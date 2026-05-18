@@ -1,0 +1,66 @@
+/* Le Pupitre Médiéval — scoped styles for the admin tool.
+   Mirrors the standalone app's index.html <style> block, but scoped
+   under .pupitre-root so the gold/dark theme doesn't leak into the
+   rest of the FMM admin chrome. */
+
+.pupitre-root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.pupitre-root .glass-panel {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.pupitre-root .glass-input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: #e5e5e5;
+}
+
+.pupitre-root .glass-input:focus {
+  border-color: rgba(212, 175, 55, 0.8);
+  outline: none;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+.pupitre-root .text-gold-gradient {
+  background: linear-gradient(to right, #BF953F, #FBF5B7, #B38728);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.pupitre-root .bg-gold-gradient {
+  background-image: linear-gradient(135deg, #AA8C2C 0%, #FBF5B7 25%, #D4AF37 50%, #AA8C2C 75%, #806921 100%);
+}
+
+.pupitre-root .bg-gold-gradient-hover:hover {
+  background-image: linear-gradient(135deg, #D4AF37 0%, #FCF6BA 25%, #E6C200 50%, #D4AF37 75%, #AA8C2C 100%);
+}
+
+/* Custom scrollbar — only inside the pupitre to avoid affecting the
+   rest of the admin shell. */
+.pupitre-root .scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+.pupitre-root .scrollbar-thin::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+.pupitre-root .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+.pupitre-root .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Signature pad — feather-edit cursor (kept from the standalone app
+   so signing-on-canvas matches the visual it was designed against). */
+.pupitre-root .signature-paper canvas {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>') 0 24, auto;
+}

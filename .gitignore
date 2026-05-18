@@ -1,0 +1,64 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+
+# Reference snapshots of the legacy Wix site — used for visual cloning
+_wix-clone/
+
+# TypeScript build info caches
+*.tsbuildinfo
+
+# Playwright MCP cache (per-run snapshots from the dev tooling)
+.playwright-mcp/
+
+# Claude Code runtime — task locks and local state shouldn't be tracked
+.claude/scheduled_tasks.lock
+.claude/memory.db
+.claude/settings.json
+
+# Claude Flow / Swarm runtime data
+.claude-flow/
+.swarm/
+ruvector.db
+
+# Python bytecode caches inside Claude skills
+__pycache__/
+*.pyc
+
+# Large media assets — serve from CDN, not git
+*.mp4
+*.webm
+*.mov
+*.avi
+*.mkv

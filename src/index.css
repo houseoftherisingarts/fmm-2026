@@ -1,0 +1,1531 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Midnight palette (clones live Wix site at festivalmedievaldemontpellier.org)
+     midnight       = page background — deep navy, used everywhere
+     midnight-deep  = nav bar / footer background — near black
+     midnight-soft  = card / section accent — a touch lighter
+     ivory          = primary text — warm cream off-white
+     ivory-soft     = secondary text — muted
+     brass          = primary accent — buttons, dividers, gold details
+     blush          = "PASSION" partner-style hot accent — used sparingly
+     oxblood        = secondary accent — used for section bands
+     forest         = ternary accent — equestrian / nature pages */
+  --color-midnight: #0E1F33;
+  --color-midnight-deep: #081424;
+  --color-midnight-soft: #15293F;
+  --color-midnight-glass: rgb(14 31 51 / 0.65);
+  --color-ivory: #F4EFE3;
+  --color-ivory-soft: #C9C2B5;
+  --color-brass: #B08D3A;
+  --color-brass-soft: #C9A85A;
+  --color-blush: #D87B8E;
+  --color-oxblood: #6B1F1F;
+  --color-forest: #2F4A36;
+  --color-stone: #6E7B8F;
+  --color-stone-light: #9AA6B8;
+  /* Pale editorial mist — used for the light "Le Moyen Âge" body
+     section that breaks up the dark on the live home page. */
+  --color-mist: #B7C3D2;
+  --color-mist-deep: #8A98AB;
+
+  /* ── Cabaret Itinérant palette — saltimbanque jewel tones used by
+     the vendor quest stage. Each chapter gets its own accent. */
+  --color-velvet:        #2B0A12;   /* deep wine stage backdrop */
+  --color-velvet-deep:   #1A050B;   /* curtain shadows */
+  --color-ruby:          #7B1E2D;   /* chapter I — la caravane */
+  --color-copper:        #B86A2A;   /* lantern / ember warmth */
+  --color-amber-glow:    #E8B14A;   /* candlelight highlight */
+  --color-mustard:       #D89B3A;   /* chapter III — la tente */
+  --color-plum:          #6B4565;   /* chapter IV — le voyage */
+  --color-emerald-deep:  #1F3D2C;   /* chapter II — votre métier */
+  --color-bone:          #E8DDC1;   /* warm parchment ivory */
+
+  /* Type stack — chosen via the in-page FontSwitch tester:
+     · --font-display     → big section titles (h1, h2). Cinzel
+       Decorative, Roman monumental caps with a slight ornament.
+     · --font-display-alt → small display labels (h3-h6,
+       .title-medieval card titles, eyebrows). Cormorant SC, a
+       small-caps Renaissance Garamond — Witcher 3 journal register.
+     · --font-editorial   → flowing italics for editorial body,
+       quotes, captions. Cormorant Garamond italic. */
+  --font-display: "Cinzel Decorative", "Marcellus", "Cinzel", Georgia, serif;
+  --font-display-alt: "Cormorant SC", "Cormorant Garamond", Georgia, serif;
+  --font-editorial: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --radius-xs: 6px;
+  --radius-card: 15px;          /* project standard */
+  --radius-lg-card: 22px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -12px rgb(0 0 0 / 0.55);
+  --shadow-glass: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 20px 60px -20px rgb(0 0 0 / 0.6);
+
+  /* ── Pupitre palette — used ONLY by the admin Pupitre tool. Adds
+     gold-* and dark-* utilities so the imported pupitre components
+     (which use Tailwind v3 class names like bg-dark-900 / text-gold-500)
+     resolve cleanly under Tailwind v4. */
+  --color-gold-100: #FDFCF0;
+  --color-gold-200: #FBF5B7;
+  --color-gold-300: #F3E5AB;
+  --color-gold-400: #E6C200;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #AA8C2C;
+  --color-gold-700: #806921;
+  --color-gold-800: #554616;
+  --color-gold-900: #2B230B;
+  --color-dark-600: #1C1C1C;
+  --color-dark-700: #121212;
+  --color-dark-800: #0A0A0A;
+  --color-dark-900: #050505;
+
+  --radius-xl3: 30px;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Neutral deep base — works for both Caravan (velvet-deep) and
+       Midnight palettes, so nothing blue flashes between sections
+       during scroll. */
+    background-color: #050204;
+  }
+  body {
+    background-color: #050204;
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+  }
+  h1, h2 {
+    font-family: var(--font-display);
+    color: var(--color-ivory);
+    letter-spacing: 0.01em;
+  }
+  h3, h4, h5, h6 {
+    font-family: var(--font-display-alt);
+    color: var(--color-ivory);
+    letter-spacing: 0.04em;
+  }
+  ::selection {
+    background-color: var(--color-brass);
+    color: var(--color-midnight-deep);
+  }
+}
+
+/* ── Glassmorphism utilities (used heavily by the live site over photos)
+   `glass-on-photo`  — main workhorse: dark navy panel sitting above a
+                       full-bleed image, with brass hairline.
+   `glass-light`     — pale wash for occasional cards on solid sections.
+   `glass-frost`     — faint white veil for outline buttons on dark bg.
+   `glass-deep`      — even deeper midnight panel for footer-like areas. */
+@layer components {
+  .glass-on-photo {
+    background: rgb(14 31 51 / 0.78);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgb(176 141 58 / 0.22);
+    box-shadow: var(--shadow-glass);
+  }
+  .glass-light {
+    background: rgb(244 239 227 / 0.08);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    border: 1px solid rgb(244 239 227 / 0.14);
+  }
+  .glass-frost {
+    background: rgb(255 255 255 / 0.05);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgb(255 255 255 / 0.14);
+  }
+  .glass-deep {
+    background: rgb(8 20 36 / 0.92);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgb(176 141 58 / 0.18);
+  }
+}
+
+/* ── Parchment skin — admin only ─────────────────────────────────────
+   Toggled via [data-admin-skin="parchment"] on the AdminShell root.
+   Re-maps the design tokens so every Tailwind utility (bg-midnight-deep,
+   text-ivory, border-ivory-soft/…) automatically flips to a warm
+   manuscript palette. Glass utilities are overridden to use a sepia
+   wash instead of a midnight wash. */
+[data-admin-skin="parchment"] {
+  --color-midnight:        #EDE0BE;
+  --color-midnight-deep:   #E0CDA0;
+  --color-midnight-soft:   #F1E5C8;
+  --color-midnight-glass:  rgb(237 224 190 / 0.65);
+  --color-ivory:           #3A2A18;
+  --color-ivory-soft:      #6F5C42;
+  --color-brass:           #8C6A1F;
+  --color-brass-soft:      #6E5318;
+  --color-blush:           #A8423E;
+  --color-stone:           #8C7B5E;
+  --color-stone-light:     #6F5C42;
+  background-color: var(--color-midnight);
+  color: var(--color-ivory);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(140, 106, 31, 0.07), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(168, 66, 62, 0.05), transparent 55%),
+    url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.42  0 0 0 0 0.20  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+[data-admin-skin="parchment"] .glass-light {
+  background: rgb(58 42 24 / 0.05);
+  border-color: rgb(140 106 31 / 0.30);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+[data-admin-skin="parchment"] .glass-on-photo,
+[data-admin-skin="parchment"] .glass-deep,
+[data-admin-skin="parchment"] .glass-frost {
+  background: rgb(241 229 200 / 0.85);
+  border-color: rgb(140 106 31 / 0.35);
+}
+/* Smooth transition when toggling. */
+.admin-skin-root,
+.admin-skin-root * {
+  transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease;
+}
+
+/* ── Paper-grain overlay (apply with .grain on a position:relative parent) */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ── Brass hairline divider ───────────────────────────────────────── */
+.divider-brass {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-brass) 50%, transparent);
+}
+
+/* ── Brume — drifting fog overlay used between sections.
+   Place inside a position:relative parent with overflow:hidden. */
+.brume {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("/wix/home/brume-fog.png") center bottom / cover no-repeat;
+  opacity: 0.7;
+  mix-blend-mode: screen;
+}
+.brume-light { mix-blend-mode: multiply; opacity: 0.55; }
+
+/* ── Section edge fades — soften the top/bottom of full-bleed photo
+   bands into the page background. */
+.fade-top    { mask-image: linear-gradient(to bottom, transparent 0, black 8%); -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 8%); }
+.fade-bottom { mask-image: linear-gradient(to top, transparent 0, black 10%); -webkit-mask-image: linear-gradient(to top, transparent 0, black 10%); }
+.fade-y      { mask-image: linear-gradient(to bottom, transparent 0, black 8%, black 90%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 8%, black 90%, transparent 100%); }
+
+/* ── Fancy display-title kerning ──────────────────────────────────── */
+.title-medieval {
+  font-family: var(--font-display-alt);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ── Living fire glow used in the cinematic welcome hero ────────────
+   Two stacked radial gradients (warm core + amber halo) plus a slow
+   organic flicker animation. Drop on a position:relative parent
+   with overflow:hidden. */
+.fire-bed {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(232, 184, 106, 0.55), transparent 70%),
+    radial-gradient(ellipse 90% 55% at 50% 100%, rgba(176, 80, 32, 0.45), transparent 75%),
+    radial-gradient(ellipse 120% 70% at 50% 100%, rgba(70, 14, 4, 0.55), transparent 80%);
+  animation: fire-flicker 4.5s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+@keyframes fire-flicker {
+  0%, 100% { opacity: 0.92; transform: translateY(0) scaleY(1); }
+  20%      { opacity: 1.00; transform: translateY(-2px) scaleY(1.04); }
+  35%      { opacity: 0.85; transform: translateY(0) scaleY(0.98); }
+  55%      { opacity: 0.97; transform: translateY(-3px) scaleY(1.03); }
+  72%      { opacity: 0.88; transform: translateY(0) scaleY(0.99); }
+  88%      { opacity: 0.94; transform: translateY(-1px) scaleY(1.02); }
+}
+
+/* ── Floating embers — small particles drifting upward over fire ─── */
+.embers::before, .embers::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle 1px at 20% 90%, rgba(232, 184, 106, 0.9) 0, transparent 100%),
+    radial-gradient(circle 1.5px at 35% 80%, rgba(232, 184, 106, 0.7) 0, transparent 100%),
+    radial-gradient(circle 1px at 55% 95%, rgba(232, 184, 106, 0.85) 0, transparent 100%),
+    radial-gradient(circle 1.5px at 70% 85%, rgba(232, 184, 106, 0.65) 0, transparent 100%),
+    radial-gradient(circle 1px at 85% 92%, rgba(232, 184, 106, 0.8) 0, transparent 100%);
+  background-size: 100% 100%;
+  animation: ember-rise 9s linear infinite;
+}
+.embers::after { animation-delay: -4.5s; opacity: 0.7; }
+@keyframes ember-rise {
+  0%   { transform: translateY(0)    scale(1);   opacity: 0; }
+  15%  { opacity: 0.9; }
+  100% { transform: translateY(-80vh) scale(0.4); opacity: 0; }
+}
+
+/* ── Subtle vignette — used between cinematic acts ─────────────── */
+.vignette-radial {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgb(8 20 36 / 0.85) 100%);
+}
+
+/* ── Cabaret stage — velvet curtain backdrop with center spotlight.
+   Used by the vendor quest section, replacing the cold midnight wash. */
+.cabaret-stage {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 35%, rgba(216, 155, 58, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 110% 80% at 50% 100%, var(--color-velvet) 0%, var(--color-velvet-deep) 75%, #0A0207 100%);
+}
+.cabaret-curtain-l, .cabaret-curtain-r {
+  position: absolute; top: 0; bottom: 0; pointer-events: none;
+  width: 18%;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,0.45) 0px, rgba(0,0,0,0.45) 4px,
+      rgba(74, 12, 22, 0.55) 6px, rgba(43, 10, 18, 0.85) 22px,
+      rgba(0,0,0,0.45) 30px, rgba(0,0,0,0.45) 34px);
+  filter: blur(0.4px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.cabaret-curtain-l { left: 0;  mask-image: linear-gradient(to right, black 30%, transparent); -webkit-mask-image: linear-gradient(to right, black 30%, transparent); }
+.cabaret-curtain-r { right: 0; mask-image: linear-gradient(to left,  black 30%, transparent); -webkit-mask-image: linear-gradient(to left,  black 30%, transparent); }
+
+/* Velvet card — used inside cabaret stage instead of glass-light.
+   Deep wine fill with copper inner glow + multi-layer shadow. */
+.velvet-card {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(216, 155, 58, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255, 230, 180, 0.04), rgba(0, 0, 0, 0.35)),
+    rgb(43 10 18 / 0.85);
+  border: 1px solid rgba(216, 155, 58, 0.30);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6) inset,
+    0 0 60px -10px rgba(216, 155, 58, 0.18) inset,
+    0 24px 60px -20px rgba(0, 0, 0, 0.85),
+    0 50px 120px -40px rgba(123, 30, 45, 0.55);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+/* 3D perspective container — needed for card-flip + tilt. */
+.stage-3d { perspective: 1400px; perspective-origin: 50% 30%; }
+.flip-3d  { transform-style: preserve-3d; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+
+/* Copper sheen — animated highlight strip used on chapter titles. */
+.copper-sheen {
+  background: linear-gradient(95deg,
+    var(--color-copper) 0%, var(--color-amber-glow) 35%,
+    #FFF6D5 50%, var(--color-amber-glow) 65%, var(--color-copper) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: copper-shift 6s ease-in-out infinite;
+}
+@keyframes copper-shift {
+  0%, 100% { background-position: 100% 50%; }
+  50%      { background-position: 0% 50%; }
+}
+
+/* Lantern flicker — applied to box-shadow + opacity. */
+@keyframes lantern-flicker {
+  0%, 100% { opacity: 1;    filter: brightness(1.0); }
+  18%      { opacity: 0.92; filter: brightness(0.92); }
+  36%      { opacity: 1.05; filter: brightness(1.08); }
+  62%      { opacity: 0.95; filter: brightness(0.95); }
+  78%      { opacity: 1.02; filter: brightness(1.05); }
+}
+.lantern-flicker { animation: lantern-flicker 3.4s ease-in-out infinite; transform-origin: 50% 0%; }
+
+/* Lantern sway — gentle pendulum. */
+@keyframes lantern-sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(3deg); }
+}
+.lantern-sway { animation: lantern-sway 5.2s ease-in-out infinite; transform-origin: 50% 0%; }
+
+/* Reduced-motion: kill all decorative animations. */
+@media (prefers-reduced-motion: reduce) {
+  .lantern-flicker, .lantern-sway, .copper-sheen, .fmm-kenburns { animation: none !important; }
+}
+
+/* ── Ken Burns — slow scale + drift on hero/feature photos. Caller is
+   expected to set its own `object-position`; we only animate scale + a
+   tiny translate so the framing stays under the designer's control. */
+@keyframes fmm-kenburns {
+  0%   { transform: scale(1.04) translate3d(0, 0, 0); }
+  100% { transform: scale(1.16) translate3d(-1%, -1.5%, 0); }
+}
+.fmm-kenburns {
+  animation: fmm-kenburns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* ── Caravan stage — TRANSPARENT.
+   Old version had a radial gradient anchored at the bottom of each
+   section: warm velvet at the bottom, dark at the top → visible seam
+   between any two adjacent sections. New approach: sections are
+   transparent. ONE continuous warm-to-dark page background paints
+   behind everything (see body.fmm-caravan-page below). Sections only
+   provide content + padding; their edges are the same colour as their
+   neighbours' edges by construction. */
+.caravan-stage {
+  background-color: transparent;
+}
+
+/* Set on <body> from any pillar page via useCaravanPage(). One
+   continuous gradient covering the whole document — nothing to seam
+   between sections.
+
+   ALSO overrides the midnight + brass design tokens to caravan
+   equivalents. Because Tailwind v4 utilities read from these vars at
+   runtime, every `bg-midnight-deep`, `text-brass`, `from-midnight/85`,
+   etc. inside the caravan body flips to the velvet/oxblood/copper
+   register automatically — no per-page rewrites required. */
+.fmm-caravan-page {
+  background-color: #050204;
+  background-image:
+    radial-gradient(ellipse 90% 50% at 50% 25%, rgba(184, 106, 42, 0.10), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 75%, rgba(123, 30, 45, 0.10), transparent 60%),
+    linear-gradient(180deg, #0A0207 0%, #1A050B 35%, #14040A 65%, #050204 100%);
+  background-attachment: fixed;
+
+  /* Midnight → velvet/oxblood */
+  --color-midnight:      #1A050B;
+  --color-midnight-deep: #050204;
+  --color-midnight-soft: #2B0A12;
+  --color-midnight-glass: rgb(26 5 11 / 0.65);
+  /* Brass → warmer caravan amber */
+  --color-brass:         #C9A85A;
+  --color-brass-soft:    #E0BE6A;
+  /* Mist → keep, but warmed slightly so light editorial blocks tint
+     toward parchment rather than steel. */
+  --color-mist:          #C9BAA3;
+  --color-mist-deep:     #A89A82;
+}
+
+/* ── Caravan-palette shim ───────────────────────────────────────
+   Re-themes legacy utility classes (navy-on-brass clone of the live
+   Wix site) for any page that calls useCaravanPage(). Sections become
+   transparent so the body gradient shows through, glass-light gains
+   the copper-rimmed caravan-glass treatment, brass accents shift to
+   the warmer amber-glow, dividers re-tone to copper. Tuned to
+   re-skin existing markup without per-page rewrites. */
+
+/* Strip Wix-inherited dark slabs + hairlines from any descendant of a
+   caravan page — not just <section>. Any element that still has a
+   bg-midnight* or border-ivory-soft/* utility (left behind from the
+   navy-on-brass Wix clone) bleeds through to the body gradient. We
+   removed the attributes at source on pillar pages, but keep this
+   safety-net for any straggling element we missed. */
+.fmm-caravan-page .bg-midnight,
+.fmm-caravan-page .bg-midnight-deep,
+.fmm-caravan-page .bg-midnight-soft {
+  background-color: transparent !important;
+}
+/* Kill ONLY section-level border hairlines (border-t / border-b /
+   border-y combined with border-ivory-soft). In-card content
+   dividers (border-b border-ivory-soft/15 inside a heading row, etc.)
+   stay intact — those help readability and aren't the source of the
+   horizontal cuts between sections. */
+.fmm-caravan-page section.border-t,
+.fmm-caravan-page section.border-b,
+.fmm-caravan-page section.border-y,
+.fmm-caravan-page section[class*="border-ivory-soft"] {
+  border-top-color: transparent !important;
+  border-bottom-color: transparent !important;
+}
+
+/* Kill the wix-imported brume overlay (screen-blends the bg toward
+   white at 70% opacity — was brightening every pillar hero into a
+   washed-out grey instead of keeping it dark velvet). */
+.fmm-caravan-page .brume {
+  display: none !important;
+}
+
+/* Glass cards — re-skin .glass-light to read like caravan-glass.
+   Warm-charcoal fill (NOT oxblood), copper rim, gold inner highlight.
+   Containers stay neutral so the red body atmosphere doesn't compound
+   into a uniform red wash — the Witcher 3 chrome treatment: black
+   panels with amber rims, red reserved for the backdrop. */
+.fmm-caravan-page .glass-light {
+  background:
+    linear-gradient(180deg, rgba(232, 184, 106, 0.04), rgba(32, 13, 16, 0.5)),
+    rgba(19, 8, 11, 0.72) !important;
+  border-color: rgba(216, 155, 58, 0.22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(232, 177, 74, 0.12),
+    0 18px 40px -22px rgba(0, 0, 0, 0.7) !important;
+}
+.fmm-caravan-page .glass-on-photo {
+  background: rgba(19, 8, 11, 0.73) !important;
+  border-color: rgba(216, 155, 58, 0.25) !important;
+}
+.fmm-caravan-page .glass-deep {
+  background: rgba(9, 4, 6, 0.92) !important;
+  border-color: rgba(216, 155, 58, 0.22) !important;
+}
+.fmm-caravan-page .glass-frost {
+  background: rgba(232, 177, 74, 0.05) !important;
+  border-color: rgba(232, 177, 74, 0.18) !important;
+}
+
+/* Brass text → warmer amber-glow that matches the caravan accent. */
+.fmm-caravan-page .text-brass {
+  color: var(--color-amber-glow) !important;
+}
+.fmm-caravan-page .text-brass-soft {
+  color: var(--color-mustard) !important;
+}
+.fmm-caravan-page .bg-brass {
+  background-color: var(--color-amber-glow) !important;
+}
+.fmm-caravan-page .hover\:bg-brass-soft:hover {
+  background-color: var(--color-mustard) !important;
+}
+.fmm-caravan-page .hover\:bg-brass:hover {
+  background-color: var(--color-amber-glow) !important;
+}
+.fmm-caravan-page .hover\:text-brass:hover {
+  color: var(--color-amber-glow) !important;
+}
+.fmm-caravan-page .hover\:border-brass:hover,
+.fmm-caravan-page .border-brass\/40,
+.fmm-caravan-page .border-brass\/30,
+.fmm-caravan-page .border-brass\/50,
+.fmm-caravan-page .border-brass {
+  border-color: rgba(232, 177, 74, 0.45) !important;
+}
+.fmm-caravan-page .bg-brass\/10,
+.fmm-caravan-page .bg-brass\/15,
+.fmm-caravan-page .bg-brass\/20 {
+  background-color: rgba(232, 177, 74, 0.10) !important;
+}
+
+/* Divider hairlines — re-tone to copper. */
+.fmm-caravan-page .divider-brass {
+  background: linear-gradient(90deg, transparent, var(--color-copper) 50%, transparent) !important;
+}
+
+/* Stone-toned secondary text → warm bone-soft so it reads on the
+   velvet base. */
+.fmm-caravan-page .text-stone,
+.fmm-caravan-page .text-stone-light {
+  color: rgba(244, 239, 227, 0.55) !important;
+}
+/* Kill the grain overlay on /marche — visible film noise was reading
+   as a render artifact once the body gradient cleaned up. Real fire
+   takes its place via <FireBackdrop /> mounted at page level. */
+
+/* ── Reusable horizontal edge feathering ─────────────────────
+   Drop on any element whose paint shouldn't end at a hard
+   rectangular edge (gradient bands, thin rails, full-width photos,
+   atmospheric overlays). The mask cuts the leftmost / rightmost
+   8% of the element's width to transparent. Applies on top of any
+   existing mask-image because it sits on `.fmm-soft-edges` itself. */
+.fmm-soft-edges {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image:         linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+.fmm-soft-edges-wide {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 16%, black 84%, transparent 100%);
+  mask-image:         linear-gradient(90deg, transparent 0%, black 16%, black 84%, transparent 100%);
+}
+
+/* ── Chapter Mark — bounded medieval ornament ─────────────────
+   A free-standing forged-metal object, NOT a full-width rail. Fixed
+   total width (~360px), centered on its own line. Renders as a
+   gold diamond flanked by tapered flourishes that fade out within
+   the object's own bounds, plus two small accent diamonds. The
+   ornament never touches the viewport edge, so it can't read as
+   cropped. Pure CSS — no SVG, no asset.
+
+   Usage:
+     <div className="fmm-chapter-mark" aria-hidden>
+       <span className="fmm-cm-flourish fmm-cm-left"  />
+       <span className="fmm-cm-pip" />
+       <span className="fmm-cm-diamond" />
+       <span className="fmm-cm-pip" />
+       <span className="fmm-cm-flourish fmm-cm-right" />
+     </div> */
+.fmm-chapter-mark {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 14px 0;
+  pointer-events: none;
+}
+/* Long tapered flourish — flex-grows to fill all remaining width, so
+   the rail spans the full viewport but fades smoothly from solid
+   gold at center to transparent at the viewport edge. The fade is
+   the full half-width, so there's no hard cut anywhere. */
+.fmm-chapter-mark .fmm-cm-flourish {
+  flex: 1 1 auto;
+  height: 2px;
+  background: linear-gradient(180deg,
+    transparent 0,
+    #6E5318 0,
+    #E0BE6A 50%,
+    #FFF1B5 50%,
+    #6E5318 100%,
+    transparent 100%);
+  box-shadow: 0 0 6px rgba(232, 177, 74, 0.25);
+}
+.fmm-chapter-mark .fmm-cm-flourish.fmm-cm-left {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 100%);
+  mask-image:         linear-gradient(90deg, transparent 0%, black 100%);
+}
+.fmm-chapter-mark .fmm-cm-flourish.fmm-cm-right {
+  -webkit-mask-image: linear-gradient(90deg, black 0%, transparent 100%);
+  mask-image:         linear-gradient(90deg, black 0%, transparent 100%);
+}
+/* Small accent diamonds — 5px gold pips flanking the centerpiece. */
+.fmm-chapter-mark .fmm-cm-pip {
+  display: block;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #FFF1B5 0%, #C9A85A 60%, #6E5318 100%);
+  box-shadow:
+    0 0 0 1px #4A3812,
+    0 0 6px rgba(232, 177, 74, 0.6);
+}
+/* Center diamond — larger forged piece with bevel + carved inner echo. */
+.fmm-chapter-mark .fmm-cm-diamond {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #FFF1B5 0%, #E0BE6A 35%, #C9A85A 60%, #6E5318 100%);
+  box-shadow:
+    0 0 0 1px #4A3812,
+    inset 1px 1px 0 rgba(255, 241, 181, 0.75),
+    inset -1px -1px 0 rgba(74, 56, 18, 0.75),
+    0 0 18px rgba(232, 177, 74, 0.55);
+}
+.fmm-chapter-mark .fmm-cm-diamond::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  box-shadow:
+    inset 0 0 0 1px rgba(74, 56, 18, 0.7),
+    inset 0 0 0 2px rgba(255, 241, 181, 0.28);
+}
+
+/* ── Caravan grade — unified color treatment for photography ─────
+   The festival site mixes shots from many different photographers and
+   shooting conditions: sunny daylight on the arena, lantern-lit night
+   stage, indoor workshop tents, posed studio portraits. Without a
+   common grade they read as a scrapbook. This LUT-like CSS filter
+   pulls all photos toward the same caravan register:
+     · saturate(0.62)   — drop chroma so harsh blues/greens calm down
+     · contrast(1.06)   — keep depth + readable shadows
+     · brightness(0.92) — sit darker against the velvet page
+     · sepia(0.14)      — add a base warmth (vintage-ish)
+     · hue-rotate(-6deg)— nudge greens/blues toward amber-copper
+
+   Pair with `.fmm-grade-caravan-tint` overlaid on top (a low-opacity
+   warm rectangle in mix-blend-mode: multiply) to unify the residual
+   hue cast across photos shot in wildly different lighting. */
+.fmm-grade-caravan {
+  filter:
+    saturate(0.58)
+    contrast(1.06)
+    brightness(0.92)
+    sepia(0.11)
+    hue-rotate(-4deg);
+}
+.fmm-grade-caravan-tint {
+  background-color: rgba(150, 95, 45, 0.14);
+  mix-blend-mode: multiply;
+}
+
+/* Auto-grade every photo on a caravan page — pulls the festival's
+   wildly-mixed photography (different photographers / lighting eras)
+   toward a unified Witcher register. Same LUT as .fmm-grade-caravan,
+   applied globally so individual pages don't need per-image markup.
+   Opt out by giving an <img> the .fmm-no-grade class — used on logos,
+   the Green Knight (already alpha-clean), and any image that needs
+   to render its natural colors. */
+.fmm-caravan-page img:not(.fmm-no-grade) {
+  filter:
+    saturate(0.58)
+    contrast(1.06)
+    brightness(0.92)
+    sepia(0.11)
+    hue-rotate(-4deg);
+}
+
+/* ── Glistening sweep — orb-style diagonal shine for cards.
+   Re-uses the orb's fmm-orb-sweep keyframes. Loops on a slow cycle
+   (8s) per card; pass an inline `animation-delay` so adjacent cards
+   don't sweep in unison. mix-blend-mode: screen keeps it as a light
+   gleam over the photograph rather than a paint overlay. */
+.fmm-card-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(110deg,
+      transparent 38%,
+      rgba(255, 241, 181, 0.22) 50%,
+      transparent 62%);
+  transform: translateX(-110%);
+  mix-blend-mode: screen;
+  animation: fmm-orb-sweep 8s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+  opacity: 0.9;
+}
+/* On hover, the sweep brightens AND speeds up — like waking the
+   card. Animation-duration shortens; opacity bumps. */
+.group:hover .fmm-card-shine {
+  animation-duration: 1.2s;
+  background:
+    linear-gradient(110deg,
+      transparent 38%,
+      rgba(255, 241, 181, 0.55) 50%,
+      transparent 62%);
+}
+
+/* ── FireBackdrop — fixed-position video bed sitting under every
+   caravan page. Real fire footage, masked to fade up into nothing,
+   screen-blended so only the bright flames paint over the caravan
+   gradient. Hidden by default; only shown when <body> carries the
+   .fmm-caravan-page class. */
+.fmm-fire-backdrop {
+  display: none;
+  position: fixed;
+  inset: 30% 0 0 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+body.fmm-caravan-page .fmm-fire-backdrop { display: block; }
+.fmm-fire-backdrop > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  filter: hue-rotate(-8deg) saturate(1.05) brightness(0.9) contrast(1.1);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,1) 100%);
+  mask-image:         linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,1) 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fmm-fire-backdrop > video { display: none; }
+}
+
+/* ── Admin Witcher register ────────────────────────────────────
+   Black-and-blue tints, sharp hairlines, sans-serif chrome. Mirrors
+   what the caravan register does for /marche, but tuned for back-of-
+   house clarity instead of dramatic atmosphere. Single cool accent
+   (steel blue) used sparingly for active state. */
+
+:root {
+  /* Midnight slate with a faint warm undertone — keeps the
+     "black + blue" register the user asked for without leaning into
+     bright steel-blue. The accent shifts to brass (FMM's existing
+     gold) so this reads as Witcher inventory chrome dropped on top of
+     our brand palette. */
+  --admin-bg-deep:    #060A12;
+  --admin-bg:         #0A101A;
+  --admin-bg-soft:    #121A28;
+  --admin-text:       #ECE5D2;
+  --admin-text-soft:  #9A988A;
+  --admin-text-mute:  #61605A;
+  --admin-accent:     #C9A85A;  /* brass-soft — single warm accent */
+  --admin-accent-dim: #8C7335;
+  --admin-line:       rgba(201, 168, 90, 0.22);
+  --admin-line-soft:  rgba(236, 229, 210, 0.07);
+}
+
+.admin-stage {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 100%, rgba(201, 168, 90, 0.04) 0%, transparent 70%),
+    linear-gradient(180deg, var(--admin-bg) 0%, var(--admin-bg-deep) 60%, #02040A 100%);
+  color: var(--admin-text);
+}
+
+.admin-rail {
+  background:
+    linear-gradient(180deg, #0E141F 0%, var(--admin-bg-deep) 60%, #030610 100%);
+  border-right: 1px solid var(--admin-line);
+}
+
+/* Sidebar nav item — base + active. Bigger type, more padding, more
+   breathing room than the previous compact version — matches the
+   readability spacing of the Witcher inventory mockup tabs. Active
+   gets a left-side diamond pip + a thin brass inner glow on a subtle
+   brass backplate. */
+.admin-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.4rem 0.85rem 1.75rem;
+  position: relative;
+  text-align: left;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--admin-text-soft);
+  transition: color 200ms ease, background-color 200ms ease, padding-left 200ms ease;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+/* Hover lifts the row text and shifts it right slightly, like a
+   selected card on a console UI. */
+.admin-nav-item:not([data-active="true"]):hover {
+  padding-left: 1.9rem;
+}
+.admin-nav-item:hover {
+  color: var(--admin-text);
+  background: rgba(201, 168, 90, 0.05);
+}
+.admin-nav-item[data-active="true"] {
+  color: var(--admin-accent);
+  background: rgba(201, 168, 90, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 90, 0.22),
+              inset 2px 0 0 0 var(--admin-accent);
+}
+/* Diamond pip on the left of active items — brass glow */
+.admin-nav-item[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 6px; top: 50%;
+  width: 5px; height: 5px;
+  transform: translateY(-50%) rotate(45deg);
+  background: var(--admin-accent);
+  box-shadow: 0 0 8px rgba(201, 168, 90, 0.75);
+}
+
+/* Admin card / panel — dark slate, thin blue hairline, sharp corners
+   with subtle inset stroke. Replaces the brass glass-light look. */
+.admin-card {
+  background: rgba(10, 15, 24, 0.65);
+  border: 1px solid var(--admin-line);
+  box-shadow:
+    inset 0 1px 0 rgba(228, 236, 247, 0.04),
+    0 12px 28px -16px rgba(0, 0, 0, 0.85);
+}
+.admin-card-strong {
+  background:
+    linear-gradient(180deg, rgba(16, 23, 36, 0.85) 0%, rgba(10, 15, 24, 0.85) 100%);
+  border: 1px solid var(--admin-line);
+  box-shadow:
+    inset 0 1px 0 rgba(228, 236, 247, 0.06),
+    0 14px 36px -16px rgba(0, 0, 0, 0.9);
+}
+
+/* Admin header — slim sticky top bar */
+.admin-topbar {
+  background: rgba(8, 12, 20, 0.92);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-bottom: 1px solid var(--admin-line);
+}
+
+/* Admin input — slate base, brass focus rim */
+.admin-input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  background: rgba(5, 8, 14, 0.7);
+  border: 1px solid var(--admin-line-soft);
+  color: var(--admin-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.admin-input::placeholder { color: var(--admin-text-mute); }
+.admin-input:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 1px var(--admin-accent), 0 0 16px -4px rgba(201, 168, 90, 0.35);
+}
+
+/* Admin primary CTA — chevron-clipped brass gradient */
+.admin-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--admin-bg-deep);
+  background:
+    linear-gradient(180deg, #E0BE6A 0%, #C9A85A 55%, #8C7335 100%);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 200, 0.45),
+    0 6px 18px -6px rgba(201, 168, 90, 0.55);
+  transition: filter 200ms ease, transform 200ms ease;
+  border: 0; cursor: pointer;
+}
+.admin-cta:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.admin-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Admin ghost button — hairline outline, brass hover */
+.admin-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--admin-text-soft);
+  background: transparent;
+  border: 1px solid var(--admin-line);
+  transition: color 200ms ease, border-color 200ms ease, background 200ms ease;
+  cursor: pointer;
+}
+.admin-ghost:hover {
+  color: var(--admin-accent);
+  border-color: var(--admin-accent);
+  background: rgba(201, 168, 90, 0.08);
+}
+.admin-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Admin danger — oxblood red kept consistent with action red */
+.admin-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 500;
+  color: #FCA5B0;
+  background: rgba(216, 123, 142, 0.10);
+  border: 1px solid rgba(216, 123, 142, 0.40);
+  transition: background 200ms ease, border-color 200ms ease;
+  cursor: pointer;
+}
+.admin-danger:hover {
+  background: rgba(216, 123, 142, 0.22);
+  border-color: rgba(216, 123, 142, 0.65);
+}
+
+/* Section title — keep the medieval display face for big headings
+   only; chrome (nav, badges, buttons, labels, body) all stay in clean
+   sans. Sized large + airy line-height like a Witcher screen title. */
+.admin-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--admin-text);
+}
+.admin-eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.45em;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--admin-accent);
+}
+
+/* ── Admin bottom HUD — Witcher controller-prompt rail at the bottom
+   of the section content. Diamond-glyph + uppercase tracked label. */
+.admin-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--admin-line);
+  margin-top: 2rem;
+}
+.admin-hud-prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--admin-text-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+.admin-hud-prompt-glyph {
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(201, 168, 90, 0.45);
+  transform: rotate(45deg);
+  font-size: 11px;
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+}
+.admin-hud-prompt-glyph > span { transform: rotate(-45deg); display: block; line-height: 1; }
+.admin-hud-prompt:hover { color: var(--admin-accent); }
+.admin-hud-prompt:hover .admin-hud-prompt-glyph {
+  border-color: var(--admin-accent);
+  background: rgba(201, 168, 90, 0.10);
+  color: var(--admin-accent);
+}
+
+/* Status badges in admin context — sharp corners, slate base */
+.admin-badge {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 9px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+/* ── NavBar surfaces ─────────────────────────────────────────────
+   Two states: top-of-page (transparent over the section) and
+   scrolled (darkened velvet glass with copper hairline). Caravan
+   palette throughout — no midnight-navy. */
+.fmm-nav-top {
+  background:
+    linear-gradient(180deg, rgba(10, 2, 7, 0.55) 0%, rgba(10, 2, 7, 0.15) 70%, transparent 100%);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.fmm-nav-scrolled {
+  background:
+    linear-gradient(180deg, rgba(10, 2, 7, 0.88), rgba(26, 5, 11, 0.78));
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow:
+    0 1px 0 rgba(232, 177, 74, 0.10) inset,
+    0 12px 30px -18px rgba(0, 0, 0, 0.85);
+}
+
+/* ── Witcher 4 inventory register ────────────────────────────────
+   Restrained AAA-game UI: dark slate backdrop, diamond-rotated tiles,
+   single gold accent for active state only, clean sans typography.
+   NOT parchment/illuminated-manuscript clichés. */
+
+/* Diamond tile — 45°-rotated square. Pair with .witcher-tile-inner
+   on the child to counter-rotate the content so the icon/label stays
+   upright. */
+.witcher-tile {
+  position: relative;
+  width: 88px; height: 88px;
+  transform: rotate(45deg);
+  background: rgba(244, 239, 227, 0.04);
+  border: 1px solid rgba(244, 239, 227, 0.16);
+  transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+.witcher-tile-inner {
+  position: absolute; inset: 0;
+  transform: rotate(-45deg);
+  display: flex; align-items: center; justify-content: center;
+}
+.witcher-tile:hover,
+.witcher-tile[data-active="true"] {
+  background: rgba(216, 176, 90, 0.16);
+  border-color: rgba(216, 176, 90, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(216, 176, 90, 0.45),
+    0 0 28px -6px rgba(216, 176, 90, 0.45);
+}
+
+/* Witcher tab — top-of-screen section nav. Active state gets a solid
+   gold backplate; inactive stays as a hairline diamond outline. */
+.witcher-tab {
+  position: relative;
+  padding: 0.6rem 1.4rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 11px;
+  color: rgba(244, 239, 227, 0.65);
+  transition: color 200ms ease;
+}
+.witcher-tab:hover { color: rgba(244, 239, 227, 0.95); }
+.witcher-tab[data-active="true"] {
+  color: var(--color-velvet-deep);
+  background:
+    linear-gradient(180deg, #E0BE6A 0%, #C9A85A 50%, #B08D3A 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 200, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Witcher stat — corner stat readout. Tiny icon + huge sans number +
+   small uppercase label. */
+.witcher-stat {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.5rem 0;
+}
+.witcher-stat-num {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--color-bone);
+  line-height: 1;
+}
+.witcher-stat-label {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  font-size: 10px;
+  color: rgba(244, 239, 227, 0.55);
+}
+
+/* Witcher action prompt — controller-style HUD CTA. Small glyph in a
+   circle/diamond + uppercase label, wide tracking. */
+.witcher-prompt {
+  /* Gap is generous so the rotated 26px glyph's right point doesn't
+     clip into the label — the diamond's diagonal extends ~5px past
+     its rect bounding box. */
+  display: inline-flex; align-items: center; gap: 1rem;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 11px;
+  color: var(--color-bone);
+  transition: color 200ms ease;
+  cursor: pointer;
+}
+.witcher-prompt-glyph {
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(244, 239, 227, 0.45);
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+  transform: rotate(45deg);
+  font-size: 12px;
+}
+.witcher-prompt-glyph > span { transform: rotate(-45deg); display: block; line-height: 1; }
+.witcher-prompt:hover { color: #D8B05A; }
+.witcher-prompt:hover .witcher-prompt-glyph {
+  border-color: #D8B05A;
+  background: rgba(216, 176, 90, 0.10);
+  color: #D8B05A;
+}
+.witcher-prompt[data-primary="true"] .witcher-prompt-glyph {
+  border-color: #D8B05A;
+  background: #D8B05A;
+  color: var(--color-velvet-deep);
+}
+.witcher-prompt[data-primary="true"]:hover .witcher-prompt-glyph {
+  background: #E0BE6A;
+  border-color: #E0BE6A;
+}
+
+/* Slate texture — dark stone backdrop for the Witcher panel. Subtle
+   noise + radial vignette. */
+.witcher-slate {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(20, 18, 16, 0.6), rgba(0, 0, 0, 0.92) 100%),
+    linear-gradient(180deg, #1a1612 0%, #0e0c0a 60%, #050402 100%);
+}
+.witcher-slate::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.06; mix-blend-mode: overlay;
+}
+
+/* ── Charter / Parchment panel ─────────────────────────────────
+   Witcher 3 / Thronebreaker register: warm aged-paper plate sitting
+   on the dark velvet stage, framed by gold ornate corners. Use for
+   formal declarations (become-a-merchant CTA, official notices). */
+.parchment-plate {
+  position: relative;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232, 184, 106, 0.20), transparent 70%),
+    radial-gradient(ellipse 100% 70% at 50% 100%, rgba(122, 78, 38, 0.10), transparent 70%),
+    linear-gradient(180deg, #EFE2C0 0%, #E2D0A6 60%, #D4BE89 100%);
+  color: #3a2a18;
+  isolation: isolate;
+}
+/* Aged paper grain + edge burn */
+.parchment-plate::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.32  0 0 0 0 0.22  0 0 0 0 0.10  0 0 0 0.42 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+.parchment-plate::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow:
+    inset 0 0 80px rgba(82, 50, 20, 0.40),
+    inset 0 0 18px rgba(60, 30, 8, 0.45);
+}
+
+/* Charter ornate gold border — thick outer gold stroke + thin inner
+   echo, forming the double-line frame seen on Thronebreaker dialogues
+   and Witcher inn signs. */
+.charter-frame {
+  position: relative;
+  box-shadow:
+    /* Outer dark wooden stroke */
+    0 0 0 1px rgba(60, 30, 8, 0.85),
+    /* Thick gold band */
+    0 0 0 6px var(--color-brass),
+    /* Inner dark echo */
+    0 0 0 7px rgba(60, 30, 8, 0.85),
+    /* Outer drop */
+    0 30px 90px -28px rgba(0, 0, 0, 0.95);
+}
+/* Inner thin gold echo */
+.charter-frame > .charter-inner {
+  position: absolute; inset: 14px; pointer-events: none; z-index: 1;
+  border: 1px solid rgba(140, 106, 31, 0.55);
+}
+
+/* Beveled rivet — small gold dome dropped at corner crossings to
+   read like the metal studs on a tavern signboard. */
+.charter-rivet {
+  width: 16px; height: 16px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, #F4E5B6 0%, #C9A85A 35%, #8C6A1F 75%, #4A3812 100%);
+  box-shadow:
+    inset 0 -1px 2px rgba(0,0,0,0.4),
+    inset 0 1px 1px rgba(255, 240, 200, 0.7),
+    0 1px 3px rgba(0,0,0,0.6);
+}
+
+/* Charter heraldic glyph — Roman numeral block used on year plates. */
+.charter-numeral {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  color: #4A3812;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.4);
+}
+
+/* Wax seal — real-feeling stamp with hatching. */
+.wax-seal {
+  position: relative;
+  width: 88px; height: 88px;
+  background:
+    radial-gradient(circle at 32% 28%, #C7372A 0%, #7B1E2D 50%, #3A0810 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.55),
+    0 6px 14px rgba(0,0,0,0.55),
+    inset -3px -4px 8px rgba(0,0,0,0.55),
+    inset 2px 2px 4px rgba(255, 220, 200, 0.35);
+}
+.wax-seal::before {
+  /* Hatching at the edge to suggest dripped wax */
+  content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 70% 78%, rgba(123, 30, 45, 0.55) 0 8%, transparent 12%),
+    radial-gradient(circle at 22% 80%, rgba(123, 30, 45, 0.45) 0 6%, transparent 10%),
+    radial-gradient(circle at 86% 22%, rgba(123, 30, 45, 0.40) 0 5%, transparent 9%);
+  pointer-events: none;
+}
+.wax-seal::after {
+  /* Embossed monogram engraving */
+  content: ""; position: absolute; inset: 12px; border-radius: 50%;
+  border: 1px solid rgba(255, 220, 200, 0.40);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+
+/* ── Performance helpers ────────────────────────────────────────
+   .fmm-perf-section — contains layout + style work but NOT paint,
+   so absolutely-positioned children (fog overhangs, bleed gradients)
+   that extend past the section bounding box still render. Original
+   `content-visibility: auto` was clipping the section-fog overhang
+   at every seam — replaced with weaker containment that keeps the
+   layout-recalc gains without the paint clip. */
+.fmm-perf-section {
+  contain: layout style;
+}
+
+/* GPU layer promotion for elements that move/transform a lot on
+   scroll. Use sparingly — promoted layers cost memory. */
+.fmm-gpu {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* ── Section bleed-edges — DISABLED.
+   Used to paint gradient bands at section edges to mask hard cuts,
+   but with the new approach (transparent sections over one continuous
+   page bg) there are no cuts left to mask. The class stays as a
+   no-op so existing markup doesn't need to change. */
+.bleed-edges {
+  position: relative;
+}
+.bleed-edges::before,
+.bleed-edges::after {
+  content: none;
+}
+/* All bleed/fog gradient rules now no-op. The single continuous page
+   background (.fmm-caravan-page on <body>) handles atmosphere; nothing
+   paints at section edges. */
+.section-fog { display: none; }
+.bleed-edges-soft::before,
+.bleed-edges-soft::after,
+.bleed-top::before,
+.bleed-bottom::after {
+  content: none;
+}
+
+/* ── Caravan glass — premium glass wrapper for content blocks on
+   the caravan stage. Deep velvet base with copper edge + inner hot
+   highlight. Replaces glass-on-photo for /marche.
+
+   Perf: backdrop-filter dropped from blur(18px) saturate(140%) to
+   blur(8px) saturate(115%) — the previous value caused major scroll
+   jank on /marche when multiple glass panels were stacked. The fill
+   opacity bumped to .88 to keep the visual weight despite the
+   lighter blur. translate3d(0) promotes the element to a compositor
+   layer so it's not repainted on every scroll frame. */
+.caravan-glass {
+  background:
+    linear-gradient(180deg, rgba(232, 184, 106, 0.05), rgba(32, 13, 16, 0.55)),
+    rgb(19 8 11 / 0.88);
+  backdrop-filter: blur(8px) saturate(115%);
+  -webkit-backdrop-filter: blur(8px) saturate(115%);
+  border: 1px solid rgba(216, 155, 58, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(232, 177, 74, 0.18),
+    inset 0 0 80px -30px rgba(184, 106, 42, 0.27),
+    0 30px 80px -30px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Concentric energy-pulse rings — used behind focal elements
+   (active champion tile, hero CTA). Two layers, offset phases. */
+@keyframes fmm-pulse-1 {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.95; }
+}
+@keyframes fmm-pulse-2 {
+  0%, 100% { opacity: 0.20; }
+  50%      { opacity: 0.55; }
+}
+.fmm-pulse-1 { animation: fmm-pulse-1 3.8s ease-in-out infinite; }
+.fmm-pulse-2 { animation: fmm-pulse-2 5.6s ease-in-out infinite; }
+
+/* Champion-select tile lock — particle-burst pulse when a tile
+   becomes active. Triggered via a brief class swap on the wrapper. */
+@keyframes fmm-lock-burst {
+  0%   { transform: scale(0.6); opacity: 0; }
+  40%  { opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.fmm-lock-burst {
+  animation: fmm-lock-burst 0.9s ease-out forwards;
+}
+
+/* ── Wild-Rift hex-cut panel — opposite-corner notches. Wrap with
+   .hex-cut around the OUTER frame; inside, the hex-edge utility paints
+   a duplicate copper outline that follows the cut. Use `--hex` to
+   tune notch size (default 18px). */
+.hex-cut {
+  --hex: 18px;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--hex)) 0,
+    100% var(--hex),
+    100% 100%,
+    var(--hex) 100%,
+    0 calc(100% - var(--hex))
+  );
+}
+.hex-cut-sm { --hex: 10px; }
+.hex-cut-lg { --hex: 28px; }
+
+/* Inner-stroke for hex-cut elements — clip-path can't take a border,
+   so this duplicate inner inset element paints the copper edge. */
+.hex-edge {
+  --hex: 18px;
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(135deg, transparent 0 calc(var(--hex) - 1px), var(--color-copper) calc(var(--hex) - 1px) calc(var(--hex) + 1px), transparent calc(var(--hex) + 1px)) top right / 100% 100% no-repeat,
+    linear-gradient(135deg, transparent 0 calc(var(--hex) - 1px), var(--color-copper) calc(var(--hex) - 1px) calc(var(--hex) + 1px), transparent calc(var(--hex) + 1px)) bottom left  / 100% 100% no-repeat;
+  -webkit-mask:
+    linear-gradient(#000, #000) content-box,
+    linear-gradient(#000, #000);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  padding: 1px;
+  /* The mask trick gives us a hollow ring. Combine with two more strokes
+     so it traces all four edges plus the bevels. */
+  box-shadow:
+    inset 0 1px 0 0 var(--color-copper),
+    inset 0 -1px 0 0 var(--color-copper),
+    inset 1px 0 0 0 var(--color-copper),
+    inset -1px 0 0 0 var(--color-copper);
+  /* Re-clip outer with the same hex so the inset rectangle conforms */
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--hex)) 0,
+    100% var(--hex),
+    100% 100%,
+    var(--hex) 100%,
+    0 calc(100% - var(--hex))
+  );
+  opacity: 0.55;
+  transition: opacity 350ms ease, box-shadow 350ms ease;
+}
+.group:hover > .hex-edge,
+.hex-edge[data-active="true"] {
+  opacity: 1;
+  box-shadow:
+    inset 0 1px 0 0 var(--color-amber-glow),
+    inset 0 -1px 0 0 var(--color-amber-glow),
+    inset 1px 0 0 0 var(--color-amber-glow),
+    inset -1px 0 0 0 var(--color-amber-glow),
+    inset 0 0 24px -6px var(--color-amber-glow);
+}
+
+/* ── Chevron CTA — slanted-edge primary button. */
+.chev-cta {
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+.chev-cta-r {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 100%, 12px 100%);
+}
+
+/* ── Diagonal accent stripe overlay — paired with chev-cta to read
+   like the LoL "Play" button stripe pattern. */
+.chev-stripe::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 7px,
+    rgba(0,0,0,0.12) 7px 8px,
+    transparent 8px 18px
+  );
+  mix-blend-mode: multiply; opacity: 0.85;
+}
+
+/* ── Lateral shimmer sweep — runs once on element enter. Drop on a
+   position:relative parent. Uses ::after pseudo with a brass gradient
+   that sweeps across, 1.2 s, then disappears. */
+@keyframes fmm-shimmer {
+  0%   { transform: translateX(-110%); opacity: 0; }
+  10%  { opacity: 0.9; }
+  100% { transform: translateX(110%); opacity: 0; }
+}
+.fmm-shimmer { position: relative; overflow: hidden; }
+.fmm-shimmer::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0;
+  width: 55%; pointer-events: none;
+  background: linear-gradient(105deg,
+    transparent 0%,
+    rgba(232,177,74,0.0) 30%,
+    rgba(232,177,74,0.45) 50%,
+    rgba(255,240,200,0.85) 52%,
+    rgba(232,177,74,0.45) 54%,
+    rgba(232,177,74,0.0) 70%,
+    transparent 100%
+  );
+  filter: blur(2px); mix-blend-mode: screen;
+  animation: fmm-shimmer 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s 1 both;
+}
+
+/* ── Vertical light beam — used behind focal subjects (champion
+   splash treatment). Goes on a position:relative parent. Just the
+   wide soft glow; the sharp 2px center bar was killed because it
+   read as a render artifact, not a backlight. */
+.fmm-beam::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg,
+      transparent 0%,
+      rgba(232,177,74,0.14) 30%,
+      rgba(232,177,74,0.22) 55%,
+      rgba(184,106,42,0.14) 80%,
+      transparent 100%
+    );
+  width: 60%; left: 20%;
+  mix-blend-mode: screen; opacity: 0.7;
+  filter: blur(34px);
+}
+
+/* ── Hex divider mark — six-point star/diamond used at section breaks. */
+.fmm-hex-mark {
+  width: 14px; height: 14px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--color-amber-glow);
+}
+
+/* Subtle hot-rim drop-shadow for focused tiles. */
+.caravan-rim {
+  box-shadow:
+    0 0 0 1px rgba(232, 177, 74, 0.65),
+    0 0 32px -4px rgba(232, 177, 74, 0.55),
+    0 0 80px -20px rgba(184, 106, 42, 0.5),
+    0 30px 60px -30px rgba(0, 0, 0, 0.85);
+}
+
+/* ── Shared orb chrome — lifted from OrbHomePage so the per-pillar
+   PageHeader can reuse the same glass orb visual. Pattern: a circular
+   element with cross-fading Ken Burns photo layers, a glistening
+   diagonal sweep that re-keys on content change, and a brass/flame
+   ornate rim. */
+.fmm-orb-img-active {
+  animation: fmm-orb-kenburns 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes fmm-orb-kenburns {
+  0%   { transform: scale(1.05); }
+  100% { transform: scale(1.14) translateY(-1.5%); }
+}
+.fmm-orb-shine { animation: fmm-orb-shine 6s ease-in-out infinite alternate; }
+@keyframes fmm-orb-shine {
+  0%   { opacity: 0.45; transform: translateY(0); }
+  100% { opacity: 0.7;  transform: translateY(2px); }
+}
+.fmm-orb-sweep {
+  animation: fmm-orb-sweep 1100ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  transform-origin: center;
+}
+@keyframes fmm-orb-sweep {
+  0%   { transform: translateX(-110%); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateX(110%); opacity: 0; }
+}
+.fmm-orb-sweep-2 {
+  animation: fmm-orb-sweep-2 1400ms cubic-bezier(0.2, 0.7, 0.3, 1) 120ms both;
+}
+@keyframes fmm-orb-sweep-2 {
+  0%   { transform: translateX(-130%); opacity: 0; }
+  25%  { opacity: 1; }
+  100% { transform: translateX(130%); opacity: 0; }
+}
+
+/* Film grain — REMOVED. Do not re-add. */

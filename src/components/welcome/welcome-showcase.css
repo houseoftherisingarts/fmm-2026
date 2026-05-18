@@ -1,0 +1,254 @@
+/* ─── FullScreenScrollFX — extracted styles, FMM-tuned for big imagery
+   and bold typography. Tokens (--fx-*) come from inline style on the
+   root so callers can theme without editing this file. */
+
+.fx {
+  width: 100%;
+  overflow: hidden;
+  background: var(--fx-page-bg);
+  color: var(--fx-text);
+  font-family: var(--fx-font);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.fx-debug {
+  position: fixed; bottom: 10px; right: 10px; z-index: 9999;
+  background: rgba(255, 255, 255, 0.8); color: #000; padding: 6px 8px;
+  font: 12px/1 monospace; border-radius: 4px;
+}
+
+.fx-fixed-section { position: relative; }
+.fx-fixed {
+  position: sticky; top: 0; height: 120vh; width: 100%;
+  overflow: hidden; background: var(--fx-stage-bg);
+}
+
+/* Backgrounds — IMAGES SHOULD DOMINATE. Subtle warming filter, light
+   gradient overlay only at top/bottom for legibility. */
+.fx-bgs {
+  position: absolute; inset: 0;
+  background: var(--fx-stage-bg);
+  z-index: 1;
+}
+.fx-bg { position: absolute; inset: 0; }
+.fx-bg-img {
+  position: absolute; inset: -8% 0 -8% 0;
+  width: 100%; height: 116%; object-fit: cover;
+  filter: brightness(0.92) contrast(1.05) saturate(1.05);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.fx-bg-overlay {
+  position: absolute; inset: 0;
+  background:
+    /* Soft horizontal vignette to anchor the centered title */
+    radial-gradient(
+      ellipse 60% 70% at 50% 50%,
+      rgba(8, 20, 36, 0.45) 0%,
+      rgba(8, 20, 36, 0.15) 40%,
+      transparent 75%
+    ),
+    /* Top + bottom legibility gradients */
+    linear-gradient(
+      180deg,
+      rgba(8, 20, 36, 0.55) 0%,
+      rgba(8, 20, 36, 0.10) 25%,
+      rgba(8, 20, 36, 0.10) 70%,
+      rgba(8, 20, 36, 0.85) 100%
+    );
+}
+
+/* Grid + content — center column is the star, side lists secondary.
+   Constrained to the VISIBLE 100vh so the footer (progress bar + label)
+   anchors at the bottom of the viewport, not the bottom of the 120vh
+   stage (which would be 20vh below the fold). The bg image layer
+   `.fx-bgs` keeps the full 120vh of canvas. */
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--fx-gap);
+  padding: 0 var(--fx-grid-px);
+  position: relative;
+  height: 100vh;
+  z-index: 2;
+}
+
+.fx-header {
+  grid-column: 1 / 13; align-self: start; padding-top: 5vh;
+  text-align: left;
+  padding-left: 0;
+  color: var(--fx-text-soft);
+  font-family: var(--fx-display-font);
+  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+  letter-spacing: 0.5em;
+}
+
+/* Center is BIG — wider than the side rails. Content layer is constrained
+   to the VISIBLE 100vh viewport (the stage itself is 120vh — the extra
+   20vh extends the bg image downward, off the fold). */
+.fx-content {
+  grid-column: 1 / 13;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 0.85fr 2.4fr 0.85fr;
+  align-items: center;
+  padding: 0 var(--fx-grid-px);
+}
+
+.fx-left, .fx-right {
+  height: 70vh;
+  overflow: hidden;
+  display: grid; align-content: center;
+}
+.fx-left  { justify-items: start; }
+.fx-right { justify-items: end; }
+.fx-track { will-change: transform; }
+
+.fx-item {
+  color: var(--fx-text-soft);
+  font-family: var(--fx-display-font);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  margin: calc(var(--fx-row-gap) / 2) 0;
+  opacity: 0.4;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: relative;
+  font-size: clamp(0.7rem, 0.95vw, 0.92rem);
+  user-select: none;
+  cursor: pointer;
+  background: none; border: none;
+  padding: 10px 18px;
+}
+.fx-left-item.active, .fx-right-item.active {
+  opacity: 1; color: var(--fx-accent);
+  font-weight: 700;
+}
+.fx-left-item.active::before,
+.fx-right-item.active::after {
+  content: ""; position: absolute; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; background: var(--fx-accent); border-radius: 50%;
+}
+.fx-left-item.active::before  { left: 0; }
+.fx-right-item.active::after  { right: 0; }
+
+/* CENTER STAGE — title is huge, body and CTA prominent.
+   Visible overflow on the wrapper lets the masked-word title spill
+   gracefully if a word is unusually wide; the per-word masks still
+   clip the slide animation. */
+.fx-center {
+  display: grid; place-items: center; text-align: center;
+  height: 80vh; overflow: visible; position: relative;
+  padding: 0 clamp(1rem, 4vw, 4rem);
+}
+.fx-featured {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2rem;
+  opacity: 0; visibility: hidden;
+  padding: 0 clamp(1rem, 3vw, 3rem);
+}
+.fx-featured.active { opacity: 1; visibility: visible; }
+
+.fx-featured-title {
+  margin: 0; color: var(--fx-text);
+  font-family: var(--fx-display-font);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-size: clamp(3.25rem, 10vw, 8.5rem);
+  line-height: 1;
+  /* Layered shadows: tight near-black for edge definition + wider blur
+     for atmospheric glow, regardless of underlying photo luminance. */
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.7),
+    0 6px 30px rgba(0, 0, 0, 0.75),
+    0 0 80px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+
+.fx-word-mask { display: inline-block; overflow: hidden; vertical-align: middle; line-height: 0.95; }
+.fx-word { display: inline-block; vertical-align: middle; }
+
+.fx-featured-body {
+  max-width: 36rem;
+  font-family: var(--fx-body-font);
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  color: var(--fx-text);
+  line-height: 1.5;
+  padding: 0 1rem;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+}
+.fx-featured-body p { margin: 0 0 1.5rem; }
+
+.fx-featured-cta {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 1rem 2.25rem;
+  background: var(--fx-accent); color: var(--fx-page-bg);
+  font-family: var(--fx-body-font); font-weight: 700;
+  font-size: 0.85rem; letter-spacing: 0.22em; text-transform: uppercase;
+  border-radius: 999px; text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 36px -10px rgba(176, 141, 58, 0.55);
+}
+.fx-featured-cta:hover {
+  transform: scale(1.04) translateY(-1px);
+  background: var(--fx-accent-soft);
+  box-shadow: 0 18px 44px -10px rgba(176, 141, 58, 0.7);
+}
+
+/* Footer area inside the pinned stage */
+.fx-footer { grid-column: 1 / 13; align-self: end; padding-bottom: 4vh; text-align: center; }
+.fx-footer-title {
+  color: var(--fx-text-soft); font-family: var(--fx-display-font);
+  font-size: clamp(0.85rem, 1.2vw, 1rem); font-weight: 400;
+  letter-spacing: 0.4em; line-height: 0.9;
+}
+.fx-progress {
+  width: 240px; height: 2px; margin: 1.25rem auto 0;
+  background: rgba(245, 245, 245, 0.18); position: relative;
+}
+.fx-progress-fill {
+  position: absolute; inset: 0 auto 0 0; width: 0%;
+  background: var(--fx-accent); height: 100%;
+  transition: width 0.3s ease;
+}
+.fx-progress-numbers {
+  position: absolute; inset: auto 0 100% 0;
+  display: flex; justify-content: space-between;
+  font-family: var(--fx-display-font);
+  font-size: 0.7rem; letter-spacing: 0.25em;
+  color: var(--fx-text-soft);
+  margin-bottom: 0.6rem;
+}
+
+/* End spacer */
+.fx-end { height: 50vh; display: grid; place-items: center; background: var(--fx-stage-bg); }
+.fx-fin {
+  font-family: var(--fx-display-font);
+  letter-spacing: 0.4em;
+  color: var(--fx-text-soft);
+  font-size: 0.85rem;
+}
+
+/* Mobile — drop side rails entirely, hero gets full width */
+@media (max-width: 900px) {
+  .fx-content {
+    grid-template-columns: 1fr;
+    place-items: center;
+    padding: 0 1rem;
+  }
+  .fx-left, .fx-right { display: none; }
+  .fx-center {
+    height: 100vh; padding: 5rem 1rem 4rem;
+    overflow: visible;
+  }
+  .fx-featured { gap: 1.5rem; }
+  .fx-featured-title { font-size: clamp(3rem, 16vw, 5rem); }
+  .fx-featured-body  { font-size: 1.05rem; }
+}
