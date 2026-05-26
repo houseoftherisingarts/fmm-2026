@@ -12,7 +12,17 @@ const slugRx = /slug:\s*\{\s*FR:\s*'([^']+)'\s*,\s*EN:\s*'([^']+)'/g;
 const slugs = [];
 for (const m of content.matchAll(slugRx)) slugs.push(m[1], m[2]);
 
-const urls = ['/', '/en', ...slugs, '/politique-de-confidentialite', '/en/privacy'];
+// Public, indexable routes only. Private routes (/admin, /compte, /messages,
+// /espace-benevole, /profil/:uid) and dynamic application forms are
+// intentionally excluded from the sitemap.
+const extraPublic = [
+  '/accueil',            '/en/accueil',
+  '/communaute',         '/en/community',
+  '/ressources',         '/en/resources',
+  '/contact',            '/en/contact',
+  '/jeunesse/hnefatafl', '/en/youth/hnefatafl',
+];
+const urls = ['/', '/en', ...slugs, ...extraPublic, '/politique-de-confidentialite', '/en/privacy'];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

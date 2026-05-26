@@ -1,0 +1,56 @@
+rules_version = '2';
+
+// ─── FMM 2026 Firebase Storage security rules ──────────────────────
+// Mirrors the email-allowlist admin pattern from firestore.rules.
+// Keep this list in sync with VITE_ADMIN_EMAILS (full emails only —
+// domain entries are client-UI convenience and not trusted server-side).
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() in [
+          'admin@festivalmedievaldemontpellier.org',
+          'alex@lesalondesinconnus.com',
+          'houseoftherisingarts@gmail.com',
+        ];
+    }
+
+    // ── Admin-curated media library ──────────────────────────────
+    // Used by the Image Picker (admin) to attach hero/illustration
+    // assets to vendor cards, broadcasts, etc. Publicly readable so
+    // the assets render on the live site; admin-only writes.
+    match /media/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Vendor-uploaded photos ──────────────────────────────────
+    // Each merchant uploads their own booth photos under their uid.
+    // Publicly readable so the marketplace can render them; only
+    // the owner or an admin can write.
+    match /vendors/{uid}/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isOwner(uid) || isAdmin();
+    }
+
+    // ── Musician demos / press photos ──────────────────────────
+    match /musicians/{uid}/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isOwner(uid) || isAdmin();
+    }
+
+    // ── User avatars ────────────────────────────────────────────
+    match /users/{uid}/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isOwner(uid) || isAdmin();
+    }
+
+    // Deny everything else by default.
+  }
+}

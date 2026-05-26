@@ -191,7 +191,7 @@ export const PREP_PRODUCTS: MarcheKiosk[] = [
     tagEN: 'With integrated bottle opener',
     prepPrice: 'C$45.50',
     prepStrike: 'C$62.00',
-    prepNote: { FR: 'Édition Viking 2026', EN: '2026 Viking edition' },
+    prepNote: { FR: 'Édition Caravanes 2026', EN: '2026 Caravans edition' },
     image: '/wix/marche/1d8aca4a.jpg',
   },
   {

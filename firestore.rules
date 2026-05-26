@@ -145,14 +145,66 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ── Misc top-level collections from older flows ──────────────
-    // Inquiry / newsletter forms write to top-level collections. Allow
-    // create for any visitor; admins read & manage.
+    // ── Musicians (one application per musician per year) ────────
+    // /musicians/{uid}/years/{year} — mirrors the vendors layout so
+    // a band can have multi-year history. Accepted musicians are
+    // publicly listed via composePublicMusician on the client.
+    match /musicians/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      match /years/{year} {
+        allow read:   if isOwner(uid) || isAdmin()
+                      || resource.data.status == 'accepted';
+        allow create: if isOwner(uid);
+        allow update: if isOwner(uid) || isAdmin();
+        allow delete: if isAdmin();
+      }
+
+      // Musician ↔ FMM messaging thread
+      match /messages/{msgId} {
+        allow read:   if isOwner(uid) || isAdmin();
+        allow create: if (isOwner(uid) || isAdmin())
+                      && request.resource.data.senderUid == request.auth.uid;
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // ── Admin roles ──────────────────────────────────────────────
+    // Pre-provisioned by super-admin, keyed by lowercased email.
+    // A signed-in user can read their own role row (so the client UI
+    // knows what to enable); only admins can write.
+    match /adminRoles/{email} {
+      allow read:  if isAdmin()
+                   || (signedIn() && request.auth.token.email != null
+                       && request.auth.token.email.lower() == email);
+      allow write: if isAdmin();
+    }
+
+    // ── Admin-only operational collections ───────────────────────
+    // bar inventory, volunteer schedule, social-media planner, mail
+    // tab (internal — different from inquiry-form `contacts`).
+    match /bar/{docId}         { allow read, write: if isAdmin(); }
+    match /schedule/{docId}    { allow read, write: if isAdmin(); }
+    match /socialPosts/{docId} { allow read, write: if isAdmin(); }
+
+    // ── Public-create, admin-managed inquiry collections ─────────
+    // Inquiry / newsletter / contact / behourd forms. Allow create
+    // for any visitor; admins read & manage.
     match /mariages/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /chevaux/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /groupes/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /jeunesse/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /contacts/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /newsletter/{docId}  { allow create: if true; allow read, update, delete: if isAdmin(); }
+    match /behourd/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
+    match /mail/{docId}        { allow create: if true; allow read, update, delete: if isAdmin(); }
+
+    // ── Outgoing email queue (Firebase Extension "Trigger Email") ─
+    // Admin-only writes. Each doc dropped here is picked up by the
+    // extension and sent via the configured SMTP. We keep public
+    // writes blocked to avoid spam — confirmation emails to visitors
+    // will go through admin actions (broadcasts) or a future Cloud
+    // Function that mirrors form submissions into mail-out.
+    match /mail-out/{docId}    { allow read, write: if isAdmin(); }
   }
 }
