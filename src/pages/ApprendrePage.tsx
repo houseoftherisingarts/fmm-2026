@@ -1,10 +1,12 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {Hammer} from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // Workshop / formation cards — cloned from Wix /apprendre.
 const FORMATIONS = [
@@ -59,6 +61,7 @@ const ApprendrePage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro1} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -70,69 +73,71 @@ const ApprendrePage: React.FC = () => {
       {/* Light editorial body — Au-delà des Clichés */}
       <section className="relative py-20 md:py-28 overflow-hidden" style={{ backgroundColor: 'var(--color-mist)' }}>
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-12">
+          <Reveal className="text-center mb-12 max-w-3xl mx-auto">
             <p className="font-editorial italic uppercase tracking-[0.3em] text-xs mb-3" style={{ color: 'var(--color-mist-deep)' }}>{t.appelEyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl mb-3" style={{ color: 'var(--color-midnight-deep)' }}>{t.appelTitle}</h2>
-          </div>
-          <p className="font-editorial text-base md:text-xl leading-relaxed max-w-3xl mx-auto mb-12 text-center" style={{ color: 'var(--color-midnight-deep)' }}>
-            {t.appelBody}
-          </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {EXAMPLES.map((ex, i) => (
-              <motion.article
+            <h2 className="font-display title-medieval text-3xl md:text-5xl mb-6" style={{ color: 'var(--color-midnight-deep)' }}>{t.appelTitle}</h2>
+            <p className="font-editorial text-base md:text-xl leading-relaxed" style={{ color: 'var(--color-midnight-deep)' }}>
+              {t.appelBody}
+            </p>
+          </Reveal>
+          <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" stagger={0.07}>
+            {EXAMPLES.map((ex) => (
+              <StaggerItem
                 key={ex.titleFR}
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.5, delay: (i % 3) * 0.06 }}
-                className="/8 border border-midnight-deep/15 rounded-card p-6"
+                as="article"
+                className="bg-white/35 border border-midnight-deep/15 rounded-card p-6 transition-transform duration-300 hover:-translate-y-1"
               >
                 <h3 className="font-display title-medieval text-base md:text-lg mb-2" style={{ color: 'var(--color-midnight-deep)' }}>{lang === 'FR' ? ex.titleFR : ex.titleEN}</h3>
                 <p className="font-editorial text-sm leading-relaxed" style={{ color: 'var(--color-midnight-deep)' }}>{lang === 'FR' ? ex.bodyFR : ex.bodyEN}</p>
-              </motion.article>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* Une époque aux réalités variées */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
         <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
-          <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3 text-center">{t.epoqueEyebrow}</p>
-          <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory text-center mb-6">{t.epoqueTitle}</h2>
-          <div className="divider-brass w-20 mx-auto mb-8" />
-          <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.epoque1}</p>
-          <ul className="space-y-3 font-editorial text-base text-ivory-soft mb-5">
-            <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueEurope}</li>
-            <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueVikings}</li>
-            <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueAndes}</li>
-          </ul>
-          <p className="font-editorial italic text-base text-ivory-soft leading-relaxed">{t.epoqueClose}</p>
+          <ChapterIntro eyebrow={t.epoqueEyebrow} title={t.epoqueTitle} className="mb-8" />
+          <Reveal as="div">
+            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.epoque1}</p>
+            <ul className="space-y-3 font-editorial text-base text-ivory-soft mb-5">
+              <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueEurope}</li>
+              <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueVikings}</li>
+              <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueAndes}</li>
+            </ul>
+            <p className="font-editorial italic text-base text-ivory-soft leading-relaxed">{t.epoqueClose}</p>
+          </Reveal>
         </div>
       </section>
 
       {/* Formations et démonstrations grid */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <Parallax speed={0.12} className="absolute inset-0 -z-10">
+          <div
+            className="absolute inset-x-0 top-1/4 h-1/2"
+            style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
+          />
+        </Parallax>
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
-            <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.formationsEyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-3">{t.formationsTitle}</h2>
-            <div className="divider-brass w-20 mx-auto" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {FORMATIONS.map((f, i) => (
-              <motion.article
+          <ChapterIntro eyebrow={t.formationsEyebrow} title={t.formationsTitle} className="mb-10 md:mb-14" />
+          <Stagger className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.05}>
+            {FORMATIONS.map((f) => (
+              <StaggerItem
                 key={f.name.FR}
-                initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.4, delay: (i % 4) * 0.05 }}
-                className="glass-light rounded-card p-5 md:p-6 hover:bg-brass/10 transition group"
+                as="article"
+                className="glass-light rounded-card p-5 md:p-6 hover:bg-brass/10 transition group hover:-translate-y-1 duration-300"
               >
                 <Hammer size={20} className="text-brass mb-3" />
                 <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5 group-hover:text-brass transition">
                   {f.name[lang]}
                 </h3>
                 <p className="font-editorial italic text-xs text-ivory-soft">{t.detailsTBD}</p>
-              </motion.article>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
     </>
