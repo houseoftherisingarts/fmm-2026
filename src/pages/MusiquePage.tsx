@@ -7,6 +7,9 @@ import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // ─── Band data ───────────────────────────────────────────────────────
 // 2026 lineup (cloned from the Wix /musique page). When the artist has
@@ -315,6 +318,7 @@ const MusiquePage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro1} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -324,68 +328,87 @@ const MusiquePage: React.FC = () => {
       />
 
       {/* ── Bands 2026 ── */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
-            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.section2026Eyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2">{t.section2026Title}</h2>
-            <div className="divider-brass w-20 mx-auto mb-4" />
-            <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-2xl mx-auto">
-              {t.section2026Lead}
-            </p>
-          </div>
-          <BandsCarousel
-            bands={BANDS_2026}
-            variant="present"
-            lang={lang}
-            artistLabel={t.artist}
-            spotifyLabel={t.spotify}
-            websiteLabel={t.website}
-            prevLabel={t.prev}
-            nextLabel={t.next}
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-50" count={16} />
+        <SectionFog edges="top" />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro
+            eyebrow={t.section2026Eyebrow}
+            title={t.section2026Title}
+            lead={t.section2026Lead}
+            className="mb-10 md:mb-14"
           />
+          <Reveal from="up" delay={0.15}>
+            <BandsCarousel
+              bands={BANDS_2026}
+              variant="present"
+              lang={lang}
+              artistLabel={t.artist}
+              spotifyLabel={t.spotify}
+              websiteLabel={t.website}
+              prevLabel={t.prev}
+              nextLabel={t.next}
+            />
+          </Reveal>
         </div>
       </section>
 
       {/* ── Bands des Ans Passés ── */}
-      <section className="py-16 md:py-24 bg-gradient-to-b from-transparent via-black/20 to-transparent">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
+      <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-transparent via-black/20 to-transparent">
+        <Motes className="opacity-30" count={10} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal className="text-center mb-10 md:mb-14 max-w-2xl mx-auto">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.sectionPastEyebrow}</p>
             <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory-soft mb-2">{t.sectionPastTitle}</h2>
             <div className="divider-brass w-20 mx-auto mb-4 opacity-50" />
             <p className="font-editorial italic text-base md:text-lg text-ivory-soft/80 max-w-2xl mx-auto">
               {t.sectionPastLead}
             </p>
-          </div>
-          <BandsCarousel
-            bands={BANDS_PAST}
-            variant="past"
-            lang={lang}
-            artistLabel={t.artist}
-            spotifyLabel={t.spotify}
-            websiteLabel={t.website}
-            prevLabel={t.prev}
-            nextLabel={t.next}
-          />
+          </Reveal>
+          <Reveal from="up" delay={0.15}>
+            <BandsCarousel
+              bands={BANDS_PAST}
+              variant="past"
+              lang={lang}
+              artistLabel={t.artist}
+              spotifyLabel={t.spotify}
+              websiteLabel={t.website}
+              prevLabel={t.prev}
+              nextLabel={t.next}
+            />
+          </Reveal>
         </div>
       </section>
 
       {/* ── Your troupe here CTA ── */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-3xl mx-auto px-4 md:px-8 text-center">
-          <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.callEyebrow}</p>
-          <h2 className="font-display title-medieval text-3xl md:text-4xl text-ivory mb-4">{t.callTitle}</h2>
-          <div className="divider-brass w-16 mx-auto mb-6" />
-          <p className="font-editorial text-base md:text-lg text-ivory-soft mb-8 leading-relaxed">
-            {t.callBody}
-          </p>
-          <Link
-            to={addLocale('/musique/inscription', lang)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-            {t.callCta}
-            <ArrowUpRight size={14} />
-          </Link>
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <Parallax speed={0.12} className="absolute inset-0 -z-10">
+          <div
+            className="absolute inset-x-0 top-1/4 h-1/2"
+            style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,141,74,0.10), transparent 70%)' }}
+          />
+        </Parallax>
+        <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 text-center">
+          <ChapterIntro
+            eyebrow={t.callEyebrow}
+            title={t.callTitle}
+            className="mb-6"
+          />
+          <Stagger stagger={0.1} delayChildren={0.1} className="flex flex-col items-center gap-6">
+            <StaggerItem>
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">
+                {t.callBody}
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <Link
+                to={addLocale('/musique/inscription', lang)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+                {t.callCta}
+                <ArrowUpRight size={14} />
+              </Link>
+            </StaggerItem>
+          </Stagger>
         </div>
       </section>
     </>
