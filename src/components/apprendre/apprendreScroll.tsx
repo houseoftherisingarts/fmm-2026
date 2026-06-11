@@ -60,7 +60,7 @@ export const CinematicReveal: React.FC<{
 // ─── DepthChapter ────────────────────────────────────────────────────
 // Wraps a section and paints three scroll-linked parallax layers behind
 // the children: a far ember/parchment bloom, a mid drifting band, and a
-// near vignette — each moving at a very different rate to read as real
+// near vignette, each moving at a very different rate to read as real
 // depth as the chapter passes through the viewport.
 export const DepthChapter: React.FC<{
   children: React.ReactNode;
@@ -139,7 +139,7 @@ export const DepthChapter: React.FC<{
 // ─── Codex3D ─────────────────────────────────────────────────────────
 // The 3D moment: a medieval codex rendered in CSS 3D that tilts and
 // opens as you scroll past it (rotateY/rotateX driven by scroll), its
-// pages catching candlelight. Fits "Apprendre" — the book of crafts and
+// pages catching candlelight. Fits "Apprendre", the book of crafts and
 // knowledge. Static, gently open under prefers-reduced-motion.
 export const Codex3D: React.FC<{ label?: string; caption?: string }> = ({ label, caption }) => {
   const reduce = useReducedMotion();
@@ -206,7 +206,7 @@ export const Codex3D: React.FC<{ label?: string; caption?: string }> = ({ label,
             boxShadow: 'inset -8px 0 18px rgba(120,90,40,0.35)',
           }}
         />
-        {/* Front cover — opens on scroll */}
+        {/* Front cover, opens on scroll */}
         <motion.div
           aria-hidden
           style={{

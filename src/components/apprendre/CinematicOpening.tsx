@@ -18,7 +18,7 @@ if (typeof window !== 'undefined') {
 //     page content below.
 //
 // Desktop (>=768px): full pin + scrub. Mobile (<768px): the fire loops
-// gently and every layer is shown static — no long pin, no scrub.
+// gently and every layer is shown static: no long pin, no scrub.
 // prefers-reduced-motion: everything visible, video paused on frame one.
 
 interface Props {
@@ -97,7 +97,7 @@ const CinematicOpening: React.FC<Props> = ({
         // Scrub the forge fire frame-by-frame with the scroll.
         if (vid) tl.to(vid, { currentTime: Math.max(0, dur - 0.05), duration: 100 }, 0);
 
-        // Parallax depth — each layer climbs at its own rate.
+        // Parallax depth: each layer climbs at its own rate.
         tl.to('[data-ap="glow"]', { yPercent: -24, scale: 1.18, duration: 100 }, 0)
           .to('[data-ap="motes"]', { yPercent: -65, duration: 100 }, 0)
           .to('[data-ap="fore"]', { yPercent: -14, scale: 1.16, duration: 100 }, 0)
@@ -147,7 +147,7 @@ const CinematicOpening: React.FC<Props> = ({
             background: 'var(--color-velvet-deep)',
           }}
         >
-          {/* Forge-fire bed — scrubbed on desktop, looped on mobile */}
+          {/* Forge-fire bed, scrubbed on desktop, looped on mobile */}
           <video
             ref={video}
             src={videoSrc}
@@ -178,7 +178,7 @@ const CinematicOpening: React.FC<Props> = ({
             }}
           />
 
-          {/* Back layer — broad ember glow */}
+          {/* Back layer: broad ember glow */}
           <div
             data-ap="glow"
             aria-hidden
@@ -196,7 +196,7 @@ const CinematicOpening: React.FC<Props> = ({
             }}
           />
 
-          {/* Mid layer — drifting sparks */}
+          {/* Mid layer: drifting sparks */}
           <div data-ap="motes" aria-hidden style={{ position: 'absolute', inset: 0 }}>
             {SPARKS.map((s, i) => (
               <span
