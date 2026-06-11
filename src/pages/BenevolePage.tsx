@@ -15,6 +15,7 @@ import {
 } from '../firebase/applications';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { ScrollProgress } from '../components/scroll';
 
 // Two-page bénévole application form, mirrors Maïté's Google Form
 // ("Recrutement des bénévoles - FMM 2026"). Page 1 captures preferences,
@@ -251,6 +252,7 @@ const BenevolePage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro1} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}

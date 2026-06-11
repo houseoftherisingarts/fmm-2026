@@ -9,6 +9,7 @@ import {
 } from '../content/marche';
 import { applyImageOverrides, loadVendorImageOverrides } from '../firebase/vendorImages';
 import PageHeader, { type PageHeaderCta } from '../components/layout/PageHeader';
+import { ScrollProgress } from '../components/scroll';
 import { addLocale } from '../lib/locale';
 import AtelierHall, { type AtelierCopy } from '../components/marche/AtelierHall';
 import MarketSquare, { type MarketCopy } from '../components/marche/MarketSquare';
@@ -71,6 +72,7 @@ const MarchePage: React.FC = () => {
   return (
     <>
       <SEO title={`${c.header.titleA}${c.header.titleB ? ' & ' + c.header.titleB : ''}`} description={c.header.intro} />
+      <ScrollProgress />
 
       <PageHeader
         eyebrow={c.header.eyebrow}
