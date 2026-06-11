@@ -8,6 +8,9 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { db, isFirebaseReady } from '../firebase';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 const SPACES = [
   { icon: Tent,    titleFR: 'Tente de relaxation', titleEN: 'Relaxation tent', bodyFR: 'Pour parents et enfants qui veulent se reposer à l’ombre.', bodyEN: 'For parents and kids who need a shaded rest.' },
@@ -62,6 +65,7 @@ const JeunessePage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -71,19 +75,18 @@ const JeunessePage: React.FC = () => {
       />
 
       {/* 3 spaces overview */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
-            {SPACES.map((s, i) => {
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-6" stagger={0.1}>
+            {SPACES.map((s) => {
               const Icon = s.icon;
               return (
-                <motion.article
+                <StaggerItem
                   key={s.titleFR}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.5, delay: i * 0.08 }}
-                  className="glass-light rounded-card p-7 md:p-8 text-center"
+                  as="article"
+                  className="glass-light rounded-card p-7 md:p-8 text-center transition-transform duration-300 hover:-translate-y-1"
                 >
                   <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
                     <Icon size={24} className="text-brass" />
@@ -94,27 +97,20 @@ const JeunessePage: React.FC = () => {
                   <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-snug">
                     {lang === 'FR' ? s.bodyFR : s.bodyEN}
                   </p>
-                </motion.article>
+                </StaggerItem>
               );
             })}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* Jeux — playable medieval games */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-8 md:mb-10">
-            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.jeuxEyebrow}</p>
-            <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-3">{t.jeuxTitle}</h2>
-            <div className="divider-brass w-16 mx-auto" />
-          </div>
-          <div className="grid md:grid-cols-2 gap-5 md:gap-6">
-            <motion.article
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.5 }}
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro eyebrow={t.jeuxEyebrow} title={t.jeuxTitle} align="center" className="mb-8 md:mb-10" />
+          <Stagger className="grid md:grid-cols-2 gap-5 md:gap-6" stagger={0.1}>
+            <StaggerItem
+              as="article"
               className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col"
             >
               <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mb-5">
@@ -130,50 +126,55 @@ const JeunessePage: React.FC = () => {
                 {t.hnefataflCta}
                 <ArrowUpRight size={14} />
               </Link>
-            </motion.article>
-            <motion.article
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.5, delay: 0.08 }}
+            </StaggerItem>
+            <StaggerItem
+              as="article"
               className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col items-start opacity-70"
             >
               <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.jeuxComingSoon}</p>
               <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.jeuxMoreTitle}</h3>
               <div className="divider-brass w-16 mb-4" />
               <p className="font-editorial text-base text-ivory-soft flex-1">{t.jeuxMoreBody}</p>
-            </motion.article>
-          </div>
+            </StaggerItem>
+          </Stagger>
         </div>
       </section>
 
       {/* Clan Renard feature */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-          <div>
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-40" count={14} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+          <Reveal from="left">
             <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.clanEyebrow}</p>
             <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.clanTitle}</h2>
             <div className="divider-brass w-20 mb-5" />
             <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-6">{t.clanBody}</p>
-            {/* Clan Renard CTA — dropped until a real sub-page or external
+            {/* Clan Renard CTA dropped until a real sub-page or external
                 URL exists for the clan. Body copy still explains who they are. */}
-          </div>
-          <div className="aspect-[4/3] overflow-hidden rounded-card border">
-            <img src="/wix/jeunesse/2b1f82d0.jpg" alt={t.clanTitle} className="w-full h-full object-cover" loading="lazy"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/hero/viking-cinematic.webp'; }} />
-          </div>
+          </Reveal>
+          <Reveal from="right" delay={0.1}>
+            <RevealImage
+              src="/wix/jeunesse/2b1f82d0.jpg"
+              alt={t.clanTitle}
+              from="right"
+              className="aspect-[4/3] rounded-card border"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/hero/viking-cinematic.webp'; }}
+            />
+          </Reveal>
         </div>
       </section>
 
       {/* Saturday workshop signup */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-2xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-8 md:mb-10">
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-40" count={14} />
+        <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-8">
+          <Reveal className="text-center mb-8 md:mb-10">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.formEyebrow}</p>
             <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-3">{t.formTitle}</h2>
             <div className="divider-brass w-16 mx-auto" />
-          </div>
+          </Reveal>
 
+          <Reveal>
           {status === 'sent' ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               className="glass-light rounded-lg-card p-10 text-center">
@@ -227,32 +228,35 @@ const JeunessePage: React.FC = () => {
               </button>
             </form>
           )}
+          </Reveal>
         </div>
       </section>
 
       {/* Camps + Zaryzad partner cards */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-5 md:gap-6">
-          <article className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col">
-            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.campsEyebrow}</p>
-            <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.campsTitle}</h3>
-            <div className="divider-brass w-16 mb-4" />
-            <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.campsBody}</p>
-            {/* Camps Légendaires CTA — dropped until a real signup URL exists. */}
-          </article>
-          <article className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col">
-            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.zaryzadEyebrow}</p>
-            <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">Zaryzad</h3>
-            <div className="divider-brass w-16 mb-4" />
-            <p className="font-editorial text-base text-ivory-soft mb-2 flex-1">{t.zaryzadBody}</p>
-            <p className="font-editorial italic text-sm text-brass mb-5">438 888 2800</p>
-            {/* Zaryzad CTA — dropped until the partner's URL is provided.
-                The phone number above stays as the live contact path. */}
-          </article>
-        </div>
-        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-10 md:mt-12 text-center">
-          <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-2">{t.youthYourEyebrow}</p>
-          <p className="font-editorial text-base md:text-lg text-ivory-soft">{t.youthYourBody}</p>
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Stagger className="grid md:grid-cols-2 gap-5 md:gap-6" stagger={0.1}>
+            <StaggerItem as="article" className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col">
+              <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.campsEyebrow}</p>
+              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.campsTitle}</h3>
+              <div className="divider-brass w-16 mb-4" />
+              <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.campsBody}</p>
+              {/* Camps Légendaires CTA dropped until a real signup URL exists. */}
+            </StaggerItem>
+            <StaggerItem as="article" className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col">
+              <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.zaryzadEyebrow}</p>
+              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">Zaryzad</h3>
+              <div className="divider-brass w-16 mb-4" />
+              <p className="font-editorial text-base text-ivory-soft mb-2 flex-1">{t.zaryzadBody}</p>
+              <p className="font-editorial italic text-sm text-brass mb-5">438 888 2800</p>
+              {/* Zaryzad CTA dropped until the partner URL is provided.
+                  The phone number above stays as the live contact path. */}
+            </StaggerItem>
+          </Stagger>
+          <Reveal className="max-w-2xl mx-auto mt-10 md:mt-12 text-center">
+            <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-2">{t.youthYourEyebrow}</p>
+            <p className="font-editorial text-base md:text-lg text-ivory-soft">{t.youthYourBody}</p>
+          </Reveal>
         </div>
       </section>
     </>
