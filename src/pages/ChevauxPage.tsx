@@ -7,6 +7,9 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { db, isFirebaseReady } from '../firebase';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, RevealImage, ScrollProgress } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 interface FormState {
   prenom: string; nom: string; email: string; telephone: string;
@@ -50,6 +53,7 @@ const ChevauxPage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -60,30 +64,31 @@ const ChevauxPage: React.FC = () => {
 
       {/* Three thumbnails of the clinic in action */}
       <section className="relative py-12 md:py-16 overflow-hidden">
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-          {['04ba7d92.jpg', '1c869c8b.jpg', 'da1da0a5.jpg'].map((f, i) => (
-            <motion.figure
-              key={f}
-              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="aspect-[4/3] overflow-hidden rounded-card border group"
-            >
-              <img decoding="async" src={`/wix/chevaux/${f}`} alt="" loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </motion.figure>
+        <SectionFog edges="top" />
+        <Stagger className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4" stagger={0.1}>
+          {['04ba7d92.jpg', '1c869c8b.jpg', 'da1da0a5.jpg'].map((f) => (
+            <StaggerItem key={f} as="figure" className="group">
+              <RevealImage
+                src={`/wix/chevaux/${f}`}
+                className="aspect-[4/3] rounded-card border"
+                from="up"
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-50" count={16} />
         <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-8 md:mb-10">
+          <Reveal className="text-center mb-8 md:mb-10">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.formEyebrow}</p>
             <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-3">{t.formTitle}</h2>
             <div className="divider-brass w-16 mx-auto mb-3" />
             <p className="font-editorial italic text-sm text-ivory-soft">{t.formNote}</p>
-          </div>
+          </Reveal>
 
+          <Reveal>
           {status === 'sent' ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               className="glass-light rounded-lg-card p-10 text-center">
@@ -123,8 +128,9 @@ const ChevauxPage: React.FC = () => {
               </button>
             </form>
           )}
+          </Reveal>
 
-          <div className="mt-10 text-center font-editorial text-sm text-ivory-soft">
+          <Reveal className="mt-10 text-center font-editorial text-sm text-ivory-soft">
             <p className="mb-3">{t.contactNote}</p>
             <p className="font-display title-medieval text-base text-brass mb-2">Carilynn</p>
             <p className="flex items-center justify-center gap-2 mb-1">
@@ -135,7 +141,7 @@ const ChevauxPage: React.FC = () => {
               <Phone size={14} className="text-brass" />
               <a href="tel:8199810838" className="hover:text-brass transition">819-981-0838</a>
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>
