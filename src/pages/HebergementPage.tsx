@@ -5,6 +5,9 @@ import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, ScrollProgress } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // ─── Camping spot data ────────────────────────────────────────────────
 // Placeholder schematic spots — coordinates are arbitrary % of the SVG
@@ -136,6 +139,7 @@ const HebergementPage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -145,9 +149,11 @@ const HebergementPage: React.FC = () => {
       />
 
       {/* ── Camping section ─────────────────────────────────────────── */}
-      <section className="relative py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal className="text-center mb-10 md:mb-14">
             <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.campingEyebrow}</p>
             <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2 flex items-center justify-center gap-3">
               <Tent size={28} className="text-brass" /> {t.campingTitle}
@@ -156,7 +162,7 @@ const HebergementPage: React.FC = () => {
             <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-2xl mx-auto">
               {t.campingLead}
             </p>
-          </div>
+          </Reveal>
 
           {/* Legend */}
           <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
@@ -318,9 +324,10 @@ const HebergementPage: React.FC = () => {
       </section>
 
       {/* ── Hébergement bestiary section ────────────────────────────── */}
-      <section className="relative py-16 md:py-24 bg-gradient-to-b from-transparent via-black/20 to-transparent">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
+      <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-transparent via-black/20 to-transparent">
+        <Motes className="opacity-40" count={14} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal className="text-center mb-10 md:mb-14">
             <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.lodgingEyebrow}</p>
             <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2 flex items-center justify-center gap-3">
               <Home size={26} className="text-brass" /> {t.lodgingTitle}
@@ -329,17 +336,19 @@ const HebergementPage: React.FC = () => {
             <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-2xl mx-auto">
               {t.lodgingLead}
             </p>
-          </div>
+          </Reveal>
 
-          <LodgingCarousel lodgings={LODGINGS} lang={lang} t={t} />
+          <Reveal delay={0.1}>
+            <LodgingCarousel lodgings={LODGINGS} lang={lang} t={t} />
+          </Reveal>
         </div>
       </section>
 
       {/* Tagline footer */}
       <section className="py-12 md:py-16">
-        <div className="max-w-3xl mx-auto px-4 md:px-8 text-center">
+        <Reveal className="max-w-3xl mx-auto px-4 md:px-8 text-center">
           <p className="font-editorial italic text-ivory-soft text-base md:text-lg">{t.callBody}</p>
-        </div>
+        </Reveal>
       </section>
     </>
   );
