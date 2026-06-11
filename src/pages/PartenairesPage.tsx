@@ -1,11 +1,13 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {ArrowUpRight, Heart} from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { SPONSORS } from '../content';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // Featured partners — long-form cards, cloned from the live Wix copy.
 const FEATURED = [
@@ -61,6 +63,7 @@ const PartenairesPage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -72,12 +75,16 @@ const PartenairesPage: React.FC = () => {
       {/* Press / sponsor logo wall */}
       <section className="py-12 md:py-16">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs text-center mb-6">{t.pressEyebrow}</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-90">
+          <Reveal>
+            <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs text-center mb-6">{t.pressEyebrow}</p>
+          </Reveal>
+          <Stagger className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-90" stagger={0.06}>
             {SPONSORS.map((s) => (
-              <img decoding="async" key={s.src} src={s.src} alt={s.name} title={s.name} className="h-10 md:h-14 w-auto object-contain" loading="lazy" />
+              <StaggerItem key={s.src}>
+                <img decoding="async" src={s.src} alt={s.name} title={s.name} className="h-10 md:h-14 w-auto object-contain transition-transform duration-300 hover:scale-105" loading="lazy" />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
@@ -87,16 +94,15 @@ const PartenairesPage: React.FC = () => {
           const reverse = i % 2 === 1;
           return (
             <article key={p.name} className="relative py-16 md:py-24 overflow-hidden">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }} transition={{ duration: 0.6 }}
-                className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-8 md:gap-12 items-center"
-              >
-                <div className={`lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
+              <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-8 md:gap-12 items-center">
+                <Reveal from={reverse ? 'right' : 'left'} className={`lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
                   <div className="relative aspect-square md:aspect-[4/3] rounded-lg-card overflow-hidden border">
-                    <img src={['/wix/partenaires/89f9a2db.jpg','/wix/partenaires/58f7a1f9.jpg','/wix/partenaires/9487bac5.jpg','/wix/partenaires/473bdc18.jpg','/wix/partenaires/7a32a3a6.png'][i % 5]}
-                      alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }} />
+                    <RevealImage
+                      src={['/wix/partenaires/89f9a2db.jpg','/wix/partenaires/58f7a1f9.jpg','/wix/partenaires/9487bac5.jpg','/wix/partenaires/473bdc18.jpg','/wix/partenaires/7a32a3a6.png'][i % 5]}
+                      className="absolute inset-0 w-full h-full"
+                      from={reverse ? 'right' : 'left'}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-midnight-deep via-midnight-deep/70 to-midnight-deep/30" />
                     <div className="absolute inset-0 flex items-end p-7 md:p-9">
                       <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight">
@@ -104,8 +110,8 @@ const PartenairesPage: React.FC = () => {
                       </h3>
                     </div>
                   </div>
-                </div>
-                <div className={`lg:col-span-7 ${reverse ? 'lg:order-1' : ''}`}>
+                </Reveal>
+                <Reveal from={reverse ? 'left' : 'right'} delay={0.1} className={`lg:col-span-7 ${reverse ? 'lg:order-1' : ''}`}>
                   <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">
                     {String(i + 1).padStart(2, '0')} · {t.partner}
                   </p>
@@ -113,7 +119,7 @@ const PartenairesPage: React.FC = () => {
                   <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-6">
                     {lang === 'FR' ? p.bioFR : p.bioEN}
                   </p>
-                  {/* Skip the CTA until a real URL is provided — placeholder
+                  {/* Skip the CTA until a real URL is provided. Placeholder
                       anchors like `#TODO_…` are rendered as nothing so we
                       don't ship dead links to visitors. Fill in `href` to
                       promote the partner to a clickable card. */}
@@ -123,8 +129,8 @@ const PartenairesPage: React.FC = () => {
                       {p.cta[lang]} <ArrowUpRight size={14} />
                     </a>
                   )}
-                </div>
-              </motion.div>
+                </Reveal>
+              </div>
             </article>
           );
         })}
@@ -136,14 +142,11 @@ const PartenairesPage: React.FC = () => {
           centerpiece on /activites. On desktop the centerpiece occupies
           cols 2-3, rows 1-2 (so 2 partners sit on each side); on mobile
           the centerpiece is a full-width row and partners stack below. */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10">
-            <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.partnersEyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-4xl text-ivory mb-3">{t.partnersTitle}</h2>
-            <div className="divider-brass w-20 mx-auto" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 [grid-auto-flow:dense] items-stretch">
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-40" count={14} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro eyebrow={t.partnersEyebrow} title={t.partnersTitle} className="mb-10" />
+          <Stagger as="div" className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 [grid-auto-flow:dense] items-stretch" stagger={0.08}>
             {/* ── Centerpiece — Vikings fight figure with copper glow + bottom fade ── */}
             <div
               aria-hidden
@@ -179,18 +182,20 @@ const PartenairesPage: React.FC = () => {
             </div>
 
             {SHORT.map((s) => (
-              <article key={s.name} className="glass-light rounded-card p-5 md:p-6 text-center">
+              <StaggerItem key={s.name} as="article" className="glass-light rounded-card p-5 md:p-6 text-center transition-transform duration-300 hover:-translate-y-1">
                 <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5">{s.name}</h3>
                 <p className="font-editorial italic text-sm text-ivory-soft">{s.tag[lang]}</p>
-              </article>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* Become a partner CTA */}
       <section className="relative py-16 md:py-24 overflow-hidden">
-        <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-8 text-center">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
+        <Reveal className="relative z-10 max-w-2xl mx-auto px-4 md:px-8 text-center">
           <Heart size={28} className="text-brass mx-auto mb-4" />
           <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.becomeEyebrow}</p>
           <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.becomeTitle}</h2>
@@ -200,7 +205,7 @@ const PartenairesPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
             {t.becomeCta} <ArrowUpRight size={14} />
           </a>
-        </div>
+        </Reveal>
       </section>
     </>
   );
