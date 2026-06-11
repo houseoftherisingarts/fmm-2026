@@ -7,6 +7,9 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { db, isFirebaseReady } from '../firebase';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, ScrollProgress } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 interface FormState {
   prenom: string; nom: string; email: string; telephone: string;
@@ -58,6 +61,7 @@ const MariagesPage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro1} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -67,13 +71,16 @@ const MariagesPage: React.FC = () => {
       />
 
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
         <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-8 md:mb-10">
+          <Reveal className="text-center mb-8 md:mb-10">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.formEyebrow}</p>
             <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-3">{t.formTitle}</h2>
             <div className="divider-brass w-16 mx-auto" />
-          </div>
+          </Reveal>
 
+          <Reveal>
           {status === 'sent' ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               className="glass-light rounded-lg-card p-10 text-center">
@@ -153,6 +160,7 @@ const MariagesPage: React.FC = () => {
               </button>
             </form>
           )}
+          </Reveal>
         </div>
       </section>
     </>
