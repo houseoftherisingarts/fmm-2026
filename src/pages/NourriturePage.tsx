@@ -1,10 +1,12 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {ArrowUpRight, Clock, Users, Wine} from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
+import { BubbleCanvas, Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // 5-service banquet menu cloned from the Wix /nourriture page.
 const MENU = [
@@ -122,6 +124,7 @@ const NourriturePage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -131,8 +134,10 @@ const NourriturePage: React.FC = () => {
       />
 
       {/* ── Banquet feature ── */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <BubbleCanvas className="opacity-30" count={14} />
+        <Reveal className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="glass-light rounded-lg-card p-8 md:p-12 grid md:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-7">
               <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.banquetEyebrow}</p>
@@ -152,26 +157,26 @@ const NourriturePage: React.FC = () => {
               <li className="flex items-start gap-3"><Wine size={16} className="text-brass mt-0.5 shrink-0" /><div><span className="block font-display title-medieval text-xs text-brass mb-0.5">{t.cost}</span>{t.banquetCost}</div></li>
             </ul>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* ── Au Menu ── */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
-            <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.menuEyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2">{t.menuTitle}</h2>
-            <div className="divider-brass w-20 mx-auto" />
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-50" count={18} />
+        <Parallax speed={0.12} className="absolute inset-0 -z-10">
+          <div
+            className="absolute inset-x-0 top-1/4 h-1/2"
+            style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
+          />
+        </Parallax>
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro eyebrow={t.menuEyebrow} title={t.menuTitle} className="mb-10 md:mb-14" />
+          <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" stagger={0.07}>
             {MENU.map((service, i) => (
-              <motion.article
+              <StaggerItem
                 key={service.name.FR}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="glass-light rounded-card p-6 md:p-7 flex flex-col"
+                as="article"
+                className="glass-light rounded-card p-6 md:p-7 flex flex-col transition-transform duration-300 hover:-translate-y-1"
               >
                 <p className="font-display title-medieval text-xs text-brass mb-2">
                   {String(i + 1).padStart(2, '0')}
@@ -186,31 +191,28 @@ const NourriturePage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-              </motion.article>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* ── Food village tents ── */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
-            <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.tentsEyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-3">{t.tentsTitle}</h2>
-            <div className="divider-brass w-20 mx-auto mb-4" />
-            <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-2xl mx-auto">
-              {t.tentsLead}
-            </p>
-          </div>
-          <div className="space-y-6 md:space-y-8">
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="both" />
+        <Motes className="opacity-40" count={14} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro
+            eyebrow={t.tentsEyebrow}
+            title={t.tentsTitle}
+            lead={t.tentsLead}
+            className="mb-10 md:mb-14"
+          />
+          <Stagger className="space-y-6 md:space-y-8" stagger={0.1} amount={0.1}>
             {TENTS.map((tent) => (
-              <motion.article
+              <StaggerItem
                 key={tent.name.FR}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.5 }}
+                as="article"
                 className="glass-light rounded-lg-card p-6 md:p-10"
               >
                 <header className="flex items-baseline gap-4 mb-6 pb-4">
@@ -227,9 +229,9 @@ const NourriturePage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-              </motion.article>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
     </>
