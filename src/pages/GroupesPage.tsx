@@ -7,6 +7,9 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { db, isFirebaseReady } from '../firebase';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, ScrollProgress } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // Static info+rates page replacing the Wix Groups community feature
 // (per locked decision B: build a static "Groupes scolaires &
@@ -80,6 +83,7 @@ const GroupesPage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -90,15 +94,16 @@ const GroupesPage: React.FC = () => {
 
       {/* 3 group types */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
-            {TYPES.map((tp, i) => {
+          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-6" stagger={0.1}>
+            {TYPES.map((tp) => {
               const Icon = tp.icon;
               return (
-                <motion.article key={tp.key}
-                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6, delay: i * 0.08 }}
-                  className="glass-light rounded-card p-7 md:p-8 flex flex-col"
+                <StaggerItem key={tp.key}
+                  as="article"
+                  className="glass-light rounded-card p-7 md:p-8 flex flex-col transition-transform duration-300 hover:-translate-y-1"
                 >
                   <div className="w-12 h-12 rounded-card bg-brass/15 border border-brass/40 flex items-center justify-center mb-5">
                     <Icon size={22} className="text-brass" />
@@ -114,25 +119,29 @@ const GroupesPage: React.FC = () => {
                       <li key={perk} className="flex items-start gap-2"><span className="text-brass mt-1">·</span>{perk}</li>
                     ))}
                   </ul>
-                </motion.article>
+                </StaggerItem>
               );
             })}
-          </div>
-          <p className="font-editorial italic text-base md:text-lg text-ivory-soft text-center max-w-2xl mx-auto mt-12">
-            {t.pricingNote}
-          </p>
+          </Stagger>
+          <Reveal>
+            <p className="font-editorial italic text-base md:text-lg text-ivory-soft text-center max-w-2xl mx-auto mt-12">
+              {t.pricingNote}
+            </p>
+          </Reveal>
         </div>
       </section>
 
       {/* Contact form */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-40" count={14} />
         <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-8 md:mb-10">
+          <Reveal className="text-center mb-8 md:mb-10">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.formEyebrow}</p>
             <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-3">{t.formTitle}</h2>
             <div className="divider-brass w-16 mx-auto" />
-          </div>
+          </Reveal>
 
+          <Reveal>
           {status === 'sent' ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               className="glass-light rounded-lg-card p-10 text-center">
@@ -180,6 +189,7 @@ const GroupesPage: React.FC = () => {
               </button>
             </form>
           )}
+          </Reveal>
         </div>
       </section>
     </>
