@@ -5,6 +5,9 @@ import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
+import { Motes } from '../components/marche/effects';
+import { SectionFog } from '../components/marche/atmospherics';
 
 // Team — cloned from Wix /histoire "L'organisation".
 const TEAM = [
@@ -50,6 +53,7 @@ const HistoirePage: React.FC = () => {
   return (
     <>
       <SEO title={t.title} description={t.intro1} />
+      <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
@@ -60,47 +64,52 @@ const HistoirePage: React.FC = () => {
 
       {/* Ni GN ni reconstitution — what the FMM IS */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-60" count={20} />
+        <SectionFog edges="top" />
         <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
-          <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3 text-center">{t.niEyebrow}</p>
-          <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory text-center mb-6">{t.niTitle}</h2>
-          <div className="divider-brass w-20 mx-auto mb-8" />
-          <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.ni1}</p>
-          <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.ni2}</p>
-          <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni3}</p>
+          <ChapterIntro eyebrow={t.niEyebrow} title={t.niTitle} className="mb-8" />
+          <Reveal as="div" className="space-y-5">
+            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni1}</p>
+            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni2}</p>
+            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni3}</p>
+          </Reveal>
         </div>
       </section>
 
       {/* Year navigation — placeholder gallery (real photos in /Downloads/FMM 20XX dirs) */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
+          <Reveal className="text-center mb-10 md:mb-14 max-w-2xl mx-auto">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">
               <Camera size={12} className="inline mr-1.5 -mt-0.5" />{t.galleryEyebrow}
             </p>
             <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-3">{t.galleryTitle}</h2>
             <div className="divider-brass w-20 mx-auto mb-4" />
-            <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-2xl mx-auto">{t.galleryLead}</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-10">
+            <p className="font-editorial text-base md:text-lg text-ivory-soft">{t.galleryLead}</p>
+          </Reveal>
+          <Stagger className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-10" stagger={0.07}>
             {YEARS.map((y) => (
-              <motion.a
-                key={y} href={`#year-${y}`}
-                initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.4, delay: (y - 2021) * 0.05 }}
-                className="glass-light rounded-card p-6 md:p-8 text-center hover:bg-brass/10 transition group"
+              <StaggerItem
+                key={y}
+                as="div"
+                className="glass-light rounded-card p-6 md:p-8 text-center transition group hover:bg-brass/10 hover:-translate-y-1 duration-300"
               >
-                <p className="font-display title-medieval text-3xl md:text-4xl text-brass group-hover:text-brass-soft transition">{y}</p>
-                <p className="font-editorial italic text-xs text-ivory-soft mt-1">{t.edition}</p>
-              </motion.a>
+                <a href={`#year-${y}`} className="block">
+                  <p className="font-display title-medieval text-3xl md:text-4xl text-brass group-hover:text-brass-soft transition">{y}</p>
+                  <p className="font-editorial italic text-xs text-ivory-soft mt-1">{t.edition}</p>
+                </a>
+              </StaggerItem>
             ))}
-          </div>
-          {/* Masonry gallery */}
+          </Stagger>
+          {/* Masonry gallery — cinematic clip-path reveals */}
           <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [&>*]:mb-3 md:[&>*]:mb-4 mb-12">
             {GALLERY.map((file, i) => (
               <motion.figure
                 key={file}
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.5, delay: (i % 4) * 0.04 }}
+                initial={{ opacity: 0, y: 22, clipPath: 'inset(8% 0 0 0)' }}
+                whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)' }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.7, delay: (i % 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 className="break-inside-avoid overflow-hidden rounded-card border group"
               >
                 <img decoding="async" src={`/wix/histoire/${file}`} alt="" loading="lazy"
@@ -109,42 +118,50 @@ const HistoirePage: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-center">
+          <Reveal className="text-center">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.creditsEyebrow}</p>
             <p className="font-editorial text-base text-ivory-soft">{CREDITS.join(' · ')}</p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* L'équipe */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <Motes className="opacity-50" count={18} />
+        <Parallax speed={0.12} className="absolute inset-0 -z-10">
+          <div
+            className="absolute inset-x-0 top-1/4 h-1/2"
+            style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
+          />
+        </Parallax>
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 md:mb-14">
+          <Reveal className="text-center mb-10 md:mb-14 max-w-2xl mx-auto">
             <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">
               <Users size={12} className="inline mr-1.5 -mt-0.5" />{t.teamEyebrow}
             </p>
             <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-3">{t.teamTitle}</h2>
             <div className="divider-brass w-20 mx-auto mb-4" />
-            <p className="font-editorial italic text-base md:text-lg text-ivory-soft max-w-2xl mx-auto">{t.teamLead}</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-            {TEAM.map((m, i) => (
-              <motion.article
+            <p className="font-editorial italic text-base md:text-lg text-ivory-soft">{t.teamLead}</p>
+          </Reveal>
+          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5" stagger={0.05} amount={0.1}>
+            {TEAM.map((m) => (
+              <StaggerItem
                 key={m.name}
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.5, delay: (i % 3) * 0.06 }}
-                className="glass-light rounded-card p-6 md:p-7 flex flex-col"
+                as="article"
+                className="glass-light rounded-card p-6 md:p-7 flex flex-col transition-transform duration-300 hover:-translate-y-1"
               >
                 <h3 className="font-display title-medieval text-lg md:text-xl text-ivory mb-1">{m.name}</h3>
                 <p className="font-editorial italic text-sm text-brass mb-3">{m.role[lang]}</p>
                 <div className="divider-brass w-12 mb-3 opacity-60" />
                 <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{lang === 'FR' ? m.bioFR : m.bioEN}</p>
-              </motion.article>
+              </StaggerItem>
             ))}
-          </div>
-          <p className="font-editorial italic text-base md:text-lg text-ivory-soft text-center max-w-2xl mx-auto mt-12">
-            {t.teamClose}
-          </p>
+          </Stagger>
+          <Reveal>
+            <p className="font-editorial italic text-base md:text-lg text-ivory-soft text-center max-w-2xl mx-auto mt-12">
+              {t.teamClose}
+            </p>
+          </Reveal>
         </div>
       </section>
     </>
