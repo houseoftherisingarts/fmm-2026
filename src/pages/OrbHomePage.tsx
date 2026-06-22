@@ -7,6 +7,7 @@ import { useSiteFlags } from '../contexts/SiteFlagsContext';
 import { SITE, PILLARS, PILLAR_COPY, type PillarKey } from '../content';
 import { addLocale } from '../lib/locale';
 import { useCountdown } from '../lib/useCountdown';
+import { usePerfTier } from '../lib/usePerfTier';
 import SEO from '../components/SEO';
 
 // Pattern adapted from le-salon-des-inconnus apps/hub/src/HubOrb.tsx —
@@ -170,7 +171,10 @@ LiveCountdown.displayName = 'LiveCountdown';
 // of time for the actual frames to stream in.
 const FireCanvas: React.FC = memo(() => {
   const reduceMotion = useReducedMotion();
-  if (reduceMotion) return null;
+  const { lite } = usePerfTier();
+  // Always-on mix-blend video, the single most repaint-heavy layer. On
+  // budget machines we drop it; the brass ring + static glow carry the look.
+  if (reduceMotion || lite) return null;
   return (
     <video
       aria-hidden="true"
@@ -251,8 +255,11 @@ const OrbHomePage: React.FC = () => {
   const { lang } = useUI();
   const { user, openSignIn, isAdmin } = useAuth();
   const { flags: siteFlags } = useSiteFlags();
-  // Skip 87 MB logo-intro + 220 MB vikings video for reduced-motion users.
+  // Skip the autoplay logo-intro + vikings video for reduced-motion and
+  // budget machines; the embossed-silver logo PNG sits underneath either way.
   const reduceMotion = useReducedMotion();
+  const { lite } = usePerfTier();
+  const heavyMedia = !reduceMotion && !lite;
   // Dev placement editor — only mounts when an admin has flipped on the
   // `knightPlacementEditor` site flag from Paramètres. Off by default.
   const knightEditorAvailable = isAdmin && siteFlags.knightPlacementEditor;
@@ -286,7 +293,7 @@ const OrbHomePage: React.FC = () => {
   // while no menu item is selected. Comes back when user clicks away.
   // Start with introDone=true when reduced-motion is active so the static
   // embossed logo shows immediately (the 87 MB intro video is skipped).
-  const [introDone, setIntroDone] = useState(reduceMotion ?? false);
+  const [introDone, setIntroDone] = useState(() => !heavyMedia);
   // Countdown reveal — fades in 8 s after page load (timed to land just as
   // the logo intro video finishes), then stays visible across landing
   // returns so the user doesn't wait 8 s again on click-away.
@@ -470,11 +477,24 @@ const OrbHomePage: React.FC = () => {
     else void v.requestFullscreen?.().catch(() => { /* user-gesture required, ignore */ });
   }, []);
 
+  // Click a choice → travel straight there (no separate "confirm" step).
+  // Hover already plays the SFX; the click plays its own and changes page.
   const onChoiceClick = (i: number) => {
-    if (i === selectedIdx) return;
-    if (ORB_CHOICES[i].key === 'nourriture') playFood();
+    const key = ORB_CHOICES[i].key;
+    if (key === 'nourriture') playFood();
     else playLoot();
     setSelectedIdx(i);
+    if (key === 'video') { requestOrbFullscreen(); return; }
+    const choicePillar = PILLARS.find((p) => p.key === key)!;
+    const target = addLocale(choicePillar.slug.FR, lang);
+    setConfirming(true);
+    setTimeout(() => navigate(target), 600);
+  };
+
+  // Clicking the wordmark replays the cinematic intro (handled in App).
+  const replayIntro = () => {
+    try { sessionStorage.removeItem('fmm_intro_seen'); } catch { /* ignore */ }
+    window.dispatchEvent(new Event('fmm:replayIntro'));
   };
 
   const onConfirm = () => {
@@ -844,8 +864,9 @@ const OrbHomePage: React.FC = () => {
                 {/* Festival video — last year's "vikings" short. Mounted once
                     at the orb root, faded in when the "video" choice is
                     active. Tapping the orb (or the blurb button) plays it
-                    fullscreen via requestOrbFullscreen. Skipped entirely
-                    for prefers-reduced-motion users (220 MB source). */}
+                    fullscreen via requestOrbFullscreen. On-demand content
+                    (no autoplay, metadata-only), so kept for budget machines;
+                    only prefers-reduced-motion skips it. */}
                 {!reduceMotion && (
                   <video
                     ref={orbVideoRef}
@@ -909,9 +930,9 @@ const OrbHomePage: React.FC = () => {
                   {/* Intro video stays mounted and crossfades to 0 once it
                       ends — unmounting it on `introDone` was creating a
                       hard cut between the animated logo and the static PNG.
-                      Reduced-motion users skip the 87 MB intro entirely;
+                      Reduced-motion + budget machines skip the intro entirely;
                       they see the static logo from frame zero. */}
-                  {!reduceMotion && (
+                  {heavyMedia && (
                     <video
                       autoPlay
                       muted
@@ -1005,6 +1026,7 @@ const OrbHomePage: React.FC = () => {
                   feather rather than the soft drift we had before. */}
               <img
                 src="/characters/knight-orb.webp"
+                srcSet="/characters/knight-orb.webp 1x, /characters/knight-orb@2x.webp 2x"
                 alt=""
                 aria-hidden
                 className={`orb-knight absolute select-none ${knightEdit ? 'cursor-move' : 'pointer-events-none'}`}
@@ -1133,10 +1155,11 @@ const OrbHomePage: React.FC = () => {
 
         {/* Top-left wordmark — logo only (the title page below carries the
             "Caravanes & Saltimbanques" edition name in full). */}
-        <Link
-          to={addLocale('/accueil', lang)}
-          className="absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3 group"
-          aria-label={lang === 'FR' ? 'FMM accueil détaillé' : 'FMM full home'}
+        <button
+          type="button"
+          onClick={replayIntro}
+          className="absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3 group outline-none rounded focus-visible:ring-2 focus-visible:ring-[var(--color-amber-glow)]"
+          aria-label={lang === 'FR' ? "Revoir l'introduction" : 'Replay the intro'}
         >
           <img
             decoding="async"
@@ -1147,7 +1170,7 @@ const OrbHomePage: React.FC = () => {
           <span className="hidden sm:inline-flex font-display title-medieval text-sm md:text-base text-ivory drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
             FMM <span className="text-brass ml-1">{SITE.year}</span>
           </span>
-        </Link>
+        </button>
 
         {/* Top-right corner — account access + lang toggle. This is
             the ONLY place outside the global NavBar (which is hidden on

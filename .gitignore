@@ -62,3 +62,10 @@ __pycache__/
 *.mov
 *.avi
 *.mkv
+
+# Working media originals + heavy unreferenced assets (kept locally, not tracked).
+# _media-originals: 350 MB of source exports. public/models: 36 MB of raw 3D.
+# public/hero/knight: 8.5 MB frame sequence not wired into any component yet.
+_media-originals/
+public/models/
+public/hero/knight/

@@ -32,6 +32,7 @@ import { PILLARS, type PillarKey } from './content';
 const OrbHomePage      = lazy(() => import('./pages/OrbHomePage'));
 const WelcomePage      = lazy(() => import('./pages/WelcomePage'));
 const AccueilPage      = lazy(() => import('./pages/AccueilPage'));
+const TitleLab         = lazy(() => import('./pages/TitleLab'));
 const PlaceholderHome  = lazy(() => import('./pages/PlaceholderHome'));
 const PillarPage       = lazy(() => import('./pages/PillarPage'));
 const ActivitesPage    = lazy(() => import('./pages/ActivitesPage'));
@@ -62,6 +63,7 @@ const HnefataflGame           = lazy(() => import('./games/hnefatafl'));
 const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
+const MedievalIntro    = lazy(() => import('./components/landing/MedievalIntro'));
 
 // Every pillar now has its own custom page. PillarPage shell is kept
 // as a defensive fallback; if any pillar is missing here it'll render
@@ -87,7 +89,51 @@ const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeh
 // `/accueil` → AccueilPage (the detailed festival home)
 // `/backuppage` → legacy WelcomePage (Viking hero, kept for reference)
 // In `placeholder` mode, `/` shows the misty-sword teaser instead.
-const HomeRoute = SITE_MODE === 'placeholder' ? PlaceholderHome : OrbHomePage;
+const OrbHome = SITE_MODE === 'placeholder' ? PlaceholderHome : OrbHomePage;
+
+// `/` shows the cinematic medieval intro once per session, then hands off to
+// the real home (OrbHomePage) which mounts underneath. Reduced-motion and
+// placeholder mode skip the intro entirely.
+const HomeWithIntro: React.FC = () => {
+  const reduce = useReducedMotion();
+  // ?intro in the URL forces the prologue to replay every load (handy while iterating)
+  const force = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('intro');
+  const [entered, setEntered] = useState<boolean>(
+    () => !force && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
+  );
+  // Reduced-motion and placeholder mode never play the prologue.
+  const skipIntro = reduce || SITE_MODE === 'placeholder';
+  const showIntro = (force || !entered) && !skipIntro;
+
+  const handleEnter = () => {
+    try { sessionStorage.setItem('fmm_intro_seen', '1'); } catch { /* ignore */ }
+    setEntered(true);
+  };
+
+  // Clicking the wordmark on the home page replays the cinematic intro.
+  useEffect(() => {
+    const replay = () => setEntered(false);
+    window.addEventListener('fmm:replayIntro', replay);
+    return () => window.removeEventListener('fmm:replayIntro', replay);
+  }, []);
+
+  return (
+    <>
+      {/* Don't mount (and decode all its video) the home page while the intro
+          covers it; mount it only once the prologue hands off. When the intro
+          is skipped (reduced-motion or placeholder), mount immediately so those
+          users land on the real home instead of a blank screen. */}
+      {(entered || skipIntro) && <OrbHome />}
+      {showIntro && (
+        <Suspense fallback={null}>
+          <MedievalIntro onEnter={handleEnter} />
+        </Suspense>
+      )}
+    </>
+  );
+};
+
+const HomeRoute = HomeWithIntro;
 
 const LocaleSync: React.FC = () => {
   const location = useLocation();
@@ -113,6 +159,7 @@ const AnalyticsPageViews: React.FC = () => {
 const isImmersive = (pathname: string) =>
   pathname === '/'
   || pathname === '/en'
+  || pathname === '/labo-titre'
   || pathname === '/backuppage'
   || pathname === '/en/backuppage'
   || pathname === '/jeunesse/hnefatafl'
@@ -201,6 +248,7 @@ const App: React.FC = () => (
               <Routes>
                 <Route path="/"   element={<HomeRoute />} />
                 <Route path="/en" element={<HomeRoute />} />
+                <Route path="/labo-titre" element={<TitleLab />} />
                 <Route path="/accueil"    element={<AccueilPage />} />
                 <Route path="/en/accueil" element={<AccueilPage />} />
                 {/* Legacy Viking WelcomePage — kept hidden for reference. */}
