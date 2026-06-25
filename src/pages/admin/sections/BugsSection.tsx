@@ -68,7 +68,7 @@ const BugsSection: React.FC<Props> = ({ devBypass }) => {
     } catch (e) {
       console.warn('[bugs] delete failed', e);
       setBugs(prev);
-      setError('Échec de la suppression — réessayez.');
+      setError('Échec de la suppression, réessayez.');
     }
   };
 
@@ -154,7 +154,7 @@ const BugsSection: React.FC<Props> = ({ devBypass }) => {
                         {b.expected && (
                           <p><span className="text-brass uppercase tracking-widest text-[10px]">Attendu : </span>{b.expected}</p>
                         )}
-                        <p><span className="text-brass uppercase tracking-widest text-[10px]">Page : </span>{b.page || '—'}</p>
+                        <p><span className="text-brass uppercase tracking-widest text-[10px]">Page : </span>{b.page || '-'}</p>
                         {b.url && (
                           <p className="break-all"><span className="text-brass uppercase tracking-widest text-[10px]">URL : </span>{b.url}</p>
                         )}

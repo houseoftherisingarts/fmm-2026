@@ -201,11 +201,26 @@ service cloud.firestore {
     match /bugReports/{docId}  { allow create: if true; allow read, update, delete: if isAdmin(); }
 
     // ── Outgoing email queue (Firebase Extension "Trigger Email") ─
-    // Admin-only writes. Each doc dropped here is picked up by the
-    // extension and sent via the configured SMTP. We keep public
-    // writes blocked to avoid spam — confirmation emails to visitors
-    // will go through admin actions (broadcasts) or a future Cloud
-    // Function that mirrors form submissions into mail-out.
-    match /mail-out/{docId}    { allow read, write: if isAdmin(); }
+    // Each doc dropped here is picked up by the extension and sent via
+    // the configured SMTP. Admins queue any mail. Reads/edits/deletes
+    // stay admin-only.
+    //
+    // Narrow public lane: the public "Signaler un bug" form may queue
+    // ONE bug-report email, hard-locked to the two festival inboxes and
+    // a "[Bug FMM]" subject. It cannot be used to send mail to anyone
+    // else, so the abuse ceiling is bug spam to our own inboxes, the
+    // same ceiling the form already has.
+    function isBugReportMail() {
+      return request.resource.data.to == [
+               'admin@festivalmedievaldemontpellier.org',
+               'alex@lesalondesinconnus.com'
+             ]
+        && request.resource.data.message.subject is string
+        && request.resource.data.message.subject.matches('\\[Bug FMM\\].*');
+    }
+    match /mail-out/{docId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isAdmin() || isBugReportMail();
+    }
   }
 }
