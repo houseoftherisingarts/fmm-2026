@@ -198,6 +198,7 @@ service cloud.firestore {
     match /newsletter/{docId}  { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /behourd/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /mail/{docId}        { allow create: if true; allow read, update, delete: if isAdmin(); }
+    match /bugReports/{docId}  { allow create: if true; allow read, update, delete: if isAdmin(); }
 
     // ── Outgoing email queue (Firebase Extension "Trigger Email") ─
     // Admin-only writes. Each doc dropped here is picked up by the

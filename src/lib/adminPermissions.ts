@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'musiciens', 'pupitre', 'matrice', 'horaire',
     'bar', 'mariages', 'comptes', 'messages', 'newsletter', 'social',
-    'medias', 'analytics', 'splash', 'parametres', 'discord',
+    'medias', 'analytics', 'splash', 'parametres', 'discord', 'bugs',
   ],
 
   // Organisateurs — total access minus the future CA-only tab.
@@ -81,7 +81,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'musiciens', 'pupitre', 'matrice', 'horaire',
     'bar', 'mariages', 'comptes', 'messages', 'newsletter', 'social',
-    'medias', 'analytics', 'splash', 'parametres', 'discord',
+    'medias', 'analytics', 'splash', 'parametres', 'discord', 'bugs',
   ],
 
   // Super Bénévole — supervises normal bénévoles. Reads bénévole

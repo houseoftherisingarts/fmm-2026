@@ -54,6 +54,7 @@ const AnalyticsSection    = lazy(() => import('./admin/sections/AnalyticsSection
 const SplashSection       = lazy(() => import('./admin/sections/SplashSection'));
 const ParametresSection   = lazy(() => import('./admin/sections/ParametresSection'));
 const DiscordSection      = lazy(() => import('./admin/sections/DiscordSection'));
+const BugsSection         = lazy(() => import('./admin/sections/BugsSection'));
 const RolesSection        = lazy(() => import('./admin/sections/RolesSection'));
 
 const SectionFallback: React.FC = () => (
@@ -176,6 +177,7 @@ const AdminPage: React.FC = () => {
       case 'splash':     return <SplashSection />;
       case 'parametres': return <ParametresSection flags={flags as unknown as Record<string, unknown>} setFlag={setFlag as any} />;
       case 'discord':    return <DiscordSection    devBypass={DEV_BYPASS} />;
+      case 'bugs':       return <BugsSection       devBypass={DEV_BYPASS} />;
       case 'roles':      return <RolesSection      devBypass={DEV_BYPASS} />;
     }
   };
