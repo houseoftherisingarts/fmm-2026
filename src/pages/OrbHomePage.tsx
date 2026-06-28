@@ -519,8 +519,12 @@ const OrbHomePage: React.FC = () => {
   const onConfirm = () => {
     if (isLanding) {
       setConfirming(true);
-      // Landing → external Zeffy ticket purchase.
-      setTimeout(() => { window.location.href = ticketUrl; }, 600);
+      // Landing → open external Zeffy ticket purchase in a NEW tab (keep the
+      // site open in the current one).
+      setTimeout(() => {
+        window.open(ticketUrl, '_blank', 'noopener,noreferrer');
+        setConfirming(false);
+      }, 600);
       return;
     }
     const choiceKey = ORB_CHOICES[selectedIdx].key;
