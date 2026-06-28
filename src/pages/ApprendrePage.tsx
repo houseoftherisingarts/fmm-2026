@@ -10,10 +10,10 @@ import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 
 // The pinned, scroll-scrubbed opening (GSAP + forge-fire video) is the
-// heavy piece — code-split so it never weighs on the initial render.
+// heavy piece, code-split so it never weighs on the initial render.
 const CinematicOpening = lazy(() => import('../components/apprendre/CinematicOpening'));
 
-// Workshop / formation cards — cloned from Wix /apprendre.
+// Workshop / formation cards, cloned from Wix /apprendre.
 const FORMATIONS = [
   { name: { FR: 'Démonstration de forge',  EN: 'Forge demonstration' } },
   { name: { FR: 'Tissage et filage',        EN: 'Weaving and spinning' } },
@@ -25,12 +25,12 @@ const FORMATIONS = [
   { name: { FR: 'Fonderie',                 EN: 'Foundry' } },
 ];
 
-// Cultural example bullets — themed groups extracted from the Wix copy.
+// Cultural example bullets, themed groups extracted from the Wix copy.
 const EXAMPLES = [
   {
     titleFR: 'Savoirs artisanaux', titleEN: 'Craft knowledge',
-    bodyFR: 'Forge, tissage, vannerie, construction en pierre sèche, teintures naturelles — techniques presque oubliées par la société industrielle.',
-    bodyEN: 'Forge, weaving, basketry, dry-stone construction, natural dyes — techniques nearly forgotten by industrial society.',
+    bodyFR: 'Forge, tissage, vannerie, construction en pierre sèche, teintures naturelles, techniques presque oubliées par la société industrielle.',
+    bodyEN: 'Forge, weaving, basketry, dry-stone construction, natural dyes, techniques nearly forgotten by industrial society.',
   },
   {
     titleFR: 'Arts et musique', titleEN: 'Arts and music',
@@ -39,18 +39,18 @@ const EXAMPLES = [
   },
   {
     titleFR: 'Célébrations et festivals', titleEN: 'Celebrations and festivals',
-    bodyFR: 'Mabon, cérémonies de solstice — moments de rassemblement liés aux cycles de la nature.',
-    bodyEN: 'Mabon, solstice ceremonies — gathering moments tied to nature’s cycles.',
+    bodyFR: 'Mabon, cérémonies de solstice, moments de rassemblement liés aux cycles de la nature.',
+    bodyEN: 'Mabon, solstice ceremonies, gathering moments tied to nature’s cycles.',
   },
   {
     titleFR: 'Innovations agricoles', titleEN: 'Agricultural innovations',
-    bodyFR: 'Chinampas aztèques, assolement européen — connaissance intime de la terre.',
-    bodyEN: 'Aztec chinampas, European crop rotation — intimate knowledge of the land.',
+    bodyFR: 'Chinampas aztèques, assolement européen, connaissance intime de la terre.',
+    bodyEN: 'Aztec chinampas, European crop rotation, intimate knowledge of the land.',
   },
   {
     titleFR: 'Vie communautaire', titleEN: 'Community life',
-    bodyFR: 'Villages, monastères, guildes — entraide et savoir-faire.',
-    bodyEN: 'Villages, monasteries, guilds — mutual aid and craft knowledge.',
+    bodyFR: 'Villages, monastères, guildes, entraide et savoir-faire.',
+    bodyEN: 'Villages, monasteries, guilds, mutual aid and craft knowledge.',
   },
   {
     titleFR: 'Loisirs et jeux', titleEN: 'Leisure and games',
@@ -69,7 +69,7 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       {!embedded && <SEO title={t.title} description={t.intro1} />}
       {!embedded && <ScrollProgress />}
 
-      {/* ── Pinned cinematic opening — forge fire scrubbed by scroll.
+      {/* ── Pinned cinematic opening, forge fire scrubbed by scroll.
             Skipped when embedded as a chapter inside Histoire & Apprendre. ── */}
       {!embedded && (
       <Suspense
@@ -120,14 +120,18 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         />
       )}
 
-      {/* Light editorial body — Au-delà des Clichés */}
-      <section className="relative py-20 md:py-28 overflow-hidden" style={{ backgroundColor: 'var(--color-mist)' }}>
-        <DepthChapter tone="parchment">
+      {/* Editorial body, Au-delà des clichés. Re-toned to the dark ember
+          register so it reads as part of the page (was a jarring light-beige
+          block in the middle of the dark caravan theme). */}
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
+        <DepthChapter tone="ember">
           <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
             <CinematicReveal className="text-center mb-12 max-w-3xl mx-auto">
-              <p className="font-editorial italic uppercase tracking-[0.3em] text-xs mb-3" style={{ color: 'var(--color-mist-deep)' }}>{t.appelEyebrow}</p>
-              <h2 className="font-display title-medieval text-3xl md:text-5xl mb-6" style={{ color: 'var(--color-midnight-deep)' }}>{t.appelTitle}</h2>
-              <p className="font-editorial text-base md:text-xl leading-relaxed" style={{ color: 'var(--color-midnight-deep)' }}>
+              <p className="font-editorial italic uppercase tracking-[0.3em] text-xs mb-3 text-brass">{t.appelEyebrow}</p>
+              <h2 className="font-display title-medieval text-3xl md:text-5xl mb-6 text-ivory">{t.appelTitle}</h2>
+              <p className="font-editorial text-base md:text-xl leading-relaxed text-ivory-soft">
                 {t.appelBody}
               </p>
             </CinematicReveal>
@@ -137,10 +141,10 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                   key={ex.titleFR}
                   as="article"
                   distance={64}
-                  className="bg-white/35 border border-midnight-deep/15 rounded-card p-6 transition-transform duration-300 hover:-translate-y-1"
+                  className="glass-light rounded-card p-6 transition duration-300 hover:-translate-y-1 hover:bg-brass/10"
                 >
-                  <h3 className="font-display title-medieval text-base md:text-lg mb-2" style={{ color: 'var(--color-midnight-deep)' }}>{lang === 'FR' ? ex.titleFR : ex.titleEN}</h3>
-                  <p className="font-editorial text-sm leading-relaxed" style={{ color: 'var(--color-midnight-deep)' }}>{lang === 'FR' ? ex.bodyFR : ex.bodyEN}</p>
+                  <h3 className="font-display title-medieval text-base md:text-lg mb-2 text-ivory">{lang === 'FR' ? ex.titleFR : ex.titleEN}</h3>
+                  <p className="font-editorial text-sm leading-relaxed text-ivory-soft">{lang === 'FR' ? ex.bodyFR : ex.bodyEN}</p>
                 </StaggerItem>
               ))}
             </Stagger>
@@ -148,7 +152,7 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         </DepthChapter>
       </section>
 
-      {/* Thème 2026 — Caravanes & Saltimbanques + aux origines du cirque */}
+      {/* Thème 2026, Caravanes & Saltimbanques + aux origines du cirque */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-50" count={16} />
@@ -164,7 +168,7 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               </div>
             </CinematicReveal>
 
-            {/* Aux origines du cirque — repères datés */}
+            {/* Aux origines du cirque, repères datés */}
             <CinematicReveal as="div" className="max-w-2xl mb-8 md:mb-10">
               <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-2">{t.hookEyebrow}</p>
               <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-4">{t.hookTitle}</h3>
@@ -234,7 +238,7 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         <DepthChapter tone="ember">
           <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
             <ChapterIntro eyebrow={t.formationsEyebrow} title={t.formationsTitle} className="mb-10 md:mb-14" />
-            {/* 3D moment — the codex of crafts opens as you scroll */}
+            {/* 3D moment, the codex of crafts opens as you scroll */}
             <Codex3D label={t.formationsTitle} />
             <Stagger className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.05}>
               {FORMATIONS.map((f) => (
@@ -262,9 +266,9 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
 const FR = {
   home: 'Accueil', eyebrow: 'Apprendre, c’est traverser les siècles', title: 'Apprendre',
   intro1: 'L’éducation fait partie des missions du FMM, car elle est la base de la promotion de la résilience. Nous cherchons à instruire via les perspectives historiques et à enrichir la culture générale.',
-  intro2: 'Au-delà du savoir trivial, nous amenons les gens à parler au présent en se posant la question : « Lesquels de ces savoirs ancestraux sont-ils encore pertinents aujourd’hui — et pourront l’être encore — pour nous aider à traverser les grands changements à venir ? »',
-  appelEyebrow: 'Appel à un voyage', appelTitle: 'Au-delà des clichés — redécouvrir le médiéval',
-  appelBody: 'Dans les récits populaires, l’époque médiévale est souvent associée aux guerres, à la violence et aux luttes de pouvoir. Bien que ces aspects aient existé, ils ne définissent pas à eux seuls cette période. Le FMM propose d’élargir le regard et de mettre en avant les trésors moins connus du quotidien médiéval — dont certains sont encore pratiqués aujourd’hui hors de la culture commerciale.',
+  intro2: 'Au-delà du savoir trivial, nous amenons les gens à parler au présent en se posant la question : « Lesquels de ces savoirs ancestraux sont-ils encore pertinents aujourd’hui, et pourront l’être encore, pour nous aider à traverser les grands changements à venir ? »',
+  appelEyebrow: 'Appel à un voyage', appelTitle: 'Au-delà des clichés, redécouvrir le médiéval',
+  appelBody: 'Dans les récits populaires, l’époque médiévale est souvent associée aux guerres, à la violence et aux luttes de pouvoir. Bien que ces aspects aient existé, ils ne définissent pas à eux seuls cette période. Le FMM propose d’élargir le regard et de mettre en avant les trésors moins connus du quotidien médiéval, dont certains sont encore pratiqués aujourd’hui hors de la culture commerciale.',
   themeEyebrow: 'Le thème de l’année · 2026', themeTitle: 'Caravanes & Saltimbanques',
   themeLead: 'Après les Vikings, la route continue. Cette année, le FMM rend hommage aux peuples nomades, aux grandes salles de banquet et aux artistes itinérants qui ont donné naissance au cirque.',
   themeBody1: 'Imaginez les caravanes qui s’arrêtent à la tombée du jour, les feux qu’on allume, les tables qu’on dresse. Tout autour, les acrobates s’élancent, les jongleurs lancent leurs torches, les conteurs prennent la parole et les musiciens font tourner la ronde. C’est cet esprit que nous célébrons : celui des saltimbanques qui portaient la fête de village en village.',
@@ -284,19 +288,19 @@ const FR = {
   continuityHullsborg: 'Si vous avez aimé l’expérience viking l’an dernier, vous serez encore servis. La troupe Hullsborg vous attend, tambours et esprit du Nord compris.',
   epoqueEyebrow: 'Multiples mondes', epoqueTitle: 'Une époque aux réalités variées',
   epoque1: 'L’histoire médiévale ne peut être résumée en un seul récit : les réalités différaient d’une région à l’autre et d’une période à l’autre. Dans certaines sociétés, les journées de travail étaient rudes et axées sur les besoins fondamentaux, 10 à 12 heures par jour. Mais ailleurs, le rythme de vie pouvait être moins intense qu’aujourd’hui.',
-  epoqueEurope: 'En Europe, les fêtes religieuses rythmaient l’année en offrant de nombreux jours de repos — jusqu’à 80-100 jours chômés par an dans certaines régions, contre une trentaine pour les travailleurs modernes (estimation : Gregory Clark, A Farewell to Alms).',
+  epoqueEurope: 'En Europe, les fêtes religieuses rythmaient l’année en offrant de nombreux jours de repos, jusqu’à 80-100 jours chômés par an dans certaines régions, contre une trentaine pour les travailleurs modernes (estimation : Gregory Clark, A Farewell to Alms).',
   epoqueVikings: 'Chez les Vikings, les longs hivers étaient dédiés aux contes, aux festivités et aux préparations pour l’été.',
   epoqueAndes: 'Dans les Andes, les systèmes agricoles en terrasses (Mita) répondaient aux besoins de la communauté avec une organisation méthodique.',
-  epoqueClose: 'Ces nuances montrent à quel point cette époque était riche et complexe — loin des généralités souvent évoquées.',
+  epoqueClose: 'Ces nuances montrent à quel point cette époque était riche et complexe, loin des généralités souvent évoquées.',
   formationsEyebrow: 'Au programme', formationsTitle: 'Formations et démonstrations',
   detailsTBD: 'Détails à venir',
 };
 const EN = {
   home: 'Home', eyebrow: 'Learning across centuries', title: 'Learn',
-  intro1: 'Education is part of FMM’s mission — it is the foundation of resilience. We seek to instruct through historical perspectives and to enrich general culture.',
-  intro2: 'Beyond trivia, we bring people back to the present by asking: "Which of these ancestral knowings are still relevant today — and will continue to be — to help us navigate the great changes to come?"',
-  appelEyebrow: 'A journey through cultures', appelTitle: 'Beyond the clichés — rediscovering the medieval',
-  appelBody: 'In popular tellings, the medieval era is often tied to wars, violence and power struggles. While those aspects existed, they do not define the period alone. FMM proposes to broaden the view and highlight the lesser-known treasures of medieval daily life — some of which are still practiced today outside of commercial culture.',
+  intro1: 'Education is part of FMM’s mission, it is the foundation of resilience. We seek to instruct through historical perspectives and to enrich general culture.',
+  intro2: 'Beyond trivia, we bring people back to the present by asking: "Which of these ancestral knowings are still relevant today, and will continue to be, to help us navigate the great changes to come?"',
+  appelEyebrow: 'A journey through cultures', appelTitle: 'Beyond the clichés, rediscovering the medieval',
+  appelBody: 'In popular tellings, the medieval era is often tied to wars, violence and power struggles. While those aspects existed, they do not define the period alone. FMM proposes to broaden the view and highlight the lesser-known treasures of medieval daily life, some of which are still practiced today outside of commercial culture.',
   themeEyebrow: 'This year’s theme · 2026', themeTitle: 'Caravans & Players',
   themeLead: 'After the Vikings, the road goes on. This year FMM pays homage to nomadic peoples, great banquet halls, and the wandering performers who gave birth to the circus.',
   themeBody1: 'Picture the caravans pulling in at dusk, the fires lit, the tables set. All around, acrobats leap, jugglers toss their torches, storytellers take the floor and musicians spin the dance. That is the spirit we celebrate : the players who carried the festival from village to village.',
@@ -316,10 +320,10 @@ const EN = {
   continuityHullsborg: 'If you loved the Viking experience last year, you will be served again. The Hullsborg troupe awaits, drums and northern spirit included.',
   epoqueEyebrow: 'Multiple worlds', epoqueTitle: 'An era of varied realities',
   epoque1: 'Medieval history cannot be summed up in a single narrative: realities differed from one region to another, from one period to another. In some societies, workdays were harsh and focused on basic needs, 10–12 hours a day. But elsewhere, the rhythm of life could be less intense than today.',
-  epoqueEurope: 'In Europe, religious feasts paced the year with many rest days — up to 80–100 days off annually in some regions, vs roughly 30 days for modern workers (estimate: Gregory Clark, A Farewell to Alms).',
+  epoqueEurope: 'In Europe, religious feasts paced the year with many rest days, up to 80–100 days off annually in some regions, vs roughly 30 days for modern workers (estimate: Gregory Clark, A Farewell to Alms).',
   epoqueVikings: 'Among the Vikings, long winters were devoted to storytelling, festivities and summer preparations.',
   epoqueAndes: 'In the Andes, terraced agricultural systems (Mita) met community needs through methodical organisation.',
-  epoqueClose: 'These nuances show how rich and complex this era was — far from the generalities often invoked.',
+  epoqueClose: 'These nuances show how rich and complex this era was, far from the generalities often invoked.',
   formationsEyebrow: 'On the program', formationsTitle: 'Workshops and demonstrations',
   detailsTBD: 'Details to come',
 };
