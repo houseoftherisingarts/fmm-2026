@@ -1529,3 +1529,16 @@ body.fmm-caravan-page .fmm-fire-backdrop { display: block; }
 }
 
 /* Film grain — REMOVED. Do not re-add. */
+
+/* ── Global keyboard focus ────────────────────────────────────────────
+   A visible brass ring for keyboard users only (:focus-visible excludes
+   mouse/touch). Lives in @layer base so the few elements with their own
+   Tailwind focus-visible:ring utilities keep priority. Fixes WCAG 2.4.7
+   site-wide (interactive elements had no visible focus indicator). */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+}
