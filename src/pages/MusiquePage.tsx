@@ -149,20 +149,18 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
       aria-label={band.name}
       className="relative outline-none focus-visible:ring-2 focus-visible:ring-brass/40 rounded-card"
     >
-      {/* ── LB chevron — left ── */}
+      {/* ── left arrow — prev ── */}
       <button
         type="button"
         onClick={goPrev}
         aria-label={prevLabel}
         className={`absolute left-0 md:-left-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 px-2 md:px-3 py-3 md:py-4 group ${isPast ? 'text-stone/70 hover:text-ivory' : 'text-brass hover:text-brass-soft'} transition-colors`}
       >
-        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">
-          LB
-        </span>
+        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">←</span>
         <ChevronLeft size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
       </button>
 
-      {/* ── RB chevron — right ── */}
+      {/* ── right arrow — next ── */}
       <button
         type="button"
         onClick={goNext}
@@ -170,9 +168,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
         className={`absolute right-0 md:-right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 px-2 md:px-3 py-3 md:py-4 group ${isPast ? 'text-stone/70 hover:text-ivory' : 'text-brass hover:text-brass-soft'} transition-colors`}
       >
         <ChevronRight size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
-        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">
-          RB
-        </span>
+        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">→</span>
       </button>
 
       {/* ── Bestiary frame — corners + brass divider ── */}

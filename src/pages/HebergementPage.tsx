@@ -221,7 +221,7 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
         aria-label={t.prev}
         className="absolute left-0 md:-left-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 px-2 md:px-3 py-3 md:py-4 text-brass hover:text-brass-soft transition-colors group"
       >
-        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">LB</span>
+        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">←</span>
         <ChevronLeft size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
       </button>
       <button
@@ -231,7 +231,7 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
         className="absolute right-0 md:-right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 px-2 md:px-3 py-3 md:py-4 text-brass hover:text-brass-soft transition-colors group"
       >
         <ChevronRight size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
-        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">RB</span>
+        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">→</span>
       </button>
 
       <div className="relative mx-8 md:mx-16 border border-brass/40 rounded-card overflow-hidden bg-midnight-deep/55">
