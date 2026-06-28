@@ -266,7 +266,7 @@ const HudPrompt: React.FC<{ glyph: string; label: string; accent?: boolean }> = 
   </span>
 );
 
-const ActivitesPage: React.FC = () => {
+const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
@@ -617,15 +617,25 @@ const ActivitesPage: React.FC = () => {
   //  visible tile set with no entry animation; tiles render at rest.
   return (
     <div ref={rootRef}>
-      <SEO title={t.title} description={t.intro} />
+      {!embedded && <SEO title={t.title} description={t.intro} />}
 
-      <PageHeader
-        eyebrow={t.eyebrow}
-        titleA={t.title}
-        intro={t.intro}
-        orbImage="/wix/home/fire-night.jpg"
-        orbImagePosition="center 35%"
-      />
+      {embedded ? (
+        <section className="relative pt-20 md:pt-28 pb-2">
+          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{t.eyebrow}</p>
+            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{t.title}</h2>
+            <div className="divider-brass w-24 mt-5" />
+          </div>
+        </section>
+      ) : (
+        <PageHeader
+          eyebrow={t.eyebrow}
+          titleA={t.title}
+          intro={t.intro}
+          orbImage="/wix/home/fire-night.jpg"
+          orbImagePosition="center 35%"
+        />
+      )}
 
       {/* ── Activity grid — Bestiary register ── */}
       <section className="py-16 md:py-24">

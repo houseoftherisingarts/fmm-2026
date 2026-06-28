@@ -59,17 +59,19 @@ const EXAMPLES = [
   },
 ];
 
-const ApprendrePage: React.FC = () => {
+const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const hint = lang === 'FR' ? 'Descendez' : 'Scroll';
   return (
     <>
-      <SEO title={t.title} description={t.intro1} />
-      <ScrollProgress />
+      {!embedded && <SEO title={t.title} description={t.intro1} />}
+      {!embedded && <ScrollProgress />}
 
-      {/* ── Pinned cinematic opening — forge fire scrubbed by scroll ── */}
+      {/* ── Pinned cinematic opening — forge fire scrubbed by scroll.
+            Skipped when embedded as a chapter inside Histoire & Apprendre. ── */}
+      {!embedded && (
       <Suspense
         fallback={
           <div
@@ -98,14 +100,25 @@ const ApprendrePage: React.FC = () => {
       >
         <CinematicOpening eyebrow={t.eyebrow} title={t.title} lead={t.intro2} hint={hint} />
       </Suspense>
+      )}
 
-      <PageHeader
-        eyebrow={t.eyebrow}
-        titleA={t.title}
-        intro={t.intro1}
-        orbImage="/wix/apprendre/88ea932f.jpg"
-        orbImagePosition="center"
-      />
+      {embedded ? (
+        <section className="relative pt-20 md:pt-28 pb-2">
+          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{t.eyebrow}</p>
+            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{t.title}</h2>
+            <div className="divider-brass w-24 mt-5" />
+          </div>
+        </section>
+      ) : (
+        <PageHeader
+          eyebrow={t.eyebrow}
+          titleA={t.title}
+          intro={t.intro1}
+          orbImage="/wix/apprendre/88ea932f.jpg"
+          orbImagePosition="center"
+        />
+      )}
 
       {/* Light editorial body — Au-delà des Clichés */}
       <section className="relative py-20 md:py-28 overflow-hidden" style={{ backgroundColor: 'var(--color-mist)' }}>

@@ -26,7 +26,7 @@ import ForgeCounter, { type ForgeCopy } from '../components/marche/ForgeCounter'
 //   4. MerchantPact — Become-a-merchant CTA with stat plates
 //   5. SealedScroll — Digital partners, 3D-tilt flip cards
 //   6. ForgeCounter — In-house pre-orders, slot tiles
-const MarchePage: React.FC = () => {
+const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { lang } = useUI();
   const c = lang === 'FR' ? FR : EN;
 
@@ -71,17 +71,27 @@ const MarchePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={`${c.header.titleA}${c.header.titleB ? ' & ' + c.header.titleB : ''}`} description={c.header.intro} />
-      <ScrollProgress />
+      {!embedded && <SEO title={`${c.header.titleA}${c.header.titleB ? ' & ' + c.header.titleB : ''}`} description={c.header.intro} />}
+      {!embedded && <ScrollProgress />}
 
-      <PageHeader
-        eyebrow={c.header.eyebrow}
-        titleA={c.header.titleA}
-        titleB={c.header.titleB}
-        intro={c.header.intro}
-        orbImage="/orb/marche.jpg"
-        ctas={ctas}
-      />
+      {embedded ? (
+        <section className="relative pt-20 md:pt-28 pb-2">
+          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{c.header.eyebrow}</p>
+            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{c.header.titleA}</h2>
+            <div className="divider-brass w-24 mt-5" />
+          </div>
+        </section>
+      ) : (
+        <PageHeader
+          eyebrow={c.header.eyebrow}
+          titleA={c.header.titleA}
+          titleB={c.header.titleB}
+          intro={c.header.intro}
+          orbImage="/orb/marche.jpg"
+          ctas={ctas}
+        />
+      )}
 
       <AtelierHall   lang={lang} vendors={premium} copy={c.atelier} />
       <MarketSquare  lang={lang} vendors={marche}  copy={c.market} />
