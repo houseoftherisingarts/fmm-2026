@@ -40,20 +40,21 @@ export interface Pillar {
   short: { FR: string; EN: string };
 }
 
+// Édition 2026 "Caravanes & Saltimbanques" — top-level pillars consolidated
+// into merged pages. Programmation (= activités + musique + jeunesse), Le
+// Village (= marché + nourriture), Histoire & Apprendre (= histoire +
+// apprendre), Mariages & Groupes (= mariages + groupes). Chevaux removed.
+// Primary slugs kept so existing links/SEO survive; absorbed slugs redirect
+// (see App.tsx). The absorbed keys still exist in PillarKey + PILLAR_COPY and
+// are rendered as chapters inside the merged page components.
 export const PILLARS: Pillar[] = [
-  { key: 'marche',      slug: { FR: '/marche',       EN: '/en/market' },     label: { FR: 'Marché & Boutique',           EN: 'Market & Shop' },           short: { FR: 'Marché',       EN: 'Market' } },
-  { key: 'activites',   slug: { FR: '/activites',    EN: '/en/activities' }, label: { FR: 'Activités',                   EN: 'Activities' },              short: { FR: 'Activités',    EN: 'Activities' } },
-  { key: 'nourriture',  slug: { FR: '/nourriture',   EN: '/en/food' },       label: { FR: 'Village Nourriture',          EN: 'Food Village' },            short: { FR: 'Nourriture',   EN: 'Food' } },
-  { key: 'jeunesse',    slug: { FR: '/jeunesse',     EN: '/en/youth' },      label: { FR: 'Village Jeunesse & Jeux',     EN: 'Youth & Games Village' },   short: { FR: 'Jeunesse & Jeux', EN: 'Youth & Games' } },
-  { key: 'musique',     slug: { FR: '/musique',      EN: '/en/music' },      label: { FR: 'Musique',                     EN: 'Music' },                   short: { FR: 'Musique',      EN: 'Music' } },
-  { key: 'chevaux',     slug: { FR: '/chevaux',      EN: '/en/horses' },     label: { FR: 'Clinique Équestre',           EN: 'Equestrian Clinic' },       short: { FR: 'Chevaux',      EN: 'Horses' } },
-  { key: 'apprendre',   slug: { FR: '/apprendre',    EN: '/en/learn' },      label: { FR: 'Apprendre',                   EN: 'Learn' },                   short: { FR: 'Apprendre',    EN: 'Learn' } },
-  { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping',      EN: 'Camping' } },
+  { key: 'activites',   slug: { FR: '/activites',    EN: '/en/activities' }, label: { FR: 'Programmation',               EN: 'Program' },                 short: { FR: 'Programmation', EN: 'Program' } },
+  { key: 'marche',      slug: { FR: '/marche',       EN: '/en/market' },     label: { FR: 'Le Village',                  EN: 'The Village' },             short: { FR: 'Le Village',   EN: 'The Village' } },
+  { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: 'Histoire & Apprendre',        EN: 'History & Learning' },      short: { FR: 'Histoire',     EN: 'History' } },
+  { key: 'mariages',    slug: { FR: '/mariages',     EN: '/en/weddings' },   label: { FR: 'Mariages & Groupes',          EN: 'Weddings & Groups' },       short: { FR: 'Mariages & Groupes', EN: 'Weddings & Groups' } },
+  { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping & Hébergement Locaux', EN: 'Camping & Local Lodging' } },
   { key: 'partenaires', slug: { FR: '/partenaires',  EN: '/en/partners' },   label: { FR: 'Nos Partenaires',             EN: 'Our Partners' },            short: { FR: 'Partenaires',  EN: 'Partners' } },
   { key: 'benevole',    slug: { FR: '/benevole',     EN: '/en/volunteer' },  label: { FR: 'Devenir Bénévole',            EN: 'Become a Volunteer' },      short: { FR: 'Bénévole',     EN: 'Volunteer' } },
-  { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: '4 Ans d\'histoire',           EN: '4 Years of History' },      short: { FR: 'Histoire',     EN: 'History' } },
-  { key: 'mariages',    slug: { FR: '/mariages',     EN: '/en/weddings' },   label: { FR: 'Mariages',                    EN: 'Weddings' },                short: { FR: 'Mariages',     EN: 'Weddings' } },
-  { key: 'groupes',     slug: { FR: '/groupes',      EN: '/en/groups' },     label: { FR: 'Groupes',                     EN: 'Groups' },                  short: { FR: 'Groupes',      EN: 'Groups' } },
 ];
 
 export const PILLAR_BY_KEY: Record<PillarKey, Pillar> = Object.fromEntries(

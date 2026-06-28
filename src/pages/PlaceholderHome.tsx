@@ -15,7 +15,7 @@ const PlaceholderHome: React.FC = () => {
       <main className="relative min-h-screen flex items-center justify-center bg-midnight-deep text-ivory overflow-hidden">
         {/* Foggy backdrop — generic torch+sword cinematic; swap when ready. */}
         <img
-          src="/hero/viking-cinematic.webp"
+          src="/wix/home/fire-night.jpg"
           alt=""
           aria-hidden
           className="absolute inset-0 w-full h-full object-cover opacity-50"

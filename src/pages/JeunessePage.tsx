@@ -158,7 +158,7 @@ const JeunessePage: React.FC = () => {
               alt={t.clanTitle}
               from="right"
               className="aspect-[4/3] rounded-card border"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/hero/viking-cinematic.webp'; }}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/jeunesse/2b1f82d0.jpg'; }}
             />
           </Reveal>
         </div>

@@ -64,7 +64,7 @@ const RessourcesPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/hero/viking-cinematic.webp"
+        orbImage="/wix/home/fire-night.jpg"
         orbImagePosition="center 40%"
       />
 

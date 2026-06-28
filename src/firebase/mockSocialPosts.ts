@@ -41,7 +41,7 @@ const seed: SocialPost[] = [
     title: 'Publié — Teaser orb',
     message: 'Une nouvelle ère commence pour le FMM 🛡️',
     platforms: ['instagram'],
-    imageUrl: '/hero/viking-cinematic.webp',
+    imageUrl: '/wix/home/fire-night.jpg',
     requestedBy: 'Alex T. St-Laurent',
     status: 'posted',
     postedDate: today(-10),

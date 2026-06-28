@@ -35,20 +35,15 @@ const AccueilPage      = lazy(() => import('./pages/AccueilPage'));
 const TitleLab         = lazy(() => import('./pages/TitleLab'));
 const PlaceholderHome  = lazy(() => import('./pages/PlaceholderHome'));
 const PillarPage       = lazy(() => import('./pages/PillarPage'));
-const ActivitesPage    = lazy(() => import('./pages/ActivitesPage'));
-const NourriturePage   = lazy(() => import('./pages/NourriturePage'));
-const MusiquePage      = lazy(() => import('./pages/MusiquePage'));
 const BenevolePage     = lazy(() => import('./pages/BenevolePage'));
 const BenevoleSpacePage = lazy(() => import('./pages/BenevoleSpacePage'));
-const MarchePage       = lazy(() => import('./pages/MarchePage'));
-const JeunessePage     = lazy(() => import('./pages/JeunessePage'));
-const ChevauxPage      = lazy(() => import('./pages/ChevauxPage'));
-const ApprendrePage    = lazy(() => import('./pages/ApprendrePage'));
 const HebergementPage  = lazy(() => import('./pages/HebergementPage'));
 const PartenairesPage  = lazy(() => import('./pages/PartenairesPage'));
-const HistoirePage     = lazy(() => import('./pages/HistoirePage'));
-const MariagesPage     = lazy(() => import('./pages/MariagesPage'));
-const GroupesPage      = lazy(() => import('./pages/GroupesPage'));
+// Merged pillar pages (édition 2026 consolidation).
+const ProgrammationPage    = lazy(() => import('./pages/ProgrammationPage'));
+const LeVillagePage        = lazy(() => import('./pages/LeVillagePage'));
+const MariagesGroupesPage  = lazy(() => import('./pages/MariagesGroupesPage'));
+const HistoireApprendrePage = lazy(() => import('./pages/HistoireApprendrePage'));
 const AdminPage        = lazy(() => import('./pages/AdminPage'));
 const PersonProfilePage = lazy(() => import('./pages/admin/PersonProfilePage'));
 const BenevoleProfilePage = lazy(() => import('./pages/admin/BenevoleProfilePage'));
@@ -68,20 +63,18 @@ const MedievalIntro    = lazy(() => import('./components/landing/MedievalIntro')
 // Every pillar now has its own custom page. PillarPage shell is kept
 // as a defensive fallback; if any pillar is missing here it'll render
 // the placeholder shell instead of 404-ing.
+// Top-level pillar routes. The four merged primaries point to their merged
+// page; absorbed pillars (nourriture, musique, jeunesse, groupes, apprendre)
+// and the dropped chevaux are no longer in PILLARS, so their old slugs are
+// handled by the redirects further down instead of by pillarRoutes().
 const CUSTOM_PILLARS: Partial<Record<PillarKey, React.LazyExoticComponent<React.FC>>> = {
-  activites:   ActivitesPage,
-  nourriture:  NourriturePage,
-  musique:     MusiquePage,
+  activites:   ProgrammationPage,
+  marche:      LeVillagePage,
+  histoire:    HistoireApprendrePage,
+  mariages:    MariagesGroupesPage,
   benevole:    BenevolePage,
-  marche:      MarchePage,
-  jeunesse:    JeunessePage,
-  chevaux:     ChevauxPage,
-  apprendre:   ApprendrePage,
   hebergement: HebergementPage,
   partenaires: PartenairesPage,
-  histoire:    HistoirePage,
-  mariages:    MariagesPage,
-  groupes:     GroupesPage,
 };
 
 const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeholder';
@@ -288,11 +281,25 @@ const App: React.FC = () => (
                 {/* Legacy slug redirects — old scaffold paths and Wix variants. */}
                 <Route path="/festival-medieval-de-montpellier" element={<Navigate to="/" replace />} />
                 <Route path="/horaire"            element={<Navigate to="/activites" replace />} />
-                <Route path="/banquet"            element={<Navigate to="/nourriture" replace />} />
+                <Route path="/banquet"            element={<Navigate to="/marche" replace />} />
                 <Route path="/benevoles"          element={<Navigate to="/benevole" replace />} />
                 <Route path="/archives"           element={<Navigate to="/histoire" replace />} />
-                <Route path="/groupe"             element={<Navigate to="/groupes" replace />} />
-                <Route path="/contact"            element={<Navigate to="/#contact" replace />} />
+
+                {/* Édition 2026 merge — absorbed pillars redirect to their
+                    new merged page; Chevaux is retired to the home. */}
+                <Route path="/musique"     element={<Navigate to="/activites" replace />} />
+                <Route path="/en/music"    element={<Navigate to="/en/activities" replace />} />
+                <Route path="/jeunesse"    element={<Navigate to="/activites" replace />} />
+                <Route path="/en/youth"    element={<Navigate to="/en/activities" replace />} />
+                <Route path="/nourriture"  element={<Navigate to="/marche" replace />} />
+                <Route path="/en/food"     element={<Navigate to="/en/market" replace />} />
+                <Route path="/groupes"     element={<Navigate to="/mariages" replace />} />
+                <Route path="/groupe"      element={<Navigate to="/mariages" replace />} />
+                <Route path="/en/groups"   element={<Navigate to="/en/weddings" replace />} />
+                <Route path="/apprendre"   element={<Navigate to="/histoire" replace />} />
+                <Route path="/en/learn"    element={<Navigate to="/en/history" replace />} />
+                <Route path="/chevaux"     element={<Navigate to="/" replace />} />
+                <Route path="/en/horses"   element={<Navigate to="/en" replace />} />
 
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>

@@ -33,28 +33,22 @@ const LANDING_IMAGE = '/wix/home/viking-helmet.jpg';
 const LANDING_KEY = '__landing__';
 
 // Curated hero image for each pillar (sampled from /public/wix/<pillar>/).
+// Édition 2026: menu consolidated to the seven top-level pillars. Chevaux is
+// retired; the festival film is no longer a menu item — it now plays as the
+// featured video at the centre of the orb (see FILM_YT_ID below).
 const ORB_CHOICES: OrbChoice[] = [
   { key: 'activites',   image: '/wix/home/fire-night.jpg',     imagePosition: 'center 35%' },
-  { key: 'musique',     image: '/wix/musique/skarazula.jpg',   imagePosition: 'left center' },
   { key: 'marche',      image: '/wix/marche/47376430.jpg' },
-  { key: 'nourriture',  image: '/wix/nourriture/41d286c9.jpg', imagePosition: 'center 40%' },
-  { key: 'jeunesse',    image: '/wix/jeunesse/2b1f82d0.jpg',   imagePosition: 'right center' },
-  { key: 'chevaux',     image: '/wix/chevaux/04ba7d92.jpg' },
-  { key: 'apprendre',   image: '/wix/apprendre/88ea932f.jpg' },
-  { key: 'hebergement', image: '/wix/hebergement/salon-living-room.jpg', imagePosition: 'center 55%' },
-  { key: 'benevole',    image: '/wix/benevole/4fc431fd.jpg',   imagePosition: 'left center' },
-  { key: 'partenaires', image: '/wix/partenaires/2a2a4608.jpg' },
   { key: 'histoire',    image: '/wix/histoire/03b1fe30.jpg' },
   { key: 'mariages',    image: '/wix/mariages/70dcaeae.jpg' },
-  { key: 'groupes',     image: '/wix/home/shields-blue.jpg' },
-  {
-    key: 'video',
-    video: '/orb/vikings.mp4',
-    label: { FR: 'Vidéo',  EN: 'Video' },
-    copy:  { FR: 'Notre court métrage de l’an dernier — vikings, feu et tambours.',
-             EN: 'Last year’s short film — vikings, fire and drums.' },
-  },
+  { key: 'hebergement', image: '/wix/hebergement/salon-living-room.jpg', imagePosition: 'center 55%' },
+  { key: 'partenaires', image: '/wix/partenaires/2a2a4608.jpg' },
+  { key: 'benevole',    image: '/wix/benevole/4fc431fd.jpg',   imagePosition: 'left center' },
 ];
+
+// New 2026 festival film — featured at the centre of the orb (replaces last
+// year's local "vikings" mp4, which now lives on the Histoire & Apprendre page).
+const FILM_YT_ID = 'mex-Tc350mI';
 
 // One-shot SFX. Pre-fetches the asset on mount, then on each trigger spawns
 // a fresh HTMLAudio so overlapping clicks don't restart a playing instance.
@@ -274,6 +268,8 @@ const OrbHomePage: React.FC = () => {
   // -1 = landing (Viking helmet + countdown + tickets CTA).
   const [selectedIdx, setSelectedIdx] = useState(-1);
   const [confirming, setConfirming] = useState(false);
+  // Featured 2026 film — opens in a centred lightbox over the orb.
+  const [showFilm, setShowFilm] = useState(false);
   const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
   // NOTE: countdown lives inside <LiveCountdown> below, isolated so
   // its 1 s ticks don't re-render the whole orb tree.
@@ -1099,26 +1095,26 @@ const OrbHomePage: React.FC = () => {
             >
               <div className="relative px-6 py-4 bg-midnight-deep/55 backdrop-blur-md">
                 {isLanding ? (
-                  <a
-                    href={ticketUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[11px] md:text-xs tracking-[0.35em] text-[var(--color-amber-glow)] hover:text-ivory transition-colors"
-                  >
-                    <span aria-hidden className="text-base translate-y-[-1px]">⚔</span>
-                    <span>{lang === 'FR' ? 'Acheter mes billets sur Zeffy' : 'Buy tickets on Zeffy'}</span>
-                    <span aria-hidden className="opacity-60 group-hover:translate-x-1 transition-transform">→</span>
-                  </a>
-                ) : activeChoice?.key === 'video' ? (
-                  <button
-                    type="button"
-                    onClick={requestOrbFullscreen}
-                    className="orb-blurb group w-full flex items-center justify-center gap-2 font-display title-medieval uppercase text-[11px] md:text-xs tracking-[0.35em] text-[var(--color-amber-glow)] hover:text-ivory transition-colors"
-                  >
-                    <span aria-hidden className="text-base translate-y-[-1px]">▶</span>
-                    <span>{lang === 'FR' ? 'Voir en plein écran' : 'Watch fullscreen'}</span>
-                    <span aria-hidden className="opacity-60 group-hover:translate-x-1 transition-transform">↗</span>
-                  </button>
+                  <div className="flex flex-col items-center gap-2.5">
+                    <a
+                      href={ticketUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[11px] md:text-xs tracking-[0.35em] text-[var(--color-amber-glow)] hover:text-ivory transition-colors"
+                    >
+                      <span aria-hidden className="text-base translate-y-[-1px]">⚔</span>
+                      <span>{lang === 'FR' ? 'Acheter mes billets sur Zeffy' : 'Buy tickets on Zeffy'}</span>
+                      <span aria-hidden className="opacity-60 group-hover:translate-x-1 transition-transform">→</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setShowFilm(true)}
+                      className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[10px] md:text-[11px] tracking-[0.3em] text-ivory-soft hover:text-ivory transition-colors"
+                    >
+                      <span aria-hidden className="translate-y-[-1px]">▶</span>
+                      <span>{lang === 'FR' ? 'Voir le film 2026' : 'Watch the 2026 film'}</span>
+                    </button>
+                  </div>
                 ) : (
                   <p className="orb-blurb font-editorial italic text-ivory-soft text-sm md:text-[15px] leading-[1.55] text-center">
                     {activeCopy}
@@ -1202,6 +1198,37 @@ const OrbHomePage: React.FC = () => {
             {lang === 'FR' ? 'EN' : 'FR'}
           </Link>
         </div>
+
+        {/* Featured 2026 film — centred lightbox over the orb. */}
+        {showFilm && (
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-midnight-deep/90 backdrop-blur-sm p-4 md:p-10"
+            onClick={() => setShowFilm(false)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <button
+              type="button"
+              aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
+              onClick={() => setShowFilm(false)}
+              className="absolute top-5 right-5 md:top-8 md:right-10 h-10 w-10 rounded-full flex items-center justify-center bg-black/60 text-ivory border border-white/15 hover:bg-black/80 transition"
+            >
+              <span aria-hidden className="text-lg leading-none">✕</span>
+            </button>
+            <div
+              className="relative w-full max-w-5xl aspect-video rounded-lg-card overflow-hidden border border-brass/30 shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <iframe
+                src={`https://www.youtube.com/embed/${FILM_YT_ID}?autoplay=1&rel=0&modestbranding=1`}
+                title={lang === 'FR' ? 'Film FMM 2026' : 'FMM 2026 film'}
+                className="absolute inset-0 w-full h-full"
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
 
         <style>{`
           /* will-change is GPU-VRAM heavy; only mark the ACTIVE layer

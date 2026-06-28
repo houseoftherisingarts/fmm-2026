@@ -202,7 +202,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
                   className="w-full h-full object-cover"
                   loading="lazy"
                   style={{ filter: imgFilter }}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/hero/viking-cinematic.webp'; }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.jpg'; }}
                 />
                 {/* Soft bottom vignette so the page-counter chip reads */}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />

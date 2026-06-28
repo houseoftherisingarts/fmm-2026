@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_MEASUREMENT_ID?: string;
   readonly VITE_META_PIXEL_ID?: string;
   readonly VITE_ZEFFY_TICKET_URL?: string;
+  readonly VITE_ZEFFY_CAMPING_URL?: string;
   readonly VITE_SITE_MODE?: 'live' | 'placeholder';
   readonly VITE_AUDIO_TRACK_URL?: string;
   readonly VITE_AUDIO_TRACK_TITLE?: string;

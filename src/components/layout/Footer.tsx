@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Mail, Phone, MapPin, Lock, Ticket } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, Lock, Ticket, Bug } from 'lucide-react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useUI } from '../../contexts/AppContext';
 import { FOOTER, PILLARS, SITE, SPONSORS } from '../../content';
@@ -8,6 +8,7 @@ import { db, isFirebaseReady } from '../../firebase';
 import { HexPanel, ChevronButton, HexMark, Eyebrow } from '../marche/atmospherics';
 import { BubbleCanvas } from '../marche/effects';
 import { useCountdown } from '../../lib/useCountdown';
+import BugReportModal from './BugReportModal';
 
 // ─── Footer — Caravan Edition ────────────────────────────────────────
 // Hex-cut blocks on a velvet-deep base. Top edge fades up from the
@@ -20,6 +21,7 @@ const Footer: React.FC = () => {
   const t = FOOTER[lang];
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [bugOpen, setBugOpen] = useState(false);
   const cd = useCountdown(`${SITE.dates.start}T10:00:00-04:00`);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -268,14 +270,25 @@ const Footer: React.FC = () => {
             <HexMark className="opacity-70" />
             {t.rights}
           </span>
-          <Link
-            to="/admin"
-            className="inline-flex items-center gap-1.5 hover:text-[var(--color-amber-glow)] transition uppercase tracking-[0.4em] text-[10px]"
-          >
-            <Lock size={11} /> {lang === 'FR' ? 'Admin' : 'Admin'}
-          </Link>
+          <div className="inline-flex items-center gap-5">
+            <button
+              type="button"
+              onClick={() => setBugOpen(true)}
+              className="inline-flex items-center gap-1.5 hover:text-[var(--color-amber-glow)] transition uppercase tracking-[0.4em] text-[10px]"
+            >
+              <Bug size={11} /> {lang === 'FR' ? 'Signaler un bug' : 'Report a bug'}
+            </button>
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1.5 hover:text-[var(--color-amber-glow)] transition uppercase tracking-[0.4em] text-[10px]"
+            >
+              <Lock size={11} /> {lang === 'FR' ? 'Admin' : 'Admin'}
+            </Link>
+          </div>
         </div>
       </div>
+
+      <BugReportModal open={bugOpen} onClose={() => setBugOpen(false)} />
     </footer>
   );
 };

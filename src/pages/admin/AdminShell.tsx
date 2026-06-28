@@ -3,7 +3,7 @@ import {
   LayoutDashboard, HandHeart, ShoppingBag, Users, MessageSquare, Mail,
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
-  Hash,
+  Hash, Bug,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
@@ -35,6 +35,7 @@ export type AdminSectionId =
   | 'splash'
   | 'parametres'
   | 'discord'
+  | 'bugs'
   | 'roles';
 
 interface NavItem {
@@ -63,6 +64,7 @@ const NAV: NavItem[] = [
   { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles },
   { id: 'parametres', label: 'Paramètres',      icon: Settings },
   { id: 'discord',    label: 'Discord',          icon: Hash },
+  { id: 'bugs',       label: 'Bugs',            icon: Bug },
   // Super-admin-only section: assign/revoke admin roles for everyone else.
   { id: 'roles',      label: 'Rôles admin',     icon: ShieldCheck },
 ];

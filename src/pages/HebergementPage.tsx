@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Tent, Home, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { ArrowUpRight, Tent, Home, ChevronLeft, ChevronRight, MapPin, Caravan } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -8,59 +8,6 @@ import PageHeader from '../components/layout/PageHeader';
 import { Reveal, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
-
-// ─── Camping spot data ────────────────────────────────────────────────
-// Placeholder schematic spots — coordinates are arbitrary % of the SVG
-// viewBox until the real site map is dropped in. The same data shape
-// will plug into the real map: just swap the <svg> background for the
-// uploaded map image and align spot polygons over it.
-
-type CampingTier = 'tent' | 'rv' | 'large' | 'cabin';
-
-interface CampingSpot {
-  id:    string;            // displayed code, e.g. "A-12"
-  tier:  CampingTier;
-  // bounding box on the SVG viewBox (0-1000 wide, 0-600 tall)
-  x: number; y: number; w: number; h: number;
-  pricePerNight: number;    // CAD
-}
-
-const CAMPING_SPOTS: CampingSpot[] = [
-  // ROW A — small tent loop (left side)
-  { id: 'A-01', tier: 'tent', x: 110, y: 100, w: 60, h: 45, pricePerNight: 35 },
-  { id: 'A-02', tier: 'tent', x: 180, y: 100, w: 60, h: 45, pricePerNight: 35 },
-  { id: 'A-03', tier: 'tent', x: 250, y: 100, w: 60, h: 45, pricePerNight: 35 },
-  { id: 'A-04', tier: 'tent', x: 320, y: 100, w: 60, h: 45, pricePerNight: 35 },
-  { id: 'A-05', tier: 'tent', x: 110, y: 160, w: 60, h: 45, pricePerNight: 35 },
-  { id: 'A-06', tier: 'tent', x: 180, y: 160, w: 60, h: 45, pricePerNight: 35 },
-  { id: 'A-07', tier: 'tent', x: 250, y: 160, w: 60, h: 45, pricePerNight: 40 },
-  { id: 'A-08', tier: 'tent', x: 320, y: 160, w: 60, h: 45, pricePerNight: 40 },
-
-  // ROW B — large tent / family
-  { id: 'B-01', tier: 'large', x: 110, y: 235, w: 90, h: 60, pricePerNight: 55 },
-  { id: 'B-02', tier: 'large', x: 210, y: 235, w: 90, h: 60, pricePerNight: 55 },
-  { id: 'B-03', tier: 'large', x: 310, y: 235, w: 90, h: 60, pricePerNight: 55 },
-
-  // ROW C — RV / camper-van loop (right side, near road)
-  { id: 'C-01', tier: 'rv', x: 540, y: 100, w: 110, h: 55, pricePerNight: 75 },
-  { id: 'C-02', tier: 'rv', x: 660, y: 100, w: 110, h: 55, pricePerNight: 75 },
-  { id: 'C-03', tier: 'rv', x: 780, y: 100, w: 110, h: 55, pricePerNight: 75 },
-  { id: 'C-04', tier: 'rv', x: 540, y: 165, w: 110, h: 55, pricePerNight: 85 },
-  { id: 'C-05', tier: 'rv', x: 660, y: 165, w: 110, h: 55, pricePerNight: 85 },
-  { id: 'C-06', tier: 'rv', x: 780, y: 165, w: 110, h: 55, pricePerNight: 85 },
-
-  // ROW D — cabins / yurts (back, fewer, more expensive)
-  { id: 'D-01', tier: 'cabin', x: 600, y: 330, w: 100, h: 70, pricePerNight: 145 },
-  { id: 'D-02', tier: 'cabin', x: 720, y: 330, w: 100, h: 70, pricePerNight: 145 },
-  { id: 'D-03', tier: 'cabin', x: 840, y: 330, w: 100, h: 70, pricePerNight: 165 },
-];
-
-const TIER_TONE: Record<CampingTier, { fill: string; stroke: string }> = {
-  tent:  { fill: 'rgba(176, 141, 58, 0.18)', stroke: 'rgba(212, 168, 87, 0.55)' },
-  large: { fill: 'rgba(184, 106, 42, 0.20)', stroke: 'rgba(232, 177, 74, 0.60)' },
-  rv:    { fill: 'rgba(91, 143, 214, 0.18)', stroke: 'rgba(140, 184, 232, 0.55)' },
-  cabin: { fill: 'rgba(91, 163, 114, 0.20)', stroke: 'rgba(140, 199, 154, 0.60)' },
-};
 
 // ─── Hébergement bestiary entries ─────────────────────────────────────
 interface Lodging {
@@ -124,18 +71,6 @@ const HebergementPage: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
 
-  const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
-  const selected = useMemo(
-    () => CAMPING_SPOTS.find((s) => s.id === selectedSpotId) || null,
-    [selectedSpotId],
-  );
-
-  const tierLabel = (tier: CampingTier) =>
-    tier === 'tent'  ? t.tierTent
-    : tier === 'large' ? t.tierLarge
-    : tier === 'rv'    ? t.tierRv
-    :                    t.tierCabin;
-
   return (
     <>
       <SEO title={t.title} description={t.intro} />
@@ -144,8 +79,8 @@ const HebergementPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/hebergement/salon-living-room.jpg"
-        orbImagePosition="center 55%"
+        orbImage="/wix/hebergement/tournage-camping.jpg"
+        orbImagePosition="center 40%"
       />
 
       {/* ── Camping section ─────────────────────────────────────────── */}
@@ -164,161 +99,51 @@ const HebergementPage: React.FC = () => {
             </p>
           </Reveal>
 
-          {/* Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
-            {(Object.keys(TIER_TONE) as CampingTier[]).map((tier) => (
-              <div key={tier} className="flex items-center gap-2">
-                <span
-                  aria-hidden
-                  className="w-4 h-4 rounded-sm border"
-                  style={{ background: TIER_TONE[tier].fill, borderColor: TIER_TONE[tier].stroke }}
-                />
-                <span className="font-sans text-xs uppercase tracking-wider text-ivory-soft">
-                  {tierLabel(tier)}
-                </span>
-              </div>
-            ))}
-          </div>
+          {/* Site map — last year's full festival map, camping emphasised.
+              Interactive spot-picking is removed for now; campers pick a
+              spot type below and reserve on Zeffy. */}
+          <Reveal>
+            <figure className="relative rounded-card border border-brass/30 overflow-hidden bg-midnight-deep/40">
+              <img
+                src="/site/carte-fmm-2025.jpg"
+                alt={t.mapAria}
+                className="w-full h-auto"
+                loading="lazy"
+              />
+              <figcaption className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-card bg-midnight-deep/85 border border-brass/40 font-sans text-[10px] uppercase tracking-widest text-brass">
+                <Tent size={12} /> {t.mapCampingTag}
+              </figcaption>
+            </figure>
+            <p className="font-editorial italic text-sm text-ivory-soft/70 text-center mt-3">{t.mapCaption}</p>
+          </Reveal>
 
-          {/* Map + sidebar */}
-          <div className="grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-8">
-              <div className="relative aspect-[16/9] rounded-card border border-brass/30 bg-midnight-deep/60 overflow-hidden">
-                {/* TODO: when the real site-map image is uploaded, swap
-                    this schematic <svg> background for
-                    `<img src="/site/camping-map.jpg" />` underneath the
-                    spot polygons. The polygons live in a 1000×600
-                    viewBox — keep that viewBox or rescale spot
-                    coordinates to match the new image. */}
-                <svg
-                  viewBox="0 0 1000 600"
-                  className="w-full h-full"
-                  role="img"
-                  aria-label={t.mapAria}
+          {/* Two spot types → reserve on Zeffy. */}
+          <div className="grid sm:grid-cols-2 gap-5 md:gap-6 mt-10 md:mt-14 max-w-4xl mx-auto">
+            {[
+              { Icon: Caravan, title: t.optRvTitle,   body: t.optRvBody },
+              { Icon: Tent,    title: t.optTentTitle, body: t.optTentBody },
+            ].map(({ Icon, title, body }) => (
+              <motion.article
+                key={title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.6 }}
+                className="velvet-card rounded-card border border-brass/30 bg-midnight-deep/55 p-7 md:p-8 flex flex-col items-center text-center"
+              >
+                <Icon size={34} className="text-brass mb-4" />
+                <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">{title}</h3>
+                <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed mb-6 flex-1">{body}</p>
+                <a
+                  href={import.meta.env.VITE_ZEFFY_CAMPING_URL || 'https://www.zeffy.com/fr-CA/ticketing/camping-7'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
                 >
-                  {/* Forest base */}
-                  <rect width="1000" height="600" fill="rgba(15, 22, 30, 0.7)" />
-
-                  {/* Water — schematic lake bottom-left */}
-                  <path
-                    d="M 50 480 Q 200 440 350 470 Q 480 500 380 560 Q 250 590 100 560 Q 30 540 50 480 Z"
-                    fill="rgba(91, 143, 214, 0.18)"
-                    stroke="rgba(140, 184, 232, 0.35)"
-                    strokeWidth="1.5"
-                  />
-                  <text x="180" y="525" fill="rgba(140, 184, 232, 0.7)" fontSize="12" fontFamily="serif" fontStyle="italic">
-                    {t.mapLake}
-                  </text>
-
-                  {/* Paths */}
-                  <rect x="60" y="60" width="880" height="480" fill="none"
-                        stroke="rgba(176, 141, 58, 0.18)" strokeDasharray="6 4" strokeWidth="1" />
-                  <line x1="460" y1="60" x2="460" y2="540"
-                        stroke="rgba(176, 141, 58, 0.18)" strokeDasharray="6 4" strokeWidth="1" />
-
-                  {/* Stage marker */}
-                  <g transform="translate(460, 320)">
-                    <circle r="24" fill="rgba(184, 106, 42, 0.25)" stroke="rgba(232, 177, 74, 0.7)" strokeWidth="1.5" />
-                    <text textAnchor="middle" dy="4" fill="rgba(232, 177, 74, 0.9)" fontSize="11" fontFamily="serif" fontStyle="italic">
-                      {t.mapStage}
-                    </text>
-                  </g>
-
-                  {/* Spots */}
-                  {CAMPING_SPOTS.map((s) => {
-                    const tone = TIER_TONE[s.tier];
-                    const isSel = selectedSpotId === s.id;
-                    return (
-                      <g
-                        key={s.id}
-                        onClick={() => setSelectedSpotId(s.id)}
-                        style={{ cursor: 'pointer' }}
-                        role="button"
-                        aria-label={`${t.spot} ${s.id}`}
-                        aria-pressed={isSel}
-                      >
-                        <rect
-                          x={s.x} y={s.y} width={s.w} height={s.h}
-                          rx="4"
-                          fill={isSel ? 'rgba(232, 177, 74, 0.55)' : tone.fill}
-                          stroke={isSel ? 'rgba(255, 215, 130, 0.95)' : tone.stroke}
-                          strokeWidth={isSel ? 2.5 : 1.25}
-                          style={{ transition: 'fill 180ms ease, stroke 180ms ease' }}
-                        />
-                        <text
-                          x={s.x + s.w / 2}
-                          y={s.y + s.h / 2 + 4}
-                          textAnchor="middle"
-                          fill={isSel ? '#0c1118' : 'rgba(244, 235, 213, 0.85)'}
-                          fontSize="11"
-                          fontFamily="serif"
-                          style={{ pointerEvents: 'none' }}
-                        >
-                          {s.id}
-                        </text>
-                      </g>
-                    );
-                  })}
-
-                  {/* Watermark */}
-                  <text x="940" y="585" textAnchor="end" fill="rgba(176, 141, 58, 0.4)" fontSize="10" fontFamily="serif" fontStyle="italic">
-                    FMM 2026 · {t.mapPlaceholder}
-                  </text>
-                </svg>
-              </div>
-            </div>
-
-            {/* Sidebar — selected spot */}
-            <aside className="lg:col-span-4">
-              <div className="velvet-card rounded-card border border-brass/30 bg-midnight-deep/55 p-6 md:p-7 lg:sticky lg:top-24">
-                <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-[10px] mb-2">
-                  <MapPin size={11} className="inline mr-1 -mt-0.5" />{t.selectionEyebrow}
-                </p>
-                {selected ? (
-                  <motion.div
-                    key={selected.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-1">
-                      {t.spot} {selected.id}
-                    </h3>
-                    <p className="font-editorial italic text-sm text-ivory-soft mb-4">
-                      {tierLabel(selected.tier)}
-                    </p>
-                    <div className="divider-brass w-12 mb-4" />
-                    <p className="font-sans text-xs uppercase tracking-widest text-ivory-soft/70 mb-1">{t.price}</p>
-                    <p className="font-display title-medieval text-2xl text-brass mb-5">
-                      {selected.pricePerNight}$ <span className="text-sm text-ivory-soft/70">{t.perNight}</span>
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // TODO: wire to Stripe/Zeffy checkout once payment
-                        // flow is set up. Currently a placeholder hand-off.
-                        console.log('[camping] reserve', selected.id);
-                        alert(`${t.reserveTodo} ${selected.id}`);
-                      }}
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
-                    >
-                      {t.reserveCta} <ArrowUpRight size={14} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSpotId(null)}
-                      className="w-full mt-2 text-[11px] font-sans uppercase tracking-widest text-ivory-soft/60 hover:text-ivory-soft transition"
-                    >
-                      {t.clearSelection}
-                    </button>
-                  </motion.div>
-                ) : (
-                  <p className="font-editorial italic text-sm text-ivory-soft/80">
-                    {t.selectionHint}
-                  </p>
-                )}
-              </div>
-            </aside>
+                  {t.reserveCta} <ArrowUpRight size={14} />
+                </a>
+              </motion.article>
+            ))}
           </div>
         </div>
       </section>
@@ -427,7 +252,7 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
                   alt={item.name}
                   className="w-full h-full object-cover"
                   loading="lazy"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/hero/viking-cinematic.webp'; }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/hebergement/tournage-camping.jpg'; }}
                 />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
                 {item.area && (
@@ -487,26 +312,18 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
 const FR = {
   eyebrow:  'Sur place et alentours',
   title:    'Camping & Hébergement',
-  intro:    'Choisissez votre emplacement de camping sur la carte interactive, ou découvrez nos hébergements partenaires dans la Petite-Nation.',
+  intro:    'Plantez votre tente ou votre roulotte sur le site du festival, ou découvrez nos hébergements partenaires dans la Petite-Nation.',
   campingEyebrow: 'Sur le site',
   campingTitle:   'Camping sur place',
-  campingLead:    'Cliquez sur un emplacement de la carte pour le sélectionner et le réserver. Carte schématique en attendant la version finale.',
-  tierTent:       'Tente',
-  tierLarge:      'Grande tente / Famille',
-  tierRv:         'VR / Roulotte',
-  tierCabin:      'Chalet / Yourte',
-  selectionEyebrow:'Votre sélection',
-  selectionHint:  'Cliquez sur un emplacement à gauche pour le sélectionner. Le tarif et le bouton de réservation apparaîtront ici.',
-  spot:           'Emplacement',
-  price:          'Tarif',
-  perNight:       '/ nuit',
-  reserveCta:     'Réserver cet emplacement',
-  reserveTodo:    'Réservation à venir — paiement à brancher pour l’emplacement',
-  clearSelection: 'Annuler la sélection',
-  mapAria:        'Carte interactive du camping FMM 2026',
-  mapPlaceholder: 'carte schématique',
-  mapLake:        'Rivière',
-  mapStage:       'Scène',
+  campingLead:    'Voici le plan du site du festival. Le camping est sur place : choisissez votre type d’emplacement ci-dessous et réservez en ligne.',
+  reserveCta:     'Réserver mon emplacement',
+  mapAria:        'Plan du site du Festival Médiéval de Montpellier',
+  mapCampingTag:  'Zone camping',
+  mapCaption:     'Plan du site de l’an dernier. La zone de camping est sur le terrain du festival.',
+  optRvTitle:     'Espace caravane / VR',
+  optRvBody:      'Pour les roulottes, caravanes et véhicules récréatifs. Stationnez sur place et profitez du festival dès le réveil.',
+  optTentTitle:   'Espace tente / petit véhicule',
+  optTentBody:    'Pour les tentes et les petits véhicules. Un coin de verdure pour dormir au cœur de l’ambiance médiévale.',
   lodgingEyebrow: 'Autour du festival',
   lodgingTitle:   'Hébergements partenaires',
   lodgingLead:    'Auberges, chalets et gîtes des environs. Utilisez les chevrons (ou ← →) pour parcourir le bestiaire.',
@@ -520,26 +337,18 @@ const FR = {
 const EN: typeof FR = {
   eyebrow:  'On site and nearby',
   title:    'Camping & Lodging',
-  intro:    'Pick your camping spot on the interactive map, or discover our partner lodgings in Petite-Nation.',
+  intro:    'Pitch your tent or park your camper on the festival grounds, or discover our partner lodgings in Petite-Nation.',
   campingEyebrow: 'On site',
   campingTitle:   'On-site camping',
-  campingLead:    'Click a spot on the map to select and reserve it. Schematic map until the final version lands.',
-  tierTent:       'Tent',
-  tierLarge:      'Large tent / Family',
-  tierRv:         'RV / Camper',
-  tierCabin:      'Cabin / Yurt',
-  selectionEyebrow:'Your selection',
-  selectionHint:  'Click a spot on the left to select it. The price and booking button will appear here.',
-  spot:           'Spot',
-  price:          'Price',
-  perNight:       '/ night',
-  reserveCta:     'Reserve this spot',
-  reserveTodo:    'Booking coming soon — payment to be wired for spot',
-  clearSelection: 'Clear selection',
-  mapAria:        'Interactive FMM 2026 campsite map',
-  mapPlaceholder: 'schematic map',
-  mapLake:        'River',
-  mapStage:       'Stage',
+  campingLead:    'Here is the festival site map. Camping is on site: choose your spot type below and reserve online.',
+  reserveCta:     'Reserve my spot',
+  mapAria:        'Festival Médiéval de Montpellier site map',
+  mapCampingTag:  'Camping zone',
+  mapCaption:     'Last year’s site map. The camping zone is on the festival grounds.',
+  optRvTitle:     'Caravan / RV area',
+  optRvBody:      'For campers, caravans and recreational vehicles. Park on site and enjoy the festival from the moment you wake up.',
+  optTentTitle:   'Tent / small vehicle area',
+  optTentBody:    'For tents and small vehicles. A patch of green to sleep right in the heart of the medieval atmosphere.',
   lodgingEyebrow: 'Around the festival',
   lodgingTitle:   'Partner lodgings',
   lodgingLead:    'Inns, cabins and B&Bs nearby. Use the chevrons (or ← →) to browse the bestiary.',
