@@ -21,8 +21,8 @@ const LOGO        = '/fmm-crest-chrome.webp?v=3';
 // Live display type (Cinzel/Marcellus) so the words can stagger in cinematically
 const TITLE_FONT = '"Marcellus", "Cinzel", "Cinzel Decorative", Georgia, serif';
 const FIRE = '/hero/fireburst.mp4';
-// Last year's festival film the burst now hands off to (played with sound).
-const FESTIVAL = '/orb/vikings.mp4';
+// The 2026 festival film the burst hands off to (played with sound).
+const FESTIVAL = '/orb/fmm-2026-film.mp4';
 // Purpose-built VEO near-still of the opening frame: the scene is frozen
 // except the torch flames, the orb's glow, and a faint breath on the knight.
 // Looped seamlessly; we crossfade to the scrubbed clip the moment scrolling

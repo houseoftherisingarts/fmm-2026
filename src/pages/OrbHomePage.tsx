@@ -299,6 +299,29 @@ const OrbHomePage: React.FC = () => {
     return () => clearTimeout(t);
   }, []);
 
+  // Idle film — after 5 s OF countdown the orb hands off to the 2026 festival
+  // film (the same clip that ends the intro), replacing the logo + countdown.
+  // Looped, muted. Skipped only for genuinely constrained devices (lite);
+  // reduced-motion users still get the film since it's their only chance to see
+  // it (the cinematic intro is skipped for them).
+  const [showOrbFilm, setShowOrbFilm] = useState(false);
+  useEffect(() => {
+    if (!showCountdown || lite) return;
+    const t = setTimeout(() => setShowOrbFilm(true), 5000);
+    return () => clearTimeout(t);
+  }, [showCountdown, lite]);
+  // Play / pause the orb film as it fades in and out.
+  useEffect(() => {
+    const v = orbVideoRef.current;
+    if (!v) return;
+    if (showOrbFilm && isLanding) {
+      v.currentTime = 0;
+      void v.play().catch(() => { /* autoplay restrictions, muted so should pass */ });
+    } else {
+      v.pause();
+    }
+  }, [showOrbFilm, isLanding]);
+
   useEffect(() => {
     if (activeLayer === 'A') {
       setLayerB(selectedIdx);
@@ -863,16 +886,16 @@ const OrbHomePage: React.FC = () => {
                     fullscreen via requestOrbFullscreen. On-demand content
                     (no autoplay, metadata-only), so kept for budget machines;
                     only prefers-reduced-motion skips it. */}
-                {!reduceMotion && (
+                {!lite && (
                   <video
                     ref={orbVideoRef}
-                    src="/orb/vikings.mp4"
+                    src="/orb/fmm-2026-film.mp4"
                     muted
                     loop
                     playsInline
                     preload="metadata"
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1400ms] ease-out ${
-                      isVideoChoice ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      isVideoChoice || (isLanding && showOrbFilm) ? 'opacity-100' : 'opacity-0 pointer-events-none'
                     }`}
                     style={{ transform: 'scale(1.4)' }}
                   />
@@ -909,18 +932,18 @@ const OrbHomePage: React.FC = () => {
                     when a pillar is selected, fades back in on click-away. */}
                 <div
                   className={`absolute inset-0 rounded-full overflow-hidden pointer-events-none transition-opacity duration-[1400ms] ease-out ${
-                    isLanding ? 'opacity-100' : 'opacity-0'
+                    isLanding && !showOrbFilm ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
-                  <div className="absolute inset-0 bg-midnight-deep" />
+                  <div className="absolute inset-0 bg-black" />
                   <img
                     src="/fmm-logo-embossed-silver.png"
                     alt="FMM"
                     decoding="async"
-                    className="fmm-no-grade absolute left-1/2 top-[8%] w-[52%] h-[52%] object-contain"
+                    className="fmm-no-grade absolute left-1/2 top-[40%] w-[50%] h-[50%] object-contain"
                     style={{
                       filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.55))',
-                      transform: 'translateX(-50%)',
+                      transform: 'translate(-50%, -50%)',
                     }}
                   />
                   {/* Intro video stays mounted and crossfades to 0 once it
@@ -951,7 +974,7 @@ const OrbHomePage: React.FC = () => {
                   className="absolute inset-0 rounded-full pointer-events-none transition-[background] duration-700"
                   style={{
                     background: isLanding
-                      ? 'radial-gradient(circle at 50% 50%, transparent 55%, rgba(8,20,36,0.7) 100%)'
+                      ? 'radial-gradient(circle at 50% 50%, transparent 55%, rgba(0,0,0,0.75) 100%)'
                       : 'radial-gradient(circle at 50% 50%, transparent 50%, rgba(8,20,36,0.6) 100%)',
                   }}
                 />
@@ -984,8 +1007,8 @@ const OrbHomePage: React.FC = () => {
                     in 8 s after page load (matched to the intro video). */}
                 {isLanding && (
                   <div
-                    className={`absolute inset-x-0 bottom-[10%] flex flex-col items-center pointer-events-none px-6 text-center transition-opacity duration-[1200ms] ease-out ${
-                      showCountdown ? 'opacity-100' : 'opacity-0'
+                    className={`absolute inset-x-0 bottom-[8%] flex flex-col items-center pointer-events-none px-6 text-center transition-opacity duration-[1200ms] ease-out ${
+                      showCountdown && !showOrbFilm ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
                     <LiveCountdown

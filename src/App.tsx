@@ -94,9 +94,11 @@ const HomeWithIntro: React.FC = () => {
   const [entered, setEntered] = useState<boolean>(
     () => !force && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
   );
-  // Reduced-motion and placeholder mode never play the prologue.
+  // Reduced-motion and placeholder mode skip the prologue by default — but an
+  // explicit ?intro in the URL forces it to play even under reduced-motion
+  // (handy for previewing the cinematic hero without toggling the OS setting).
   const skipIntro = reduce || SITE_MODE === 'placeholder';
-  const showIntro = (force || !entered) && !skipIntro;
+  const showIntro = force || (!entered && !skipIntro);
 
   const handleEnter = () => {
     try { sessionStorage.setItem('fmm_intro_seen', '1'); } catch { /* ignore */ }
@@ -116,7 +118,7 @@ const HomeWithIntro: React.FC = () => {
           covers it; mount it only once the prologue hands off. When the intro
           is skipped (reduced-motion or placeholder), mount immediately so those
           users land on the real home instead of a blank screen. */}
-      {(entered || skipIntro) && <OrbHome />}
+      {(entered || (skipIntro && !showIntro)) && <OrbHome />}
       {showIntro && (
         <Suspense fallback={null}>
           <MedievalIntro onEnter={handleEnter} />
