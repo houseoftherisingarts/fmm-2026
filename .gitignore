@@ -62,3 +62,6 @@ __pycache__/
 *.mov
 *.avi
 *.mkv
+
+# Local raw media staging (large, never in git)
+_media-originals/
