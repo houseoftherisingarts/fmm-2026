@@ -290,19 +290,14 @@ const OrbHomePage: React.FC = () => {
   // Start with introDone=true when reduced-motion is active so the static
   // embossed logo shows immediately (the 87 MB intro video is skipped).
   const [introDone, setIntroDone] = useState(() => !heavyMedia);
-  // Countdown reveal — fades in once the logo-fire intro video has actually
-  // finished (introDone), so "logo first, then the countdown" stays exact
-  // whatever the clip length. The previous fixed 8 s timer drifted out of
-  // sync (the clip is ~15 s), letting the countdown appear mid-video. Under
-  // reduced-motion the intro video is skipped (introDone starts true), so the
-  // countdown shows right away. Once true it stays visible across landing
-  // returns, so there's no re-wait on click-away.
+  // Countdown reveal — fades in 8 s after page load (timed to land just as
+  // the logo intro video finishes), then stays visible across landing
+  // returns so the user doesn't wait 8 s again on click-away.
   const [showCountdown, setShowCountdown] = useState(false);
   useEffect(() => {
-    if (!introDone) return;
-    const t = setTimeout(() => setShowCountdown(true), 300);
+    const t = setTimeout(() => setShowCountdown(true), 8000);
     return () => clearTimeout(t);
-  }, [introDone]);
+  }, []);
 
   // Idle film — after 5 s OF countdown the orb hands off to the 2026 festival
   // film (the same clip that ends the intro), replacing the logo + countdown.
