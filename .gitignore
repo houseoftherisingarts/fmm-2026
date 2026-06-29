@@ -69,3 +69,6 @@ __pycache__/
 _media-originals/
 public/models/
 public/hero/knight/
+
+# Impeccable audit artifacts (local only)
+.impeccable/
