@@ -775,9 +775,27 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               </div>
             </header>
 
-            {/* Choices list — 2 columns (vertical-flow): items 1-7 fill the
-                left column, 8-13 fill the right. break-inside-avoid keeps
-                each label on a single line within its column. */}
+            {/* Pre-sale teaser — the pillar menu isn't public yet, so the
+                left column just announces the festival is coming and the
+                CTA below carries the only live action (buy pre-sale tickets). */}
+            {presale ? (
+              <div className="orb-list min-h-0">
+                <p
+                  className="font-display title-medieval uppercase text-ivory tracking-[0.04em] leading-[1.05] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+                  style={{ fontSize: 'clamp(1.3rem, 2.2vw, 2rem)' }}
+                >
+                  {lang === 'FR' ? 'Bientôt disponible' : 'Coming soon'}
+                </p>
+                <p
+                  className="font-editorial italic text-ivory-soft/70 mt-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
+                  style={{ fontSize: 'clamp(0.95rem, 1.2vw, 1.1rem)' }}
+                >
+                  {lang === 'FR'
+                    ? 'Le site complet du festival arrive sous peu.'
+                    : 'The full festival site is coming shortly.'}
+                </p>
+              </div>
+            ) : (
             <ul className="orb-list columns-2 gap-x-6 md:gap-x-8 -mx-1 min-h-0">
               {ORB_CHOICES.map((c, i) => {
                 const isSelected = i === selectedIdx;
