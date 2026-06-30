@@ -842,7 +842,11 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               <button
                 onClick={onConfirm}
                 disabled={confirming}
-                className={`self-start px-8 py-3.5 font-display title-medieval text-[11px] uppercase tracking-[0.35em] transition-all duration-300 border bg-brass text-midnight-deep border-brass hover:bg-brass-soft hover:scale-[1.02] ${
+                className={`self-start font-display title-medieval uppercase transition-all duration-300 border bg-brass text-midnight-deep border-brass hover:bg-brass-soft hover:scale-[1.02] ${
+                  presale
+                    ? 'px-10 md:px-14 py-5 md:py-6 text-sm md:text-lg tracking-[0.28em]'
+                    : 'px-8 py-3.5 text-[11px] tracking-[0.35em]'
+                } ${
                   confirming ? 'opacity-50 scale-[0.98]' : ''
                 }`}
                 style={{
