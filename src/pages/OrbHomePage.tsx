@@ -252,11 +252,12 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
   const { lang } = useUI();
   const { user, openSignIn, isAdmin } = useAuth();
   const { flags: siteFlags } = useSiteFlags();
-  // Skip the autoplay logo-intro + vikings video for reduced-motion and
-  // budget machines; the embossed-silver logo PNG sits underneath either way.
-  const reduceMotion = useReducedMotion();
+  // The burning-logo intro video (logo-intro.mp4) plays on the orb landing for
+  // everyone EXCEPT genuinely budget machines / slow links (`lite`). It is
+  // intentionally NOT gated on prefers-reduced-motion: Alex keeps "reduce
+  // motion" on for GPU stability but still wants this signature clip to play.
+  // On lite devices the embossed-silver logo PNG underneath stands in.
   const { lite } = usePerfTier();
-  const heavyMedia = !reduceMotion && !lite;
   // Dev placement editor — only mounts when an admin has flipped on the
   // `knightPlacementEditor` site flag from Paramètres. Off by default.
   const knightEditorAvailable = isAdmin && siteFlags.knightPlacementEditor;
