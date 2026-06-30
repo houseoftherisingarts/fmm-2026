@@ -1149,7 +1149,9 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                 lead, video shows fullscreen button. */}
             <div
               key={isLanding ? LANDING_KEY : activeChoice!.key}
-              className="orb-blurb-glass relative w-full max-w-[480px] rounded-2xl overflow-hidden z-40"
+              className={`orb-blurb-glass relative w-full max-w-[480px] rounded-2xl overflow-hidden z-40 ${
+                presale ? 'hidden' : ''
+              }`}
             >
               <div className="relative px-6 py-4 bg-midnight-deep/55 backdrop-blur-md">
                 {isLanding ? (
