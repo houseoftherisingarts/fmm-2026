@@ -1039,7 +1039,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                 />
 
                 {/* Landing — countdown sits below the embossed logo. Fades
-                    in 8 s after page load (matched to the intro video). */}
+                    in once the burning-logo intro video has finished. */}
                 {isLanding && (
                   <div
                     className={`absolute inset-x-0 bottom-[8%] flex flex-col items-center pointer-events-none px-6 text-center transition-opacity duration-[1200ms] ease-out ${
