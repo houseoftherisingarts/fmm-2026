@@ -829,6 +829,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                 );
               })}
             </ul>
+            )}
             </div>
 
             {/* CTAs — auto-row of the parent grid, pinned to the column
