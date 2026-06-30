@@ -1153,6 +1153,10 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             >
               <div className="relative px-6 py-4 bg-midnight-deep/55 backdrop-blur-md">
                 {isLanding ? (
+                  // Pre-sale keeps a single CTA (the big left-column button), so
+                  // the under-orb blurb (duplicate Zeffy link + film button) is
+                  // dropped here to avoid competing buttons.
+                  presale ? null : (
                   <div className="flex flex-col items-center gap-2.5">
                     <a
                       href={ticketUrl}
@@ -1173,6 +1177,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                       <span>{lang === 'FR' ? 'Voir le film 2026' : 'Watch the 2026 film'}</span>
                     </button>
                   </div>
+                  )
                 ) : (
                   <p className="orb-blurb font-editorial italic text-ivory-soft text-sm md:text-[15px] leading-[1.55] text-center">
                     {activeCopy}
