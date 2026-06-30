@@ -33,7 +33,6 @@ const OrbHomePage      = lazy(() => import('./pages/OrbHomePage'));
 const WelcomePage      = lazy(() => import('./pages/WelcomePage'));
 const AccueilPage      = lazy(() => import('./pages/AccueilPage'));
 const TitleLab         = lazy(() => import('./pages/TitleLab'));
-const PlaceholderHome  = lazy(() => import('./pages/PlaceholderHome'));
 const PillarPage       = lazy(() => import('./pages/PillarPage'));
 const BenevolePage     = lazy(() => import('./pages/BenevolePage'));
 const BenevoleSpacePage = lazy(() => import('./pages/BenevoleSpacePage'));
