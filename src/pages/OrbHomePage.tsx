@@ -849,9 +849,11 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               >
                 {confirming
                   ? (lang === 'FR' ? 'Ouverture…' : 'Opening…')
-                  : isLanding
-                    ? (lang === 'FR' ? 'Acheter mes billets' : 'Buy tickets')
-                    : (lang === 'FR' ? 'Confirmer mon choix' : 'Confirm my choice')}
+                  : presale
+                    ? (lang === 'FR' ? 'Billets en pré-vente' : 'Pre-sale tickets')
+                    : isLanding
+                      ? (lang === 'FR' ? 'Acheter mes billets' : 'Buy tickets')
+                      : (lang === 'FR' ? 'Confirmer mon choix' : 'Confirm my choice')}
               </button>
             </div>
           </div>
