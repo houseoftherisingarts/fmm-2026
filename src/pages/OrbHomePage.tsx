@@ -245,7 +245,10 @@ const PropRow: React.FC<PropRowProps> = ({ label, value, onChange, step, fine, m
   );
 };
 
-const OrbHomePage: React.FC = () => {
+// `presale` swaps the pillar menu for a "coming soon" line + a single
+// pre-sale tickets CTA, while keeping the full orb landing (knight, orb,
+// logo→countdown→film). Used by the placeholder/teaser launch.
+const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
   const { lang } = useUI();
   const { user, openSignIn, isAdmin } = useAuth();
   const { flags: siteFlags } = useSiteFlags();
