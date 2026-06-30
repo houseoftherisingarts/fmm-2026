@@ -985,9 +985,9 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                   {/* Intro video stays mounted and crossfades to 0 once it
                       ends — unmounting it on `introDone` was creating a
                       hard cut between the animated logo and the static PNG.
-                      Reduced-motion + budget machines skip the intro entirely;
-                      they see the static logo from frame zero. */}
-                  {heavyMedia && (
+                      Only genuinely budget machines (`lite`) skip it; they
+                      see the static logo from frame zero. */}
+                  {!lite && (
                     <video
                       autoPlay
                       muted
