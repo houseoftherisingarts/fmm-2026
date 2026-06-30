@@ -1214,6 +1214,19 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
 
         {/* Top-left wordmark — logo only (the title page below carries the
             "Caravanes & Saltimbanques" edition name in full). */}
+        {presale ? (
+          <div className="absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3">
+            <img
+              decoding="async"
+              src={SITE.logoWhite}
+              alt="FMM"
+              className="fmm-no-grade h-14 md:h-20 w-auto drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]"
+            />
+            <span className="hidden sm:inline-flex font-display title-medieval text-sm md:text-base text-ivory drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+              FMM <span className="text-brass ml-1">{SITE.year}</span>
+            </span>
+          </div>
+        ) : (
         <button
           type="button"
           onClick={replayIntro}
@@ -1230,6 +1243,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             FMM <span className="text-brass ml-1">{SITE.year}</span>
           </span>
         </button>
+        )}
 
         {/* Top-right corner — account access + lang toggle. This is
             the ONLY place outside the global NavBar (which is hidden on
