@@ -770,10 +770,17 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                 </span>
               </h1>
 
-              {/* Dates subtitle — bottom rule + medieval caps */}
+              {/* Dates subtitle — bottom rule + medieval caps. On the pre-sale
+                  teaser the date is the key info, so it's blown up much larger. */}
               <div className="mt-4 md:mt-5 flex items-baseline gap-3">
                 <span className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent via-brass/40 to-brass/70" />
-                <p className="font-display title-medieval text-[11px] md:text-[13px] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[var(--color-brass-soft)] sm:whitespace-nowrap drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                <p
+                  className={`font-display title-medieval uppercase text-[var(--color-brass-soft)] sm:whitespace-nowrap drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] ${
+                    presale
+                      ? 'text-xl sm:text-2xl md:text-4xl tracking-[0.12em] sm:tracking-[0.18em]'
+                      : 'text-[11px] md:text-[13px] tracking-[0.3em] sm:tracking-[0.4em]'
+                  }`}
+                >
                   {SITE.datesLabel[lang]}
                 </p>
               </div>
