@@ -81,8 +81,10 @@ const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeh
 // `/`  → OrbHomePage (HubOrb-style selector, all 13 pillars)
 // `/accueil` → AccueilPage (the detailed festival home)
 // `/backuppage` → legacy WelcomePage (Viking hero, kept for reference)
-// In `placeholder` mode, `/` shows the misty-sword teaser instead.
-const OrbHome = SITE_MODE === 'placeholder' ? PlaceholderHome : OrbHomePage;
+// In `placeholder` mode, `/` shows the same orb home but with the pillar menu
+// swapped for a "coming soon" line + a single pre-sale tickets CTA (presale).
+const OrbHome: React.FC = () =>
+  SITE_MODE === 'placeholder' ? <OrbHomePage presale /> : <OrbHomePage />;
 
 // `/` shows the cinematic medieval intro once per session, then hands off to
 // the real home (OrbHomePage) which mounts underneath. Reduced-motion and
