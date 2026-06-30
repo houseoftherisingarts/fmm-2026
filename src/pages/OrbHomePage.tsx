@@ -1236,7 +1236,9 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             this immersive landing) where Mon compte / Se connecter
             lives. */}
         <div className="absolute top-6 right-5 md:top-8 md:right-12 z-20 flex items-center gap-4 sm:gap-6 md:gap-8">
-          {user ? (
+          {/* Pre-sale teaser hides account access entirely — the only action
+              on the page is the big pre-sale tickets button. */}
+          {presale ? null : user ? (
             <Link
               to={addLocale('/compte', lang)}
               className="group inline-flex items-center gap-1.5 sm:gap-2 font-display title-medieval text-[10px] md:text-xs uppercase tracking-[0.25em] sm:tracking-[0.4em] text-ivory-soft hover:text-[var(--color-amber-glow)] transition-colors"
