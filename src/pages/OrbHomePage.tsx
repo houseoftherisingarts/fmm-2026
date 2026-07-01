@@ -1509,16 +1509,50 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           .orb-list::-webkit-scrollbar-thumb { background: rgba(176,141,58,0.3); border-radius: 2px; }
           .orb-list::-webkit-scrollbar-thumb:hover { background: rgba(176,141,58,0.55); }
 
-          /* ── Short-viewport collapse ─────────────────────────────────
-             A phone in landscape is wide (trips md:) but only ~390 px tall,
-             so the two-column orb overflows. On any short viewport, collapse
-             to a single scrollable column and clear the top-left wordmark. */
-          @media (max-height: 600px) {
+          /* ── Short-viewport treatment (landscape phones) ─────────────
+             A phone in landscape is wide (trips md:) but only ~390 px tall.
+             Rather than collapse to a cramped scrolling single column, keep
+             the desktop-style two columns and condense everything so the whole
+             hero (title, dates, orb, countdown, CTA) fits with no scroll.
+             Portrait phones never reach this — they get the rotate overlay. */
+          @media (max-height: 600px) and (min-width: 680px) {
+            .orb-fit {
+              grid-template-columns: 1.05fr 1fr !important;
+              overflow: hidden !important;
+              padding: 2.5rem 2rem 1.1rem !important;
+              gap: 1.5rem !important;
+              align-items: center !important;
+            }
+            /* Left column: drop the desktop vertical offsets, tighten rows. */
+            .orb-left { gap: 0.7rem !important; }
+            .orb-left > div:first-child { gap: 0.55rem !important; transform: none !important; }
+            .orb-title { padding-top: 0 !important; transform: none !important; }
+            .orb-title-eyebrow { font-size: 0.95rem !important; margin-bottom: 0.3rem !important; }
+            .orb-title-hero > span { font-size: clamp(1.3rem, 3.3vw, 1.9rem) !important; }
+            .orb-dates { font-size: 1.05rem !important; }
+            /* "Bientôt disponible" block: shrink, drop the secondary sub-line. */
+            .orb-list > p:first-child { font-size: 1.25rem !important; margin: 0 !important; }
+            .orb-list > p:last-child { display: none !important; }
+            /* CTA: compact, no top gap. */
+            .orb-cta { padding-top: 0 !important; }
+            .orb-cta button { padding: 0.75rem 1.9rem !important; font-size: 0.78rem !important; }
+            /* Orb: size to the short viewport so it + the overlaid countdown
+               fit without pushing the CTA off-screen. */
+            .orb-wrap { gap: 0 !important; }
+            .orb-wrap > div:first-child {
+              max-width: min(64vh, 300px) !important;
+              transform: none !important;
+            }
+          }
+
+          /* Very short AND narrow (rare tiny/split-screen landscape): fall
+             back to a single scrollable column with the wordmark cleared. */
+          @media (max-height: 600px) and (max-width: 679px) {
             .orb-fit {
               grid-template-columns: 1fr !important;
               overflow-y: auto !important;
-              padding-top: 5.5rem;
-              padding-bottom: 6rem;
+              padding-top: 4.5rem;
+              padding-bottom: 5rem;
               align-items: start;
             }
           }
