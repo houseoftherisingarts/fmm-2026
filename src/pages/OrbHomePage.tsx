@@ -850,7 +850,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             {/* CTAs — auto-row of the parent grid, pinned to the column
                 bottom so it shares a baseline with the right column's
                 blurb panel (also pinned bottom via grid-rows-[1fr_auto]). */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:items-center pt-2">
+            <div className="orb-cta flex flex-col sm:flex-row gap-3 sm:items-center pt-2">
               <button
                 onClick={onConfirm}
                 disabled={confirming}
