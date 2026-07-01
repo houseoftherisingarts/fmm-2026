@@ -148,15 +148,15 @@ const RotatePrompt: React.FC = () => {
           72%, 100% { transform: rotate(-90deg); }
         }
         .fmm-rotate-title {
-          font-family: 'Cinzel', 'Cormorant Garamond', serif;
+          font-family: var(--font-display-alt, "Cormorant SC", serif);
           text-transform: uppercase; letter-spacing: 0.12em;
-          color: #f4ece0; font-size: clamp(1.2rem, 5.6vw, 1.6rem);
+          color: #f4ece0; font-size: clamp(1.3rem, 6vw, 1.7rem);
           margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.9);
         }
         .fmm-rotate-sub {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: var(--font-editorial, "Cormorant Garamond", Georgia, serif);
           font-style: italic; color: rgba(244,236,224,0.72);
-          font-size: 1rem; line-height: 1.35; margin: 0;
+          font-size: 1.05rem; line-height: 1.35; margin: 0;
         }
         @media (prefers-reduced-motion: reduce) {
           .fmm-rotate-icon { animation: none; transform: rotate(-90deg); }
