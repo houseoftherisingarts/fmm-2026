@@ -730,7 +730,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               relative + z-40 lifts every text/button above the knight
               image (z-30 in its sibling column) so the 6.54 × wide
               knight spillover can't visually cover the copy. */}
-          <div className="grid grid-rows-[1fr_auto] gap-4 md:gap-5 min-h-0 relative z-40">
+          <div className="orb-left grid grid-rows-[1fr_auto] gap-4 md:gap-5 min-h-0 relative z-40">
             <div className="self-center flex flex-col gap-4 md:gap-5 min-h-0 -translate-y-3">
 
             {/* TITLE PAGE — édition eyebrow, brass rule, scratch-revealed
