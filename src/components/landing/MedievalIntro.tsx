@@ -70,13 +70,14 @@ const FORGE_CSS = `
 // with a chevron bobbing in the centre to cue the scroll.
 // Scroll cue: a slim label + a soft column of light with a chevron drifting
 // down it, gently pulsing. Quietly invites the scroll without a heavy object.
-function ScrollCue() {
+function ScrollCue({ align = 'center' }: { align?: 'center' | 'left' }) {
   // Deliberately loud: visitors weren't realising the prologue advances on
   // scroll, so this pairs an explicit "Défiler" label with a cascading triple
   // chevron. Stays legible with motion disabled (the label + chevrons carry it
-  // even if the animation is stilled).
+  // even if the animation is stilled). `align="left"` for the mobile placement
+  // under the wordmark; default centered for the desktop bottom placement.
   return (
-    <div className="flex flex-col items-center gap-2.5">
+    <div className={`flex flex-col gap-2.5 ${align === 'left' ? 'items-start' : 'items-center'}`}>
       <span
         style={{
           fontFamily: fontAlt,
