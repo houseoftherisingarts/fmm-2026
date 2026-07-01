@@ -53,13 +53,17 @@ const FORGE_CSS = `
 .mi-overlay{height:100vh;height:100svh}
 .mi-stage{height:100vh;height:100svh}
 /* Short viewports (phones in landscape): shrink the crest + wordmark so the
-   whole title, "de Montpellier" included, sits inside the screen above the cue. */
+   whole title, "de Montpellier" included, sits inside the screen. The scroll
+   cue moves under the wordmark on the left (mi-cue-left); the centered bottom
+   cue (mi-cue) is hidden there. */
+.mi-cue-left{display:none}
 @media (max-height:480px){
   .mi-title{max-width:66vw!important}
   .mi-crest{width:42px!important;margin-bottom:0.35rem!important}
   .mi-line{font-size:1.55rem!important}
   .mi-line-sub{font-size:0.72rem!important;margin-top:0.3rem!important}
-  .mi-cue{bottom:calc(env(safe-area-inset-bottom,0px) + 2.5vh)!important}
+  .mi-cue{display:none!important}
+  .mi-cue-left{display:flex!important}
 }
 `;
 
