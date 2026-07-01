@@ -492,15 +492,16 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
 
                 {/* beat 1 — editorial left column, live Cinzel wordmark with a
                     crest above; words rise into focus on load, recede on scroll */}
-                <div className="pointer-events-none absolute left-[6vw] top-1/2 -translate-y-1/2 max-w-[48vw]">
+                <div className="mi-title pointer-events-none absolute left-[6vw] top-1/2 -translate-y-1/2 max-w-[48vw]">
                   <motion.div className="flex flex-col items-start text-left" style={{ opacity: b1, y: b1y }}>
                     <motion.img
                       src={LOGO} alt="" aria-hidden draggable={false} variants={crestRise} initial="hidden" animate="show"
-                      className="mb-4 w-[82px] sm:w-[98px] h-auto select-none"
+                      className="mi-crest mb-4 w-[82px] sm:w-[98px] h-auto select-none"
                       style={{ filter: 'drop-shadow(0 3px 14px rgba(0,0,0,0.6))' }}
                     />
                     {['Festival', 'Médiéval', 'de Montpellier'].map((t, i) => (
                       <motion.div key={t} custom={i} variants={lineRise} initial="hidden" animate="show"
+                        className={i < 2 ? 'mi-line' : 'mi-line-sub'}
                         style={{
                           fontFamily: TITLE_FONT, color: '#EAEFF6',
                           fontSize: i < 2 ? 'clamp(2.4rem, 5.6vw, 4.6rem)' : 'clamp(1.1rem, 2.6vw, 1.9rem)',
