@@ -1553,6 +1553,23 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             }
           }
 
+          /* ── Masthead scrim (mobile/short only) ─────────────────────── */
+          .orb-topscrim { display: none; }
+          @media (max-width: 767px), (max-height: 600px) {
+            .orb-topscrim {
+              display: block;
+              position: absolute;
+              top: 0; left: 0; right: 0;
+              height: 5.5rem;
+              z-index: 15;
+              pointer-events: none;
+              background: linear-gradient(to bottom,
+                rgba(9,11,18,0.92) 0%,
+                rgba(9,11,18,0.6) 45%,
+                transparent 100%);
+            }
+          }
+
           /* ── Mobile scroll cue ──────────────────────────────────────
              Shown on small OR short viewports (portrait phones excepted —
              the rotate prompt owns that state). */
