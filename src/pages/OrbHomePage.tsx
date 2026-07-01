@@ -1249,7 +1249,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
         <button
           type="button"
           onClick={replayIntro}
-          className="absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3 group outline-none rounded focus-visible:ring-2 focus-visible:ring-[var(--color-amber-glow)]"
+          className="orb-wordmark absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3 group outline-none rounded focus-visible:ring-2 focus-visible:ring-[var(--color-amber-glow)]"
           aria-label={lang === 'FR' ? "Revoir l'introduction" : 'Replay the intro'}
         >
           <img
