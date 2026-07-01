@@ -1553,6 +1553,13 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             }
           }
 
+          /* On mobile/short viewports the top-left wordmark is redundant
+             (the title + orb emblem carry the branding) and it collides with
+             the scrolling content, so it's hidden there. */
+          @media (max-width: 767px), (max-height: 600px) {
+            .orb-wordmark { display: none; }
+          }
+
           /* ── Masthead scrim (mobile/short only) ─────────────────────── */
           .orb-topscrim { display: none; }
           @media (max-width: 767px), (max-height: 600px) {
