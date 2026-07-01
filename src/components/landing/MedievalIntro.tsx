@@ -23,7 +23,7 @@ const TITLE_FONT = '"Marcellus", "Cinzel", "Cinzel Decorative", Georgia, serif';
 const FIRE = '/hero/fireburst.mp4';
 // Position 2 of the sequence: the "Caravanes et Saltimbanques" intro video
 // (accordionist) the burst hands off to, played with sound. NOT the general
-// festival film — that plays at position 5, inside the orb after the countdown.
+// festival film (that plays at position 5, inside the orb after the countdown).
 const INTRO_CARAVANES = '/orb/intro-caravanes.mp4';
 // Purpose-built VEO near-still of the opening frame: the scene is frozen
 // except the torch flames, the orb's glow, and a faint breath on the knight.
