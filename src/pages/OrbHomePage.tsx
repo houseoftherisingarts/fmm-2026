@@ -1568,13 +1568,25 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           @media (max-width: 767px) and (orientation: portrait) {
             .orb-scroll-cue { display: none; }
           }
-          .orb-scroll-cue-arrow {
-            animation: orbScrollBob 1.8s ease-in-out infinite;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.85));
+          .orb-scroll-cue-label {
+            animation: orbCuePulse 1.9s ease-in-out infinite;
           }
-          @keyframes orbScrollBob {
-            0%, 100% { transform: translateY(0);   opacity: 0.5; }
-            50%      { transform: translateY(5px); opacity: 1;   }
+          @keyframes orbCuePulse {
+            0%, 100% { opacity: 0.7; }
+            50%      { opacity: 1;   }
+          }
+          .orb-scroll-cue-arrow {
+            filter: drop-shadow(0 2px 10px rgba(0,0,0,0.95))
+                    drop-shadow(0 0 8px rgba(224,121,46,0.35));
+          }
+          .orb-chevron {
+            animation: orbChevron 1.6s ease-in-out infinite;
+          }
+          .orb-chevron-2 { animation-delay: 0.18s; }
+          @keyframes orbChevron {
+            0%   { opacity: 0.2; transform: translateY(-3px); }
+            45%  { opacity: 1;   }
+            100% { opacity: 0.2; transform: translateY(5px);  }
           }
 
           @media (prefers-reduced-motion: reduce) {
