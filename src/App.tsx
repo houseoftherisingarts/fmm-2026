@@ -177,8 +177,10 @@ const HomeWithIntro: React.FC = () => {
   // every visit — we don't honour the once-per-session `fmm_intro_seen` gate,
   // and we ignore reduced-motion (Alex runs with it on; see fmm_orb_logo_video).
   const presale = SITE_MODE === 'placeholder';
+  // TEMP-DEV: ?orb skips the cinematic for local screenshot validation. Remove before commit.
+  const skipToOrb = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('orb');
   const [entered, setEntered] = useState<boolean>(
-    () => !force && !presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
+    () => skipToOrb || (!force && !presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1'),
   );
   // Reduced-motion skips the prologue by default — but an explicit ?intro in
   // the URL forces it to play even under reduced-motion (handy for previewing
