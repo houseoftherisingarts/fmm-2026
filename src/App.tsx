@@ -92,15 +92,16 @@ const HomeWithIntro: React.FC = () => {
   const reduce = useReducedMotion();
   // ?intro in the URL forces the prologue to replay every load (handy while iterating)
   const force = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('intro');
+  // Placeholder/presale mode: the knight intro IS the teaser, so it replays on
+  // every visit — we don't honour the once-per-session `fmm_intro_seen` gate,
+  // and we ignore reduced-motion (Alex runs with it on; see fmm_orb_logo_video).
+  const presale = SITE_MODE === 'placeholder';
   const [entered, setEntered] = useState<boolean>(
-    () => !force && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
+    () => !force && !presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
   );
   // Reduced-motion skips the prologue by default — but an explicit ?intro in
   // the URL forces it to play even under reduced-motion (handy for previewing
-  // the cinematic hero without toggling the OS setting). Placeholder/presale
-  // mode keeps the knight intro even under reduced-motion: it's the whole
-  // teaser, and Alex runs with reduced-motion on (see fmm_orb_logo_video rule).
-  const presale = SITE_MODE === 'placeholder';
+  // the cinematic hero without toggling the OS setting).
   const skipIntro = reduce && !presale;
   const showIntro = force || (!entered && !skipIntro);
 
