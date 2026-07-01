@@ -1349,35 +1349,6 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           </svg>
         </div>
 
-        {/* ── Mobile: turn-to-landscape prompt ───────────────────────────
-            Pure-CSS orientation gate (no JS, not tied to reduced-motion), so
-            it always shows in narrow portrait and disappears the instant the
-            device is rotated to landscape. */}
-        <div className="orb-rotate-prompt" aria-live="polite">
-          <div className="flex flex-col items-center gap-4 max-w-xs px-6">
-            <svg
-              className="orb-rotate-icon"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="8" y="2" width="8" height="20" rx="1.8" />
-              <path d="M11 5h2" />
-            </svg>
-            <p
-              className="font-display title-medieval uppercase text-ivory tracking-[0.12em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
-              style={{ fontSize: 'clamp(1.15rem, 5.5vw, 1.55rem)' }}
-            >
-              {lang === 'FR' ? 'Tourne ton appareil' : 'Rotate your device'}
-            </p>
-            <p className="font-editorial italic text-ivory-soft/70 text-[0.95rem] leading-snug">
-              {lang === 'FR'
-                ? 'pour vivre l’expérience du festival'
-                : 'for the full festival experience'}
-            </p>
-          </div>
-        </div>
-
         <style>{`
           /* will-change is GPU-VRAM heavy; only mark the ACTIVE layer
              (which is actively running Ken Burns). The hidden layer
