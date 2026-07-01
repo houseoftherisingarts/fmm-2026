@@ -220,13 +220,10 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
 
   useEffect(() => {
     const unsub = progress.on('change', (p) => {
-      // Trigger the fire-burst finale as the climax approaches (bufferFilm
-      // also gates the burst video below).
+      // Pre-buffer the intro film as the burst approaches.
       if (p >= 0.7) setBufferFilm(true);
-      // At the climax, hand straight off to the orb home. The festival film
-      // used to play here (right after the knight), but it belongs at the END
-      // of the sequence — the orb plays it after caravans → fire → countdown.
-      if (p >= 0.992 && !fired.current) { fired.current = true; enterSite(); }
+      // At the climax, hand off to the intro film rather than the site.
+      if (p >= 0.992 && !fired.current) { fired.current = true; setPhase('video'); }
     });
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
