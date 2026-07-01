@@ -58,25 +58,41 @@ const FORGE_CSS = `
 // Scroll cue: a slim label + a soft column of light with a chevron drifting
 // down it, gently pulsing. Quietly invites the scroll without a heavy object.
 function ScrollCue() {
+  // Deliberately loud: visitors weren't realising the prologue advances on
+  // scroll, so this pairs an explicit "Défiler" label with a cascading triple
+  // chevron. Stays legible with motion disabled (the label + chevrons carry it
+  // even if the animation is stilled).
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative h-12 w-[1.5px] overflow-hidden rounded-full" style={{ background: 'linear-gradient(to bottom, rgba(215,222,232,0.35), rgba(215,222,232,0))' }}>
-        <motion.div
-          className="absolute left-1/2 top-0 h-4 w-[1.5px] -translate-x-1/2 rounded-full"
-          style={{ background: 'linear-gradient(to bottom, transparent, #EAF0F7)' }}
-          animate={{ y: [-16, 48] }}
-          transition={{ repeat: Infinity, duration: 1.9, ease: [0.4, 0, 0.2, 1] }}
-        />
-      </div>
-      <motion.svg
-        width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAF0F7" strokeWidth="1.6"
-        strokeLinecap="round" strokeLinejoin="round"
-        style={{ filter: 'drop-shadow(0 1px 6px rgba(0,0,0,0.85))', marginTop: '-6px' }}
-        animate={{ y: [0, 5, 0], opacity: [0.6, 1, 0.6] }}
-        transition={{ repeat: Infinity, duration: 1.9, ease: 'easeInOut' }}
+    <div className="flex flex-col items-center gap-2.5">
+      <span
+        style={{
+          fontFamily: fontAlt,
+          color: '#EAF0F7',
+          fontSize: 'clamp(0.78rem, 1vw, 0.94rem)',
+          letterSpacing: '0.5em',
+          textIndent: '0.5em',
+          textTransform: 'uppercase',
+          textShadow: '0 2px 12px rgba(0,0,0,0.95)',
+          whiteSpace: 'nowrap',
+        }}
       >
-        <path d="M6 9l6 6 6-6" />
-      </motion.svg>
+        Défiler
+      </span>
+      <div className="relative" style={{ height: 40, width: 40 }}>
+        {[0, 1, 2].map((i) => (
+          <motion.svg
+            key={i}
+            width="40" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAF0F7" strokeWidth="2.2"
+            strokeLinecap="round" strokeLinejoin="round"
+            className="absolute left-0"
+            style={{ top: i * 9, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9)) drop-shadow(0 0 9px rgba(215,222,232,0.35))' }}
+            animate={{ opacity: [0.18, 1, 0.18], y: [-2, 3, -2] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut', delay: i * 0.18 }}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </motion.svg>
+        ))}
+      </div>
     </div>
   );
 }
