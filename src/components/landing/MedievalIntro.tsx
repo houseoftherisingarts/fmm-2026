@@ -48,6 +48,19 @@ const crestRise = {
 // scoped styles for the rendered metal title plates + the date rules
 const FORGE_CSS = `
 .fmm-rule-silver{height:1px;background:linear-gradient(to right,transparent,#C7D2DE,transparent)}
+/* Map the intro to the *visible* viewport so nothing hides behind the mobile
+   browser toolbar (100vh counts the area behind it; svh is the safe height). */
+.mi-overlay{height:100vh;height:100svh}
+.mi-stage{height:100vh;height:100svh}
+/* Short viewports (phones in landscape): shrink the crest + wordmark so the
+   whole title, "de Montpellier" included, sits inside the screen above the cue. */
+@media (max-height:480px){
+  .mi-title{max-width:66vw!important}
+  .mi-crest{width:42px!important;margin-bottom:0.35rem!important}
+  .mi-line{font-size:1.55rem!important}
+  .mi-line-sub{font-size:0.72rem!important;margin-top:0.3rem!important}
+  .mi-cue{bottom:calc(env(safe-area-inset-bottom,0px) + 2.5vh)!important}
+}
 `;
 
 // Scroll cue, Lord-of-the-Rings style: an engraved silver ring with a fire
