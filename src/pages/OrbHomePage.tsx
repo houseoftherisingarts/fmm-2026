@@ -927,16 +927,16 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                   />
                 )}
 
-                {/* Festival video — last year's "vikings" short. Mounted once
-                    at the orb root, faded in when the "video" choice is
-                    active. Tapping the orb (or the blurb button) plays it
-                    fullscreen via requestOrbFullscreen. On-demand content
-                    (no autoplay, metadata-only), so kept for budget machines;
-                    only prefers-reduced-motion skips it. */}
+                {/* Position 5 of the sequence: the general festival film, in
+                    the orb after 5 s of countdown. Mounted once at the orb
+                    root, faded in when the "video" choice is active. Tapping
+                    the orb (or the blurb button) plays it fullscreen via
+                    requestOrbFullscreen. On-demand content (no autoplay,
+                    metadata-only), so kept for budget machines. */}
                 {!lite && (
                   <video
                     ref={orbVideoRef}
-                    src="/orb/fmm-2026-film.mp4"
+                    src="/orb/festival-orbe.mp4"
                     muted
                     loop
                     playsInline
