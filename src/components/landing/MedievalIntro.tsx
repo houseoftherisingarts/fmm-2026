@@ -379,7 +379,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
       {!leaving && (
         <motion.div
           key="medieval-intro"
-          className="fixed inset-0 z-[70]"
+          className="mi-overlay fixed inset-x-0 top-0 z-[70]"
           style={{ background: '#04060b' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
