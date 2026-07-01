@@ -98,8 +98,10 @@ const HomeWithIntro: React.FC = () => {
   // Reduced-motion skips the prologue by default — but an explicit ?intro in
   // the URL forces it to play even under reduced-motion (handy for previewing
   // the cinematic hero without toggling the OS setting). Placeholder/presale
-  // mode keeps the knight intro: it hands off to the pre-sale orb afterward.
-  const skipIntro = reduce;
+  // mode keeps the knight intro even under reduced-motion: it's the whole
+  // teaser, and Alex runs with reduced-motion on (see fmm_orb_logo_video rule).
+  const presale = SITE_MODE === 'placeholder';
+  const skipIntro = reduce && !presale;
   const showIntro = force || (!entered && !skipIntro);
 
   const handleEnter = () => {
