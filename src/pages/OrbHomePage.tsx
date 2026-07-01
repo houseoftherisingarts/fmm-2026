@@ -1226,6 +1226,11 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           </div>
         </div>
 
+        {/* Masthead scrim — on scrolling mobile/short viewports the content
+            slides under the fixed wordmark; this top fade keeps the wordmark
+            legible and dissolves the incoming text instead of colliding. */}
+        <div className="orb-topscrim" aria-hidden="true" />
+
         {/* Top-left wordmark — logo only (the title page below carries the
             "Caravanes & Saltimbanques" edition name in full). */}
         {presale ? (
