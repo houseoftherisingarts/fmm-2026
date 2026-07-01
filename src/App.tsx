@@ -85,6 +85,87 @@ const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeh
 const OrbHome: React.FC = () =>
   SITE_MODE === 'placeholder' ? <OrbHomePage presale /> : <OrbHomePage />;
 
+// App-level rotate-to-landscape prompt. Lives at the root (not inside the orb)
+// so it also covers the cinematic intro — otherwise a portrait phone sees the
+// intro first and never gets the prompt. Pure-CSS orientation gate: it shows on
+// narrow portrait and vanishes the instant the device is turned to landscape.
+// Its <style> is always in the DOM (unlike the orb's), so it works during the
+// intro too. Placeholder/teaser only for now.
+const RotatePrompt: React.FC = () => {
+  const { lang } = useUI();
+  if (SITE_MODE !== 'placeholder') return null;
+  return (
+    <div className="fmm-rotate-prompt" aria-live="polite">
+      <div className="fmm-rotate-inner">
+        <svg
+          className="fmm-rotate-icon"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="8" y="2" width="8" height="20" rx="1.8" />
+          <path d="M11 5h2" />
+        </svg>
+        <p className="fmm-rotate-title">
+          {lang === 'EN' ? 'Rotate your device' : 'Tourne ton appareil'}
+        </p>
+        <p className="fmm-rotate-sub">
+          {lang === 'EN'
+            ? 'for the full festival experience'
+            : 'pour vivre l’expérience du festival'}
+        </p>
+      </div>
+      <style>{`
+        .fmm-rotate-prompt { display: none; }
+        @media (max-width: 900px) and (orientation: portrait) {
+          .fmm-rotate-prompt {
+            display: flex;
+            position: fixed;
+            inset: 0;
+            z-index: 2147483000;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            background:
+              radial-gradient(ellipse at 50% 38%, rgba(184,106,42,0.20), transparent 62%),
+              rgba(9,11,18,0.97);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+          }
+        }
+        .fmm-rotate-inner {
+          display: flex; flex-direction: column; align-items: center;
+          gap: 1rem; max-width: 20rem;
+        }
+        .fmm-rotate-icon {
+          width: 72px; height: 72px; color: #d8b46a;
+          transform-origin: 50% 50%;
+          animation: fmmRotateHint 2.6s ease-in-out infinite;
+        }
+        @keyframes fmmRotateHint {
+          0%, 50%   { transform: rotate(0deg); }
+          72%, 100% { transform: rotate(-90deg); }
+        }
+        .fmm-rotate-title {
+          font-family: 'Cinzel', 'Cormorant Garamond', serif;
+          text-transform: uppercase; letter-spacing: 0.12em;
+          color: #f4ece0; font-size: clamp(1.2rem, 5.6vw, 1.6rem);
+          margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+        }
+        .fmm-rotate-sub {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-style: italic; color: rgba(244,236,224,0.72);
+          font-size: 1rem; line-height: 1.35; margin: 0;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .fmm-rotate-icon { animation: none; transform: rotate(-90deg); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 // `/` shows the cinematic medieval intro once per session, then hands off to
 // the real home (OrbHomePage) which mounts underneath. Reduced-motion and
 // placeholder mode skip the intro entirely.
