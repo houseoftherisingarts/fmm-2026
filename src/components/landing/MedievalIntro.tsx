@@ -401,7 +401,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
           {phase === 'scroll' && (
           <div ref={trackRef} onScroll={onScroll} className="absolute inset-0 overflow-y-auto overflow-x-hidden">
             <div style={{ height: '480vh', position: 'relative' }}>
-              <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
+              <div className="mi-stage" style={{ position: 'sticky', top: 0, overflow: 'hidden' }}>
                 {/* idle torch loop — seamless native loop, no scroll needed */}
                 <motion.video
                   ref={idleRef}
