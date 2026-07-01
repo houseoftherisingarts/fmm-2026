@@ -721,7 +721,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             content column scrolls vertically (overflow-y-auto) while the
             atmospheric backdrop stays pinned behind it. Extra bottom padding
             clears the scroll cue. Desktop keeps the locked full-height grid. */}
-        <div className="relative z-10 max-w-[1500px] h-full mx-auto px-8 md:px-20 lg:px-24 pt-12 pb-24 md:py-10 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 items-stretch overflow-y-auto overflow-x-hidden overscroll-contain md:overflow-visible">
+        <div className="orb-fit relative z-10 max-w-[1500px] h-full mx-auto px-8 md:px-20 lg:px-24 pt-12 pb-24 md:py-10 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 items-stretch overflow-y-auto overflow-x-hidden overscroll-contain md:overflow-visible">
 
           {/* ── LEFT — eyebrow, list of choices, confirm CTA ───────────── */}
           {/* 2-row grid: title+list float centered in the 1fr row, CTA sits
