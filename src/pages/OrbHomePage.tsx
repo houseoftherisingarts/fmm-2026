@@ -1536,9 +1536,9 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             /* "Bientôt disponible" block: shrink, drop the secondary sub-line. */
             .orb-list > p:first-child { font-size: 1.25rem !important; margin: 0 !important; }
             .orb-list > p:last-child { display: none !important; }
-            /* CTA: compact, no top gap. */
-            .orb-cta { padding-top: 0 !important; }
-            .orb-cta button { padding: 0.75rem 1.9rem !important; font-size: 0.78rem !important; }
+            /* CTA: raised off the bottom, a touch larger. */
+            .orb-cta { padding-top: 0 !important; padding-bottom: 1.35rem !important; }
+            .orb-cta button { padding: 0.95rem 2.4rem !important; font-size: 0.95rem !important; }
             /* Orb: size to the short viewport so it + the overlaid countdown
                fit without pushing the CTA off-screen. */
             .orb-wrap { gap: 0 !important; }
