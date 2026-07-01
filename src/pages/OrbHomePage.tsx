@@ -798,7 +798,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                   className="font-display title-medieval uppercase text-ivory tracking-[0.04em] leading-[1.05] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
                   style={{ fontSize: 'clamp(2.1rem, 3.6vw, 3.4rem)' }}
                 >
-                  {lang === 'FR' ? 'Bientôt disponible' : 'Coming soon'}
+                  {lang === 'FR' ? 'Site bientôt disponible' : 'Website coming soon'}
                 </p>
                 <p
                   className="font-editorial italic text-ivory-soft/70 mt-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
