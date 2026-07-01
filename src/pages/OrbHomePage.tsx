@@ -1590,7 +1590,8 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           }
 
           @media (prefers-reduced-motion: reduce) {
-            .orb-scroll-cue-arrow { animation: none !important; opacity: 0.9; }
+            .orb-chevron { animation: none !important; opacity: 0.9; }
+            .orb-scroll-cue-label { animation: none !important; opacity: 0.95; }
           }
           @media (prefers-reduced-motion: reduce) {
             .orb-img-active { animation: none !important; }
