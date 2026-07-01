@@ -514,6 +514,18 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                         {t}
                       </motion.div>
                     ))}
+                    {/* Mobile only: the scroll cue lives under the wordmark,
+                        left-aligned. On a short landscape viewport the centered
+                        bottom cue sat over the knight and got cut off. */}
+                    <button
+                      type="button"
+                      onClick={playSequence}
+                      aria-label="Lancer la séquence d'introduction"
+                      className="mi-cue-left mt-5 rounded outline-none focus-visible:ring-2 focus-visible:ring-[#D7DEE8]"
+                      style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                    >
+                      <ScrollCue align="left" />
+                    </button>
                   </motion.div>
                 </div>
 
