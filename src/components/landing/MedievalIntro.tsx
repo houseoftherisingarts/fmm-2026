@@ -544,7 +544,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
               <video
                 ref={festivalRef}
                 className="absolute inset-0 h-full w-full object-cover"
-                src={FESTIVAL}
+                src={INTRO_CARAVANES}
                 playsInline
                 preload="auto"
                 onEnded={enterSite}
