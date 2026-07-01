@@ -1533,6 +1533,74 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           .orb-list::-webkit-scrollbar-track { background: transparent; }
           .orb-list::-webkit-scrollbar-thumb { background: rgba(176,141,58,0.3); border-radius: 2px; }
           .orb-list::-webkit-scrollbar-thumb:hover { background: rgba(176,141,58,0.55); }
+
+          /* ── Mobile scroll cue ──────────────────────────────────────
+             Hidden by default; shown on small screens, but never in
+             narrow portrait (the rotate prompt takes over there). */
+          .orb-scroll-cue { display: none; }
+          @media (max-width: 767px) {
+            .orb-scroll-cue {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.3rem;
+              position: absolute;
+              left: 50%;
+              bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+              transform: translateX(-50%);
+              z-index: 45;
+              pointer-events: none;
+            }
+          }
+          @media (max-width: 767px) and (orientation: portrait) {
+            .orb-scroll-cue { display: none; }
+          }
+          .orb-scroll-cue-arrow {
+            animation: orbScrollBob 1.8s ease-in-out infinite;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.85));
+          }
+          @keyframes orbScrollBob {
+            0%, 100% { transform: translateY(0);   opacity: 0.5; }
+            50%      { transform: translateY(5px); opacity: 1;   }
+          }
+
+          /* ── Mobile rotate-to-landscape prompt ──────────────────────
+             Orientation-gated so it vanishes the moment the device is
+             turned. Deliberately NOT behind prefers-reduced-motion — the
+             prompt itself must always appear; only its icon spin is muted. */
+          .orb-rotate-prompt { display: none; }
+          @media (max-width: 767px) and (orientation: portrait) {
+            .orb-rotate-prompt {
+              display: flex;
+              position: fixed;
+              inset: 0;
+              z-index: 150;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              background:
+                radial-gradient(ellipse at 50% 38%, rgba(184,106,42,0.18), transparent 62%),
+                rgba(9,11,18,0.95);
+              -webkit-backdrop-filter: blur(6px);
+              backdrop-filter: blur(6px);
+            }
+          }
+          .orb-rotate-icon {
+            width: 66px;
+            height: 66px;
+            color: var(--color-brass-soft);
+            transform-origin: 50% 50%;
+            animation: orbRotateHint 2.6s ease-in-out infinite;
+          }
+          @keyframes orbRotateHint {
+            0%, 50%   { transform: rotate(0deg);   }
+            72%, 100% { transform: rotate(-90deg); }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .orb-scroll-cue-arrow { animation: none !important; opacity: 0.85; }
+            .orb-rotate-icon { animation: none !important; transform: rotate(-90deg); }
+          }
           @media (prefers-reduced-motion: reduce) {
             .orb-img-active { animation: none !important; }
             .orb-shine  { animation: none !important; }
