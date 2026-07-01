@@ -528,7 +528,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                       className="mi-cue-left mt-5 rounded outline-none focus-visible:ring-2 focus-visible:ring-[#D7DEE8]"
                       style={{ pointerEvents: 'auto', cursor: 'pointer' }}
                     >
-                      <ScrollCue align="left" />
+                      <ScrollCue />
                     </button>
                   </motion.div>
                 </div>
