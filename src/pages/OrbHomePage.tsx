@@ -1534,11 +1534,25 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           .orb-list::-webkit-scrollbar-thumb { background: rgba(176,141,58,0.3); border-radius: 2px; }
           .orb-list::-webkit-scrollbar-thumb:hover { background: rgba(176,141,58,0.55); }
 
+          /* ── Short-viewport collapse ─────────────────────────────────
+             A phone in landscape is wide (trips md:) but only ~390 px tall,
+             so the two-column orb overflows. On any short viewport, collapse
+             to a single scrollable column and clear the top-left wordmark. */
+          @media (max-height: 600px) {
+            .orb-fit {
+              grid-template-columns: 1fr !important;
+              overflow-y: auto !important;
+              padding-top: 5.5rem;
+              padding-bottom: 6rem;
+              align-items: start;
+            }
+          }
+
           /* ── Mobile scroll cue ──────────────────────────────────────
-             Hidden by default; shown on small screens, but never in
-             narrow portrait (the rotate prompt takes over there). */
+             Shown on small OR short viewports (portrait phones excepted —
+             the rotate prompt owns that state). */
           .orb-scroll-cue { display: none; }
-          @media (max-width: 767px) {
+          @media (max-width: 767px), (max-height: 600px) {
             .orb-scroll-cue {
               display: flex;
               flex-direction: column;
