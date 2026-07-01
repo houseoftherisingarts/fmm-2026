@@ -1529,7 +1529,10 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             .orb-title { padding-top: 0 !important; transform: none !important; }
             .orb-title-eyebrow { font-size: 0.95rem !important; margin-bottom: 0.3rem !important; }
             .orb-title-hero > span { font-size: clamp(1.3rem, 3.3vw, 1.9rem) !important; }
-            .orb-dates { font-size: 1.05rem !important; }
+            .orb-dates { font-size: 1.3rem !important; }
+            /* Everything fits this condensed layout, so there is nothing below
+               the fold to scroll to — the scroll cue would mislead. Hide it. */
+            .orb-scroll-cue { display: none !important; }
             /* "Bientôt disponible" block: shrink, drop the secondary sub-line. */
             .orb-list > p:first-child { font-size: 1.25rem !important; margin: 0 !important; }
             .orb-list > p:last-child { display: none !important; }
