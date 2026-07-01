@@ -1333,19 +1333,18 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             the teaser scrolls. Shown on small screens only, and suppressed in
             narrow portrait (the rotate prompt owns that state). */}
         <div className="orb-scroll-cue" aria-hidden="true">
-          <span className="font-display title-medieval uppercase text-[9px] tracking-[0.4em] text-[var(--color-brass-soft)] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+          <span className="orb-scroll-cue-label font-display title-medieval uppercase text-[12px] tracking-[0.5em] text-ivory drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             {lang === 'FR' ? 'Défiler' : 'Scroll'}
           </span>
           <svg
             className="orb-scroll-cue-arrow"
-            width="22" height="30" viewBox="0 0 22 30"
-            fill="none" stroke="var(--color-amber-glow)" strokeWidth="1.5"
+            width="34" height="40" viewBox="0 0 34 40"
+            fill="none" stroke="var(--color-amber-glow)" strokeWidth="2.6"
             strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
           >
-            {/* diamond finial + shaft + arrowhead — a slim medieval arrow */}
-            <path d="M11 2l2.4 2.4L11 6.8 8.6 4.4z" />
-            <path d="M11 6v16" />
-            <path d="M5 17l6 6 6-6" />
+            {/* cascading double chevron — clearly reads "scroll down" */}
+            <path className="orb-chevron orb-chevron-1" d="M6 9l11 10 11-10" />
+            <path className="orb-chevron orb-chevron-2" d="M6 21l11 10 11-10" />
           </svg>
         </div>
 
