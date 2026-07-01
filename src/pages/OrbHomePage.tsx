@@ -793,13 +793,13 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               <div className="orb-list min-h-0">
                 <p
                   className="font-display title-medieval uppercase text-ivory tracking-[0.04em] leading-[1.05] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
-                  style={{ fontSize: 'clamp(1.3rem, 2.2vw, 2rem)' }}
+                  style={{ fontSize: 'clamp(2.1rem, 3.6vw, 3.4rem)' }}
                 >
                   {lang === 'FR' ? 'Bientôt disponible' : 'Coming soon'}
                 </p>
                 <p
                   className="font-editorial italic text-ivory-soft/70 mt-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
-                  style={{ fontSize: 'clamp(0.95rem, 1.2vw, 1.1rem)' }}
+                  style={{ fontSize: 'clamp(1.15rem, 1.7vw, 1.55rem)' }}
                 >
                   {lang === 'FR'
                     ? 'Le site complet du festival arrive sous peu.'
