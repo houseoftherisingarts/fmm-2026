@@ -717,7 +717,11 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[rgba(107,31,31,0.22)] via-[rgba(184,106,42,0.05)] to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-[1500px] h-full mx-auto px-8 md:px-20 lg:px-24 py-12 md:py-10 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 items-stretch">
+        {/* On mobile the two blocks stack taller than the viewport, so the
+            content column scrolls vertically (overflow-y-auto) while the
+            atmospheric backdrop stays pinned behind it. Extra bottom padding
+            clears the scroll cue. Desktop keeps the locked full-height grid. */}
+        <div className="relative z-10 max-w-[1500px] h-full mx-auto px-8 md:px-20 lg:px-24 pt-12 pb-24 md:py-10 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 items-stretch overflow-y-auto overflow-x-hidden overscroll-contain md:overflow-visible">
 
           {/* ── LEFT — eyebrow, list of choices, confirm CTA ───────────── */}
           {/* 2-row grid: title+list float centered in the 1fr row, CTA sits
