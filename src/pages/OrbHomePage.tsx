@@ -1578,42 +1578,8 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
             50%      { transform: translateY(5px); opacity: 1;   }
           }
 
-          /* ── Mobile rotate-to-landscape prompt ──────────────────────
-             Orientation-gated so it vanishes the moment the device is
-             turned. Deliberately NOT behind prefers-reduced-motion — the
-             prompt itself must always appear; only its icon spin is muted. */
-          .orb-rotate-prompt { display: none; }
-          @media (max-width: 767px) and (orientation: portrait) {
-            .orb-rotate-prompt {
-              display: flex;
-              position: fixed;
-              inset: 0;
-              z-index: 150;
-              align-items: center;
-              justify-content: center;
-              text-align: center;
-              background:
-                radial-gradient(ellipse at 50% 38%, rgba(184,106,42,0.18), transparent 62%),
-                rgba(9,11,18,0.95);
-              -webkit-backdrop-filter: blur(6px);
-              backdrop-filter: blur(6px);
-            }
-          }
-          .orb-rotate-icon {
-            width: 66px;
-            height: 66px;
-            color: var(--color-brass-soft);
-            transform-origin: 50% 50%;
-            animation: orbRotateHint 2.6s ease-in-out infinite;
-          }
-          @keyframes orbRotateHint {
-            0%, 50%   { transform: rotate(0deg);   }
-            72%, 100% { transform: rotate(-90deg); }
-          }
-
           @media (prefers-reduced-motion: reduce) {
-            .orb-scroll-cue-arrow { animation: none !important; opacity: 0.85; }
-            .orb-rotate-icon { animation: none !important; transform: rotate(-90deg); }
+            .orb-scroll-cue-arrow { animation: none !important; opacity: 0.9; }
           }
           @media (prefers-reduced-motion: reduce) {
             .orb-img-active { animation: none !important; }
