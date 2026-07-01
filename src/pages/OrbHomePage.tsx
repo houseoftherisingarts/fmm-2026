@@ -1234,7 +1234,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
         {/* Top-left wordmark — logo only (the title page below carries the
             "Caravanes & Saltimbanques" edition name in full). */}
         {presale ? (
-          <div className="absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3">
+          <div className="orb-wordmark absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3">
             <img
               decoding="async"
               src={SITE.logoWhite}
