@@ -1,242 +1,236 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/marche</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/marche" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/market" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/marche" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/market</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/marche" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/market" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/marche" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/activites</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/activites" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/activities" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/activites" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/activities</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/nourriture</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/food</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/jeunesse</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/youth</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/musique</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/music</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/chevaux</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/horses</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/apprendre</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/learn</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/activites" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/activities" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/activites" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/hebergement</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/hebergement" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/lodging" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/hebergement" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/lodging</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/hebergement" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/lodging" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/hebergement" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/partenaires</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/partenaires" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/partners" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/partenaires" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/partners</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/partenaires" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/partners" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/partenaires" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/benevole</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/benevole" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/volunteer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/benevole" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/volunteer</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/benevole" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/volunteer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/benevole" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/histoire</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/histoire" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/history" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/histoire" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/history</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/histoire" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/history" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/histoire" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/mariages</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/mariages" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/weddings" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/mariages" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/weddings</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/groupes</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/groups</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/mariages" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/weddings" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/mariages" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/accueil</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/accueil" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/accueil" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/accueil" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/accueil</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/communaute</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.festivalmedievaldemontpellier.org/en/community</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/accueil" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/accueil" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/accueil" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/ressources</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/ressources" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/resources" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/ressources" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/resources</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/ressources" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/resources" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/ressources" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/contact</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/contact" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/contact" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/contact</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/contact" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/contact" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/jeunesse/hnefatafl</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/jeunesse/hnefatafl" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/youth/hnefatafl" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/jeunesse/hnefatafl" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/youth/hnefatafl</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/jeunesse/hnefatafl" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/youth/hnefatafl" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/jeunesse/hnefatafl" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/politique-de-confidentialite</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/politique-de-confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/politique-de-confidentialite" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.festivalmedievaldemontpellier.org/en/privacy</loc>
-    <lastmod>2026-05-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://www.festivalmedievaldemontpellier.org/politique-de-confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://www.festivalmedievaldemontpellier.org/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.festivalmedievaldemontpellier.org/politique-de-confidentialite" />
+    <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
