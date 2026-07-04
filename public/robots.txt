@@ -1,5 +1,15 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /compte
+Disallow: /en/account
+Disallow: /messages
+Disallow: /en/messages
+Disallow: /espace-benevole
+Disallow: /en/volunteer-space
+Disallow: /profil/
+Disallow: /en/profile/
+Disallow: /communaute
+Disallow: /en/community
 
 Sitemap: https://www.festivalmedievaldemontpellier.org/sitemap.xml
