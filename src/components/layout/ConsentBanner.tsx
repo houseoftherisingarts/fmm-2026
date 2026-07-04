@@ -61,7 +61,7 @@ const ConsentBanner: React.FC = () => {
               </button>
               <button
                 onClick={() => choose('declined')}
-                className="flex-1 px-4 py-2 border border-stone-light/40 text-parchment hover:border-brass transition font-sans text-xs uppercase tracking-wider rounded-card"
+                className="flex-1 min-h-[44px] px-4 py-2 border border-stone-light/40 text-parchment hover:border-brass transition font-sans text-xs uppercase tracking-wider rounded-card"
               >
                 {t.decline}
               </button>
