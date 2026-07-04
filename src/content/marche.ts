@@ -112,8 +112,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Happiness is better when shared. Forêts & Papilles is a story of sharing and passion — passing on a love of nature and the ancestral knowledge of wild foraging.',
     image: '/wix/marche/a2d1dca3.jpg',
-    href: 'https://foretspapilles.example.ca',
-    cta: { FR: 'Entrer dans la forêt', EN: 'Step into the forest' },
+    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
   },
 ];
 
