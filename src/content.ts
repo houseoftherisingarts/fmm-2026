@@ -22,7 +22,7 @@ export const SITE = {
     instagram: 'https://www.instagram.com/festivalmedievaldemontpellier/',
   },
   operator: 'Le Salon des Inconnus',
-  operatorUrl: 'http://www.lesalondesinconnus.com',
+  operatorUrl: 'https://www.lesalondesinconnus.com',
   logo: '/fmm-logo-embossed-silver.png',
   logoWhite: '/fmm-logo-embossed-silver.png',
 };
