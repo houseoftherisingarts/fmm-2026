@@ -231,7 +231,7 @@ const AdminPage: React.FC = () => {
   if (!isFirebaseReady) {
     return (
       <main className="min-h-screen bg-midnight-deep text-ivory flex items-center justify-center px-6">
-        <SEO title="Admin" />
+        <SEO title="Admin" noindex />
         <div className="max-w-md text-center glass-light rounded-lg-card p-8">
           <h1 className="font-display title-medieval text-3xl text-brass mb-4">Admin</h1>
           <p className="font-editorial text-ivory-soft mb-4">
