@@ -82,7 +82,7 @@ const PublicProfilePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={`${profile.displayName} · ${lang === 'FR' ? 'Profil bénévole' : 'Volunteer profile'}`} />
+      <SEO title={`${profile.displayName} · ${lang === 'FR' ? 'Profil bénévole' : 'Volunteer profile'}`} noindex />
 
       <div className="min-h-screen text-ivory">
         {/* Hero band */}
