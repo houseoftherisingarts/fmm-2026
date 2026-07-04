@@ -226,6 +226,13 @@ service cloud.firestore {
                'admin@festivalmedievaldemontpellier.org',
                'alex@lesalondesinconnus.com'
              ]
+        // Lock the doc shape: no cc/bcc/from smuggling, no extra fields —
+        // otherwise this public lane becomes an open relay on our SMTP.
+        && request.resource.data.keys().hasOnly(['to', 'message', 'queuedAt', 'replyTo'])
+        && request.resource.data.message.keys().hasOnly(['subject', 'text', 'html'])
+        && (!('replyTo' in request.resource.data)
+            || (request.resource.data.replyTo is string
+                && request.resource.data.replyTo.size() < 200))
         && request.resource.data.message.subject is string
         && request.resource.data.message.subject.matches('\\[Bug FMM\\].*');
     }
