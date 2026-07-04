@@ -64,7 +64,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'A jewel of Quebec craftsmanship, Artisans d’Azure products are designed by LARPers, for LARPers. Special attention to durability and practicality — leather armour and accessories, premium and custom garments, composite metal-and-leather armour.',
     image: '/wix/marche/2c7e6c33.jpg',
-    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
+    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
   },
   {
     id: 'chantelame-ariane',
@@ -80,7 +80,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Deep in the northern woods, far from electricity and tech, sits a yurt housing a forge and a weaving workshop. Listen for the friendly call — that’s how you’ll know you’ve found Ariane and Aslak’s Autonomous Viking Clan.',
     image: '/wix/marche/0b4c7ac8.jpg',
-    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
+    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
   },
   {
     id: 'mandragores',
@@ -96,7 +96,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Workshops, crafts, jewellery, handmade soaps and care products inspired by legend and poetry. 100% essential oils, all natural, handmade with Quebec ingredients.',
     image: '/wix/marche/758c6f64.jpg',
-    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
+    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
   },
   {
     id: 'forets-papilles',
@@ -112,7 +112,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Happiness is better when shared. Forêts & Papilles is a story of sharing and passion — passing on a love of nature and the ancestral knowledge of wild foraging.',
     image: '/wix/marche/a2d1dca3.jpg',
-    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
+    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
   },
 ];
 
@@ -152,7 +152,7 @@ export const DIGITAL_VENDORS: MarcheKiosk[] = [
     bioEN:
       'For full immersion, sew your own medieval garb. Julie-Chantal offers a variety of sewing patterns and digital tools to help you costume the whole family.',
     image: '/wix/marche/c8a35365.jpg',
-    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
+    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
     promo: 'FMM20',
   },
 ];
