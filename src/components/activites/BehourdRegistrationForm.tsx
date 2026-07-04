@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Swords, Send, CheckCircle2, ExternalLink, Shield } from 'lucide-react';
 import { submitBehourdApplication, type BehourdApplication, type WeightClass, type SkillLevel } from '../../firebase/behourd';
 
-const ZEFFY_BEHOURD_URL =
-  import.meta.env.VITE_ZEFFY_BEHOURD_URL ||
-  'https://www.zeffy.com/';
+// No fallback: without a real Zeffy form URL we must not send the
+// participant to zeffy.com's generic homepage believing they're paying.
+const ZEFFY_BEHOURD_URL: string | null =
+  import.meta.env.VITE_ZEFFY_BEHOURD_URL || null;
 
 interface Props {
   lang: 'FR' | 'EN';
