@@ -34,21 +34,27 @@ service firebase.storage {
     // Each merchant uploads their own booth photos under their uid.
     // Publicly readable so the marketplace can render them; only
     // the owner or an admin can write.
+    // Owner uploads are size-capped: deletes (resource == null) stay
+    // allowed, uploads can't be used to rack up storage/bandwidth costs.
     match /vendors/{uid}/{allPaths=**} {
       allow read:  if true;
-      allow write: if isOwner(uid) || isAdmin();
+      allow write: if (isOwner(uid) || isAdmin())
+        && (request.resource == null || request.resource.size < 20 * 1024 * 1024);
     }
 
     // ── Musician demos / press photos ──────────────────────────
+    // Larger cap: demos can be audio files.
     match /musicians/{uid}/{allPaths=**} {
       allow read:  if true;
-      allow write: if isOwner(uid) || isAdmin();
+      allow write: if (isOwner(uid) || isAdmin())
+        && (request.resource == null || request.resource.size < 50 * 1024 * 1024);
     }
 
     // ── User avatars ────────────────────────────────────────────
     match /users/{uid}/{allPaths=**} {
       allow read:  if true;
-      allow write: if isOwner(uid) || isAdmin();
+      allow write: if (isOwner(uid) || isAdmin())
+        && (request.resource == null || request.resource.size < 10 * 1024 * 1024);
     }
 
     // Deny everything else by default.
