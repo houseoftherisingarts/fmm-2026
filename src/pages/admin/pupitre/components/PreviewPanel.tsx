@@ -283,7 +283,7 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
               const isParchment = state.paperStyle === 'parchment';
               const bgStyle = isParchment 
                 ? {
-                    // Local texture — the old CDN parchment.png 404'd; this is
+                    // Local texture: the old CDN parchment.png 404'd, so this is
                     // transparenttextures' natural-paper served from /public.
                     backgroundImage: 'url("/textures/parchment.png"), linear-gradient(to bottom right, #f7ecd7, #dfcdab)',
                     boxShadow: '0 0 50px rgba(0,0,0,0.5)'
