@@ -203,7 +203,7 @@ const AdminPage: React.FC = () => {
     const isPreviewingDev = selectedRole !== 'super';
     return (
       <>
-        <SEO title={`Admin (DEV) · ${ROLE_LABELS[selectedRole].FR}`} />
+        <SEO title={`Admin (DEV) · ${ROLE_LABELS[selectedRole].FR}`} noindex />
         <AdminShell
           user={BYPASS_USER}
           section={section}
