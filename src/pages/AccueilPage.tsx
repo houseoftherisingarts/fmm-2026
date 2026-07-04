@@ -430,9 +430,29 @@ const AccueilPage: React.FC = () => {
 // ─── Newsletter card (extracted for readability) ────────────────────
 interface NewsletterT { eyebrow: string; title: string; body: string; emailLabel: string; consent: string; cta: string; thanks: string }
 const NewsletterCard: React.FC<{ t: NewsletterT }> = ({ t }) => {
+  const { lang } = useUI();
   const [email, setEmail] = React.useState('');
   const [consent, setConsent] = React.useState(false);
   const [sent, setSent] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
+  const [error, setError] = React.useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !consent || busy) return;
+    setBusy(true);
+    setError(false);
+    try {
+      await addSub({ email, lang, source: 'home' });
+      setSent(true);
+    } catch (err) {
+      console.warn('[FMM] Newsletter write failed:', err);
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
