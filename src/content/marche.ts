@@ -64,8 +64,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'A jewel of Quebec craftsmanship, Artisans d’Azure products are designed by LARPers, for LARPers. Special attention to durability and practicality — leather armour and accessories, premium and custom garments, composite metal-and-leather armour.',
     image: '/wix/marche/2c7e6c33.jpg',
-    href: 'https://artisansazure.example.ca',
-    cta: { FR: 'Consulter la boutique', EN: 'Visit the shop' },
+    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
   },
   {
     id: 'chantelame-ariane',
