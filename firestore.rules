@@ -36,8 +36,12 @@ service cloud.firestore {
     }
 
     // ── Users (profiles) ─────────────────────────────────────────
+    // Owner + admin only: the doc carries email/phone, so an open
+    // signedIn() read would let any self-registered account harvest
+    // every member's contact info (decision Alex 2026-07-04). The
+    // community wall doesn't need it — posts embed authorName/hue.
     match /users/{uid} {
-      allow read:   if isOwner(uid) || isAdmin() || signedIn();  // public profile fields are readable to signed-in members
+      allow read:   if isOwner(uid) || isAdmin();
       allow create: if isOwner(uid);
       allow update: if isOwner(uid) || isAdmin();
       allow delete: if isAdmin();
