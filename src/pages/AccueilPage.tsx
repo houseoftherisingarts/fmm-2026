@@ -474,9 +474,16 @@ const NewsletterCard: React.FC<{ t: NewsletterT }> = ({ t }) => {
               className="mt-1 w-4 h-4 accent-brass" />
             <span>{t.consent}</span>
           </label>
-          <button type="submit"
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-            {t.cta} <ArrowUpRight size={14} />
+          {error && (
+            <p className="font-editorial italic text-sm text-red-400 mb-4" role="alert">
+              {lang === 'FR'
+                ? 'Une erreur est survenue, réessayez.'
+                : 'Something went wrong, please try again.'}
+            </p>
+          )}
+          <button type="submit" disabled={busy}
+            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-60 disabled:cursor-wait">
+            {busy ? (lang === 'FR' ? 'Envoi…' : 'Sending…') : t.cta} <ArrowUpRight size={14} />
           </button>
         </form>
       )}
