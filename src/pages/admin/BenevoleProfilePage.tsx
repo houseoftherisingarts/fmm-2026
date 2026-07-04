@@ -75,7 +75,7 @@ const BenevoleProfilePage: React.FC = () => {
   if (DEV_BYPASS) {
     return (
       <>
-        <SEO title={`Profil bénévole · ${b?.displayName || ''}`} />
+        <SEO title={`Profil bénévole · ${b?.displayName || ''}`} noindex />
         <AdminShell user={BYPASS_USER} section="benevoles"
           onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
           onSignOut={signOut} devBanner>
@@ -92,7 +92,7 @@ const BenevoleProfilePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={`Profil bénévole · ${b?.displayName || ''}`} />
+      <SEO title={`Profil bénévole · ${b?.displayName || ''}`} noindex />
       <AdminShell user={user} section="benevoles"
         onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
         onSignOut={signOut}>
