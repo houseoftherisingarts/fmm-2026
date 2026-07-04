@@ -283,7 +283,7 @@ const AdminPage: React.FC = () => {
   const isPreviewing = selectedRole !== actualRoleForShell;
   return (
     <>
-      <SEO title={`Admin · ${ROLE_LABELS[effectiveRole ?? 'super'].FR}`} />
+      <SEO title={`Admin · ${ROLE_LABELS[effectiveRole ?? 'super'].FR}`} noindex />
       <AdminShell
         user={user}
         section={section}
