@@ -8,6 +8,8 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  /** Private/member pages: emit robots noindex and skip the canonical. */
+  noindex?: boolean;
 }
 
 const DEFAULT_DESC: Record<'FR' | 'EN', string> = {
