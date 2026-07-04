@@ -134,6 +134,14 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
     const currentNumberRef = useRef<HTMLSpanElement | null>(null);
 
     const stRef = useRef<ScrollTrigger | null>(null);
+    // gsap.context scoped to rootRef (same pattern as apprendre/CinematicOpening):
+    // every tween/delayedCall is registered through inCtx() so ctx.revert()
+    // kills them all on unmount instead of leaking after navigation.
+    const ctxRef = useRef<ReturnType<typeof gsap.context> | null>(null);
+    const inCtx = (fn: () => void) => {
+      if (ctxRef.current) ctxRef.current.add(fn);
+      else fn();
+    };
     const lastIndexRef = useRef(index);
     const isAnimatingRef = useRef(false);
     const isSnappingRef = useRef(false);
