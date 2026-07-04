@@ -202,8 +202,10 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
       };
       measureRAF(() => {
         measureRAF(() => {
-          centerTrack(leftTrackRef.current, leftItemRefs.current, false);
-          centerTrack(rightTrackRef.current, rightItemRefs.current, true);
+          inCtx(() => {
+            centerTrack(leftTrackRef.current, leftItemRefs.current, false);
+            centerTrack(rightTrackRef.current, rightItemRefs.current, true);
+          });
         });
       });
     };
