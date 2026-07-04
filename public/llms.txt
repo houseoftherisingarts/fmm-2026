@@ -1,0 +1,34 @@
+# Festival Médiéval de Montpellier (FMM 2026)
+
+> Festival médiéval en Outaouais : édition « Caravanes & Saltimbanques », les 25, 26 et 27 septembre 2026 à Montpellier (Québec, Canada). Marché artisanal, banquet aux flambeaux, musique, tournois et chevaux. Billets en ligne via Zeffy : Passe Journée 27 $, Passe 3 Jours 65 $.
+
+Infos clés :
+- Dates : vendredi 25 au dimanche 27 septembre 2026
+- Lieu : 4 rue du Bosquet, Montpellier, Québec, Canada
+- Billetterie : en ligne via Zeffy (bouton « Acheter mes billets » sur le site)
+- Site bilingue : français par défaut, anglais sous le préfixe /en
+- Contact : https://www.festivalmedievaldemontpellier.org/contact
+
+## Pages principales (FR)
+- [Accueil](https://www.festivalmedievaldemontpellier.org/) : présentation du festival et billetterie
+- [Programmation](https://www.festivalmedievaldemontpellier.org/activites) : horaire complet sur trois jours (tournois, démonstrations, ateliers, contes, spectacles)
+- [Le Village](https://www.festivalmedievaldemontpellier.org/marche) : marché artisanal, nourriture et banquet
+- [Histoire & Apprendre](https://www.festivalmedievaldemontpellier.org/histoire) : volet historique et éducatif
+- [Mariages & Groupes](https://www.festivalmedievaldemontpellier.org/mariages) : mariages médiévaux et réservations de groupe
+- [Camping & Hébergement](https://www.festivalmedievaldemontpellier.org/hebergement) : camping sur place et hébergement local
+- [Nos Partenaires](https://www.festivalmedievaldemontpellier.org/partenaires) : commanditaires et partenaires
+- [Devenir Bénévole](https://www.festivalmedievaldemontpellier.org/benevole) : inscription des bénévoles
+
+## Main pages (EN)
+- [Home](https://www.festivalmedievaldemontpellier.org/en)
+- [Program](https://www.festivalmedievaldemontpellier.org/en/activities)
+- [The Village](https://www.festivalmedievaldemontpellier.org/en/market)
+- [History & Learning](https://www.festivalmedievaldemontpellier.org/en/history)
+- [Weddings & Groups](https://www.festivalmedievaldemontpellier.org/en/weddings)
+- [Camping & Lodging](https://www.festivalmedievaldemontpellier.org/en/lodging)
+- [Our Partners](https://www.festivalmedievaldemontpellier.org/en/partners)
+- [Volunteer](https://www.festivalmedievaldemontpellier.org/en/volunteer)
+
+## Optional
+- [Contact](https://www.festivalmedievaldemontpellier.org/contact)
+- [Politique de confidentialité](https://www.festivalmedievaldemontpellier.org/politique-de-confidentialite)
