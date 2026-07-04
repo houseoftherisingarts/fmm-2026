@@ -181,7 +181,7 @@ const BenevoleSpacePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={lang === 'FR' ? `Espace bénévole · ${fullName}` : `Volunteer space · ${fullName}`} />
+      <SEO title={lang === 'FR' ? `Espace bénévole · ${fullName}` : `Volunteer space · ${fullName}`} noindex />
 
       {/* Hero band */}
       <section className="relative pt-28 pb-10 md:pt-32 md:pb-14 overflow-hidden text-ivory"
