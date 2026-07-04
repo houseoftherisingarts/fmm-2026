@@ -66,7 +66,9 @@ const BehourdRegistrationForm: React.FC<Props> = ({ lang }) => {
       await submitBehourdApplication(payload);
       setSubmitted(true);
       // Open Zeffy in a new tab so the user can complete payment.
-      window.open(ZEFFY_BEHOURD_URL, '_blank', 'noopener,noreferrer');
+      if (ZEFFY_BEHOURD_URL) {
+        window.open(ZEFFY_BEHOURD_URL, '_blank', 'noopener,noreferrer');
+      }
     } catch (err) {
       console.error('[behourd] submit failed', err);
       setError(t.errSubmit);
