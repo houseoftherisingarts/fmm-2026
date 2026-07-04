@@ -38,13 +38,18 @@ export function hueFor(seed: string): number {
 
 export async function getPublicProfile(uid: string): Promise<PublicProfile | null> {
   if (!db) return null;
-  const [u, b] = await Promise.all([
+  // Both docs are owner/admin-read only; a member looking at someone
+  // else gets permission-denied on each. Settle them independently so
+  // one denied read doesn't throw away the other.
+  const [u, b] = await Promise.allSettled([
     getDoc(doc(db, 'users', uid)),
     getDoc(doc(db, 'benevoles', uid)),
   ]);
-  if (!u.exists() && !b.exists()) return null;
-  const user = (u.exists() ? u.data() as UserProfile : null);
-  const ben  = (b.exists() ? b.data() as BenevoleApp : null);
+  const uSnap = u.status === 'fulfilled' ? u.value : null;
+  const bSnap = b.status === 'fulfilled' ? b.value : null;
+  if (!uSnap?.exists() && !bSnap?.exists()) return null;
+  const user = (uSnap?.exists() ? uSnap.data() as UserProfile : null);
+  const ben  = (bSnap?.exists() ? bSnap.data() as BenevoleApp : null);
   return composePublicProfile(uid, user, ben);
 }
 
