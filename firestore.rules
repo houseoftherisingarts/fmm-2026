@@ -195,7 +195,18 @@ service cloud.firestore {
     match /groupes/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /jeunesse/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /contacts/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
-    match /newsletter/{docId}  { allow create: if true; allow read, update, delete: if isAdmin(); }
+    match /newsletter/{docId}  {
+      // Public create, but only the exact shape the two signup forms write —
+      // blocks arbitrary-size spam docs on the open lane.
+      allow create: if request.resource.data.keys().hasOnly(['email', 'lang', 'source', 'subscribedAt', 'unsubscribed'])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() < 200
+        && request.resource.data.email.matches('.+@.+\\..+')
+        && request.resource.data.lang in ['FR', 'EN']
+        && request.resource.data.source is string
+        && request.resource.data.source.size() < 40;
+      allow read, update, delete: if isAdmin();
+    }
     match /behourd/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /mail/{docId}        { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /bugReports/{docId}  { allow create: if true; allow read, update, delete: if isAdmin(); }
