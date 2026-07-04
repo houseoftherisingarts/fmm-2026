@@ -158,7 +158,7 @@ const MessagesPage: React.FC = () => {
 
   return (
     <>
-      <SEO title={lang === 'FR' ? 'Messages' : 'Messages'} />
+      <SEO title={lang === 'FR' ? 'Messages' : 'Messages'} noindex />
       <div className="min-h-screen text-ivory pt-20 pb-10">
         <div className="max-w-screen-xl mx-auto px-3 md:px-6">
           <div className="flex items-center gap-3 mb-4">
