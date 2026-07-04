@@ -21,6 +21,7 @@ const Footer: React.FC = () => {
   const t = FOOTER[lang];
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [subError, setSubError] = useState(false);
   const [bugOpen, setBugOpen] = useState(false);
   const cd = useCountdown(`${SITE.dates.start}T10:00:00-04:00`);
 
