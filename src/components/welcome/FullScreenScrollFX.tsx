@@ -315,12 +315,17 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
       const fs = fixedSectionRef.current;
       if (!fixed || !fs || total === 0) return;
 
-      gsap.set(bgRefs.current, { opacity: 0, scale: 1.04, yPercent: 0 });
-      if (bgRefs.current[0]) gsap.set(bgRefs.current[0], { opacity: 1, scale: 1 });
+      const ctx = gsap.context(() => {}, rootRef);
+      ctxRef.current = ctx;
 
-      wordRefs.current.forEach((words, sIdx) => {
-        words.forEach((w) => {
-          gsap.set(w, { yPercent: sIdx === index ? 0 : 100, opacity: sIdx === index ? 1 : 0 });
+      ctx.add(() => {
+        gsap.set(bgRefs.current, { opacity: 0, scale: 1.04, yPercent: 0 });
+        if (bgRefs.current[0]) gsap.set(bgRefs.current[0], { opacity: 1, scale: 1 });
+
+        wordRefs.current.forEach((words, sIdx) => {
+          words.forEach((w) => {
+            gsap.set(w, { yPercent: sIdx === index ? 0 : 100, opacity: sIdx === index ? 1 : 0 });
+          });
         });
       });
 
