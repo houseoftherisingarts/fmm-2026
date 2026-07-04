@@ -690,8 +690,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
           <div
             className="absolute inset-0 opacity-[0.04] mix-blend-overlay"
             style={{
-              backgroundImage:
-                'url("https://www.transparenttextures.com/patterns/black-linen.png")',
+              backgroundImage: 'url("/textures/black-linen.png")',
             }}
           />
           {/* Soft brass top vignette */}
