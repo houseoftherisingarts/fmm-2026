@@ -152,9 +152,8 @@ export const DIGITAL_VENDORS: MarcheKiosk[] = [
     bioEN:
       'For full immersion, sew your own medieval garb. Julie-Chantal offers a variety of sewing patterns and digital tools to help you costume the whole family.',
     image: '/wix/marche/c8a35365.jpg',
-    href: 'https://juliechantal.example.ca',
+    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
     promo: 'FMM20',
-    cta: { FR: 'Voir les patrons', EN: 'See the patterns' },
   },
 ];
 
