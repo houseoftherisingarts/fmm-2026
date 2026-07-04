@@ -25,7 +25,7 @@ const LODGINGS: Lodging[] = [
     blurbFR: 'Un de nos partenaires de longue date. Auberge victorienne et centre d’artistes — chambres, bus, yourte et espaces de camping pour la période du festival.',
     blurbEN: 'A long-time partner. Victorian inn and artists’ hub — rooms, bus, yurt and camping spots during the festival.',
     image:   '/wix/hebergement/salon-living-room.jpg',
-    website: 'http://www.lesalondesinconnus.com',
+    website: 'https://www.lesalondesinconnus.com',
     area:    'Montpellier · 10 min',
   },
   {
