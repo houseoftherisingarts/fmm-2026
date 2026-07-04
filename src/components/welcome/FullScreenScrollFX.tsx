@@ -228,59 +228,61 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
 
       const D = durations.change ?? 0.7;
 
-      // Title masked words slide
-      const outWords = wordRefs.current[from] || [];
-      const inWords = wordRefs.current[to] || [];
-      if (outWords.length) {
-        gsap.to(outWords, {
-          yPercent: down ? -100 : 100, opacity: 0,
-          duration: D * 0.6, stagger: down ? 0.03 : -0.03, ease: 'power3.out',
-        });
-      }
-      if (inWords.length) {
-        gsap.set(inWords, { yPercent: down ? 100 : -100, opacity: 0 });
-        gsap.to(inWords, {
-          yPercent: 0, opacity: 1,
-          duration: D, stagger: down ? 0.05 : -0.05, ease: 'power3.out',
-        });
-      }
-
-      // Backgrounds — fade or wipe
-      const prevBg = bgRefs.current[from];
-      const newBg = bgRefs.current[to];
-      if (bgTransition === 'fade') {
-        if (newBg) {
-          gsap.set(newBg, { opacity: 0, scale: 1.04, yPercent: down ? 1 : -1 });
-          gsap.to(newBg, { opacity: 1, scale: 1, yPercent: 0, duration: D, ease: 'power2.out' });
-        }
-        if (prevBg) {
-          gsap.to(prevBg, { opacity: 0, yPercent: down ? -parallaxAmount : parallaxAmount, duration: D, ease: 'power2.out' });
-        }
-      } else {
-        if (newBg) {
-          gsap.set(newBg, {
-            opacity: 1, clipPath: down ? 'inset(100% 0 0 0)' : 'inset(0 0 100% 0)',
-            scale: 1, yPercent: 0,
+      inCtx(() => {
+        // Title masked words slide
+        const outWords = wordRefs.current[from] || [];
+        const inWords = wordRefs.current[to] || [];
+        if (outWords.length) {
+          gsap.to(outWords, {
+            yPercent: down ? -100 : 100, opacity: 0,
+            duration: D * 0.6, stagger: down ? 0.03 : -0.03, ease: 'power3.out',
           });
-          gsap.to(newBg, { clipPath: 'inset(0 0 0 0)', duration: D, ease: 'power3.out' });
         }
-        if (prevBg) gsap.to(prevBg, { opacity: 0, duration: D * 0.8, ease: 'power2.out' });
-      }
+        if (inWords.length) {
+          gsap.set(inWords, { yPercent: down ? 100 : -100, opacity: 0 });
+          gsap.to(inWords, {
+            yPercent: 0, opacity: 1,
+            duration: D, stagger: down ? 0.05 : -0.05, ease: 'power3.out',
+          });
+        }
 
-      // Lists
-      measureAndCenterLists(to, true);
-      leftItemRefs.current.forEach((el, i) => {
-        el.classList.toggle('active', i === to);
-        gsap.to(el, { opacity: i === to ? 1 : 0.32, x: i === to ? 10 : 0, duration: D * 0.6, ease: 'power3.out' });
-      });
-      rightItemRefs.current.forEach((el, i) => {
-        el.classList.toggle('active', i === to);
-        gsap.to(el, { opacity: i === to ? 1 : 0.32, x: i === to ? -10 : 0, duration: D * 0.6, ease: 'power3.out' });
-      });
+        // Backgrounds — fade or wipe
+        const prevBg = bgRefs.current[from];
+        const newBg = bgRefs.current[to];
+        if (bgTransition === 'fade') {
+          if (newBg) {
+            gsap.set(newBg, { opacity: 0, scale: 1.04, yPercent: down ? 1 : -1 });
+            gsap.to(newBg, { opacity: 1, scale: 1, yPercent: 0, duration: D, ease: 'power2.out' });
+          }
+          if (prevBg) {
+            gsap.to(prevBg, { opacity: 0, yPercent: down ? -parallaxAmount : parallaxAmount, duration: D, ease: 'power2.out' });
+          }
+        } else {
+          if (newBg) {
+            gsap.set(newBg, {
+              opacity: 1, clipPath: down ? 'inset(100% 0 0 0)' : 'inset(0 0 100% 0)',
+              scale: 1, yPercent: 0,
+            });
+            gsap.to(newBg, { clipPath: 'inset(0 0 0 0)', duration: D, ease: 'power3.out' });
+          }
+          if (prevBg) gsap.to(prevBg, { opacity: 0, duration: D * 0.8, ease: 'power2.out' });
+        }
 
-      gsap.delayedCall(D, () => {
-        lastIndexRef.current = to;
-        isAnimatingRef.current = false;
+        // Lists
+        measureAndCenterLists(to, true);
+        leftItemRefs.current.forEach((el, i) => {
+          el.classList.toggle('active', i === to);
+          gsap.to(el, { opacity: i === to ? 1 : 0.32, x: i === to ? 10 : 0, duration: D * 0.6, ease: 'power3.out' });
+        });
+        rightItemRefs.current.forEach((el, i) => {
+          el.classList.toggle('active', i === to);
+          gsap.to(el, { opacity: i === to ? 1 : 0.32, x: i === to ? -10 : 0, duration: D * 0.6, ease: 'power3.out' });
+        });
+
+        gsap.delayedCall(D, () => {
+          lastIndexRef.current = to;
+          isAnimatingRef.current = false;
+        });
       });
     };
 
