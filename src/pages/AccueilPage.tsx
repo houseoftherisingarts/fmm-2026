@@ -465,7 +465,7 @@ const NewsletterCard: React.FC<{ t: NewsletterT }> = ({ t }) => {
       {sent ? (
         <p className="font-editorial italic text-brass">{t.thanks}</p>
       ) : (
-        <form onSubmit={(e) => { e.preventDefault(); if (email && consent) setSent(true); }}>
+        <form onSubmit={onSubmit}>
           <label className="block font-display title-medieval text-xs text-brass mb-1.5">{t.emailLabel}</label>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
             className="w-full /50 border px-3.5 py-2.5 text-sm font-sans text-ivory placeholder:text-stone focus:border-brass focus:outline-none rounded-card mb-4" />
