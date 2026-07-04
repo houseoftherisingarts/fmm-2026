@@ -368,6 +368,9 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
         ro.disconnect();
         st.kill();
         stRef.current = null;
+        // Kill every tween/delayedCall registered through inCtx().
+        ctx.revert();
+        ctxRef.current = null;
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [total, initialIndex, motionOff, bgTransition, parallaxAmount]);
