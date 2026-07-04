@@ -390,7 +390,7 @@ const App: React.FC = () => (
                 <Route path="/chevaux"     element={<Navigate to="/" replace />} />
                 <Route path="/en/horses"   element={<Navigate to="/en" replace />} />
 
-                {/* Safety net — FR slugs that circulated with a bare `/en`
+                {/* Safety net: FR slugs that circulated with a bare `/en`
                     prefix (old addLocale didn't translate slugs). Redirect
                     to the real translated EN routes. */}
                 <Route path="/en/activites"          element={<Navigate to="/en/activities" replace />} />
