@@ -6,6 +6,7 @@ import { useUI } from '../contexts/AppContext';
 import { PILLAR_BY_KEY, SITE, SPONSORS } from '../content';
 import { useCountdown } from '../lib/useCountdown';
 import { addLocale } from '../lib/locale';
+import { addSub } from '../firebase/newsletter';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 
