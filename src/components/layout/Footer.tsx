@@ -257,6 +257,13 @@ const Footer: React.FC = () => {
                   </ChevronButton>
                 </form>
               )}
+              {!submitted && subError && (
+                <p className="font-editorial italic text-sm mt-3" style={{ color: '#e08a7a' }} role="alert">
+                  {lang === 'FR'
+                    ? 'Une erreur est survenue, réessayez.'
+                    : 'Something went wrong, please try again.'}
+                </p>
+              )}
             </div>
           </div>
         </HexPanel>
