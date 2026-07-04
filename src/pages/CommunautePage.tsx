@@ -100,11 +100,14 @@ const CommunautePage: React.FC = () => {
   useEffect(() => {
     setPostsLoading(true);
     let unsub: (() => void) | null = null;
-    if (isDemo || !user) {
+    if (isDemo || (!user && SHOWCASE_IN_DEV)) {
       mockListChannelPosts(channelId).then((p) => {
         setPosts(p);
         setPostsLoading(false);
       });
+    } else if (!user) {
+      setPosts([]);
+      setPostsLoading(false);
     } else {
       unsub = subscribeChannelFeed(channelId, (p) => {
         // Merge with mock seed in dev so the UI is alive even when Firestore is empty.
