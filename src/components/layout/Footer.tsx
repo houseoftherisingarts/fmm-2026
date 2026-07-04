@@ -28,6 +28,7 @@ const Footer: React.FC = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) return;
+    setSubError(false);
     try {
       if (db && isFirebaseReady) {
         await addDoc(collection(db, 'newsletter'), {
@@ -43,7 +44,7 @@ const Footer: React.FC = () => {
       setSubmitted(true);
     } catch (err) {
       console.warn('[FMM] Newsletter write failed:', err);
-      setSubmitted(true);
+      setSubError(true);
     }
   };
 
