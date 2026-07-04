@@ -107,7 +107,7 @@ const PersonProfilePage: React.FC = () => {
   if (DEV_BYPASS) {
     return (
       <>
-        <SEO title={`Profil · ${person?.name || 'Personne'}`} />
+        <SEO title={`Profil · ${person?.name || 'Personne'}`} noindex />
         <AdminShell user={BYPASS_USER} section="matrice"
           onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
           onSignOut={signOut} devBanner>
@@ -125,7 +125,7 @@ const PersonProfilePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={`Profil · ${person?.name || 'Personne'}`} />
+      <SEO title={`Profil · ${person?.name || 'Personne'}`} noindex />
       <AdminShell user={user} section="matrice"
         onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
         onSignOut={signOut}>
