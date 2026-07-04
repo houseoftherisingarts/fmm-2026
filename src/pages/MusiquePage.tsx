@@ -73,7 +73,7 @@ const BANDS_2026: Band[] = [
 const BANDS_PAST: Band[] = [
   {
     name:  'Les Anciens',
-    image: '/wix/musique/skarazula.jpg',
+    image: '/wix/musique/skarazula.webp',
     bioFR: 'Anciens compagnons des éditions précédentes — leurs noms et leurs visages reviendront ici dès que la liste d’archives sera prête.',
     bioEN: 'Past companions from previous editions — their names and faces will return here once the archive list is ready.',
   },
@@ -198,7 +198,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
                   className="w-full h-full object-cover"
                   loading="lazy"
                   style={{ filter: imgFilter }}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.jpg'; }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
                 />
                 {/* Soft bottom vignette so the page-counter chip reads */}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
@@ -328,7 +328,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
           eyebrow={t.eyebrow}
           titleA={t.title}
           intro={t.intro1}
-          orbImage="/wix/musique/skarazula.jpg"
+          orbImage="/wix/musique/skarazula.webp"
           orbImagePosition="left center"
         />
       )}

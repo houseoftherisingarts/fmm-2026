@@ -41,7 +41,7 @@ const ORB_CHOICES: OrbChoice[] = [
   { key: 'marche',      image: '/wix/marche/47376430.jpg' },
   { key: 'histoire',    image: '/wix/histoire/03b1fe30.jpg' },
   { key: 'mariages',    image: '/wix/mariages/70dcaeae.jpg' },
-  { key: 'hebergement', image: '/wix/hebergement/salon-living-room.jpg', imagePosition: 'center 55%' },
+  { key: 'hebergement', image: '/wix/hebergement/salon-living-room.webp', imagePosition: 'center 55%' },
   { key: 'partenaires', image: '/wix/partenaires/2a2a4608.jpg' },
   { key: 'benevole',    image: '/wix/benevole/4fc431fd.jpg',   imagePosition: 'left center' },
 ];
@@ -637,9 +637,9 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               on the right of the source crops off-canvas, and so the
               right→left scroll parallax has somewhere to travel. */}
           <picture>
-            <source srcSet="/orb/caravan-2x.png" media="(min-width: 1280px)" />
+            <source srcSet="/orb/caravan-2x.webp" media="(min-width: 1280px)" />
             <img
-              src="/orb/caravan.png"
+              src="/orb/caravan.webp"
               alt=""
               aria-hidden="true"
               decoding="async"
@@ -982,7 +982,7 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
                 >
                   <div className="absolute inset-0 bg-black" />
                   <img
-                    src="/fmm-logo-embossed-silver.png"
+                    src="/fmm-logo-embossed-silver.webp"
                     alt="FMM"
                     decoding="async"
                     className="fmm-no-grade absolute left-1/2 top-[40%] w-[50%] h-[50%] object-contain"

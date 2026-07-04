@@ -24,7 +24,7 @@ export const SITE = {
   operator: 'Le Salon des Inconnus',
   operatorUrl: 'https://www.lesalondesinconnus.com',
   logo: '/fmm-logo-embossed-silver.png',
-  logoWhite: '/fmm-logo-embossed-silver.png',
+  logoWhite: '/fmm-logo-embossed-silver.webp',
 };
 
 // Slugs match the live Wix site, normalized to ASCII (no diacritics).

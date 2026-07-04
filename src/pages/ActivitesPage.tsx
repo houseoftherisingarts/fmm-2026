@@ -112,7 +112,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Démonstrations',   titleEN: 'Demonstrations',    bodyFR: 'Forge, savoirs ancestraux',                               bodyEN: 'Forge, ancestral knowledge',
     descFR: 'Forge, fonderie, gravure sur os, planage de bois ancestral, tissage. Les artisans-démonstrateurs travaillent devant vous, expliquant chaque geste hérité d’une époque où la matière était travaillée à la main.',
     descEN: 'Forge, foundry, bone engraving, ancestral wood planing, weaving. The demonstrator-artisans work in front of you, explaining each gesture handed down from an age when matter was shaped by hand.',
-    image: '/wix/activites/1eb43235.jpg', category: 'crafts' },
+    image: '/wix/activites/1eb43235.webp', category: 'crafts' },
   { titleFR: 'Joutes',           titleEN: 'Jousts',            bodyFR: 'Équestres',                                                bodyEN: 'On horseback',
     descFR: 'Joutes équestres à la lance et à l’épée. Chevaliers et destriers s’affrontent dans l’arène — une tradition millénaire remise au goût du jour.',
     descEN: 'Mounted joust with lance and sword. Knights and chargers face off in the arena — a thousand-year-old tradition brought up to date.',
@@ -742,7 +742,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 }}
               />
               <img
-                src="/characters/green-knight.png"
+                src="/characters/green-knight.webp"
                 alt={t.championName}
                 className="acti-knight-img fmm-no-grade relative w-full h-full object-contain"
                 style={{

@@ -24,7 +24,7 @@ const LODGINGS: Lodging[] = [
     name:    'Le Salon des Inconnus',
     blurbFR: 'Un de nos partenaires de longue date. Auberge victorienne et centre d’artistes — chambres, bus, yourte et espaces de camping pour la période du festival.',
     blurbEN: 'A long-time partner. Victorian inn and artists’ hub — rooms, bus, yurt and camping spots during the festival.',
-    image:   '/wix/hebergement/salon-living-room.jpg',
+    image:   '/wix/hebergement/salon-living-room.webp',
     website: 'https://www.lesalondesinconnus.com',
     area:    'Montpellier · 10 min',
   },
@@ -79,7 +79,7 @@ const HebergementPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/hebergement/tournage-camping.jpg"
+        orbImage="/wix/hebergement/tournage-camping.webp"
         orbImagePosition="center 40%"
       />
 
@@ -252,7 +252,7 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
                   alt={item.name}
                   className="w-full h-full object-cover"
                   loading="lazy"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/hebergement/tournage-camping.jpg'; }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/hebergement/tournage-camping.webp'; }}
                 />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
                 {item.area && (

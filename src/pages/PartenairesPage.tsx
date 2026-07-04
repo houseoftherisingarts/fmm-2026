@@ -161,7 +161,7 @@ const PartenairesPage: React.FC = () => {
                 }}
               />
               <img
-                src="/characters/vikings-fight.png"
+                src="/characters/vikings-fight.webp"
                 alt=""
                 className="fmm-no-grade relative w-full h-full object-contain"
                 style={{

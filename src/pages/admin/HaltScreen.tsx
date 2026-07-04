@@ -128,7 +128,7 @@ const HaltScreen: React.FC<Props> = ({
           }}
         />
         <img
-          src="/characters/halt.png"
+          src="/characters/halt.webp"
           alt="Le gardien des portes"
           className="fmm-no-grade relative w-full h-auto object-contain"
           style={{

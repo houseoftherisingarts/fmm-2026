@@ -104,7 +104,7 @@ const NotFoundPage: React.FC = () => {
             }}
           />
           <img
-            src="/characters/empty-armor.png"
+            src="/characters/empty-armor.webp"
             alt={lang === 'FR' ? 'Armure abandonnée' : 'Abandoned armour'}
             className="fmm-no-grade relative w-full h-auto object-contain"
             style={{
