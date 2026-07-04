@@ -30,7 +30,7 @@ const SEO: React.FC<Props> = ({ title, description, image, noindex }) => {
       <html lang={lang.toLowerCase()} />
       <title>{fullTitle}</title>
       <meta name="description" content={desc} />
-      <link rel="canonical" href={url} />
+      {noindex ? <meta name="robots" content="noindex,nofollow" /> : <link rel="canonical" href={url} />}
 
       <meta property="og:type" content="website" />
       <meta property="og:title" content={fullTitle} />
