@@ -209,7 +209,7 @@ const CommunautePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={lang === 'FR' ? 'Espace communauté' : 'Community space'} />
+      <SEO title={lang === 'FR' ? 'Espace communauté' : 'Community space'} noindex />
 
       <div className="min-h-screen text-ivory pt-20 pb-16">
         <div className="max-w-screen-2xl mx-auto px-3 md:px-6">
