@@ -96,8 +96,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Workshops, crafts, jewellery, handmade soaps and care products inspired by legend and poetry. 100% essential oils, all natural, handmade with Quebec ingredients.',
     image: '/wix/marche/758c6f64.jpg',
-    href: 'https://mandragores.example.ca',
-    cta: { FR: 'Consulter le grimoire', EN: 'Open the grimoire' },
+    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
   },
   {
     id: 'forets-papilles',
