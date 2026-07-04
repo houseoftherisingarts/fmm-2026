@@ -390,6 +390,22 @@ const App: React.FC = () => (
                 <Route path="/chevaux"     element={<Navigate to="/" replace />} />
                 <Route path="/en/horses"   element={<Navigate to="/en" replace />} />
 
+                {/* Safety net — FR slugs that circulated with a bare `/en`
+                    prefix (old addLocale didn't translate slugs). Redirect
+                    to the real translated EN routes. */}
+                <Route path="/en/activites"          element={<Navigate to="/en/activities" replace />} />
+                <Route path="/en/marche"             element={<Navigate to="/en/market" replace />} />
+                <Route path="/en/marche/inscription" element={<Navigate to="/en/market/registration" replace />} />
+                <Route path="/en/histoire"           element={<Navigate to="/en/history" replace />} />
+                <Route path="/en/mariages"           element={<Navigate to="/en/weddings" replace />} />
+                <Route path="/en/hebergement"        element={<Navigate to="/en/lodging" replace />} />
+                <Route path="/en/partenaires"        element={<Navigate to="/en/partners" replace />} />
+                <Route path="/en/benevole"           element={<Navigate to="/en/volunteer" replace />} />
+                <Route path="/en/compte"             element={<Navigate to="/en/account" replace />} />
+                <Route path="/en/communaute"         element={<Navigate to="/en/community" replace />} />
+                <Route path="/en/espace-benevole"    element={<Navigate to="/en/volunteer-space" replace />} />
+                <Route path="/en/musique/inscription" element={<Navigate to="/en/music/registration" replace />} />
+
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
