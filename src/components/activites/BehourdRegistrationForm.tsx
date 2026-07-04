@@ -104,14 +104,16 @@ const BehourdRegistrationForm: React.FC<Props> = ({ lang }) => {
           <CheckCircle2 size={42} className="mx-auto mb-4 text-emerald-400" />
           <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-2">{t.thanksTitle}</h3>
           <p className="font-editorial italic text-base text-ivory-soft mb-5">{t.thanksBody}</p>
-          <a
-            href={ZEFFY_BEHOURD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
-          >
-            {t.zeffyAgain} <ExternalLink size={13} />
-          </a>
+          {ZEFFY_BEHOURD_URL && (
+            <a
+              href={ZEFFY_BEHOURD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+            >
+              {t.zeffyAgain} <ExternalLink size={13} />
+            </a>
+          )}
         </motion.div>
       )}
 
