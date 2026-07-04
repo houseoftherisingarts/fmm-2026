@@ -188,7 +188,7 @@ const AdminPage: React.FC = () => {
     if (!selectedRole) {
       return (
         <>
-          <SEO title="Admin (DEV) · Chambre du Conseil" />
+          <SEO title="Admin (DEV) · Chambre du Conseil" noindex />
           <GateScreen
             actualRole={null}
             isSuperAdmin
