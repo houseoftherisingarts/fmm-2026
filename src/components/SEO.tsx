@@ -17,7 +17,7 @@ const DEFAULT_DESC: Record<'FR' | 'EN', string> = {
   EN: 'Festival Médiéval de Montpellier — September 25-27, 2026. Caravans & Players Edition. Market, banquet, music, jousts and horses in Quebec.',
 };
 
-const SEO: React.FC<Props> = ({ title, description, image }) => {
+const SEO: React.FC<Props> = ({ title, description, image, noindex }) => {
   const { lang } = useUI();
   const location = useLocation();
   const fullTitle = title ? `${title} · ${SITE.name}` : SITE.name;
