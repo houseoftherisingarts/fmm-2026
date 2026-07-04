@@ -80,8 +80,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Deep in the northern woods, far from electricity and tech, sits a yurt housing a forge and a weaving workshop. Listen for the friendly call — that’s how you’ll know you’ve found Ariane and Aslak’s Autonomous Viking Clan.',
     image: '/wix/marche/0b4c7ac8.jpg',
-    href: 'https://chantelame.example.ca',
-    cta: { FR: 'Découvrir le clan', EN: 'Meet the clan' },
+    // site web à confirmer — href retiré (placeholder example.ca qui ne résout pas)
   },
   {
     id: 'mandragores',
