@@ -265,7 +265,6 @@ const App: React.FC = () => (
           <Suspense fallback={null}>
             <SignInModal />
           </Suspense>
-          <RotatePrompt />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
