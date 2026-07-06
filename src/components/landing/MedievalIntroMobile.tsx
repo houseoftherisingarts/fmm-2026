@@ -80,7 +80,7 @@ function ScrollCue() {
 
 // Canvas frame-scrubber. The canvas fills a 16:9 band, and the source frames
 // are 16:9, so "cover" is an exact fit here — no crop, no squish.
-function BandScrubber({ progress, active }: { progress: MotionValue<number>; active: boolean }) {
+function BandScrubber({ progress, active, superSample = 1 }: { progress: MotionValue<number>; active: boolean; superSample?: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const imgs = useRef<HTMLImageElement[]>([]);
   const cur = useRef(0);
@@ -93,7 +93,13 @@ function BandScrubber({ progress, active }: { progress: MotionValue<number>; act
     if (!c) return;
     const ctx = c.getContext('2d');
     if (!ctx) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    // The band is CSS-scaled up to `superSample`× to fill the screen (Ken
+    // Burns). Rendering the canvas at only clientWidth×dpr would then be
+    // upscaled by CSS and look pixelated. So we render the backing store at
+    // clientWidth × dpr × superSample: the raster stays sharp at full zoom.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2) * Math.min(Math.max(superSample, 1), 3);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     const n = imgs.current.length;
     cur.current = progress.get() * (n - 1);
     let raf = 0;
@@ -115,7 +121,7 @@ function BandScrubber({ progress, active }: { progress: MotionValue<number>; act
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [active, progress]);
+  }, [active, progress, superSample]);
   return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
 }
 
