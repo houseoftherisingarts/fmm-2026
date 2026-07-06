@@ -300,6 +300,9 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
   // The scene video is ALREADY rolling behind the title at 25% (a "semi-fade"),
   // then fades up to full as the title leaves.
   const bandOp = useTransform(progress, [0, 0.18], [0.25, 1]);
+  // Once the title has cleared, the band pushes in (Ken Burns) from the
+  // letterboxed strip to full-screen cover, zooming into the knight + orb.
+  const bandScale = useTransform(progress, [0.16, 0.55], [1, fillScale]);
   // Scroll cue fades the instant scrolling begins.
   const cueOp = useTransform(progress, [0, 0.06], [1, 0]);
   // Fire burst — the finale over the band.
