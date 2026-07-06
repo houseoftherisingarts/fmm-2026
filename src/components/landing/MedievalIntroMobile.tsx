@@ -279,12 +279,13 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
     autoRef.current = requestAnimationFrame(step);
   }
 
-  // Opening card (crest + wordmark + dates): full at the top, rises and
-  // dissolves on scroll to reveal the scene band.
-  const cardOp = useTransform(progress, [0, 0.18, 0.28], [1, 1, 0]);
-  const cardY = useTransform(progress, [0, 0.28], ['0px', '-30px']);
-  // The scene band reveals as the card leaves.
-  const bandOp = useTransform(progress, [0.02, 0.2], [0, 1]);
+  // Opening card (crest + wordmark + dates): full at the top, then dissolves
+  // FAST on scroll (title clears before the video reaches full).
+  const cardOp = useTransform(progress, [0, 0.05, 0.13], [1, 1, 0]);
+  const cardY = useTransform(progress, [0, 0.16], ['0px', '-30px']);
+  // The scene video is ALREADY rolling behind the title at 25% (a "semi-fade"),
+  // then fades up to full as the title leaves.
+  const bandOp = useTransform(progress, [0, 0.18], [0.25, 1]);
   // Scroll cue fades the instant scrolling begins.
   const cueOp = useTransform(progress, [0, 0.06], [1, 0]);
   // Fire burst — the finale over the band.
