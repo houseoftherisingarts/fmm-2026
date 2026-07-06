@@ -1649,8 +1649,6 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               margin: 0 auto !important;
               transform: none !important;
             }
-            /* The page scrolls now, so the scroll cue is meaningful again. */
-            .orb-scroll-cue { display: flex !important; }
           }
           .orb-scroll-cue-label {
             animation: orbCuePulse 1.9s ease-in-out infinite;
