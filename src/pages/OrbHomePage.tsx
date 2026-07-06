@@ -1600,8 +1600,57 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               pointer-events: none;
             }
           }
+          /* ── Portrait phones ────────────────────────────────────────
+             Previously portrait phones were sent a "rotate your device"
+             wall and never reached this landing, so it was only ever laid
+             out for wide/short viewports. That wall is gone (the Facebook
+             in-app browser locks orientation, so it trapped users), so we
+             give portrait a real vertical stack: title, orb, choices and
+             CTA flow in a single scrolling column with nothing overlapping.
+             The atmospheric backdrop stays pinned behind (absolute inset-0
+             on the relative .orb-root, which now grows to content height). */
           @media (max-width: 767px) and (orientation: portrait) {
-            .orb-scroll-cue { display: none; }
+            .orb-root { height: auto !important; min-height: 100svh; }
+            .orb-fit {
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: stretch !important;
+              height: auto !important;
+              min-height: 100svh;
+              overflow: visible !important;
+              padding: 5.5rem 1.5rem 5rem !important;
+              gap: 2rem !important;
+            }
+            /* Left block (title + choices + CTA): natural column flow, no
+               1fr stretch row that collapsed and let the CTA ride up. */
+            .orb-left {
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 1.6rem !important;
+              min-height: 0 !important;
+            }
+            .orb-left > div:first-child {
+              transform: none !important;
+              gap: 1.15rem !important;
+            }
+            .orb-title { transform: none !important; padding-top: 0 !important; }
+            .orb-cta { padding: 0 !important; }
+            .orb-cta button { align-self: center !important; text-align: center; }
+            /* Orb block: centre the orb, size it to the width, drop the
+               desktop offsets; blurb (if any) flows below it. */
+            .orb-wrap {
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 1.5rem !important;
+              min-height: 0 !important;
+            }
+            .orb-wrap > div:first-child {
+              max-width: min(82vw, 360px) !important;
+              margin: 0 auto !important;
+              transform: none !important;
+            }
+            /* The page scrolls now, so the scroll cue is meaningful again. */
+            .orb-scroll-cue { display: flex !important; }
           }
           .orb-scroll-cue-label {
             animation: orbCuePulse 1.9s ease-in-out infinite;
