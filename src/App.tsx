@@ -109,6 +109,7 @@ function useIsMobilePortrait() {
 // placeholder mode skip the intro entirely.
 const HomeWithIntro: React.FC = () => {
   const reduce = useReducedMotion();
+  const mobilePortrait = useIsMobilePortrait();
   // ?intro in the URL forces the prologue to replay every load (handy while iterating)
   const force = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('intro');
   // Placeholder/presale mode: the knight intro IS the teaser, so it replays on
