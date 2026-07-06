@@ -58,6 +58,7 @@ const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
 const MedievalIntro    = lazy(() => import('./components/landing/MedievalIntro'));
+const MedievalIntroMobile = lazy(() => import('./components/landing/MedievalIntroMobile'));
 
 // Every pillar now has its own custom page. PillarPage shell is kept
 // as a defensive fallback; if any pillar is missing here it'll render
