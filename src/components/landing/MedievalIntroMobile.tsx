@@ -396,7 +396,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
                           autoPlay muted loop playsInline preload="auto"
                         />
                       )}
-                    </div>
+                    </motion.div>
                   </motion.div>
 
                   {/* ── TOP: opening card (crest + wordmark + dates) ── */}
