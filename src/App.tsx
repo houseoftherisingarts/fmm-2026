@@ -146,7 +146,9 @@ const HomeWithIntro: React.FC = () => {
       {(entered || (skipIntro && !showIntro)) && <OrbHome />}
       {showIntro && (
         <Suspense fallback={null}>
-          <MedievalIntro onEnter={handleEnter} />
+          {mobilePortrait
+            ? <MedievalIntroMobile onEnter={handleEnter} />
+            : <MedievalIntro onEnter={handleEnter} />}
         </Suspense>
       )}
     </>
