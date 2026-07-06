@@ -135,6 +135,20 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
   const [bufferFilm, setBufferFilm] = useState(false);
   const [needsUnmute, setNeedsUnmute] = useState(false);
   const [scrollStarted, setScrollStarted] = useState(false);
+  // Scale needed for the 16:9 band to grow past the letterbox and cover the
+  // whole portrait screen (Ken Burns push-in once the title is gone). Derived
+  // from the real viewport so it fills any phone; a hair of overscan (1.04).
+  const [fillScale, setFillScale] = useState(4);
+  useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth, h = window.innerHeight;
+      const bandH = (w * 9) / 16;
+      setFillScale(Math.max(1, (h / bandH) * 1.04));
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
 
   useEffect(() => {
     if (scrollStarted) { idleRef.current?.pause(); fireRef.current?.pause(); }
