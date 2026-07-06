@@ -338,12 +338,13 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
                   {/* warm-black backdrop with a soft mist + grain, top and bottom */}
                   <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(120% 80% at 50% 42%, rgba(28,20,14,0.55) 0%, rgba(10,8,8,0) 60%), #0a0808' }} />
 
-                  {/* ── MIDDLE: cinematic 16:9 band, centred ── */}
+                  {/* ── MIDDLE: cinematic 16:9 band, centred; pushes in to
+                      full-screen cover once the title clears ── */}
                   <motion.div
-                    className="absolute inset-x-0 top-1/2 -translate-y-1/2"
+                    className="absolute inset-0 flex items-center justify-center"
                     style={{ opacity: bandOp }}
                   >
-                    <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
+                    <motion.div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9', scale: bandScale }}>
                       {/* idle breathing loop */}
                       <motion.video
                         ref={idleRef}
