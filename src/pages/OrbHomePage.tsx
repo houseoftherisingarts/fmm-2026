@@ -1652,6 +1652,9 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               margin: 0 auto !important;
               transform: none !important;
             }
+            /* The page barely scrolls and the cue sits pinned to the very
+               bottom, so it reads as "scroll" pointing at nothing. Hide it. */
+            .orb-scroll-cue { display: none !important; }
           }
           .orb-scroll-cue-label {
             animation: orbCuePulse 1.9s ease-in-out infinite;
