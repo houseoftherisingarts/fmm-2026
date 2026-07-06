@@ -370,7 +370,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
                         animate={{ opacity: scrollStarted ? 1 : 0 }}
                         transition={{ duration: 0.5, ease: 'easeOut' }}
                       >
-                        <BandScrubber progress={progress} active={scrollStarted} />
+                        <BandScrubber progress={progress} active={scrollStarted} superSample={fillScale} />
                       </motion.div>
 
                       {/* ambient torch fire, held to the sides */}
