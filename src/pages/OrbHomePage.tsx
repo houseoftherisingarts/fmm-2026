@@ -1619,7 +1619,10 @@ const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
               min-height: 100svh;
               overflow: visible !important;
               padding: 5.5rem 1.5rem 5rem !important;
-              gap: 2rem !important;
+              /* Extra breathing room between the CTA and the orb so the
+                 "Acheter mes billets" button never rides onto the gauntlet
+                 finger holding the orb. */
+              gap: 3.25rem !important;
             }
             /* Left block (title + choices + CTA): natural column flow, no
                1fr stretch row that collapsed and let the CTA ride up. */
