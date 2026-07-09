@@ -5,6 +5,7 @@ import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSiteFlags } from '../contexts/SiteFlagsContext';
 import { SITE, PILLARS, PILLAR_COPY, type PillarKey } from '../content';
+import { isPillarVisible } from '../firebase/siteFlags';
 import { addLocale } from '../lib/locale';
 import { useCountdown } from '../lib/useCountdown';
 import { usePerfTier } from '../lib/usePerfTier';
