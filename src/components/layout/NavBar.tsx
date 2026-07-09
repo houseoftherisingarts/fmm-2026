@@ -93,6 +93,10 @@ const ctaVariants = {
 // sterile sheet.
 const NavBar: React.FC = () => {
   const { lang, setLang, mobileMenuOpen, setMobileMenuOpen } = useUI();
+  const { flags } = useSiteFlags();
+  // Only published pillars appear in the drawer (unpublished routes bounce home
+  // anyway via PillarGate, but don't advertise a link that dead-ends).
+  const visiblePillars = PILLARS.filter((p) => isPillarVisible(flags, p.key, PREVIEW_ALL));
   const { user, openSignIn } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
