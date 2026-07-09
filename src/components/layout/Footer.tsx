@@ -12,6 +12,9 @@ import { BubbleCanvas } from '../marche/effects';
 import { useCountdown } from '../../lib/useCountdown';
 import BugReportModal from './BugReportModal';
 
+// Local dev previews every pillar; production shows only published ones.
+const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
+
 // ─── Footer — Caravan Edition ────────────────────────────────────────
 // Hex-cut blocks on a velvet-deep base. Top edge fades up from the
 // page so the footer emerges instead of cutting in. Three vertical
