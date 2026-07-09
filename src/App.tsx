@@ -235,13 +235,24 @@ const GlobalFireBackdrop: React.FC = () => {
   );
 };
 
+// Gate a pillar route: until its page is published (or we're previewing all in
+// local dev) a direct hit bounces to the teaser home, so no one lands on an
+// unfinished section even with the URL in hand.
+const PillarGate: React.FC<{ pillarKey: PillarKey; children: React.ReactElement }> = ({ pillarKey, children }) => {
+  const { flags } = useSiteFlags();
+  return isPillarVisible(flags, pillarKey, SITE_MODE === 'live')
+    ? children
+    : <Navigate to="/" replace />;
+};
+
 function pillarRoutes() {
   const out: React.ReactNode[] = [];
   for (const p of PILLARS) {
     const Custom = CUSTOM_PILLARS[p.key as PillarKey];
-    const element = Custom
+    const inner = Custom
       ? <Custom />
       : <PillarPage pillarKey={p.key as PillarKey} />;
+    const element = <PillarGate pillarKey={p.key as PillarKey}>{inner}</PillarGate>;
     out.push(<Route key={`fr-${p.key}`} path={p.slug.FR} element={element} />);
     out.push(<Route key={`en-${p.key}`} path={p.slug.EN} element={element} />);
   }
