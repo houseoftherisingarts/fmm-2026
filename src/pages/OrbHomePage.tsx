@@ -253,13 +253,20 @@ const PropRow: React.FC<PropRowProps> = ({ label, value, onChange, step, fine, m
   );
 };
 
-// `presale` swaps the pillar menu for a "coming soon" line + a single
-// pre-sale tickets CTA, while keeping the full orb landing (knight, orb,
-// logo→countdown→film). Used by the placeholder/teaser launch.
-const OrbHomePage: React.FC<{ presale?: boolean }> = ({ presale = false }) => {
+// The teaser ("site bientôt disponible" + a single pre-sale tickets CTA) is
+// not a mode: it's simply the state where NO page is published yet. As each
+// pillar is flipped on from the admin it appears in the orb menu and the teaser
+// gives way to the real menu, page by page. The full orb landing (knight, orb,
+// logo→countdown→film) stays throughout.
+const OrbHomePage: React.FC = () => {
   const { lang } = useUI();
   const { user, openSignIn, isAdmin } = useAuth();
   const { flags: siteFlags } = useSiteFlags();
+  // A menu choice is visible when previewing all (local dev) or once its
+  // pillar's publication flag is on. `presale` (teaser) = nothing visible.
+  const isChoiceVisible = (key: PillarKey | 'video') =>
+    key === 'video' ? PREVIEW_ALL : isPillarVisible(siteFlags, key, PREVIEW_ALL);
+  const presale = ORB_CHOICES.every((c) => !isChoiceVisible(c.key));
   // The burning-logo intro video (logo-intro.mp4) plays on the orb landing for
   // everyone EXCEPT genuinely budget machines / slow links (`lite`). It is
   // intentionally NOT gated on prefers-reduced-motion: Alex keeps "reduce
