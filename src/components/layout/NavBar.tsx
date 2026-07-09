@@ -399,7 +399,7 @@ const NavBar: React.FC = () => {
                 animate="shown"
                 className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12"
               >
-                {PILLARS.map((p, idx) => {
+                {visiblePillars.map((p, idx) => {
                   const isActive = location.pathname === p.slug[lang]
                                 || location.pathname === p.slug[lang] + '/';
                   return (
