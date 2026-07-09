@@ -47,6 +47,13 @@ const ORB_CHOICES: OrbChoice[] = [
   { key: 'benevole',    image: '/wix/benevole/4fc431fd.jpg',   imagePosition: 'left center' },
 ];
 
+// Site mode: `live` (local dev) previews every page regardless of flags so an
+// unpublished page can be built without exposing it. Otherwise a page shows
+// only once its publication flag is on. `npm run deploy` forces `placeholder`,
+// so production always follows the publication flags.
+const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeholder';
+const PREVIEW_ALL = SITE_MODE === 'live';
+
 // New 2026 festival film — featured at the centre of the orb (replaces last
 // year's local "vikings" mp4, which now lives on the Histoire & Apprendre page).
 const FILM_YT_ID = 'mex-Tc350mI';
