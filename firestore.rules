@@ -54,9 +54,29 @@ service cloud.firestore {
     // Public profile data is exposed via composePublicProfile in client.
     match /benevoles/{uid} {
       allow read:   if isOwner(uid) || isAdmin();
-      allow create: if isOwner(uid);
-      allow update: if isOwner(uid) || isAdmin();
+      // Create: the applicant opens their OWN pending application. They may not
+      // self-approve or seed any admin-only field at creation time.
+      allow create: if isOwner(uid)
+                    && request.resource.data.status == 'pending'
+                    && !request.resource.data.keys().hasAny(
+                         ['adminNotes', 'teamId', 'teamRole', 'badges',
+                          'hoursLogged', 'assignedShifts', 'pastYears']);
+      // Update: an admin may change anything. The owner may edit their own form
+      // data but must never touch status/adminNotes/team/hours/etc. We compare
+      // by diff().affectedKeys() (keys whose VALUE actually changes) so the
+      // full-doc round-trip the signature step sends — which re-includes
+      // unchanged admin fields verbatim — still passes.
+      allow update: if isAdmin()
+                    || (isOwner(uid)
+                        && !request.resource.data.diff(resource.data).affectedKeys()
+                              .hasAny(benevoleAdminOnlyFields()));
       allow delete: if isAdmin();
+
+      // Admin-only private notes about the applicant, kept OFF the main doc so
+      // the owner (who can read their own doc) can't read Maïté's notes.
+      match /private/{doc} {
+        allow read, write: if isAdmin();
+      }
 
       // Bénévole ↔ FMM messaging thread
       match /messages/{msgId} {
