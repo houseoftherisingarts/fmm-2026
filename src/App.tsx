@@ -82,10 +82,10 @@ const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeh
 // `/`  → OrbHomePage (HubOrb-style selector, all 13 pillars)
 // `/accueil` → AccueilPage (the detailed festival home)
 // `/backuppage` → legacy WelcomePage (Viking hero, kept for reference)
-// In `placeholder` mode, `/` shows the same orb home but with the pillar menu
-// swapped for a "coming soon" line + a single pre-sale tickets CTA (presale).
-const OrbHome: React.FC = () =>
-  SITE_MODE === 'placeholder' ? <OrbHomePage presale /> : <OrbHomePage />;
+// The orb home decides its own teaser-vs-menu state from the per-page
+// publication flags (see OrbHomePage): while nothing is published it shows the
+// "coming soon" teaser + pre-sale CTA; each published pillar then joins the menu.
+const OrbHome: React.FC = () => <OrbHomePage />;
 
 // Portrait phones (incl. the Facebook in-app browser, which locks orientation)
 // get a purpose-built vertical intro instead of a "rotate your device" wall.
