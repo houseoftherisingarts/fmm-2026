@@ -44,6 +44,24 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         </div>
       </Card>
 
+      {/* Per-page publication — reveal categories one by one */}
+      <Card className="p-6 md:p-8">
+        <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
+          <Eye size={14} /> Publication des pages
+        </h3>
+        <p className="font-editorial italic text-sm text-ivory-soft mb-5">
+          Chaque page reste cachée derrière le teaser « Site bientôt disponible » tant qu'elle est éteinte. Activez-la pour la faire apparaître dans le menu principal, en direct, sans redéploiement.
+        </p>
+        <div className="space-y-1">
+          {PILLAR_PUBLISH_FLAGS.map(({ flag, label }) => (
+            <div key={flag} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
+              <span className="font-sans text-sm text-ivory">{label}</span>
+              <ToggleSwitch checked={!!flags[flag]} onChange={(v) => setFlag(flag, v)} />
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* Configuration status */}
       <Card className="p-6 md:p-8">
         <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
