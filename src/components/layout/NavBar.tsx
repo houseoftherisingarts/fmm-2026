@@ -11,6 +11,10 @@ import { addLocale, stripLocale } from '../../lib/locale';
 import AudioPlayer from '../AudioPlayer';
 import { HexMark } from '../marche/atmospherics';
 
+// Local dev (VITE_SITE_MODE=live) previews every pillar; production shows only
+// published ones. `npm run deploy` forces placeholder, so prod follows flags.
+const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
+
 // ─── Drawer palette ──────────────────────────────────────────────────
 // Charcoal-grey dominant (80%), copper/gold accent (20%). Drawer is
 // fully opaque so menu text is always readable against the page beneath.
