@@ -42,7 +42,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   knightPlacementEditor:   false,
   // All pages start unpublished → the public sees the teaser until each is
   // flipped on one by one.
-  pubActivites:            false,
+  pubActivites:            true,
   pubMarche:               false,
   pubHistoire:             false,
   pubMariages:             false,
