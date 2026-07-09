@@ -826,6 +826,10 @@ const OrbHomePage: React.FC = () => {
             ) : (
             <ul className="orb-list columns-2 gap-x-6 md:gap-x-8 -mx-1 min-h-0">
               {ORB_CHOICES.map((c, i) => {
+                // Hide unpublished pillars; keep the real index so the orb's
+                // cross-fade/selection machinery (resolveLayer, selectedIdx)
+                // stays aligned with ORB_CHOICES.
+                if (!isChoiceVisible(c.key)) return null;
                 const isSelected = i === selectedIdx;
                 return (
                   <li key={c.key} className="break-inside-avoid">
