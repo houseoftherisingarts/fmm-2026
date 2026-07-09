@@ -31,8 +31,18 @@ service cloud.firestore {
           'admin@festivalmedievaldemontpellier.org',
           'alex@lesalondesinconnus.com',
           'houseoftherisingarts@gmail.com',
+          'm.fournel11@gmail.com',                    // Maïté — Master Bénévole
+          'benevoles.medievalmontpellier@gmail.com',  // Maïté — courriel de fonction
           // Add more admin emails here.
         ];
+    }
+
+    // Fields on a bénévole doc that only an admin (or the server) may ever set
+    // or change. Everything else on the doc is the applicant's own form data.
+    // Add any future sensitive field here so the owner can't forge it.
+    function benevoleAdminOnlyFields() {
+      return ['status', 'adminNotes', 'teamId', 'teamRole', 'badges',
+              'hoursLogged', 'assignedShifts', 'pastYears'];
     }
 
     // ── Users (profiles) ─────────────────────────────────────────
