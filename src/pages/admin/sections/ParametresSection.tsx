@@ -32,8 +32,9 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         <div className="space-y-1">
           {Object.keys(flags)
             // `knightPlacementEditor` has its own dedicated toggle inside
-            // « Écran d'accueil » → don't duplicate it in the generic list.
-            .filter((k) => k !== 'knightPlacementEditor')
+            // « Écran d'accueil »; the per-page publication flags get their own
+            // labeled panel below → keep both out of this generic list.
+            .filter((k) => k !== 'knightPlacementEditor' && !PUBLISH_FLAG_KEYS.has(k))
             .map((k) => (
               <div key={k} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
                 <span className="font-sans text-sm text-ivory">{k}</span>
