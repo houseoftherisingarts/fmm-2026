@@ -53,9 +53,15 @@ const Footer: React.FC = () => {
     }
   };
 
+  const { flags } = useSiteFlags();
   const quickLinks    = ['activites', 'nourriture', 'musique', 'marche', 'benevole'] as const;
   const resourceLinks = ['hebergement', 'mariages', 'groupes', 'partenaires', 'histoire'] as const;
-  const findPillar = (k: string) => PILLARS.find((p) => p.key === k);
+  // Only surface a pillar link once its page is published (unpublished routes
+  // bounce home via PillarGate). Absorbed keys aren't in PILLARS → undefined.
+  const findPillar = (k: string) => {
+    const p = PILLARS.find((pp) => pp.key === k);
+    return p && isPillarVisible(flags, p.key, PREVIEW_ALL) ? p : undefined;
+  };
 
   return (
     <footer className="relative caravan-stage text-[var(--color-bone)]">
