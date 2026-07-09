@@ -10,7 +10,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { useReducedMotion } from 'framer-motion';
 
 import { AppProvider, useUI } from './contexts/AppContext';
-import { SiteFlagsProvider } from './contexts/SiteFlagsContext';
+import { SiteFlagsProvider, useSiteFlags } from './contexts/SiteFlagsContext';
 import { AuthProvider } from './contexts/AuthContext';
 import NavBar from './components/layout/NavBar';
 import ErrorBoundary from './components/layout/ErrorBoundary';
