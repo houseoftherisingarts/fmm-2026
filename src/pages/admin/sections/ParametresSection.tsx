@@ -1,6 +1,7 @@
 import React from 'react';
-import { Settings, ShieldAlert, Globe, Database, Music } from 'lucide-react';
+import { Settings, ShieldAlert, Globe, Database, Music, Eye } from 'lucide-react';
 import { Card, ToggleSwitch } from '../primitives';
+import { PILLAR_PUBLISH_FLAGS, PUBLISH_FLAG_KEYS } from '../../../firebase/siteFlags';
 
 interface Props {
   flags: Record<string, unknown>;
