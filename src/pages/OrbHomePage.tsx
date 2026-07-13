@@ -514,6 +514,15 @@ const OrbHomePage: React.FC = () => {
   const requestOrbFullscreen = useCallback(() => {
     const v = orbVideoRef.current;
     if (!v) return;
+    // Play WITH sound — the click is a real user gesture, so unmuting is
+    // allowed (Alex, 2026-07-13: clicking the orb film opens it fullscreen with
+    // music). Re-mute on exit so the looping orb film stays silent afterwards.
+    v.muted = false;
+    v.volume = 1;
+    void v.play().catch(() => { /* ignore */ });
+    const remute = () => { if (!document.fullscreenElement) v.muted = true; };
+    document.addEventListener('fullscreenchange', remute, { once: true });
+    v.addEventListener('webkitendfullscreen', () => { v.muted = true; }, { once: true });
     // Some Safari versions only expose webkitEnterFullscreen on the element.
     const anyV = v as HTMLVideoElement & { webkitEnterFullscreen?: () => void };
     if (typeof anyV.webkitEnterFullscreen === 'function') anyV.webkitEnterFullscreen();
