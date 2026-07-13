@@ -314,12 +314,18 @@ const OrbHomePage: React.FC = () => {
   // right AFTER the logo clip rather than on top of it. Stays visible across
   // landing returns. Safety net: if onEnded never fires (autoplay blocked,
   // load error), reveal it anyway after the clip's full ~14.75 s length.
-  const [showCountdown, setShowCountdown] = useState(false);
+  // Countdown removed from the landing sequence (Alex, 2026-07-13): the burning-
+  // logo intro now hands straight to the festival film, with no held logo or
+  // countdown in between. Kept as a dormant `false` so the (now hidden) block
+  // below needn't be torn out.
+  const [showCountdown] = useState(false);
+  // Safety net: if the intro video's onEnded never fires (autoplay blocked or a
+  // load error), advance the sequence anyway a hair past its ~14.75 s length.
   useEffect(() => {
-    if (introDone) { setShowCountdown(true); return; }
-    const t = setTimeout(() => setShowCountdown(true), 16000);
+    if (introDone || lite) return;
+    const t = setTimeout(() => setIntroDone(true), 16000);
     return () => clearTimeout(t);
-  }, [introDone]);
+  }, [introDone, lite]);
 
   // Idle film — after 5 s OF countdown the orb hands off to the 2026 festival
   // film (the same clip that ends the intro), replacing the logo + countdown.
