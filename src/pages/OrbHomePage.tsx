@@ -1000,35 +1000,23 @@ const OrbHomePage: React.FC = () => {
                   }`}
                 >
                   <div className="absolute inset-0 bg-black" />
-                  <img
-                    src="/fmm-logo-embossed-silver.webp"
-                    alt="FMM"
-                    decoding="async"
-                    className="fmm-no-grade absolute left-1/2 top-[40%] w-[50%] h-[50%] object-contain"
-                    style={{
-                      filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.55))',
-                      transform: 'translate(-50%, -50%)',
-                    }}
+                  {/* Off-centre embossed-silver logo removed (Alex, 2026-07-13):
+                      it must never be seen. The orb goes fire video → film over a
+                      plain black bed during the brief crossfade. */}
+                  {/* Burning-logo intro video — plays on every device, then
+                      crossfades to 0 once it ends, handing the orb to the film. */}
+                  <video
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    onEnded={() => setIntroDone(true)}
+                    src="/orb/logo-intro.mp4"
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out ${
+                      introDone ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    style={{ transform: 'scale(1.4)' }}
                   />
-                  {/* Intro video stays mounted and crossfades to 0 once it
-                      ends — unmounting it on `introDone` was creating a
-                      hard cut between the animated logo and the static PNG.
-                      Only genuinely budget machines (`lite`) skip it; they
-                      see the static logo from frame zero. */}
-                  {!lite && (
-                    <video
-                      autoPlay
-                      muted
-                      playsInline
-                      preload="auto"
-                      onEnded={() => setIntroDone(true)}
-                      src="/orb/logo-intro.mp4"
-                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out ${
-                        introDone ? 'opacity-0' : 'opacity-100'
-                      }`}
-                      style={{ transform: 'scale(1.4)' }}
-                    />
-                  )}
                 </div>
 
                 {/* Inner vignette so the image meets the rim softly. On
