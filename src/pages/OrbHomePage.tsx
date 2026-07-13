@@ -319,10 +319,10 @@ const OrbHomePage: React.FC = () => {
   // Safety net: if the intro video's onEnded never fires (autoplay blocked or a
   // load error), advance the sequence anyway a hair past its ~14.75 s length.
   useEffect(() => {
-    if (introDone || lite) return;
+    if (introDone) return;
     const t = setTimeout(() => setIntroDone(true), 16000);
     return () => clearTimeout(t);
-  }, [introDone, lite]);
+  }, [introDone]);
 
   // Idle film — the orb hands off to the 2026 festival film the moment the
   // burning-logo intro ends (Alex, 2026-07-13: straight fire→film, no countdown
