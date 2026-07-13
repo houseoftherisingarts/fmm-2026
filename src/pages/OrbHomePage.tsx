@@ -952,20 +952,18 @@ const OrbHomePage: React.FC = () => {
                     the orb (or the blurb button) plays it fullscreen via
                     requestOrbFullscreen. On-demand content (no autoplay,
                     metadata-only), so kept for budget machines. */}
-                {!lite && (
-                  <video
-                    ref={orbVideoRef}
-                    src="/orb/festival-orbe.mp4"
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1400ms] ease-out ${
-                      isVideoChoice || (isLanding && showOrbFilm) ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    }`}
-                    style={{ transform: 'scale(1.4)' }}
-                  />
-                )}
+                <video
+                  ref={orbVideoRef}
+                  src="/orb/festival-orbe.mp4"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1400ms] ease-out ${
+                    isVideoChoice || (isLanding && showOrbFilm) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  }`}
+                  style={{ transform: 'scale(1.4)' }}
+                />
 
                 {/* Glistening sweep — re-keys on every selection change so a
                     diagonal light lance plays across the orb during each
