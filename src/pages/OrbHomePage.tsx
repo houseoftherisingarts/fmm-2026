@@ -302,12 +302,10 @@ const OrbHomePage: React.FC = () => {
   const [layerB, setLayerB] = useState<number | null>(null);
   const [activeLayer, setActiveLayer] = useState<'A' | 'B'>('A');
 
-  // Orb landing media — animated FMM logo intro video plays once on first
-  // visit, then fades to the static embossed-silver logo which stays as the
-  // placeholder while no menu item is selected. Comes back when user clicks
-  // away. Starts false so the video plays before the countdown; on `lite`
-  // devices there is no video, so it starts true (static logo + countdown).
-  const [introDone, setIntroDone] = useState(() => lite);
+  // Orb landing media — the burning-logo intro video plays once, then hands
+  // straight to the festival film. Starts false on every device so the fire
+  // video always plays first (no held logo, no countdown in between).
+  const [introDone, setIntroDone] = useState(false);
   // Countdown reveal — appears once the burning-logo intro video has actually
   // finished (introDone, fired by the <video> onEnded), so it always lands
   // right AFTER the logo clip rather than on top of it. Stays visible across
