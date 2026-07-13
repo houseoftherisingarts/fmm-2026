@@ -327,13 +327,13 @@ const OrbHomePage: React.FC = () => {
   // Idle film — the orb hands off to the 2026 festival film the moment the
   // burning-logo intro ends (Alex, 2026-07-13: straight fire→film, no countdown
   // or held logo in between). Looped, muted. Skipped only for genuinely
-  // constrained devices (lite); reduced-motion users still get the film since
-  // it's their only chance to see it (the cinematic intro is skipped for them).
+  // constrained devices used to skip it; now it plays on every device so the
+  // orb always resolves to the film (Alex, 2026-07-13).
   const [showOrbFilm, setShowOrbFilm] = useState(false);
   useEffect(() => {
-    if (!introDone || lite) return;
+    if (!introDone) return;
     setShowOrbFilm(true);
-  }, [introDone, lite]);
+  }, [introDone]);
   // Play / pause the orb film as it fades in and out.
   useEffect(() => {
     const v = orbVideoRef.current;
