@@ -267,12 +267,11 @@ const OrbHomePage: React.FC = () => {
   const isChoiceVisible = (key: PillarKey | 'video') =>
     key === 'video' ? PREVIEW_ALL : isPillarVisible(siteFlags, key, PREVIEW_ALL);
   const presale = ORB_CHOICES.every((c) => !isChoiceVisible(c.key));
-  // The burning-logo intro video (logo-intro.mp4) plays on the orb landing for
-  // everyone EXCEPT genuinely budget machines / slow links (`lite`). It is
-  // intentionally NOT gated on prefers-reduced-motion: Alex keeps "reduce
-  // motion" on for GPU stability but still wants this signature clip to play.
-  // On lite devices the embossed-silver logo PNG underneath stands in.
-  const { lite } = usePerfTier();
+  // The burning-logo intro video (logo-intro.mp4) plays on the orb landing on
+  // EVERY device, then hands straight to the festival film. Not gated on
+  // prefers-reduced-motion or the perf tier: Alex keeps "reduce motion" on for
+  // GPU stability but still wants this signature clip (and the film) to play,
+  // and the off-centre static logo must never be seen (Alex, 2026-07-13).
   // Dev placement editor — only mounts when an admin has flipped on the
   // `knightPlacementEditor` site flag from Paramètres. Off by default.
   const knightEditorAvailable = isAdmin && siteFlags.knightPlacementEditor;
