@@ -573,6 +573,15 @@ const OrbHomePage: React.FC = () => {
     setTimeout(() => navigate(target), 600);
   };
 
+  // Orb click: when the festival film is the orb's content (landing film or the
+  // "video" choice), play it fullscreen with sound; otherwise run the normal
+  // confirm (tickets on landing, navigate on a pillar). (Alex, 2026-07-13)
+  const orbFilmShowing = (isLanding && showOrbFilm) || isVideoChoice;
+  const activateOrb = () => {
+    if (orbFilmShowing) { requestOrbFullscreen(); return; }
+    onConfirm();
+  };
+
   const labelOf = (k: PillarKey | 'video'): string => {
     const choice = ORB_CHOICES.find((c) => c.key === k);
     if (choice?.label) return choice.label[lang];
