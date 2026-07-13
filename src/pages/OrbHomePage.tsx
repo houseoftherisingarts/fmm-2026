@@ -936,14 +936,16 @@ const OrbHomePage: React.FC = () => {
               <div
                 role="button"
                 tabIndex={0}
-                onClick={onConfirm}
+                onClick={activateOrb}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onConfirm();
+                    activateOrb();
                   }
                 }}
-                aria-label={isLanding
+                aria-label={orbFilmShowing
+                  ? (lang === 'FR' ? 'Lire la vidéo en plein écran' : 'Play the video fullscreen')
+                  : isLanding
                   ? (lang === 'FR' ? 'Acheter mes billets' : 'Buy tickets')
                   : (lang === 'FR' ? `Confirmer ${activeLabel}` : `Confirm ${activeLabel}`)}
                 className="orb relative aspect-square w-full rounded-full overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-amber-glow)]/70"
