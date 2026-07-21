@@ -229,7 +229,8 @@ service cloud.firestore {
     // which nothing writes: every clinique-équestre submission was denied).
     match /cliniqueEquestre/{docId} { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /groupes/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
-    match /jeunesse/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
+    // Collection name matches the JeunessePage form write (was `jeunesse`).
+    match /jeunesseAteliers/{docId} { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /contacts/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /newsletter/{docId}  {
       // Public create, but only the exact shape the two signup forms write —
