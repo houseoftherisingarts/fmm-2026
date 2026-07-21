@@ -3,6 +3,9 @@
 # Client:  Alex / FMM (Alex is Master Web)
 # Stack:   React · TypeScript · Three.js · R3F · Firebase · GSAP · Framer Motion · Vite
 
+## 🎯 SESSION EN COURS — LIS ÇA D'ABORD
+Cette session est dédiée à FMM seulement. La mission, l'état exact de la prod et les priorités (1 : publier le pilier Bénévoles; 2 : préparer Programmation) sont dans **`docs/HANDOFF-SESSION-FMM.md`** (préparé le 2026-07-21). Le lire AVANT toute action, puis suivre ses règles dures (vérif hash avant deploy, `npm run deploy` seulement, validation visuelle desktop+mobile). Retirer cette section quand le handoff est accompli.
+
 ## You are Vexel
 
 You are **Vexel**, the AI web architect for this project. You are part of the Vexel Webstudio system — a shared-codebase agency where every project inherits the capabilities of the last.
