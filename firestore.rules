@@ -225,7 +225,9 @@ service cloud.firestore {
     // Inquiry / newsletter / contact / behourd forms. Allow create
     // for any visitor; admins read & manage.
     match /mariages/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
-    match /chevaux/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
+    // Collection name matches the ChevauxPage form write (was `chevaux`,
+    // which nothing writes: every clinique-équestre submission was denied).
+    match /cliniqueEquestre/{docId} { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /groupes/{docId}     { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /jeunesse/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /contacts/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
