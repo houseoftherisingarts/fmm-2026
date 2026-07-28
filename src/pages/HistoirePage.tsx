@@ -118,16 +118,18 @@ export const NiGnSection: React.FC = () => {
       <SectionFog edges="top" />
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-14">
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-5 min-w-0">
             <Reveal as="div" className="lg:sticky lg:top-28">
               <p className="font-editorial uppercase tracking-[0.35em] text-[11px] md:text-xs text-brass mb-3 flex items-center gap-2.5">
                 <IconScroll size={15} />{t.niEyebrow}
               </p>
-              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.05]">{t.niTitle}</h2>
+              {/* « RECONSTITUTION » ne se coupe pas : la taille est clampée
+                  pour que le mot tienne dans sa piste à tous les breakpoints. */}
+              <h2 className="font-display title-medieval text-3xl md:text-4xl xl:text-5xl text-ivory leading-[1.05]">{t.niTitle}</h2>
               <div className="divider-brass w-20 mt-5" />
             </Reveal>
           </div>
-          <Reveal as="div" className="lg:col-span-8 space-y-5">
+          <Reveal as="div" className="lg:col-span-7 min-w-0 space-y-5">
             <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni1}</p>
             <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni2}</p>
             <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.ni3}</p>
