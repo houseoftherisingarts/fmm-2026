@@ -55,6 +55,8 @@ export const PILLARS: Pillar[] = [
   { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping & Hébergement Locaux', EN: 'Camping & Local Lodging' } },
   { key: 'partenaires', slug: { FR: '/partenaires',  EN: '/en/partners' },   label: { FR: 'Nos Partenaires',             EN: 'Our Partners' },            short: { FR: 'Partenaires',  EN: 'Partners' } },
   { key: 'benevole',    slug: { FR: '/benevole',     EN: '/en/volunteer' },  label: { FR: 'Devenir Bénévole',            EN: 'Become a Volunteer' },      short: { FR: 'Bénévole',     EN: 'Volunteer' } },
+  // Slug identique FR/EN : « Petite Monnaie » est un nom de marque.
+  { key: 'petite-monnaie', slug: { FR: '/petite-monnaie', EN: '/en/petite-monnaie' }, label: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' }, short: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' } },
 ];
 
 export const PILLAR_BY_KEY: Record<PillarKey, Pillar> = Object.fromEntries(
