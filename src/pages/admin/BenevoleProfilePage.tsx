@@ -477,6 +477,44 @@ const Body: React.FC<{
             </Card>
 
             <Card className="p-5">
+              <SectionTitle icon={User} dense>Infos personnelles</SectionTitle>
+              <dl className="space-y-2 text-sm font-sans">
+                <MetaRow label="Pronoms">
+                  {b.pronouns
+                    ? (b.pronouns === 'autre' && b.pronounsOther
+                        ? b.pronounsOther
+                        : PRONOUNS.find((p) => p.id === b.pronouns)?.fr ?? b.pronouns)
+                    : <span className="text-ivory-soft/50">Sans réponse</span>}
+                </MetaRow>
+                <MetaRow label="Âge">
+                  {b.ageRange
+                    ? <>
+                        {AGE_RANGES.find((a) => a.id === b.ageRange)?.fr ?? b.ageRange}
+                        {b.ageRange === 'lt18' && b.minorGuardianPresent && (
+                          <span className="block text-xs text-blush mt-0.5">
+                            Mineur·e · parent sur place : {YESNO[b.minorGuardianPresent]}
+                          </span>
+                        )}
+                      </>
+                    : <span className="text-ivory-soft/50">Sans réponse</span>}
+                </MetaRow>
+                <MetaRow label="T-shirt">
+                  {b.tShirtSize
+                    ? (b.tShirtSize === 'autre' ? (b.tShirtSizeOther || 'Autre') : b.tShirtSize)
+                    : <span className="text-ivory-soft/50">Sans réponse</span>}
+                </MetaRow>
+                <MetaRow label="Allergies">
+                  {b.allergies
+                    ? <span className={/^aucune/i.test(b.allergies) ? undefined : 'text-blush'}>{b.allergies}</span>
+                    : <span className="text-ivory-soft/50">Sans réponse</span>}
+                </MetaRow>
+                <MetaRow label="Diète">
+                  {b.dietaryNotes || <span className="text-ivory-soft/50">Sans réponse</span>}
+                </MetaRow>
+              </dl>
+            </Card>
+
+            <Card className="p-5">
               <SectionTitle icon={UsersRound} dense>Équipe</SectionTitle>
               {b.teamId ? (
                 <>
