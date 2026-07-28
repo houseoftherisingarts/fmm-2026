@@ -68,8 +68,11 @@ const MedievalIntroMobile = lazy(() => import('./components/landing/MedievalIntr
 // page; absorbed pillars (nourriture, musique, jeunesse, groupes, apprendre)
 // and the dropped chevaux are no longer in PILLARS, so their old slugs are
 // handled by the redirects further down instead of by pillarRoutes().
+const PetiteMonnaiePage = lazy(() => import('./pages/PetiteMonnaiePage'));
+
 const CUSTOM_PILLARS: Partial<Record<PillarKey, React.LazyExoticComponent<React.FC>>> = {
   activites:   ProgrammationPage,
+  'petite-monnaie': PetiteMonnaiePage,
   marche:      LeVillagePage,
   histoire:    HistoireApprendrePage,
   mariages:    MariagesGroupesPage,
