@@ -652,6 +652,13 @@ const Row: React.FC<{ label: string; icon?: React.ComponentType<{ size?: number;
   </div>
 );
 
+const MetaRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div className="flex items-start justify-between gap-3">
+    <dt className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest pt-0.5 shrink-0">{label}</dt>
+    <dd className="text-ivory text-right min-w-0">{children}</dd>
+  </div>
+);
+
 const Coord: React.FC<{ icon: React.ComponentType<{ size?: number; className?: string }>; value: string; href?: string }> = ({ icon: Icon, value, href }) => (
   <li className="flex items-center gap-2">
     <Icon size={12} className="text-stone shrink-0" />
