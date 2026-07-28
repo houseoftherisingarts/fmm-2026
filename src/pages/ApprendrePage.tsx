@@ -1,28 +1,34 @@
 import React, { lazy, Suspense } from 'react';
-import {Hammer} from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
-import { Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
-import { CinematicReveal, DepthChapter, Codex3D } from '../components/apprendre/apprendreScroll';
+import { Reveal, Stagger, StaggerItem, ScrollProgress, Parallax } from '../components/scroll';
+import { CinematicReveal, DepthChapter } from '../components/apprendre/apprendreScroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
+import { SectionBand } from './HistoirePage';
+import {
+  IconForge, IconTissage, IconMailles, IconCuisine, IconCharpente,
+  IconSculpture, IconJoaillerie, IconFonderie, IconOpenBook, IconWagon,
+  IconJester, IconWorld, type GameIconProps,
+} from '../components/icons/GameIcons';
 
 // The pinned, scroll-scrubbed opening (GSAP + forge-fire video) is the
 // heavy piece, code-split so it never weighs on the initial render.
 const CinematicOpening = lazy(() => import('../components/apprendre/CinematicOpening'));
 
-// Workshop / formation cards, cloned from Wix /apprendre.
-const FORMATIONS = [
-  { name: { FR: 'Démonstration de forge',  EN: 'Forge demonstration' } },
-  { name: { FR: 'Tissage et filage',        EN: 'Weaving and spinning' } },
-  { name: { FR: 'Fabrication de cotte de mailles', EN: 'Chainmail making' } },
-  { name: { FR: 'Cuisine historique',       EN: 'Historical cooking' } },
-  { name: { FR: 'Charpente traditionnelle', EN: 'Traditional carpentry' } },
-  { name: { FR: 'Sculpture',                EN: 'Sculpture' } },
-  { name: { FR: 'Joaillerie',               EN: 'Jewellery' } },
-  { name: { FR: 'Fonderie',                 EN: 'Foundry' } },
+// Workshop / formation cards, cloned from Wix /apprendre. Each craft gets
+// its own engraved icon (game-icons.net) instead of a generic hammer.
+const FORMATIONS: { name: { FR: string; EN: string }; Icon: React.FC<GameIconProps> }[] = [
+  { name: { FR: 'Démonstration de forge',  EN: 'Forge demonstration' },       Icon: IconForge },
+  { name: { FR: 'Tissage et filage',        EN: 'Weaving and spinning' },      Icon: IconTissage },
+  { name: { FR: 'Fabrication de cotte de mailles', EN: 'Chainmail making' },   Icon: IconMailles },
+  { name: { FR: 'Cuisine historique',       EN: 'Historical cooking' },        Icon: IconCuisine },
+  { name: { FR: 'Charpente traditionnelle', EN: 'Traditional carpentry' },     Icon: IconCharpente },
+  { name: { FR: 'Sculpture',                EN: 'Sculpture' },                 Icon: IconSculpture },
+  { name: { FR: 'Joaillerie',               EN: 'Jewellery' },                 Icon: IconJoaillerie },
+  { name: { FR: 'Fonderie',                 EN: 'Foundry' },                   Icon: IconFonderie },
 ];
 
 // Cultural example bullets, themed groups extracted from the Wix copy.
@@ -58,6 +64,221 @@ const EXAMPLES = [
     bodyEN: 'Storytelling, folk dances, Nordic Tafl, Egyptian board games.',
   },
 ];
+
+// ─── Apprendre (chapter opener + Au-delà des clichés) ────────────────
+export const ApprendreChapterSection: React.FC = () => {
+  const { lang } = useUI();
+  const t = lang === 'FR' ? FR : EN;
+  return (
+    <section className="relative pt-20 md:pt-28 pb-16 md:pb-24 overflow-hidden">
+      <SectionFog edges="top" />
+      <Motes className="opacity-50" count={16} />
+      <DepthChapter tone="ember">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-14 mb-14 md:mb-20">
+            <Reveal as="div" className="lg:col-span-5">
+              <p className="font-editorial uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3 flex items-center gap-2.5">
+                <IconOpenBook size={15} className="text-brass" />{t.eyebrow}
+              </p>
+              <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{t.title}</h2>
+              <div className="divider-brass w-24 mt-5" />
+            </Reveal>
+            <Reveal as="div" className="lg:col-span-7 lg:pt-3 space-y-5">
+              <p className="font-editorial text-lg md:text-xl text-ivory-soft leading-relaxed">{t.intro1}</p>
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.intro2}</p>
+            </Reveal>
+          </div>
+
+          {/* Au-delà des clichés — the chapter's manifesto + examples */}
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end mb-10 md:mb-14">
+            <CinematicReveal className="lg:col-span-6">
+              <p className="font-editorial uppercase tracking-[0.3em] text-xs mb-3 text-brass">{t.appelEyebrow}</p>
+              <h3 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.05]">{t.appelTitle}</h3>
+              <div className="divider-brass w-20 mt-5" />
+            </CinematicReveal>
+            <CinematicReveal className="lg:col-span-6">
+              <p className="font-editorial text-base md:text-lg leading-relaxed text-ivory-soft lg:pb-1">{t.appelBody}</p>
+            </CinematicReveal>
+          </div>
+          <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" stagger={0.07}>
+            {EXAMPLES.map((ex) => (
+              <StaggerItem
+                key={ex.titleFR}
+                as="article"
+                distance={64}
+                className="glass-light rounded-card p-6 transition duration-300 hover:-translate-y-1 hover:bg-brass/10"
+              >
+                <h4 className="font-display title-medieval text-base md:text-lg mb-2 text-ivory">{lang === 'FR' ? ex.titleFR : ex.titleEN}</h4>
+                <p className="font-editorial text-sm leading-relaxed text-ivory-soft">{lang === 'FR' ? ex.bodyFR : ex.bodyEN}</p>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </DepthChapter>
+    </section>
+  );
+};
+
+// ─── Caravanes & Saltimbanques (thème 2026) ──────────────────────────
+export const ThemeCaravanesSection: React.FC = () => {
+  const { lang } = useUI();
+  const t = lang === 'FR' ? FR : EN;
+  return (
+    <section className="relative py-16 md:py-24 overflow-hidden">
+      <SectionFog edges="top" />
+      <Motes className="opacity-50" count={16} />
+      <DepthChapter tone="ember">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-14 mb-12 md:mb-16">
+            <CinematicReveal className="lg:col-span-5">
+              <p className="font-editorial uppercase tracking-[0.35em] text-[11px] md:text-xs text-brass mb-3 flex items-center gap-2.5">
+                <IconWagon size={15} />{t.themeEyebrow}
+              </p>
+              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.05] mb-5">{t.themeTitle}</h2>
+              <div className="divider-brass w-20 mb-6" />
+              <p className="font-editorial text-lg md:text-2xl text-ivory leading-relaxed">{t.themeLead}</p>
+            </CinematicReveal>
+            <CinematicReveal className="lg:col-span-7 lg:pt-3 space-y-6">
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.themeBody1}</p>
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.themeBody2}</p>
+            </CinematicReveal>
+          </div>
+
+          {/* Culture invitée + continuité des thèmes */}
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
+            <CinematicReveal as="article" className="glass-light rounded-card p-6 md:p-8">
+              <p className="font-editorial uppercase tracking-[0.3em] text-xs text-brass mb-3">{t.partnerEyebrow}</p>
+              <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-3">{t.partnerTitle}</h3>
+              <p className="font-editorial text-base text-ivory-soft leading-relaxed">{t.partnerBody}</p>
+            </CinematicReveal>
+            <CinematicReveal as="article" className="border-l-2 border-brass/60 pl-6 md:pl-8 py-2 self-center">
+              <p className="font-display title-medieval text-xl md:text-3xl text-ivory mb-4 leading-tight">{t.continuityTitle}</p>
+              <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-3">{t.continuityBody}</p>
+              <p className="font-editorial text-base text-brass leading-relaxed">{t.continuityHullsborg}</p>
+            </CinematicReveal>
+          </div>
+        </div>
+      </DepthChapter>
+    </section>
+  );
+};
+
+// ─── Aux origines du cirque (timeline) ───────────────────────────────
+export const OriginesCirqueSection: React.FC = () => {
+  const { lang } = useUI();
+  const t = lang === 'FR' ? FR : EN;
+  return (
+    <section className="relative py-16 md:py-24 overflow-hidden">
+      <SectionFog edges="top" />
+      <DepthChapter tone="ember">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <SectionBand
+            icon={<IconJester size={15} />}
+            eyebrow={t.hookEyebrow}
+            title={t.hookTitle}
+            lead={t.hookLead}
+          />
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.06}>
+            {t.timeline.map((item) => (
+              <StaggerItem
+                key={item.era}
+                as="article"
+                distance={56}
+                className="glass-light rounded-card p-5 md:p-6 hover:bg-brass/10 transition group hover:-translate-y-1 duration-300"
+              >
+                <p className="font-display title-medieval text-brass text-sm md:text-base tracking-widest mb-2">{item.era}</p>
+                <h4 className="font-display title-medieval text-base md:text-lg text-ivory mb-2 group-hover:text-brass transition">{item.title}</h4>
+                <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{item.body}</p>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </DepthChapter>
+    </section>
+  );
+};
+
+// ─── Une époque aux réalités variées ─────────────────────────────────
+export const EpoqueSection: React.FC = () => {
+  const { lang } = useUI();
+  const t = lang === 'FR' ? FR : EN;
+  return (
+    <section className="relative py-16 md:py-24 overflow-hidden">
+      <SectionFog edges="top" />
+      <Motes className="opacity-50" count={16} />
+      <DepthChapter tone="ember">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-14">
+            <div className="lg:col-span-4">
+              <CinematicReveal className="lg:sticky lg:top-28">
+                <p className="font-editorial uppercase tracking-[0.35em] text-[11px] md:text-xs text-brass mb-3 flex items-center gap-2.5">
+                  <IconWorld size={15} />{t.epoqueEyebrow}
+                </p>
+                <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.05]">{t.epoqueTitle}</h2>
+                <div className="divider-brass w-20 mt-5" />
+              </CinematicReveal>
+            </div>
+            <CinematicReveal as="div" className="lg:col-span-8">
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.epoque1}</p>
+              <ul className="space-y-3 font-editorial text-base text-ivory-soft mb-5">
+                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueEurope}</li>
+                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueVikings}</li>
+                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueAndes}</li>
+              </ul>
+              <p className="font-editorial text-base text-brass leading-relaxed">{t.epoqueClose}</p>
+            </CinematicReveal>
+          </div>
+        </div>
+      </DepthChapter>
+    </section>
+  );
+};
+
+// ─── Formations et démonstrations ────────────────────────────────────
+// The CSS-3D codex is gone (design call, 2026-07-28): the craft cards
+// carry the section now, each with its own engraved-metal medallion.
+export const FormationsSection: React.FC = () => {
+  const { lang } = useUI();
+  const t = lang === 'FR' ? FR : EN;
+  return (
+    <section className="relative py-16 md:py-24 overflow-hidden">
+      <Parallax speed={0.12} className="absolute inset-0 -z-10">
+        <div
+          className="absolute inset-x-0 top-1/4 h-1/2"
+          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
+        />
+      </Parallax>
+      <DepthChapter tone="ember">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <SectionBand
+            icon={<IconForge size={15} />}
+            eyebrow={t.formationsEyebrow}
+            title={t.formationsTitle}
+            lead={t.formationsLead}
+          />
+          <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.05}>
+            {FORMATIONS.map(({ name, Icon }) => (
+              <StaggerItem
+                key={name.FR}
+                as="article"
+                distance={56}
+                className="glass-light rounded-card p-5 md:p-7 hover:bg-brass/10 transition group hover:-translate-y-1 duration-300"
+              >
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-brass/40 bg-gradient-to-b from-brass/15 to-transparent flex items-center justify-center mb-4 group-hover:border-brass/70 group-hover:shadow-[0_0_24px_rgba(184,106,42,0.25)] transition duration-300">
+                  <Icon size={30} className="text-brass group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5 group-hover:text-brass transition">
+                  {name[lang]}
+                </h3>
+                <p className="font-editorial text-xs text-ivory-soft">{t.detailsTBD}</p>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </DepthChapter>
+    </section>
+  );
+};
 
 const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
@@ -102,15 +323,7 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </Suspense>
       )}
 
-      {embedded ? (
-        <section className="relative pt-20 md:pt-28 pb-2">
-          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{t.eyebrow}</p>
-            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{t.title}</h2>
-            <div className="divider-brass w-24 mt-5" />
-          </div>
-        </section>
-      ) : (
+      {!embedded && (
         <PageHeader
           eyebrow={t.eyebrow}
           titleA={t.title}
@@ -120,145 +333,11 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         />
       )}
 
-      {/* Editorial body, Au-delà des clichés. Re-toned to the dark ember
-          register so it reads as part of the page (was a jarring light-beige
-          block in the middle of the dark caravan theme). */}
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <SectionFog edges="top" />
-        <Motes className="opacity-50" count={16} />
-        <DepthChapter tone="ember">
-          <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-            <CinematicReveal className="text-center mb-12 max-w-3xl mx-auto">
-              <p className="font-editorial italic uppercase tracking-[0.3em] text-xs mb-3 text-brass">{t.appelEyebrow}</p>
-              <h2 className="font-display title-medieval text-3xl md:text-5xl mb-6 text-ivory">{t.appelTitle}</h2>
-              <p className="font-editorial text-base md:text-xl leading-relaxed text-ivory-soft">
-                {t.appelBody}
-              </p>
-            </CinematicReveal>
-            <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" stagger={0.07}>
-              {EXAMPLES.map((ex) => (
-                <StaggerItem
-                  key={ex.titleFR}
-                  as="article"
-                  distance={64}
-                  className="glass-light rounded-card p-6 transition duration-300 hover:-translate-y-1 hover:bg-brass/10"
-                >
-                  <h3 className="font-display title-medieval text-base md:text-lg mb-2 text-ivory">{lang === 'FR' ? ex.titleFR : ex.titleEN}</h3>
-                  <p className="font-editorial text-sm leading-relaxed text-ivory-soft">{lang === 'FR' ? ex.bodyFR : ex.bodyEN}</p>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </div>
-        </DepthChapter>
-      </section>
-
-      {/* Thème 2026, Caravanes & Saltimbanques + aux origines du cirque */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <SectionFog edges="top" />
-        <Motes className="opacity-50" count={16} />
-        <DepthChapter tone="ember">
-          <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-            <ChapterIntro eyebrow={t.themeEyebrow} title={t.themeTitle} className="mb-8" />
-
-            <CinematicReveal as="div" className="max-w-3xl mb-12 md:mb-16">
-              <p className="font-editorial text-lg md:text-2xl text-ivory leading-relaxed mb-7">{t.themeLead}</p>
-              <div className="grid md:grid-cols-2 gap-6 md:gap-10">
-                <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.themeBody1}</p>
-                <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.themeBody2}</p>
-              </div>
-            </CinematicReveal>
-
-            {/* Aux origines du cirque, repères datés */}
-            <CinematicReveal as="div" className="max-w-2xl mb-8 md:mb-10">
-              <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-2">{t.hookEyebrow}</p>
-              <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-4">{t.hookTitle}</h3>
-              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.hookLead}</p>
-            </CinematicReveal>
-
-            <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.06}>
-              {t.timeline.map((item) => (
-                <StaggerItem
-                  key={item.era}
-                  as="article"
-                  distance={56}
-                  className="glass-light rounded-card p-5 md:p-6 hover:bg-brass/10 transition group hover:-translate-y-1 duration-300"
-                >
-                  <p className="font-display title-medieval text-brass text-sm md:text-base tracking-widest mb-2">{item.era}</p>
-                  <h4 className="font-display title-medieval text-base md:text-lg text-ivory mb-2 group-hover:text-brass transition">{item.title}</h4>
-                  <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{item.body}</p>
-                </StaggerItem>
-              ))}
-            </Stagger>
-
-            {/* Culture invitée + continuité des thèmes */}
-            <div className="grid lg:grid-cols-2 gap-6 md:gap-8 mt-12 md:mt-16">
-              <CinematicReveal as="article" className="glass-light rounded-card p-6 md:p-8">
-                <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.partnerEyebrow}</p>
-                <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-3">{t.partnerTitle}</h3>
-                <p className="font-editorial text-base text-ivory-soft leading-relaxed">{t.partnerBody}</p>
-              </CinematicReveal>
-              <CinematicReveal as="article" className="border-l-2 border-brass/60 pl-6 md:pl-8 py-2 self-center">
-                <p className="font-display title-medieval text-xl md:text-3xl text-ivory mb-4 leading-tight">{t.continuityTitle}</p>
-                <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-3">{t.continuityBody}</p>
-                <p className="font-editorial text-base text-brass leading-relaxed">{t.continuityHullsborg}</p>
-              </CinematicReveal>
-            </div>
-          </div>
-        </DepthChapter>
-      </section>
-
-      {/* Une époque aux réalités variées */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <SectionFog edges="top" />
-        <Motes className="opacity-50" count={16} />
-        <DepthChapter tone="ember">
-          <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
-            <ChapterIntro eyebrow={t.epoqueEyebrow} title={t.epoqueTitle} className="mb-8" />
-            <CinematicReveal as="div">
-              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.epoque1}</p>
-              <ul className="space-y-3 font-editorial text-base text-ivory-soft mb-5">
-                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueEurope}</li>
-                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueVikings}</li>
-                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueAndes}</li>
-              </ul>
-              <p className="font-editorial italic text-base text-ivory-soft leading-relaxed">{t.epoqueClose}</p>
-            </CinematicReveal>
-          </div>
-        </DepthChapter>
-      </section>
-
-      {/* Formations et démonstrations grid */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <Parallax speed={0.12} className="absolute inset-0 -z-10">
-          <div
-            className="absolute inset-x-0 top-1/4 h-1/2"
-            style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
-          />
-        </Parallax>
-        <DepthChapter tone="ember">
-          <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-            <ChapterIntro eyebrow={t.formationsEyebrow} title={t.formationsTitle} className="mb-10 md:mb-14" />
-            {/* 3D moment, the codex of crafts opens as you scroll */}
-            <Codex3D label={t.formationsTitle} />
-            <Stagger className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.05}>
-              {FORMATIONS.map((f) => (
-                <StaggerItem
-                  key={f.name.FR}
-                  as="article"
-                  distance={56}
-                  className="glass-light rounded-card p-5 md:p-6 hover:bg-brass/10 transition group hover:-translate-y-1 duration-300"
-                >
-                  <Hammer size={20} className="text-brass mb-3" />
-                  <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5 group-hover:text-brass transition">
-                    {f.name[lang]}
-                  </h3>
-                  <p className="font-editorial italic text-xs text-ivory-soft">{t.detailsTBD}</p>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </div>
-        </DepthChapter>
-      </section>
+      <ApprendreChapterSection />
+      <ThemeCaravanesSection />
+      <OriginesCirqueSection />
+      <EpoqueSection />
+      <FormationsSection />
     </>
   );
 };
@@ -293,6 +372,7 @@ const FR = {
   epoqueAndes: 'Dans les Andes, les systèmes agricoles en terrasses (Mita) répondaient aux besoins de la communauté avec une organisation méthodique.',
   epoqueClose: 'Ces nuances montrent à quel point cette époque était riche et complexe, loin des généralités souvent évoquées.',
   formationsEyebrow: 'Au programme', formationsTitle: 'Formations et démonstrations',
+  formationsLead: 'Huit métiers vivants, démontrés sous vos yeux par des artisans qui les pratiquent encore. Le détail de chaque atelier arrive avec la programmation.',
   detailsTBD: 'Détails à venir',
 };
 const EN = {
@@ -325,6 +405,7 @@ const EN = {
   epoqueAndes: 'In the Andes, terraced agricultural systems (Mita) met community needs through methodical organisation.',
   epoqueClose: 'These nuances show how rich and complex this era was, far from the generalities often invoked.',
   formationsEyebrow: 'On the program', formationsTitle: 'Workshops and demonstrations',
+  formationsLead: 'Eight living crafts, demonstrated before your eyes by artisans who still practice them. Details for each workshop arrive with the program.',
   detailsTBD: 'Details to come',
 };
 
