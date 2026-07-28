@@ -839,7 +839,7 @@ const EN: typeof FR = {
   q11Label: 'Any allergies (food or other)?',
   q12Label: 'Any dietary restrictions or preferences?',
   q13Label: 'Do you need a camping spot for the weekend?',
-  q13Sub:   'We provide the space only — bring your own gear.',
+  q13Sub:   'We provide the space only: bring your own gear.',
   q14Label: 'Have you ever volunteered at FMM before?',
   q15Label: 'Have you ever volunteered at other festivals?',
   q16Label: 'Anything else you’d like to share with us?',
