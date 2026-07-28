@@ -808,7 +808,7 @@ const FR = {
 };
 const EN: typeof FR = {
   home: 'Home', eyebrow: 'The heart of the festival', title: 'Join the team',
-  intro1: 'FMM is run by a volunteer team. Our permanent organising team can’t cover everything on the day — so we call for reinforcements. If you’d like to take part, create an account and submit your application.',
+  intro1: 'FMM is run by a volunteer team. Our permanent organising team can’t cover everything on the day, so we call for reinforcements. If you’d like to take part, create an account and submit your application.',
   intro2: 'Volunteers receive unique merchandise, two weekend passes, meals during shifts, and a camping spot on request.',
   authTitle: 'Sign-in required',
   authBody: 'To apply as a volunteer, you must first create an account. This lets us track your application and stay in touch.',
