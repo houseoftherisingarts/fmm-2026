@@ -170,7 +170,9 @@ export interface KeyContact {
   tone?:   'brass' | 'blush' | 'ivory';
 }
 export const KEY_CONTACTS: KeyContact[] = [
-  { name: 'Maïté Fournel',        role: 'Coordination bénévoles',  phone: '819-981-1007',  email: 'm.fournel11@gmail.com' },
+  // Courriel de fonction seulement — Maïté ne veut pas exposer son adresse
+  // personnelle aux bénévoles (demande du 2026-07-28).
+  { name: 'Maïté Fournel',        role: 'Coordination bénévoles',  phone: '819-981-1007',  email: 'benevoles.medievalmontpellier@gmail.com' },
   { name: 'Tristan Côté-Hotte',   role: 'Co-organisateur',         phone: '819-428-1280',  email: 'tristan_cote_hotte@hotmail.fr' },
   { name: 'Alex St-Laurent',      role: 'Co-organisateur · Web',    phone: '514-418-3450',  email: 'alex@lesalondesinconnus.com' },
   { name: 'Jesse Dippy',          role: 'Co-organisateur',         phone: '904-994-4072' },
