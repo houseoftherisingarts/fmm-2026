@@ -21,6 +21,20 @@ let _benevoles: BenevoleApp[] = [
     adminNotes: 'Profil de démonstration — à utiliser comme exemple pour les nouvelles candidatures.',
     year: 2026, createdAt: now(-1) as any, updatedAt: now(-1) as any,
     city: 'Montpellier, QC',
+    // Champs du vrai formulaire public — le profil démo montre la carte
+    // « Questionnaire de candidature » remplie dans la fiche admin.
+    daysAvailable: ['vendredi', 'samedi', 'dimanche'],
+    stationPreferences: { bar: 1, accueil: 2, camping: 2, securite: 'learn-more', entretien: 3 },
+    heardFrom: 'bouche-a-oreille',
+    pronouns: 'elle',
+    ageRange: '25-40',
+    tShirtSize: 'M',
+    allergies: 'Aucune',
+    dietaryNotes: 'Végétarienne',
+    needsCamping: 'oui',
+    priorVolunteerFMM: 'never',
+    priorVolunteerOther: true,
+    otherComments: 'Je peux arriver le jeudi pour aider au montage si besoin.',
     languages: ['FR', 'EN'],
     skills: [
       'Bricolage général', 'Conduite manuelle', 'Cuisine en grande quantité',
