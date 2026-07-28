@@ -317,9 +317,28 @@ export async function setBenevoleStatus(uid: string, status: AppStatus, adminNot
   if (!db) throw new Error('Firestore not configured');
   await updateDoc(doc(db, 'benevoles', uid), {
     status,
-    ...(adminNotes !== undefined ? { adminNotes } : {}),
     updatedAt: serverTimestamp(),
   });
+  // Notes ride along on status changes but land in the private subcollection,
+  // never on the main doc (the owner can read their own doc).
+  if (adminNotes !== undefined) await saveBenevoleAdminNotes(uid, adminNotes);
+}
+
+// ── Admin-only notes ───────────────────────────────────────────────
+// Stored at benevoles/{uid}/private/notes (admin-only in firestore.rules)
+// so the applicant — who can read their own main doc — never sees them.
+const benevoleNotesDoc = (uid: string) =>
+  doc(db!, 'benevoles', uid, 'private', 'notes');
+
+export async function getBenevoleAdminNotes(uid: string): Promise<string> {
+  if (!db) return '';
+  const snap = await getDoc(benevoleNotesDoc(uid));
+  return snap.exists() ? ((snap.data().text as string) || '') : '';
+}
+
+export async function saveBenevoleAdminNotes(uid: string, text: string): Promise<void> {
+  if (!db) throw new Error('Firestore not configured');
+  await setDoc(benevoleNotesDoc(uid), { text, updatedAt: serverTimestamp() }, { merge: true });
 }
 
 // Assign / unassign a bénévole on a team. Pass teamId=null to unassign.
