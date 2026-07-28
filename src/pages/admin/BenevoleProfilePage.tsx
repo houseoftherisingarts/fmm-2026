@@ -112,11 +112,21 @@ const Body: React.FC<{
   adminUid: string;
   adminName: string;
 }> = ({ b, loading, updateOne, reload, adminUid, adminName }) => {
-  const [notesDraft, setNotesDraft] = useState(b?.adminNotes || '');
+  const [notesDraft, setNotesDraft] = useState('');
   const [saving, setSaving] = useState(false);
   const [teams, setTeams] = useState<Team[]>([]);
 
-  useEffect(() => { setNotesDraft(b?.adminNotes || ''); }, [b?.adminNotes]);
+  // Live notes come from the admin-only private subcollection; the mock
+  // showcase store still carries them inline on the doc.
+  useEffect(() => {
+    let cancelled = false;
+    if (!b) { setNotesDraft(''); return; }
+    if (b.uid.startsWith('mock-')) { setNotesDraft(b.adminNotes || ''); return; }
+    getBenevoleAdminNotes(b.uid)
+      .then((t) => { if (!cancelled) setNotesDraft(t); })
+      .catch(() => { if (!cancelled) setNotesDraft(''); });
+    return () => { cancelled = true; };
+  }, [b]);
 
   // Load teams once — small list, fine to merge live + mock as in EquipesSection.
   useEffect(() => {
