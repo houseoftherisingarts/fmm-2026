@@ -40,6 +40,20 @@ const TRANSPORT_LABEL: Record<NonNullable<BenevoleApp['transport']>, string> = {
 const LANG_LABEL: Record<NonNullable<BenevoleApp['languages']>[number], string> = {
   FR: 'Français', EN: 'Anglais', ES: 'Espagnol', AR: 'Arabe', DE: 'Allemand', IT: 'Italien',
 };
+const YESNO: Record<'oui' | 'non' | 'incertain', string> = {
+  oui: 'Oui', non: 'Non', incertain: 'Incertain',
+};
+
+// Petits blocs du questionnaire admin.
+const QBlock: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div className="mb-4 last:mb-0">
+    <p className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest mb-1.5">{label}</p>
+    {children}
+  </div>
+);
+const Unanswered: React.FC = () => (
+  <p className="font-editorial text-sm text-ivory-soft/50">Sans réponse</p>
+);
 
 function hueFor(seed: string): number {
   let h = 0;
