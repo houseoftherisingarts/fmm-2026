@@ -31,6 +31,7 @@ export interface SiteFlags {
   pubHebergement:          boolean;
   pubPartenaires:          boolean;
   pubBenevole:             boolean;
+  pubPetiteMonnaie:        boolean;
 }
 
 export const SITE_FLAGS_DEFAULTS: SiteFlags = {
