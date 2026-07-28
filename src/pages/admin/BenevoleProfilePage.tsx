@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Phone, Mail, MapPin, Calendar, Award, Languages, Shirt, Car,
   Heart, Sparkles, Save, AlertTriangle, Instagram, Facebook, Globe, Clock,
-  HandHeart, BadgeCheck, Crown, UsersRound,
+  HandHeart, BadgeCheck, Crown, UsersRound, ClipboardList, User,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { isFirebaseReady } from '../../firebase';
