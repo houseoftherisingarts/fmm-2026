@@ -32,9 +32,12 @@ export const SiteFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   });
 
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
     const unsub = subscribeSiteFlags((next) => {
       setFlags(next);
+      setReady(true);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch { /* noop */ }
     });
     return unsub;
@@ -43,6 +46,7 @@ export const SiteFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const value = useMemo<SiteFlagsCtx>(
     () => ({
       flags,
+      ready,
       setFlag: async (k, v) => {
         // Optimistic local update; Firestore subscription will reconcile.
         setFlags((prev) => ({ ...prev, [k]: v }));
