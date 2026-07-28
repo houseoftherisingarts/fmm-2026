@@ -221,9 +221,12 @@ export const EpoqueSection: React.FC = () => {
             <CinematicReveal as="div" className="lg:col-span-8">
               <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.epoque1}</p>
               <ul className="space-y-3 font-editorial text-base text-ivory-soft mb-5">
-                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueEurope}</li>
-                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueVikings}</li>
-                <li className="flex gap-3"><span className="text-brass mt-1">·</span>{t.epoqueAndes}</li>
+                {[t.epoqueEurope, t.epoqueVikings, t.epoqueAndes].map((li) => (
+                  <li key={li.slice(0, 24)} className="flex gap-3">
+                    <span aria-hidden className="text-brass text-[9px] leading-none mt-[0.55em]">◆</span>
+                    <span>{li}</span>
+                  </li>
+                ))}
               </ul>
               <p className="font-editorial text-base text-brass leading-relaxed">{t.epoqueClose}</p>
             </CinematicReveal>
