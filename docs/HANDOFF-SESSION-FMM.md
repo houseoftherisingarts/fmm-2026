@@ -1,5 +1,7 @@
 # HANDOFF — Session FMM (préparé le 2026-07-21, fin de journée)
 
+> **✅ PRIORITÉ 1 ACCOMPLIE le 2026-07-28** : P1-notes déployé (notes → `benevoles/{uid}/private/notes`, migration faite, zéro adminNotes restant), test témoin REST 8/8 en prod, `pubBenevole=true` posé sur OK explicite d'Alex, validation visuelle faite. Les 2 docs TEST de `cliniqueEquestre`/`jeunesseAteliers` sont supprimés. Reste : PRIORITÉ 2 (Programmation) quand Alex le demande.
+
 Cette session est dédiée à UN objectif : **publier le pilier Devenir Bénévole**, puis préparer les autres sections une par une. Rien d'autre (pas de Salon, pas de Vexel : ces chantiers vivent dans leurs propres sessions).
 
 ## État de la prod au moment de la passation (2026-07-21)
