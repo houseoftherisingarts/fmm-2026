@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowLeft, ArrowUpRight, Calendar, MapPin, Phone, Shirt, Car,
   AlertTriangle, LogOut, Pencil, Sparkles, BadgeCheck, HandHeart, Languages,
-  Heart, ListChecks, UsersRound, Crown,
+  Heart, UsersRound, Crown,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
