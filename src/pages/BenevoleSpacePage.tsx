@@ -478,13 +478,6 @@ const SectionTitle: React.FC<{ icon: React.ComponentType<{ size?: number; classN
   </div>
 );
 
-const Li: React.FC<{ icon?: string; children: React.ReactNode }> = ({ icon, children }) => (
-  <li className="flex items-start gap-2.5">
-    {icon && <span aria-hidden className="text-base leading-tight shrink-0 mt-0.5">{icon}</span>}
-    <span>{children}</span>
-  </li>
-);
-
 const Stat: React.FC<{ label: string; value: string; sub?: string }> = ({ label, value, sub }) => (
   <div>
     <p className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest">{label}</p>
