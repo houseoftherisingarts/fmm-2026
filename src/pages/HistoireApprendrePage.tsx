@@ -27,7 +27,7 @@ const HistoireApprendrePage: React.FC = () => {
       <SEO title={fr ? 'Histoire & Apprendre' : 'History & Learning'} />
       <ScrollProgress />
       <PageHeader
-        eyebrow={fr ? 'Quatre ans, et ce qu’on en garde' : 'Four years, and what we keep'}
+        eyebrow={fr ? 'Quatre ans, et ce que nous en gardons' : 'Four years, and what we keep'}
         titleA={fr ? 'Histoire & Apprendre' : 'History & Learning'}
         intro={fr
           ? 'D’où vient le festival, et ce qu’il transmet : notre histoire, puis les savoirs et le thème 2026 à explorer.'
