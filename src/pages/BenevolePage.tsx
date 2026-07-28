@@ -739,7 +739,7 @@ const inputCls = 'w-full bg-midnight-deep/50 border border-ivory-soft/20 px-3.5 
 // ── Copy ───────────────────────────────────────────────────────────
 const FR = {
   home: 'Accueil', eyebrow: 'Le cœur du festival', title: 'Joindre l’équipe',
-  intro1: 'Le FMM est un événement géré par une équipe de bénévoles. L’équipe permanente d’organisation est insuffisante pour combler tous les besoins du festival le jour J — c’est pourquoi nous appelons les renforts. Si vous souhaitez participer, créez un compte et soumettez votre candidature.',
+  intro1: 'Le FMM est un événement géré par une équipe de bénévoles. L’équipe permanente d’organisation est insuffisante pour combler tous les besoins du festival le jour J. C’est pourquoi nous appelons les renforts. Si vous souhaitez participer, créez un compte et soumettez votre candidature.',
   intro2: 'Les bénévoles reçoivent de la marchandise unique, deux billets d’entrée pour la fin de semaine, des repas pendant les quarts, et l’accès à un espace de camping sur demande.',
   authTitle: 'Connexion requise',
   authBody: 'Pour postuler comme bénévole, vous devez d’abord créer un compte. Cela nous permet de garder une trace de votre candidature et de communiquer avec vous.',
