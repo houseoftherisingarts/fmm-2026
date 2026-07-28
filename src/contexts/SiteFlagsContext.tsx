@@ -54,7 +54,7 @@ export const SiteFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         catch (e) { console.warn('[siteFlags] remote write failed', e); }
       },
     }),
-    [flags],
+    [flags, ready],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
