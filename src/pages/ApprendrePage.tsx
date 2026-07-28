@@ -279,7 +279,7 @@ const FR = {
     { era: 'Antiquité', title: 'Le cirque romain', body: 'À Rome, le Circus Maximus accueille des courses de chars devant des dizaines de milliers de spectateurs. Mimes et histrions amusent déjà la foule.' },
     { era: 'XIIᵉ siècle', title: 'Jongleurs et ménestrels', body: 'Sur les grandes foires, comme celles de Champagne, jongleurs, bateleurs et ménestrels enchaînent acrobaties, musique et tours d’adresse, de ville en ville.' },
     { era: '1316', title: 'Le fou à la cour', body: 'Les registres royaux français mentionnent pour la première fois un fou de cour. Bouffons et conteurs animent les salles de banquet des seigneurs.' },
-    { era: '1768', title: 'Le cirque moderne', body: 'À Londres, Philip Astley réunit cavaliers, acrobates, funambules et clowns sur une piste ronde. Le cirque tel qu’on le connaît est né.' },
+    { era: '1768', title: 'Le cirque moderne', body: 'À Londres, Philip Astley réunit cavaliers, acrobates, funambules et clowns sur une piste ronde. Le cirque tel que nous le connaissons est né.' },
   ],
   partnerEyebrow: 'Une culture invitée', partnerTitle: 'L’association Rome de Montréal',
   partnerBody: 'Cette année, nous accueillons l’association Rome de Montréal, qui vient partager et représenter la culture rom (romani) au festival. Une présence vivante, portée par celles et ceux qui la font vibrer aujourd’hui.',
