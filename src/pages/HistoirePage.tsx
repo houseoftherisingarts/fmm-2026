@@ -11,8 +11,14 @@ import {
   IconCastle, IconScroll, IconCamera, IconHourglass, IconTable,
 } from '../components/icons/GameIcons';
 
-// Team, cloned from Wix /histoire "L'organisation".
-const TEAM = [
+// Team, cloned from Wix /histoire "L'organisation". `pos` overrides the
+// default vertical crop (object-[center_25%]) when a portrait sits lower
+// in its frame (e.g. Léna: too much headroom at 25%).
+type TeamMember = {
+  name: string; photo: string; pos?: string;
+  role: { FR: string; EN: string }; bioFR: string; bioEN: string;
+};
+const TEAM: TeamMember[] = [
   { name: 'Tristan Côté-Hotte', photo: '/wix/histoire/team/tristan.jpg',  role: { FR: 'Direction générale · Fondateur',                                  EN: 'General direction · Founder' },                          bioFR: '+10 à l’épée, +10 à cheval, +10 en hydromel.',                                                                bioEN: '+10 to sword, +10 to horse, +10 to mead.' },
   { name: 'Jesse Dippy', photo: '/wix/histoire/team/jesse.jpg',         role: { FR: 'Kiosques et marchands',                                            EN: 'Kiosks and vendors' },                                   bioFR: 'Pirate dans l’âme, travailleuse et tanneuse de cuir. Artiste traditionnelle, spécialiste en costumes médiévaux historiques et fantaisie.', bioEN: 'Pirate at heart, leather worker and tanner. Traditional artist, specialist in historical and fantasy medieval costumes.' },
   { name: 'Maïté Fournel', photo: '/wix/histoire/team/maite.jpg',       role: { FR: 'Secrétariat · Bar · Structure',                                    EN: 'Secretary · Bar · Structure' },                          bioFR: 'D’une bonté sans précédent, Maïté s’occupe que tout roule comme sur des charrettes.',                       bioEN: 'Unprecedented kindness, Maïté keeps everything running smoothly.' },
