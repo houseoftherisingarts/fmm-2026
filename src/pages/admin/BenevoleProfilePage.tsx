@@ -160,7 +160,11 @@ const Body: React.FC<{
   const saveNotes = async () => {
     if (!b) return;
     setSaving(true);
-    try { await updateOne(b.uid, b.status, notesDraft); await reload(); }
+    try {
+      if (b.uid.startsWith('mock-')) await updateOne(b.uid, b.status, notesDraft);
+      else                           await saveBenevoleAdminNotes(b.uid, notesDraft);
+      await reload();
+    }
     finally { setSaving(false); }
   };
 
