@@ -55,11 +55,19 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
     (search === '' || `${b.prenom} ${b.nom} ${b.email}`.toLowerCase().includes(search.toLowerCase())),
   );
 
-  const exportCsv = () => downloadCsv('fmm-benevoles.csv', items.map((b) => ({
-    prenom: b.prenom, nom: b.nom, email: b.email, telephone: b.telephone || '',
-    status: b.status, message: b.message || '', adminNotes: b.adminNotes || '',
-    createdAt: fmtDate(b.createdAt), year: b.year,
-  })));
+  // Live notes sit in the admin-only private subcollection, so the export
+  // fetches them per bénévole; mock rows still carry them inline.
+  const exportCsv = async () => {
+    const notes = await Promise.all(items.map((b) =>
+      b.uid.startsWith('mock-') ? Promise.resolve(b.adminNotes || '')
+                                : getBenevoleAdminNotes(b.uid).catch(() => ''),
+    ));
+    downloadCsv('fmm-benevoles.csv', items.map((b, i) => ({
+      prenom: b.prenom, nom: b.nom, email: b.email, telephone: b.telephone || '',
+      status: b.status, message: b.message || '', adminNotes: notes[i],
+      createdAt: fmtDate(b.createdAt), year: b.year,
+    })));
+  };
 
   const counts = {
     total:    items.length,
