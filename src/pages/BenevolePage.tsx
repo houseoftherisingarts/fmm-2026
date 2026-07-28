@@ -40,10 +40,10 @@ const DAYS: { id: BenevoleDay; fr: string; en: string }[] = [
   { id: 'incertain', fr: 'Je ne sais pas encore', en: "I'm not sure yet" },
 ];
 const STATION_PREF_LABELS: Record<BenevoleStationPref | 'unset', { fr: string; en: string; tone: string }> = {
-  1:            { fr: '1 — Mon préféré',       en: '1 — My pick',         tone: 'bg-brass text-midnight-deep border-brass' },
-  2:            { fr: '2 — Si besoin',          en: '2 — If needed',       tone: 'bg-emerald-500/15 border-emerald-400/40 text-emerald-300' },
-  3:            { fr: '3 — Pas pour moi',       en: '3 — Not for me',      tone: 'bg-blush/15 border-blush/40 text-blush' },
-  'learn-more': { fr: '? — En apprendre plus', en: '? — Tell me more',    tone: 'bg-blue-300/15 border-blue-300/40 text-blue-300' },
+  1:            { fr: '1 · Mon préféré',       en: '1 · My pick',         tone: 'bg-brass text-midnight-deep border-brass' },
+  2:            { fr: '2 · Si besoin',          en: '2 · If needed',       tone: 'bg-emerald-500/15 border-emerald-400/40 text-emerald-300' },
+  3:            { fr: '3 · Pas pour moi',       en: '3 · Not for me',      tone: 'bg-blush/15 border-blush/40 text-blush' },
+  'learn-more': { fr: '? · En apprendre plus', en: '? · Tell me more',    tone: 'bg-blue-300/15 border-blue-300/40 text-blue-300' },
   unset:        { fr: '—',                      en: '—',                   tone: 'border-ivory-soft/20 text-ivory-soft/60' },
 };
 const HEARD_FROM: { id: BenevoleHeardFrom; fr: string; en: string }[] = [
