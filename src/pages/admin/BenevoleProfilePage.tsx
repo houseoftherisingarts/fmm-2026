@@ -19,6 +19,11 @@ import {
   type BenevoleApp, type AppStatus,
 } from '../../firebase/applications';
 import { mockGetBenevole, mockSetBenevoleStatus } from '../../firebase/mockApplications';
+// Vocabulaire du formulaire public — la fiche admin rend les réponses avec
+// exactement les mêmes libellés que ce que le bénévole a coché.
+import {
+  STATIONS, DAYS, STATION_PREF_LABELS, HEARD_FROM, PRONOUNS, AGE_RANGES, PRIOR_FMM,
+} from '../BenevolePage';
 
 const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.meta.env.DEV;
 const BYPASS_USER = { email: 'dev@local', displayName: 'Dev (bypass)', photoURL: null };
