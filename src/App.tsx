@@ -239,10 +239,13 @@ const GlobalFireBackdrop: React.FC = () => {
 // local dev) a direct hit bounces to the teaser home, so no one lands on an
 // unfinished section even with the URL in hand.
 const PillarGate: React.FC<{ pillarKey: PillarKey; children: React.ReactElement }> = ({ pillarKey, children }) => {
-  const { flags } = useSiteFlags();
-  return isPillarVisible(flags, pillarKey, SITE_MODE === 'live')
-    ? children
-    : <Navigate to="/" replace />;
+  const { flags, ready } = useSiteFlags();
+  if (isPillarVisible(flags, pillarKey, SITE_MODE === 'live')) return children;
+  // First-ever visit: flags are still the all-off defaults until the first
+  // Firestore snapshot lands. Bouncing now would send a shared link to a
+  // PUBLISHED pillar back to the teaser — hold until we actually know.
+  if (!ready) return null;
+  return <Navigate to="/" replace />;
 };
 
 function pillarRoutes() {
