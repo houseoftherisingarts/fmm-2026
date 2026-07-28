@@ -91,6 +91,9 @@ export interface BenevoleApp {
   telephone: string;
   message: string;                      // free-text "why volunteer" + comments
   status: AppStatus;
+  // Live notes live at benevoles/{uid}/private/notes (see getBenevoleAdminNotes)
+  // and must NEVER be written to the main doc, which the owner can read.
+  // This field only survives for the in-memory mock/showcase store.
   adminNotes?: string;
   year: number;
   createdAt?: Timestamp;
