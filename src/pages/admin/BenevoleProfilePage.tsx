@@ -250,6 +250,75 @@ const Body: React.FC<{
                 : <p className="font-editorial italic text-ivory-soft/60">— aucun message —</p>}
             </Card>
 
+            {/* Questionnaire de candidature — les VRAIS champs du formulaire
+                public (daysAvailable, stationPreferences, etc.), rendus avec
+                le même vocabulaire. Sans cette carte, Maïté ne voyait qu'une
+                fraction des réponses (les blocs plus bas lisent des champs
+                d'une forme antérieure). */}
+            <Card className="p-5 md:p-6">
+              <SectionTitle icon={ClipboardList}>Questionnaire de candidature</SectionTitle>
+
+              <QBlock label="Jours disponibles">
+                {b.daysAvailable && b.daysAvailable.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {b.daysAvailable.map((d) => (
+                      <span key={d} className="inline-flex items-center px-2.5 py-1 rounded-card border border-brass/30 bg-brass/8 text-brass text-xs font-sans">
+                        {DAYS.find((x) => x.id === d)?.fr ?? d}
+                      </span>
+                    ))}
+                  </div>
+                ) : <Unanswered />}
+              </QBlock>
+
+              <QBlock label="Préférences de poste">
+                {b.stationPreferences && Object.keys(b.stationPreferences).length > 0 ? (
+                  <ul className="grid sm:grid-cols-2 gap-1.5">
+                    {STATIONS.map((s) => {
+                      const pref = b.stationPreferences?.[s.id];
+                      const badge = STATION_PREF_LABELS[pref ?? 'unset'];
+                      return (
+                        <li key={s.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-card border border-ivory-soft/10">
+                          <span className="font-sans text-sm text-ivory">{s.emoji} {s.fr}</span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-card border font-sans text-[10px] uppercase tracking-widest ${badge.tone}`}>
+                            {badge.fr}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : <Unanswered />}
+              </QBlock>
+
+              <div className="grid sm:grid-cols-2 gap-x-6">
+                <QBlock label="A connu le FMM via">
+                  {b.heardFrom
+                    ? <p className="font-sans text-sm text-ivory">
+                        {HEARD_FROM.find((h) => h.id === b.heardFrom)?.fr ?? b.heardFrom}
+                        {b.heardFrom === 'autre' && b.heardFromOther ? ` : ${b.heardFromOther}` : ''}
+                      </p>
+                    : <Unanswered />}
+                </QBlock>
+                <QBlock label="Bénévolat FMM par le passé">
+                  {b.priorVolunteerFMM
+                    ? <p className="font-sans text-sm text-ivory">
+                        {PRIOR_FMM.find((p) => p.id === b.priorVolunteerFMM)?.fr ?? b.priorVolunteerFMM}
+                        {b.priorVolunteerOther ? ' · aussi bénévole dans d’autres festivals' : ''}
+                      </p>
+                    : <Unanswered />}
+                </QBlock>
+                <QBlock label="Camping sur place">
+                  {b.needsCamping
+                    ? <p className="font-sans text-sm text-ivory">{YESNO[b.needsCamping]}</p>
+                    : <Unanswered />}
+                </QBlock>
+                <QBlock label="Autres commentaires">
+                  {b.otherComments
+                    ? <p className="font-sans text-sm text-ivory whitespace-pre-line">{b.otherComments}</p>
+                    : <Unanswered />}
+                </QBlock>
+              </div>
+            </Card>
+
             {/* Disponibilités */}
             {b.availability && Object.keys(b.availability).length > 0 && (
               <Card className="p-5 md:p-6">

@@ -25,7 +25,7 @@ import { ScrollProgress } from '../components/scroll';
 
 const SHOWCASE_IN_DEV = import.meta.env.DEV;
 
-const STATIONS: { id: BenevoleStation; fr: string; en: string; emoji: string }[] = [
+export const STATIONS: { id: BenevoleStation; fr: string; en: string; emoji: string }[] = [
   { id: 'bar',           fr: 'Bar / Taverne',     en: 'Bar / Tavern',         emoji: '🍺' },
   { id: 'accueil',       fr: 'Accueil',           en: 'Welcome / Box-office', emoji: '🎟️' },
   { id: 'securite',      fr: 'Sécurité',          en: 'Security',             emoji: '🛡️' },
@@ -33,34 +33,34 @@ const STATIONS: { id: BenevoleStation; fr: string; en: string; emoji: string }[]
   { id: 'entretien',     fr: 'Entretien du site', en: 'Site upkeep',          emoji: '🧹' },
   { id: 'stationnement', fr: 'Stationnement',     en: 'Parking',              emoji: '🅿️' },
 ];
-const DAYS: { id: BenevoleDay; fr: string; en: string }[] = [
+export const DAYS: { id: BenevoleDay; fr: string; en: string }[] = [
   { id: 'vendredi',  fr: 'Vendredi 25 sept.', en: 'Friday 25 Sept' },
   { id: 'samedi',    fr: 'Samedi 26 sept.',   en: 'Saturday 26 Sept' },
   { id: 'dimanche',  fr: 'Dimanche 27 sept.', en: 'Sunday 27 Sept' },
   { id: 'incertain', fr: 'Je ne sais pas encore', en: "I'm not sure yet" },
 ];
-const STATION_PREF_LABELS: Record<BenevoleStationPref | 'unset', { fr: string; en: string; tone: string }> = {
+export const STATION_PREF_LABELS: Record<BenevoleStationPref | 'unset', { fr: string; en: string; tone: string }> = {
   1:            { fr: '1 · Mon préféré',       en: '1 · My pick',         tone: 'bg-brass text-midnight-deep border-brass' },
   2:            { fr: '2 · Si besoin',          en: '2 · If needed',       tone: 'bg-emerald-500/15 border-emerald-400/40 text-emerald-300' },
   3:            { fr: '3 · Pas pour moi',       en: '3 · Not for me',      tone: 'bg-blush/15 border-blush/40 text-blush' },
   'learn-more': { fr: '? · En apprendre plus', en: '? · Tell me more',    tone: 'bg-blue-300/15 border-blue-300/40 text-blue-300' },
   unset:        { fr: '—',                      en: '—',                   tone: 'border-ivory-soft/20 text-ivory-soft/60' },
 };
-const HEARD_FROM: { id: BenevoleHeardFrom; fr: string; en: string }[] = [
+export const HEARD_FROM: { id: BenevoleHeardFrom; fr: string; en: string }[] = [
   { id: 'reseaux',          fr: 'Réseaux sociaux (Facebook, Instagram…)', en: 'Social networks (Facebook, Instagram…)' },
   { id: 'site',             fr: 'Site web',                                 en: 'Website' },
   { id: 'bouche-a-oreille', fr: 'Bouche-à-oreille',                         en: 'Word of mouth' },
   { id: 'affiche',          fr: 'Affiche dans un magasin',                  en: 'Poster in a store' },
   { id: 'autre',            fr: 'Autre (précisez)',                         en: 'Other (specify)' },
 ];
-const PRONOUNS: { id: BenevolePronouns; fr: string; en: string }[] = [
+export const PRONOUNS: { id: BenevolePronouns; fr: string; en: string }[] = [
   { id: 'il',          fr: 'Il',                       en: 'He/Him' },
   { id: 'elle',        fr: 'Elle',                     en: 'She/Her' },
   { id: 'iel',         fr: 'Iel',                      en: 'They/Them' },
   { id: 'prefer-not',  fr: 'Je préfère ne pas répondre', en: 'Prefer not to say' },
   { id: 'autre',       fr: 'Autre (précisez)',           en: 'Other (specify)' },
 ];
-const AGE_RANGES: { id: BenevoleAgeRange; fr: string; en: string }[] = [
+export const AGE_RANGES: { id: BenevoleAgeRange; fr: string; en: string }[] = [
   { id: 'lt18',  fr: 'Moins de 18 ans', en: 'Under 18' },
   { id: '18-25', fr: '18 – 25 ans',     en: '18 – 25' },
   { id: '25-40', fr: '25 – 40 ans',     en: '25 – 40' },
@@ -68,7 +68,7 @@ const AGE_RANGES: { id: BenevoleAgeRange; fr: string; en: string }[] = [
   { id: '60+',   fr: '60 ans et plus',  en: '60+' },
 ];
 const TSHIRT: BenevoleTShirt[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'autre'];
-const PRIOR_FMM: { id: BenevolePriorFMM; fr: string; en: string }[] = [
+export const PRIOR_FMM: { id: BenevolePriorFMM; fr: string; en: string }[] = [
   { id: 'one',      fr: 'Oui, 1 fois',           en: 'Yes, 1 time' },
   { id: 'multiple', fr: 'Oui, plusieurs années', en: 'Yes, several years' },
   { id: 'never',    fr: 'Non jamais',            en: 'No, never' },
