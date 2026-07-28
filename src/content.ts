@@ -80,6 +80,7 @@ export const PILLAR_COPY: Record<PillarKey, { FR: PillarCopy; EN: PillarCopy }> 
   histoire:    { FR: { eyebrow: 'Notre histoire',       title: '5 Ans d\'histoire',     lead: 'Cinq éditions, des milliers de visiteurs, des centaines de photos.' }, EN: { eyebrow: 'Our story',           title: '5 Years of History',    lead: 'Five editions, thousands of visitors, hundreds of photos.' } },
   mariages:    { FR: { eyebrow: 'Cérémonie d\'époque',  title: 'Mariages',              lead: 'Le site du FMM accueille mariages médiévaux et celtiques sur réservation.' }, EN: { eyebrow: 'Period ceremony',     title: 'Weddings',              lead: 'The FMM site hosts medieval and Celtic weddings by reservation.' } },
   groupes:     { FR: { eyebrow: 'Sortie de groupe',     title: 'Groupes',               lead: 'Tarifs spéciaux pour les groupes scolaires, communautaires et corporatifs.' }, EN: { eyebrow: 'Group outing',        title: 'Groups',                lead: 'Special rates for school, community and corporate groups.' } },
+  'petite-monnaie': { FR: { eyebrow: 'La monnaie du festival', title: 'Petite Monnaie', lead: 'Le réseau cellulaire est capricieux sur le site : passez au kiosque à l\'entrée, repartez avec votre Petite Monnaie et payez partout au festival.' }, EN: { eyebrow: 'The festival currency', title: 'Petite Monnaie', lead: 'Cell coverage is spotty on site: stop at the entrance kiosk, pick up your Petite Monnaie and pay everywhere at the festival.' } },
 };
 
 // ─── Home (real homepage, replaces Wix `/festival-medieval-de-montpellier`)
