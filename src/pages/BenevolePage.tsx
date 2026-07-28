@@ -214,7 +214,6 @@ const BenevolePage: React.FC = () => {
         telephone:   form.telephone,
         message:     form.message,
         status:      existing?.status || 'pending',
-        adminNotes:  existing?.adminNotes,
         year:        2026,
         createdAt:   existing?.createdAt,
         // Page 1
