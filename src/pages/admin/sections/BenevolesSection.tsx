@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Download, HandHeart, Calendar } from 'lucide-react';
-import type { AppStatus, BenevoleApp } from '../../../firebase/applications';
+import { getBenevoleAdminNotes, type AppStatus, type BenevoleApp } from '../../../firebase/applications';
 import { Badge, Card, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
 import HoraireEditor from '../../../components/admin/HoraireEditor';
 import { listTeams, type Team } from '../../../firebase/teams';
