@@ -50,6 +50,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   pubHebergement:          false,
   pubPartenaires:          false,
   pubBenevole:             false,
+  pubPetiteMonnaie:        false,
 };
 
 // Maps each top-level pillar to its publication flag + a human label for the
