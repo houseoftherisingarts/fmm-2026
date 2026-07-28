@@ -64,6 +64,7 @@ export const PILLAR_PUBLISH_FLAGS: { key: PillarKey; flag: keyof SiteFlags; labe
   { key: 'hebergement', flag: 'pubHebergement', label: 'Camping & Hébergement' },
   { key: 'partenaires', flag: 'pubPartenaires', label: 'Nos Partenaires' },
   { key: 'benevole',    flag: 'pubBenevole',    label: 'Devenir Bénévole' },
+  { key: 'petite-monnaie', flag: 'pubPetiteMonnaie', label: 'Petite Monnaie' },
 ];
 
 const PUBLISH_FLAG_BY_KEY = Object.fromEntries(
