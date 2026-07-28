@@ -15,7 +15,7 @@ import { setBenevoleTeam, type BenevoleTeamRole } from '../../firebase/applicati
 import { listTeams, type Team } from '../../firebase/teams';
 import { mockListTeams, mockSetBenevoleTeam } from '../../firebase/mockApplications';
 import {
-  getBenevoleApp, setBenevoleStatus,
+  getBenevoleApp, setBenevoleStatus, getBenevoleAdminNotes, saveBenevoleAdminNotes,
   type BenevoleApp, type AppStatus,
 } from '../../firebase/applications';
 import { mockGetBenevole, mockSetBenevoleStatus } from '../../firebase/mockApplications';
