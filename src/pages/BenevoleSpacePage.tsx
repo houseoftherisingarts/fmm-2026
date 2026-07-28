@@ -340,29 +340,9 @@ const BenevoleSpacePage: React.FC = () => {
               <DocumentsShelf lang={lang} />
             </Card>
 
-            {/* Practical info */}
-            <Card>
-              <SectionTitle icon={ListChecks}>
-                {lang === 'FR' ? 'Infos pratiques' : 'Practical info'}
-              </SectionTitle>
-              <ul className="space-y-2.5 font-sans text-sm text-ivory-soft leading-relaxed">
-                <Li icon="📍">{lang === 'FR'
-                  ? 'Point de ralliement bénévole : tente Maïté, près de l’entrée principale, ouverte dès le jeudi 16h.'
-                  : 'Volunteer rally point: Maïté tent, near the main entrance, open from Thursday 4pm.'}</Li>
-                <Li icon="🅿️">{lang === 'FR'
-                  ? 'Stationnement bénévoles : entrée latérale, signalez-vous au Lead Parking (Clément).'
-                  : 'Volunteer parking: side entrance, check in with Lead Parking (Clément).'}</Li>
-                <Li icon="👕">{lang === 'FR'
-                  ? `T-shirt FMM (taille ${b.tShirtSize || 'à confirmer'}) à récupérer au point de ralliement.`
-                  : `FMM t-shirt (size ${b.tShirtSize || 'to confirm'}) to pick up at the rally point.`}</Li>
-                <Li icon="🍲">{lang === 'FR'
-                  ? 'Repas bénévoles : trois repas chauds par jour à la cantine équipe (10h, 14h, 19h).'
-                  : 'Volunteer meals: three hot meals per day at the team canteen (10am, 2pm, 7pm).'}</Li>
-                <Li icon="🎟️">{lang === 'FR'
-                  ? 'Vos invitations gratuites pour proches sont disponibles via le lien envoyé par courriel.'
-                  : 'Your free guest passes are available via the link emailed to you.'}</Li>
-              </ul>
-            </Card>
+            {/* Infos pratiques : bloc RETIRÉ le 2026-07-28 à la demande de
+                Maïté — le contenu (tente, parking, repas, invitations) était
+                inventé. À remettre seulement avec ses vraies infos validées. */}
 
             {/* Messagerie avec Maïté / FMM */}
             <Card>
