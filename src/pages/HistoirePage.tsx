@@ -11,6 +11,9 @@ import {
   IconCastle, IconScroll, IconCamera, IconHourglass, IconTable,
 } from '../components/icons/GameIcons';
 import { ARCHIVES_LENA, ARCHIVES_ALEX, ARCHIVES_LIEVRE } from '../content/histoireArchives';
+import {
+  fetchArchivePhotos, photoThumb, photoFull, PHOTOGRAPHER_META, PHOTOGRAPHER_ORDER,
+} from '../firebase/archivesPhotos';
 
 // Team, cloned from Wix /histoire "L'organisation". `pos` overrides the
 // default vertical crop (object-[center_25%]) when a portrait sits lower
