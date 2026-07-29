@@ -169,14 +169,10 @@ export interface KeyContact {
   email?:  string;
   tone?:   'brass' | 'blush' | 'ivory';
 }
+// Décision d'Alex + Maïté (2026-07-28) : l'aide-mémoire n'expose RIEN
+// d'autre que le courriel de fonction des bénévoles. Aucun numéro ni
+// courriel personnel des organisateur·ices tant que la vraie liste n'est
+// pas validée par l'équipe.
 export const KEY_CONTACTS: KeyContact[] = [
-  // Courriel de fonction seulement — Maïté ne veut pas exposer son adresse
-  // personnelle aux bénévoles (demande du 2026-07-28).
-  { name: 'Maïté Fournel',        role: 'Coordination bénévoles',  phone: '819-981-1007',  email: 'benevoles.medievalmontpellier@gmail.com' },
-  { name: 'Tristan Côté-Hotte',   role: 'Co-organisateur',         phone: '819-428-1280',  email: 'tristan_cote_hotte@hotmail.fr' },
-  { name: 'Alex St-Laurent',      role: 'Co-organisateur · Web',    phone: '514-418-3450',  email: 'alex@lesalondesinconnus.com' },
-  { name: 'Jesse Dippy',          role: 'Co-organisateur',         phone: '904-994-4072' },
-  { name: 'Mikael Lamarche',      role: 'Co-organisateur',         phone: '819-983-1631',  email: 'lamarchemikael45@gmail.com' },
-  { name: 'Léna Le Bozec',        role: 'Co-organisatrice',        phone: '819-983-8409',  email: 'lebozeclena@gmail.com' },
-  { name: 'Urgences',             role: 'Sur place / 911',         phone: '911',           tone: 'blush' },
+  { name: 'Maïté Fournel', role: 'Coordination bénévoles', email: 'benevoles.medievalmontpellier@gmail.com' },
 ];
