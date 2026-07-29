@@ -237,6 +237,9 @@ service cloud.firestore {
     // RACI matrix (MatriceRolesSection + PersonProfilePage, admin only).
     match /matriceRoles/{docId} { allow read, write: if isAdmin(); }
     match /matriceTasks/{docId} { allow read, write: if isAdmin(); }
+    // Archives photos de la page Histoire : la page publique lit tout,
+    // seuls les admins (section Photos — Léna) écrivent.
+    match /archivesPhotos/{docId} { allow read: if true; allow write: if isAdmin(); }
     // Vendor image overrides: admin writes, the public MarchePage reads.
     match /crm/vendor-image-overrides { allow read: if true; allow write: if isAdmin(); }
     // Broadcast templates (BroadcastComposer, admin only).
