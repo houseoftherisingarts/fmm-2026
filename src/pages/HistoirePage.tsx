@@ -211,32 +211,16 @@ export const ArchivesPhotosSection: React.FC = () => {
           title={t.photosTitle}
           lead={t.galleryLead}
         />
-        {/* Archives, one masonry block per photographer (as on the Wix site) */}
+        {/* Archives, one batched masonry block per photographer */}
         {GALLERY_BY_PHOTOGRAPHER.map((grp) => (
-          <div key={grp.photographer} className="mb-12 md:mb-14">
-            <Reveal>
-              <p className="font-editorial uppercase tracking-[0.3em] text-[11px] text-brass/80 mb-1">{t.photographerBy}</p>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-5 flex items-center gap-3">
-                {grp.photographer}
-                <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-brass/40 to-transparent" />
-              </h3>
-            </Reveal>
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [&>*]:mb-3 md:[&>*]:mb-4">
-              {grp.photos.map((file, i) => (
-                <motion.figure
-                  key={file}
-                  initial={{ opacity: 0, y: 22, clipPath: 'inset(8% 0 0 0)' }}
-                  whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)' }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ duration: 0.7, delay: (i % 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                  className="break-inside-avoid overflow-hidden rounded-card border border-brass/20 group"
-                >
-                  <img decoding="async" src={`/wix/histoire/${file}.jpg`} alt={`${t.photographerBy} ${grp.photographer}`} loading="lazy"
-                    className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" />
-                </motion.figure>
-              ))}
-            </div>
-          </div>
+          <PhotographerGroup
+            key={grp.photographer}
+            photographer={grp.photographer}
+            base={grp.base}
+            photos={grp.photos}
+            byLabel={t.photographerBy}
+            moreLabel={t.morePhotos}
+          />
         ))}
 
         <Reveal as="div" className="grid lg:grid-cols-12 gap-4 lg:gap-12 border-t border-brass/15 pt-6">
