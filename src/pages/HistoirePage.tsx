@@ -277,11 +277,10 @@ export const ArchivesPhotosSection: React.FC = () => {
           lead={t.galleryLead}
         />
         {/* Archives, one batched masonry block per photographer */}
-        {GALLERY_BY_PHOTOGRAPHER.map((grp) => (
+        {groups.map((grp) => (
           <PhotographerGroup
             key={grp.photographer}
             photographer={grp.photographer}
-            base={grp.base}
             photos={grp.photos}
             byLabel={t.photographerBy}
             moreLabel={t.morePhotos}
