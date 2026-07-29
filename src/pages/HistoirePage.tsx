@@ -52,16 +52,16 @@ const WAYBACK: Record<number, string> = {
   2025: 'https://web.archive.org/web/20250809223540/https://www.festivalmedievaldemontpellier.org/',
 };
 
-// Archives photos par photographe. Léna et Alex viennent du pipeline
-// d'import du 2026-07-28 (exports complets convertis en webp dans
-// /public/histoire/archives/); Clair du Lièvre et Océane gardent la
-// sélection Wix d'origine (/public/wix/histoire/). Chaque groupe se
-// charge par lots (12 d'abord, « Voir plus » ensuite) pour rester léger.
+// Archives photos par photographe. Léna, Alex et Clair du Lièvre viennent
+// du pipeline d'import (exports convertis en webp dans
+// /public/histoire/archives/); Océane garde la sélection Wix d'origine
+// (/public/wix/histoire/). Ordre des groupes fixé par Alex (2026-07-29).
+// Chaque groupe se charge par lots (12 d'abord, « Voir plus » ensuite).
 const GALLERY_BY_PHOTOGRAPHER: { photographer: string; base: string; photos: string[] }[] = [
   { photographer: 'Lena Photos et Aventures', base: '/histoire/archives/lena/', photos: ARCHIVES_LENA },
-  { photographer: 'Clair du Lièvre',          base: '/wix/histoire/', photos: ['79cc4362.jpg', 'e9ed2ea5.jpg', '41b394c7.jpg', 'b61a5675.jpg', '77c6727f.jpg'] },
-  { photographer: 'Océane Leclair',           base: '/wix/histoire/', photos: ['75354f34.jpg', '7daad709.jpg', '8f8a1178.jpg', '0ca093b1.jpg', '6b19a593.jpg', '722a8ce4.jpg', '61a24378.jpg', '1e52cafb.jpg'] },
   { photographer: 'Alex T. St-Laurent',       base: '/histoire/archives/alex/', photos: ARCHIVES_ALEX },
+  { photographer: 'Océane Leclair',           base: '/wix/histoire/', photos: ['75354f34.jpg', '7daad709.jpg', '8f8a1178.jpg', '0ca093b1.jpg', '6b19a593.jpg', '722a8ce4.jpg', '61a24378.jpg', '1e52cafb.jpg'] },
+  { photographer: 'Clair du Lièvre',          base: '/histoire/archives/lievre/', photos: ARCHIVES_LIEVRE },
 ];
 
 const PHOTOS_FIRST_BATCH = 12;
