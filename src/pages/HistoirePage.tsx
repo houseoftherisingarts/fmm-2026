@@ -269,7 +269,6 @@ export const ArchivesPhotosSection: React.FC = () => {
           <p className="lg:col-span-4 font-editorial uppercase tracking-[0.3em] text-xs text-stone">{t.creditsEyebrow}</p>
           <div className="lg:col-span-8">
             <p className="font-editorial text-base text-ivory-soft">{CREDITS.join(' · ')}</p>
-            <p className="font-editorial text-xs text-stone mt-2">{t.iconCredit}</p>
           </div>
         </Reveal>
       </div>
