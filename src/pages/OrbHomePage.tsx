@@ -1032,15 +1032,12 @@ const OrbHomePage: React.FC = () => {
                     playsInline
                     preload="auto"
                     onEnded={() => setIntroDone(true)}
+                    src="/orb/logo-intro.mp4"
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out ${
                       introDone ? 'opacity-0' : 'opacity-100'
                     }`}
                     style={{ transform: 'scale(1.4)' }}
-                  >
-                    <source src="/orb/logo-intro.hevc.mp4" type={'video/mp4; codecs="hvc1"'} />
-                    <source src="/orb/logo-intro.webm" type={'video/webm; codecs="vp9"'} />
-                    <source src="/orb/logo-intro.mp4" type="video/mp4" />
-                  </video>
+                  />
                 </div>
 
                 {/* Inner vignette so the image meets the rim softly. On
