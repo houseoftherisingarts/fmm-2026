@@ -10,6 +10,7 @@ import { SectionFog } from '../components/marche/atmospherics';
 import {
   IconCastle, IconScroll, IconCamera, IconHourglass, IconTable,
 } from '../components/icons/GameIcons';
+import { ARCHIVES_LENA, ARCHIVES_ALEX } from '../content/histoireArchives';
 
 // Team, cloned from Wix /histoire "L'organisation". `pos` overrides the
 // default vertical crop (object-[center_25%]) when a portrait sits lower
