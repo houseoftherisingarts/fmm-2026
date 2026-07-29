@@ -405,7 +405,7 @@ const FR = {
   galleryEyebrow: 'Archives', photosTitle: 'Archives photos', galleryTitle: 'Plongez dans nos archives', photographerBy: 'Photos par',
   galleryLead: 'Cinq éditions immortalisées par nos photographes. Une sélection, classée selon qui l’a captée.',
   plongezLead: 'Cinq éditions, et une machine à remonter le temps : revisitez le site du festival tel qu’il était, année après année, puis revivez l’édition Viking en images.',
-  edition: 'Édition', viewArchive: 'Voir l’archive',
+  edition: 'Édition', viewArchive: 'Voir l’archive', morePhotos: 'Voir plus de photos',
   creditsEyebrow: 'Crédits photo',
   iconCredit: 'Icônes : game-icons.net (Lorc, Delapouite et contributeurs) · CC BY 3.0',
   teamEyebrow: 'L’organisation', teamTitle: 'L’équipe',
