@@ -76,8 +76,9 @@ export async function deletePhoto(p: ArchivePhoto): Promise<void> {
 // fractions, lisible dans la console).
 export async function savePhotoOrder(photos: ArchivePhoto[]): Promise<void> {
   if (!db) throw new Error('Firestore indisponible');
-  const batch = writeBatch(db);
-  photos.forEach((p, i) => batch.update(doc(db, COLL, p.id), { order: (i + 1) * 10 }));
+  const database = db;
+  const batch = writeBatch(database);
+  photos.forEach((p, i) => batch.update(doc(database, COLL, p.id), { order: (i + 1) * 10 }));
   await batch.commit();
 }
 
