@@ -480,13 +480,10 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
               <video
                 ref={festivalRef}
                 className="absolute inset-0 h-full w-full object-contain"
-                playsInline preload="auto"
+                src={INTRO_CARAVANES}
+                playsInline preload="metadata"
                 onEnded={enterSite}
-              >
-                <source src="/orb/intro-caravanes.hevc.mp4" type={'video/mp4; codecs="hvc1"'} />
-                <source src="/orb/intro-caravanes.webm" type={'video/webm; codecs="vp9"'} />
-                <source src={INTRO_CARAVANES} type="video/mp4" />
-              </video>
+              />
               {phase === 'video' && needsUnmute && (
                 <button
                   onClick={unmuteFilm}
