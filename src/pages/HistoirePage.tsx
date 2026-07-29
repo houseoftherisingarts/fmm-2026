@@ -241,6 +241,7 @@ export const NiGnSection: React.FC = () => {
 export const ArchivesPhotosSection: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
+  const [lightbox, setLightbox] = React.useState<{ src: string; alt: string } | null>(null);
   return (
     <section className="relative py-16 md:py-24 overflow-hidden">
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -259,8 +260,10 @@ export const ArchivesPhotosSection: React.FC = () => {
             photos={grp.photos}
             byLabel={t.photographerBy}
             moreLabel={t.morePhotos}
+            onOpen={(src, alt) => setLightbox({ src, alt })}
           />
         ))}
+        {lightbox && <PhotoLightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
 
         <Reveal as="div" className="grid lg:grid-cols-12 gap-4 lg:gap-12 border-t border-brass/15 pt-6">
           <p className="lg:col-span-4 font-editorial uppercase tracking-[0.3em] text-xs text-stone">{t.creditsEyebrow}</p>
