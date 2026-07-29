@@ -31,6 +31,7 @@ export type AdminSectionId =
   | 'newsletter'
   | 'social'
   | 'medias'
+  | 'photos'
   | 'analytics'
   | 'splash'
   | 'parametres'
