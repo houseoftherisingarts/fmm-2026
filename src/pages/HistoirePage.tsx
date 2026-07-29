@@ -96,17 +96,17 @@ const PhotographerGroup: React.FC<{
         </h3>
       </Reveal>
       <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [&>*]:mb-3 md:[&>*]:mb-4">
-        {visible.map((file, i) => (
+        {visible.map((item, i) => (
           <motion.figure
-            key={file}
+            key={item.full}
             initial={{ opacity: 0, y: 22, clipPath: 'inset(8% 0 0 0)' }}
             whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)' }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.7, delay: (i % 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="break-inside-avoid overflow-hidden rounded-card border border-brass/20 group cursor-zoom-in"
-            onClick={() => onOpen(`${base}${file}`, `${byLabel} ${photographer}`)}
+            onClick={() => onOpen(item.full, `${byLabel} ${photographer}`)}
           >
-            <img decoding="async" src={thumbSrc(base, file)} alt={`${byLabel} ${photographer}`} loading="lazy"
+            <img decoding="async" src={item.thumb} alt={`${byLabel} ${photographer}`} loading="lazy"
               className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" />
           </motion.figure>
         ))}
