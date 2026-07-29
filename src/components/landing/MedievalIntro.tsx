@@ -593,7 +593,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                 className="absolute inset-0 h-full w-full object-contain"
                 src={INTRO_CARAVANES}
                 playsInline
-                preload="metadata"
+                preload="auto"
                 onEnded={enterSite}
               />
               {phase === 'video' && needsUnmute && (
