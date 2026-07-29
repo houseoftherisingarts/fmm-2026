@@ -67,11 +67,19 @@ const GALLERY_BY_PHOTOGRAPHER: { photographer: string; base: string; photos: str
 const PHOTOS_FIRST_BATCH = 12;
 const PHOTOS_BATCH = 24;
 
+// Bande passante : la mosaïque ne charge QUE des vignettes 640px (~30-60 Ko);
+// le webp pleine taille (1920px) ne part que si le visiteur clique (lightbox).
+// Les groupes venus du pipeline (Léna, Alex) ont un sous-dossier thumb/;
+// les sélections Wix historiques restent servies telles quelles.
+const thumbSrc = (base: string, file: string) =>
+  base.includes('/archives/') ? `${base}thumb/${file}` : `${base}${file}`;
+
 // Un groupe de photographe : masonry en lots, « Voir plus » tant qu'il reste
 // des photos. Les groupes vides (manifeste pas encore peuplé) sont masqués.
 const PhotographerGroup: React.FC<{
   photographer: string; base: string; photos: string[]; byLabel: string; moreLabel: string;
-}> = ({ photographer, base, photos, byLabel, moreLabel }) => {
+  onOpen: (src: string, alt: string) => void;
+}> = ({ photographer, base, photos, byLabel, moreLabel, onOpen }) => {
   const [count, setCount] = React.useState(PHOTOS_FIRST_BATCH);
   if (photos.length === 0) return null;
   const visible = photos.slice(0, count);
@@ -94,9 +102,10 @@ const PhotographerGroup: React.FC<{
             whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)' }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.7, delay: (i % 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
-            className="break-inside-avoid overflow-hidden rounded-card border border-brass/20 group"
+            className="break-inside-avoid overflow-hidden rounded-card border border-brass/20 group cursor-zoom-in"
+            onClick={() => onOpen(`${base}${file}`, `${byLabel} ${photographer}`)}
           >
-            <img decoding="async" src={`${base}${file}`} alt={`${byLabel} ${photographer}`} loading="lazy"
+            <img decoding="async" src={thumbSrc(base, file)} alt={`${byLabel} ${photographer}`} loading="lazy"
               className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" />
           </motion.figure>
         ))}
@@ -112,6 +121,35 @@ const PhotographerGroup: React.FC<{
         </div>
       )}
     </div>
+  );
+};
+
+// Lightbox minimale : la pleine taille ne se télécharge qu'ici, à la demande.
+const PhotoLightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [onClose]);
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
+      className="fixed inset-0 z-[90] bg-black/92 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+      onClick={onClose}
+      role="dialog" aria-modal="true"
+    >
+      <img src={src} alt={alt} className="max-w-[94vw] max-h-[90vh] w-auto h-auto rounded-card border border-brass/30 shadow-2xl" />
+      <button
+        onClick={onClose}
+        aria-label="Fermer"
+        className="absolute top-4 right-4 w-10 h-10 rounded-full border border-ivory-soft/30 text-ivory hover:border-brass hover:text-brass transition font-sans text-lg"
+      >
+        ✕
+      </button>
+    </motion.div>
   );
 };
 
