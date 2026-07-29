@@ -25,7 +25,8 @@ const SCRUB_FRAMES = Array.from({ length: 96 }, (_, i) => `/hero/scrub/f${String
 const LOGO = '/fmm-crest-chrome.webp?v=3';
 const TITLE_FONT = '"Marcellus", "Cinzel", "Cinzel Decorative", Georgia, serif';
 const FIRE = '/hero/fireburst.mp4';
-const INTRO_CARAVANES = '/orb/intro-caravanes.mp4';
+// 720p variant: indistinguishable on phone-sized viewports, half the bytes.
+const INTRO_CARAVANES = '/orb/intro-caravanes-720.mp4';
 const CRYSTAL_IDLE = '/hero/crystal-idle.mp4';
 const fontAlt = '"Cormorant SC", "Cormorant Garamond", Georgia, serif';
 
