@@ -76,10 +76,11 @@ const thumbSrc = (base: string, file: string) =>
 
 // Un groupe de photographe : masonry en lots, « Voir plus » tant qu'il reste
 // des photos. Les groupes vides (manifeste pas encore peuplé) sont masqués.
+type GalleryItem = { thumb: string; full: string };
 const PhotographerGroup: React.FC<{
-  photographer: string; base: string; photos: string[]; byLabel: string; moreLabel: string;
+  photographer: string; photos: GalleryItem[]; byLabel: string; moreLabel: string;
   onOpen: (src: string, alt: string) => void;
-}> = ({ photographer, base, photos, byLabel, moreLabel, onOpen }) => {
+}> = ({ photographer, photos, byLabel, moreLabel, onOpen }) => {
   const [count, setCount] = React.useState(PHOTOS_FIRST_BATCH);
   if (photos.length === 0) return null;
   const visible = photos.slice(0, count);

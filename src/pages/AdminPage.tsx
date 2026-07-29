@@ -50,6 +50,7 @@ const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection')
 const MessagesSection     = lazy(() => import('./admin/sections/MessagesSection'));
 const NewsletterSection   = lazy(() => import('./admin/sections/NewsletterSection'));
 const MediasSection       = lazy(() => import('./admin/sections/MediasSection'));
+const PhotosSection       = lazy(() => import('./admin/sections/PhotosSection'));
 const AnalyticsSection    = lazy(() => import('./admin/sections/AnalyticsSection'));
 const SplashSection       = lazy(() => import('./admin/sections/SplashSection'));
 const ParametresSection   = lazy(() => import('./admin/sections/ParametresSection'));
@@ -173,6 +174,7 @@ const AdminPage: React.FC = () => {
       case 'newsletter': return <NewsletterSection devBypass={DEV_BYPASS} />;
       case 'social':     return <SocialMediaSection />;
       case 'medias':     return <MediasSection     devBypass={DEV_BYPASS} />;
+      case 'photos':     return <PhotosSection     devBypass={DEV_BYPASS} />;
       case 'analytics':  return <AnalyticsSection  devBypass={DEV_BYPASS} />;
       case 'splash':     return <SplashSection />;
       case 'parametres': return <ParametresSection flags={flags as unknown as Record<string, unknown>} setFlag={setFlag as any} />;
