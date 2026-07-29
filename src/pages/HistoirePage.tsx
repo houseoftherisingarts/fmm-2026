@@ -239,10 +239,34 @@ export const NiGnSection: React.FC = () => {
 };
 
 // ─── Archives photos (masonry per photographer + credits) ────────────
+// Source de vérité : la collection Firestore `archivesPhotos` (gérée par
+// la section Photos de l'admin — activer/désactiver, ordre, uploads).
+// Si la collection est vide ou inaccessible, on retombe sur les
+// manifestes statiques pour que la galerie ne casse jamais.
+const staticGroups = (): { photographer: string; photos: GalleryItem[] }[] =>
+  GALLERY_BY_PHOTOGRAPHER.map((grp) => ({
+    photographer: grp.photographer,
+    photos: grp.photos.map((file) => ({ thumb: thumbSrc(grp.base, file), full: `${grp.base}${file}` })),
+  }));
+
 export const ArchivesPhotosSection: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const [lightbox, setLightbox] = React.useState<{ src: string; alt: string } | null>(null);
+  const [groups, setGroups] = React.useState(staticGroups);
+  React.useEffect(() => {
+    fetchArchivePhotos()
+      .then((rows) => {
+        if (!rows.length) return;
+        setGroups(PHOTOGRAPHER_ORDER.map((k) => ({
+          photographer: PHOTOGRAPHER_META[k].label,
+          photos: rows
+            .filter((p) => p.photographer === k && p.active)
+            .map((p) => ({ thumb: photoThumb(p), full: photoFull(p) })),
+        })));
+      })
+      .catch((e) => console.warn('[ArchivesPhotos] Firestore indisponible, manifeste statique conservé:', e));
+  }, []);
   return (
     <section className="relative py-16 md:py-24 overflow-hidden">
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
