@@ -51,16 +51,68 @@ const WAYBACK: Record<number, string> = {
   2025: 'https://web.archive.org/web/20250809223540/https://www.festivalmedievaldemontpellier.org/',
 };
 
-// Curated subset of the 95 archive photos pulled from the live Wix
-// CDN into /public/wix/histoire/. Archives photos grouped by photographer,
-// exactly as on the live Wix site: the photographer who shot each photo was
-// read off the live site's per-photographer carousels (DOM-verified, not by
-// position). Only the photos held locally appear, divided to their author.
-const GALLERY_BY_PHOTOGRAPHER = [
-  { photographer: 'Lena Photos et Aventures', photos: ['c90e5727', '3708cb28', 'f688cefd', '03b1fe30'] },
-  { photographer: 'Clair du Lièvre',          photos: ['79cc4362', 'e9ed2ea5', '41b394c7', 'b61a5675', '77c6727f'] },
-  { photographer: 'Océane Leclair',           photos: ['75354f34', '7daad709', '8f8a1178', '0ca093b1', '6b19a593', '722a8ce4', '61a24378', '1e52cafb'] },
+// Archives photos par photographe. Léna et Alex viennent du pipeline
+// d'import du 2026-07-28 (exports complets convertis en webp dans
+// /public/histoire/archives/); Clair du Lièvre et Océane gardent la
+// sélection Wix d'origine (/public/wix/histoire/). Chaque groupe se
+// charge par lots (12 d'abord, « Voir plus » ensuite) pour rester léger.
+const GALLERY_BY_PHOTOGRAPHER: { photographer: string; base: string; photos: string[] }[] = [
+  { photographer: 'Lena Photos et Aventures', base: '/histoire/archives/lena/', photos: ARCHIVES_LENA },
+  { photographer: 'Clair du Lièvre',          base: '/wix/histoire/', photos: ['79cc4362.jpg', 'e9ed2ea5.jpg', '41b394c7.jpg', 'b61a5675.jpg', '77c6727f.jpg'] },
+  { photographer: 'Océane Leclair',           base: '/wix/histoire/', photos: ['75354f34.jpg', '7daad709.jpg', '8f8a1178.jpg', '0ca093b1.jpg', '6b19a593.jpg', '722a8ce4.jpg', '61a24378.jpg', '1e52cafb.jpg'] },
+  { photographer: 'Alex T. St-Laurent',       base: '/histoire/archives/alex/', photos: ARCHIVES_ALEX },
 ];
+
+const PHOTOS_FIRST_BATCH = 12;
+const PHOTOS_BATCH = 24;
+
+// Un groupe de photographe : masonry en lots, « Voir plus » tant qu'il reste
+// des photos. Les groupes vides (manifeste pas encore peuplé) sont masqués.
+const PhotographerGroup: React.FC<{
+  photographer: string; base: string; photos: string[]; byLabel: string; moreLabel: string;
+}> = ({ photographer, base, photos, byLabel, moreLabel }) => {
+  const [count, setCount] = React.useState(PHOTOS_FIRST_BATCH);
+  if (photos.length === 0) return null;
+  const visible = photos.slice(0, count);
+  const rest = photos.length - visible.length;
+  return (
+    <div className="mb-12 md:mb-14">
+      <Reveal>
+        <p className="font-editorial uppercase tracking-[0.3em] text-[11px] text-brass/80 mb-1">{byLabel}</p>
+        <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-5 flex items-center gap-3">
+          {photographer}
+          <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-brass/40 to-transparent" />
+          <span className="font-sans text-xs text-stone tracking-widest tabular-nums shrink-0">{photos.length}</span>
+        </h3>
+      </Reveal>
+      <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [&>*]:mb-3 md:[&>*]:mb-4">
+        {visible.map((file, i) => (
+          <motion.figure
+            key={file}
+            initial={{ opacity: 0, y: 22, clipPath: 'inset(8% 0 0 0)' }}
+            whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)' }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, delay: (i % 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
+            className="break-inside-avoid overflow-hidden rounded-card border border-brass/20 group"
+          >
+            <img decoding="async" src={`${base}${file}`} alt={`${byLabel} ${photographer}`} loading="lazy"
+              className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" />
+          </motion.figure>
+        ))}
+      </div>
+      {rest > 0 && (
+        <div className="mt-5">
+          <button
+            onClick={() => setCount((c) => c + PHOTOS_BATCH)}
+            className="inline-flex items-center gap-2 px-5 py-2 border border-brass/50 text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+          >
+            {moreLabel} ({rest})
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── Shared two-column section header band ───────────────────────────
 // Layout law (Alex, 2026-07-28): nothing sits alone centered — every
