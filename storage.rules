@@ -30,6 +30,14 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
+    // ── Archives photos (section Photos de l'admin) ─────────────
+    // Téléversements de la galerie Histoire (Léna). Lecture publique
+    // (la page Histoire les affiche), écriture admin seulement.
+    match /archives-uploads/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     // ── Vendor-uploaded photos ──────────────────────────────────
     // Each merchant uploads their own booth photos under their uid.
     // Publicly readable so the marketplace can render them; only
