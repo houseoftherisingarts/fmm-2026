@@ -61,6 +61,7 @@ const NAV: NavItem[] = [
   { id: 'newsletter', label: 'Infolettre',      icon: Mail },
   { id: 'social',     label: 'Médias sociaux',  icon: Megaphone },
   { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon },
+  { id: 'photos',     label: 'Photos',          icon: Camera },
   { id: 'analytics',  label: 'Analytics',       icon: BarChart3 },
   { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles },
   { id: 'parametres', label: 'Paramètres',      icon: Settings },
