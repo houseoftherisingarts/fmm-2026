@@ -423,7 +423,7 @@ const EN = {
   galleryEyebrow: 'Archives', photosTitle: 'Photo archives', galleryTitle: 'Step into the archives', photographerBy: 'Photos by',
   galleryLead: 'Five editions captured by our photographers. A selection, sorted by who shot it.',
   plongezLead: 'Five editions, and a time machine: revisit the festival site as it was, year after year, then relive the Viking edition in motion.',
-  edition: 'Edition', viewArchive: 'View the archive',
+  edition: 'Edition', viewArchive: 'View the archive', morePhotos: 'Show more photos',
   creditsEyebrow: 'Photo credits',
   iconCredit: 'Icons: game-icons.net (Lorc, Delapouite and contributors) · CC BY 3.0',
   teamEyebrow: 'The organisation', teamTitle: 'The team',
