@@ -79,8 +79,8 @@ const MenuComingSoon: React.FC<{ fr: boolean }> = ({ fr }) => (
           <HexPanel size="lg" active className="fmm-shimmer">
             <div className="relative h-[clamp(340px,40vw,520px)] overflow-hidden">
               <img
-                src="/wix/nourriture/13fb1062.jpg"
-                alt={fr ? 'Cuisinière remuant un chaudron sur le feu' : 'Cook stirring a cauldron over the fire'}
+                src="/wix/nourriture/cauldron-teaser.webp"
+                alt={fr ? 'Chaudron mijotant sur le feu de bois' : 'Cauldron simmering over the wood fire'}
                 decoding="async"
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover fmm-kenburns"
