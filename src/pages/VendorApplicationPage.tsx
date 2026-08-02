@@ -136,22 +136,23 @@ const VendorApplicationPage: React.FC = () => {
 const SignedOutCard: React.FC<{ onSignIn: () => void; t: typeof FR }> = ({ onSignIn, t }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}
-    className="velvet-card rounded-lg-card p-10 md:p-12 text-center relative overflow-hidden max-w-2xl mx-auto"
+    className="velvet-card p-10 md:p-12 text-center relative overflow-hidden max-w-2xl mx-auto"
+    style={{ border: '1px solid rgba(216, 176, 90, 0.3)' }}
   >
-    <div className="w-16 h-16 rounded-full bg-amber-300/15 border border-amber-300/45 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(232,177,74,0.4)]">
-      <LogIn size={28} className="text-amber-200" />
+    <span className="witcher-tile mx-auto mb-8 block" style={{ width: 54, height: 54 }}>
+      <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+        <LogIn size={18} />
+      </span>
+    </span>
+    <h2 className="font-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-bone)', fontWeight: 400 }}>{t.authTitle}</h2>
+    <p className="font-sans text-base mb-9 max-w-md mx-auto" style={{ color: 'rgba(244,239,227,0.7)', fontWeight: 300 }}>{t.authBody}</p>
+    <div className="flex justify-center">
+      <button type="button" className="witcher-prompt" data-primary="true" onClick={onSignIn}>
+        <span className="witcher-prompt-glyph"><span>A</span></span>
+        {t.signInCta}
+      </button>
     </div>
-    <h2 className="font-display title-medieval text-3xl md:text-4xl text-ivory mb-4 copper-sheen">{t.authTitle}</h2>
-    <p className="font-editorial text-base md:text-lg text-ivory-soft mb-8 max-w-md mx-auto italic">{t.authBody}</p>
-    <motion.button
-      onClick={onSignIn}
-      whileHover={{ y: -3, scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-b from-amber-300 via-brass-soft to-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold rounded-card border border-amber-200/60 shadow-[0_0_36px_rgba(232,177,74,0.5),0_8px_24px_-4px_rgba(216,155,58,0.6)]"
-    >
-      {t.signInCta} <ArrowUpRight size={16} />
-    </motion.button>
-    <p className="font-editorial italic text-xs text-stone mt-5">{t.authNote}</p>
+    <p className="font-sans text-xs mt-6" style={{ color: 'rgba(244,239,227,0.4)', fontWeight: 300 }}>{t.authNote}</p>
   </motion.div>
 );
 
