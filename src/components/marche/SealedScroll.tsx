@@ -105,7 +105,8 @@ const FlipCard: React.FC<{
   index: number;
   lang: 'FR' | 'EN';
   copy: SealedCopy;
-}> = ({ kiosk, index, lang, copy }) => {
+  large?: boolean;
+}> = ({ kiosk, index, lang, copy, large = false }) => {
   const reduce = useReducedMotion();
   const [flipped, setFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -161,7 +162,7 @@ const FlipCard: React.FC<{
             // Was a fixed 460 — at 320px portrait the card filled most
             // of the viewport with empty padding. Tighter on mobile,
             // restore full height on sm+ where there's room.
-            minHeight: 'clamp(320px, 70vw, 460px)',
+            minHeight: large ? 'clamp(380px, 42vw, 560px)' : 'clamp(320px, 70vw, 460px)',
           }}
         >
           {/* FRONT */}
@@ -170,7 +171,7 @@ const FlipCard: React.FC<{
             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
           >
             <HexPanel size="md" className="fmm-shimmer h-full">
-              <div className="relative h-[460px] overflow-hidden">
+              <div className={`relative overflow-hidden ${large ? "h-[clamp(380px,42vw,560px)]" : "h-[460px]"}`}>
                 <img
                   src={kiosk.image || '/wix/marche/04065e6d.jpg'}
                   alt={kiosk.name}
@@ -207,8 +208,8 @@ const FlipCard: React.FC<{
                       {kiosk.category}
                     </p>
                     <h3
-                      className="font-display leading-[1.05] tracking-[-0.005em] text-2xl md:text-3xl mb-3"
-                      style={{ color: 'var(--color-bone)', fontWeight: 400 }}
+                      className={`font-display leading-[1.05] tracking-[-0.005em] mb-3 ${large ? 'text-3xl md:text-4xl lg:text-5xl max-w-xl' : 'text-2xl md:text-3xl'}`}
+                      style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 4px 24px rgba(0,0,0,0.85)' }}
                     >
                       {kiosk.name}
                     </h3>
@@ -238,7 +239,7 @@ const FlipCard: React.FC<{
           >
             <HexPanel size="md" active className="h-full">
               <div
-                className="relative h-[460px] overflow-hidden caravan-glass fmm-beam p-6 md:p-7 flex flex-col justify-between"
+                className={`relative overflow-hidden caravan-glass fmm-beam p-6 md:p-7 flex flex-col justify-between ${large ? "h-[clamp(380px,42vw,560px)]" : "h-[460px]"}`}
               >
                 <span
                   className="inline-flex items-center gap-2 self-start font-editorial italic uppercase tracking-[0.4em] text-[10px]"
