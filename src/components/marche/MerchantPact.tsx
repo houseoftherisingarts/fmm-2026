@@ -17,12 +17,6 @@ export interface PactCopy {
   apply2026:  string;
   apply2027:  string;
   reviewNote: string;
-  stat1Number: string;
-  stat1Label:  string;
-  stat2Number: string;
-  stat2Label:  string;
-  stat3Number: string;
-  stat3Label:  string;
 }
 
 // ─── MerchantPact — Glossary register ────────────────────────────────
