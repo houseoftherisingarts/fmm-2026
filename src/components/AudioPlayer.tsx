@@ -3,14 +3,22 @@ import { Play, Pause } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { UI } from '../content';
 
-// Compact header audio player — clones the Wix nav widget that loops
-// "Freyja — Mystic Projekt" in the background. Source URL + title come
-// from env (`VITE_AUDIO_TRACK_URL` + `VITE_AUDIO_TRACK_TITLE`); leave
-// the URL empty to hide the player.
+// Musique du thème « Caravanes et Saltimbanques » : Gypsy Caravan de
+// Derek & Brandon Fiechter (album Europe, 2015). Pour l'instant le chip
+// est un LIEN vers Spotify (décision d'Alex 2026-08-02), pas un lecteur.
+// URL de recherche : format stable, atterrit sur la piste sans dépendre
+// d'un ID; les IDs d'artistes vérifiés via l'oEmbed Spotify sont
+// 01Er12nK5rrnHx8usFPJAs (Derek) et 2XDOBQOobSTxtmFhWKdm6x (Brandon).
+const SPOTIFY_LINK  = 'https://open.spotify.com/search/Gypsy%20Caravan%20Derek%20Brandon%20Fiechter';
+const SPOTIFY_TITLE = 'Gypsy Caravan — D&B Fiechter';
+
+// Compact header audio chip. If `VITE_AUDIO_TRACK_URL` points to a
+// local audio file it becomes a real loop player; otherwise it links
+// out to the theme track on Spotify.
 const AudioPlayer: React.FC = () => {
   const { lang } = useUI();
   const url   = import.meta.env.VITE_AUDIO_TRACK_URL;
-  const title = import.meta.env.VITE_AUDIO_TRACK_TITLE || 'FMM';
+  const title = import.meta.env.VITE_AUDIO_TRACK_TITLE || SPOTIFY_TITLE;
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -20,18 +28,22 @@ const AudioPlayer: React.FC = () => {
   }, []);
 
   if (!url) {
-    // No track configured — render a non-interactive placeholder so the
-    // header layout stays balanced. Drop a file in /public/audio and set
-    // VITE_AUDIO_TRACK_URL to enable playback.
+    // Pas de fichier local : le chip ouvre la piste-thème sur Spotify.
     return (
-      <div className="hidden md:flex items-center gap-3 opacity-50">
-        <div className="w-8 h-8 rounded-full glass-frost flex items-center justify-center">
-          <Play size={12} className="text-ivory-soft translate-x-px" />
-        </div>
-        <span className="font-editorial italic text-xs text-ivory-soft tracking-wide">
+      <a
+        href={SPOTIFY_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden md:flex items-center gap-3 opacity-70 hover:opacity-100 transition group"
+        aria-label={`${title} (Spotify)`}
+      >
+        <span className="w-8 h-8 rounded-full glass-frost flex items-center justify-center group-hover:border-brass transition">
+          <Play size={12} className="text-ivory-soft translate-x-px group-hover:text-brass transition" />
+        </span>
+        <span className="font-editorial italic text-xs text-ivory-soft tracking-wide max-w-[200px] truncate group-hover:text-ivory transition">
           {title}
         </span>
-      </div>
+      </a>
     );
   }
 
