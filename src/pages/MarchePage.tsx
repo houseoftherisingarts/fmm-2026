@@ -5,7 +5,6 @@ import {
   PREMIUM_VENDORS,
   MARCHE_VENDORS,
   DIGITAL_VENDORS,
-  PREP_PRODUCTS,
 } from '../content/marche';
 import { applyImageOverrides, loadVendorImageOverrides } from '../firebase/vendorImages';
 import PageHeader, { type PageHeaderCta } from '../components/layout/PageHeader';
