@@ -341,7 +341,7 @@ const FR = {
 const EN: typeof FR = {
   eyebrow:  'On site and nearby',
   title:    'Camping & Lodging',
-  intro:    'Pitch your tent or park your camper on the festival grounds, or pick a place to sleep across Petite-Nation.',
+  intro:    'Pitch your tent or park your camper on the festival grounds, or discover our partner lodgings in Petite-Nation.',
   campingEyebrow: 'On site',
   campingTitle:   'On-site camping',
   campingLead:    'Here is the festival site map. Camping is on site: choose your spot type below and reserve online.',
