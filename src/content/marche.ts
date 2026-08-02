@@ -7,9 +7,8 @@
 // `tier: 'premium'` puts the artisan in the gold-rim pavilion at the top.
 // `tier: 'marche'`  goes into the interactive grid below.
 // `tier: 'digital'` goes into the Boutique Digitale band.
-// `tier: 'prep'`    is an in-house pre-order product (no contact, has price).
 
-export type KioskTier = 'premium' | 'marche' | 'digital' | 'prep';
+export type KioskTier = 'premium' | 'marche' | 'digital';
 
 export interface MarcheKiosk {
   /** Stable id used as the mock vendor uid (e.g. `mock-v-artisans-azure`). */
@@ -40,10 +39,6 @@ export interface MarcheKiosk {
   cta?: { FR: string; EN: string };
   /** Promo code applicable to this digital boutique. */
   promo?: string;
-  /** Pre-order product fields (prep tier only). */
-  prepPrice?: string;
-  prepStrike?: string; // e.g. "C$29.00" before rebate
-  prepNote?: { FR: string; EN: string };
 }
 
 /* ─── Premium pavilion ───────────────────────────────────────────────
@@ -157,69 +152,7 @@ export const DIGITAL_VENDORS: MarcheKiosk[] = [
   },
 ];
 
-/* ─── Boutique Préparatoire — in-house pre-order with rebate ─────────
-   Items sold directly by FMM. `prepPrice` is the festival-rebate price;
-   `prepStrike` is the regular retail price shown struck-through. */
-export const PREP_PRODUCTS: MarcheKiosk[] = [
-  {
-    id: 'prep-tunique-base',
-    name: 'Tunique de base',
-    tier: 'prep',
-    contact: 'FMM Boutique',
-    email: 'boutique@festivalmedievaldemontpellier.org',
-    category: 'Vêtement de base',
-    tagFR: 'Beige, vert ou noir — coton',
-    tagEN: 'Beige, green or black — cotton',
-    prepPrice: 'C$23.25',
-    prepStrike: 'C$32.00',
-    prepNote: { FR: 'Livraison 2–4 semaines', EN: 'Delivery in 2–4 weeks' },
-    image: '/wix/marche/73932437.jpg',
-  },
-  {
-    id: 'prep-choppe-viking',
-    name: 'Choppe viking',
-    tier: 'prep',
-    contact: 'FMM Boutique',
-    email: 'boutique@festivalmedievaldemontpellier.org',
-    category: 'Accessoire',
-    tagFR: 'Avec ouvre-bière intégré',
-    tagEN: 'With integrated bottle opener',
-    prepPrice: 'C$45.50',
-    prepStrike: 'C$62.00',
-    prepNote: { FR: 'Édition Caravanes 2026', EN: '2026 Caravans edition' },
-    image: '/wix/marche/1d8aca4a.jpg',
-  },
-  {
-    id: 'prep-wooden-mugs',
-    name: 'Chopes en bois',
-    tier: 'prep',
-    contact: 'FMM Boutique',
-    email: 'boutique@festivalmedievaldemontpellier.org',
-    category: 'Vaisselle',
-    tagFR: 'On manque toujours de chopes — précommandez la vôtre cette année.',
-    tagEN: 'We are always short on mugs. Pre-order yours this year.',
-    prepPrice: 'C$18.00',
-    prepStrike: 'C$26.00',
-    prepNote: { FR: 'Tournée à la main, traitée à la cire', EN: 'Hand-turned, wax-treated' },
-    image: '/wix/marche/0b69be84.jpg',
-  },
-  {
-    id: 'prep-base-coton',
-    name: 'Base médiévale coton',
-    tier: 'prep',
-    contact: 'FMM Boutique',
-    email: 'boutique@festivalmedievaldemontpellier.org',
-    category: 'Ensemble',
-    tagFR: 'Duo pantalon + chandail',
-    tagEN: 'Pants + shirt set',
-    prepPrice: 'C$19.25',
-    prepStrike: 'C$28.50',
-    prepNote: { FR: 'Tailles XS à XXL', EN: 'Sizes XS through XXL' },
-    image: '/wix/marche/89000880.jpg',
-  },
-];
-
-/** All non-prep kiosks flattened — handy for CRM seed + counts. */
+/** All kiosks flattened — handy for CRM seed + counts. */
 export const ALL_VENDORS: MarcheKiosk[] = [
   ...PREMIUM_VENDORS,
   ...MARCHE_VENDORS,
