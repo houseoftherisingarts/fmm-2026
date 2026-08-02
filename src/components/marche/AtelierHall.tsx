@@ -105,7 +105,7 @@ const AtelierHall: React.FC<Props> = ({ lang, vendors, copy }) => {
           </div>
 
           {/* ── PICKER LIST ──────────────────────────────────── */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-4 min-w-0">
             <p
               className="font-editorial italic uppercase tracking-[0.45em] text-[10px] mb-4"
               style={{ color: 'var(--color-amber-glow)' }}
