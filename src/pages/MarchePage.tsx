@@ -93,7 +93,6 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
       <MarketSquare  lang={lang} vendors={marche}  copy={c.market} />
       <MerchantPact  lang={lang} copy={c.pact} />
       <SealedScroll  lang={lang} vendors={digital} copy={c.sealed} />
-      <ForgeCounter  lang={lang} products={prep}   copy={c.forge} />
     </>
   );
 };
