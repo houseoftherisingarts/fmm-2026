@@ -14,7 +14,6 @@ import AtelierHall, { type AtelierCopy } from '../components/marche/AtelierHall'
 import MarketSquare, { type MarketCopy } from '../components/marche/MarketSquare';
 import MerchantPact, { type PactCopy } from '../components/marche/MerchantPact';
 import SealedScroll, { type SealedCopy } from '../components/marche/SealedScroll';
-import ForgeCounter, { type ForgeCopy } from '../components/marche/ForgeCounter';
 
 // ─── /marche ─────────────────────────────────────────────────────────
 // Top-to-bottom:
