@@ -136,14 +136,6 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
             </ul>
           </div>
 
-          {/* Stats row — horizontal, floating */}
-          <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
-            <StatInline num={copy.stat1Number} label={copy.stat1Label} />
-            <span aria-hidden className="hidden sm:block w-px h-8" style={{ background: 'rgba(244,239,227,0.12)' }} />
-            <StatInline num={copy.stat2Number} label={copy.stat2Label} />
-            <span aria-hidden className="hidden sm:block w-px h-8" style={{ background: 'rgba(244,239,227,0.12)' }} />
-            <StatInline num={copy.stat3Number} label={copy.stat3Label} />
-          </div>
         </motion.div>
 
         {/* ─── BOTTOM HAIRLINE HUD — action prompts ─────────── */}
