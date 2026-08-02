@@ -181,7 +181,7 @@ const FocusCard: React.FC<{
 
             <div className="grid md:grid-cols-12">
               {/* PHOTO column — splash-art treatment */}
-              <div className="relative md:col-span-6 min-h-[46vh] md:min-h-[62vh] overflow-hidden fmm-beam">
+              <div className="relative md:col-span-6 min-w-0 min-h-[46vh] md:min-h-[62vh] overflow-hidden fmm-beam">
                 <img
                   src={kiosk.image || '/wix/marche/04065e6d.jpg'}
                   alt={kiosk.name}
