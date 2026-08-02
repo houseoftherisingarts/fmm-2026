@@ -178,7 +178,7 @@ const EN: Copy = {
     titleA:    'Market',
     titleB:    'Artisans',
     intro:
-      'Four doors into the same market: our premium kiosks, the on-site alleys, the digital shop, and our in-house pieces available for pre-order.',
+      'Three doors into the same market: our premium kiosks, the on-site alleys, and the digital shop.',
     apply2026: 'Apply 2026',
     apply2027: 'Reserve 2027',
   },
