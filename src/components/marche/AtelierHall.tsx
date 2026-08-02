@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { MarcheKiosk } from '../../content/marche';
 import { Eyebrow, DisplayTitle, EnergyPulse, HexPanel, ChevronButton, HexMark, SectionFog, SectionTopRail, SectionBottomRail } from './atmospherics';
