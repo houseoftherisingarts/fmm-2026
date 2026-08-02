@@ -52,33 +52,21 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
       <SectionFog />
 
       <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8">
-        {/* ─── TOP HAIRLINE — tabs + capacity readout ─────────── */}
+        {/* ─── TOP HAIRLINE — state registers, read-only ──────── */}
         <div className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
-          <div className="flex items-center -ml-2">
-            <button
-              type="button"
-              className="witcher-tab"
-              data-active={year === 2026 || undefined}
-              onClick={() => setYear(2026)}
-            >
-              {lang === 'FR' ? 'Cohorte 2026' : 'Cohort 2026'}
-            </button>
-            <button
-              type="button"
-              className="witcher-tab"
-              data-active={year === 2027 || undefined}
-              onClick={() => setYear(2027)}
-            >
-              {lang === 'FR' ? 'Liste 2027' : '2027 list'}
-            </button>
-          </div>
-          <div className="hidden md:flex items-center gap-2">
-            <span className="witcher-stat-label">{lang === 'FR' ? 'Places' : 'Slots'}</span>
-            <span
-              className="font-sans text-sm tracking-[0.2em]"
-              style={{ color: '#D8B05A', fontWeight: 300 }}
-            >
-              {year === 2026 ? '15 / 15' : '— / 15'}
+          <div className="flex items-center gap-6 md:gap-9 flex-wrap">
+            <span className="flex items-baseline gap-3">
+              <span className="witcher-stat-label">{lang === 'FR' ? 'Cohorte 2026' : 'Cohort 2026'}</span>
+              <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'rgba(244,239,227,0.55)', fontWeight: 300 }}>
+                {lang === 'FR' ? 'Complète' : 'Full'}
+              </span>
+            </span>
+            <span aria-hidden className="hidden sm:block w-px h-5" style={{ background: 'rgba(244,239,227,0.12)' }} />
+            <span className="flex items-baseline gap-3">
+              <span className="witcher-stat-label">{lang === 'FR' ? 'Cohorte 2027' : 'Cohort 2027'}</span>
+              <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+                {lang === 'FR' ? 'Inscriptions ouvertes' : 'Applications open'}
+              </span>
             </span>
           </div>
         </div>
