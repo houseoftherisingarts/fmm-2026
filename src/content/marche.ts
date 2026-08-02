@@ -59,7 +59,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'A jewel of Quebec craftsmanship, Artisans d’Azure products are designed by LARPers, for LARPers. Special attention to durability and practicality — leather armour and accessories, premium and custom garments, composite metal-and-leather armour.',
     image: '/wix/marche/2c7e6c33.jpg',
-    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
+    href: 'https://artisansdazure.com/',
   },
   {
     id: 'chantelame-ariane',
@@ -75,7 +75,8 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Deep in the northern woods, far from electricity and tech, sits a yurt housing a forge and a weaving workshop. Listen for the friendly call — that’s how you’ll know you’ve found Ariane and Aslak’s Autonomous Viking Clan.',
     image: '/wix/marche/0b4c7ac8.jpg',
-    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
+    // Recherche 2026-08-02 : aucun site/FB/IG trouvé pour le clan d'Ariane
+    // et Aslak. Demander leur lien via le CRM avant l'édition 2026.
   },
   {
     id: 'mandragores',
@@ -91,7 +92,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Workshops, crafts, jewellery, handmade soaps and care products inspired by legend and poetry. 100% essential oils, all natural, handmade with Quebec ingredients.',
     image: '/wix/marche/5b12ccf8.jpg',
-    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
+    href: 'https://atelierdesmandragores.ca/',
   },
   {
     id: 'forets-papilles',
@@ -107,25 +108,26 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioEN:
       'Happiness is better when shared. Forêts & Papilles is a story of sharing and passion — passing on a love of nature and the ancestral knowledge of wild foraging.',
     image: '/wix/marche/a2d1dca3.jpg',
-    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
+    // Recherche 2026-08-02 : aucun site trouvé pour Forêts et Papilles.
+    // Demander leur lien via le CRM avant l'édition 2026.
   },
 ];
 
 /* ─── Marché — interactive kiosk grid ──────────────────────────────── */
 export const MARCHE_VENDORS: MarcheKiosk[] = [
   { id: 'cuir-arcana',       name: 'Cuir Arcana',           tier: 'marche', contact: 'Anouk Beaufort',   email: 'arcana@cuir.example.ca',   category: 'Cuir',         tagFR: 'Accessoires de cuir',                   tagEN: 'Leather accessories',                bioFR: 'Bourses, ceintures et accessoires de cuir, finition artisanale.', bioEN: 'Pouches, belts and leather accessories — handcrafted finish.', image: '/wix/marche/b4c19724.webp' },
-  { id: 'rose-dragon',       name: 'La Rose et le Dragon',  tier: 'marche', contact: 'Iseult Marquis',   email: 'contact@roseetdragon.example.ca', category: 'Vêtements',    tagFR: 'Vêtements et créations',                tagEN: 'Clothing and creations',             bioFR: 'Vêtements d’inspiration médiévale et créations textiles uniques.', bioEN: 'Medieval-inspired garments and one-of-a-kind textile creations.', image: '/wix/marche/1ad4a4cb.jpg' },
-  { id: 'mama-rose-quartz',  name: 'Mama Rose Quartz',      tier: 'marche', contact: 'Mama Rose',        email: 'mama@rosequartz.example.ca',category: 'Bijoux',        tagFR: 'Créations et bijoux de pierres',        tagEN: 'Crystal jewellery',                  bioFR: 'Bijoux en pierres semi-précieuses, montés à la main.', bioEN: 'Hand-set jewellery in semi-precious stones.', image: '/wix/marche/73932437.jpg' },
-  { id: 'ferme-mouflon',     name: 'Ferme Mouflon',         tier: 'marche', contact: 'Famille Lavoie',   email: 'ferme@mouflon.example.ca',category: 'Élevage',      tagFR: 'Moutons Icelandic élevés au pâturage',  tagEN: 'Pasture-raised Icelandic sheep',     bioFR: 'Laine, peaux et produits issus d’un élevage Icelandic au pâturage.', bioEN: 'Wool, hides and products from pasture-raised Icelandic sheep.', image: '/wix/marche/0b69be84.jpg' },
-  { id: 'kissisam',          name: 'Pâtisserie Kîssisam',   tier: 'marche', contact: 'Naomi Wapachee',   email: 'kissisam@example.ca',     category: 'Restauration', tagFR: 'Pâtisseries inspirées de racines autochtones', tagEN: 'Pastries from Indigenous roots', bioFR: 'Pâtisseries fines inspirées de saveurs et techniques autochtones.', bioEN: 'Fine pastries inspired by Indigenous flavours and techniques.', image: '/wix/marche/5660e1a5.jpg' },
-  { id: 'corpsage',          name: 'CorpSage',              tier: 'marche', contact: 'Salomé Brassard', email: 'corpsage@example.ca',     category: 'Soins corps',  tagFR: '« Tatouage » au henné',                 tagEN: 'Henna "tattooing"',                   bioFR: 'Henné naturel et motifs corporels éphémères.', bioEN: 'Natural henna and ephemeral body designs.', image: '/wix/marche/2de271eb.jpg' },
+  { id: 'rose-dragon',       name: 'La Rose et le Dragon',  tier: 'marche', contact: 'Iseult Marquis',   email: 'contact@roseetdragon.example.ca', category: 'Vêtements',    tagFR: 'Vêtements et créations',                tagEN: 'Clothing and creations',             bioFR: 'Vêtements d’inspiration médiévale et créations textiles uniques.', bioEN: 'Medieval-inspired garments and one-of-a-kind textile creations.', href: 'https://www.etsy.com/shop/LaRoseetleDragon', image: '/wix/marche/1ad4a4cb.jpg' },
+  { id: 'mama-rose-quartz',  name: 'Mama Rose Quartz',      tier: 'marche', contact: 'Mama Rose',        email: 'mama@rosequartz.example.ca',category: 'Bijoux',        tagFR: 'Créations et bijoux de pierres',        tagEN: 'Crystal jewellery',                  bioFR: 'Bijoux en pierres semi-précieuses, montés à la main.', bioEN: 'Hand-set jewellery in semi-precious stones.', href: 'https://www.mamarosequartz.ca/', image: '/wix/marche/73932437.jpg' },
+  { id: 'ferme-mouflon',     name: 'Ferme Mouflon',         tier: 'marche', contact: 'Famille Lavoie',   email: 'ferme@mouflon.example.ca',category: 'Élevage',      tagFR: 'Moutons Icelandic élevés au pâturage',  tagEN: 'Pasture-raised Icelandic sheep',     bioFR: 'Laine, peaux et produits issus d’un élevage Icelandic au pâturage.', bioEN: 'Wool, hides and products from pasture-raised Icelandic sheep.', href: 'https://fermemouflon.com/', image: '/wix/marche/0b69be84.jpg' },
+  { id: 'kissisam',          name: 'Pâtisserie Kîssisam',   tier: 'marche', contact: 'Naomi Wapachee',   email: 'kissisam@example.ca',     category: 'Restauration', tagFR: 'Pâtisseries inspirées de racines autochtones', tagEN: 'Pastries from Indigenous roots', bioFR: 'Pâtisseries fines inspirées de saveurs et techniques autochtones.', bioEN: 'Fine pastries inspired by Indigenous flavours and techniques.', href: 'https://www.kisisam.com/', image: '/wix/marche/5660e1a5.jpg' },
+  { id: 'corpsage',          name: 'CorpSage',              tier: 'marche', contact: 'Salomé Brassard', email: 'corpsage@example.ca',     category: 'Soins corps',  tagFR: '« Tatouage » au henné',                 tagEN: 'Henna "tattooing"',                   bioFR: 'Henné naturel et motifs corporels éphémères.', bioEN: 'Natural henna and ephemeral body designs.', href: 'https://corpsage.com/', image: '/wix/marche/2de271eb.jpg' },
   { id: 'artisans-monde',    name: 'Artisans du Monde',     tier: 'marche', contact: 'Collectif AdM',    email: 'mtl@artisansdumonde.example.ca', category: 'Commerce équitable', tagFR: 'Commerce équitable',           tagEN: 'Fair trade',                          bioFR: 'Objets et tissus issus du commerce équitable mondial.', bioEN: 'Objects and textiles from worldwide fair trade.', image: '/wix/marche/ec6cf71c.jpg' },
   { id: 'argile-papier',     name: 'Argile de Papier',      tier: 'marche', contact: 'Clarisse Hébert', email: 'argile@papier.example.ca',category: 'Sculpture',    tagFR: 'Créations d’argile de papier',          tagEN: 'Paper-clay creations',               bioFR: 'Sculptures et objets décoratifs en argile de papier.', bioEN: 'Sculptures and decorative objects in paper clay.', image: '/wix/marche/c266478f.jpg' },
-  { id: 'editions-mondes',   name: 'Les Éditions Mondes Imaginaires', tier: 'marche', contact: 'Olivier Couture', email: 'editeur@mondesimaginaires.example.ca', category: 'Édition', tagFR: 'Maison d’édition',    tagEN: 'Indie publisher',                    bioFR: 'Romans, recueils et jeux de rôle d’univers imaginaires.', bioEN: 'Novels, anthologies and tabletop RPGs from imaginary worlds.', image: '/wix/marche/97646275.jpg' },
+  { id: 'editions-mondes',   name: 'Les Éditions Mondes Imaginaires', tier: 'marche', contact: 'Olivier Couture', email: 'editeur@mondesimaginaires.example.ca', category: 'Édition', tagFR: 'Maison d’édition',    tagEN: 'Indie publisher',                    bioFR: 'Romans, recueils et jeux de rôle d’univers imaginaires.', bioEN: 'Novels, anthologies and tabletop RPGs from imaginary worlds.', href: 'https://editionsmondesimaginaires.com/', image: '/wix/marche/97646275.jpg' },
   { id: 'ciriers-allumes',   name: 'Les Ciriers Allumés',   tier: 'marche', contact: 'Marie-Élise Cyr',  email: 'cire@ciriersallumes.example.ca', category: 'Bougies',   tagFR: 'Cires et chandelles',                   tagEN: 'Wax and candles',                     bioFR: 'Bougies coulées à la main, cires d’abeille et de soya.', bioEN: 'Hand-poured candles in beeswax and soy.', image: '/wix/marche/89000880.jpg' },
-  { id: 'sol-art',           name: 'Sol Art',               tier: 'marche', contact: 'Solène Tanguay',   email: 'sol@solart.example.ca',   category: 'Art',          tagFR: 'Atelier & galerie d’art',               tagEN: 'Studio & gallery',                    bioFR: 'Atelier itinérant — peintures, dessins, illustrations.', bioEN: 'Travelling studio — paintings, drawings, illustrations.', image: '/wix/marche/36bb3314.jpg' },
-  { id: 'frek-atelier',      name: 'Frek Atelier',          tier: 'marche', contact: 'Mikaela Frank',    email: 'frek@atelier.example.ca', category: 'Fourrures',    tagFR: 'Fourrures recyclées',                   tagEN: 'Upcycled furs',                       bioFR: 'Manteaux et accessoires en fourrures recyclées.', bioEN: 'Coats and accessories from upcycled furs.', image: '/wix/marche/f7025e55.jpg' },
-  { id: 'mont-vezeau',       name: 'Domaine Mont Vezeau',   tier: 'marche', contact: 'Jeanne Pellerin',  email: 'vignes@montvezeau.example.ca', category: 'Vinification', tagFR: 'Vins de fraises et spécialités',  tagEN: 'Strawberry wines & specialties',     bioFR: 'Vins de fruits, hypocras et mistelles du Domaine Mont Vezeau.', bioEN: 'Fruit wines, hypocras and mistelles from Domaine Mont Vezeau.', image: '/wix/marche/1d8aca4a.jpg' },
+  { id: 'sol-art',           name: 'Sol Art',               tier: 'marche', contact: 'Solène Tanguay',   email: 'sol@solart.example.ca',   category: 'Art',          tagFR: 'Atelier & galerie d’art',               tagEN: 'Studio & gallery',                    bioFR: 'Atelier itinérant — peintures, dessins, illustrations.', bioEN: 'Travelling studio — paintings, drawings, illustrations.', href: 'https://www.ateliergaleriedartsolart.com/', image: '/wix/marche/36bb3314.jpg' },
+  { id: 'frek-atelier',      name: 'Frek Atelier',          tier: 'marche', contact: 'Mikaela Frank',    email: 'frek@atelier.example.ca', category: 'Fourrures',    tagFR: 'Fourrures recyclées',                   tagEN: 'Upcycled furs',                       bioFR: 'Manteaux et accessoires en fourrures recyclées.', bioEN: 'Coats and accessories from upcycled furs.', href: 'https://www.frekatelier.com/', image: '/wix/marche/f7025e55.jpg' },
+  { id: 'mont-vezeau',       name: 'Domaine Mont Vezeau',   tier: 'marche', contact: 'Jeanne Pellerin',  email: 'vignes@montvezeau.example.ca', category: 'Vinification', tagFR: 'Vins de fraises et spécialités',  tagEN: 'Strawberry wines & specialties',     bioFR: 'Vins de fruits, hypocras et mistelles du Domaine Mont Vezeau.', bioEN: 'Fruit wines, hypocras and mistelles from Domaine Mont Vezeau.', href: 'http://www.domainemont-vezeau.com/', image: '/wix/marche/1d8aca4a.jpg' },
   { id: 'isabelle-jewelry',  name: 'Isabelle Jewelery',     tier: 'marche', contact: 'Isabelle Vachon',  email: 'isabelle@jewelry.example.ca', category: 'Bijoux',     tagFR: 'Bijoux faits main',                     tagEN: 'Handmade jewellery',                  bioFR: 'Bijoux en argent, cuivre et laiton — pièces uniques.', bioEN: 'Silver, copper and brass jewellery — one-off pieces.', image: '/wix/marche/3efa78c8.jpg' },
   { id: 'confections-zad',   name: 'Confections ZAD',       tier: 'marche', contact: 'Zoé Asselin',      email: 'zad@confections.example.ca', category: 'Costumes',    tagFR: 'Confections d’époque',                  tagEN: 'Period costuming',                    bioFR: 'Costumes d’époque sur mesure pour reconstitution et scène.', bioEN: 'Period costumes made to measure for reenactment and stage.', image: '/wix/marche/b4f50022.webp' },
 ];
@@ -147,7 +149,7 @@ export const DIGITAL_VENDORS: MarcheKiosk[] = [
     bioEN:
       'For full immersion, sew your own medieval garb. Julie-Chantal offers a variety of sewing patterns and digital tools to help you costume the whole family.',
     image: '/wix/marche/c8a35365.jpg',
-    // site web à confirmer : href retiré (placeholder example.ca qui ne résout pas)
+    href: 'https://juliechantal.com/',
     promo: 'FMM20',
   },
 ];

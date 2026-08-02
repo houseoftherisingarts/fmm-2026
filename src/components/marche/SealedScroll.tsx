@@ -41,33 +41,53 @@ const SealedScroll: React.FC<Props> = ({ lang, vendors, copy }) => (
         className="mb-10 md:mb-14"
       />
 
-      <header className="max-w-3xl mb-12 md:mb-16">
-        <Eyebrow className="mb-5 inline-flex items-center gap-3">
-          <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
-          {copy.eyebrow}
-        </Eyebrow>
-        <DisplayTitle size="xl" glow className="mb-6">{copy.title}</DisplayTitle>
-        <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
-          {copy.lead}
-        </p>
-      </header>
-
-      {vendors.length === 0 ? (
-        <p className="font-editorial italic text-[var(--color-bone)]/70 text-base max-w-xl">
-          {copy.emptyState}
-        </p>
+      {/* Une seule carte : le titre reste à gauche et la carte prend la
+          colonne de droite, grande, au lieu de flotter en petit carré
+          centré sous le titre. Plusieurs cartes : grille pleine largeur
+          sous l'en-tête, comme avant. */}
+      {vendors.length === 1 ? (
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          <header className="lg:col-span-5 min-w-0">
+            <Eyebrow className="mb-5 inline-flex items-center gap-3">
+              <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
+              {copy.eyebrow}
+            </Eyebrow>
+            <DisplayTitle size="xl" glow className="mb-6">{copy.title}</DisplayTitle>
+            <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
+              {copy.lead}
+            </p>
+          </header>
+          <div className="lg:col-span-7 min-w-0">
+            <FlipCard kiosk={vendors[0]} index={0} lang={lang} copy={copy} large />
+          </div>
+        </div>
       ) : (
-        <ul
-          className={`grid gap-6 md:gap-8 ${
-            vendors.length === 1 ? 'max-w-xl mx-auto' : 'md:grid-cols-2 lg:grid-cols-3'
-          }`}
-        >
-          {vendors.map((v, i) => (
-            <li key={v.id}>
-              <FlipCard kiosk={v} index={i} lang={lang} copy={copy} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <header className="max-w-3xl mb-12 md:mb-16">
+            <Eyebrow className="mb-5 inline-flex items-center gap-3">
+              <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
+              {copy.eyebrow}
+            </Eyebrow>
+            <DisplayTitle size="xl" glow className="mb-6">{copy.title}</DisplayTitle>
+            <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
+              {copy.lead}
+            </p>
+          </header>
+
+          {vendors.length === 0 ? (
+            <p className="font-editorial italic text-[var(--color-bone)]/70 text-base max-w-xl">
+              {copy.emptyState}
+            </p>
+          ) : (
+            <ul className="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {vendors.map((v, i) => (
+                <li key={v.id}>
+                  <FlipCard kiosk={v} index={i} lang={lang} copy={copy} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
 
       <SectionBottomRail

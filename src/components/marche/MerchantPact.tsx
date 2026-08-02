@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { addLocale } from '../../lib/locale';
@@ -14,7 +14,6 @@ export interface PactCopy {
   eyebrow:    string;
   title:      string;
   body:       string;
-  apply2026:  string;
   apply2027:  string;
   reviewNote: string;
 }
@@ -206,18 +205,6 @@ const PerkCell: React.FC<{ perk: PerkTile; index: number; reduce: boolean }> = (
   );
 };
 
-// ─── StatInline ──────────────────────────────────────────────────────
-const StatInline: React.FC<{ num: string; label: string }> = ({ num, label }) => (
-  <span className="flex items-baseline gap-3">
-    <span
-      className="witcher-stat-num"
-      style={{ fontSize: 'clamp(1.5rem, 2.6vw, 2rem)' }}
-    >
-      {num}
-    </span>
-    <span className="witcher-stat-label">{label}</span>
-  </span>
-);
 
 // ─── Line-art icons ─────────────────────────────────────────────────
 const IconKiosk: React.FC<{ size?: number }> = ({ size = 18 }) => (

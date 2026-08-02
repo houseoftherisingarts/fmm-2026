@@ -54,14 +54,9 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
 
   const ctas: PageHeaderCta[] = [
     {
-      label:   c.header.apply2026,
-      to:      addLocale('/marche/inscription', lang) + '?year=2026',
-      variant: 'primary',
-    },
-    {
       label:   c.header.apply2027,
       to:      addLocale('/marche/inscription', lang) + '?year=2027',
-      variant: 'ghost',
+      variant: 'primary',
     },
   ];
 
@@ -102,7 +97,6 @@ interface HeaderCopy {
   titleA:    string;
   titleB?:   string;
   intro:     string;
-  apply2026: string;
   apply2027: string;
 }
 
@@ -121,8 +115,7 @@ const FR: Copy = {
     titleB:    'Artisans',
     intro:
       'Trois portes ouvrent sur le même marché : nos kiosques premium, les allées du marché, et la boutique numérique.',
-    apply2026: 'Postuler 2026',
-    apply2027: 'Réserver 2027',
+    apply2027: 'Postuler 2027',
   },
   atelier: {
     eyebrow: 'Pavillon Premium',
@@ -148,15 +141,8 @@ const FR: Copy = {
     eyebrow:   'Devenir marchand',
     title:     'Votre kiosque sur le marché',
     body:      'La cohorte 2026 est complète. Les inscriptions 2027 sont ouvertes, et la liste sera dévoilée sous peu. Chaque dossier est étudié individuellement : esprit artisanal, ambiance médiévale, conscience écologique.',
-    apply2026: 'Postuler 2027',
     apply2027: 'Postuler 2027',
     reviewNote:'Réponse via votre espace client après revue de votre dossier.',
-    stat1Number: '',
-    stat1Label:  '',
-    stat2Number: '',
-    stat2Label:  '',
-    stat3Number: '',
-    stat3Label:  '',
   },
   sealed: {
     eyebrow:    'Boutique digitale',
@@ -179,8 +165,7 @@ const EN: Copy = {
     titleB:    'Artisans',
     intro:
       'Three doors into the same market: our premium kiosks, the on-site alleys, and the digital shop.',
-    apply2026: 'Apply 2026',
-    apply2027: 'Reserve 2027',
+    apply2027: 'Apply 2027',
   },
   atelier: {
     eyebrow: 'Premium Pavilion',
@@ -206,15 +191,8 @@ const EN: Copy = {
     eyebrow:   'Become a merchant',
     title:     'Your kiosk at the market',
     body:      'The 2026 cohort is full. 2027 applications are open, and the list will be revealed soon. Each application is reviewed individually: artisan goods, medieval vibe, eco-mindedness.',
-    apply2026: 'Apply 2027',
     apply2027: 'Apply 2027',
     reviewNote:'Response via your client space after review.',
-    stat1Number: '',
-    stat1Label:  '',
-    stat2Number: '',
-    stat2Label:  '',
-    stat3Number: '',
-    stat3Label:  '',
   },
   sealed: {
     eyebrow:    'Digital shop',
