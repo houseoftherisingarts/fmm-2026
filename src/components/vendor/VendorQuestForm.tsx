@@ -15,6 +15,7 @@ import {
 import { JourneyPath } from './JourneyPath';
 import { WaxSeal } from './WaxSeal';
 import OrnateFrame from './OrnateFrame';
+import { Motes } from '../marche/effects';
 import TiltShell from './TiltShell';
 import PhotoUpload from './PhotoUpload';
 
@@ -344,9 +345,12 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
           className="velvet-card p-6 md:p-10 relative overflow-hidden stage-3d"
         >
           <OrnateFrame accent={CHAPTER_ACCENT[chapter]} duration={0.85} />
-          <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={parchmentBg} aria-hidden />
-
-          <div className="relative">
+          <Motes className="opacity-40" count={14} />
+    
+          {/* pt-6 : la carte courante monte de 10 px et porte un halo de
+              28 px; sans cette marge le conteneur overflow-hidden lui
+              rognait le haut. */}
+          <div className="relative pt-6">
             <JourneyPath
               chapter={chapter}
               completed={[1, 2, 3, 4].filter((i) => chapterValid(i as Exclude<ChapterId, 5>)) as number[]}
@@ -938,7 +942,6 @@ const InvoicePanel: React.FC<{
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.12 }}
       className="mt-6 relative border border-amber-300/30 bg-[rgba(26,5,11,0.45)] p-5 md:p-6 overflow-hidden"
     >
-      <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={parchmentBg} aria-hidden />
       <div className="relative">
         <div className="flex items-center justify-between gap-3 mb-4">
           <div>
@@ -997,11 +1000,6 @@ const UnitsSwitch: React.FC<{
   </button>
 );
 
-// ─── Decorative parchment grain (inline SVG noise) ────────────────
-const parchmentBg: React.CSSProperties = {
-  backgroundImage:
-    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.77  0 0 0 0 0.64  0 0 0 0 0.35  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-};
 
 // ─── Translations ────────────────────────────────────────────────
 const FR = {

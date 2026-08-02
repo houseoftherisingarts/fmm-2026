@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  ArrowRight, Sparkles, CalendarDays, Coins, Hammer, CreditCard, Tent, ScrollText,
+  ArrowRight, CalendarDays, Coins, Hammer, CreditCard, Tent, ScrollText,
   type LucideIcon,
 } from 'lucide-react';
 import OrnateFrame from './OrnateFrame';
+import { Motes } from '../marche/effects';
 
 // Overture / festival preamble shown before the vendor sign-in + form.
 // Asymmetric bento grid: a hero, then varied-span cards with per-section
@@ -23,42 +24,31 @@ interface SectionData {
 export const FR_OVERTURE = {
   eyebrow: 'Avant de commencer',
   title:   'Bienvenue, voyageur',
-  intro:   'Sixième édition du Festival Médiéval de Montpellier. Voici l’essentiel à connaître avant d’inscrire votre kiosque.',
-  cta:     'Entrer dans la caravane',
+  intro:   'Voici l’essentiel à connaître avant de réserver votre place sur la liste 2027.',
+  cta:     'Réserver ma place',
   sections: [
-    {
-      title: 'Caravanes & Saltimbanques',
-      body: [
-        'Imaginez une troupe de voyageurs débarquant en village avec leur caravane : musique joyeuse, spectacles, danses, jeux et bouffe nomade. C’est le ton que nous cherchons cette année.',
-        'Les kiosques qui s’accordent le mieux avec ce thème seront priorisés.',
-      ],
-      icon: Sparkles,
-      accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-7',
-    },
     {
       title: 'Quand & où',
       body: [
-        '25, 26 et 27 septembre 2026.',
+        'Septembre 2027, dates exactes à confirmer.',
         '4 Rue du Bosquet, Montpellier (Québec).',
-        'Vendredi 16 h 30 - 20 h · Samedi 9 h 30 – 19 h · Dimanche 9 h 30 – 16 h.',
+        'Trois jours, du vendredi au dimanche. L’horaire précis sera publié avec les dates.',
         'Présence obligatoire pendant tout l’horaire pour être considéré exposant.',
       ],
       icon: CalendarDays,
       accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-5',
+      span: 'lg:col-span-7',
     },
     {
       title: 'Coût',
       body: [
-        '110 $ · espace 10 × 10 pi.',
-        '165 $ · espace 10 × 15 pi.',
-        '220 $ · espace 10 × 20 pi.',
-        'Mesures impériales (vous pourrez basculer en métrique à la facture).',
+        'Tarifs 2027 à dévoiler.',
+        'Ils seront annoncés en même temps que les dates, avant toute demande de paiement.',
+        'Réserver votre place maintenant ne vous engage à rien.',
       ],
       icon: Coins,
       accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-4',
+      span: 'lg:col-span-5',
     },
     {
       title: 'Montage & démontage',
@@ -99,7 +89,7 @@ export const FR_OVERTURE = {
         'Événement 100 % extérieur, sur gazon (apportez vos cales si besoin).',
         'Sanitaires et toilettes chimiques sur place. Pas de douches.',
         'Nous priorisons les artisans qui créent ou démontrent leur métier plutôt que la simple revente.',
-        'Réponse à votre candidature sous 1 à 2 mois, par courriel. Questions : montpelliermedieval@gmail.com.',
+        'Réponse par courriel à l’ouverture officielle des inscriptions 2027. Questions : montpelliermedieval@gmail.com.',
       ],
       icon: ScrollText,
       accent: 'var(--color-amber-glow)',
@@ -111,42 +101,31 @@ export const FR_OVERTURE = {
 export const EN_OVERTURE: typeof FR_OVERTURE = {
   eyebrow: 'Before you begin',
   title:   'Welcome, traveller',
-  intro:   'Sixth edition of the Festival Médiéval de Montpellier. Here is what you should know before registering your kiosk.',
-  cta:     'Enter the caravan',
+  intro:   'Here is what you should know before reserving your spot on the 2027 list.',
+  cta:     'Reserve my spot',
   sections: [
-    {
-      title: 'Caravans & Saltimbanques',
-      body: [
-        'Picture a troupe of travellers arriving in a village with their caravan: lively music, shows, dance, games, and nomadic food. That is the tone we are aiming for this year.',
-        'Kiosks that fit this theme will be given priority.',
-      ],
-      icon: Sparkles,
-      accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-7',
-    },
     {
       title: 'When & where',
       body: [
-        'September 25, 26 and 27, 2026.',
+        'September 2027, exact dates to be confirmed.',
         '4 Rue du Bosquet, Montpellier (Quebec).',
-        'Friday 4:30 – 8 pm · Saturday 9:30 am – 7 pm · Sunday 9:30 am – 4 pm.',
+        'Three days, Friday through Sunday. The full schedule will be published with the dates.',
         'Full-weekend attendance is required to be considered an exhibitor.',
       ],
       icon: CalendarDays,
       accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-5',
+      span: 'lg:col-span-7',
     },
     {
       title: 'Cost',
       body: [
-        '$110 · 10 × 10 ft space.',
-        '$165 · 10 × 15 ft space.',
-        '$220 · 10 × 20 ft space.',
-        'Imperial measurements (switch to metric at the invoice step).',
+        '2027 rates to be revealed.',
+        'They will be announced alongside the dates, before any payment is requested.',
+        'Reserving your spot now commits you to nothing.',
       ],
       icon: Coins,
       accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-4',
+      span: 'lg:col-span-5',
     },
     {
       title: 'Setup & teardown',
@@ -187,7 +166,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
         '100% outdoor on grass (bring shims if needed).',
         'Bathrooms and chemical toilets on site. No showers.',
         'We prioritize artisans who create or demonstrate their craft over straight resale.',
-        'Replies within 1–2 months by email. Questions: montpelliermedieval@gmail.com.',
+        'We reply by email when the 2027 registrations officially open. Questions: montpelliermedieval@gmail.com.',
       ],
       icon: ScrollText,
       accent: 'var(--color-amber-glow)',
@@ -196,10 +175,6 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
   ] satisfies SectionData[],
 };
 
-const parchmentBg: React.CSSProperties = {
-  backgroundImage:
-    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.77  0 0 0 0 0.64  0 0 0 0 0.35  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-};
 
 const OvertureScroll: React.FC<{
   lang: 'FR' | 'EN'; onEnter: () => void; reduceMotion: boolean;
@@ -213,7 +188,7 @@ const OvertureScroll: React.FC<{
       className="velvet-card p-6 md:p-12 relative overflow-hidden stage-3d max-w-7xl mx-auto"
     >
       <OrnateFrame accent="var(--color-amber-glow)" duration={1} />
-      <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={parchmentBg} aria-hidden />
+      <Motes className="opacity-45" count={16} />
 
       <div className="relative">
         {/* ── Hero ─────────────────────────────────────────── */}

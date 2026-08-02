@@ -11,11 +11,15 @@ interface Props {
 }
 
 // One reusable corner glyph (top-left). Other corners reuse via rotation.
-const Corner: React.FC<{ rotate: number; accent: string; duration: number }> = ({ rotate, accent, duration }) => (
+// `pos` places the 80x80 box flush inside the matching corner. Sans ça,
+// les wrappers de largeur nulle (right-0 / bottom-0) poussaient trois
+// coins sur quatre hors du cadre, où overflow-hidden les rognait : il ne
+// restait qu'une équerre solitaire en haut à gauche. Corrigé 2026-08-02.
+const Corner: React.FC<{ rotate: number; pos: string; accent: string; duration: number }> = ({ rotate, pos, accent, duration }) => (
   <motion.svg
     viewBox="0 0 80 80"
     width="80" height="80"
-    className="absolute"
+    className={`absolute ${pos}`}
     style={{ transform: `rotate(${rotate}deg)`, color: accent }}
     aria-hidden
   >

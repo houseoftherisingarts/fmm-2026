@@ -24,10 +24,13 @@ const VendorApplicationPage: React.FC = () => {
   // Accepted: CURRENT_YEAR (2026) or CURRENT_YEAR+1 (2027 — early reservation).
   // Anything else falls back to CURRENT_YEAR so a typo doesn't strand
   // the form against a year that has no admin tooling yet.
+  // La cohorte 2026 est complète : tout ce qui arrive ici vise 2027.
+  // ?year=2026 reste accepté pour qu'un marchand déjà inscrit puisse
+  // rouvrir et modifier son dossier de l'an dernier depuis son compte.
   const [params] = useSearchParams();
-  const parsedYear = Number(params.get('year'));
-  const targetYear =
-    parsedYear === CURRENT_YEAR + 1 ? CURRENT_YEAR + 1 : CURRENT_YEAR;
+  const targetYear = Number(params.get('year')) === CURRENT_YEAR
+    ? CURRENT_YEAR
+    : CURRENT_YEAR + 1;
   const isEarly = targetYear === CURRENT_YEAR + 1;
 
   // Three-step flow: Overture → Auth gate → Form. Overture is always shown
@@ -157,11 +160,11 @@ const SignedOutCard: React.FC<{ onSignIn: () => void; t: typeof FR }> = ({ onSig
 const FR = {
   backToMarket: 'Retour au marché',
   eyebrow: 'Inscription marchand',
-  title: 'Rejoindre la caravane',
+  title: 'Rejoindre le marché',
   intro: 'La cohorte 2026 est complète. Si vous avez déjà un dossier 2026, consultez-le et modifiez-le ici via votre compte.',
-  intro2027: 'Réservez votre place sur la liste 2027. Vos réponses sont enregistrées dans la cohorte 2027 et Jesse vous reviendra dès l’ouverture officielle des inscriptions.',
-  banner2026: 'Cohorte 2026 · 25–27 septembre',
-  banner2027: 'Réservation 2027 · Liste anticipée',
+  intro2027: 'Réservez votre place sur la liste 2027. Les dates et les tarifs seront dévoilés sous peu; vos réponses sont gardées et Jesse vous reviendra dès l’ouverture officielle des inscriptions.',
+  banner2026: 'Dossier 2026 · cohorte complète',
+  banner2027: 'Marché 2027 · Liste anticipée',
   authTitle: 'Créez votre compte FMM',
   authBody: 'Pour soumettre votre candidature et suivre son statut, créez un compte ou connectez-vous. Votre courriel sera utilisé pour la suite.',
   authNote: 'Connexion via Google ou par lien magique courriel.',
@@ -171,11 +174,11 @@ const FR = {
 const EN: typeof FR = {
   backToMarket: 'Back to market',
   eyebrow: 'Vendor registration',
-  title: 'Join the caravan',
+  title: 'Join the market',
   intro: 'The 2026 cohort is full. If you already have a 2026 application, review and edit it here through your account.',
-  intro2027: 'Reserve your seat on the 2027 list. Your answers are stored in the 2027 cohort and Jesse will reach out as soon as registrations officially open.',
-  banner2026: '2026 cohort · 25–27 September',
-  banner2027: '2027 reservation · Early list',
+  intro2027: 'Reserve your seat on the 2027 list. Dates and rates will be revealed shortly; your answers are kept and Jesse will reach out as soon as registrations officially open.',
+  banner2026: '2026 application · cohort full',
+  banner2027: '2027 market · Early list',
   authTitle: 'Create your FMM account',
   authBody: 'To submit your application and track its status, create an account or sign in. Your email will be used for follow-ups.',
   authNote: 'Sign in with Google or an email magic link.',
