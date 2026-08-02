@@ -19,49 +19,53 @@ interface Lodging {
   area?:    string;     // distance / location pointer
 }
 
+// Coordonnées et descriptions validées sur les sites officiels de chaque
+// établissement (août 2026). Ne rien ajouter ici sans l'avoir vérifié à la
+// source : ce sont de vraies entreprises, nommées publiquement.
+//
+// TODO — Les Chalets d'Aile-Laine (23 ch. Lanzo, Montpellier, 819-665-6400)
+// n'ont ni site web ni photo utilisable. Les appeler pour obtenir une photo
+// et un lien, puis remettre la fiche ici.
 const LODGINGS: Lodging[] = [
   {
     name:    'Le Salon des Inconnus',
-    blurbFR: 'Un de nos partenaires de longue date. Auberge victorienne et centre d’artistes — chambres, bus, yourte et espaces de camping pour la période du festival.',
-    blurbEN: 'A long-time partner. Victorian inn and artists’ hub — rooms, bus, yurt and camping spots during the festival.',
+    blurbFR: 'Un de nos partenaires de longue date. Auberge victorienne et centre d’artistes : chambres, bus, yourte et espaces de camping pour la période du festival.',
+    blurbEN: 'A long-time partner. Victorian inn and artists’ hub: rooms, bus, yurt and camping spots during the festival.',
     image:   '/wix/hebergement/salon-living-room.webp',
     website: 'https://www.lesalondesinconnus.com',
     area:    'Montpellier · 10 min',
   },
   {
     name:    'Camping Montpellier',
-    blurbFR: 'À proximité du village — 107 acres avec rivière, montagne, chutes et plages. Canoë, kayak, pêche et baignade sur place. 11 km de sentiers de vélo, 5 km de sentiers pédestres. Espace zen, volley-ball, jeux de fer, jeux de fléchettes, feu de camp.',
-    blurbEN: 'Near the village — 107 acres with river, mountain, waterfalls and beaches. Canoe, kayak, fishing, swimming on site. 11 km of bike trails, 5 km of hiking trails. Zen space, volleyball, horseshoes, darts, campfire.',
-    image:   '/wix/hebergement/camping-montpellier.jpg',
-    area:    'Village de Montpellier',
-  },
-  {
-    name:    'Les Chalets d’Aile Laine',
-    blurbFR: 'Chalets en bois rond dans la forêt — confort rustique, foyer extérieur, accès direct aux sentiers. Idéal pour les groupes qui souhaitent prolonger le festival.',
-    blurbEN: 'Log cabins in the forest — rustic comfort, outdoor firepit, direct trail access. Ideal for groups wanting to extend the festival.',
-    image:   '/wix/hebergement/chalets-aile-laine.jpg',
-    area:    'Petite-Nation',
-  },
-  {
-    name:    'Manoir Montpellier',
-    blurbFR: 'Manoir historique au cœur du village — chambres traditionnelles, petit-déjeuner copieux, accueil chaleureux. Une option élégante pour les visiteurs qui aiment le confort.',
-    blurbEN: 'Historic manor at the heart of the village — traditional rooms, hearty breakfast, warm welcome. An elegant option for visitors who love comfort.',
-    image:   '/wix/hebergement/manoir-montpellier.jpg',
-    area:    'Cœur du village',
-  },
-  {
-    name:    'Gîte Gill Ann',
-    blurbFR: 'Maison d’hôtes intimiste tenue par Gill et Ann — quelques chambres, jardin tranquille, déjeuner maison.',
-    blurbEN: 'Intimate guesthouse run by Gill and Ann — a few rooms, peaceful garden, homemade breakfast.',
-    image:   '/wix/hebergement/gite-gill-ann.jpg',
+    blurbFR: 'Cent sept acres à quelques minutes du village, avec rivière, montagne, chutes et plages. Canot, kayak, pêche et baignade sur place, 11 km de sentiers de vélo et 5 km de sentiers pédestres.',
+    blurbEN: 'One hundred and seven acres minutes from the village, with a river, a mountain, waterfalls and beaches. Canoe, kayak, fishing and swimming on site, 11 km of bike trails and 5 km of hiking trails.',
+    image:   '/wix/hebergement/camping-montpellier.webp',
+    website: 'https://campingmontpellier.ca/',
     area:    'Montpellier',
   },
   {
-    name:    'Auberge Montagnes Noires',
-    blurbFR: 'Auberge nichée dans les Montagnes Noires — vue panoramique, restauration locale, randonnée. Le repli idéal après une journée au festival.',
-    blurbEN: 'Inn nestled in the Montagnes Noires — panoramic view, local dining, hiking. The ideal retreat after a day at the festival.',
-    image:   '/wix/hebergement/auberge-montagnes-noires.jpg',
-    area:    'Montagnes Noires',
+    name:    'Manoir Montpellier',
+    blurbFR: 'Un domaine au bord du lac Viceroy, loué en exclusivité à un seul groupe : 25 chambres au manoir, 4 autres dans la maison voisine, plage privée, spa nordique et salle de réception. Pensé pour les grandes tablées plutôt que pour une chambre à la nuit.',
+    blurbEN: 'An estate on Lac Viceroy, rented exclusively to one group: 25 rooms in the manor, 4 more in the neighbouring house, a private beach, a nordic spa and a reception hall. Built for large parties rather than a single room for the night.',
+    image:   '/wix/hebergement/manoir-montpellier.webp',
+    website: 'https://www.manoirmontpellier.com/',
+    area:    'Lac Viceroy',
+  },
+  {
+    name:    'Gîte du passant Gil-Ann',
+    blurbFR: 'Cinq chambres dans une grande maison victorienne de Saint-André-Avellin, tenue par Annette et Gilles. Une adresse tranquille de la Petite-Nation.',
+    blurbEN: 'Five rooms in a large Victorian house in Saint-André-Avellin, run by Annette and Gilles. A quiet address in Petite-Nation.',
+    image:   '/wix/hebergement/gite-gil-ann.webp',
+    website: 'https://gitedupassantgilann.com/',
+    area:    'Saint-André-Avellin',
+  },
+  {
+    name:    'Auberge Montagne Noire',
+    blurbFR: 'Huit chambres rénovées au cœur du village de Ripon, avec service de bar, terrasse et cuisine commune. Tout près du parc des Montagnes Noires.',
+    blurbEN: 'Eight renovated rooms in the heart of Ripon village, with bar service, a terrace and a shared kitchen. Right next to Parc des Montagnes Noires.',
+    image:   '/wix/hebergement/auberge-montagne-noire.webp',
+    website: 'https://sites.google.com/view/auberge-montagne-noire',
+    area:    'Ripon',
   },
 ];
 
