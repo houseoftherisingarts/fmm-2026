@@ -128,7 +128,7 @@ const AtelierHall: React.FC<Props> = ({ lang, vendors, copy }) => {
 
       <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-8 pb-24 md:pb-32">
         <SectionBottomRail
-          hint={lang === 'FR' ? 'Toucher un nom pour ouvrir l’atelier' : 'Tap a name to open the atelier'}
+          hint={lang === 'FR' ? 'Toucher un nom pour voir l’artisan' : 'Tap a name to see the artisan'}
           meta={`${vendors.length} ${lang === 'FR' ? 'fanions' : 'flagships'}`}
         />
       </div>
