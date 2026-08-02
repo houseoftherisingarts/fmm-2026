@@ -12,7 +12,7 @@ import MessageThread from '../../../components/vendor/MessageThread';
 import BroadcastComposer from '../../../components/admin/BroadcastComposer';
 import VendorImagePicker from '../../../components/admin/VendorImagePicker';
 import {
-  PREMIUM_VENDORS, MARCHE_VENDORS, DIGITAL_VENDORS, PREP_PRODUCTS,
+  PREMIUM_VENDORS, MARCHE_VENDORS, DIGITAL_VENDORS,
 } from '../../../content/marche';
 
 interface Props {
