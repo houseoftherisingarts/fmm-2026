@@ -28,20 +28,20 @@ export interface PactCopy {
 const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
   const reduce = useReducedMotion();
   const navigate = useNavigate();
-  const [year, setYear] = useState<2026 | 2027>(2026);
   const playLoot = useSfx('/orb/sfx/loot.mp3', 0.45);
 
   const perks: PerkTile[] = lang === 'FR' ? FR_PERKS : EN_PERKS;
 
+  // 2026 est complète : le seul geste possible est de postuler pour 2027.
   const onApply = () => {
     playLoot();
-    navigate(addLocale('/marche/inscription', lang) + `?year=${year}`);
+    navigate(addLocale('/marche/inscription', lang) + '?year=2027');
   };
 
   const loreQuote = lang === 'FR'
-    ? '« Aux marchands voyageurs : la caravane se rassemble. Quinze places, trois jours, un site. »'
-    : '« To travelling merchants: the caravan gathers. Fifteen pitches, three days, one site. »';
-  const loreAttrib = lang === 'FR' ? '— Avis affiché à l’entrée du site' : '— Posted at the site entrance';
+    ? '« Aux marchands voyageurs : la caravane 2026 est au complet. Ceux de 2027 seront bientôt appelés. »'
+    : '« To travelling merchants: the 2026 caravan is full. Those of 2027 will soon be called. »';
+  const loreAttrib = lang === 'FR' ? '· Avis affiché à l’entrée du site' : '· Posted at the site entrance';
 
   return (
     <section
