@@ -51,7 +51,6 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const premium = useMemo(() => applyImageOverrides(PREMIUM_VENDORS, overrides), [overrides]);
   const marche  = useMemo(() => applyImageOverrides(MARCHE_VENDORS,  overrides), [overrides]);
   const digital = useMemo(() => applyImageOverrides(DIGITAL_VENDORS, overrides), [overrides]);
-  const prep    = useMemo(() => applyImageOverrides(PREP_PRODUCTS,   overrides), [overrides]);
 
   const ctas: PageHeaderCta[] = [
     {
