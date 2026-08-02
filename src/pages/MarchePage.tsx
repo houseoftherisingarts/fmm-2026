@@ -112,7 +112,6 @@ interface Copy {
   market:  MarketCopy;
   pact:    PactCopy;
   sealed:  SealedCopy;
-  forge:   ForgeCopy;
 }
 
 const FR: Copy = {
