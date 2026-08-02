@@ -23,7 +23,6 @@ import SealedScroll, { type SealedCopy } from '../components/marche/SealedScroll
 //   3. MarketSquare — 15 on-site kiosks, item-shop grid + modal
 //   4. MerchantPact — Become-a-merchant CTA with stat plates
 //   5. SealedScroll — Digital partners, 3D-tilt flip cards
-//   6. ForgeCounter — In-house pre-orders, slot tiles
 const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { lang } = useUI();
   const c = lang === 'FR' ? FR : EN;
