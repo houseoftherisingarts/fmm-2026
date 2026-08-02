@@ -137,11 +137,11 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
 export const DIGITAL_VENDORS: MarcheKiosk[] = [
   {
     id: 'julie-chantal',
-    name: 'Julie-Chantal — Patrons de costumes médiévaux',
+    name: 'Julie-Chantal',
     tier: 'digital',
     contact: 'Julie-Chantal Dubreuil',
     email: 'julie.chantal@example.ca',
-    category: 'Patrons numériques',
+    category: 'Patrons de costumes médiévaux',
     tagFR: 'Patrons de couture & outils numériques',
     tagEN: 'Sewing patterns & digital tools',
     bioFR:

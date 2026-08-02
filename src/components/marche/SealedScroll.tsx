@@ -52,7 +52,9 @@ const SealedScroll: React.FC<Props> = ({ lang, vendors, copy }) => (
               <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
               {copy.eyebrow}
             </Eyebrow>
-            <DisplayTitle size="xl" glow className="mb-6">{copy.title}</DisplayTitle>
+            {/* size lg : en colonne étroite, xl poussait le titre sur
+                trois lignes (règle : jamais plus de deux). */}
+            <DisplayTitle size="lg" glow className="mb-6">{copy.title}</DisplayTitle>
             <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
               {copy.lead}
             </p>
