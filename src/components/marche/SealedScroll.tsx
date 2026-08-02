@@ -182,12 +182,14 @@ const FlipCard: React.FC<{
                   className="absolute inset-0 w-full h-full object-cover fmm-kenburns"
                   style={{ objectPosition: kiosk.imagePosition || 'center' }}
                 />
+                {/* Scrim renforcé : le texte doit rester lisible même sur
+                    une photo chargée (leçon Julie-Chantal). */}
                 <div
                   aria-hidden
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(180deg, rgba(184,106,42,0.18) 0%, transparent 40%, rgba(10,2,7,0.92) 100%)',
+                      'linear-gradient(180deg, rgba(184,106,42,0.15) 0%, transparent 30%, rgba(10,2,7,0.55) 62%, rgba(10,2,7,0.97) 100%)',
                   }}
                 />
                 <motion.div
