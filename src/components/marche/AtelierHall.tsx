@@ -249,7 +249,7 @@ const FocusCard: React.FC<{
               </div>
 
               {/* COPY column */}
-              <div className="relative md:col-span-6 p-7 md:p-10 lg:p-14 flex flex-col justify-center">
+              <div className="relative md:col-span-6 min-w-0 p-7 md:p-10 lg:p-14 flex flex-col justify-center">
                 <p
                   className="font-editorial italic uppercase tracking-[0.4em] text-[10px] md:text-[11px] mb-5 inline-flex items-center gap-2"
                   style={{ color: 'var(--color-bone)', opacity: 0.65 }}
