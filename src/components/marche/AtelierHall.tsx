@@ -230,7 +230,11 @@ const FocusCard: React.FC<{
                     {kiosk.category}
                   </p>
                   <h3
-                    className="font-display leading-[1.0] tracking-[-0.01em] text-2xl sm:text-3xl md:text-4xl lg:text-[2.8rem]"
+                    className={`font-display leading-[1.0] tracking-[-0.01em] ${
+                      kiosk.name.length > 24
+                        ? 'text-xl sm:text-2xl md:text-3xl lg:text-[2.1rem]'
+                        : 'text-2xl sm:text-3xl md:text-4xl lg:text-[2.8rem]'
+                    }`}
                     style={{
                       color: 'var(--color-bone)',
                       fontWeight: 400,
