@@ -60,7 +60,8 @@ const MenuComingSoon: React.FC<{ fr: boolean }> = ({ fr }) => (
             <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
             {fr ? 'À la table du seigneur' : 'At the lord’s table'}
           </Eyebrow>
-          <DisplayTitle size="xl" glow className="mb-6">
+          {/* size lg : en colonne étroite, xl pousse sur trois lignes. */}
+          <DisplayTitle size="lg" glow className="mb-6">
             {fr ? 'Menu à venir' : 'Menu coming soon'}
           </DisplayTitle>
           <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
