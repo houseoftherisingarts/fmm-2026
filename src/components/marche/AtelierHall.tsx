@@ -28,19 +28,41 @@ export interface AtelierCopy {
 // Caravan palette throughout: velvet stage, copper edges, amber lock-in.
 const AtelierHall: React.FC<Props> = ({ lang, vendors, copy }) => {
   const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
   const reduce = useReducedMotion();
   const playLoot = useSfx('/orb/sfx/loot.mp3', 0.45);
   const active = vendors[idx];
+
+  // Auto-cycle through the flagship artisans. Pauses while the cursor
+  // is over the section, and a manual pick restarts the clock so the
+  // visitor's choice stays on screen a full beat.
+  const cycleKey = useRef(0);
+  useEffect(() => {
+    if (reduce || paused || vendors.length < 2) return;
+    const t = window.setInterval(
+      () => setIdx((i) => (i + 1) % vendors.length),
+      6500,
+    );
+    return () => window.clearInterval(t);
+    // cycleKey.current bumps on manual select to restart the interval
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduce, paused, vendors.length, cycleKey.current]);
+
   if (!active) return null;
 
   const select = (i: number) => {
     if (i === idx) return;
+    cycleKey.current += 1;
     setIdx(i);
     playLoot();
   };
 
   return (
-    <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
+    <section
+      className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <SectionFog />
       <BubbleCanvas className="opacity-25" count={10} />
 
