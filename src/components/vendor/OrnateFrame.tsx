@@ -54,11 +54,11 @@ const Corner: React.FC<{ rotate: number; pos: string; accent: string; duration: 
 );
 
 const OrnateFrame: React.FC<Props> = ({ accent = 'var(--color-amber-glow)', className = '', duration = 0.9 }) => (
-  <div className={`pointer-events-none absolute inset-0 ${className}`} aria-hidden>
-    <div className="absolute top-0 left-0">              <Corner rotate={0}   accent={accent} duration={duration} /></div>
-    <div className="absolute top-0 right-0">             <Corner rotate={90}  accent={accent} duration={duration} /></div>
-    <div className="absolute bottom-0 right-0">          <Corner rotate={180} accent={accent} duration={duration} /></div>
-    <div className="absolute bottom-0 left-0">           <Corner rotate={270} accent={accent} duration={duration} /></div>
+  <div className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`} aria-hidden>
+    <Corner rotate={0}   pos="top-0 left-0"     accent={accent} duration={duration} />
+    <Corner rotate={90}  pos="top-0 right-0"    accent={accent} duration={duration} />
+    <Corner rotate={180} pos="bottom-0 right-0" accent={accent} duration={duration} />
+    <Corner rotate={270} pos="bottom-0 left-0"  accent={accent} duration={duration} />
   </div>
 );
 
