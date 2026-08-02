@@ -247,7 +247,7 @@ const FR = {
   placeholder: 'Écrire un message… (⌘/Ctrl+Entrée pour envoyer)',
   send:    'Envoyer',
   sending: 'Envoi…',
-  mockMode: 'Mode démo — messagerie désactivée pour les profils factices.',
+  mockMode: 'Mode démo : messagerie désactivée pour les profils factices.',
 };
 const EN: typeof FR = {
   title: 'Messages with FMM',
@@ -256,7 +256,7 @@ const EN: typeof FR = {
   placeholder: 'Write a message… (⌘/Ctrl+Enter to send)',
   send:    'Send',
   sending: 'Sending…',
-  mockMode: 'Demo mode — messaging is disabled for mock profiles.',
+  mockMode: 'Demo mode: messaging is disabled for mock profiles.',
 };
 
 export default MessageThread;

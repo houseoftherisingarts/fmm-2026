@@ -142,7 +142,7 @@ const Notice: React.FC<{ v: VendorApp; tilt: number; t: typeof FR; index: number
       </h3>
       {v.regionOfOrigin && (
         <p className="font-editorial italic text-sm text-[#5b3b1a] text-center mb-3">
-          — {v.regionOfOrigin} —
+          · {v.regionOfOrigin} ·
         </p>
       )}
       {v.description && (
@@ -228,7 +228,7 @@ const FR = {
   emptyTitle:  'Tableau vide',
   empty:       'Aucun marchand n’a encore été confirmé. Les premiers avis seront épinglés sous peu.',
   visit:       'Visiter',
-  refreshNote: 'Revenez régulièrement — si votre candidature est acceptée, vous la verrez ici et dans votre espace client.',
+  refreshNote: 'Revenez régulièrement : si votre candidature est acceptée, vous la verrez ici et dans votre espace client.',
 };
 
 const EN: typeof FR = {
@@ -239,7 +239,7 @@ const EN: typeof FR = {
   emptyTitle:  'Empty board',
   empty:       'No merchants have been confirmed yet. The first notices will be pinned shortly.',
   visit:       'Visit',
-  refreshNote: 'Check back regularly — if your application is accepted, you will see it both here and in your client space.',
+  refreshNote: 'Check back regularly: if your application is accepted, you will see it both here and in your client space.',
 };
 
 export default ApprovedVendorsList;

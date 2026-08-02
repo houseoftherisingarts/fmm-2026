@@ -147,7 +147,7 @@ const FR: Copy = {
   sealed: {
     eyebrow:    'Boutique digitale',
     title:      'Préparez-vous au festival',
-    lead:       'Nos partenaires en ligne — pas de kiosque sur place, mais ils vous équipent pour le festival. Retournez la carte pour voir le code promo.',
+    lead:       'Nos partenaires en ligne : pas de kiosque sur place, mais ils vous équipent pour le festival. Retournez la carte pour voir le code promo.',
     visit:      'Voir la boutique',
     promoLabel: 'Code promo',
     copyAction: 'Copier',
@@ -197,7 +197,7 @@ const EN: Copy = {
   sealed: {
     eyebrow:    'Digital shop',
     title:      'Get festival-ready',
-    lead:       'Our online partners — no on-site kiosk, but they kit you out for the festival. Flip the card to see the promo code.',
+    lead:       'Our online partners: no on-site kiosk, but they kit you out for the festival. Flip the card to see the promo code.',
     visit:      'Visit shop',
     promoLabel: 'Promo code',
     copyAction: 'Copy',

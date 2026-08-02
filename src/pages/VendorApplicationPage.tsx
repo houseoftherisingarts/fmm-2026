@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, LogIn, ShoppingBag, Calendar } from 'lucide-react';
+import { ArrowLeft, LogIn, ShoppingBag, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
@@ -10,8 +10,6 @@ import SEO from '../components/SEO';
 import VendorQuestForm from '../components/vendor/VendorQuestForm';
 import OvertureScroll from '../components/vendor/OvertureScroll';
 import EmberCanvas from '../components/vendor/EmberCanvas';
-import CandleSpotlight from '../components/vendor/CandleSpotlight';
-import LanternRow from '../components/vendor/LanternRow';
 import ApprovedVendorsList from '../components/vendor/ApprovedVendorsList';
 import { CURRENT_YEAR } from '../firebase/applications';
 
@@ -160,8 +158,8 @@ const FR = {
   backToMarket: 'Retour au marché',
   eyebrow: 'Inscription marchand',
   title: 'Rejoindre la caravane',
-  intro: 'Soumettez votre candidature pour tenir un kiosque au marché du FMM 2026. Nous étudions chaque demande individuellement et vous reviendrons via votre compte.',
-  intro2027: 'Réservez votre place sur la liste 2027. Vos réponses sont enregistrées dans la cohorte 2027 — Jesse vous reviendra dès l’ouverture officielle des inscriptions.',
+  intro: 'La cohorte 2026 est complète. Si vous avez déjà un dossier 2026, consultez-le et modifiez-le ici via votre compte.',
+  intro2027: 'Réservez votre place sur la liste 2027. Vos réponses sont enregistrées dans la cohorte 2027 et Jesse vous reviendra dès l’ouverture officielle des inscriptions.',
   banner2026: 'Cohorte 2026 · 25–27 septembre',
   banner2027: 'Réservation 2027 · Liste anticipée',
   authTitle: 'Créez votre compte FMM',
@@ -174,8 +172,8 @@ const EN: typeof FR = {
   backToMarket: 'Back to market',
   eyebrow: 'Vendor registration',
   title: 'Join the caravan',
-  intro: 'Submit your application to hold a stall at the FMM 2026 market. We review each application individually and respond via your account.',
-  intro2027: 'Reserve your seat on the 2027 list. Your answers are stored in the 2027 cohort — Jesse will reach out as soon as registrations officially open.',
+  intro: 'The 2026 cohort is full. If you already have a 2026 application, review and edit it here through your account.',
+  intro2027: 'Reserve your seat on the 2027 list. Your answers are stored in the 2027 cohort and Jesse will reach out as soon as registrations officially open.',
   banner2026: '2026 cohort · 25–27 September',
   banner2027: '2027 reservation · Early list',
   authTitle: 'Create your FMM account',

@@ -44,7 +44,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
 
   return (
     <section
-      className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden py-24 md:py-36"
+      className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden py-16 md:py-24"
     >
       {/* Backdrop image removed — section now sits cleanly on the
           continuous page bg with just grain + fog atmosphere. */}

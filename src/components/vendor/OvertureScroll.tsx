@@ -41,7 +41,7 @@ export const FR_OVERTURE = {
       body: [
         '25, 26 et 27 septembre 2026.',
         '4 Rue du Bosquet, Montpellier (Québec).',
-        'Vendredi 16 h 30 – 20 h · Samedi 9 h 30 – 19 h · Dimanche 9 h 30 – 16 h.',
+        'Vendredi 16 h 30 - 20 h · Samedi 9 h 30 – 19 h · Dimanche 9 h 30 – 16 h.',
         'Présence obligatoire pendant tout l’horaire pour être considéré exposant.',
       ],
       icon: CalendarDays,
@@ -51,9 +51,9 @@ export const FR_OVERTURE = {
     {
       title: 'Coût',
       body: [
-        '110 $ — espace 10 × 10 pi.',
-        '165 $ — espace 10 × 15 pi.',
-        '220 $ — espace 10 × 20 pi.',
+        '110 $ · espace 10 × 10 pi.',
+        '165 $ · espace 10 × 15 pi.',
+        '220 $ · espace 10 × 20 pi.',
         'Mesures impériales (vous pourrez basculer en métrique à la facture).',
       ],
       icon: Coins,
@@ -95,7 +95,7 @@ export const FR_OVERTURE = {
     {
       title: 'Bon à savoir',
       body: [
-        'Aucune obligation vestimentaire ni de décor — costumes et déco encouragés, kiosques décorés/médiévaux priorisés.',
+        'Aucune obligation vestimentaire ni de décor : costumes et déco encouragés, kiosques décorés/médiévaux priorisés.',
         'Événement 100 % extérieur, sur gazon (apportez vos cales si besoin).',
         'Sanitaires et toilettes chimiques sur place. Pas de douches.',
         'Nous priorisons les artisans qui créent ou démontrent leur métier plutôt que la simple revente.',
@@ -139,9 +139,9 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
     {
       title: 'Cost',
       body: [
-        '$110 — 10 × 10 ft space.',
-        '$165 — 10 × 15 ft space.',
-        '$220 — 10 × 20 ft space.',
+        '$110 · 10 × 10 ft space.',
+        '$165 · 10 × 15 ft space.',
+        '$220 · 10 × 20 ft space.',
         'Imperial measurements (switch to metric at the invoice step).',
       ],
       icon: Coins,
@@ -183,7 +183,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
     {
       title: 'Good to know',
       body: [
-        'No costume or decor requirement — costumes and themed setups encouraged, well-decorated/medieval kiosks prioritized.',
+        'No costume or decor requirement: costumes and themed setups encouraged, well-decorated/medieval kiosks prioritized.',
         '100% outdoor on grass (bring shims if needed).',
         'Bathrooms and chemical toilets on site. No showers.',
         'We prioritize artisans who create or demonstrate their craft over straight resale.',
