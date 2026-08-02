@@ -329,13 +329,13 @@ const FR = {
   optTentTitle:   'Espace tente / petit véhicule',
   optTentBody:    'Pour les tentes et les petits véhicules. Un coin de verdure pour dormir au cœur de l’ambiance médiévale.',
   lodgingEyebrow: 'Autour du festival',
-  lodgingTitle:   'Hébergements partenaires',
-  lodgingLead:    'Auberges, chalets et gîtes des environs. Utilisez les chevrons (ou ← →) pour parcourir le bestiaire.',
+  lodgingTitle:   'Où dormir dans les environs',
+  lodgingLead:    'Auberges, campings et gîtes de la Petite-Nation. Utilisez les chevrons (ou ← →) pour parcourir le bestiaire.',
   lodging:        'Hébergement',
   prev:           'Précédent',
   next:           'Suivant',
-  book:           'Réserver',
-  callBody:       'Vous ne trouvez pas votre bonheur ? Écrivez-nous à admin@festivalmedievaldemontpellier.org — on connaît tout le monde dans la Petite-Nation.',
+  book:           'Voir le site',
+  callBody:       'Vous ne trouvez pas votre bonheur ? Écrivez-nous à admin@festivalmedievaldemontpellier.org. Nous connaissons tout le monde dans la Petite-Nation.',
 };
 
 const EN: typeof FR = {
