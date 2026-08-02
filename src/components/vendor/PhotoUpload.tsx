@@ -97,7 +97,7 @@ const PhotoUpload: React.FC<Props> = ({
           {busy && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 /85 flex flex-col items-center justify-center gap-2"
+              className="absolute inset-0 bg-[rgba(10,2,7,0.85)] flex flex-col items-center justify-center gap-2"
             >
               <div className="w-32 h-1 rounded-full bg-ivory-soft/15 overflow-hidden">
                 <motion.div

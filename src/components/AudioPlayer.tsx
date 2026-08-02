@@ -10,7 +10,7 @@ import { UI } from '../content';
 // d'un ID; les IDs d'artistes vérifiés via l'oEmbed Spotify sont
 // 01Er12nK5rrnHx8usFPJAs (Derek) et 2XDOBQOobSTxtmFhWKdm6x (Brandon).
 const SPOTIFY_LINK  = 'https://open.spotify.com/search/Gypsy%20Caravan%20Derek%20Brandon%20Fiechter';
-const SPOTIFY_TITLE = 'Gypsy Caravan — D&B Fiechter';
+const SPOTIFY_TITLE = 'Gypsy Caravan · D&B Fiechter';
 
 // Compact header audio chip. If `VITE_AUDIO_TRACK_URL` points to a
 // local audio file it becomes a real loop player; otherwise it links

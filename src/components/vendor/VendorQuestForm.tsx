@@ -276,7 +276,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
       <div className="relative">
         <motion.div
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          className="velvet-card rounded-lg-card p-10 md:p-14 text-center relative overflow-hidden"
+          className="velvet-card p-10 md:p-14 text-center relative overflow-hidden"
         >
           <OrnateFrame accent="var(--color-amber-glow)" duration={1.2} />
           {/* Burst rings */}
@@ -335,13 +335,13 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
       )}
 
       {/* ── Quest form card ──────────────────────────────────────── */}
-      <TiltShell max={4} className="rounded-lg-card">
+      <TiltShell max={4} className="">
         <motion.div
           animate={{
             boxShadow: `0 0 0 1px ${CHAPTER_ACCENT[chapter]}33, 0 0 60px -10px ${CHAPTER_ACCENT[chapter]}66, 0 24px 60px -20px rgba(0,0,0,0.85)`,
           }}
           transition={{ duration: 0.6 }}
-          className="velvet-card rounded-lg-card p-6 md:p-10 relative overflow-hidden stage-3d"
+          className="velvet-card p-6 md:p-10 relative overflow-hidden stage-3d"
         >
           <OrnateFrame accent={CHAPTER_ACCENT[chapter]} duration={0.85} />
           <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={parchmentBg} aria-hidden />
@@ -555,7 +555,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
               disabled={submitState === 'submitting'}
               whileHover={{ y: -2, scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-b from-amber-300 via-brass-soft to-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold rounded-card disabled:opacity-50 border border-amber-200/60 shadow-[0_0_36px_rgba(232,177,74,0.45),0_8px_24px_-4px_rgba(216,155,58,0.55)]"
+              className="witcher-prompt disabled:opacity-50" data-primary="true"
             >
               {submitState === 'submitting' ? t.sealing : (existing ? t.update : t.seal)}
               {submitState !== 'submitting' && <Sparkles size={14} />}
@@ -629,7 +629,7 @@ const FancyInput: React.FC<{
         onFocus={() => setFocused(true)}
         onBlur={() => { setFocused(false); onBlur?.(); }}
         placeholder={placeholder}
-        className="w-full /50 border px-3.5 py-3 text-sm font-sans text-ivory placeholder:text-stone focus:outline-none rounded-card transition-colors focus:"
+        className="witcher-input font-sans"
       />
       <motion.span
         aria-hidden
@@ -655,7 +655,7 @@ const FancyTextarea: React.FC<{
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => { setFocused(false); onBlur?.(); }}
-        className="w-full /50 border px-3.5 py-3 text-sm font-sans text-ivory placeholder:text-stone focus:outline-none rounded-card resize-y min-h-[80px] transition-colors focus:"
+        className="witcher-input font-sans resize-y min-h-[80px]"
       />
       <motion.span
         aria-hidden
@@ -676,7 +676,7 @@ const FancySelect: React.FC<{
   <select
     value={value}
     onChange={(e) => onChange(e.target.value)}
-    className="w-full /50 border px-3.5 py-3 text-sm font-sans text-ivory focus:border-brass focus:outline-none rounded-card cursor-pointer"
+    className="witcher-input font-sans"
   >
     <option value="" disabled>{placeholder}</option>
     {options.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
@@ -697,7 +697,7 @@ const ChipRadio: React.FC<{
         <motion.label
           key={o.v}
           whileTap={{ scale: 0.97 }}
-          className={`relative cursor-pointer text-center py-3.5 rounded-card border font-sans text-sm transition-all ${
+          className={`relative cursor-pointer text-center py-3.5 border font-sans text-sm transition-all ${
             active
               ? 'bg-brass/15 border-brass text-brass shadow-[0_0_20px_rgba(196,164,90,0.18)]'
               : 'bg-midnight-deep/40 border-ivory-soft/15 text-ivory-soft hover:border-brass/50 hover:text-ivory'
@@ -708,7 +708,7 @@ const ChipRadio: React.FC<{
           {active && (
             <motion.span
               layoutId={`chip-glow-${name}`}
-              className="absolute inset-0 rounded-card border border-brass/60 pointer-events-none"
+              className="absolute inset-0 border border-brass/60 pointer-events-none"
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
             />
           )}
@@ -936,7 +936,7 @@ const InvoicePanel: React.FC<{
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.12 }}
-      className="mt-6 relative rounded-card border border-amber-300/30 /40 p-5 md:p-6 overflow-hidden"
+      className="mt-6 relative border border-amber-300/30 bg-[rgba(26,5,11,0.45)] p-5 md:p-6 overflow-hidden"
     >
       <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={parchmentBg} aria-hidden />
       <div className="relative">
@@ -983,13 +983,13 @@ const UnitsSwitch: React.FC<{
   <button
     type="button"
     onClick={() => onChange(!metric)}
-    className="relative inline-flex items-center /60 border rounded-pill p-0.5 font-sans text-[10px] uppercase tracking-widest text-ivory-soft"
+    className="relative inline-flex items-center bg-[rgba(26,5,11,0.6)] border border-ivory-soft/20 p-0.5 font-sans text-[10px] uppercase tracking-widest text-ivory-soft"
     aria-label="Units toggle"
   >
     <motion.span
       layout
       transition={{ type: 'spring', stiffness: 480, damping: 32 }}
-      className="absolute top-0.5 bottom-0.5 rounded-pill bg-brass shadow-[0_0_14px_rgba(232,177,74,0.4)]"
+      className="absolute top-0.5 bottom-0.5 bg-brass shadow-[0_0_14px_rgba(232,177,74,0.4)]"
       style={{ left: metric ? '50%' : '0.125rem', right: metric ? '0.125rem' : '50%' }}
     />
     <span className={`relative px-3 py-1.5 transition-colors ${!metric ? 'text-midnight-deep' : ''}`}>{labelImperial}</span>

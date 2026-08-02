@@ -153,7 +153,7 @@ const MessageThread: React.FC<Props> = ({
           placeholder={t.placeholder}
           disabled={isMock}
           rows={2}
-          className="flex-1 /60 border px-3 py-2 text-sm font-sans text-ivory placeholder:text-stone focus:border-brass focus:outline-none rounded-card resize-y min-h-[44px] disabled:opacity-50"
+          className="witcher-input font-sans flex-1 resize-y min-h-[44px] disabled:opacity-50"
         />
         <button
           type="submit"

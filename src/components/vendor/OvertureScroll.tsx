@@ -33,7 +33,7 @@ export const FR_OVERTURE = {
         'Les kiosques qui s’accordent le mieux avec ce thème seront priorisés.',
       ],
       icon: Sparkles,
-      accent: 'var(--color-ruby)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-7',
     },
     {
@@ -45,7 +45,7 @@ export const FR_OVERTURE = {
         'Présence obligatoire pendant tout l’horaire pour être considéré exposant.',
       ],
       icon: CalendarDays,
-      accent: 'var(--color-emerald-deep)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-5',
     },
     {
@@ -57,7 +57,7 @@ export const FR_OVERTURE = {
         'Mesures impériales (vous pourrez basculer en métrique à la facture).',
       ],
       icon: Coins,
-      accent: 'var(--color-mustard)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-4',
     },
     {
@@ -78,7 +78,7 @@ export const FR_OVERTURE = {
         'Le paiement se fait en ligne via un lien Zeffy.',
       ],
       icon: CreditCard,
-      accent: 'var(--color-plum)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-4',
     },
     {
@@ -102,7 +102,7 @@ export const FR_OVERTURE = {
         'Réponse à votre candidature sous 1 à 2 mois, par courriel. Questions : montpelliermedieval@gmail.com.',
       ],
       icon: ScrollText,
-      accent: 'var(--color-bone)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-5',
     },
   ] satisfies SectionData[],
@@ -121,7 +121,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
         'Kiosks that fit this theme will be given priority.',
       ],
       icon: Sparkles,
-      accent: 'var(--color-ruby)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-7',
     },
     {
@@ -133,7 +133,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
         'Full-weekend attendance is required to be considered an exhibitor.',
       ],
       icon: CalendarDays,
-      accent: 'var(--color-emerald-deep)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-5',
     },
     {
@@ -145,7 +145,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
         'Imperial measurements (switch to metric at the invoice step).',
       ],
       icon: Coins,
-      accent: 'var(--color-mustard)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-4',
     },
     {
@@ -166,7 +166,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
         'Payment is made online via a Zeffy link.',
       ],
       icon: CreditCard,
-      accent: 'var(--color-plum)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-4',
     },
     {
@@ -190,7 +190,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
         'Replies within 1–2 months by email. Questions: montpelliermedieval@gmail.com.',
       ],
       icon: ScrollText,
-      accent: 'var(--color-bone)',
+      accent: 'var(--color-amber-glow)',
       span: 'lg:col-span-5',
     },
   ] satisfies SectionData[],
@@ -210,7 +210,7 @@ const OvertureScroll: React.FC<{
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="velvet-card rounded-lg-card p-6 md:p-12 relative overflow-hidden stage-3d max-w-7xl mx-auto"
+      className="velvet-card p-6 md:p-12 relative overflow-hidden stage-3d max-w-7xl mx-auto"
     >
       <OrnateFrame accent="var(--color-amber-glow)" duration={1} />
       <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={parchmentBg} aria-hidden />
@@ -244,7 +244,7 @@ const OvertureScroll: React.FC<{
             onClick={onEnter}
             whileHover={{ y: -3, scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-amber-300 via-brass-soft to-brass text-midnight-deep font-sans uppercase tracking-wider text-sm md:text-base font-semibold rounded-card border border-amber-200/60 shadow-[0_0_36px_rgba(232,177,74,0.45),0_8px_24px_-4px_rgba(216,155,58,0.55)]"
+            className="witcher-prompt" data-primary="true"
           >
             {t.cta} <ArrowRight size={16} />
           </motion.button>
@@ -262,7 +262,7 @@ const Tile: React.FC<{ s: SectionData; reduceMotion: boolean; delay: number }> =
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay }}
       whileHover={reduceMotion ? undefined : { y: -3 }}
-      className={`relative ${s.span} rounded-card p-5 md:p-6 bg-midnight-deep/55 border border-ivory-soft/10 overflow-hidden group transition-colors`}
+      className={`relative ${s.span} p-5 md:p-6 bg-midnight-deep/55 border border-ivory-soft/10 overflow-hidden group transition-colors`}
       style={{
         boxShadow: `inset 0 0 0 1px ${s.accent}1a, 0 12px 32px -16px ${s.accent}55`,
       }}
@@ -273,7 +273,7 @@ const Tile: React.FC<{ s: SectionData; reduceMotion: boolean; delay: number }> =
 
       <header className="flex items-start gap-3 mb-3">
         <div
-          className="w-10 h-10 rounded-card flex items-center justify-center shrink-0"
+          className="w-10 h-10 flex items-center justify-center shrink-0"
           style={{
             background: `${s.accent}20`,
             border: `1px solid ${s.accent}55`,

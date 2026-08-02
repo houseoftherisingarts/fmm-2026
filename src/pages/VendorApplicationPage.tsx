@@ -42,66 +42,67 @@ const VendorApplicationPage: React.FC = () => {
     <>
       <SEO title={t.title} description={t.intro} />
 
-      <section className="relative cabaret-stage text-ivory pt-28 pb-24 md:pt-32 md:pb-32 overflow-hidden">
-        <div className="cabaret-curtain-l" aria-hidden />
-        <div className="cabaret-curtain-r" aria-hidden />
+      {/* Grammaire Witcher : continuité directe de la page Village
+          (caravan-stage, hairlines, registres, prompt A). Les rideaux
+          de cabaret et lanternes de l'ancienne version sont partis. */}
+      <section className="relative caravan-stage bleed-edges text-[var(--color-bone)] pt-28 pb-24 md:pt-32 md:pb-32 overflow-hidden">
         <EmberCanvas />
-        <CandleSpotlight />
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 h-40 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)' }}
-        />
 
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <Link
-            to={addLocale('/marche', lang)}
-            className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-amber-200 mb-10 transition"
+          {/* Rail supérieur : retour + registre d'année */}
+          <div
+            className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2"
+            style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
           >
-            <ArrowLeft size={14} /> {t.backToMarket}
-          </Link>
+            <Link
+              to={addLocale('/marche', lang)}
+              className="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.3em] text-[var(--color-bone)]/60 hover:text-[#D8B05A] transition"
+            >
+              <ArrowLeft size={13} /> {t.backToMarket}
+            </Link>
+            <div className="hidden md:flex items-center gap-3">
+              <Calendar size={12} style={{ color: '#D8B05A' }} />
+              <span className="witcher-stat-label">{isEarly ? t.banner2027 : t.banner2026}</span>
+            </div>
+          </div>
 
-          <LanternRow className="max-w-md mx-auto mb-2" />
+          <div className="max-w-2xl">
+            <p
+              className="font-sans uppercase tracking-[0.45em] text-[10px] md:text-[11px] mb-7 inline-flex items-center gap-2"
+              style={{ color: '#D8B05A' }}
+            >
+              <ShoppingBag size={12} />{t.eyebrow}
+            </p>
 
-          <p className="font-editorial italic text-amber-200 uppercase tracking-[0.4em] text-xs md:text-sm mb-3 text-center">
-            <ShoppingBag size={12} className="inline mr-1.5 -mt-0.5" />{t.eyebrow}
-          </p>
+            <h1
+              className="font-display leading-[1.02] tracking-[-0.005em] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-8"
+              style={{
+                color: 'var(--color-bone)',
+                fontWeight: 400,
+                textShadow: '0 0 24px rgba(232, 177, 74, 0.28), 0 0 60px rgba(184, 106, 42, 0.22)',
+              }}
+            >
+              {titleWords.map((w, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.65, delay: 0.1 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                  className="inline-block mr-3 last:mr-0"
+                >
+                  {w}
+                </motion.span>
+              ))}
+            </h1>
 
-          <h1 className="font-display title-medieval text-5xl md:text-7xl text-ivory mb-5 text-center leading-[1.05]">
-            {titleWords.map((w, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 24, rotateX: -45 }}
-                animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                transition={{ duration: 0.65, delay: 0.1 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-block mr-3 last:mr-0 copper-sheen"
-                style={{ transformStyle: 'preserve-3d', transformOrigin: 'center bottom' }}
-              >
-                {w}
-              </motion.span>
-            ))}
-          </h1>
-
-          <motion.div
-            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8, delay: 0.4 }}
-            className="h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent w-32 mx-auto mb-6 origin-center"
-          />
-
-          <motion.p
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-            className="font-editorial text-lg md:text-xl text-ivory/90 leading-relaxed max-w-2xl mx-auto text-center italic"
-          >
-            {isEarly ? t.intro2027 : t.intro}
-          </motion.p>
-
-          {/* Year banner — shows which festival year this submission targets. */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.6 }}
-            className="mt-7 mx-auto inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-amber-300/10 border border-amber-300/45 text-amber-200 font-sans uppercase tracking-widest text-[11px] backdrop-blur"
-          >
-            <Calendar size={12} />
-            {isEarly ? t.banner2027 : t.banner2026}
-          </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
+              className="font-sans text-base md:text-lg leading-[1.75]"
+              style={{ color: 'rgba(244, 239, 227, 0.78)', fontWeight: 300 }}
+            >
+              {isEarly ? t.intro2027 : t.intro}
+            </motion.p>
+          </div>
         </div>
 
         {/* ── Form well: Overture → Auth → Form ─────────────────────── */}

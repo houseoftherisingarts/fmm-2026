@@ -1542,3 +1542,27 @@ body.fmm-caravan-page .fmm-fire-backdrop { display: block; }
     border-radius: 3px;
   }
 }
+
+/* ── Witcher form grammar — champs du formulaire marchand ─────────
+   Continuité de la page Village : verre sombre, arêtes vives,
+   hairlines ivoire, focus ambre. Posé 2026-08-02 (refonte du
+   formulaire d'inscription, décision d'Alex). */
+.witcher-input {
+  width: 100%;
+  background: rgba(26, 5, 11, 0.55);
+  border: 1px solid rgba(244, 239, 227, 0.16);
+  color: #F4EFE3;
+  padding: 0.8rem 0.95rem;
+  font-size: 0.875rem;
+  border-radius: 0;
+  transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
+}
+.witcher-input::placeholder { color: rgba(244, 239, 227, 0.35); }
+.witcher-input:focus {
+  outline: none;
+  border-color: rgba(216, 176, 90, 0.8);
+  background: rgba(26, 5, 11, 0.78);
+  box-shadow: 0 0 0 1px rgba(216, 176, 90, 0.3), 0 0 26px -8px rgba(216, 176, 90, 0.45);
+}
+select.witcher-input { cursor: pointer; }
+select.witcher-input option { background: #1a050b; color: #F4EFE3; }
