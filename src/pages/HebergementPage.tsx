@@ -354,13 +354,13 @@ const EN: typeof FR = {
   optTentTitle:   'Tent / small vehicle area',
   optTentBody:    'For tents and small vehicles. A patch of green to sleep right in the heart of the medieval atmosphere.',
   lodgingEyebrow: 'Around the festival',
-  lodgingTitle:   'Partner lodgings',
-  lodgingLead:    'Inns, cabins and B&Bs nearby. Use the chevrons (or ← →) to browse the bestiary.',
+  lodgingTitle:   'Where to sleep nearby',
+  lodgingLead:    'Inns, campgrounds and B&Bs across Petite-Nation. Use the chevrons (or ← →) to browse the bestiary.',
   lodging:        'Lodging',
   prev:           'Previous',
   next:           'Next',
-  book:           'Book',
-  callBody:       'Can’t find what you’re looking for? Email admin@festivalmedievaldemontpellier.org — we know everyone in Petite-Nation.',
+  book:           'Visit their site',
+  callBody:       'Can’t find what you’re looking for? Email admin@festivalmedievaldemontpellier.org. We know everyone in Petite-Nation.',
 };
 
 export default HebergementPage;
