@@ -143,17 +143,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
           <div className="flex items-center gap-8 md:gap-11">
             <button type="button" className="witcher-prompt" data-primary="true" onClick={onApply}>
               <span className="witcher-prompt-glyph"><span>A</span></span>
-              {year === 2026 ? copy.apply2026 : copy.apply2027}
-            </button>
-            <button
-              type="button"
-              className="witcher-prompt"
-              onClick={() => setYear((y) => (y === 2026 ? 2027 : 2026))}
-            >
-              <span className="witcher-prompt-glyph"><span>X</span></span>
-              {year === 2026
-                ? (lang === 'FR' ? 'Voir 2027' : 'View 2027')
-                : (lang === 'FR' ? 'Voir 2026' : 'View 2026')}
+              {copy.apply2027}
             </button>
           </div>
           <div className="hidden md:flex items-center gap-3">
