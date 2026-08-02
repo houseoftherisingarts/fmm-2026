@@ -59,7 +59,7 @@ export const FR_OVERTURE = {
       ],
       icon: Hammer,
       accent: 'var(--color-copper)',
-      span: 'lg:col-span-4',
+      span: 'lg:col-span-6',
     },
     {
       title: 'Paiement',
@@ -69,7 +69,7 @@ export const FR_OVERTURE = {
       ],
       icon: CreditCard,
       accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-4',
+      span: 'lg:col-span-6',
     },
     {
       title: 'Camping',
@@ -136,7 +136,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
       ],
       icon: Hammer,
       accent: 'var(--color-copper)',
-      span: 'lg:col-span-4',
+      span: 'lg:col-span-6',
     },
     {
       title: 'Payment',
@@ -146,7 +146,7 @@ export const EN_OVERTURE: typeof FR_OVERTURE = {
       ],
       icon: CreditCard,
       accent: 'var(--color-amber-glow)',
-      span: 'lg:col-span-4',
+      span: 'lg:col-span-6',
     },
     {
       title: 'Camping',
@@ -206,7 +206,7 @@ const OvertureScroll: React.FC<{
         </div>
 
         {/* ── Bento grid ──────────────────────────────────── */}
-        <div className="grid gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-12">
+        <div className="grid gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 items-start">
           {t.sections.map((s, i) => (
             <Tile key={s.title} s={s} reduceMotion={reduceMotion} delay={i * 0.05} />
           ))}

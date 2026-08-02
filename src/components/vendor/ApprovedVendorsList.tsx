@@ -62,7 +62,7 @@ const ApprovedVendorsList: React.FC = () => {
           </span>
         </div>
 
-        <header className="max-w-2xl mb-10 md:mb-14">
+        <header className="max-w-3xl mb-10 md:mb-14">
           <Eyebrow className="mb-5 inline-flex items-center gap-3">
             <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
             {t.eyebrow}
@@ -232,7 +232,7 @@ function seedTilt(seed: string): number {
 // ─── Traductions ─────────────────────────────────────────────────
 const FR = {
   eyebrow: 'Marché 2027',
-  title:   'Le tableau des marchands',
+  title:   'Tableau des marchands',
   lead:    'Les marchands retenus pour l’édition 2027 sont épinglés ici, au fil des acceptations.',
   none:        'Aucun avis',
   acceptedTag: 'Confirmé',
@@ -244,7 +244,7 @@ const FR = {
 
 const EN: typeof FR = {
   eyebrow: '2027 Market',
-  title:   'The merchants’ board',
+  title:   'Merchants’ board',
   lead:    'Merchants selected for the 2027 edition are pinned here as acceptances come in.',
   none:        'No notices',
   acceptedTag: 'Confirmed',
