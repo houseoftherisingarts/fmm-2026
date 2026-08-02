@@ -3,12 +3,14 @@ import { Play, Pause } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { UI } from '../content';
 
-// Musique du thème « Caravanes et Saltimbanques » : Gypsy Caravan de
-// Derek & Brandon Fiechter (album Europe, 2015). Pour l'instant le chip
-// est un LIEN vers Spotify (décision d'Alex 2026-08-02), pas un lecteur.
-// URL de recherche : format stable, atterrit sur la piste sans dépendre
-// d'un ID; les IDs d'artistes vérifiés via l'oEmbed Spotify sont
-// 01Er12nK5rrnHx8usFPJAs (Derek) et 2XDOBQOobSTxtmFhWKdm6x (Brandon).
+// Musique d'ambiance du thème « Caravanes et Saltimbanques ».
+// Piste : Gypsy Shoegazer (No Voices) de Kevin MacLeod, CC BY
+// (incompetech.com), hébergée dans /public/audio et jouée en boucle par
+// le lecteur ci-dessous (VITE_AUDIO_TRACK_URL). Le crédit visible vit
+// dans le titre du chip; détail licence : public/audio/CREDITS.txt.
+// La piste rêvée d'Alex (Gypsy Caravan, Derek & Brandon Fiechter) est
+// protégée : on ne peut pas l'héberger sans licence. Le lien Spotify
+// ci-dessous reste le repli si jamais l'URL locale est vidée.
 const SPOTIFY_LINK  = 'https://open.spotify.com/search/Gypsy%20Caravan%20Derek%20Brandon%20Fiechter';
 const SPOTIFY_TITLE = 'Gypsy Caravan · D&B Fiechter';
 
