@@ -23,7 +23,7 @@ interface Lodging {
 // établissement (août 2026). Ne rien ajouter ici sans l'avoir vérifié à la
 // source : ce sont de vraies entreprises, nommées publiquement.
 //
-// TODO — Les Chalets d'Aile-Laine (23 ch. Lanzo, Montpellier, 819-665-6400)
+// TODO : Les Chalets d'Aile-Laine (23 ch. Lanzo, Montpellier, 819-665-6400)
 // n'ont ni site web ni photo utilisable. Les appeler pour obtenir une photo
 // et un lien, puis remettre la fiche ici.
 const LODGINGS: Lodging[] = [
