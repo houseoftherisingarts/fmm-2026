@@ -316,7 +316,7 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
 const FR = {
   eyebrow:  'Sur place et alentours',
   title:    'Camping & Hébergement',
-  intro:    'Plantez votre tente ou votre roulotte sur le site du festival, ou choisissez une adresse où dormir dans la Petite-Nation.',
+  intro:    'Plantez votre tente ou votre roulotte sur le site du festival, ou découvrez nos hébergements partenaires dans la Petite-Nation.',
   campingEyebrow: 'Sur le site',
   campingTitle:   'Camping sur place',
   campingLead:    'Voici le plan du site du festival. Le camping est sur place : choisissez votre type d’emplacement ci-dessous et réservez en ligne.',
