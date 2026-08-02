@@ -87,7 +87,9 @@ const AtelierHall: React.FC<Props> = ({ lang, vendors, copy }) => {
 
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
           {/* ── FOCUSED CARD ─────────────────────────────────── */}
-          <div className="lg:col-span-8">
+          {/* min-w-0 : sans ça, la grille refuse de rétrécir sous la
+              largeur intrinsèque du contenu et déborde sur mobile. */}
+          <div className="lg:col-span-8 min-w-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active.id}
