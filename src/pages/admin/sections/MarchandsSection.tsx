@@ -70,7 +70,6 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
       ...PREMIUM_VENDORS.map((v) => ({ id: v.id, name: `${v.name} · Premium`,   defaultImage: v.image })),
       ...MARCHE_VENDORS.map((v)  => ({ id: v.id, name: `${v.name} · Marché`,    defaultImage: v.image })),
       ...DIGITAL_VENDORS.map((v) => ({ id: v.id, name: `${v.name} · Digitale`,  defaultImage: v.image })),
-      ...PREP_PRODUCTS.map((v)   => ({ id: v.id, name: `${v.name} · Boutique`,  defaultImage: v.image })),
     ],
     [],
   );
