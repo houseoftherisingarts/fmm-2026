@@ -120,7 +120,7 @@ const FR: Copy = {
     titleA:    'Marché',
     titleB:    'Artisans',
     intro:
-      'Quatre portes ouvrent sur le même marché : nos kiosques premium, les allées du marché, la boutique numérique, et nos pièces maison à précommander.',
+      'Trois portes ouvrent sur le même marché : nos kiosques premium, les allées du marché, et la boutique numérique.',
     apply2026: 'Postuler 2026',
     apply2027: 'Réserver 2027',
   },
@@ -169,17 +169,6 @@ const FR: Copy = {
     flipCta:    'Voir le code',
     flipBack:   'Retour',
     emptyState: 'Nos partenaires en ligne seront annoncés sous peu.',
-  },
-  forge: {
-    eyebrow:    'Boutique maison',
-    title:      'L’atelier FMM',
-    lead:       'Les essentiels signés FMM, livrés à votre porte. Précommande avant l’ouverture du marché, rabais d’avant-festival.',
-    preorder:   'Précommander',
-    finePrint:  'Pièces sélectionnées et contrôlées par l’équipe FMM. Livraison sous deux à quatre semaines. Précommandes ouvrent prochainement.',
-    emptyState: 'Précommandes ouvrent bientôt.',
-    rebateBadge:'Rabais festival',
-    retailLabel:'Détail',
-    festLabel:  'Festival',
   },
 };
 
@@ -238,17 +227,6 @@ const EN: Copy = {
     flipCta:    'See the code',
     flipBack:   'Back',
     emptyState: 'Online partners coming soon.',
-  },
-  forge: {
-    eyebrow:    'In-house shop',
-    title:      'The FMM workshop',
-    lead:       'FMM-signed essentials, shipped to your door. Pre-order before the market opens, pre-festival discount included.',
-    preorder:   'Pre-order',
-    finePrint:  'Pieces selected and quality-checked by the FMM team. Shipped in two to four weeks. Pre-orders opening soon.',
-    emptyState: 'Pre-orders open soon.',
-    rebateBadge:'Festival discount',
-    retailLabel:'Retail',
-    festLabel:  'Festival',
   },
 };
 
