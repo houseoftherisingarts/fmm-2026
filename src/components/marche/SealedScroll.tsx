@@ -212,8 +212,8 @@ const FlipCard: React.FC<{
                       {kiosk.category}
                     </p>
                     <h3
-                      className={`font-display leading-[1.05] tracking-[-0.005em] mb-3 ${large ? 'text-3xl md:text-4xl lg:text-5xl max-w-xl' : 'text-2xl md:text-3xl'}`}
-                      style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 4px 24px rgba(0,0,0,0.85)' }}
+                      className={`font-display leading-[1.05] tracking-[-0.005em] mb-3 line-clamp-2 ${large ? 'text-3xl md:text-4xl lg:text-5xl max-w-xl' : 'text-2xl md:text-3xl'}`}
+                      style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 4px 24px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.9)' }}
                     >
                       {kiosk.name}
                     </h3>
