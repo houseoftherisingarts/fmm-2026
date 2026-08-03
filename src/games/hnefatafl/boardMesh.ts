@@ -195,6 +195,10 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
         m.transparent = true;
         m.opacity = 0;
         m.depthWrite = false;
+        // Passer `transparent` après la première compilation exige une
+        // recompilation du programme, sinon l'opacité est ignorée et
+        // les tuiles restent pleinement visibles.
+        m.needsUpdate = true;
       }
 
       // Accordeur dev : régler échelle / hauteur / rotation à l'écran,
