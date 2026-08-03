@@ -1,6 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useReducedMotion } from 'framer-motion';
 import EmberCanvas from '../components/vendor/EmberCanvas';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';

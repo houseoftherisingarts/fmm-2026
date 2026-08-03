@@ -97,10 +97,11 @@ const ComptePage: React.FC = () => {
     return (
       <main className="min-h-screen text-ivory">
         <SEO title={t.title} noindex />
-        <section className="relative pt-28 pb-16 md:pt-36 md:pb-20 overflow-hidden">
+        <section className="relative caravan-stage bleed-edges pt-28 pb-16 md:pt-36 md:pb-20 overflow-hidden">
           <img decoding="async" fetchPriority="low" src="/wix/home/scene-cinematic.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover opacity-25" />
           <div className="absolute inset-0 bg-gradient-to-b from-midnight-deep/90 via-midnight/90 to-midnight-deep" />
           <Brume />
+          <EmberCanvas className="opacity-80" count={30} />
           <div className="relative max-w-2xl mx-auto px-4 md:px-8 text-center">
             <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-8 transition">
               <ArrowLeft size={14} /> {t.home}
