@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import { usePerfTier } from '../../lib/usePerfTier';
+import IntroChant from './IntroChant';
 
 /**
  * MedievalIntro — cinematic scroll prologue for the FMM site.
@@ -608,6 +609,10 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
               )}
             </motion.div>
           )}
+
+          {/* Le chant, en bas à gauche : le pendant du « Passer l'intro ».
+              Masqué pendant le film, qui porte déjà son propre son. */}
+          <IntroChant visible={phase !== 'video'} silver={SILVER} fontAlt={fontAlt} />
 
           {/* Skip intro — bottom-right, present through both the prologue and
               the film; always lands on the main site. */}

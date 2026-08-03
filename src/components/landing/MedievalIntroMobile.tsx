@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import { usePerfTier } from '../../lib/usePerfTier';
+import IntroChant from './IntroChant';
 
 /**
  * MedievalIntroMobile — portrait sibling of MedievalIntro.
