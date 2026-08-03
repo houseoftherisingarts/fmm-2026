@@ -123,6 +123,29 @@ const AnnonceCard: React.FC<{ a: Annonce; lang: 'FR' | 'EN'; index: number }> = 
           >
             {fr ? a.bodyFR : a.bodyEN}
           </p>
+
+          {a.logo && (
+            <a
+              href={a.logo.href}
+              target={a.logo.href?.startsWith('http') ? '_blank' : undefined}
+              rel={a.logo.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className="group inline-flex items-center gap-3 mt-5 pt-5 transition-opacity hover:opacity-100 opacity-85"
+              style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}
+            >
+              <img
+                src={a.logo.src}
+                alt={a.logo.alt}
+                loading="lazy"
+                decoding="async"
+                className="h-11 md:h-12 w-auto"
+              />
+              <ArrowUpRight
+                size={14}
+                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                style={{ color: '#D8B05A' }}
+              />
+            </a>
+          )}
         </div>
       </div>
     </motion.li>

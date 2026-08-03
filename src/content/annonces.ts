@@ -24,6 +24,8 @@ export interface Annonce {
   titleEN: string;
   bodyFR:  string;
   bodyEN:  string;
+  /** Logo d'un partenaire à afficher sous l'avis, s'il y a lieu. */
+  logo?:   { src: string; alt: string; href?: string };
 }
 
 export const ANNONCES: Annonce[] = [
@@ -45,8 +47,16 @@ export const ANNONCES: Annonce[] = [
     titleFR: 'Apportez du comptant',
     titleEN: 'Bring cash',
     bodyFR:
-      'Le réseau cellulaire est faible sur le site. Les terminaux de paiement peuvent devenir capricieux, surtout aux heures de pointe. Prévoyez du comptant pour les kiosques, la nourriture et le bar.',
+      'Le réseau cellulaire est faible sur le site. Les terminaux de paiement deviennent capricieux, surtout aux heures de pointe. Prévoyez du comptant pour les kiosques, la nourriture et le bar. Un kiosque de la Petite Monnaie sera présent à l’entrée : vous pourrez y échanger votre comptant contre la monnaie locale, acceptée partout sur le site.',
     bodyEN:
-      'Cell coverage is weak on site. Card terminals can get temperamental, especially at peak hours. Bring cash for the kiosks, the food and the bar.',
+      'Cell coverage is weak on site. Card terminals get temperamental, especially at peak hours. Bring cash for the kiosks, the food and the bar. A Petite Monnaie kiosk will be at the entrance: you can trade your cash for the local currency, accepted everywhere on the grounds.',
+    // Le logo pointe vers le Salon des Inconnus et non vers le pilier
+    // interne : c'est le Salon qui porte la Petite Monnaie, et l'avis
+    // ramène du trafic chez nous. URL vérifiée (200).
+    logo: {
+      src:  '/petite-monnaie/petite-monnaie-wordmark-reverse-1054.png',
+      alt:  'Petite Monnaie',
+      href: 'https://www.lesalondesinconnus.com/petite-monnaie',
+    },
   },
 ];
