@@ -231,6 +231,9 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
           },
           census: () => {
             const sc = group.parent as THREE.Scene | null;
+            // Headless : aucune frame ne passe forcément entre tune()
+            // et census(), donc on force la matrice monde à jour.
+            model.updateWorldMatrix(true, true);
             return {
               groupInScene: !!sc,
               sceneChildren: sc ? sc.children.map((ch) => `${ch.type}:${ch.children.length}`) : [],
