@@ -18,6 +18,7 @@ import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 import CoffreBillets from '../components/compte/CoffreBillets';
 import SoutienPanel from '../components/compte/SoutienPanel';
 import AvatarUpload from '../components/compte/AvatarUpload';
+import SalonDesJeux from '../components/compte/SalonDesJeux';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
@@ -220,7 +221,10 @@ const ComptePage: React.FC = () => {
 
         {/* Coffre à billets + guichet de soutien */}
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8 mb-6 md:mb-8 items-start">
-          <div className="lg:col-span-7"><CoffreBillets uid={user.uid} lang={lang} /></div>
+          <div className="lg:col-span-7 space-y-6 md:space-y-8">
+            <CoffreBillets uid={user.uid} lang={lang} />
+            <SalonDesJeux lang={lang} />
+          </div>
           <div className="lg:col-span-5"><SoutienPanel lang={lang} userEmail={user.email || ''} userName={displayName || user.displayName || ''} /></div>
         </div>
 
@@ -366,7 +370,7 @@ const inputCls = 'w-full bg-midnight-deep/50 border border-ivory-soft/20 px-3.5 
 
 const FR = {
   home: 'Accueil', eyebrow: 'Mon compte', title: 'Mon espace FMM',
-  signedOutLead: 'Connectez-vous pour postuler comme bénévole, marchand, ou suivre le statut de votre dossier.',
+  signedOutLead: 'Votre espace garde vos billets à l’abri, vous donne les avis du festival avant tout le monde, et ouvre le salon des jeux. C’est aussi d’ici que vous postulez comme bénévole ou marchand, et que vous suivez votre dossier.',
   signIn: 'Se connecter', signOut: 'Déconnexion',
   profileEyebrow: 'Profil', profileTitle: 'Vos informations',
   displayName: 'Nom affiché', phone: 'Téléphone',
@@ -383,7 +387,7 @@ const FR = {
 };
 const EN = {
   home: 'Home', eyebrow: 'My account', title: 'My FMM space',
-  signedOutLead: 'Sign in to apply as a volunteer or vendor, or to track your application status.',
+  signedOutLead: 'Your space keeps your tickets safe, gives you festival notices before anyone else, and opens the games room. It is also where you apply as a volunteer or merchant, and follow your application.',
   signIn: 'Sign in', signOut: 'Sign out',
   profileEyebrow: 'Profile', profileTitle: 'Your information',
   displayName: 'Display name', phone: 'Phone',
