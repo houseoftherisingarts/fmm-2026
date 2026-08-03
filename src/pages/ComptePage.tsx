@@ -14,6 +14,10 @@ import {
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import MessageThread from '../components/vendor/MessageThread';
+import AnnoncesPanel from '../components/compte/AnnoncesPanel';
+import CoffreBillets from '../components/compte/CoffreBillets';
+import SoutienPanel from '../components/compte/SoutienPanel';
+import { Motes } from '../components/marche/effects';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
@@ -134,10 +138,9 @@ const ComptePage: React.FC = () => {
   return (
     <main className="min-h-screen text-ivory">
       <SEO title={t.title} noindex />
-      <section className="relative pt-28 pb-12 md:pt-32 md:pb-16 overflow-hidden">
-        <img decoding="async" fetchPriority="low" src="/wix/home/scene-cinematic.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover opacity-20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-midnight-deep/90 via-midnight/90 to-midnight-deep" />
+      <section className="relative caravan-stage bleed-edges pt-28 pb-12 md:pt-32 md:pb-16 overflow-hidden">
         <Brume />
+        <Motes className="opacity-40" count={14} />
         <div className="relative max-w-screen-xl mx-auto px-4 md:px-8">
           <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-6 transition">
             <ArrowLeft size={14} /> {t.home}
@@ -195,8 +198,21 @@ const ComptePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="relative py-12 md:py-16 overflow-hidden">
+      <section className="relative caravan-stage bleed-edges py-12 md:py-16 overflow-hidden">
         <Brume />
+        <Motes className="opacity-30" count={10} />
+
+        {/* Les annonces ouvrent l'inventaire : première chose vue. */}
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <AnnoncesPanel lang={lang} />
+        </div>
+
+        {/* Coffre à billets + guichet de soutien */}
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8 mb-6 md:mb-8 items-start">
+          <div className="lg:col-span-7"><CoffreBillets uid={user.uid} lang={lang} /></div>
+          <div className="lg:col-span-5"><SoutienPanel lang={lang} /></div>
+        </div>
+
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8">
 
           {/* Profile */}
