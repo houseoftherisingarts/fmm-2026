@@ -1,4 +1,9 @@
-Gypsy Shoegazer (No Voices) — Kevin MacLeod (incompetech.com)
-Licence : Creative Commons By Attribution 3.0/4.0
-https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200074
+Carnivale Intrigue — Kevin MacLeod (incompetech.com)
+Licence : Creative Commons By Attribution 4.0
+https://creativecommons.org/licenses/by/4.0/
 Utilisée comme musique d'ambiance du site FMM (lecteur d'en-tête).
+
+Candidats non retenus, gardés dans public/audio/candidats/ le temps
+qu'Alex tranche à l'oreille : Master of the Feast, Danse Morialta,
+Tafi Maradi, Bumba Crossing, Minstrel Guild. Tous du même compositeur,
+même licence.

@@ -4,15 +4,19 @@ import { useUI } from '../contexts/AppContext';
 import { UI } from '../content';
 
 // Musique d'ambiance du thème « Caravanes et Saltimbanques ».
-// Piste : Gypsy Shoegazer (No Voices) de Kevin MacLeod, CC BY
-// (incompetech.com), hébergée dans /public/audio et jouée en boucle par
-// le lecteur ci-dessous (VITE_AUDIO_TRACK_URL). Le crédit visible vit
-// dans le titre du chip; détail licence : public/audio/CREDITS.txt.
-// La piste rêvée d'Alex (Gypsy Caravan, Derek & Brandon Fiechter) est
-// protégée : on ne peut pas l'héberger sans licence. Le lien Spotify
-// ci-dessous reste le repli si jamais l'URL locale est vidée.
-const SPOTIFY_LINK  = 'https://open.spotify.com/search/Gypsy%20Caravan%20Derek%20Brandon%20Fiechter';
-const SPOTIFY_TITLE = 'Gypsy Caravan · D&B Fiechter';
+// Piste : Carnivale Intrigue de Kevin MacLeod, CC BY (incompetech.com),
+// hébergée dans /public/audio et jouée en boucle par le lecteur
+// ci-dessous (VITE_AUDIO_TRACK_URL). Le crédit visible vit dans le
+// titre du chip; détail licence : public/audio/CREDITS.txt.
+//
+// 🚨 Le mot « gypsy » est banni du site (demande d'Alex, 2026-08-03) :
+// il est tenu pour offensant. Ne pas le réintroduire dans un titre de
+// piste, un nom de fichier, une recherche ni une copie publique.
+//
+// Cinq autres pistes du même compositeur attendent dans
+// public/audio/candidats/ le temps qu'Alex tranche à l'oreille.
+const REPLI_LINK  = 'https://incompetech.com/music/royalty-free/music.html';
+const REPLI_TITLE = 'Carnivale Intrigue · Kevin MacLeod';
 
 // Compact header audio chip. If `VITE_AUDIO_TRACK_URL` points to a
 // local audio file it becomes a real loop player; otherwise it links
@@ -20,7 +24,7 @@ const SPOTIFY_TITLE = 'Gypsy Caravan · D&B Fiechter';
 const AudioPlayer: React.FC = () => {
   const { lang } = useUI();
   const url   = import.meta.env.VITE_AUDIO_TRACK_URL;
-  const title = import.meta.env.VITE_AUDIO_TRACK_TITLE || SPOTIFY_TITLE;
+  const title = import.meta.env.VITE_AUDIO_TRACK_TITLE || REPLI_TITLE;
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -33,11 +37,11 @@ const AudioPlayer: React.FC = () => {
     // Pas de fichier local : le chip ouvre la piste-thème sur Spotify.
     return (
       <a
-        href={SPOTIFY_LINK}
+        href={REPLI_LINK}
         target="_blank"
         rel="noopener noreferrer"
         className="hidden md:flex items-center gap-3 opacity-70 hover:opacity-100 transition group"
-        aria-label={`${title} (Spotify)`}
+        aria-label={title}
       >
         <span className="w-8 h-8 rounded-full glass-frost flex items-center justify-center group-hover:border-brass transition">
           <Play size={12} className="text-ivory-soft translate-x-px group-hover:text-brass transition" />

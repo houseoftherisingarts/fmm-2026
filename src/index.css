@@ -1575,7 +1575,7 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   position: relative;
   aspect-ratio: 2 / 3;
   transform-style: preserve-3d;
-  transition: transform 1.5s cubic-bezier(.22,1,.36,1);
+  transition: transform 2s cubic-bezier(.22,1,.36,1);
 }
 .gwent-face {
   position: absolute;

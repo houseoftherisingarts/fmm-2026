@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowUpRight, Ticket, Tent } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -74,17 +74,17 @@ const Section: React.FC<{
   icon: React.ComponentType<{ size?: number }>;
   children: React.ReactNode;
 }> = ({ index, name, title, lead, icon: Icon, children }) => (
-  <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden pt-16 md:pt-24 pb-12 md:pb-20">
+  <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden pt-6 md:pt-10 pb-12 md:pb-20">
     <SectionFog />
     <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14">
-      <SectionTopRail index={index} name={name} className="mb-10 md:mb-14" />
-      <header className="max-w-3xl mx-auto mb-10 md:mb-14 text-center">
-        <Eyebrow className="mb-5 inline-flex items-center gap-3">
+      <SectionTopRail index={index} name={name} className="mb-6 md:mb-8" />
+      <header className="max-w-3xl mx-auto mb-8 md:mb-10 text-center">
+        <Eyebrow className="mb-4 inline-flex items-center gap-3">
           <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
           <Icon size={13} /> {name}
           <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
         </Eyebrow>
-        <DisplayTitle size="lg" glow className="mb-5">{title}</DisplayTitle>
+        <DisplayTitle size="lg" glow className="mb-4">{title}</DisplayTitle>
         <p
           className="font-sans text-base md:text-lg leading-[1.75] mx-auto max-w-2xl"
           style={{ color: 'rgba(244, 239, 227, 0.75)', fontWeight: 300 }}
@@ -119,7 +119,6 @@ const Carte: React.FC<{
 }> = ({ billet, lang, t, href, index }) => {
   const fr = lang === 'FR';
   const [flipped, setFlipped] = useState(false);
-  const reduce = useReducedMotion();
 
   const nom  = fr ? billet.labelFR : billet.labelEN;
   const note = fr ? billet.noteFR  : billet.noteEN;
@@ -148,7 +147,6 @@ const Carte: React.FC<{
         className="gwent-card cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#D8B05A]/70 rounded"
         style={{
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          transitionDuration: reduce ? '0.15s' : undefined,
           // teinte du filet intérieur de la plaque, propre à chaque billet
           ['--gwent-tint' as string]: fondDos.borderColor,
         }}
@@ -295,7 +293,7 @@ const Carte: React.FC<{
 const FR = {
   eyebrow: 'Billetterie · Édition 2026',
   title:   'Vos billets',
-  intro:   'Choisissez votre porte d’entrée. Chaque billet ouvre les mêmes trois jours, à sa manière.',
+  intro:   'Choisissez votre porte d’entrée. Une journée ou les trois, seul ou en famille.',
   entreesRail:  'Entrées',
   entreesTitle: 'Entrer au festival',
   entreesLead:  'Une journée ou la fin de semaine entière, seul ou en famille. Le programme complet et les activités principales sont compris dans chaque billet.',
@@ -315,7 +313,7 @@ const FR = {
 const EN: typeof FR = {
   eyebrow: 'Tickets · 2026 Edition',
   title:   'Your tickets',
-  intro:   'Choose your way in. Every ticket opens the same three days, in its own way.',
+  intro:   'Choose your way in. One day or all three, alone or with family.',
   entreesRail:  'Admission',
   entreesTitle: 'Enter the festival',
   entreesLead:  'One day or the whole weekend, alone or with family. The full program and the main activities come with every ticket.',

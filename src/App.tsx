@@ -334,10 +334,14 @@ const App: React.FC = () => (
                 <Route path="/en/messages"                      element={<MessagesPage />} />
                 <Route path="/en/messages/:otherUid"            element={<MessagesPage />} />
                 <Route path="/compte" element={<ComptePage />} />
-                {/* Billetterie en cartes : construite, PAS publiee. Aucun
-                    lien du site n'y mene. Voir src/content/billets.ts pour
-                    la question des taxes, a trancher avant mise en ligne. */}
-                <Route path="/billets" element={<BilletsPage />} />
+                {/* Billetterie en cartes : construite, PAS publiee. La
+                    route n'existe qu'en developpement, donc elle ne part
+                    meme pas dans le paquet de production. Voir
+                    src/content/billets.ts pour la question des taxes, a
+                    trancher avant mise en ligne. */}
+                {import.meta.env.DEV && (
+                  <Route path="/billets" element={<BilletsPage />} />
+                )}
                 <Route path="/en/account" element={<ComptePage />} />
                 <Route path="/marche/inscription"   element={<VendorApplicationPage />} />
                 <Route path="/en/market/registration" element={<VendorApplicationPage />} />

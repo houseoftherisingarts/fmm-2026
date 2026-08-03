@@ -75,7 +75,7 @@ const PageHeader: React.FC<Props> = ({
           stays clear so the orb has uncluttered surrounding space. */}
       <SectionFog edges="bottom" />
 
-      <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-28 md:pt-36 pb-20 md:pb-28 grid lg:grid-cols-[1.05fr_1fr] gap-x-12 gap-y-12 items-center">
+      <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-28 md:pt-36 pb-12 md:pb-16 grid lg:grid-cols-[1.05fr_1fr] gap-x-12 gap-y-12 items-center">
         {/* LEFT — text column */}
         <div className="lg:pr-6">
           <p className="font-editorial italic uppercase tracking-[0.45em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-7 inline-flex items-center gap-3">
