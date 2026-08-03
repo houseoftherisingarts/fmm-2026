@@ -122,7 +122,10 @@ const NoticeBoard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         backgroundImage: 'url(/board/notice-wood.webp)',
         backgroundSize: '340px auto',
         backgroundRepeat: 'repeat',
-        filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.75))',
+        // padding-box : sans ça le bois se peint AUSSI sous la zone de
+        // bordure et rebouche les creux transparents du cadre découpé.
+        backgroundClip: 'padding-box',
+        filter: 'drop-shadow(0 24px 50px rgba(0,0,0,0.7))',
       }}
     >
       {/* Ombrage interne : le bois s'assombrit dans les coins, comme
