@@ -3,14 +3,34 @@
 // Each part registers its (r,c) in userData so the raycaster lookup
 // can resolve to a board cell regardless of which surface was hit.
 //
-// When real GLB models arrive from Meshy (see ./assets/models/README.md),
-// swap the procedural body+cap geometry inside `mkPiece` for the loaded
-// GLTF scene. The commented-out block at the bottom of this file shows
-// exactly where to plug in a GLTFLoader.
+// Modèles Meshy (2026-08-03) : loup de noyer (raiders), pion d'os
+// (défenseurs), roi couronné. Le corps procédural RESTE le porteur des
+// animations et du raycast : quand le GLB de son type est chargé, le
+// modèle est attaché EN ENFANT du corps (donc il suit mv/rm/lift sans
+// toucher aux timelines), et corps+coiffe passent sur un matériau
+// invisible (material.visible=false n'empêche pas le raycast).
+//
+// Calage déterministe, pas d'autofit : Meshy normalise ses sorties à
+// y ∈ [-0.95, 0.95] (hauteur 1.9, base -0.95, y-up). Les échelles
+// ci-dessous en découlent, mesurées une fois via gltf-transform inspect.
 
 import * as THREE from 'three';
 import gsap from 'gsap';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { CELL, MID, type CellValue } from './gameLogic';
+
+// ── GLB des pièces ──────────────────────────────────────────────────
+const MODEL_URLS: Record<CellValue & number, string> = {
+  1: '/games/hnefatafl/models/piece-raider.glb',
+  2: '/games/hnefatafl/models/piece-defender.glb',
+  3: '/games/hnefatafl/models/piece-king.glb',
+} as Record<CellValue & number, string>;
+
+// Hauteur GLB brute = 1.9. Cibles : pions ≈ 0.85, roi ≈ 1.2 (mêmes
+// silhouettes que les pièces procédurales, donc mêmes cadrages caméra).
+const MODEL_SCALE: Record<number, number> = { 1: 0.45, 2: 0.45, 3: 0.63 };
+const MODEL_BASE = -0.95; // base locale des modèles Meshy avant échelle
 
 export interface PieceMaterials {
   a: THREE.MeshPhongMaterial;
