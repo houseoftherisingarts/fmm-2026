@@ -13,7 +13,10 @@
 // cache dans Firestore (le navigateur ne peut pas porter le secret).
 // En attendant, le bloc Facebook de l'espace client renvoie à la page.
 
-export type AnnonceTone = 'alerte' | 'info';
+// `alerte` = consigne à respecter (clou de cire rouge), `info` = bon à
+// savoir (clou de laiton), `appel` = demande de participation (clou d'or,
+// avec un bouton).
+export type AnnonceTone = 'alerte' | 'info' | 'appel';
 
 export interface Annonce {
   id:      string;
@@ -27,9 +30,17 @@ export interface Annonce {
   /** Affiche la pièce de la Petite Monnaie sous l'avis. */
   piece?:     boolean;
   lienPiece?: string;
+  /** Bouton au pied de l'avis. Sans `url`, l'avis ne s'affiche pas. */
+  cta?: { url: string; labelFR: string; labelEN: string };
 }
 
-export const ANNONCES: Annonce[] = [
+// Levée de fonds Zeffy pour la connectivité du site (deux antennes
+// Starlink, 1 400 $). À REMPLIR quand la campagne Zeffy existe : tant que
+// cette adresse est vide, l'avis « Connexion aux étoiles » reste hors du
+// tableau plutôt que d'y pendre un bouton mort.
+const ZEFFY_LEVEE_URL = '';
+
+const TOUTES: Annonce[] = [
   {
     id:   'no-dogs-2026',
     tone: 'alerte',
