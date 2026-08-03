@@ -351,31 +351,6 @@ export function createPieceSystem(
   return { group, mkPiece, rmPiece, mvPiece, getPiece, dispose };
 }
 
-// ── GLB hookup (Meshy pipeline) ─────────────────────────────────────
-// Drop board.glb, piece_raider.glb, piece_defender.glb, piece_king.glb
-// into ./assets/models/, then replace the body+cap construction inside
-// mkPiece() with the snippet below. Keep userData={r,c} on every Mesh
-// that should be raycast-clickable (descendants of the loaded scene).
-//
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-// import raiderUrl   from './assets/models/piece_raider.glb?url';
-// import defenderUrl from './assets/models/piece_defender.glb?url';
-// import kingUrl     from './assets/models/piece_king.glb?url';
-//
-// const loader = new GLTFLoader();
-// const urlFor = (pType: CellValue) =>
-//   pType === 3 ? kingUrl : pType === 1 ? raiderUrl : defenderUrl;
-//
-// loader.load(urlFor(pType), (gltf) => {
-//   const root = gltf.scene;
-//   root.position.set(x, 0.1, z);
-//   root.traverse((o) => {
-//     if ((o as THREE.Mesh).isMesh) {
-//       (o as THREE.Mesh).castShadow = true;
-//       o.userData = { r, c };
-//       clickables.push(o);
-//     }
-//   });
-//   group.add(root);
-//   // store `root` (instead of body/cap) in map[`${r},${c}`] so mv/rm work.
-// });
+// Le branchement GLB décrit jadis ici est implémenté plus haut :
+// MODEL_URLS / MODEL_SCALE / attachModel(), modèles servis depuis
+// public/games/hnefatafl/models/ et clonés par pièce.
