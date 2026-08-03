@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Plus, X, Trash2, Pencil, Search, TicketCheck, CheckCircle2, Circle, Users,
+  Plus, X, Trash2, Pencil, Search, TicketCheck, CheckCircle2, Circle,
 } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
