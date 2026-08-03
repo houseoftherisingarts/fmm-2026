@@ -35,8 +35,10 @@ export interface Billet {
   noteEN?:   string;
   /** Vers quelle billetterie Zeffy la carte envoie. */
   billetterie: 'entrees' | 'camping';
-  /** Mise en avant visuelle : la carte se détache du jeu. */
-  vedette?:  boolean;
+  /** Ruban de mise en avant. Deux cartes ne doivent jamais porter la
+      même mention : chacune dit pourquoi ELLE se détache. */
+  mentionFR?: string;
+  mentionEN?: string;
   /** Famille de couleur de la carte. Les billets d'une journée sont
       dans les rouges, les passes fin de semaine dans les verts, le
       camping garde le cuivre du site. */
@@ -90,7 +92,8 @@ export const BILLETS: Billet[] = [
     descFR: 'Les trois jours. Le programme complet et les activités principales, du vendredi au dimanche.',
     descEN: 'All three days. The full program and the main activities, Friday through Sunday.',
     noteFR: 'Une personne · trois jours', noteEN: 'One person · three days',
-    billetterie: 'entrees', teinte: 'vert', nuance: 'moyen', vedette: true,
+    billetterie: 'entrees', teinte: 'vert', nuance: 'moyen',
+    mentionFR: 'Le plus populaire', mentionEN: 'Most popular',
   },
   {
     id: 'famille-weekend',
@@ -99,7 +102,8 @@ export const BILLETS: Billet[] = [
     descFR: 'Un billet de groupe qui en contient quatre, pour les trois jours du festival.',
     descEN: 'A group ticket holding four, for all three festival days.',
     noteFR: '2 adultes, 2 enfants · trois jours', noteEN: '2 adults, 2 children · three days',
-    billetterie: 'entrees', teinte: 'vert', nuance: 'profond', vedette: true,
+    billetterie: 'entrees', teinte: 'vert', nuance: 'profond',
+    mentionFR: 'Le plus avantageux', mentionEN: 'Best value',
   },
   {
     id: 'camping-tente',

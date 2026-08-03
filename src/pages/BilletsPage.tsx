@@ -78,14 +78,15 @@ const Section: React.FC<{
     <SectionFog />
     <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14">
       <SectionTopRail index={index} name={name} className="mb-10 md:mb-14" />
-      <header className="max-w-3xl mb-10 md:mb-14">
+      <header className="max-w-3xl mx-auto mb-10 md:mb-14 text-center">
         <Eyebrow className="mb-5 inline-flex items-center gap-3">
           <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
           <Icon size={13} /> {name}
+          <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
         </Eyebrow>
         <DisplayTitle size="lg" glow className="mb-5">{title}</DisplayTitle>
         <p
-          className="font-sans text-base md:text-lg leading-[1.75]"
+          className="font-sans text-base md:text-lg leading-[1.75] mx-auto max-w-2xl"
           style={{ color: 'rgba(244, 239, 227, 0.75)', fontWeight: 300 }}
         >
           {lead}
@@ -100,7 +101,11 @@ const Section: React.FC<{
 const Deck: React.FC<{
   billets: Billet[]; lang: 'FR' | 'EN'; t: typeof FR; href: string;
 }> = ({ billets, lang, t, href }) => (
-  <ul className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 items-stretch max-w-5xl">
+  <ul
+    className={`grid grid-cols-2 gap-5 md:gap-7 items-stretch mx-auto ${
+      billets.length >= 3 ? 'md:grid-cols-3 max-w-5xl' : 'max-w-3xl'
+    }`}
+  >
     {billets.map((b, i) => (
       <li key={b.id} className="min-w-0">
         <Carte billet={b} lang={lang} t={t} href={href} index={i} />
@@ -118,6 +123,7 @@ const Carte: React.FC<{
 
   const nom  = fr ? billet.labelFR : billet.labelEN;
   const note = fr ? billet.noteFR  : billet.noteEN;
+  const mention = fr ? billet.mentionFR : billet.mentionEN;
   const fondDos   = carteFond(billet, false);
   const fondRecto = carteFond(billet, true);
 
@@ -210,7 +216,7 @@ const Carte: React.FC<{
           <span className="gwent-stud" style={{ bottom: 10, left: 10 }} aria-hidden />
           <span className="gwent-stud" style={{ bottom: 10, right: 10 }} aria-hidden />
 
-          {billet.vedette && (
+          {mention && (
             <span
               className="self-start px-2.5 py-1 mb-3 font-sans uppercase tracking-[0.28em] text-[8px]"
               style={{
@@ -219,7 +225,7 @@ const Carte: React.FC<{
                 clipPath: 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
               }}
             >
-              {t.favori}
+              {mention}
             </span>
           )}
 
@@ -296,7 +302,6 @@ const FR = {
   campingRail:  'Camping',
   campingTitle: 'Dormir sur place',
   campingLead:  'Un emplacement sur le terrain du festival, pour se réveiller au son des forges.',
-  favori:  'Le plus pris',
   eyebrowCarte: 'Billet',
   devoiler: 'Toucher pour dévoiler',
   retourner: 'Retourner la carte',
@@ -317,7 +322,6 @@ const EN: typeof FR = {
   campingRail:  'Camping',
   campingTitle: 'Sleep on site',
   campingLead:  'A pitch on the festival grounds, to wake up to the sound of the forges.',
-  favori:  'Most chosen',
   eyebrowCarte: 'Ticket',
   devoiler: 'Tap to reveal',
   retourner: 'Flip back',
