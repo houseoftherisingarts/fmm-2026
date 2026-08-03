@@ -14,9 +14,11 @@ import { Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmosph
 const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.meta.env.DEV;
 
 // ─── ContactPage ─────────────────────────────────────────────────────
-// Public "Nous joindre" form. Visitors pick a department (each chip
-// names the responsible: "Kiosques (Jesse)" etc.) and submit. The
-// message lands in the corresponding admin Mail mailbox.
+// Public "Nous joindre" form. Le visiteur choisit un SUJET, pas une
+// personne : le nom du responsable ne paraît plus dans la liste
+// (décision d'Alex, 2026-08-03). L'acheminement est identique, il vit
+// simplement côté admin. Le message tombe dans la boîte du département
+// correspondant, dans l'onglet Courrier.
 //
 // Mandatory fields: email, department, subject, body. Display name is
 // optional — defaults to "Anonyme" if left empty so the admin always
@@ -118,7 +120,9 @@ const ContactPage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Department picker — the dropdown shows the responsible */}
+                  {/* Choix du sujet. On n'affiche AUCUN nom : personne
+                      n'écrit à quelqu'un en particulier, et un nom
+                      affiché vieillit mal (départs, remplacements). */}
                   <div className="md:col-span-2">
                     <FieldLabel required>{t.deptLabel}</FieldLabel>
                     <select
@@ -129,7 +133,7 @@ const ContactPage: React.FC = () => {
                     >
                       {DEPARTMENTS.map((d) => (
                         <option key={d.id} value={d.id}>
-                          {(lang === 'FR' ? d.labelFR : d.labelEN)} ({lang === 'FR' ? d.responsibleFR : d.responsibleEN})
+                          {lang === 'FR' ? d.labelFR : d.labelEN}
                         </option>
                       ))}
                     </select>
@@ -274,8 +278,8 @@ const FR = {
   title:     'Nous joindre',
   intro:     'Un mot pour la cour ? Choisissez le département, et votre message atterrira directement dans la bonne boîte.',
   formEyebrow: 'Formulaire',
-  formTitle: 'Toquez à la bonne porte',
-  formIntro: 'Sélectionnez le département concerné : votre message ira dans sa boîte de réception. Le responsable nommé vous répondra par courriel.',
+  formTitle: 'Frappez à la bonne porte',
+  formIntro: 'Choisissez le département : votre message ira directement dans la bonne boîte. La personne qui s’en occupe vous répondra par courriel.',
   deptLabel: 'Département',
   nameLabel: 'Votre nom',
   namePh:    'Optionnel',
@@ -301,7 +305,7 @@ const EN: typeof FR = {
   intro:     'A word for the court? Pick the right department and your message will land directly in the right inbox.',
   formEyebrow: 'Form',
   formTitle: 'Knock on the right door',
-  formIntro: 'Select the relevant department: your message will go straight to its inbox. The named lead will reply by email.',
+  formIntro: 'Pick the department: your message goes straight to the right inbox. Whoever handles it will reply by email.',
   deptLabel: 'Department',
   nameLabel: 'Your name',
   namePh:    'Optional',

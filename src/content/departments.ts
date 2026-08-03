@@ -5,11 +5,13 @@
 //   2. A shared inbox inside the admin Mail tab visible to super, CA,
 //      and Organisateurs. Every admin can read every department box.
 //
-// `responsibleFR/EN` is the human name surfaced in the dropdown next
-// to the department label, so visitors see "Kiosques (Jesse)" and
-// know who they're writing to. The mapping is loose by design — no
-// uid binding yet — so editing the responsible name doesn't require
-// touching any auth records.
+// `responsibleFR/EN` est le nom de la personne qui reçoit le message.
+// 🚨 Il n'est PAS montré au public (décision d'Alex, 2026-08-03) : un
+// visiteur choisit un sujet, pas quelqu'un. Le nom ne sert que côté
+// admin, pour savoir à qui revient la boîte. Seul « Général » dit
+// ouvertement qu'il s'adresse à toute l'équipe.
+// L'appariement reste souple, sans liaison à un compte : changer un nom
+// ne touche aucun enregistrement d'authentification.
 
 export interface Department {
   id:            string;
@@ -27,15 +29,15 @@ export const DEPARTMENTS: Department[] = [
     id: 'general',
     labelFR: 'Général',          labelEN: 'General',
     responsibleFR: 'Le Conseil', responsibleEN: 'The Council',
-    hintFR: 'Toute question qui ne tombe nulle part ailleurs.',
-    hintEN: 'Any question that doesn’t fit elsewhere.',
+    hintFR: 'Toute question qui ne tombe nulle part ailleurs. Lu par toute l’équipe.',
+    hintEN: 'Any question that doesn’t fit elsewhere. Read by the whole team.',
   },
   {
     id: 'kiosques',
     labelFR: 'Kiosques',         labelEN: 'Kiosks',
     responsibleFR: 'Jesse',      responsibleEN: 'Jesse',
-    hintFR: 'Marchands, artisans, exposants — exposer ou réserver un kiosque.',
-    hintEN: 'Merchants, artisans, exhibitors — booking a kiosk.',
+    hintFR: 'Marchands, artisans, exposants : exposer ou réserver un kiosque.',
+    hintEN: 'Merchants, artisans, exhibitors: booking a kiosk.',
   },
   {
     id: 'programmation',
@@ -47,28 +49,28 @@ export const DEPARTMENTS: Department[] = [
   {
     id: 'benevoles',
     labelFR: 'Bénévoles',        labelEN: 'Volunteers',
-    responsibleFR: 'Maité',      responsibleEN: 'Maité',
+    responsibleFR: 'Maïté',      responsibleEN: 'Maïté',
     hintFR: 'Devenir bénévole, modifier votre engagement, horaires.',
     hintEN: 'Become a volunteer, edit your engagement, schedule.',
   },
   {
     id: 'partenaires',
     labelFR: 'Partenaires',      labelEN: 'Sponsors',
-    responsibleFR: 'Le Conseil', responsibleEN: 'The Council',
+    responsibleFR: 'Tristan',    responsibleEN: 'Tristan',
     hintFR: 'Commandites, partenariats stratégiques, communications.',
     hintEN: 'Sponsorships, strategic partnerships, communications.',
   },
   {
     id: 'mariages',
     labelFR: 'Mariages',         labelEN: 'Weddings',
-    responsibleFR: 'Le Conseil', responsibleEN: 'The Council',
+    responsibleFR: 'Océane',     responsibleEN: 'Océane',
     hintFR: 'Cérémonies, formules, réception sur le site.',
     hintEN: 'Ceremonies, packages, on-site reception.',
   },
   {
     id: 'medias',
     labelFR: 'Médias',           labelEN: 'Media',
-    responsibleFR: 'Le Conseil', responsibleEN: 'The Council',
+    responsibleFR: 'Alex',       responsibleEN: 'Alex',
     hintFR: 'Demandes presse, entrevues, accréditations.',
     hintEN: 'Press requests, interviews, accreditation.',
   },
