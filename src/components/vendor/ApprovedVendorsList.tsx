@@ -151,14 +151,6 @@ function ensureUrl(raw: string): string {
   return v;
 }
 
-// Inclinaison déterministe par id, dans [-3.5, +3.5] degrés.
-function seedTilt(seed: string): number {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
-  const t = ((h % 71) / 71) * 7 - 3.5;
-  return Math.round(t * 100) / 100;
-}
-
 // ─── Traductions ─────────────────────────────────────────────────
 const FR = {
   eyebrow: 'Marché 2027',
