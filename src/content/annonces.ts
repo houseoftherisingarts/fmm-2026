@@ -24,8 +24,9 @@ export interface Annonce {
   titleEN: string;
   bodyFR:  string;
   bodyEN:  string;
-  /** Logo d'un partenaire à afficher sous l'avis, s'il y a lieu. */
-  logo?:   { src: string; alt: string; href?: string };
+  /** Affiche la pièce de la Petite Monnaie sous l'avis. */
+  piece?:     boolean;
+  lienPiece?: string;
 }
 
 export const ANNONCES: Annonce[] = [
@@ -50,13 +51,11 @@ export const ANNONCES: Annonce[] = [
       'Le réseau cellulaire est faible sur le site. Les terminaux de paiement deviennent capricieux, surtout aux heures de pointe. Prévoyez du comptant pour les kiosques, la nourriture et le bar. Un kiosque de la Petite Monnaie sera présent à l’entrée : vous pourrez y échanger votre comptant contre la monnaie locale, acceptée partout sur le site.',
     bodyEN:
       'Cell coverage is weak on site. Card terminals get temperamental, especially at peak hours. Bring cash for the kiosks, the food and the bar. A Petite Monnaie kiosk will be at the entrance: you can trade your cash for the local currency, accepted everywhere on the grounds.',
-    // Le logo pointe vers le Salon des Inconnus et non vers le pilier
-    // interne : c'est le Salon qui porte la Petite Monnaie, et l'avis
-    // ramène du trafic chez nous. URL vérifiée (200).
-    logo: {
-      src:  '/petite-monnaie/piece-petite-monnaie.webp',
-      alt:  'Petite Monnaie',
-      href: 'https://www.lesalondesinconnus.com/petite-monnaie',
-    },
+    // La pièce de laiton (composant PetiteMonnaieCoin) remplace le logo
+    // plat : c'est l'objet que les gens verront au kiosque. Le lien va
+    // au Salon des Inconnus et non au pilier interne, pour ramener du
+    // trafic chez nous. URL vérifiée (200).
+    piece: true,
+    lienPiece: 'https://www.lesalondesinconnus.com/petite-monnaie',
   },
 ];

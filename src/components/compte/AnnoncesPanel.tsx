@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, Info, Facebook, ArrowUpRight } from 'lucide-react';
 import { ANNONCES, type Annonce } from '../../content/annonces';
+import PetiteMonnaieCoin from '../PetiteMonnaieCoin';
 import { SITE } from '../../content';
 
 // Les annonces ouvrent l'espace client : c'est la première chose vue en
@@ -124,24 +125,32 @@ const AnnonceCard: React.FC<{ a: Annonce; lang: 'FR' | 'EN'; index: number }> = 
             {fr ? a.bodyFR : a.bodyEN}
           </p>
 
-          {a.logo && (
+          {a.piece && (
             <a
-              href={a.logo.href}
-              target={a.logo.href?.startsWith('http') ? '_blank' : undefined}
-              rel={a.logo.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="group inline-flex items-center gap-3 mt-5 pt-5 transition-opacity hover:opacity-100 opacity-85"
+              href={a.lienPiece}
+              target={a.lienPiece?.startsWith('http') ? '_blank' : undefined}
+              rel={a.lienPiece?.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className="group inline-flex items-center gap-4 mt-5 pt-5 transition-opacity hover:opacity-100 opacity-90"
               style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}
             >
-              <img
-                src={a.logo.src}
-                alt={a.logo.alt}
-                loading="lazy"
-                decoding="async"
-                className="h-11 md:h-12 w-auto"
-              />
+              <PetiteMonnaieCoin className="w-16 h-16 shrink-0" flotte={false} />
+              <span className="min-w-0">
+                <span
+                  className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-1"
+                  style={{ color: 'var(--color-bone)' }}
+                >
+                  {fr ? 'La Petite Monnaie' : 'The Petite Monnaie'}
+                </span>
+                <span
+                  className="block font-sans text-[12px] leading-snug"
+                  style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}
+                >
+                  {fr ? 'La monnaie locale de la Petite-Nation.' : 'The local currency of Petite-Nation.'}
+                </span>
+              </span>
               <ArrowUpRight
                 size={14}
-                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                className="shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 style={{ color: '#D8B05A' }}
               />
             </a>

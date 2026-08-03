@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
+import PetiteMonnaieCoin from '../components/PetiteMonnaieCoin';
 import { ScrollProgress, Reveal, Stagger, StaggerItem } from '../components/scroll';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -11,7 +12,6 @@ import { IconHourglass, IconTable, IconWagon } from '../components/icons/GameIco
 
 // Assets rapatriés de pmonnaie.ca (recon 2026-07-28) : l'emblème rond qui
 // vit au cœur de la pièce, et le mot-symbole renversé pour fond sombre.
-const EMBLEM_SRC   = '/petite-monnaie/petite-monnaie-emblem-512.png';
 const WORDMARK_SRC = '/petite-monnaie/petite-monnaie-wordmark-reverse-1054.png';
 
 // ─── La pièce frappée ────────────────────────────────────────────────
@@ -19,67 +19,6 @@ const WORDMARK_SRC = '/petite-monnaie/petite-monnaie-wordmark-reverse-1054.png';
 // pas une image plate, c'est une pièce de laiton frappée. Elle flotte au
 // repos, s'incline sous le curseur, et un reflet balaie sa surface.
 // Statique sous prefers-reduced-motion.
-const PetiteMonnaieCoin: React.FC = () => {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rotX = useSpring(useTransform(my, [-0.5, 0.5], [16, -16]), { stiffness: 120, damping: 16 });
-  const rotY = useSpring(useTransform(mx, [-0.5, 0.5], [-16, 16]), { stiffness: 120, damping: 16 });
-
-  const onMove = (e: React.PointerEvent) => {
-    if (reduce || !ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
-  const onLeave = () => { mx.set(0); my.set(0); };
-
-  return (
-    <div ref={ref} onPointerMove={onMove} onPointerLeave={onLeave} style={{ perspective: 900 }}>
-      <motion.div
-        animate={reduce ? undefined : { y: [0, -12, 0] }}
-        transition={reduce ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <motion.div
-          style={{ rotateX: reduce ? 0 : rotX, rotateY: reduce ? 0 : rotY, transformStyle: 'preserve-3d' }}
-          className="relative w-64 h-64 md:w-80 md:h-80 rounded-full select-none"
-        >
-          {/* Corps de laiton */}
-          <div aria-hidden className="absolute inset-0 rounded-full"
-            style={{
-              background: 'radial-gradient(circle at 32% 28%, #E8B14A 0%, #C9A85A 34%, #8a6a2c 72%, #5c4118 100%)',
-              boxShadow: '0 24px 60px rgba(0,0,0,0.55), inset 0 2px 6px rgba(255,235,180,0.55), inset 0 -8px 18px rgba(40,24,4,0.6)',
-            }} />
-          {/* Tranche crantée */}
-          <div aria-hidden className="absolute inset-[7px] rounded-full opacity-70"
-            style={{
-              background: 'repeating-conic-gradient(rgba(60,40,8,0.55) 0deg 2deg, transparent 2deg 6deg)',
-              WebkitMask: 'radial-gradient(circle, transparent 62%, black 66%, black 100%)',
-              mask: 'radial-gradient(circle, transparent 62%, black 66%, black 100%)',
-            }} />
-          {/* Emblème incrusté */}
-          <div className="absolute inset-[13%] rounded-full overflow-hidden border border-[#5c4118]/60"
-            style={{ boxShadow: 'inset 0 4px 14px rgba(20,10,0,0.5)' }}>
-            <img src={EMBLEM_SRC} alt="Petite Monnaie" className="w-full h-full object-cover" draggable={false} />
-          </div>
-          {/* Reflet qui balaie */}
-          {!reduce && (
-            <motion.div aria-hidden className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
-              <motion.div
-                className="absolute -inset-y-8 w-1/3"
-                style={{ background: 'linear-gradient(100deg, transparent, rgba(255,240,200,0.28), transparent)', filter: 'blur(6px)' }}
-                animate={{ x: ['-140%', '420%'] }}
-                transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 7.5, ease: 'easeInOut' }}
-              />
-            </motion.div>
-          )}
-        </motion.div>
-      </motion.div>
-    </div>
-  );
-};
-
 // ─── Petite Monnaie — la monnaie du festival ─────────────────────────
 // Les faits de cette page : le FMM accepte la Petite Monnaie (1 petite-
 // monnaie = 1 $ CA); le réseau cellulaire est capricieux sur le site,

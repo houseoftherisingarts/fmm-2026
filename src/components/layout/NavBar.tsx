@@ -224,8 +224,8 @@ const NavBar: React.FC = () => {
                   e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.25)';
                   e.currentTarget.style.boxShadow = '';
                 }}
-                aria-label={lang === 'FR' ? 'Mon compte' : 'My account'}
-                title={lang === 'FR' ? 'Mon compte' : 'My account'}
+                aria-label={lang === 'FR' ? 'Mon compte / Espace client' : 'My account / Client space'}
+                title={lang === 'FR' ? 'Mon compte / Espace client' : 'My account / Client space'}
               >
                 <User size={14} />
               </Link>
