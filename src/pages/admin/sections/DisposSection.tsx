@@ -11,10 +11,10 @@ import {
   Card, EmptyState, GhostButton, PrimaryButton, DangerButton, Input, Textarea, Label,
 } from '../primitives';
 
-// ─── Disponibilités — clone Doodle interne ─────────────────────────
+// ─── Disponibilités : clone Doodle interne ─────────────────────────
 // Maïté (ou tout admin) crée un sondage avec quelques options (dates
 // ou créneaux libres). Chaque membre de l'équipe vote sur SA propre
-// ligne — un clic fait cycler Oui → Peut-être → Non. Les votes des
+// ligne : un clic fait cycler Oui → Peut-être → Non. Les votes des
 // autres sont visibles mais non modifiables. La meilleure option (le
 // plus de Oui, départagé par Peut-être) est mise en évidence.
 
@@ -65,7 +65,7 @@ const DisposSection: React.FC = () => {
   };
   useEffect(() => { reload(); }, []);
 
-  // Live listener on the open sondage — updates the grid the instant
+  // Live listener on the open sondage : updates the grid the instant
   // someone else votes.
   useEffect(() => {
     if (!selectedId) { setPoll(null); return; }
@@ -251,7 +251,7 @@ const PollCard: React.FC<{
   );
 };
 
-// ─── Poll detail — membres × options grid ──────────────────────────
+// ─── Poll detail : membres × options grid ──────────────────────────
 const PollDetail: React.FC<{
   poll: TeamPoll;
   myUid: string;
@@ -360,7 +360,7 @@ const PollDetail: React.FC<{
                               className={`${cellBase} rounded-card cursor-pointer hover:brightness-110 ${
                                 c ? CHOICE_TONE[c] : 'border-dashed border-ivory-soft/20 text-ivory-soft/30'
                               }`}>
-                              {c ? CHOICE_LABEL[c] : '—'}
+                              {c ? CHOICE_LABEL[c] : '-'}
                             </button>
                           </td>
                         );
@@ -370,7 +370,7 @@ const PollDetail: React.FC<{
                           <div className={`${cellBase} rounded-card ${
                             c ? CHOICE_TONE[c] : 'border-dashed border-ivory-soft/10 text-ivory-soft/20'
                           }`}>
-                            {c ? CHOICE_LABEL[c] : '—'}
+                            {c ? CHOICE_LABEL[c] : '-'}
                           </div>
                         </td>
                       );
@@ -401,7 +401,7 @@ const PollDetail: React.FC<{
       )}
       {poll.closed && (
         <p className="font-editorial italic text-xs text-ivory-soft/50">
-          Sondage fermé — les votes ne peuvent plus être modifiés. Rouvrez-le pour continuer à voter.
+          Sondage fermé : les votes ne peuvent plus être modifiés. Rouvrez-le pour continuer à voter.
         </p>
       )}
     </div>
@@ -466,7 +466,7 @@ const PollEditor: React.FC<{
 
         <label className="block">
           <Label>Titre</Label>
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus placeholder="Ex. : Réunion d’équipe — semaine du festival" />
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus placeholder="Ex. : Réunion d’équipe : semaine du festival" />
         </label>
 
         <label className="block">
@@ -480,7 +480,7 @@ const PollEditor: React.FC<{
             {options.map((opt, i) => (
               <div key={opt.id} className="flex items-center gap-2">
                 <Input value={opt.label} onChange={(e) => setOptionLabel(opt.id, e.target.value)}
-                  placeholder={`Option ${i + 1} — ex. « Jeudi soir »`} className="flex-1" />
+                  placeholder={`Option ${i + 1} : ex. « Jeudi soir »`} className="flex-1" />
                 <Input type="date" value={opt.dateISO || ''} onChange={(e) => setOptionDate(opt.id, e.target.value)}
                   className="w-40" />
                 <button type="button" onClick={() => removeOption(opt.id)}

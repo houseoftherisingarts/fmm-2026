@@ -1,5 +1,5 @@
-// Disponibilités — sondages de disponibilité d'équipe (clone Doodle interne).
-// Collection: teamPolls/{id} — un seul doc par sondage, les votes vivent
+// Disponibilités : sondages de disponibilité d'équipe (clone Doodle interne).
+// Collection: teamPolls/{id} : un seul doc par sondage, les votes vivent
 // dans un champ map plutôt qu'une sous-collection (équipe d'une dizaine
 // de personnes, pas besoin de plus).
 
@@ -38,7 +38,7 @@ export interface TeamPoll {
 
 const COL = 'teamPolls';
 
-// Firestore rejects payloads containing `undefined` — drop those keys.
+// Firestore rejects payloads containing `undefined` : drop those keys.
 const stripUndefined = (obj: Record<string, unknown>): Record<string, unknown> => {
   const out: Record<string, unknown> = {};
   for (const k of Object.keys(obj)) {
@@ -84,7 +84,7 @@ export async function getPoll(id: string): Promise<TeamPoll | null> {
   return fromSnap(snap.id, snap.data() as Record<string, unknown>);
 }
 
-// Live listener sur un sondage — pour que la grille se mette à jour à
+// Live listener sur un sondage : pour que la grille se mette à jour à
 // mesure que les autres votent. Erreur (permission refusée, etc.) → null.
 export function subscribePoll(id: string, cb: (poll: TeamPoll | null) => void): () => void {
   if (!db) { cb(null); return () => {}; }
@@ -122,7 +122,7 @@ export async function createPoll(poll: {
   return ref.id;
 }
 
-// Écrit le vote d'une seule personne (map path ciblée — n'écrase pas les
+// Écrit le vote d'une seule personne (map path ciblée : n'écrase pas les
 // votes des autres). `choices` couvre toutes les options du sondage.
 export async function setVote(
   pollId: string,

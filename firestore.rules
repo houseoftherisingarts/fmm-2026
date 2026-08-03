@@ -220,7 +220,7 @@ service cloud.firestore {
     match /bar/{docId}         { allow read, write: if isAdmin(); }
     match /schedule/{docId}    { allow read, write: if isAdmin(); }
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
-    // Team availability polls (Disponibilités — Doodle interne).
+    // Team availability polls (Disponibilités : Doodle interne).
     match /teamPolls/{docId}   { allow read, write: if isAdmin(); }
 
     // ── Public-create, admin-managed inquiry collections ─────────
