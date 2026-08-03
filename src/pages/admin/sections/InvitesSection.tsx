@@ -8,7 +8,7 @@ import {
   type GuestInvite, type GuestCategorie, type GuestJour,
 } from '../../../firebase/invites';
 import {
-  Card, EmptyState, PrimaryButton, GhostButton, DangerButton, Input, Textarea, Label,
+  Card, EmptyState, PrimaryButton, GhostButton, Input, Textarea, Label,
 } from '../primitives';
 
 // ─── Invités : liste des entrées gratuites tenue pour la porte ─────
