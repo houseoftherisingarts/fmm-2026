@@ -48,7 +48,7 @@ const OXBLOOD      = 0x571414;   // trône
 const BRASS        = 0xc4a45a;   // laiton du site
 const BRASS_DEEP   = 0x7a5215;
 
-export function buildBoard(scene: THREE.Scene): BoardHandle {
+export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHandle {
   const group = new THREE.Group();
   scene.add(group);
 
