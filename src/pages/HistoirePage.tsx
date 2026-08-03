@@ -303,11 +303,177 @@ export const ArchivesPhotosSection: React.FC = () => {
   );
 };
 
-// ─── Plongez dans nos archives (time machine + Viking film) ──────────
+
+// ─── La salle de projection ──────────────────────────────────────────
+// Il n'y avait qu'un seul film ici, présenté comme « l'édition Viking en
+// images », alors que c'était la bande-annonce de cette édition. Nous
+// avons trois films distincts, et ils méritaient une vraie salle : un
+// lecteur unique, trois affiches à choisir dessous.
+//
+// 🚨 Poids réseau : les trois fichiers pèsent une centaine de mégas au
+// total. Le lecteur est donc en preload="none" avec une affiche webp
+// (~50 Ko) : rien ne se télécharge tant que personne n'appuie sur lecture.
+interface Film {
+  key:      string;
+  src:      string;
+  poster:   string;
+  titleFR:  string; titleEN: string;
+  editionFR: string; editionEN: string;
+  bodyFR:   string; bodyEN: string;
+}
+
+const FILMS: Film[] = [
+  {
+    key: 'caravanes',
+    src: '/orb/intro-caravanes-720.mp4',
+    poster: '/orb/posters/caravanes.webp',
+    titleFR: 'Caravanes et Saltimbanques',
+    titleEN: 'Caravans and Travelling Players',
+    editionFR: 'Édition 2026', editionEN: '2026 edition',
+    bodyFR: 'La bande-annonce de l’édition qui vient. Roulottes, feux et musiciens sur la route.',
+    bodyEN: 'The trailer for the coming edition. Wagons, fires and musicians on the road.',
+  },
+  {
+    key: 'vikings',
+    src: '/orb/vikings.mp4',
+    poster: '/orb/posters/vikings.webp',
+    titleFR: 'L’édition Viking',
+    titleEN: 'The Viking edition',
+    editionFR: 'Édition précédente', editionEN: 'Previous edition',
+    bodyFR: 'Drakkar, feu et tambours au bord de l’eau. La troupe Hullsborg revient cette année.',
+    bodyEN: 'Longship, fire and drums by the water. The Hullsborg troupe returns this year.',
+  },
+  {
+    key: 'festival',
+    src: '/orb/festival-orbe.mp4',
+    poster: '/orb/posters/orbe.webp',
+    titleFR: 'Le festival, une journée entière',
+    titleEN: 'The festival, a whole day',
+    editionFR: 'Le film du site', editionEN: 'The grounds film',
+    bodyFR: 'Celui que vous apercevez dans l’orbe de l’accueil : la forge, les joutes, le marché, du matin au soir.',
+    bodyEN: 'The one you glimpse inside the orb on the home page: the forge, the jousts, the market, morning to night.',
+  },
+];
+
+const FilmsSection: React.FC = () => {
+  const { lang } = useUI();
+  const fr = lang === 'FR';
+  const [actif, setActif] = React.useState(0);
+  const film = FILMS[actif];
+
+  return (
+    <div>
+      <Reveal as="div" className="text-center mb-8 md:mb-10">
+        <p className="font-editorial uppercase tracking-[0.3em] text-xs text-brass mb-3">
+          {fr ? 'La salle de projection' : 'The screening room'}
+        </p>
+        <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight">
+          {fr ? 'Trois films, trois éditions' : 'Three films, three editions'}
+        </h3>
+        <div className="divider-brass w-16 mx-auto mt-5" />
+      </Reveal>
+
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-100px' }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="rounded-lg-card overflow-hidden border border-brass/30 aspect-video bg-black"
+      >
+        {/* La clé force le remontage du lecteur au changement de film :
+            sans elle, changer `src` sur un <video> déjà lancé laisse la
+            vidéo précédente à l'écran. */}
+        <video
+          key={film.key}
+          src={film.src}
+          poster={film.poster}
+          controls
+          preload="none"
+          playsInline
+          className="w-full h-full object-cover"
+        />
+      </motion.div>
+
+      <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-relaxed text-center mt-5 max-w-2xl mx-auto">
+        {fr ? film.bodyFR : film.bodyEN}
+      </p>
+
+      <Stagger className="grid sm:grid-cols-3 gap-4 md:gap-5 mt-8">
+        {FILMS.map((f, i) => {
+          const on = i === actif;
+          return (
+            <StaggerItem key={f.key} as="div">
+              <button
+                type="button"
+                onClick={() => setActif(i)}
+                aria-pressed={on}
+                className={`group relative w-full text-left rounded-card overflow-hidden border transition-all duration-300 ${
+                  on
+                    ? 'border-brass/70 shadow-[0_0_26px_rgba(232,177,74,0.22)]'
+                    : 'border-white/12 hover:border-brass/50 hover:-translate-y-1'
+                }`}
+              >
+                <span className="block relative aspect-video overflow-hidden">
+                  <img
+                    src={f.poster}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 transition-opacity duration-300"
+                    style={{
+                      background: on
+                        ? 'linear-gradient(180deg, rgba(10,2,7,0.15) 0%, rgba(10,2,7,0.85) 100%)'
+                        : 'linear-gradient(180deg, rgba(10,2,7,0.45) 0%, rgba(10,2,7,0.92) 100%)',
+                    }}
+                  />
+                  {/* Pastille de lecture : le geste est évident. */}
+                  <span
+                    aria-hidden
+                    className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                      on ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'
+                    }`}
+                  >
+                    <span
+                      className="flex items-center justify-center w-11 h-11 rounded-full border backdrop-blur-sm"
+                      style={{
+                        borderColor: on ? 'rgba(232,177,74,0.85)' : 'rgba(244,239,227,0.35)',
+                        background: 'rgba(10,2,7,0.45)',
+                        color: on ? 'var(--color-amber-glow)' : 'rgba(244,239,227,0.85)',
+                      }}
+                    >
+                      <span className="translate-x-[1px] text-sm">&#9654;</span>
+                    </span>
+                  </span>
+                </span>
+                <span className="block px-4 py-3.5">
+                  <span className="block font-editorial uppercase tracking-[0.28em] text-[10px] text-brass mb-1.5">
+                    {fr ? f.editionFR : f.editionEN}
+                  </span>
+                  <span
+                    className={`block font-display title-medieval text-base md:text-lg leading-snug transition-colors duration-300 ${
+                      on ? 'text-ivory' : 'text-ivory/85 group-hover:text-ivory'
+                    }`}
+                  >
+                    {fr ? f.titleFR : f.titleEN}
+                  </span>
+                </span>
+              </button>
+            </StaggerItem>
+          );
+        })}
+      </Stagger>
+    </div>
+  );
+};
+
+// ─── Plongez dans nos archives (time machine + salle de projection) ──
 export const PlongezArchivesSection: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
-  const fr = lang === 'FR';
   return (
     <section className="relative py-16 md:py-24 overflow-hidden bg-midnight-deep">
       <SectionFog edges="top" />
@@ -343,38 +509,7 @@ export const PlongezArchivesSection: React.FC = () => {
           ))}
         </Stagger>
 
-        {/* The Viking short film lives with the archives: the previous
-            edition, preserved in motion. */}
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-14 items-center">
-          <Reveal as="div" className="lg:col-span-4">
-            <p className="font-editorial uppercase tracking-[0.3em] text-xs text-brass mb-3">{fr ? 'Le court-métrage' : 'The short film'}</p>
-            <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory mb-4 leading-tight">
-              {fr ? 'L’édition Viking en images' : 'The Viking edition in motion'}
-            </h3>
-            <div className="divider-brass w-16 mb-5" />
-            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">
-              {fr
-                ? 'Vikings, feu et tambours : revivez notre édition précédente. La troupe Hullsborg, elle, revient cette année.'
-                : 'Vikings, fire and drums: relive our previous edition. The Hullsborg troupe returns this year.'}
-            </p>
-          </Reveal>
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="lg:col-span-8 rounded-lg-card overflow-hidden border border-brass/30 aspect-video bg-black"
-          >
-            <video
-              src="/orb/vikings.mp4"
-              controls
-              preload="none"
-              poster="/wix/histoire/03b1fe30.jpg"
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-        </div>
+        <FilmsSection />
       </div>
     </section>
   );
