@@ -286,32 +286,9 @@ const Footer: React.FC = () => {
           className="max-w-screen-xl mx-auto px-4 md:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-sans"
           style={{ color: 'var(--color-bone)', opacity: 0.45 }}
         >
-          <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="inline-flex items-center gap-3">
             <HexMark className="opacity-70" />
             {t.rights}
-            {/* Signature de l'atelier : le site est bâti par Le Salon des
-                Inconnus. Discrète, dans la ligne de droits, jamais en
-                bandeau. Demandée par Alex le 2026-08-03. */}
-            <a
-              href="https://www.lesalondesinconnus.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 hover:text-[var(--color-amber-glow)] transition-colors"
-            >
-              <span aria-hidden className="opacity-40">·</span>
-              <img
-                src="/salon/salon-logo.png"
-                alt=""
-                aria-hidden
-                loading="lazy"
-                className="h-4 w-auto opacity-80"
-              />
-              <span>
-                {lang === 'FR'
-                  ? 'Site développé par Le Salon des Inconnus'
-                  : 'Website built by Le Salon des Inconnus'}
-              </span>
-            </a>
           </span>
           <div className="inline-flex items-center gap-5">
             <button
