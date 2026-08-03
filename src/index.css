@@ -1575,7 +1575,7 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   position: relative;
   aspect-ratio: 2 / 3;
   transform-style: preserve-3d;
-  transition: transform .75s cubic-bezier(.22,1,.36,1);
+  transition: transform 1.15s cubic-bezier(.22,1,.36,1);
 }
 .gwent-face {
   position: absolute;
@@ -1585,10 +1585,12 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   overflow: hidden;
   border-radius: 4px;
   /* Plaque de métal : double filet, chaud à l'intérieur, sombre dehors */
+  /* Le filet intérieur prend la teinte du billet (--gwent-tint), le
+     filet extérieur reste laiton : le jeu garde son unité. */
   box-shadow:
     inset 0 0 0 1px rgba(216,176,90,0.55),
     inset 0 0 0 5px rgba(10,2,7,0.92),
-    inset 0 0 0 6px rgba(216,176,90,0.30),
+    inset 0 0 0 6px var(--gwent-tint, rgba(216,176,90,0.30)),
     0 18px 42px -14px rgba(0,0,0,0.9);
 }
 .gwent-back { transform: rotateY(0deg); }

@@ -8,7 +8,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
 import { Eyebrow, DisplayTitle, SectionFog, SectionTopRail } from '../components/marche/atmospherics';
 import {
-  BILLETS, displayAmount, formatAmount, showBeforeTax, type Billet,
+  BILLETS, displayAmount, formatAmount, showBeforeTax, carteFond, type Billet,
 } from '../content/billets';
 
 // ─── Billetterie ────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ const BilletsPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/marche/64edb1ee.jpg"
+        orbImage="/wix/marche/0b4c7ac8.jpg"
       />
 
       <Section index="01" name={t.entreesRail} title={t.entreesTitle} lead={t.entreesLead} icon={Ticket}>
@@ -100,7 +100,7 @@ const Section: React.FC<{
 const Deck: React.FC<{
   billets: Billet[]; lang: 'FR' | 'EN'; t: typeof FR; href: string;
 }> = ({ billets, lang, t, href }) => (
-  <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 items-stretch">
+  <ul className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 items-stretch max-w-5xl">
     {billets.map((b, i) => (
       <li key={b.id} className="min-w-0">
         <Carte billet={b} lang={lang} t={t} href={href} index={i} />
@@ -118,6 +118,8 @@ const Carte: React.FC<{
 
   const nom  = fr ? billet.labelFR : billet.labelEN;
   const note = fr ? billet.noteFR  : billet.noteEN;
+  const fondDos   = carteFond(billet, false);
+  const fondRecto = carteFond(billet, true);
 
   return (
     <motion.div
@@ -138,16 +140,17 @@ const Carte: React.FC<{
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped((v) => !v); }
         }}
         className="gwent-card cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#D8B05A]/70 rounded"
-        style={{ transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transitionDuration: reduce ? '0.15s' : undefined }}
+        style={{
+          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          transitionDuration: reduce ? '0.15s' : undefined,
+          // teinte du filet intérieur de la plaque, propre à chaque billet
+          ['--gwent-tint' as string]: fondDos.borderColor,
+        }}
       >
         {/* ── DOS : l'emblème et le nom, rien d'autre ─────────── */}
         <div
-          className="gwent-face gwent-back gwent-sheen flex flex-col items-center justify-between p-6 text-center"
-          style={{
-            background:
-              'radial-gradient(ellipse 70% 50% at 50% 32%, rgba(96,38,20,0.55) 0%, transparent 62%),' +
-              'linear-gradient(168deg, #24080f 0%, #14040a 55%, #0a0207 100%)',
-          }}
+          className="gwent-face gwent-back gwent-sheen flex flex-col items-center justify-between p-3.5 sm:p-5 md:p-6 text-center"
+          style={{ background: fondDos.background }}
         >
           <span className="gwent-stud" style={{ top: 10, left: 10 }} aria-hidden />
           <span className="gwent-stud" style={{ top: 10, right: 10 }} aria-hidden />
@@ -167,26 +170,30 @@ const Carte: React.FC<{
             aria-hidden
             loading="lazy"
             decoding="async"
-            className="w-[52%] max-w-[130px] opacity-90"
-            style={{ filter: 'drop-shadow(0 6px 22px rgba(0,0,0,0.8)) sepia(0.35) saturate(1.5) hue-rotate(-12deg)' }}
+            className="w-[44%] sm:w-[48%] max-w-[130px] opacity-90"
+            style={{
+              filter: billet.teinte === 'vert'
+                ? 'drop-shadow(0 6px 22px rgba(0,0,0,0.8)) sepia(0.4) saturate(1.3) hue-rotate(58deg) brightness(1.05)'
+                : 'drop-shadow(0 6px 22px rgba(0,0,0,0.8)) sepia(0.35) saturate(1.5) hue-rotate(-12deg)',
+            }}
           />
 
           <div className="w-full">
-            <span aria-hidden className="block h-px w-2/3 mx-auto mb-3"
+            <span aria-hidden className="block h-px w-2/3 mx-auto mb-2 sm:mb-3"
               style={{ background: 'linear-gradient(90deg, transparent, rgba(216,176,90,0.6), transparent)' }} />
             <h3
-              className="font-display leading-[1.15] text-lg md:text-xl mb-1.5"
+              className="font-display leading-[1.12] text-[13px] sm:text-base md:text-xl mb-1"
               style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
             >
               {nom}
             </h3>
             {note && (
-              <p className="font-sans uppercase tracking-[0.22em] text-[9px]"
+              <p className="font-sans uppercase tracking-[0.16em] sm:tracking-[0.22em] text-[8px] sm:text-[9px] leading-snug"
                  style={{ color: 'rgba(244,239,227,0.42)' }}>
                 {note}
               </p>
             )}
-            <p className="font-sans uppercase tracking-[0.3em] text-[9px] mt-4"
+            <p className="font-sans uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[8px] sm:text-[9px] mt-2 sm:mt-3.5"
                style={{ color: 'rgba(216,176,90,0.75)' }}>
               {t.devoiler}
             </p>
@@ -195,12 +202,8 @@ const Carte: React.FC<{
 
         {/* ── RECTO : le détail, révélé au clic ────────────────── */}
         <div
-          className="gwent-face gwent-front flex flex-col p-6 md:p-7"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 55% at 50% 0%, rgba(120,52,22,0.5) 0%, transparent 60%),' +
-              'linear-gradient(170deg, #1e0710 0%, #12040a 60%, #0a0207 100%)',
-          }}
+          className="gwent-face gwent-front flex flex-col p-4 sm:p-6 md:p-7"
+          style={{ background: fondRecto.background }}
         >
           <span className="gwent-stud" style={{ top: 10, left: 10 }} aria-hidden />
           <span className="gwent-stud" style={{ top: 10, right: 10 }} aria-hidden />
@@ -248,7 +251,7 @@ const Carte: React.FC<{
           </div>
 
           <p
-            className="font-sans text-[13px] leading-[1.65] flex-1"
+            className="font-sans text-[11px] sm:text-[13px] leading-[1.6] flex-1 overflow-hidden"
             style={{ color: 'rgba(244, 239, 227, 0.72)', fontWeight: 300 }}
           >
             {fr ? billet.descFR : billet.descEN}

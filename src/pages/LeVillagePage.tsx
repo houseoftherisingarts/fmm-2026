@@ -28,8 +28,8 @@ const LeVillagePage: React.FC = () => {
         intro={fr
           ? 'Le marché des artisans et le village nourriture : tout ce qui se découvre, se goûte et se rapporte du festival.'
           : 'The artisan market and the food village: everything you discover, taste and bring home from the festival.'}
-        orbImage="/wix/marche/0b4c7ac8.jpg"
-        orbImagePosition="center 30%"
+        orbImage="/wix/marche/64edb1ee.jpg"
+        orbImagePosition="center 45%"
       />
       <MarchePage embedded />
       <MenuComingSoon fr={fr} />
