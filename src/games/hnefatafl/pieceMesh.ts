@@ -91,6 +91,65 @@ export function createPieceSystem(
   const map: Record<string, PieceEntry> = {};
   let disposed = false;
 
+  // ── Modèles Meshy ─────────────────────────────────────────────────
+  // Un chargement par type, clones par pièce. Les pièces créées avant
+  // l'arrivée du GLB sont mises à niveau au chargement; celles créées
+  // après le reçoivent immédiatement. Échec réseau = pièces
+  // procédurales, le jeu reste entier.
+  const invisibleMat = new THREE.MeshBasicMaterial({ visible: false });
+  const loadedModels: Partial<Record<number, THREE.Object3D>> = {};
+
+  const attachModel = (entry: PieceEntry) => {
+    const proto = loadedModels[entry.pType as number];
+    if (!proto || entry.model || disposed) return;
+    const s = MODEL_SCALE[entry.pType as number];
+    const isK = entry.pType === 3;
+    const bh = isK ? 0.92 : 0.56;
+    const clone = proto.clone(true);
+    clone.scale.setScalar(s);
+    // Base du modèle posée au niveau du plateau (0.1), exprimée dans le
+    // repère local du corps (centré à 0.1 + bh/2).
+    clone.position.y = -bh / 2 - MODEL_BASE * s;
+    // Les loups regardent le roi, les défenseurs font face au dehors,
+    // le roi fait face à la caméra.
+    const { r, c } = entry.body.userData as { r: number; c: number };
+    const px = (c - MID) * CELL;
+    const pz = (r - MID) * CELL;
+    if (entry.pType === 1 && (px !== 0 || pz !== 0)) {
+      clone.rotation.y = Math.atan2(-px, -pz);
+    } else if (entry.pType === 2 && (px !== 0 || pz !== 0)) {
+      clone.rotation.y = Math.atan2(px, pz);
+    }
+    clone.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) o.castShadow = true;
+    });
+    entry.body.add(clone);
+    entry.model = clone;
+    entry.body.material = invisibleMat;
+    entry.cap.material = invisibleMat;
+  };
+
+  {
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('/draco/');
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(draco);
+    for (const t of [1, 2, 3] as const) {
+      loader.load(
+        MODEL_URLS[t],
+        (gltf) => {
+          if (disposed) return;
+          loadedModels[t] = gltf.scene;
+          for (const k of Object.keys(map)) {
+            if (map[k].pType === t) attachModel(map[k]);
+          }
+        },
+        undefined,
+        (err) => console.warn('[hnefatafl] pièce GLB indisponible', MODEL_URLS[t], err),
+      );
+    }
+  }
+
   // Spawn a small particle burst at a captured piece's position. The
   // particles are independent THREE objects (not held in `map`) and
   // clean themselves up via gsap onComplete.
