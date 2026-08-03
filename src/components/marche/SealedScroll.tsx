@@ -31,7 +31,7 @@ export interface SealedCopy {
 const SealedScroll: React.FC<Props> = ({ lang, vendors, copy }) => (
   <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
     <SectionFog />
-    <Motes className="opacity-35" count={12} />
+    <Motes className="opacity-70" count={34} />
 
     <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-24 md:pt-32 pb-24 md:pb-32">
       <SectionTopRail

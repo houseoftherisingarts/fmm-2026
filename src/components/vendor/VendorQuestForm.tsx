@@ -384,7 +384,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
           className="velvet-card p-6 md:p-10 relative overflow-hidden stage-3d"
         >
           <OrnateFrame accent={CHAPTER_ACCENT[chapter]} duration={0.85} />
-          <Motes className="opacity-40" count={14} />
+          <Motes className="opacity-70" count={34} />
     
           {/* pt-6 : la carte courante monte de 10 px et porte un halo de
               28 px; sans cette marge le conteneur overflow-hidden lui

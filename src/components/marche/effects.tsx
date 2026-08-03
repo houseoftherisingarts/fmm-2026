@@ -374,12 +374,12 @@ export const Motes: React.FC<{
         const r = 0.7 + (((i * 2246822519) >>> 12) % 100) / 100 * 1.3;
         const hue = 36 + (i % 14);
         const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 8);
-        halo.addColorStop(0, `hsla(${hue}, 92%, 78%, 0.42)`);
-        halo.addColorStop(0.5, `hsla(${hue}, 80%, 55%, 0.10)`);
+        halo.addColorStop(0, `hsla(${hue}, 92%, 78%, 0.60)`);
+        halo.addColorStop(0.5, `hsla(${hue}, 80%, 55%, 0.16)`);
         halo.addColorStop(1, 'hsla(0, 0%, 0%, 0)');
         ctx.fillStyle = halo;
         ctx.beginPath(); ctx.arc(x, y, r * 8, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = `hsla(${hue + 6}, 100%, 90%, 0.8)`;
+        ctx.fillStyle = `hsla(${hue + 6}, 100%, 90%, 0.95)`;
         ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
       }
     };

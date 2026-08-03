@@ -45,7 +45,7 @@ const LeVillagePage: React.FC = () => {
 const MenuComingSoon: React.FC<{ fr: boolean }> = ({ fr }) => (
   <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
     <SectionFog />
-    <Motes className="opacity-40" count={14} />
+    <Motes className="opacity-70" count={34} />
     <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-24 md:pt-32 pb-24 md:pb-32">
       <SectionTopRail
         index="05"

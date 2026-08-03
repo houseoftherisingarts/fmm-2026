@@ -45,7 +45,7 @@ const ApprovedVendorsList: React.FC = () => {
   return (
     <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden py-20 md:py-28">
       <SectionFog />
-      <Motes className="opacity-40" count={14} />
+      <Motes className="opacity-70" count={34} />
 
       <div className="relative max-w-screen-xl mx-auto px-4 md:px-8">
         {/* Rail de registre, même grammaire que le reste du pilier */}

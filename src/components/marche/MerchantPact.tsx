@@ -49,7 +49,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
       {/* Backdrop image removed — section now sits cleanly on the
           continuous page bg with just grain + fog atmosphere. */}
       <SectionFog />
-      <Motes className="opacity-35" count={12} />
+      <Motes className="opacity-70" count={34} />
 
       <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8">
         {/* ─── TOP HAIRLINE — state registers, read-only ──────── */}
