@@ -66,7 +66,7 @@ const AtelierHall: React.FC<Props> = ({ lang, vendors, copy }) => {
       <SectionFog />
       <BubbleCanvas className="opacity-25" count={10} />
 
-      <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-24 md:pt-32 pb-12">
+      <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-12 md:pt-16 pb-12">
         <SectionTopRail
           index="01"
           name={copy.eyebrow}

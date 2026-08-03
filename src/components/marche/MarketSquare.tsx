@@ -20,7 +20,15 @@ export interface MarketCopy {
   count:      string;
   filterAll:  string;
   filterLabel:string;
+  yearLabel:  string;
+  yearAll:    string;
+  emptyYear:  string;
+  photoCaption: string;
 }
+
+// Éditions proposées au filtre. Seule 2025 a des fiches pour l'instant :
+// 2024 n'a pas été saisie et le marché 2026 sera dévoilé sous peu.
+const YEARS = [2024, 2025, 2026] as const;
 
 // ─── MarketSquare — Item-shop grid ──────────────────────────────────
 // Caravan item-shop aesthetic for the 15 on-site kiosks. Each stall is
@@ -30,18 +38,25 @@ export interface MarketCopy {
 // other. Category chips at the top filter the grid live.
 const MarketSquare: React.FC<Props> = ({ lang, vendors, copy }) => {
   const [filter, setFilter] = useState<string>('ALL');
+  const [year, setYear] = useState<number | 'ALL'>('ALL');
   const [openId, setOpenId] = useState<string | null>(null);
   const reduce = useReducedMotion();
   const playLoot = useSfx('/orb/sfx/loot.mp3', 0.45);
 
+  // L'année filtre d'abord, les métiers ensuite : les puces de métier
+  // ne listent que ce qui existe réellement dans l'année choisie.
+  const byYear = useMemo(
+    () => (year === 'ALL' ? vendors : vendors.filter((v) => (v.years ?? []).includes(year))),
+    [vendors, year],
+  );
   const categories = useMemo(() => {
     const set = new Set<string>();
-    vendors.forEach((v) => set.add(v.category));
+    byYear.forEach((v) => set.add(v.category));
     return Array.from(set);
-  }, [vendors]);
+  }, [byYear]);
   const filtered = useMemo(
-    () => (filter === 'ALL' ? vendors : vendors.filter((v) => v.category === filter)),
-    [vendors, filter],
+    () => (filter === 'ALL' ? byYear : byYear.filter((v) => v.category === filter)),
+    [byYear, filter],
   );
   const open = vendors.find((v) => v.id === openId) ?? null;
 
@@ -68,15 +83,65 @@ const MarketSquare: React.FC<Props> = ({ lang, vendors, copy }) => {
               {copy.lead}
             </p>
           </div>
-          <div className="md:col-span-4 md:self-end">
+          {/* Colonne de droite : une vraie photo de kiosque. Il n'y
+              avait qu'un compteur minuscule et un grand vide. */}
+          <div className="md:col-span-4 min-w-0">
+            <HexPanel size="md" className="fmm-shimmer">
+              <div className="relative h-[clamp(220px,26vw,320px)] overflow-hidden">
+                <img
+                  src="/wix/marche/64edb1ee.jpg"
+                  alt={copy.photoCaption}
+                  decoding="async"
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover fmm-kenburns"
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, rgba(184,106,42,0.15) 0%, transparent 35%, rgba(10,2,7,0.92) 100%)',
+                  }}
+                />
+                <p
+                  className="absolute inset-x-0 bottom-0 p-4 font-editorial italic text-[13px] leading-snug"
+                  style={{ color: 'var(--color-bone)', textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
+                >
+                  {copy.photoCaption}
+                </p>
+              </div>
+            </HexPanel>
             <p
-              className="font-sans text-[10px] tracking-[0.5em]"
+              className="font-sans text-[10px] tracking-[0.5em] mt-3"
               style={{ color: 'var(--color-amber-glow)', opacity: 0.85 }}
             >
               {copy.count.replace('{n}', String(filtered.length))}
             </p>
           </div>
         </header>
+
+        {/* Year chips */}
+        <div className="mb-4 flex flex-wrap items-center gap-2 md:gap-3">
+          <span
+            className="font-editorial italic uppercase tracking-[0.45em] text-[10px] mr-2"
+            style={{ color: 'var(--color-copper)' }}
+          >
+            {copy.yearLabel}
+          </span>
+          <CategoryChip
+            label={copy.yearAll}
+            isActive={year === 'ALL'}
+            onClick={() => { setYear('ALL'); setFilter('ALL'); }}
+          />
+          {YEARS.map((y) => (
+            <CategoryChip
+              key={y}
+              label={String(y)}
+              isActive={year === y}
+              onClick={() => { setYear(y); setFilter('ALL'); }}
+            />
+          ))}
+        </div>
 
         {/* Category chips */}
         <div className="mb-10 md:mb-14 flex flex-wrap items-center gap-2 md:gap-3">
@@ -102,6 +167,14 @@ const MarketSquare: React.FC<Props> = ({ lang, vendors, copy }) => {
         </div>
 
         {/* Tiles */}
+        {filtered.length === 0 && (
+          <p
+            className="font-editorial italic text-base md:text-lg max-w-xl"
+            style={{ color: 'rgba(244, 239, 227, 0.6)' }}
+          >
+            {copy.emptyYear}
+          </p>
+        )}
         <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
           <AnimatePresence>
             {filtered.map((v, i) => (

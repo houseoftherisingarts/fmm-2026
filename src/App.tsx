@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useNavigationType,
 } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { useReducedMotion } from 'framer-motion';
@@ -191,6 +192,24 @@ const isImmersive = (pathname: string) =>
   || pathname === '/jeunesse/hnefatafl'
   || pathname === '/en/youth/hnefatafl';
 
+// ─── ScrollToTop ────────────────────────────────────────────────────
+// React Router ne réinitialise pas le défilement en changeant de route :
+// on gardait la position de l'ancienne page. Depuis le bas d'une page
+// longue, cliquer « Mon compte » ou n'importe quel lien atterrissait
+// directement dans le pied de page de la nouvelle. Posé 2026-08-02.
+// Les ancres (#section) et le retour arrière du navigateur sont
+// respectés : on ne remonte que sur une vraie navigation vers le haut.
+const ScrollToTop: React.FC = () => {
+  const { pathname, hash } = useLocation();
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (hash) return;                 // lien vers une ancre : on laisse faire
+    if (navType === 'POP') return;    // retour arrière : le navigateur restaure
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname, hash, navType]);
+  return null;
+};
+
 const Chrome: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;
@@ -271,6 +290,7 @@ const App: React.FC = () => (
       <SiteFlagsProvider>
         <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <LocaleSync />
           <AnalyticsPageViews />
           <Chrome />

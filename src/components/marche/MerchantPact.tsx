@@ -138,24 +138,41 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
 
         </motion.div>
 
-        {/* ─── BOTTOM HAIRLINE HUD — action prompts ─────────── */}
-        <div className="mt-16 md:mt-20 pt-5 flex items-center justify-between flex-wrap gap-y-4" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
-          <div className="flex items-center gap-8 md:gap-11">
-            <button type="button" className="witcher-prompt" data-primary="true" onClick={onApply}>
-              <span className="witcher-prompt-glyph"><span>A</span></span>
-              {copy.apply2027}
-            </button>
-          </div>
-          <div className="hidden md:flex items-center gap-3">
-            <span className="witcher-stat-label">{lang === 'FR' ? 'Réponse' : 'Reply'}</span>
-            <span
-              className="font-sans text-xs tracking-[0.25em]"
-              style={{ color: 'rgba(244, 239, 227, 0.78)', fontWeight: 300 }}
-            >
-              {lang === 'FR' ? 'Via votre espace marchand' : 'Via your merchant space'}
-            </span>
-          </div>
+        {/* ─── APPEL À L'ACTION ────────────────────────────────
+            Le prompt witcher discret se perdait dans le filet du bas.
+            C'est le seul geste de la section : il prend le centre, en
+            grand, entre les deux filets. */}
+        <div
+          className="mt-14 md:mt-20 pt-12 md:pt-16 pb-2 flex flex-col items-center text-center"
+          style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}
+        >
+          <motion.button
+            type="button"
+            onClick={onApply}
+            whileHover={reduce ? undefined : { y: -3, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+            className="group relative inline-flex items-center justify-center gap-4 px-10 md:px-16 py-5 md:py-6 font-sans uppercase tracking-[0.3em] text-sm md:text-base"
+            style={{
+              color: '#1a050b',
+              fontWeight: 600,
+              background: 'linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%)',
+              clipPath: 'polygon(22px 0, 100% 0, calc(100% - 22px) 100%, 0 100%)',
+              boxShadow: '0 0 48px -8px rgba(216,176,90,0.65), 0 18px 40px -14px rgba(0,0,0,0.8)',
+            }}
+          >
+            {copy.apply2027}
+            <span aria-hidden className="inline-block w-6 h-px bg-[#1a050b]/70 transition-all group-hover:w-12" />
+          </motion.button>
+
+          <p
+            className="font-sans text-xs md:text-sm tracking-[0.25em] uppercase mt-6"
+            style={{ color: 'rgba(244, 239, 227, 0.5)', fontWeight: 300 }}
+          >
+            {lang === 'FR' ? 'Réponse via votre espace marchand' : 'Reply via your merchant space'}
+          </p>
         </div>
+        <div className="mt-12 md:mt-16" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }} />
       </div>
     </section>
   );

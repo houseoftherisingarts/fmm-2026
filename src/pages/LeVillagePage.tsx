@@ -21,11 +21,11 @@ const LeVillagePage: React.FC = () => {
   const fr = lang === 'FR';
   return (
     <>
-      <SEO title={fr ? 'Le Village' : 'The Village'} />
+      <SEO title={fr ? 'Marché' : 'Market'} />
       <ScrollProgress />
       <PageHeader
         eyebrow={fr ? 'Le cœur battant du festival' : 'The beating heart of the festival'}
-        titleA={fr ? 'Le Village' : 'The Village'}
+        titleA={fr ? 'Marché' : 'Market'}
         intro={fr
           ? 'Le marché des artisans et le village nourriture : tout ce qui se découvre, se goûte et se rapporte du festival.'
           : 'The artisan market and the food village: everything you discover, taste and bring home from the festival.'}

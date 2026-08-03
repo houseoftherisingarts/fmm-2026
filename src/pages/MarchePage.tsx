@@ -65,15 +65,11 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
       {!embedded && <SEO title={`${c.header.titleA}${c.header.titleB ? ' & ' + c.header.titleB : ''}`} description={c.header.intro} />}
       {!embedded && <ScrollProgress />}
 
-      {embedded ? (
-        <section className="relative pt-20 md:pt-28 pb-2">
-          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{c.header.eyebrow}</p>
-            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{c.header.titleA}</h2>
-            <div className="divider-brass w-24 mt-5" />
-          </div>
-        </section>
-      ) : (
+      {/* En mode embarqué, le hero de la page porte déjà le mot « Marché ».
+          Le sous-titre répétait « Marché médiéval · Édition 2026 / Marché »
+          juste en dessous et poussait le Pavillon Premium loin vers le bas,
+          pour rien. Retiré 2026-08-02. */}
+      {embedded ? null : (
         <PageHeader
           eyebrow={c.header.eyebrow}
           titleA={c.header.titleA}
@@ -128,14 +124,18 @@ const FR: Copy = {
   },
   market: {
     eyebrow:     'Les allées du marché',
-    title:       'Le marché 2025',
-    lead:        'Un aperçu de l’édition passée : les artisans qui tiennent vitrine en ligne. Le marché 2026 sera dévoilé sous peu. Touchez une tuile pour ouvrir la fiche complète.',
+    title:       'Les Kiosques',
+    lead:        'Les artisans qui ont tenu place au marché. Filtrez par édition ou par métier, touchez une tuile pour ouvrir la fiche complète.',
     onsite:      'Sur place uniquement',
     visit:       'Voir la boutique',
     closeLbl:    'Fermer',
-    count:       'Marché 2026 dévoilé sous peu',
+    count:       '{n} kiosques',
     filterAll:   'Tous',
-    filterLabel: 'Filtrer',
+    filterLabel: 'Métier',
+    yearLabel:   'Édition',
+    yearAll:     'Toutes',
+    emptyYear:   'Aucun kiosque saisi pour cette édition. Le marché 2026 sera dévoilé sous peu.',
+    photoCaption:'Un kiosque du marché, monté sous la tente.',
   },
   pact: {
     eyebrow:   'Devenir marchand',
@@ -178,14 +178,18 @@ const EN: Copy = {
   },
   market: {
     eyebrow:     'Through the market alleys',
-    title:       'The 2025 market',
-    lead:        'A look back at last edition: the artisans with an online storefront. The 2026 market will be revealed soon. Tap a tile to open the full entry.',
+    title:       'The Kiosks',
+    lead:        'The artisans who have held a spot at the market. Filter by edition or by trade, tap a tile to open the full entry.',
     onsite:      'On site only',
     visit:       'Visit shop',
     closeLbl:    'Close',
-    count:       '2026 market revealed soon',
+    count:       '{n} stalls',
     filterAll:   'All',
-    filterLabel: 'Filter',
+    filterLabel: 'Trade',
+    yearLabel:   'Edition',
+    yearAll:     'All',
+    emptyYear:   'No kiosk recorded for this edition. The 2026 market will be revealed soon.',
+    photoCaption:'A market kiosk, pitched under the canvas.',
   },
   pact: {
     eyebrow:   'Become a merchant',
