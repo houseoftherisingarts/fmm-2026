@@ -216,11 +216,11 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
           census: () => tuners.map((t) => (t as { census: () => unknown }).census()),
         };
         tuners.push({
-          tune: (scale: number, y: number, rotY = 0) => {
+          tune: (scale: number, y: number, rotY = 0, x = 0, z = 0) => {
             model.scale.setScalar(scale);
-            model.position.y = y;
+            model.position.set(x, y, z);
             model.rotation.y = rotY;
-            return { scale, y, rotY };
+            return { scale, y, rotY, x, z };
           },
           showProc: (on: boolean) => {
             for (const c of cosmetics) c.visible = on;
