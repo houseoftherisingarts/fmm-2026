@@ -112,7 +112,7 @@ export async function updateInvite(id: string, patch: {
   await updateDoc(doc(db, COL, id), stripUndefined({
     ...patch,
     updatedAt: serverTimestamp(),
-  }));
+  }) as any);
 }
 
 export async function setArrive(id: string, arrive: boolean): Promise<void> {
