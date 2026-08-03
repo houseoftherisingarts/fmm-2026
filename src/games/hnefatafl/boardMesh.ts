@@ -1,18 +1,25 @@
-// ─── Hnefatafl — plateau procédural ─────────────────────────────────
-// Socle de noyer sombre, tuiles chaudes, filets et incrustations de
-// laiton : la palette du site (velours, os, laiton), pas celle d'un
-// échiquier générique.
+// ─── Hnefatafl — plateau : GLB de Meshy + secours procédural ────────
+// Le plateau sculpté d'Alex (Meshy) est revenu le 2026-08-03, compressé
+// de 34 Mo à 1,96 Mo (draco + textures webp 1024). Il se pose PAR-DESSUS
+// une grille procédurale qui, elle, reste la seule vérité du jeu :
 //
-// 🚨 Le GLB de 34 Mo est PARTI (2026-08-03). Il arrivait pivoté et
-// décalé par rapport à la grille (le socle sculpté dépassait en biais
-// sous le plateau), pesait 34 Mo au chargement, et son damier peint ne
-// tombait pas sur les cases cliquables. Tout est maintenant construit
-// ici, aligné par construction sur les mêmes coordonnées que le
-// raycast. Si un beau modèle 3D revient un jour, il devra être
-// compressé (draco/meshopt, < 2 Mo) et calé sur CELL/MID sans
-// autofit heuristique.
+//   · les tuiles procédurales portent le raycast (userData {r,c}) et
+//     deviennent invisibles (opacity 0) dès que le GLB est affiché;
+//   · la surbrillance (highlightSystem) vit sur des plans superposés,
+//     donc elle fonctionne au-dessus de n'importe quel plateau;
+//   · si le GLB échoue à charger, le plateau procédural reste visible
+//     et le jeu est identique à avant.
+//
+// 🚨 CALAGE FIXE, PAS D'AUTOFIT. La première intégration (34 Mo) avait
+// un autofit heuristique qui pivotait et décalait le modèle : damier
+// peint à côté des cases cliquables. Les constantes GLB_* ci-dessous
+// sont mesurées à l'écran une fois pour toutes (accordeur dev
+// window.__hnefBoard) puis figées. Si le modèle change, on re-mesure,
+// on ne devine pas.
 
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { CELL, MID, N, isCorner, isThrone } from './gameLogic';
 
 export interface BoardHandle {
@@ -21,6 +28,17 @@ export interface BoardHandle {
   /** Conservé pour compatibilité d'interface : toujours vide désormais. */
   decorations: THREE.Object3D[];
 }
+
+// ── Calage du GLB (constantes figées, mesurées via l'accordeur dev) ──
+// Le modèle Meshy est couché dans le plan XY (épaisseur en Z) :
+// bbox x,y ∈ [-0.95, 0.95], z ∈ [-0.14, 0.14]. On le couche à plat
+// (rotation X) puis on l'échelonne pour que son damier peint tombe sur
+// la grille CELL/MID du raycast.
+const GLB_URL   = '/games/hnefatafl/models/board.glb';
+const GLB_ROT_X = -Math.PI / 2;
+const GLB_SCALE = 7.4;
+const GLB_Y     = 0.0;
+const GLB_ROT_Y = 0;
 
 // ── Palette du festival ───────────────────────────────────────────
 const WALNUT_LIGHT = 0x4a2f16;   // tuile claire, noyer chaud
@@ -34,6 +52,12 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
   const group = new THREE.Group();
   scene.add(group);
 
+  // Tout ce qui est purement décoratif (socle, filets, incrustations)
+  // s'éteint quand le GLB prend le relais. Les tuiles, elles, passent
+  // en opacité 0 mais restent dans la scène : cibles du raycast.
+  const cosmetics: THREE.Object3D[] = [];
+  const tileMats: THREE.MeshPhongMaterial[] = [];
+
   // ── Socle : deux plateaux de velours-noyer, biseau de laiton ────
   const span = N * CELL;
 
@@ -44,6 +68,7 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
   baseDeep.position.y = -0.42;
   baseDeep.receiveShadow = true;
   group.add(baseDeep);
+  cosmetics.push(baseDeep);
 
   const baseTop = new THREE.Mesh(
     new THREE.BoxGeometry(span + 1.5, 0.3, span + 1.5),
@@ -52,6 +77,7 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
   baseTop.position.y = -0.12;
   baseTop.receiveShadow = true;
   group.add(baseTop);
+  cosmetics.push(baseTop);
 
   // Filet de laiton qui court autour du champ de jeu
   const railMat = new THREE.MeshPhongMaterial({
@@ -73,6 +99,7 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
     );
     rail.position.set(x, 0.055, z);
     group.add(rail);
+    cosmetics.push(rail);
   }
 
   // ── Tuiles (chacune cliquable, cible du raycast) ────────────────
@@ -95,14 +122,12 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
       group.add(sq);
       row.push(sq);
       clickables.push(sq);
+      tileMats.push(mat);
     }
     squares.push(row);
   }
 
   // ── Incrustations de laiton : coins et trône ────────────────────
-  // Des anneaux plats posés sur la tuile, comme des ferrures
-  // incrustées, à la place des anciennes torches vertes et rouges qui
-  // juraient avec tout le reste.
   const inlayMat = new THREE.MeshPhongMaterial({
     color: BRASS,
     emissive: 0x241902,
@@ -120,9 +145,11 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
     ring.rotation.x = Math.PI / 2;
     ring.position.set((c - MID) * CELL, 0.108, (r - MID) * CELL);
     group.add(ring);
+    cosmetics.push(ring);
     const dot = new THREE.Mesh(dotGeo, inlayMat);
     dot.position.set((c - MID) * CELL, 0.108, (r - MID) * CELL);
     group.add(dot);
+    cosmetics.push(dot);
   }
 
   // Croix du trône : quatre courts rayons de laiton
@@ -133,7 +160,63 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
     );
     ray.position.set(dx * CELL * 0.26, 0.106, dz * CELL * 0.26);
     group.add(ray);
+    cosmetics.push(ray);
   }
+
+  // ── Le plateau sculpté de Meshy, par-dessus ─────────────────────
+  const draco = new DRACOLoader();
+  draco.setDecoderPath('/draco/');
+  const loader = new GLTFLoader();
+  loader.setDRACOLoader(draco);
+
+  loader.load(
+    GLB_URL,
+    (gltf) => {
+      const model = gltf.scene;
+      model.rotation.x = GLB_ROT_X;
+      model.rotation.y = GLB_ROT_Y;
+      model.scale.setScalar(GLB_SCALE);
+      model.position.y = GLB_Y;
+      model.traverse((o) => {
+        if ((o as THREE.Mesh).isMesh) {
+          o.receiveShadow = true;
+          o.castShadow = false;
+        }
+      });
+      group.add(model);
+
+      // Le GLB est là : la déco procédurale s'éteint, les tuiles
+      // deviennent des cibles invisibles.
+      for (const c of cosmetics) c.visible = false;
+      for (const m of tileMats) {
+        m.transparent = true;
+        m.opacity = 0;
+        m.depthWrite = false;
+      }
+
+      // Accordeur dev : régler échelle / hauteur / rotation à l'écran,
+      // reporter les valeurs dans les constantes GLB_*, puis figer.
+      if (import.meta.env.DEV) {
+        (window as unknown as Record<string, unknown>).__hnefBoard = {
+          tune: (scale: number, y: number, rotY = 0) => {
+            model.scale.setScalar(scale);
+            model.position.y = y;
+            model.rotation.y = rotY;
+            return { scale, y, rotY };
+          },
+          showProc: (on: boolean) => {
+            for (const c of cosmetics) c.visible = on;
+            for (const m of tileMats) m.opacity = on ? 1 : 0;
+          },
+        };
+      }
+    },
+    undefined,
+    (err) => {
+      // Pas de GLB : le plateau procédural reste tel quel.
+      console.warn('[hnefatafl] plateau GLB indisponible, secours procédural', err);
+    },
+  );
 
   return { squares, clickables, decorations: [] };
 }
