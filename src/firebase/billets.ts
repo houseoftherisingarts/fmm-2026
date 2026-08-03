@@ -12,7 +12,7 @@
 import {
   ref, uploadBytes, getDownloadURL, listAll, deleteObject, getMetadata,
 } from 'firebase/storage';
-import { storage } from './config';
+import { storage } from '../firebase';
 
 export interface Billet {
   /** Chemin complet dans le bucket, sert de clé de suppression. */
@@ -54,6 +54,7 @@ function safeName(raw: string): string {
 }
 
 export async function uploadBillet(uid: string, file: File): Promise<Billet> {
+  if (!storage) throw new Error('Firebase indisponible');
   const path = `billets/${uid}/${safeName(file.name)}`;
   const r = ref(storage, path);
   await uploadBytes(r, file, { contentType: file.type || 'application/octet-stream' });
@@ -68,6 +69,7 @@ export async function uploadBillet(uid: string, file: File): Promise<Billet> {
 }
 
 export async function listBillets(uid: string): Promise<Billet[]> {
+  if (!storage) return [];
   const dir = ref(storage, `billets/${uid}`);
   let items;
   try {
@@ -90,5 +92,6 @@ export async function listBillets(uid: string): Promise<Billet[]> {
 }
 
 export async function deleteBillet(path: string): Promise<void> {
+  if (!storage) throw new Error('Firebase indisponible');
   await deleteObject(ref(storage, path));
 }

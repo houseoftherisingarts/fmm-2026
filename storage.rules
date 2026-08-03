@@ -65,6 +65,17 @@ service firebase.storage {
         && (request.resource == null || request.resource.size < 10 * 1024 * 1024);
     }
 
+    // ── Billets du festivalier ──────────────────────────────────
+    // Une facture Zeffy porte un nom, un courriel et un achat. Contrairement
+    // aux avatars de /users (lecture publique), ce coffre est strictement
+    // privé : seul le propriétaire et les admins y accèdent.
+    match /billets/{uid}/{allPaths=**} {
+      allow read:   if isOwner(uid) || isAdmin();
+      allow write:  if isOwner(uid)
+        && (request.resource == null || request.resource.size < 10 * 1024 * 1024);
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
     // Deny everything else by default.
   }
 }
