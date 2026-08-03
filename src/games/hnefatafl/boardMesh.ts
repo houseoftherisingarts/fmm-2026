@@ -234,6 +234,16 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
               tileOpacity: tileMats[0]?.opacity,
               cosmeticsVisible: cosmetics[0]?.visible,
               modelScale: model.scale.x,
+              // Hauteur réelle de la surface peinte : raycast vertical
+              // au-dessus de quelques cases logiques.
+              surfaceY: [[5, 5], [0, 0], [10, 10], [0, 10]].map(([r, c]) => {
+                const rc = new THREE.Raycaster(
+                  new THREE.Vector3((c - MID) * CELL, 10, (r - MID) * CELL),
+                  new THREE.Vector3(0, -1, 0),
+                );
+                const hit = rc.intersectObject(model, true)[0];
+                return hit ? Math.round(hit.point.y * 1000) / 1000 : null;
+              }),
             };
           },
         });
