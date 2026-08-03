@@ -34,10 +34,15 @@ export interface BoardHandle {
 // bbox x,y ∈ [-0.95, 0.95], z ∈ [-0.14, 0.14]. On le couche à plat
 // (rotation X) puis on l'échelonne pour que son damier peint tombe sur
 // la grille CELL/MID du raycast.
+// Mesuré le 2026-08-03 (accordeur dev + marqueurs Playwright) : les
+// quatre pierres de coin du damier peint tombent pile sur les centres
+// logiques (0,0)/(0,10)/(10,0)/(10,10), et le champ peint arrive à
+// y = 0.10, le niveau des socles de pièces. Aucun décalage x/z : le
+// damier peint est centré dans le modèle.
 const GLB_URL   = '/games/hnefatafl/models/board.glb';
 const GLB_ROT_X = -Math.PI / 2;
-const GLB_SCALE = 7.4;
-const GLB_Y     = 0.0;
+const GLB_SCALE = 7.85;
+const GLB_Y     = -0.63;
 const GLB_ROT_Y = 0;
 
 // ── Palette du festival ───────────────────────────────────────────
