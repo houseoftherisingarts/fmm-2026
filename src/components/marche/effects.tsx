@@ -336,8 +336,15 @@ export const Motes: React.FC<{
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // 🚨 « Réduire les animations » ne doit PAS effacer les braises.
+    // Avant, le composant sortait ici et le canevas restait à sa taille
+    // par défaut (300x150), vide : personne avec ce réglage système ne
+    // voyait la moindre particule sur tout le site. Alex l'a sur son
+    // Mac, d'où « je ne vois jamais les particules de feu ».
+    // Corrigé 2026-08-02 : on dessine un champ de braises FIXE. Aucun
+    // mouvement, donc l'intention d'accessibilité est respectée, mais
+    // l'ambiance reste.
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
     const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
 
@@ -352,10 +359,40 @@ export const Motes: React.FC<{
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (reduce) paintStatic();
     };
+
+    // Champ de braises immobile, pour le mode réduit.
+    const paintStatic = () => {
+      if (w < 2 || h < 2) return;
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < count; i++) {
+        // Positions déterministes : pas de scintillement au redimensionnement.
+        const x = 22 + ((i * 61.803) % 1) * 0 + (((i * 2654435761) >>> 8) % 1000) / 1000 * Math.max(1, w - 44);
+        const y = 22 + (((i * 40503) >>> 4) % 1000) / 1000 * Math.max(1, h - 44);
+        const r = 0.7 + (((i * 2246822519) >>> 12) % 100) / 100 * 1.3;
+        const hue = 36 + (i % 14);
+        const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 8);
+        halo.addColorStop(0, `hsla(${hue}, 92%, 78%, 0.42)`);
+        halo.addColorStop(0.5, `hsla(${hue}, 80%, 55%, 0.10)`);
+        halo.addColorStop(1, 'hsla(0, 0%, 0%, 0)');
+        ctx.fillStyle = halo;
+        ctx.beginPath(); ctx.arc(x, y, r * 8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `hsla(${hue + 6}, 100%, 90%, 0.8)`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      }
+    };
+
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
+
+    if (reduce) {
+      paintStatic();
+      return () => { ro.disconnect(); };
+    }
+
     const io = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
