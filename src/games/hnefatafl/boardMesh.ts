@@ -189,7 +189,8 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
     decal.position.set(0, 0.13, 0);
     decal.renderOrder = 1;
     group.add(decal);
-    cosmetics.push(decal);
+    // Surtout PAS dans `cosmetics` : le blason survit à l'arrivée du
+    // GLB, c'est précisément sur le beau plateau qu'il doit se voir.
 
     new THREE.TextureLoader().load(DECAL_URL, (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
