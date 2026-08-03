@@ -38,7 +38,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           demande un jeton de page Meta côté serveur. En attendant, on
           renvoie honnêtement à la page plutôt que de simuler un fil. */}
       <a
-        href={SITE.facebook}
+        href={SITE.social.facebook}
         target="_blank"
         rel="noopener noreferrer"
         className="group mt-5 flex items-center justify-between gap-4 p-5 border transition-colors"
