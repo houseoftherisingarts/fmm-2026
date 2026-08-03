@@ -6,16 +6,12 @@ import {
   subscribeAcceptedVendors, CURRENT_YEAR, type VendorApp,
 } from '../../firebase/applications';
 import { Eyebrow, DisplayTitle, SectionFog } from '../marche/atmospherics';
+import { NoticeBoard, Parchment, seedTilt } from '../board/NoticeBoard';
 
 // Le tableau des marchands, refait sur de vrais visuels (2026-08-02).
-// Avant : des dégradés CSS qui imitaient le bois et le papier. Maintenant :
-//   • public/board/notice-frame.webp  — panneau de bois généré (FLUX), servi
-//     en border-image (tranches de 170 px) pour que les coins ferrés restent
-//     nets quelle que soit la hauteur du tableau
-//   • public/board/notice-wood.webp   — intérieur en tuile miroir 2x2, donc
-//     répétable sans couture, jamais étiré
-//   • public/board/notice-parchment.webp — vraie feuille déchirée détourée
-//     (fond noir passé en alpha), une par avis, notre texte par-dessus
+// Le panneau lui-même (bois, cadre, parchemin) vit dans
+// `components/board/NoticeBoard.tsx` depuis le 2026-08-03 : les avis de
+// l'espace client s'épinglent sur le même objet.
 // L'édition affichée est celle des inscriptions ouvertes (2027) : la 2026
 // est complète et déjà derrière nous.
 const BOARD_YEAR = CURRENT_YEAR + 1;
