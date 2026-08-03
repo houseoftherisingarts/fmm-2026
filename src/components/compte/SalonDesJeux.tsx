@@ -31,7 +31,7 @@ const JEUX: Jeu[] = [
     titreEN: 'Hnefatafl',
     texteFR: 'Le jeu de plateau des Vikings, en trois dimensions. Le roi doit fuir, ses assaillants l’encercler. Choisissez votre camp.',
     texteEN: 'The Viking board game, in three dimensions. The king must flee, his attackers must surround him. Choose your side.',
-    image: '/orb/marche.jpg',
+    image: '/photos/hnefatafl-card.webp',
     pret: true,
   },
 ];

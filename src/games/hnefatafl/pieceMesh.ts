@@ -23,9 +23,9 @@ export interface PieceMaterials {
 
 export function createPieceMaterials(): PieceMaterials {
   return {
-    a: new THREE.MeshPhongMaterial({ color: 0xaa1f0f, shininess: 90, specular: 0xff6644 }),
-    aC: new THREE.MeshPhongMaterial({ color: 0xcc2211, shininess: 110, emissive: 0x110000 }),
-    d: new THREE.MeshPhongMaterial({ color: 0xd4c49a, shininess: 70, specular: 0xffffdd }),
+    a: new THREE.MeshPhongMaterial({ color: 0x8a2418, shininess: 90, specular: 0xff9a5a }),
+    aC: new THREE.MeshPhongMaterial({ color: 0xa63a20, shininess: 110, emissive: 0x140402 }),
+    d: new THREE.MeshPhongMaterial({ color: 0xe8dcc0, shininess: 70, specular: 0xfff6dd }),
     dC: new THREE.MeshPhongMaterial({ color: 0xeeddcc, shininess: 90, emissive: 0x080808 }),
     k: new THREE.MeshPhongMaterial({ color: 0xbb8800, shininess: 180, specular: 0xffff00 }),
     kC: new THREE.MeshPhongMaterial({

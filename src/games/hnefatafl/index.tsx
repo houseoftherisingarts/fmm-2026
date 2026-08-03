@@ -10,6 +10,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useUI } from '../../contexts/AppContext';
 import {
   applyMove,
+  CELL,
+  MID,
+  N,
   checkWin,
   hasAnyMoves,
   initBoard,
@@ -19,7 +22,7 @@ import {
   type Side,
 } from './gameLogic';
 import { setupScene } from './sceneSetup';
-import { buildBoard, loadBoardModel } from './boardMesh';
+import { buildBoard } from './boardMesh';
 import { createPieceSystem } from './pieceMesh';
 import { createHighlightSystem } from './highlightSystem';
 import { pickMove, type Difficulty } from './cpuPlayer';
@@ -167,43 +170,28 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
     const scene = setupScene(el);
     const detachResize = scene.attachResize();
 
-    const { squares, clickables, decorations } = buildBoard(scene.scene);
+    const { clickables } = buildBoard(scene.scene);
     const pieces = createPieceSystem(scene.scene, clickables);
     const hl = createHighlightSystem(scene.scene);
 
-    // Kick off the GLB load (large asset, served from /public/). The
-    // loader auto-fits the model to the 11×11 board span and aligns its
-    // top surface with the play plane. On success, hide the procedural
-    // decorations and make the procedural squares invisible — they
-    // remain in the raycast list so clicks still resolve to (r, c).
-    //
-    // TUNING: the GLB's actual playing-surface ratio to its outer
-    // extent is unknown. `scaleMul` here scales the auto-fit result.
-    // Bump up if pieces fall off the board edges, down if pieces look
-    // small in a sea of board. yOffset nudges pieces sit-line if they
-    // float above or sink into the board surface. Watch devtools for
-    // the "[Hnefatafl] Board GLB loaded" log with raw + final sizes.
-    const boardModel = loadBoardModel(scene.scene, {
-      scaleMul: 0.55,
-      yOffset: 0,
-      onLoad: () => {
-        if (!alive) return;
-        for (const d of decorations) d.visible = false;
-        for (const row of squares) {
-          for (const sq of row) {
-            const mat = sq.material as THREE.MeshPhongMaterial;
-            mat.transparent = true;
-            mat.opacity = 0;
-            mat.depthWrite = false;
-            sq.castShadow = false;
-            sq.receiveShadow = false;
-          }
-        }
-      },
-      onError: () => {
-        // Procedural board remains visible — clean fallback.
-      },
-    });
+    // ── Sonde de développement ──────────────────────────────────────
+    // Expose la projection case -> écran pour les tests Playwright :
+    // window.__hnef.squareToScreen(r, c) rend {x, y} en pixels client.
+    // Dev seulement : rien n'est expose en production.
+    if (import.meta.env.DEV) {
+      (window as unknown as Record<string, unknown>).__hnef = {
+        squareToScreen: (r: number, c: number) => {
+          const v = new THREE.Vector3((c - MID) * CELL, 0.12, (r - MID) * CELL);
+          v.project(scene.camera);
+          const rect = scene.renderer.domElement.getBoundingClientRect();
+          return {
+            x: rect.left + ((v.x + 1) / 2) * rect.width,
+            y: rect.top + ((1 - v.y) / 2) * rect.height,
+          };
+        },
+        state: () => ({ turn: gs.turn, over: gs.over, sel: gs.sel, mode: configRef.current.mode, humanSide: configRef.current.humanSide, board: gs.board.map((row) => row.join('')) }),
+      };
+    }
 
     const board0: Board = initBoard();
     for (let r = 0; r < board0.length; r++) {
@@ -302,6 +290,13 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
     };
 
     const commitMove = (fr: number, fc: number, tr: number, tc: number) => {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.info('[Hnefatafl] commitMove', { fr, fc, tr, tc, piece: gs.board[fr][fc], turn: gs.turn });
+      }
+      // Garde defensive : jamais commettre depuis une case vide (un
+      // commit fantome basculerait le tour sans bouger le plateau).
+      if (!gs.board[fr]?.[fc]) return;
       const { board: nb, removed } = applyMove(gs.board, fr, fc, tr, tc);
       gs.board = nb;
       gs.sel = null;
@@ -393,16 +388,50 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
     const endDrag = () => {
       isDown = false;
     };
+    // Plan du champ de jeu, pour resoudre la case visee independamment
+    // de ce qui se dresse devant. Le bug d'origine : les pieces hautes
+    // intersectaient le rayon AVANT la tuile verte visee, le clic se
+    // resolvait sur la piece, et le coup n'etait jamais applique
+    // (audit 2026-08-03, regles et IA saines par ailleurs).
+    const playPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.1);
+    const planePoint = new THREE.Vector3();
+
     const tryClick = (clientX: number, clientY: number) => {
       if (dragged) return;
       const rect = scene.renderer.domElement.getBoundingClientRect();
       mp.x = ((clientX - rect.left) / rect.width) * 2 - 1;
       mp.y = -((clientY - rect.top) / rect.height) * 2 + 1;
       ray.setFromCamera(mp, scene.camera);
-      const hit = ray
-        .intersectObjects(clickables, false)
-        .find((h) => h.object.userData.r !== undefined);
-      if (hit) handleSqClick(hit.object.userData.r as number, hit.object.userData.c as number);
+
+      // Case sous le curseur, par intersection avec le plan du plateau.
+      let planeRC: { r: number; c: number } | null = null;
+      if (ray.ray.intersectPlane(playPlane, planePoint)) {
+        const c = Math.round(planePoint.x / CELL + MID);
+        const r = Math.round(planePoint.z / CELL + MID);
+        if (r >= 0 && r < N && c >= 0 && c < N) planeRC = { r, c };
+      }
+
+      const hits = ray.intersectObjects(clickables, false);
+      const pieceHit = hits.find((h) => h.object.userData.r !== undefined && !h.object.userData.isSquare);
+      const squareHit = hits.find((h) => h.object.userData.isSquare);
+
+      // 1. Un coup est en attente et le plan designe une case legale :
+      //    on JOUE, meme si une piece obstrue visuellement la tuile.
+      if (gs.sel && planeRC && gs.moves.some(([mr, mc]) => mr === planeRC.r && mc === planeRC.c)) {
+        handleSqClick(planeRC.r, planeRC.c);
+        return;
+      }
+      // 2. Sinon, une piece cliquee directement se selectionne.
+      if (pieceHit) {
+        handleSqClick(pieceHit.object.userData.r as number, pieceHit.object.userData.c as number);
+        return;
+      }
+      // 3. Sinon, la tuile touchee, ou la case du plan en dernier recours.
+      if (squareHit) {
+        handleSqClick(squareHit.object.userData.r as number, squareHit.object.userData.c as number);
+        return;
+      }
+      if (planeRC) handleSqClick(planeRC.r, planeRC.c);
     };
 
     const onMouseDown = (e: MouseEvent) => beginDrag(e.clientX, e.clientY);
@@ -481,7 +510,6 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
       el.removeEventListener('touchend', onTouchEnd);
       el.removeEventListener('touchcancel', onTouchEnd);
       el.removeEventListener('contextmenu', onContextMenu);
-      boardModel.cancel();
       hl.dispose();
       pieces.dispose();
       scene.dispose();

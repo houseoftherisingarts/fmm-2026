@@ -91,7 +91,7 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
       const sq = new THREE.Mesh(sqGeo, mat);
       sq.position.set((c - MID) * CELL, 0.05, (r - MID) * CELL);
       sq.receiveShadow = true;
-      sq.userData = { r, c };
+      sq.userData = { r, c, isSquare: true };
       group.add(sq);
       row.push(sq);
       clickables.push(sq);

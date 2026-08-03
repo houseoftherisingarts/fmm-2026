@@ -78,9 +78,9 @@ export function setupScene(el: HTMLElement): SceneHandle {
     return () => window.removeEventListener('resize', onResize);
   };
 
-  scene.add(new THREE.AmbientLight(0x3a1a08, 1));
+  scene.add(new THREE.AmbientLight(0x4a2a12, 1.6));
 
-  const sun = new THREE.DirectionalLight(0xffcc60, 2.2);
+  const sun = new THREE.DirectionalLight(0xffd580, 2.8);
   sun.position.set(8, 14, 6);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
