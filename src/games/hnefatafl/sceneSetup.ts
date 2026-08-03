@@ -28,7 +28,19 @@ export function setupScene(el: HTMLElement): SceneHandle {
   scene.fog = new THREE.Fog(0x080502, 24, 42);
 
   const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
-  let camR = 20;
+
+  // ── Cadrage adaptatif ─────────────────────────────────────────────
+  // Le champ de vision est VERTICAL : dans une scène large, la hauteur
+  // commande; dans une scène étroite (mobile en portrait), c'est la
+  // largeur, et à distance fixe le plateau sortait du cadre. Le rayon
+  // se recalcule donc à chaque redimensionnement. L'exposant adoucit
+  // l'éloignement pour que le plateau ne devienne pas minuscule sur
+  // téléphone. Posé le 2026-08-03 avec la refonte de la page.
+  const FIT_R = 16.5;
+  const fitRadius = (aspect: number) =>
+    aspect >= 1 ? FIT_R : FIT_R / Math.pow(Math.max(aspect, 0.35), 0.8);
+
+  let camR = FIT_R;
   let theta = 0.4;
   let phi = 1.08;
 
@@ -38,7 +50,10 @@ export function setupScene(el: HTMLElement): SceneHandle {
       camR * Math.cos(phi),
       camR * Math.sin(phi) * Math.cos(theta),
     );
-    camera.lookAt(0, 0, 0);
+    // Visée LÉGÈREMENT sous le plateau : en perspective, le bord proche
+    // du plateau est bien plus gros et tire la masse visuelle vers le
+    // bas. Viser un peu plus bas recentre l'ensemble à l'écran.
+    camera.lookAt(0, -0.9, 0);
   };
   updateCam();
 

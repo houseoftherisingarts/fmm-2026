@@ -88,6 +88,7 @@ interface GameStrings {
   pageEyebrow: string;
   pageTitle: string;
   pageIntro: string;
+  tableReady: string;
   rulesEyebrow: string;
   rulesTitle: string;
   rules: Array<{ title: string; body: string }>;
@@ -128,6 +129,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     pageTitle: 'Hnefatafl',
     pageIntro:
       'Le jeu des Vikings, mille ans avant les échecs. Un roi cerné cherche la sortie, ses assaillants resserrent l\u2019étau. La partie se joue ici, en trois dimensions, sur un plateau sculpté. Elle se joue aussi sur le site du festival, autour d\u2019une vraie table de bois.',
+    tableReady: 'La table est prête',
     rulesEyebrow: 'Avant de vous asseoir',
     rulesTitle: 'Trois choses à savoir',
     rules: [
@@ -179,6 +181,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     pageTitle: 'Hnefatafl',
     pageIntro:
       'The Viking board game, a thousand years before chess. A cornered king looks for a way out while his attackers tighten the ring. Play it here in three dimensions on a carved board. Play it again at the festival, around a real wooden table.',
+    tableReady: 'The table is set',
     rulesEyebrow: 'Before you sit down',
     rulesTitle: 'Three things to know',
     rules: [
@@ -774,7 +777,7 @@ const HnefataflPage: React.FC = () => {
                     style={{ background: tc, boxShadow: `0 0 10px ${tc}` }}
                   />
                   <span className="font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] text-ivory-soft truncate">
-                    {gameStarted ? ui.msg : s.startSubtitle}
+                    {gameStarted ? ui.msg : s.tableReady}
                   </span>
                 </span>
                 {gameStarted && (
@@ -794,14 +797,24 @@ const HnefataflPage: React.FC = () => {
                   atteignable. */}
               <div
                 className="relative w-full"
-                style={{ height: 'clamp(400px, 66vh, 720px)' }}
+                style={{ height: 'clamp(420px, 72vh, 780px)' }}
               >
                 {gameStarted && (
                   <GameCanvas gameKey={gameKey} onUi={setUi} strings={s} config={config} />
                 )}
 
                 {!gameStarted && (
-                  <StartScreen initial={config} strings={s} onBegin={handleBegin} />
+                  <>
+                    {/* Le plateau en photo derrière l'écran de
+                        préparation : le flou a quelque chose à flouter,
+                        et on voit ce qui nous attend. */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{ backgroundImage: 'url(/photos/hnefatafl-card.webp)' }}
+                    />
+                    <StartScreen initial={config} strings={s} onBegin={handleBegin} />
+                  </>
                 )}
 
                 <AnimatePresence>
