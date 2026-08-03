@@ -50,6 +50,7 @@ const AdminPage        = lazy(() => import('./pages/AdminPage'));
 const PersonProfilePage = lazy(() => import('./pages/admin/PersonProfilePage'));
 const BenevoleProfilePage = lazy(() => import('./pages/admin/BenevoleProfilePage'));
 const ComptePage       = lazy(() => import('./pages/ComptePage'));
+const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const MessagesPage     = lazy(() => import('./pages/MessagesPage'));
@@ -333,6 +334,10 @@ const App: React.FC = () => (
                 <Route path="/en/messages"                      element={<MessagesPage />} />
                 <Route path="/en/messages/:otherUid"            element={<MessagesPage />} />
                 <Route path="/compte" element={<ComptePage />} />
+                {/* Billetterie en cartes : construite, PAS publiee. Aucun
+                    lien du site n'y mene. Voir src/content/billets.ts pour
+                    la question des taxes, a trancher avant mise en ligne. */}
+                <Route path="/billets" element={<BilletsPage />} />
                 <Route path="/en/account" element={<ComptePage />} />
                 <Route path="/marche/inscription"   element={<VendorApplicationPage />} />
                 <Route path="/en/market/registration" element={<VendorApplicationPage />} />
