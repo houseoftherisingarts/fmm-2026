@@ -80,4 +80,24 @@ const TOUTES: Annonce[] = [
     piece: true,
     lienPiece: 'https://www.lesalondesinconnus.com/petite-monnaie',
   },
+  {
+    id:   'connexion-etoiles-2026',
+    tone: 'appel',
+    date: '2026-08-03',
+    titleFR: 'Offrez la connexion aux étoiles',
+    titleEN: 'Offer the connection to the stars',
+    bodyFR:
+      'Montpellier est un village que le réseau n’a jamais trouvé. Trois cent soixante-deux jours par année, c’est exactement pour cela que le lieu est beau. Les trois autres, il faut bien que les marchands encaissent et que vous puissiez montrer votre billet à l’entrée. Nous installons deux antennes tournées vers le ciel, le temps de la fin de semaine. Il nous manque 1 400 $, et chaque nom donné entre au Temple de la renommée.',
+    bodyEN:
+      'Montpellier is a village the network never found. Three hundred and sixty-two days a year, that is exactly what makes the place beautiful. The other three, the merchants have to get paid and you have to show your ticket at the gate. We are raising two antennas toward the sky for the length of the weekend. We are 1,400 $ short, and every name given enters the Hall of Fame.',
+    cta: {
+      url:     ZEFFY_LEVEE_URL,
+      labelFR: 'Porter la lumière',
+      labelEN: 'Carry the light',
+    },
+  },
 ];
+
+// Un avis muni d'un bouton sans adresse n'est pas un avis, c'est une
+// impasse. Il attend en coulisses jusqu'à ce que l'adresse existe.
+export const ANNONCES: Annonce[] = TOUTES.filter((a) => !a.cta || a.cta.url);

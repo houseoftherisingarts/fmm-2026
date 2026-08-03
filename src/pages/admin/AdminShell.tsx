@@ -60,6 +60,7 @@ const NAV: NavItem[] = [
   { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2 },
   { id: 'mariages',   label: 'Mariages',        icon: Heart },
   { id: 'comptes',    label: 'Comptes',         icon: Users },
+  { id: 'invites',    label: 'Invités',         icon: TicketCheck },
   { id: 'messages',   label: 'Messages',        icon: MessageSquare },
   { id: 'newsletter', label: 'Infolettre',      icon: Mail },
   { id: 'social',     label: 'Médias sociaux',  icon: Megaphone },
