@@ -1,5 +1,4 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
-import GlobalEmbers from './components/GlobalEmbers';
 import {
   BrowserRouter,
   Routes,
@@ -14,6 +13,7 @@ import { useReducedMotion } from 'framer-motion';
 import { AppProvider, useUI } from './contexts/AppContext';
 import { SiteFlagsProvider, useSiteFlags } from './contexts/SiteFlagsContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { usePerfTier } from './lib/usePerfTier';
 import NavBar from './components/layout/NavBar';
 import ErrorBoundary from './components/layout/ErrorBoundary';
 import PageLoader from './components/layout/PageLoader';
@@ -237,21 +237,23 @@ const Footing: React.FC = () => {
 // `.fmm-caravan-page`. Avoids fetching fire.mp4 on routes that don't show it
 // (like the orb landing, which renders its own FireCanvas). Also a no-op for
 // prefers-reduced-motion users.
+// Le feu du site : la vraie vidéo de flammes, masquée pour se fondre
+// dans la nuit et fusionnée en `screen` pour que seules les flammes
+// peignent. C'est l'effet des premières versions, celui qu'Alex
+// reconnaît; les points de braise en canevas ont été retirés.
+//
+// Il ne dépendait que de la classe `.fmm-caravan-page`, donc il
+// manquait sur toute page qui n'appelle pas useCaravanPage().
+// Maintenant : partout, sauf l'admin (tableau de bord) et l'accueil-orbe
+// (qui porte déjà sa propre flamme).
 const GlobalFireBackdrop: React.FC = () => {
-  const [active, setActive] = useState(
-    typeof document !== 'undefined' && document.body.classList.contains('fmm-caravan-page')
-  );
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    const sync = () => setActive(document.body.classList.contains('fmm-caravan-page'));
-    sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-  if (!active) return null;
+  const { pathname } = useLocation();
+  const { lite } = usePerfTier();
+  if (lite) return null;                                   // machine modeste
+  if (pathname.startsWith('/admin')) return null;
+  if (pathname === '/' || pathname === '/en') return null;  // FireCanvas y est déjà
   return (
-    <div aria-hidden className="fmm-fire-backdrop">
+    <div aria-hidden className="fmm-fire-backdrop" data-always>
       <video src="/orb/fire.mp4" autoPlay muted loop playsInline preload="auto" />
     </div>
   );
@@ -291,15 +293,14 @@ const App: React.FC = () => (
         <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
-          <GlobalEmbers />
           <LocaleSync />
           <AnalyticsPageViews />
           <Chrome />
           {/* Global fire backdrop — only mounted while <body> carries
               `.fmm-caravan-page` (set by useCaravanPage()). Skipping the
-              mount on non-caravan pages avoids fetching fire.mp4 (1.1 MB)
-              twice on /, since OrbHomePage renders its own FireCanvas.
-              Also skipped entirely for prefers-reduced-motion users. */}
+              feu global : présent sur toutes les pages sauf l'admin et
+              l'accueil-orbe, qui rend sa propre FireCanvas (évite de
+              télécharger fire.mp4 deux fois). */}
           <GlobalFireBackdrop />
           <Suspense fallback={null}>
             <SignInModal />
