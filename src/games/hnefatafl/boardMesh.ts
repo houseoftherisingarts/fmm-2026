@@ -45,6 +45,14 @@ const GLB_SCALE = 7.85;
 const GLB_Y     = -0.63;
 const GLB_ROT_Y = 0;
 
+// ── Blason peint au centre ────────────────────────────────────────
+// Texture blanche découpée sur son alpha (public/fmm-logo-decal.png,
+// 512x626) : le blanc laisse la teinte au matériau. Hauteur en cases,
+// ratio largeur/hauteur mesuré sur l'image.
+const DECAL_URL   = '/fmm-logo-decal.png';
+const DECAL_H     = 5.4;
+const DECAL_RATIO = 512 / 626;
+
 // ── Palette du festival ───────────────────────────────────────────
 const WALNUT_LIGHT = 0x4a2f16;   // tuile claire, noyer chaud
 const WALNUT_DARK  = 0x2b1a0b;   // tuile sombre
