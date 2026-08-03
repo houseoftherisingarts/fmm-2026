@@ -326,7 +326,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
         cancelCpu();
         const s = stringsRef.current;
         const isKingEscape = w === 'defender';
-        if (isKingEscape) scene.pushCameraIn(13, 1.6);
+        if (isKingEscape) scene.pushCameraIn(0.78, 1.6);
         onUi({
           turn: gs.turn,
           over: true,
@@ -796,8 +796,7 @@ const HnefataflPage: React.FC = () => {
                   de verrouiller 100vh, et le pied de page reste
                   atteignable. */}
               <div
-                className="relative w-full"
-                style={{ height: 'clamp(420px, 72vh, 780px)' }}
+                className="relative w-full h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
               >
                 {gameStarted && (
                   <GameCanvas gameKey={gameKey} onUi={setUi} strings={s} config={config} />

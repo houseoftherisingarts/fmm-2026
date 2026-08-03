@@ -850,7 +850,7 @@ const OrbHomePage: React.FC = () => {
                 </p>
               </div>
             ) : (
-            <ul className="orb-list columns-2 gap-x-6 md:gap-x-8 -mx-1 min-h-0">
+            <ul className="orb-list grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-2.5 min-h-0">
               {ORB_CHOICES.map((c, i) => {
                 // Hide unpublished pillars; keep the real index so the orb's
                 // cross-fade/selection machinery (resolveLayer, selectedIdx)
@@ -858,44 +858,66 @@ const OrbHomePage: React.FC = () => {
                 if (!isChoiceVisible(c.key)) return null;
                 const isSelected = i === selectedIdx;
                 return (
-                  <li key={c.key} className="break-inside-avoid">
+                  <li key={c.key}>
+                    {/* ── Plaque de pilier ──────────────────────────
+                        C'étaient des lignes à puces : rien ne disait
+                        qu'on pouvait cliquer, et le titre se noyait
+                        dans la photo. Ce sont maintenant de vraies
+                        plaques de verre à liseré de laiton, dans le
+                        registre premium d'Alex (verre sombre, coins
+                        ~15px, glow discret). Refait le 2026-08-03. */}
                     <button
                       onClick={() => onChoiceClick(i)}
                       onPointerEnter={(e) => { if (e.pointerType === 'mouse') playHover(); }}
                       onFocus={() => playHover()}
-                      className="group relative w-full text-left px-3 py-1.5 md:py-2 flex items-baseline gap-3 md:gap-4 transition-all duration-300"
+                      aria-pressed={isSelected}
+                      className={`group relative w-full h-full text-left overflow-hidden rounded-[15px] border backdrop-blur-md flex items-center gap-3 px-4 py-3 md:px-5 md:py-3.5 transition-all duration-300 hover:translate-x-[3px] ${
+                        isSelected
+                          ? 'border-brass/70 bg-black/60 shadow-[0_0_30px_rgba(232,177,74,0.26),inset_0_1px_0_rgba(255,235,190,0.16)]'
+                          : 'border-white/12 bg-black/45 hover:border-brass/55 hover:bg-black/60 hover:shadow-[0_0_24px_rgba(232,177,74,0.18)]'
+                      }`}
                     >
-                      {/* Voile sombre : le texte reposait a meme la photo
-                          de la caravane et se noyait dans les zones
-                          claires. Ajoute 2026-08-03. */}
+                      {/* Liseré de laiton : allumé quand le pilier est
+                          choisi, esquissé au survol. */}
                       <span
                         aria-hidden
-                        className="absolute inset-0 -mx-1 rounded-[3px] transition-opacity duration-300"
+                        className={`absolute left-0 top-0 bottom-0 w-[2px] transition-opacity duration-300 ${
+                          isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'
+                        }`}
                         style={{
                           background:
-                            'linear-gradient(90deg, rgba(10,2,7,0.72) 0%, rgba(10,2,7,0.52) 55%, rgba(10,2,7,0) 100%)',
-                          opacity: isSelected ? 1 : 0.78,
+                            'linear-gradient(180deg, transparent, var(--color-amber-glow), transparent)',
                         }}
                       />
                       <span
-                        className={`relative shrink-0 w-1.5 h-1.5 rounded-full transition-all duration-300 translate-y-[-2px] ${
+                        className={`relative shrink-0 w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                           isSelected
                             ? 'bg-[var(--color-amber-glow)] shadow-[0_0_14px_rgba(232,177,74,0.95)]'
-                            : 'bg-ivory/45 group-hover:bg-[var(--color-amber-glow)]'
+                            : 'bg-ivory/40 group-hover:bg-[var(--color-amber-glow)]'
                         }`}
                       />
                       <span
-                        className={`relative font-display title-medieval uppercase transition-all duration-300 leading-[1] ${
-                          isSelected
-                            ? 'text-ivory tracking-[0.04em]'
-                            : 'text-ivory/85 group-hover:text-ivory tracking-[0.02em]'
+                        className={`relative font-display title-medieval uppercase transition-colors duration-300 leading-[1.1] ${
+                          isSelected ? 'text-ivory' : 'text-ivory/85 group-hover:text-ivory'
                         }`}
                         style={{
-                          fontSize: 'clamp(0.95rem, 1.35vw, 1.35rem)',
-                          textShadow: '0 2px 10px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.8)',
+                          fontSize: 'clamp(0.9rem, 1.25vw, 1.2rem)',
+                          letterSpacing: '0.03em',
+                          textShadow: '0 2px 10px rgba(0,0,0,0.9)',
                         }}
                       >
                         {labelOf(c.key)}
+                      </span>
+                      {/* Chevron : le geste « on entre ici ». */}
+                      <span
+                        aria-hidden
+                        className={`relative ml-auto shrink-0 font-sans text-sm transition-all duration-300 text-[var(--color-amber-glow)] ${
+                          isSelected
+                            ? 'opacity-100 translate-x-0'
+                            : 'opacity-0 -translate-x-1.5 group-hover:opacity-90 group-hover:translate-x-0'
+                        }`}
+                      >
+                        &rsaquo;
                       </span>
                     </button>
                   </li>
