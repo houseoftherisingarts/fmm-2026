@@ -58,7 +58,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
 // groupes) redirect to a primary and have no flag of their own.
 export const PILLAR_PUBLISH_FLAGS: { key: PillarKey; flag: keyof SiteFlags; label: string }[] = [
   { key: 'activites',   flag: 'pubActivites',   label: 'Programmation' },
-  { key: 'marche',      flag: 'pubMarche',      label: 'Le Village' },
+  { key: 'marche',      flag: 'pubMarche',      label: 'Marché' },
   { key: 'histoire',    flag: 'pubHistoire',    label: 'Histoire & Apprendre' },
   { key: 'mariages',    flag: 'pubMariages',    label: 'Mariages & Groupes' },
   { key: 'hebergement', flag: 'pubHebergement', label: 'Camping & Hébergement' },
