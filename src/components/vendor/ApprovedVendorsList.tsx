@@ -6,7 +6,6 @@ import {
   subscribeAcceptedVendors, CURRENT_YEAR, type VendorApp,
 } from '../../firebase/applications';
 import { Eyebrow, DisplayTitle, SectionFog } from '../marche/atmospherics';
-import EmberCanvas from './EmberCanvas';
 
 // Le tableau des marchands, refait sur de vrais visuels (2026-08-02).
 // Avant : des dégradés CSS qui imitaient le bois et le papier. Maintenant :
@@ -45,7 +44,6 @@ const ApprovedVendorsList: React.FC = () => {
   return (
     <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden py-20 md:py-28">
       <SectionFog />
-      <EmberCanvas className="opacity-80" count={30} />
 
       <div className="relative max-w-screen-xl mx-auto px-4 md:px-8">
         {/* Rail de registre, même grammaire que le reste du pilier */}

@@ -6,7 +6,6 @@ import { ScrollProgress } from '../components/scroll';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { Eyebrow, DisplayTitle, HexPanel, SectionFog, SectionTopRail } from '../components/marche/atmospherics';
-import EmberCanvas from '../components/vendor/EmberCanvas';
 import MarchePage from './MarchePage';
 
 // ─── Le Village (édition 2026) ──────────────────────────────────────
@@ -45,7 +44,6 @@ const LeVillagePage: React.FC = () => {
 const MenuComingSoon: React.FC<{ fr: boolean }> = ({ fr }) => (
   <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
     <SectionFog />
-    <EmberCanvas className="opacity-80" count={30} />
     <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-24 md:pt-32 pb-24 md:pb-32">
       <SectionTopRail
         index="05"

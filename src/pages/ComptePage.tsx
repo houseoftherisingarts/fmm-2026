@@ -17,7 +17,6 @@ import MessageThread from '../components/vendor/MessageThread';
 import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 import CoffreBillets from '../components/compte/CoffreBillets';
 import SoutienPanel from '../components/compte/SoutienPanel';
-import EmberCanvas from '../components/vendor/EmberCanvas';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
@@ -101,7 +100,6 @@ const ComptePage: React.FC = () => {
           <img decoding="async" fetchPriority="low" src="/wix/home/scene-cinematic.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover opacity-25" />
           <div className="absolute inset-0 bg-gradient-to-b from-midnight-deep/90 via-midnight/90 to-midnight-deep" />
           <Brume />
-          <EmberCanvas className="opacity-80" count={30} />
           <div className="relative max-w-2xl mx-auto px-4 md:px-8 text-center">
             <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-8 transition">
               <ArrowLeft size={14} /> {t.home}
@@ -141,7 +139,6 @@ const ComptePage: React.FC = () => {
       <SEO title={t.title} noindex />
       <section className="relative caravan-stage bleed-edges pt-28 pb-12 md:pt-32 md:pb-16 overflow-hidden">
         <Brume />
-        <EmberCanvas className="opacity-80" count={30} />
         <div className="relative max-w-screen-xl mx-auto px-4 md:px-8">
           <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-6 transition">
             <ArrowLeft size={14} /> {t.home}
@@ -201,7 +198,6 @@ const ComptePage: React.FC = () => {
 
       <section className="relative caravan-stage bleed-edges py-12 md:py-16 overflow-hidden">
         <Brume />
-        <EmberCanvas className="opacity-80" count={30} />
 
         {/* Les annonces ouvrent l'inventaire : première chose vue. */}
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">

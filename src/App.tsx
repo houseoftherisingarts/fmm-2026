@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
+import GlobalEmbers from './components/GlobalEmbers';
 import {
   BrowserRouter,
   Routes,
@@ -237,7 +238,6 @@ const Footing: React.FC = () => {
 // (like the orb landing, which renders its own FireCanvas). Also a no-op for
 // prefers-reduced-motion users.
 const GlobalFireBackdrop: React.FC = () => {
-  const reduceMotion = useReducedMotion();
   const [active, setActive] = useState(
     typeof document !== 'undefined' && document.body.classList.contains('fmm-caravan-page')
   );
@@ -249,7 +249,7 @@ const GlobalFireBackdrop: React.FC = () => {
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();
   }, []);
-  if (reduceMotion || !active) return null;
+  if (!active) return null;
   return (
     <div aria-hidden className="fmm-fire-backdrop">
       <video src="/orb/fire.mp4" autoPlay muted loop playsInline preload="auto" />
@@ -291,6 +291,7 @@ const App: React.FC = () => (
         <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <GlobalEmbers />
           <LocaleSync />
           <AnalyticsPageViews />
           <Chrome />

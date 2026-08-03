@@ -15,7 +15,6 @@ import {
 import { JourneyPath } from './JourneyPath';
 import { WaxSeal } from './WaxSeal';
 import OrnateFrame from './OrnateFrame';
-import EmberCanvas from './EmberCanvas';
 import TiltShell from './TiltShell';
 import PhotoUpload from './PhotoUpload';
 
@@ -384,7 +383,6 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
           className="velvet-card p-6 md:p-10 relative overflow-hidden stage-3d"
         >
           <OrnateFrame accent={CHAPTER_ACCENT[chapter]} duration={0.85} />
-          <EmberCanvas className="opacity-80" count={30} />
     
           {/* pt-6 : la carte courante monte de 10 px et porte un halo de
               28 px; sans cette marge le conteneur overflow-hidden lui
