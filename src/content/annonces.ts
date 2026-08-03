@@ -42,6 +42,17 @@ export const ANNONCES: Annonce[] = [
       'Horses are on site for the whole festival, and our insurance coverage lapses the moment a dog comes near them. The entire festival would lose its protection. No dog is admitted on the grounds, even on a leash. Please arrange pet care before you head out.',
   },
   {
+    id:   'imprimez-billet-2026',
+    tone: 'alerte',
+    date: '2026-08-03',
+    titleFR: 'Imprimez votre billet avant de partir',
+    titleEN: 'Print your ticket before you leave home',
+    bodyFR:
+      'Le réseau cellulaire est faible sur le site et il n’y a pas de Wi-Fi public à l’entrée. Chercher son billet sur son téléphone au moment d’arriver peut tourner court. Imprimez votre confirmation Zeffy à la maison, ou téléchargez-la sur votre appareil pendant que vous avez encore du réseau. Votre coffre à billets, plus bas, garde une copie prête à télécharger.',
+    bodyEN:
+      'Cell coverage is weak on site and there is no public Wi-Fi at the gate. Hunting for your ticket on your phone as you arrive can fall flat. Print your Zeffy confirmation at home, or download it to your device while you still have signal. Your ticket vault below keeps a copy ready to download.',
+  },
+  {
     id:   'apportez-comptant-2026',
     tone: 'info',
     date: '2026-08-02',
