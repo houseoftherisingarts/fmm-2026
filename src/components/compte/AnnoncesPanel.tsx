@@ -107,7 +107,10 @@ const AnnonceNotice: React.FC<{ a: Annonce; lang: 'FR' | 'EN'; index: number }> 
     : (fr ? 'Bon à savoir' : 'Good to know');
 
   return (
-    <Parchment tilt={seedTilt(a.id)} pin={PIN_PAR_TON[a.tone]}>
+    // Marge plus large que sur le tableau des marchands : les avis sont de
+    // vrais paragraphes, et le parchemin a des bords déchirés. Le texte
+    // doit rester dans la zone plate de la feuille.
+    <Parchment tilt={seedTilt(a.id)} pin={PIN_PAR_TON[a.tone]} className="px-9 py-9 md:px-12 md:py-10">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

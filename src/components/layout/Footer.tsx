@@ -321,11 +321,12 @@ const Footer: React.FC = () => {
             style={{ color: 'var(--color-bone)' }}
           >
             <img
-              src="/salon/salon-logo.png"
+              src="/salon/salon-logo.webp"
               alt=""
               aria-hidden
-              loading="lazy"
-              className="h-6 w-auto opacity-60 group-hover:opacity-100 transition-opacity"
+              width={12}
+              height={34}
+              className="h-[34px] w-auto opacity-65 group-hover:opacity-100 transition-opacity"
             />
             <span className="opacity-45 group-hover:opacity-80 transition-opacity uppercase tracking-[0.28em]">
               {lang === 'FR'

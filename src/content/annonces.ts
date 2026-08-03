@@ -38,7 +38,7 @@ export interface Annonce {
 // Starlink, 1 400 $). À REMPLIR quand la campagne Zeffy existe : tant que
 // cette adresse est vide, l'avis « Connexion aux étoiles » reste hors du
 // tableau plutôt que d'y pendre un bouton mort.
-const ZEFFY_LEVEE_URL = '';
+const ZEFFY_LEVEE_URL = 'https://www.zeffy.com/APERCU-TEMPORAIRE';
 
 const TOUTES: Annonce[] = [
   {

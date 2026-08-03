@@ -953,11 +953,10 @@ const HnefataflPage: React.FC = () => {
               style={{ background: 'rgba(10, 4, 6, 0.5)' }}
             >
               <img
-                src="/salon/salon-logo.png"
+                src="/salon/salon-logo.webp"
                 alt=""
                 aria-hidden
-                loading="lazy"
-                className="h-14 md:h-16 w-auto shrink-0 self-start md:self-center opacity-90"
+                className="h-16 md:h-20 w-auto shrink-0 self-start md:self-center opacity-90"
               />
               <div className="min-w-0 flex-1">
                 <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-2">
