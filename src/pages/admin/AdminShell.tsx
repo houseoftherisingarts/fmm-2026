@@ -25,6 +25,7 @@ export type AdminSectionId =
   | 'matrice'
   | 'horaire'
   | 'bar'
+  | 'dispos'
   | 'mariages'
   | 'comptes'
   | 'messages'
