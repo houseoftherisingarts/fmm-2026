@@ -84,6 +84,13 @@ interface GameStrings {
   diffMedium: string;
   diffHard: string;
   begin: string;
+  // Habillage de page (ajouté avec la refonte du 2026-08-03)
+  pageEyebrow: string;
+  pageTitle: string;
+  pageIntro: string;
+  rulesEyebrow: string;
+  rulesTitle: string;
+  rules: Array<{ title: string; body: string }>;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -117,6 +124,26 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     diffMedium: 'Intermédiaire',
     diffHard: 'Difficile',
     begin: 'Commencer la partie',
+    pageEyebrow: 'Jeunesse · Jeu de plateau',
+    pageTitle: 'Hnefatafl',
+    pageIntro:
+      'Le jeu des Vikings, mille ans avant les échecs. Un roi cerné cherche la sortie, ses assaillants resserrent l\u2019étau. La partie se joue ici, en trois dimensions, sur un plateau sculpté. Elle se joue aussi sur le site du festival, autour d\u2019une vraie table de bois.',
+    rulesEyebrow: 'Avant de vous asseoir',
+    rulesTitle: 'Trois choses à savoir',
+    rules: [
+      {
+        title: 'Le but',
+        body: 'Le Roi doit atteindre l\u2019un des quatre coins du plateau. Les Raiders doivent l\u2019encercler avant qu\u2019il n\u2019y parvienne.',
+      },
+      {
+        title: 'Les camps',
+        body: 'Les Raiders sont deux fois plus nombreux et jouent en premier. Les Défenseurs sont moins nombreux, mais ils protègent le Roi.',
+      },
+      {
+        title: 'Les prises',
+        body: 'Toutes les pièces se déplacent en ligne droite, comme une tour. Une pièce prise entre deux pièces adverses est capturée.',
+      },
+    ],
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -148,6 +175,26 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     diffMedium: 'Medium',
     diffHard: 'Hard',
     begin: 'Begin the game',
+    pageEyebrow: 'Youth · Board game',
+    pageTitle: 'Hnefatafl',
+    pageIntro:
+      'The Viking board game, a thousand years before chess. A cornered king looks for a way out while his attackers tighten the ring. Play it here in three dimensions on a carved board. Play it again at the festival, around a real wooden table.',
+    rulesEyebrow: 'Before you sit down',
+    rulesTitle: 'Three things to know',
+    rules: [
+      {
+        title: 'The goal',
+        body: 'The King must reach one of the four corners of the board. The Raiders must surround him before he gets there.',
+      },
+      {
+        title: 'The sides',
+        body: 'Raiders are twice as many and move first. Defenders are fewer, but they shield the King.',
+      },
+      {
+        title: 'Captures',
+        body: 'Every piece moves in a straight line, like a rook. A piece caught between two enemy pieces is captured.',
+      },
+    ],
   },
 };
 
@@ -650,6 +697,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin 
 };
 
 const HnefataflPage: React.FC = () => {
+  // Pose l'atmosphère de la caravane sur <body> : brumes, grain, noir
+  // chaud. C'est ce hook qui raccroche la page au reste du site.
+  useCaravanPage();
   const { lang } = useUI();
   const s = useMemo(() => STRINGS[lang], [lang]);
 
@@ -688,243 +738,184 @@ const HnefataflPage: React.FC = () => {
     setGameStarted(false);
   };
 
-  const tc = ui.turn === 'attacker' ? '#CC2211' : '#D4C49A';
+  // Pastille de tour : oxblood du site pour les Raiders, os pour les
+  // Défenseurs. Plus de rouge néon ni de jaune saturé.
+  const tc = ui.turn === 'attacker' ? '#A6392B' : '#E8DDC1';
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100vh',
-        background: '#080502',
-        display: 'flex',
-        flexDirection: 'column',
-        fontFamily: '"Cinzel", "Palatino Linotype", serif',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '10px 20px',
-          borderBottom: '1px solid #5A3A0A',
-          background: '#0E0703',
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            color: '#FFD700',
-            fontSize: 'clamp(14px,3.5vw,26px)',
-            letterSpacing: '.35em',
-            fontWeight: 900,
-            textShadow: '0 0 20px rgba(255,136,0,.6)',
-          }}
-        >
-          HNEFATAFL
-        </div>
-        <div
-          style={{
-            color: '#6A4010',
-            fontSize: 'clamp(7px,1.2vw,10px)',
-            letterSpacing: '.5em',
-            marginTop: 2,
-          }}
-        >
-          FESTIVAL MÉDIÉVAL DE MONTPELLIER
-        </div>
-      </div>
+    <>
+      <SEO title={`${s.pageTitle} | FMM 2026`} description={s.pageIntro} />
 
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        {gameStarted && (
-          <GameCanvas gameKey={gameKey} onUi={setUi} strings={s} config={config} />
-        )}
+      <PageHeader
+        eyebrow={s.pageEyebrow}
+        titleA={s.pageTitle}
+        titleB=""
+        intro={s.pageIntro}
+        orbImage="/photos/hnefatafl-card.webp"
+      />
 
-        {!gameStarted && (
-          <StartScreen initial={config} strings={s} onBegin={handleBegin} />
-        )}
-
-        {gameStarted && (
-          <>
+      {/* ── La table de jeu ─────────────────────────────────────── */}
+      <section className="relative pb-14 md:pb-20">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal>
             <div
+              className="relative rounded-card overflow-hidden border border-brass/25"
               style={{
-                position: 'absolute',
-                top: 12,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'rgba(8,5,2,.9)',
-                border: `1px solid ${tc}44`,
-                borderRadius: 3,
-                padding: '7px 18px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                backdropFilter: 'blur(8px)',
-                whiteSpace: 'nowrap',
-                pointerEvents: 'none',
+                background: 'rgba(10, 4, 6, 0.55)',
+                boxShadow: '0 30px 90px rgba(0,0,0,0.55)',
               }}
             >
+              {/* Bandeau d'état : qui joue, et le retour au menu */}
+              <div className="flex items-center justify-between gap-3 px-4 md:px-6 py-3 border-b border-brass/20 bg-black/30">
+                <span className="inline-flex items-center gap-2.5 min-w-0">
+                  <span
+                    aria-hidden
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ background: tc, boxShadow: `0 0 10px ${tc}` }}
+                  />
+                  <span className="font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] text-ivory-soft truncate">
+                    {gameStarted ? ui.msg : s.startSubtitle}
+                  </span>
+                </span>
+                {gameStarted && (
+                  <button
+                    type="button"
+                    onClick={returnToMenu}
+                    className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 min-h-[40px] rounded-card border border-brass/35 text-ivory-soft hover:text-ivory hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+                  >
+                    <RotateCcw size={12} />
+                    <span className="hidden sm:inline">{s.newSaga}</span>
+                  </button>
+                )}
+              </div>
+
+              {/* La scène 3D. Hauteur bornée : la page respire au lieu
+                  de verrouiller 100vh, et le pied de page reste
+                  atteignable. */}
               <div
-                style={{
-                  width: 9,
-                  height: 9,
-                  borderRadius: '50%',
-                  background: tc,
-                  boxShadow: `0 0 10px ${tc}`,
-                }}
-              />
-              <span
-                style={{
-                  color: '#C09050',
-                  fontSize: 'clamp(9px,1.6vw,13px)',
-                  letterSpacing: '.2em',
-                }}
+                className="relative w-full"
+                style={{ height: 'clamp(400px, 66vh, 720px)' }}
               >
-                {ui.msg}
-              </span>
+                {gameStarted && (
+                  <GameCanvas gameKey={gameKey} onUi={setUi} strings={s} config={config} />
+                )}
+
+                {!gameStarted && (
+                  <StartScreen initial={config} strings={s} onBegin={handleBegin} />
+                )}
+
+                <AnimatePresence>
+                  {ui.vfx === 'king-escape' && (
+                    <motion.div
+                      key={`fx-escape-${gameKey}`}
+                      initial={{ opacity: 0.9 }}
+                      animate={{ opacity: 0 }}
+                      transition={{ duration: 1.8, ease: 'easeOut' }}
+                      className="absolute inset-0 z-[4] pointer-events-none"
+                      style={{
+                        background:
+                          'radial-gradient(circle at center, rgba(232,177,74,0.8) 0%, rgba(184,106,42,0.45) 35%, rgba(0,0,0,0) 70%)',
+                      }}
+                    />
+                  )}
+                  {ui.vfx === 'king-fall' && (
+                    <motion.div
+                      key={`fx-fall-${gameKey}`}
+                      initial={{ opacity: 0.95 }}
+                      animate={{ opacity: 0.4 }}
+                      transition={{ duration: 1.4, ease: 'easeOut' }}
+                      className="absolute inset-0 z-[4] pointer-events-none"
+                      style={{
+                        background:
+                          'radial-gradient(ellipse at center, rgba(40,0,0,0) 30%, rgba(107,31,31,0.6) 75%, rgba(20,0,0,0.9) 100%)',
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {ui.over && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.7, delay: 1.2, ease: 'easeOut' }}
+                    className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-6 text-center bg-[rgba(10,4,6,0.85)] backdrop-blur-md"
+                  >
+                    <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+                      {s.ending}
+                    </p>
+                    <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-[1.15] max-w-xl">
+                      {ui.msg}
+                    </h2>
+                    <div className="divider-brass w-24 mx-auto my-7" />
+                    <button
+                      type="button"
+                      onClick={returnToMenu}
+                      className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+                    >
+                      <RotateCcw size={15} />
+                      {s.newSaga}
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Légende. Elle ENVELOPPE au lieu de déborder : l'ancien
+                  bandeau en nowrap sortait de l'écran sur mobile. */}
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 px-4 py-3 border-t border-brass/20 bg-black/30">
+                <span className="font-sans text-[10px] md:text-[11px] text-ivory-soft/65 text-center">
+                  {s.hint}
+                </span>
+                <span className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-sans text-[10px] md:text-[11px]">
+                  <span style={{ color: '#C0503E' }}>{s.raidersDot}</span>
+                  <span className="text-ivory-soft">{s.defendersDot}</span>
+                  <span className="text-brass">{s.kingDot}</span>
+                </span>
+              </div>
             </div>
+          </Reveal>
+        </div>
+      </section>
 
-            <AnimatePresence>
-              {ui.vfx === 'king-escape' && (
-                <motion.div
-                  key={`fx-escape-${gameKey}`}
-                  initial={{ opacity: 0.9 }}
-                  animate={{ opacity: 0 }}
-                  transition={{ duration: 1.8, ease: 'easeOut' }}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    pointerEvents: 'none',
-                    background:
-                      'radial-gradient(circle at center, rgba(255,215,0,0.85) 0%, rgba(255,160,30,0.5) 35%, rgba(0,0,0,0) 70%)',
-                    zIndex: 4,
-                  }}
-                />
-              )}
-              {ui.vfx === 'king-fall' && (
-                <motion.div
-                  key={`fx-fall-${gameKey}`}
-                  initial={{ opacity: 0.95 }}
-                  animate={{ opacity: 0.4 }}
-                  transition={{ duration: 1.4, ease: 'easeOut' }}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    pointerEvents: 'none',
-                    background:
-                      'radial-gradient(ellipse at center, rgba(40,0,0,0) 30%, rgba(120,10,10,0.55) 75%, rgba(20,0,0,0.9) 100%)',
-                    zIndex: 4,
-                  }}
-                />
-              )}
-            </AnimatePresence>
-
-            {ui.over && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.7, delay: 1.2, ease: 'easeOut' }}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(4,2,0,.88)',
-                  backdropFilter: 'blur(12px)',
-                  zIndex: 5,
-                }}
-              >
-                <div
-                  style={{
-                    width: 80,
-                    height: 2,
-                    background: 'linear-gradient(90deg,transparent,#7A5215,transparent)',
-                    marginBottom: 28,
-                  }}
-                />
-                <div
-                  style={{
-                    color: '#FFD700',
-                    fontSize: 'clamp(16px,4.5vw,32px)',
-                    fontWeight: 900,
-                    letterSpacing: '.2em',
-                    textAlign: 'center',
-                    padding: '0 24px',
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {ui.msg}
-                </div>
-                <div
-                  style={{
-                    color: '#4A2808',
-                    fontSize: 'clamp(8px,1.4vw,11px)',
-                    letterSpacing: '.4em',
-                    margin: '12px 0 28px',
-                  }}
-                >
-                  {s.ending}
-                </div>
-                <div
-                  style={{
-                    width: 80,
-                    height: 2,
-                    background: 'linear-gradient(90deg,transparent,#7A5215,transparent)',
-                    marginBottom: 28,
-                  }}
-                />
-                <button
-                  onClick={returnToMenu}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid #7A5215',
-                    color: '#FFD700',
-                    padding: '10px 30px',
-                    fontSize: 'clamp(9px,1.6vw,13px)',
-                    letterSpacing: '.3em',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    transition: 'all .2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = '#1A0A00';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                  }}
-                >
-                  {s.newSaga}
-                </button>
-              </motion.div>
-            )}
-
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 10,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'rgba(8,5,2,.85)',
-                border: '1px solid #2A1405',
-                borderRadius: 3,
-                padding: '5px 14px',
-                fontSize: 'clamp(7px,1.2vw,10px)',
-                color: '#4A2C0E',
-                textAlign: 'center',
-                letterSpacing: '.08em',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {s.hint} &nbsp;|&nbsp;
-              <span style={{ color: '#881100' }}>{s.raidersDot}</span> &nbsp;
-              <span style={{ color: '#888060' }}>{s.defendersDot}</span> &nbsp;
-              <span style={{ color: '#997700' }}>{s.kingDot}</span>
+      {/* ── Les règles, en trois cartes ─────────────────────────── */}
+      <section className="relative pb-20 md:pb-28">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal>
+            <div className="text-center mb-10 md:mb-14">
+              <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+                {s.rulesEyebrow}
+              </p>
+              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.06]">
+                {s.rulesTitle}
+              </h2>
+              <div className="divider-brass w-24 mx-auto mt-5" />
             </div>
-          </>
-        )}
-      </div>
-    </div>
+          </Reveal>
+
+          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-7">
+            {s.rules.map((r, i) => {
+              const Icon = [Crown, Users, Swords][i] ?? Crown;
+              return (
+                <StaggerItem
+                  key={r.title}
+                  as="article"
+                  className="glass-light rounded-card p-7 md:p-8 text-center transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
+                    <Icon size={24} className="text-brass" />
+                  </div>
+                  <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
+                    {r.title}
+                  </h3>
+                  <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-snug">
+                    {r.body}
+                  </p>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </div>
+      </section>
+    </>
   );
 };
 
