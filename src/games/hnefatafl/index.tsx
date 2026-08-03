@@ -11,7 +11,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -92,6 +92,11 @@ interface GameStrings {
   rulesEyebrow: string;
   rulesTitle: string;
   rules: Array<{ title: string; body: string }>;
+  // Signature de l'atelier (2026-08-03)
+  builtEyebrow: string;
+  builtBy:      string;
+  builtLead:    string;
+  builtCta:     string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -146,6 +151,10 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
         body: 'Toutes les pièces se déplacent en ligne droite, comme une tour. Une pièce prise entre deux pièces adverses est capturée.',
       },
     ],
+    builtEyebrow: 'L\u2019atelier',
+    builtBy: 'Jeu développé par Le Salon des Inconnus',
+    builtLead: 'Le plateau, les pièces et le code viennent de l\u2019atelier du Salon des Inconnus, à Namur. Vous pouvez aussi emporter le jeu chez vous : il se télécharge dans la section outils.',
+    builtCta: 'Les outils du Salon',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -198,6 +207,10 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
         body: 'Every piece moves in a straight line, like a rook. A piece caught between two enemy pieces is captured.',
       },
     ],
+    builtEyebrow: 'The workshop',
+    builtBy: 'Game built by Le Salon des Inconnus',
+    builtLead: 'The board, the pieces and the code all come from the Salon des Inconnus workshop in Namur. You can also take the game home: it downloads from the tools section.',
+    builtCta: 'The Salon\u2019s tools',
   },
 };
 
@@ -925,6 +938,49 @@ const HnefataflPage: React.FC = () => {
               );
             })}
           </Stagger>
+        </div>
+      </section>
+
+      {/* ── Signature de l'atelier ──────────────────────────────── */}
+      {/* Le jeu est bâti par Le Salon des Inconnus, et il se télécharge
+          aussi chez eux. Lien vérifié : /outils et /tools mènent tous
+          deux à la vue « outils » du site du Salon. */}
+      <section className="relative pb-20 md:pb-28">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal>
+            <div
+              className="rounded-card border border-brass/25 px-6 py-8 md:px-10 md:py-9 flex flex-col md:flex-row md:items-center gap-6 md:gap-9"
+              style={{ background: 'rgba(10, 4, 6, 0.5)' }}
+            >
+              <img
+                src="/salon/salon-logo.png"
+                alt=""
+                aria-hidden
+                loading="lazy"
+                className="h-14 md:h-16 w-auto shrink-0 self-start md:self-center opacity-90"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-2">
+                  {s.builtEyebrow}
+                </p>
+                <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory leading-snug mb-2.5">
+                  {s.builtBy}
+                </h3>
+                <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-relaxed">
+                  {s.builtLead}
+                </p>
+              </div>
+              <a
+                href="https://www.lesalondesinconnus.com/outils"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 inline-flex items-center justify-center gap-2.5 px-6 py-3.5 min-h-[48px] rounded-card border border-brass/45 text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[11px] md:text-xs uppercase tracking-[0.2em]"
+              >
+                <Download size={14} />
+                {s.builtCta}
+              </a>
+            </div>
+          </Reveal>
         </div>
       </section>
     </>
