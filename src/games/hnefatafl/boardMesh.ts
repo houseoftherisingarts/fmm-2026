@@ -196,8 +196,26 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
 
       // Accordeur dev : régler échelle / hauteur / rotation à l'écran,
       // reporter les valeurs dans les constantes GLB_*, puis figer.
+      // ⚠️ StrictMode monte le jeu deux fois : deux buildBoard, deux
+      // callbacks de chargement, et l'accordeur du montage MORT peut
+      // écraser celui du vivant (course des parses GLB). D'où un
+      // TABLEAU : on accorde tous les modèles, la scène fantôme ne
+      // rend rien de toute façon.
       if (import.meta.env.DEV) {
-        (window as unknown as Record<string, unknown>).__hnefBoard = {
+        const w = window as unknown as Record<string, unknown>;
+        const tuners = (w.__hnefBoards as unknown[]) ?? [];
+        w.__hnefBoards = tuners;
+        w.__hnefBoard = {
+          tune: (scale: number, y: number, rotY = 0) => {
+            for (const t of tuners) (t as { tune: (s: number, y: number, r: number) => void }).tune(scale, y, rotY);
+            return { scale, y, rotY, models: tuners.length };
+          },
+          showProc: (on: boolean) => {
+            for (const t of tuners) (t as { showProc: (o: boolean) => void }).showProc(on);
+          },
+          census: () => tuners.map((t) => (t as { census: () => unknown }).census()),
+        };
+        tuners.push({
           tune: (scale: number, y: number, rotY = 0) => {
             model.scale.setScalar(scale);
             model.position.y = y;
