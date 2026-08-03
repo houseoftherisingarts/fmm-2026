@@ -499,6 +499,10 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
             </motion.div>
           )}
 
+          {/* Le chant, en bas à gauche : le pendant du « Passer l'intro ».
+              Masqué pendant le film, qui porte déjà son propre son. */}
+          <IntroChant visible={phase !== 'video'} silver={SILVER} fontAlt={fontAlt} />
+
           {/* Skip intro */}
           <button
             onClick={enterSite}
