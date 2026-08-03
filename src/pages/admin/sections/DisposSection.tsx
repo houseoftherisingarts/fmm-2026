@@ -481,8 +481,11 @@ const PollEditor: React.FC<{
               <div key={opt.id} className="flex items-center gap-2">
                 <Input value={opt.label} onChange={(e) => setOptionLabel(opt.id, e.target.value)}
                   placeholder={`Option ${i + 1} : ex. « Jeudi soir »`} className="flex-1" />
-                <Input type="date" value={opt.dateISO || ''} onChange={(e) => setOptionDate(opt.id, e.target.value)}
-                  className="w-40" />
+                {/* .admin-input impose width:100% : la largeur se
+                    contraint par un wrapper, pas par w-40 sur l'input. */}
+                <div className="w-40 shrink-0">
+                  <Input type="date" value={opt.dateISO || ''} onChange={(e) => setOptionDate(opt.id, e.target.value)} />
+                </div>
                 <button type="button" onClick={() => removeOption(opt.id)}
                   disabled={options.length <= 1}
                   className="p-2 rounded-card text-ivory-soft hover:text-blush hover:bg-blush/10 transition disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
