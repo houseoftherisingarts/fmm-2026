@@ -231,7 +231,7 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
           },
           showProc: (on: boolean) => {
             for (const c of cosmetics) c.visible = on;
-            for (const m of tileMats) m.opacity = on ? 1 : 0;
+            for (const m of tileMats) { m.opacity = on ? 1 : 0; m.needsUpdate = true; }
           },
           census: () => {
             const sc = group.parent as THREE.Scene | null;
