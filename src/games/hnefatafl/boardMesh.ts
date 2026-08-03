@@ -168,6 +168,37 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
     cosmetics.push(ray);
   }
 
+  // ── Le blason du festival, peint sur le champ ───────────────────
+  // Un décalque du chevalier, à peine plus clair que le noyer, posé au
+  // centre. Il doit se deviner, pas se voir : le plateau sculpté reste
+  // la vedette. MeshPhong (et non Basic) pour que la peinture prenne
+  // la lumière des torches et s'assombrisse dans l'ombre, comme une
+  // vraie dorure usée. Sous la surbrillance (0.16) pour ne jamais
+  // masquer les cases jouables.
+  {
+    const decalGeo = new THREE.PlaneGeometry(DECAL_H * DECAL_RATIO, DECAL_H);
+    const decalMat = new THREE.MeshPhongMaterial({
+      color: 0xd8bd82,
+      transparent: true,
+      opacity: 0.26,
+      depthWrite: false,
+      shininess: 8,
+    });
+    const decal = new THREE.Mesh(decalGeo, decalMat);
+    decal.rotation.x = -Math.PI / 2;
+    decal.position.set(0, 0.13, 0);
+    decal.renderOrder = 1;
+    group.add(decal);
+    cosmetics.push(decal);
+
+    new THREE.TextureLoader().load(DECAL_URL, (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 8;
+      decalMat.map = tex;
+      decalMat.needsUpdate = true;
+    });
+  }
+
   // ── Le plateau sculpté de Meshy, par-dessus ─────────────────────
   const draco = new DRACOLoader();
   draco.setDecoderPath('/draco/');
