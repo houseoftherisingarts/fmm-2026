@@ -1239,21 +1239,17 @@ const OrbHomePage: React.FC = () => {
                   // the under-orb blurb (duplicate Zeffy link + film button) is
                   // dropped here to avoid competing buttons.
                   presale ? null : (
-                  <div className="flex flex-col items-center gap-2.5">
-                    <a
-                      href={ticketUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[11px] md:text-xs tracking-[0.35em] text-[var(--color-amber-glow)] hover:text-ivory transition-colors"
-                    >
-                      <span aria-hidden className="text-base translate-y-[-1px]">⚔</span>
-                      <span>{lang === 'FR' ? 'Acheter mes billets sur Zeffy' : 'Buy tickets on Zeffy'}</span>
-                      <span aria-hidden className="opacity-60 group-hover:translate-x-1 transition-transform">→</span>
-                    </a>
+                  // Un SEUL appel « acheter mes billets » sur l'accueil.
+                  // Le lien Zeffy vivait aussi ici, en double avec le
+                  // grand bouton de la colonne de gauche (qui porte déjà
+                  // la même action, et que le clic sur l'orbe déclenche).
+                  // Retiré le 2026-08-03 : ce panneau ne garde que le
+                  // film, il a maintenant un seul rôle.
+                  <div className="flex flex-col items-center">
                     <button
                       type="button"
                       onClick={() => setShowFilm(true)}
-                      className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[10px] md:text-[11px] tracking-[0.3em] text-ivory-soft hover:text-ivory transition-colors"
+                      className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[11px] md:text-xs tracking-[0.3em] text-ivory-soft hover:text-ivory transition-colors"
                     >
                       <span aria-hidden className="translate-y-[-1px]">▶</span>
                       <span>{lang === 'FR' ? 'Voir le film 2026' : 'Watch the 2026 film'}</span>
