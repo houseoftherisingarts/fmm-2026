@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight, Ticket, Tent } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
-import { Eyebrow, DisplayTitle, HexPanel, SectionFog, SectionTopRail } from '../components/marche/atmospherics';
-import { useTilt, useSpotlight } from '../components/marche/effects';
+import { Eyebrow, DisplayTitle, SectionFog, SectionTopRail } from '../components/marche/atmospherics';
 import {
   BILLETS, displayAmount, formatAmount, showBeforeTax, type Billet,
 } from '../content/billets';
@@ -101,7 +100,7 @@ const Section: React.FC<{
 const Deck: React.FC<{
   billets: Billet[]; lang: 'FR' | 'EN'; t: typeof FR; href: string;
 }> = ({ billets, lang, t, href }) => (
-  <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7 items-stretch">
+  <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 items-stretch">
     {billets.map((b, i) => (
       <li key={b.id} className="min-w-0">
         <Carte billet={b} lang={lang} t={t} href={href} index={i} />
@@ -114,122 +113,173 @@ const Carte: React.FC<{
   billet: Billet; lang: 'FR' | 'EN'; t: typeof FR; href: string; index: number;
 }> = ({ billet, lang, t, href, index }) => {
   const fr = lang === 'FR';
-  const tilt = useTilt(6);
-  const spot = useSpotlight('rgba(232, 177, 74, 0.20)', 300);
-  const [hover, setHover] = useState(false);
+  const [flipped, setFlipped] = useState(false);
+  const reduce = useReducedMotion();
+
+  const nom  = fr ? billet.labelFR : billet.labelEN;
+  const note = fr ? billet.noteFR  : billet.noteEN;
 
   return (
-    <motion.a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 22 }}
+    <motion.div
+      initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.55, delay: 0.05 * index, ease: [0.22, 1, 0.36, 1] }}
-      className="group block h-full"
-      style={{ perspective: 1400 }}
-      onMouseMove={(e) => { tilt.onMove(e); spot.onMove(e); }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => { tilt.onLeave(); spot.onLeave(); setHover(false); }}
-      ref={tilt.ref as React.Ref<HTMLAnchorElement>}
+      transition={{ duration: 0.55, delay: 0.06 * index, ease: [0.22, 1, 0.36, 1] }}
+      className="group"
+      style={{ perspective: 1600 }}
     >
-      <motion.div
-        style={{ rotateX: tilt.rx, rotateY: tilt.ry, transformStyle: 'preserve-3d' }}
-        className="h-full"
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={flipped}
+        aria-label={`${nom} — ${flipped ? t.retourner : t.devoiler}`}
+        onClick={() => setFlipped((v) => !v)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped((v) => !v); }
+        }}
+        className="gwent-card cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#D8B05A]/70 rounded"
+        style={{ transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transitionDuration: reduce ? '0.15s' : undefined }}
       >
-        <HexPanel size="md" active={billet.vedette} className={billet.vedette ? 'fmm-shimmer h-full' : 'h-full'}>
-          <div
-            className="relative h-full flex flex-col p-7 md:p-8 overflow-hidden"
-            style={{
-              background: billet.vedette
-                ? 'linear-gradient(165deg, rgba(60,22,14,0.75) 0%, rgba(26,5,11,0.9) 60%)'
-                : 'rgba(26, 5, 11, 0.6)',
-              minHeight: 260,
-            }}
+        {/* ── DOS : l'emblème et le nom, rien d'autre ─────────── */}
+        <div
+          className="gwent-face gwent-back gwent-sheen flex flex-col items-center justify-between p-6 text-center"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 50% at 50% 32%, rgba(96,38,20,0.55) 0%, transparent 62%),' +
+              'linear-gradient(168deg, #24080f 0%, #14040a 55%, #0a0207 100%)',
+          }}
+        >
+          <span className="gwent-stud" style={{ top: 10, left: 10 }} aria-hidden />
+          <span className="gwent-stud" style={{ top: 10, right: 10 }} aria-hidden />
+          <span className="gwent-stud" style={{ bottom: 10, left: 10 }} aria-hidden />
+          <span className="gwent-stud" style={{ bottom: 10, right: 10 }} aria-hidden />
+
+          <p
+            className="font-sans uppercase tracking-[0.4em] text-[9px] pt-1"
+            style={{ color: 'rgba(216,176,90,0.6)' }}
           >
-            {/* Halo qui suit le curseur */}
-            <motion.span
-              aria-hidden
-              className="absolute inset-0 pointer-events-none"
-              style={{ background: spot.background, mixBlendMode: 'screen' }}
-            />
+            {t.eyebrowCarte}
+          </p>
 
-            {billet.vedette && (
-              <span
-                className="absolute top-0 right-0 px-3 py-1 font-sans uppercase tracking-[0.3em] text-[9px]"
-                style={{
-                  color: '#1a050b',
-                  background: 'linear-gradient(180deg, #E8C87A, #C79E4A)',
-                  clipPath: 'polygon(14px 0, 100% 0, 100% 100%, 0 100%)',
-                }}
-              >
-                {t.favori}
-              </span>
-            )}
+          <img
+            src="/fmm-crest-chrome.webp"
+            alt=""
+            aria-hidden
+            loading="lazy"
+            decoding="async"
+            className="w-[52%] max-w-[130px] opacity-90"
+            style={{ filter: 'drop-shadow(0 6px 22px rgba(0,0,0,0.8)) sepia(0.35) saturate(1.5) hue-rotate(-12deg)' }}
+          />
 
-            <div className="relative flex-1">
-              <p
-                className="font-sans uppercase tracking-[0.28em] text-[10px] mb-3"
-                style={{ color: 'rgba(244,239,227,0.45)' }}
-              >
-                {fr ? billet.noteFR : billet.noteEN}
-              </p>
-
-              <h3
-                className="font-display leading-[1.1] text-xl md:text-2xl mb-4 line-clamp-2"
-                style={{ color: 'var(--color-bone)', fontWeight: 400 }}
-              >
-                {fr ? billet.labelFR : billet.labelEN}
-              </h3>
-
-              <div className="flex items-baseline gap-2 mb-4">
-                <span
-                  className="font-display leading-none"
-                  style={{
-                    color: '#E8C87A',
-                    fontSize: 'clamp(2rem, 3.4vw, 2.9rem)',
-                    fontWeight: 400,
-                    textShadow: '0 0 28px rgba(232,200,122,0.35)',
-                  }}
-                >
-                  {formatAmount(displayAmount(billet), lang)}
-                </span>
-                <span
-                  className="font-sans uppercase tracking-[0.22em] text-[10px]"
-                  style={{ color: 'rgba(244,239,227,0.45)' }}
-                >
-                  {showBeforeTax ? t.avantTaxes : t.taxesIncluses}
-                </span>
-              </div>
-
-              <p
-                className="font-sans text-sm leading-[1.7]"
-                style={{ color: 'rgba(244, 239, 227, 0.7)', fontWeight: 300 }}
-              >
-                {fr ? billet.descFR : billet.descEN}
-              </p>
-            </div>
-
-            <span
-              className="relative mt-6 inline-flex items-center gap-2.5 font-sans uppercase tracking-[0.28em] text-[10px] transition-colors"
-              style={{ color: hover ? '#E8C87A' : 'rgba(244,239,227,0.6)' }}
+          <div className="w-full">
+            <span aria-hidden className="block h-px w-2/3 mx-auto mb-3"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(216,176,90,0.6), transparent)' }} />
+            <h3
+              className="font-display leading-[1.15] text-lg md:text-xl mb-1.5"
+              style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
             >
-              {t.choisir}
-              <ArrowUpRight
-                size={13}
-                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              />
-              <span
-                aria-hidden
-                className="inline-block h-px transition-all"
-                style={{ width: hover ? 46 : 22, background: 'currentColor' }}
-              />
+              {nom}
+            </h3>
+            {note && (
+              <p className="font-sans uppercase tracking-[0.22em] text-[9px]"
+                 style={{ color: 'rgba(244,239,227,0.42)' }}>
+                {note}
+              </p>
+            )}
+            <p className="font-sans uppercase tracking-[0.3em] text-[9px] mt-4"
+               style={{ color: 'rgba(216,176,90,0.75)' }}>
+              {t.devoiler}
+            </p>
+          </div>
+        </div>
+
+        {/* ── RECTO : le détail, révélé au clic ────────────────── */}
+        <div
+          className="gwent-face gwent-front flex flex-col p-6 md:p-7"
+          style={{
+            background:
+              'radial-gradient(ellipse 80% 55% at 50% 0%, rgba(120,52,22,0.5) 0%, transparent 60%),' +
+              'linear-gradient(170deg, #1e0710 0%, #12040a 60%, #0a0207 100%)',
+          }}
+        >
+          <span className="gwent-stud" style={{ top: 10, left: 10 }} aria-hidden />
+          <span className="gwent-stud" style={{ top: 10, right: 10 }} aria-hidden />
+          <span className="gwent-stud" style={{ bottom: 10, left: 10 }} aria-hidden />
+          <span className="gwent-stud" style={{ bottom: 10, right: 10 }} aria-hidden />
+
+          {billet.vedette && (
+            <span
+              className="self-start px-2.5 py-1 mb-3 font-sans uppercase tracking-[0.28em] text-[8px]"
+              style={{
+                color: '#1a050b',
+                background: 'linear-gradient(180deg, #E8C87A, #C79E4A)',
+                clipPath: 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
+              }}
+            >
+              {t.favori}
+            </span>
+          )}
+
+          <h3
+            className="font-display leading-[1.15] text-lg md:text-xl mb-3"
+            style={{ color: 'var(--color-bone)', fontWeight: 400 }}
+          >
+            {nom}
+          </h3>
+
+          <div className="mb-4">
+            <span
+              className="font-display leading-none block"
+              style={{
+                color: '#E8C87A',
+                fontSize: 'clamp(1.9rem, 2.6vw, 2.5rem)',
+                fontWeight: 400,
+                textShadow: '0 0 26px rgba(232,200,122,0.4)',
+              }}
+            >
+              {formatAmount(displayAmount(billet), lang)}
+            </span>
+            <span
+              className="font-sans uppercase tracking-[0.24em] text-[9px]"
+              style={{ color: 'rgba(244,239,227,0.45)' }}
+            >
+              {showBeforeTax ? t.avantTaxes : t.taxesIncluses}
             </span>
           </div>
-        </HexPanel>
-      </motion.div>
-    </motion.a>
+
+          <p
+            className="font-sans text-[13px] leading-[1.65] flex-1"
+            style={{ color: 'rgba(244, 239, 227, 0.72)', fontWeight: 300 }}
+          >
+            {fr ? billet.descFR : billet.descEN}
+          </p>
+
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 font-sans uppercase tracking-[0.26em] text-[10px] transition-transform hover:scale-[1.02]"
+            style={{
+              color: '#1a050b',
+              background: 'linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%)',
+              clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
+            }}
+          >
+            {t.choisir} <ArrowUpRight size={12} />
+          </a>
+
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
+            className="mt-2.5 font-sans uppercase tracking-[0.26em] text-[9px] opacity-55 hover:opacity-100 transition"
+            style={{ color: 'rgba(244,239,227,0.8)' }}
+          >
+            {t.retourner}
+          </button>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
@@ -244,6 +294,9 @@ const FR = {
   campingTitle: 'Dormir sur place',
   campingLead:  'Un emplacement sur le terrain du festival, pour se réveiller au son des forges.',
   favori:  'Le plus pris',
+  eyebrowCarte: 'Billet',
+  devoiler: 'Toucher pour dévoiler',
+  retourner: 'Retourner la carte',
   choisir: 'Choisir ce billet',
   avantTaxes:    'avant taxes',
   taxesIncluses: 'taxes comprises',
@@ -262,6 +315,9 @@ const EN: typeof FR = {
   campingTitle: 'Sleep on site',
   campingLead:  'A pitch on the festival grounds, to wake up to the sound of the forges.',
   favori:  'Most chosen',
+  eyebrowCarte: 'Ticket',
+  devoiler: 'Tap to reveal',
+  retourner: 'Flip back',
   choisir: 'Choose this ticket',
   avantTaxes:    'before tax',
   taxesIncluses: 'tax included',

@@ -1566,3 +1566,51 @@ body.fmm-caravan-page .fmm-fire-backdrop,
 }
 select.witcher-input { cursor: pointer; }
 select.witcher-input option { background: #1a050b; color: #F4EFE3; }
+
+/* ── Cartes de billet, registre Gwent ──────────────────────────────
+   Format tarot (2:3), dos ouvragé, recto au retournement. Le cadre
+   imite une plaque de métal battu : double filet de laiton, coins
+   ferrés, léger reflet en diagonale. Posé 2026-08-03. */
+.gwent-card {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  transform-style: preserve-3d;
+  transition: transform .75s cubic-bezier(.22,1,.36,1);
+}
+.gwent-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  border-radius: 4px;
+  /* Plaque de métal : double filet, chaud à l'intérieur, sombre dehors */
+  box-shadow:
+    inset 0 0 0 1px rgba(216,176,90,0.55),
+    inset 0 0 0 5px rgba(10,2,7,0.92),
+    inset 0 0 0 6px rgba(216,176,90,0.30),
+    0 18px 42px -14px rgba(0,0,0,0.9);
+}
+.gwent-back { transform: rotateY(0deg); }
+.gwent-front { transform: rotateY(180deg); }
+
+/* Reflet diagonal qui balaie la plaque au survol */
+.gwent-sheen::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,232,180,0.16) 50%, transparent 58%);
+  transform: translateX(-60%);
+  transition: transform .9s ease;
+  pointer-events: none;
+}
+.group:hover .gwent-sheen::after { transform: translateX(60%); }
+
+/* Coins ferrés : quatre clous de laiton */
+.gwent-stud {
+  position: absolute;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #E8C87A 0%, #A9853C 55%, #4a3617 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.35);
+}
