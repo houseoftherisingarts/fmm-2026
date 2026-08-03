@@ -222,6 +222,8 @@ service cloud.firestore {
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
     // Team availability polls (Disponibilités : Doodle interne).
     match /teamPolls/{docId}   { allow read, write: if isAdmin(); }
+    // Invités : liste des entrées gratuites tenue pour la porte.
+    match /guestList/{docId}   { allow read, write: if isAdmin(); }
 
     // ── Public-create, admin-managed inquiry collections ─────────
     // Inquiry / newsletter / contact / behourd forms. Allow create
