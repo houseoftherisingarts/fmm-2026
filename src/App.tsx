@@ -190,9 +190,11 @@ const isImmersive = (pathname: string) =>
   || pathname === '/en'
   || pathname === '/labo-titre'
   || pathname === '/backuppage'
-  || pathname === '/en/backuppage'
-  || pathname === '/jeunesse/hnefatafl'
-  || pathname === '/en/youth/hnefatafl';
+  || pathname === '/en/backuppage';
+// Hnefatafl a quitté cette liste le 2026-08-03 : le jeu vivait dans un
+// noir absolu, sans barre de navigation ni pied de page, avec sa propre
+// palette. Il est maintenant une vraie page du site (en-tête, brumes,
+// laiton, typographie Cinzel) et le plateau tient dans une scène cadrée.
 
 // ─── ScrollToTop ────────────────────────────────────────────────────
 // React Router ne réinitialise pas le défilement en changeant de route :

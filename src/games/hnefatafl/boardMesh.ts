@@ -50,7 +50,7 @@ const GLB_ROT_Y = 0;
 // 512x626) : le blanc laisse la teinte au matériau. Hauteur en cases,
 // ratio largeur/hauteur mesuré sur l'image.
 const DECAL_URL   = '/fmm-logo-decal.png';
-const DECAL_H     = 5.4;
+const DECAL_H     = 7.4;
 const DECAL_RATIO = 512 / 626;
 
 // ── Palette du festival ───────────────────────────────────────────
@@ -188,7 +188,7 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
     const decalMat = new THREE.MeshPhongMaterial({
       color: 0xd8bd82,
       transparent: true,
-      opacity: 0.26,
+      opacity: 0.36,
       depthWrite: false,
       shininess: 8,
     });
