@@ -19,8 +19,11 @@ const ACCENTS = [
   'var(--color-amber-glow)',
 ];
 
-// Tarot-spread progress nav. Cards sit face-down (rotated, dimmed) until
-// their chapter is reached or completed; current card lifts and glows.
+// Tarot-spread progress nav. Toutes les cartes sont cliquables : on
+// circule librement dans le formulaire pour relire ou corriger. Ce qui
+// reste verrouillé, c'est l'envoi (VendorQuestForm exige les quatre
+// chapitres complets), pas la circulation. Les cartes non complétées
+// restent désaturées pour qu'on voie d'un coup d'œil ce qui manque.
 export const JourneyPath: React.FC<Props> = ({ chapter, completed, onJump, labels }) => {
   const reduce = useReducedMotion();
 
@@ -31,9 +34,6 @@ export const JourneyPath: React.FC<Props> = ({ chapter, completed, onJump, label
           const id = i + 1;
           const isCurrent  = chapter === id;
           const isComplete = completed.includes(id);
-          const reachable  =
-            id <= chapter ||
-            GLYPHS.slice(0, id - 1).every((_, k) => completed.includes(k + 1));
 
           // Resting tilt for stack-of-cards feel; current card stands up.
           const restRot = (id - 3) * 4;       // -8 / -4 / 0 / 4 / 8 deg
@@ -49,13 +49,12 @@ export const JourneyPath: React.FC<Props> = ({ chapter, completed, onJump, label
             >
               <motion.button
                 type="button"
-                disabled={!reachable}
-                onClick={() => reachable && onJump(id)}
-                whileHover={reachable && !isCurrent ? { y: -6, scale: 1.04 } : undefined}
-                whileTap={reachable ? { scale: 0.97 } : undefined}
+                onClick={() => onJump(id)}
+                whileHover={!isCurrent ? { y: -6, scale: 1.04 } : undefined}
+                whileTap={{ scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 360, damping: 22 }}
                 className={`relative cursor-pointer transition-opacity ${
-                  reachable ? 'opacity-100' : 'opacity-40 cursor-not-allowed'
+                  isCurrent || isComplete ? 'opacity-100' : 'opacity-65 hover:opacity-90'
                 }`}
                 aria-current={isCurrent ? 'step' : undefined}
                 aria-label={labels[i] || `Chapitre ${id}`}

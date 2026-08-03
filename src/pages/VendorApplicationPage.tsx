@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, LogIn, ShoppingBag, Calendar } from 'lucide-react';
@@ -36,6 +36,16 @@ const VendorApplicationPage: React.FC = () => {
   // Three-step flow: Overture → Auth gate → Form. Overture is always shown
   // first so newcomers must read the rules before being asked to sign in.
   const [overtureClosed, setOvertureClosed] = useState(false);
+
+  const wellRef = useRef<HTMLDivElement | null>(null);
+  const focusWell = () => {
+    requestAnimationFrame(() => {
+      const el = wellRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    });
+  };
 
   const titleWords = t.title.split(' ');
 
@@ -110,17 +120,25 @@ const VendorApplicationPage: React.FC = () => {
         </div>
 
         {/* ── Form well: Overture → Auth → Form ─────────────────────── */}
-        <div className="relative z-10 w-full px-4 md:px-8 mt-14 stage-3d">
+        {/* L'ouverture est très haute; la carte de connexion et le
+            formulaire le sont beaucoup moins. En passant de l'une à
+            l'autre la page rétrécissait sous le curseur de défilement et
+            le visiteur atterrissait dans le pied de page. On recale la
+            vue sur le puits à chaque bascule. */}
+        <div ref={wellRef} className="relative z-10 w-full px-4 md:px-8 mt-14 stage-3d">
           {!overtureClosed ? (
             <OvertureScroll
               lang={lang}
               reduceMotion={!!reduceMotion}
-              onEnter={() => setOvertureClosed(true)}
+              onEnter={() => { setOvertureClosed(true); focusWell(); }}
             />
           ) : !user ? (
             <SignedOutCard onSignIn={openSignIn} t={t} />
           ) : (
-            <VendorQuestForm onReopenOverture={() => setOvertureClosed(false)} year={targetYear} />
+            <VendorQuestForm
+              onReopenOverture={() => { setOvertureClosed(false); focusWell(); }}
+              year={targetYear}
+            />
           )}
         </div>
 
