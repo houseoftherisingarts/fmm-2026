@@ -28,6 +28,7 @@ export type AdminSectionId =
   | 'dispos'
   | 'mariages'
   | 'comptes'
+  | 'invites'
   | 'messages'
   | 'newsletter'
   | 'social'
