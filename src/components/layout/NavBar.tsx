@@ -91,6 +91,10 @@ const ctaVariants = {
 // The full-screen drawer keeps the pillar list it already had, but
 // the surface is now the caravan stage with drifting fog instead of a
 // sterile sheet.
+// Link anime : le bouton Billets mene desormais a notre page de
+// cartes, une route interne, donc plus d'ancre ni de nouvel onglet.
+const MotionLink = motion(Link);
+
 const NavBar: React.FC = () => {
   const { lang, setLang, mobileMenuOpen, setMobileMenuOpen } = useUI();
   const { flags } = useSiteFlags();
@@ -125,7 +129,9 @@ const NavBar: React.FC = () => {
     navigate(addLocale(frPath, next), { replace: true });
   };
 
-  const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
+  // La billetterie passe par notre page de cartes, qui presente les
+  // formules et renvoie ensuite vers Zeffy. Publiee le 2026-08-03.
+  const ticketUrl = addLocale('/billets', lang);
 
   return (
     <>
@@ -162,10 +168,8 @@ const NavBar: React.FC = () => {
           {/* ── Right cluster ─────────────────────────────── */}
           <div className="flex items-center gap-2 md:gap-2.5 shrink-0">
             {/* Primary CTA — Tickets, always visible on desktop */}
-            <a
-              href={ticketUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to={ticketUrl}
               className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 font-sans uppercase tracking-[0.28em] text-[10px] font-semibold transition-all hover:scale-[1.03]"
               style={{
                 color: 'var(--color-velvet-deep)',
@@ -177,7 +181,7 @@ const NavBar: React.FC = () => {
               }}
             >
               {lang === 'FR' ? 'Billets' : 'Tickets'}
-            </a>
+            </Link>
 
             {/* Segmented FR/EN toggle — lifted from SiteHeader */}
             <div
@@ -469,13 +473,11 @@ const NavBar: React.FC = () => {
 
               {/* CTA — copper/gold gradient fill (the 20% accent moment).
                   Pops in last with a back-ease overshoot. */}
-              <motion.a
+              <MotionLink
                 variants={ctaVariants}
                 initial="hidden"
                 animate="shown"
-                href={ticketUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                to={ticketUrl}
                 className="group relative inline-flex items-center gap-3 px-8 py-3.5 font-sans uppercase tracking-[0.28em] text-[11px] font-semibold overflow-hidden"
                 style={{
                   color: 'var(--color-velvet-deep)',
@@ -488,7 +490,7 @@ const NavBar: React.FC = () => {
               >
                 {lang === 'FR' ? 'Acheter mes billets' : 'Get my tickets'}
                 <span aria-hidden className="inline-block w-4 h-px bg-[var(--color-velvet-deep)] transition-all group-hover:w-8" />
-              </motion.a>
+              </MotionLink>
             </nav>
           </motion.div>
         )}

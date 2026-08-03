@@ -247,11 +247,22 @@ const Carte: React.FC<{
               {formatAmount(displayAmount(billet), lang)}
             </span>
             <span
-              className="font-sans uppercase tracking-[0.24em] text-[9px]"
+              className="font-sans uppercase tracking-[0.24em] text-[9px] block"
               style={{ color: 'rgba(244,239,227,0.45)' }}
             >
               {showBeforeTax ? t.avantTaxes : t.taxesIncluses}
             </span>
+            {/* Le montant reellement debite. Afficher le hors-taxes seul
+                surprendrait l'acheteur au paiement, et la Loi sur la
+                protection du consommateur veut le tout-inclus visible. */}
+            {showBeforeTax && (
+              <span
+                className="font-sans text-[10px] block mt-1.5"
+                style={{ color: 'rgba(244,239,227,0.38)', fontWeight: 300 }}
+              >
+                {formatAmount(billet.zeffyAmount, lang)} {t.auPaiement}
+              </span>
+            )}
           </div>
 
           <p
@@ -305,6 +316,7 @@ const FR = {
   retourner: 'Retourner la carte',
   choisir: 'Choisir ce billet',
   avantTaxes:    'avant taxes',
+  auPaiement:    'taxes comprises au paiement',
   taxesIncluses: 'taxes comprises',
   taxNote:     'Les prix affichés ici sont avant taxes. Les taxes s’ajoutent au moment du paiement sur Zeffy, notre billetterie. Zeffy ne prélève aucune commission : la totalité de votre achat revient au festival.',
   taxNoteIncl: 'Les prix affichés ici sont ceux du paiement, taxes comprises. Zeffy ne prélève aucune commission : la totalité de votre achat revient au festival.',
@@ -325,6 +337,7 @@ const EN: typeof FR = {
   retourner: 'Flip back',
   choisir: 'Choose this ticket',
   avantTaxes:    'before tax',
+  auPaiement:    'tax included at checkout',
   taxesIncluses: 'tax included',
   taxNote:     'Prices shown here are before tax. Taxes are added at checkout on Zeffy, our ticketing platform. Zeffy takes no commission: the whole of your purchase goes to the festival.',
   taxNoteIncl: 'Prices shown here are checkout prices, tax included. Zeffy takes no commission: the whole of your purchase goes to the festival.',

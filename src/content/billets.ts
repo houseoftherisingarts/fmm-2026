@@ -7,14 +7,15 @@
 // Rien n'est inventé ici. Si un prix change sur Zeffy, il faut le
 // changer ici aussi : les deux ne sont pas synchronisés.
 //
-// 🚨 `zeffyAmount` = le montant affiché PAR Zeffy.
-// `showBeforeTax` décide de ce que la carte montre :
-//   true  -> le montant hors taxes, calculé à partir du montant Zeffy
+// `zeffyAmount` = le montant affiché par Zeffy, TAXES COMPRISES
+// (confirmé par Alex le 2026-08-03).
+// `showBeforeTax` décide du chiffre mis en avant sur la carte :
+//   true  -> le hors-taxes, calculé à partir du montant Zeffy
 //   false -> le montant Zeffy tel quel
-// Alex veut le prix avant taxes sur les cartes, Zeffy affichant le prix
-// taxes comprises. À CONFIRMER avant mise en ligne : si les montants
-// Zeffy sont en réalité HORS taxes, il faut passer ce drapeau à false,
-// sinon les cartes annonceraient un prix plus bas que la réalité.
+// Dans les deux cas la carte affiche AUSSI le montant réellement
+// débité, en petit sous le prix : afficher le hors-taxes seul
+// surprendrait l'acheteur au paiement, et la Loi sur la protection du
+// consommateur du Québec veut le tout-inclus visible.
 
 export const TPS = 0.05;
 export const TVQ = 0.09975;
