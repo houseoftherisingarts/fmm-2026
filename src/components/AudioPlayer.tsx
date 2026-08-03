@@ -4,19 +4,18 @@ import { useUI } from '../contexts/AppContext';
 import { UI } from '../content';
 
 // Musique d'ambiance du thème « Caravanes et Saltimbanques ».
-// Piste : Carnivale Intrigue de Kevin MacLeod, CC BY (incompetech.com),
-// hébergée dans /public/audio et jouée en boucle par le lecteur
+// Piste : Master of the Feast de Kevin MacLeod, CC BY
+// (incompetech.com), choisie à l'oreille par Alex parmi six candidates.
+// Hébergée dans /public/audio et jouée en boucle par le lecteur
 // ci-dessous (VITE_AUDIO_TRACK_URL). Le crédit visible vit dans le
 // titre du chip; détail licence : public/audio/CREDITS.txt.
 //
 // 🚨 Le mot « gypsy » est banni du site (demande d'Alex, 2026-08-03) :
 // il est tenu pour offensant. Ne pas le réintroduire dans un titre de
 // piste, un nom de fichier, une recherche ni une copie publique.
-//
-// Cinq autres pistes du même compositeur attendent dans
-// public/audio/candidats/ le temps qu'Alex tranche à l'oreille.
+
 const REPLI_LINK  = 'https://incompetech.com/music/royalty-free/music.html';
-const REPLI_TITLE = 'Carnivale Intrigue · Kevin MacLeod';
+const REPLI_TITLE = 'Master of the Feast · Kevin MacLeod';
 
 // Compact header audio chip. If `VITE_AUDIO_TRACK_URL` points to a
 // local audio file it becomes a real loop player; otherwise it links

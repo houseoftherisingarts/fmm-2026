@@ -1,9 +1,10 @@
-Carnivale Intrigue — Kevin MacLeod (incompetech.com)
+Master of the Feast — Kevin MacLeod (incompetech.com)
 Licence : Creative Commons By Attribution 4.0
 https://creativecommons.org/licenses/by/4.0/
-Utilisée comme musique d'ambiance du site FMM (lecteur d'en-tête).
 
-Candidats non retenus, gardés dans public/audio/candidats/ le temps
-qu'Alex tranche à l'oreille : Master of the Feast, Danse Morialta,
-Tafi Maradi, Bumba Crossing, Minstrel Guild. Tous du même compositeur,
-même licence.
+Musique d'ambiance du site FMM, jouée en boucle par le lecteur de
+l'en-tête. Choisie à l'oreille par Alex le 2026-08-03 parmi six pistes
+du même compositeur.
+
+L'attribution exigée par la licence est portée par le titre visible
+dans le chip du lecteur.
