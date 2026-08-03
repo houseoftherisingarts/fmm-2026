@@ -1,13 +1,23 @@
-// ─── Hnefatafl — playable 3D board, route entry point ───────────────
-// Full-screen game. Owns its own header strip; the global NavBar +
-// Footer are hidden for this route via the isImmersive() helper in
-// src/App.tsx.
+// ─── Hnefatafl — plateau 3D jouable, entrée de route ────────────────
+// Refondue le 2026-08-03 : c'était un jeu plein écran en noir absolu,
+// avec sa propre palette (jaune #FFD700), sa propre bande de titre et
+// aucun lien visuel avec le reste du site. C'est maintenant une PAGE
+// DU SITE comme les autres : PageHeader à orbe, brumes de la caravane,
+// typographie Cinzel, laiton, barre de navigation et pied de page.
+// Le plateau vit dans une scène cadrée (et non plus en 100vh), suivie
+// d'un rappel des règles. Toute couleur en dur a été remplacée par les
+// jetons du design system (--color-bone, --color-brass, etc).
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
+import { useCaravanPage } from '../../lib/useCaravanPage';
+import SEO from '../../components/SEO';
+import PageHeader from '../../components/layout/PageHeader';
+import { Reveal, Stagger, StaggerItem } from '../../components/scroll';
 import {
   applyMove,
   CELL,
@@ -83,19 +93,19 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     defendersMove: 'Tour des Défenseurs',
     raidersThinking: 'Les Raiders réfléchissent…',
     defendersThinking: 'Les Défenseurs réfléchissent…',
-    kingEscapes: '👑 Le Roi s\'échappe ! Victoire des Défenseurs',
-    kingFalls: '⚔️ Le Roi tombe ! Victoire des Raiders',
-    noMoves: (winner) => `Plus aucun coup — ${winner} l'emportent`,
+    kingEscapes: 'Le Roi s\'échappe. Victoire des Défenseurs',
+    kingFalls: 'Le Roi tombe. Victoire des Raiders',
+    noMoves: (winner) => `Plus aucun coup possible : ${winner} l'emportent`,
     defenders: 'les Défenseurs',
     raiders: 'les Raiders',
-    ending: 'LA SAGA SE TERMINE',
-    newSaga: '⚔ NOUVELLE SAGA',
+    ending: 'La saga se termine',
+    newSaga: 'Nouvelle saga',
     hint: 'Cliquez une pièce · Cliquez une case verte · Glissez pour pivoter',
     raidersDot: '● Raiders',
     defendersDot: '● Défenseurs',
     kingDot: '● Roi : atteindre un coin ★',
-    startTitle: 'PRÉPAREZ VOTRE SAGA',
-    startSubtitle: 'CHOISISSEZ VOTRE CAMP',
+    startTitle: 'Préparez votre saga',
+    startSubtitle: 'Choisissez votre camp',
     modeLabel: 'MODE',
     modeTwoPlayer: 'Deux joueurs',
     modeVsCpu: 'Contre l\'ordinateur',
@@ -106,7 +116,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     diffEasy: 'Facile',
     diffMedium: 'Intermédiaire',
     diffHard: 'Difficile',
-    begin: '⚔ COMMENCER',
+    begin: 'Commencer la partie',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -114,19 +124,19 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     defendersMove: 'Defenders move',
     raidersThinking: 'Raiders thinking…',
     defendersThinking: 'Defenders thinking…',
-    kingEscapes: '👑 The King has escaped! Defenders win!',
-    kingFalls: '⚔️ The King falls! Raiders win!',
-    noMoves: (winner) => `No moves left — ${winner} win!`,
+    kingEscapes: 'The King has escaped. Defenders win',
+    kingFalls: 'The King falls. Raiders win',
+    noMoves: (winner) => `No moves left: ${winner} win`,
     defenders: 'Defenders',
     raiders: 'Raiders',
-    ending: 'THE SAGA ENDS',
-    newSaga: '⚔ NEW SAGA',
+    ending: 'The saga ends',
+    newSaga: 'New saga',
     hint: 'Click piece · Click green to move · Drag to orbit',
     raidersDot: '● Raiders',
     defendersDot: '● Defenders',
     kingDot: '● King : reach a corner ★',
-    startTitle: 'PREPARE YOUR SAGA',
-    startSubtitle: 'CHOOSE YOUR SIDE',
+    startTitle: 'Prepare your saga',
+    startSubtitle: 'Choose your side',
     modeLabel: 'MODE',
     modeTwoPlayer: 'Two players',
     modeVsCpu: 'Against computer',
@@ -137,7 +147,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     diffEasy: 'Easy',
     diffMedium: 'Medium',
     diffHard: 'Hard',
-    begin: '⚔ BEGIN',
+    begin: 'Begin the game',
   },
 };
 
