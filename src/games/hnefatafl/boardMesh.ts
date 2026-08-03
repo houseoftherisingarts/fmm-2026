@@ -172,6 +172,9 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
   loader.load(
     GLB_URL,
     (gltf) => {
+      // StrictMode monte le jeu deux fois : le callback du montage MORT
+      // arrive quand même. On ne garde que le vivant.
+      if (isAlive && !isAlive()) return;
       const model = gltf.scene;
       model.rotation.x = GLB_ROT_X;
       model.rotation.y = GLB_ROT_Y;
