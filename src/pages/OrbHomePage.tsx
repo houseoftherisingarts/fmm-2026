@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
+import EmberCanvas from '../components/vendor/EmberCanvas';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSiteFlags } from '../contexts/SiteFlagsContext';
@@ -173,11 +174,14 @@ LiveCountdown.displayName = 'LiveCountdown';
 // the full MP4 — the flame fades in only after 3 s, so there's plenty
 // of time for the actual frames to stream in.
 const FireCanvas: React.FC = memo(() => {
-  const reduceMotion = useReducedMotion();
   const { lite } = usePerfTier();
   // Always-on mix-blend video, the single most repaint-heavy layer. On
   // budget machines we drop it; the brass ring + static glow carry the look.
-  if (reduceMotion || lite) return null;
+  // 🚨 On ne la coupe PLUS sur prefers-reduced-motion (décision d'Alex,
+  // 2026-08-02) : avec ce réglage l'accueil n'avait plus une flamme, et
+  // c'est l'image de marque du site. Le garde-fou `lite` reste, lui : il
+  // parle de performance machine, pas de confort de mouvement.
+  if (lite) return null;
   return (
     <video
       aria-hidden="true"
@@ -738,6 +742,8 @@ const OrbHomePage: React.FC = () => {
               here because it blends against the caravan + scrim
               siblings in this stacking context. */}
           <FireCanvas />
+          {/* Braises montantes, le même champ que sur les autres pages. */}
+          <EmberCanvas className="opacity-80" count={40} />
           <div
             className="orb-flame-glow absolute inset-x-0 bottom-0 h-[40%] pointer-events-none"
             aria-hidden="true"
@@ -1719,7 +1725,8 @@ const OrbHomePage: React.FC = () => {
             .orb-cool-scrim { animation: none !important; opacity: 0.5 !important; }
             .orb-scrim-green { animation: none !important; opacity: 1 !important; }
             .orb-scrim-blue  { animation: none !important; opacity: 0 !important; }
-            .orb-flame-canvas { animation: none !important; opacity: 0 !important; }
+            /* la flamme reste visible, seule sa montée en fondu est coupée */
+            .orb-flame-canvas { animation: none !important; opacity: 1 !important; }
             .orb-flame-glow   { animation: none !important; opacity: 1 !important; }
           }
         `}</style>

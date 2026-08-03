@@ -190,9 +190,9 @@ export const BubbleCanvas: React.FC<{
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
-
+    // Même décision que pour les braises : cet effet d'ambiance n'est
+    // plus coupé par prefers-reduced-motion. Il monte lentement, sans
+    // parallaxe ni détournement de défilement.
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
