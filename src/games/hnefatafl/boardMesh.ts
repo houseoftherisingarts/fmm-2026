@@ -236,7 +236,7 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
               modelScale: model.scale.x,
             };
           },
-        };
+        });
       }
     },
     undefined,
