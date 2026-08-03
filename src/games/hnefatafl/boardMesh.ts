@@ -206,9 +206,9 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
         const tuners = (w.__hnefBoards as unknown[]) ?? [];
         w.__hnefBoards = tuners;
         w.__hnefBoard = {
-          tune: (scale: number, y: number, rotY = 0) => {
-            for (const t of tuners) (t as { tune: (s: number, y: number, r: number) => void }).tune(scale, y, rotY);
-            return { scale, y, rotY, models: tuners.length };
+          tune: (scale: number, y: number, rotY = 0, x = 0, z = 0) => {
+            for (const t of tuners) (t as { tune: (s: number, y: number, r: number, x: number, z: number) => void }).tune(scale, y, rotY, x, z);
+            return { scale, y, rotY, x, z, models: tuners.length };
           },
           showProc: (on: boolean) => {
             for (const t of tuners) (t as { showProc: (o: boolean) => void }).showProc(on);
