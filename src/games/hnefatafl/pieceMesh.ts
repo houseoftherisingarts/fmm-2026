@@ -251,11 +251,9 @@ export function createPieceSystem(
     });
     delete map[key];
 
-    // Particle burst takes the body's current color and current
-    // position (slightly elevated so embers spawn above the piece base).
-    const bodyMat = body.material as THREE.MeshPhongMaterial;
-    const burstColor = bodyMat.color.getHex();
-    spawnCaptureBurst(body.position.x, body.position.y + 0.2, body.position.z, burstColor);
+    // Particle burst takes the piece's stored color (the live material
+    // may be the invisible one once the GLB is attached).
+    spawnCaptureBurst(body.position.x, body.position.y + 0.2, body.position.z, entry.burstColor);
 
     gsap.killTweensOf([body.position, cap.position, body.scale, cap.scale]);
     const tl = gsap.timeline({
