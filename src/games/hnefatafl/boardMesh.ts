@@ -237,6 +237,8 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
               tileOpacity: tileMats[0]?.opacity,
               cosmeticsVisible: cosmetics[0]?.visible,
               modelScale: model.scale.x,
+              modelPos: model.position.toArray(),
+              modelWorldY: new THREE.Vector3().setFromMatrixPosition(model.matrixWorld).y,
               // Hauteur réelle de la surface peinte : raycast vertical
               // au-dessus de quelques cases logiques.
               surfaceY: [[5, 5], [0, 0], [10, 10], [0, 10]].map(([r, c]) => {
