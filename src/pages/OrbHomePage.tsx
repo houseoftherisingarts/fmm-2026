@@ -863,22 +863,37 @@ const OrbHomePage: React.FC = () => {
                       onClick={() => onChoiceClick(i)}
                       onPointerEnter={(e) => { if (e.pointerType === 'mouse') playHover(); }}
                       onFocus={() => playHover()}
-                      className="group w-full text-left px-1 py-1 md:py-1.5 flex items-baseline gap-3 md:gap-4 transition-all duration-300"
+                      className="group relative w-full text-left px-3 py-1.5 md:py-2 flex items-baseline gap-3 md:gap-4 transition-all duration-300"
                     >
+                      {/* Voile sombre : le texte reposait a meme la photo
+                          de la caravane et se noyait dans les zones
+                          claires. Ajoute 2026-08-03. */}
                       <span
-                        className={`shrink-0 w-1.5 h-1.5 rounded-full transition-all duration-300 translate-y-[-2px] ${
+                        aria-hidden
+                        className="absolute inset-0 -mx-1 rounded-[3px] transition-opacity duration-300"
+                        style={{
+                          background:
+                            'linear-gradient(90deg, rgba(10,2,7,0.72) 0%, rgba(10,2,7,0.52) 55%, rgba(10,2,7,0) 100%)',
+                          opacity: isSelected ? 1 : 0.78,
+                        }}
+                      />
+                      <span
+                        className={`relative shrink-0 w-1.5 h-1.5 rounded-full transition-all duration-300 translate-y-[-2px] ${
                           isSelected
                             ? 'bg-[var(--color-amber-glow)] shadow-[0_0_14px_rgba(232,177,74,0.95)]'
-                            : 'bg-ivory/15 group-hover:bg-ivory/40'
+                            : 'bg-ivory/45 group-hover:bg-[var(--color-amber-glow)]'
                         }`}
                       />
                       <span
-                        className={`font-display title-medieval uppercase transition-all duration-300 leading-[1] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] ${
+                        className={`relative font-display title-medieval uppercase transition-all duration-300 leading-[1] ${
                           isSelected
                             ? 'text-ivory tracking-[0.04em]'
-                            : 'text-ivory-soft/70 group-hover:text-ivory tracking-[0.02em]'
+                            : 'text-ivory/85 group-hover:text-ivory tracking-[0.02em]'
                         }`}
-                        style={{ fontSize: 'clamp(0.95rem, 1.35vw, 1.35rem)' }}
+                        style={{
+                          fontSize: 'clamp(0.95rem, 1.35vw, 1.35rem)',
+                          textShadow: '0 2px 10px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.8)',
+                        }}
                       >
                         {labelOf(c.key)}
                       </span>
