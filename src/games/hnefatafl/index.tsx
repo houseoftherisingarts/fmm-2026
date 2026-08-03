@@ -567,143 +567,84 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin 
   const [difficulty, setDifficulty] = useState<Difficulty>(initial.difficulty);
 
   const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-    <div style={{ marginBottom: 22, textAlign: 'center' }}>
-      <div
-        style={{
-          color: '#6A4010',
-          fontSize: 'clamp(8px,1.3vw,11px)',
-          letterSpacing: '.45em',
-          marginBottom: 10,
-        }}
-      >
+    <div className="mb-6 text-center">
+      <p className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70 mb-3">
         {label}
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: 8,
-        }}
-      >
-        {children}
-      </div>
+      </p>
+      <div className="flex flex-wrap justify-center gap-2.5">{children}</div>
     </div>
   );
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(4,2,0,.88)',
-        backdropFilter: 'blur(12px)',
-        zIndex: 5,
-        padding: '24px 16px',
-        overflowY: 'auto',
-      }}
-    >
-      <div
-        style={{
-          width: 80,
-          height: 2,
-          background: 'linear-gradient(90deg,transparent,#7A5215,transparent)',
-          marginBottom: 22,
-        }}
-      />
-      <div
-        style={{
-          color: '#FFD700',
-          fontSize: 'clamp(16px,4vw,28px)',
-          fontWeight: 900,
-          letterSpacing: '.28em',
-          textAlign: 'center',
-          textShadow: '0 0 20px rgba(255,136,0,.6)',
-        }}
-      >
-        {s.startTitle}
+    <div className="absolute inset-0 z-[5] flex items-center justify-center overflow-y-auto px-4 py-8 bg-[rgba(10,4,6,0.82)] backdrop-blur-md">
+      <div className="w-full max-w-lg text-center">
+        <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+          {s.startSubtitle}
+        </p>
+        <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.06]">
+          {s.startTitle}
+        </h2>
+        <div className="divider-brass w-24 mx-auto mt-5 mb-8" />
+
+        <Row label={s.modeLabel}>
+          <Pill
+            active={mode === 'two-player'}
+            onClick={() => setMode('two-player')}
+            icon={<Users size={13} />}
+          >
+            {s.modeTwoPlayer}
+          </Pill>
+          <Pill
+            active={mode === 'vs-cpu'}
+            onClick={() => setMode('vs-cpu')}
+            icon={<Cpu size={13} />}
+          >
+            {s.modeVsCpu}
+          </Pill>
+        </Row>
+
+        {mode === 'vs-cpu' && (
+          <>
+            <Row label={s.sideLabel}>
+              <Pill
+                active={humanSide === 'defender'}
+                onClick={() => setHumanSide('defender')}
+                icon={<Shield size={13} />}
+              >
+                {s.sideDefenders}
+              </Pill>
+              <Pill
+                active={humanSide === 'attacker'}
+                onClick={() => setHumanSide('attacker')}
+                icon={<Swords size={13} />}
+              >
+                {s.sideRaiders}
+              </Pill>
+            </Row>
+
+            <Row label={s.difficultyLabel}>
+              <Pill active={difficulty === 'easy'} onClick={() => setDifficulty('easy')}>
+                {s.diffEasy}
+              </Pill>
+              <Pill active={difficulty === 'medium'} onClick={() => setDifficulty('medium')}>
+                {s.diffMedium}
+              </Pill>
+              <Pill active={difficulty === 'hard'} onClick={() => setDifficulty('hard')}>
+                {s.diffHard}
+              </Pill>
+            </Row>
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={() => onBegin({ mode, humanSide, difficulty })}
+          className="mt-4 inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+        >
+          <Swords size={15} />
+          {s.begin}
+        </button>
       </div>
-      <div
-        style={{
-          color: '#4A2808',
-          fontSize: 'clamp(8px,1.4vw,11px)',
-          letterSpacing: '.4em',
-          margin: '8px 0 22px',
-        }}
-      >
-        {s.startSubtitle}
-      </div>
-      <div
-        style={{
-          width: 80,
-          height: 2,
-          background: 'linear-gradient(90deg,transparent,#7A5215,transparent)',
-          marginBottom: 30,
-        }}
-      />
-
-      <Row label={s.modeLabel}>
-        <Pill active={mode === 'two-player'} onClick={() => setMode('two-player')}>
-          {s.modeTwoPlayer}
-        </Pill>
-        <Pill active={mode === 'vs-cpu'} onClick={() => setMode('vs-cpu')}>
-          {s.modeVsCpu}
-        </Pill>
-      </Row>
-
-      {mode === 'vs-cpu' && (
-        <>
-          <Row label={s.sideLabel}>
-            <Pill active={humanSide === 'defender'} onClick={() => setHumanSide('defender')}>
-              {s.sideDefenders}
-            </Pill>
-            <Pill active={humanSide === 'attacker'} onClick={() => setHumanSide('attacker')}>
-              {s.sideRaiders}
-            </Pill>
-          </Row>
-
-          <Row label={s.difficultyLabel}>
-            <Pill active={difficulty === 'easy'} onClick={() => setDifficulty('easy')}>
-              {s.diffEasy}
-            </Pill>
-            <Pill active={difficulty === 'medium'} onClick={() => setDifficulty('medium')}>
-              {s.diffMedium}
-            </Pill>
-            <Pill active={difficulty === 'hard'} onClick={() => setDifficulty('hard')}>
-              {s.diffHard}
-            </Pill>
-          </Row>
-        </>
-      )}
-
-      <button
-        type="button"
-        onClick={() => onBegin({ mode, humanSide, difficulty })}
-        style={{
-          marginTop: 16,
-          background: 'transparent',
-          border: '1px solid #7A5215',
-          color: '#FFD700',
-          padding: '12px 36px',
-          fontSize: 'clamp(10px,1.7vw,14px)',
-          letterSpacing: '.35em',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          transition: 'all .2s',
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = '#1A0A00';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-        }}
-      >
-        {s.begin}
-      </button>
     </div>
   );
 };
