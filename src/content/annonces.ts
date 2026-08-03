@@ -54,7 +54,7 @@ export const ANNONCES: Annonce[] = [
     // interne : c'est le Salon qui porte la Petite Monnaie, et l'avis
     // ramène du trafic chez nous. URL vérifiée (200).
     logo: {
-      src:  '/petite-monnaie/petite-monnaie-wordmark-reverse-1054.png',
+      src:  '/petite-monnaie/piece-petite-monnaie.webp',
       alt:  'Petite Monnaie',
       href: 'https://www.lesalondesinconnus.com/petite-monnaie',
     },

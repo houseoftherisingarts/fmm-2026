@@ -46,7 +46,7 @@ const BilletsPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/marche/0b4c7ac8.jpg"
+        orbImage="/photos/tournage-2026/cavaliere-charge.webp"
       />
 
       <Section index="01" name={t.entreesRail} title={t.entreesTitle} lead={t.entreesLead} icon={Ticket}>
