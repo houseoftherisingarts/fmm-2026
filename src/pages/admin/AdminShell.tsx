@@ -56,6 +56,7 @@ const NAV: NavItem[] = [
   { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3 },
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock },
   { id: 'bar',        label: 'Bar',             icon: Beer },
+  { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2 },
   { id: 'mariages',   label: 'Mariages',        icon: Heart },
   { id: 'comptes',    label: 'Comptes',         icon: Users },
   { id: 'messages',   label: 'Messages',        icon: MessageSquare },
