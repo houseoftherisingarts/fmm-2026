@@ -529,38 +529,31 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
   return <div ref={mountRef} style={{ width: '100%', height: '100%' }} />;
 };
 
-// ─── Start-screen pill button ───────────────────────────────────────
+// ─── Jeton de choix de l'écran de préparation ───────────────────────
+// Grammaire du site : verre sombre, filet de laiton, texte os. L'état
+// actif se marque par le laiton PLEIN (comme les appels à l'action du
+// site), pas par un jaune saturé.
 interface PillProps {
   active: boolean;
   onClick: () => void;
+  icon?: React.ReactNode;
   children: React.ReactNode;
 }
-const Pill: React.FC<PillProps> = ({ active, onClick, children }) => {
-  const [hover, setHover] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        background: active ? '#1A0A00' : hover ? '#100704' : 'transparent',
-        border: `1px solid ${active ? '#FFD700' : '#7A5215'}`,
-        color: active ? '#FFD700' : '#C09050',
-        padding: '8px 18px',
-        fontSize: 'clamp(9px,1.5vw,12px)',
-        letterSpacing: '.25em',
-        cursor: 'pointer',
-        fontFamily: 'inherit',
-        textTransform: 'uppercase',
-        transition: 'all .15s',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {children}
-    </button>
-  );
-};
+const Pill: React.FC<PillProps> = ({ active, onClick, icon, children }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={active}
+    className={`inline-flex items-center gap-2 px-4 py-2.5 md:px-5 rounded-card border font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] transition-colors duration-200 min-h-[44px] ${
+      active
+        ? 'bg-brass text-[#1A0A05] border-brass'
+        : 'bg-black/30 text-ivory-soft border-brass/35 hover:border-brass hover:text-ivory'
+    }`}
+  >
+    {icon}
+    {children}
+  </button>
+);
 
 // ─── Start screen overlay ───────────────────────────────────────────
 interface StartScreenProps {
