@@ -244,7 +244,7 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
               modelWorldY: new THREE.Vector3().setFromMatrixPosition(model.matrixWorld).y,
               // Hauteur réelle de la surface peinte : raycast vertical
               // au-dessus de quelques cases logiques.
-              surfaceY: [[5, 5], [0, 0], [10, 10], [0, 10]].map(([r, c]) => {
+              surfaceY: [[5, 5], [0, 5], [5, 0], [10, 5], [5, 10], [3, 3], [8, 8]].map(([r, c]) => {
                 const rc = new THREE.Raycaster(
                   new THREE.Vector3((c - MID) * CELL, 10, (r - MID) * CELL),
                   new THREE.Vector3(0, -1, 0),
