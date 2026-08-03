@@ -170,7 +170,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
     const scene = setupScene(el);
     const detachResize = scene.attachResize();
 
-    const { clickables } = buildBoard(scene.scene);
+    const { clickables } = buildBoard(scene.scene, () => alive);
     const pieces = createPieceSystem(scene.scene, clickables);
     const hl = createHighlightSystem(scene.scene);
 
