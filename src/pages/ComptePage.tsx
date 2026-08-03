@@ -17,6 +17,7 @@ import MessageThread from '../components/vendor/MessageThread';
 import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 import CoffreBillets from '../components/compte/CoffreBillets';
 import SoutienPanel from '../components/compte/SoutienPanel';
+import AvatarUpload from '../components/compte/AvatarUpload';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
@@ -41,6 +42,7 @@ const ComptePage: React.FC = () => {
 
   const [phone, setPhone]               = useState('');
   const [displayName, setDisplayName]   = useState('');
+  const [avatarUrl, setAvatarUrl]       = useState<string | undefined>(undefined);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savedAt, setSavedAt]           = useState<number | null>(null);
 
@@ -60,6 +62,7 @@ const ComptePage: React.FC = () => {
       ]);
       setDisplayName(p?.displayName || user.displayName || '');
       setPhone(p?.phone || '');
+      setAvatarUrl(p?.avatarUrl || undefined);
       setBApp(b); setVApp(v);
       setLoadingApps(false);
     })();
@@ -76,6 +79,7 @@ const ComptePage: React.FC = () => {
         displayName: displayName.trim(),
         phone:       phone.trim(),
         lang,
+        ...(avatarUrl ? { avatarUrl } : {}),
       });
       setSavedAt(Date.now());
     } finally {
@@ -144,12 +148,22 @@ const ComptePage: React.FC = () => {
             <ArrowLeft size={14} /> {t.home}
           </Link>
           <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-2">{t.eyebrow}</p>
-              <h1 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2">{displayName || user.email}</h1>
-              <p className="font-editorial italic text-sm text-ivory-soft flex items-center gap-2">
-                <Mail size={14} className="text-brass" /> {user.email}
-              </p>
+            <div className="flex items-center gap-6 flex-wrap">
+              <AvatarUpload
+                uid={user.uid}
+                email={user.email || ''}
+                displayName={displayName || user.displayName || ''}
+                lang={lang}
+                avatarUrl={avatarUrl}
+                onChange={setAvatarUrl}
+              />
+              <div>
+                <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-2">{t.eyebrow}</p>
+                <h1 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2">{displayName || user.email}</h1>
+                <p className="font-editorial italic text-sm text-ivory-soft flex items-center gap-2">
+                  <Mail size={14} className="text-brass" /> {user.email}
+                </p>
+              </div>
             </div>
             <button onClick={signOut}
               className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory font-sans text-xs uppercase tracking-wider hover:bg-ivory hover:text-midnight-deep transition rounded-card">
@@ -207,7 +221,7 @@ const ComptePage: React.FC = () => {
         {/* Coffre à billets + guichet de soutien */}
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8 mb-6 md:mb-8 items-start">
           <div className="lg:col-span-7"><CoffreBillets uid={user.uid} lang={lang} /></div>
-          <div className="lg:col-span-5"><SoutienPanel lang={lang} /></div>
+          <div className="lg:col-span-5"><SoutienPanel lang={lang} userEmail={user.email || ''} userName={displayName || user.displayName || ''} /></div>
         </div>
 
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8">

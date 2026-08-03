@@ -53,7 +53,7 @@ const AvatarUpload: React.FC<{
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const initials = (displayName || email || '?')
-    .trim().split(/\s+/).slice(0, 2).map((w) => w[0］ ?? '').join('').toUpperCase() || '?';
+    .trim().split(/\s+/).slice(0, 2).map((w) => w[0] ?? '').join('').toUpperCase() || '?';
 
   const accept = useCallback(async (file: File | undefined) => {
     if (!file) return;
