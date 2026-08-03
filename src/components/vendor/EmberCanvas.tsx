@@ -1,8 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 
-// Canvas-based ember field. Lighter than 30+ DOM divs animating box-shadow.
-// Particles drift upward with mild horizontal sway, fade in/out, recycle.
-// Skips render entirely when prefers-reduced-motion is set.
+// Les braises du festival : elles montent du bas avec un balancement de
+// vent, cuivre vers ambre, halo additif. C'est l'effet des premières
+// versions du site, celui qu'Alex voulait retrouver.
+//
+// 🚨 On n'écoute PAS prefers-reduced-motion ici (décision d'Alex,
+// 2026-08-02). Avant, le composant sortait aussitôt si le réglage
+// système était actif : personne avec « réduire les animations » ne
+// voyait la moindre braise, sur aucune page. La dérive est lente et
+// ambiante, sans parallaxe ni détournement de défilement, donc elle ne
+// déclenche pas de gêne vestibulaire. La boucle se met quand même en
+// pause hors écran, pour ne pas faire tourner six canevas à vide.
 
 interface Props {
   count?: number;
@@ -21,13 +29,11 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
-
     const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
 
     let raf = 0;
+    let visible = true;
     let w = 0, h = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -41,25 +47,49 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
+    // Pause hors écran : une page longue peut porter six canevas.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible && !raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
+      },
+      { rootMargin: '160px' },
+    );
+    io.observe(canvas);
 
-    const spawn = (e?: Ember): Ember => {
+    // `seed` = première population. Sans elle, toutes les braises
+    // naissaient SOUS le canevas et devaient le remonter en entier :
+    // sur une section de 1300 px, à ~1,4 px par image, la traversée
+    // demande une quinzaine de secondes alors que leur durée de vie
+    // plafonne à 10 s. Elles mouraient donc avant d'entrer dans le
+    // champ, et la section restait vide. Corrigé 2026-08-02.
+    const spawn = (e?: Ember, seed = false): Ember => {
       const maxLife = 5500 + Math.random() * 4500;
       return Object.assign(e || ({} as Ember), {
         x: Math.random() * w,
-        y: h + Math.random() * 80,
+        y: seed ? Math.random() * h : h + Math.random() * 80,
         vx: (Math.random() - 0.5) * 0.18,
         vy: -0.25 - Math.random() * 0.55,
         r: 0.6 + Math.random() * 1.7,
-        life: 0,
+        // Une braise semée démarre à un âge quelconque, sinon les
+        // `count` braises apparaissent et s'éteignent en choeur.
+        life: seed ? Math.random() * maxLife * 0.8 : 0,
         maxLife,
-        hue: 28 + Math.random() * 18,            // copper → amber range
+        hue: 28 + Math.random() * 18,            // cuivre vers ambre
       });
     };
 
-    const embers: Ember[] = Array.from({ length: count }, () => spawn());
+    // Densité proportionnelle à l'aire : `count` est calibré pour un
+    // hero d'environ 1200x600. Sur une section deux fois plus haute, un
+    // nombre fixe donnait trois braises perdues dans le noir. On garde
+    // un plafond pour ne pas noyer une grande page en particules.
+    const area = Math.max(1, w * h);
+    const n = Math.min(140, Math.max(count, Math.round(area / 12500)));
+    const embers: Ember[] = Array.from({ length: n }, () => spawn(undefined, true));
 
     let last = performance.now();
     const tick = (now: number) => {
+      if (!visible) { raf = 0; return; }
       const dt = Math.min(48, now - last); last = now;
       ctx.clearRect(0, 0, w, h);
       // Additive glow — embers brighten where they overlap.
@@ -71,7 +101,9 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
         // Wind sway — lateral nudge tied to vertical position.
         e.vx += Math.sin((e.life / 700) + e.x * 0.01) * 0.0035;
         e.x += e.vx * dt * 0.06;
-        e.y += e.vy * dt * 0.06;
+        // Facteur de hauteur : sur une section haute, les braises
+        // montent plus vite pour couvrir la distance dans leur vie.
+        e.y += e.vy * dt * 0.06 * Math.max(1, h / 520);
 
         const t = e.life / e.maxLife;
         const alpha =
@@ -95,7 +127,7 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
     };
     raf = requestAnimationFrame(tick);
 
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
   }, [count]);
 
   return (

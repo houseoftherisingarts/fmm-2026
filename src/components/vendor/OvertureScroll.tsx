@@ -5,7 +5,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import OrnateFrame from './OrnateFrame';
-import { Motes } from '../marche/effects';
+import EmberCanvas from './EmberCanvas';
 
 // Overture / festival preamble shown before the vendor sign-in + form.
 // Asymmetric bento grid: a hero, then varied-span cards with per-section
@@ -188,7 +188,7 @@ const OvertureScroll: React.FC<{
       className="velvet-card p-6 md:p-12 relative overflow-hidden stage-3d max-w-7xl mx-auto"
     >
       <OrnateFrame accent="var(--color-amber-glow)" duration={1} />
-      <Motes className="opacity-70" count={34} />
+      <EmberCanvas className="opacity-80" count={30} />
 
       <div className="relative">
         {/* ── Hero ─────────────────────────────────────────── */}

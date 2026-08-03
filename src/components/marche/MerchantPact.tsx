@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { addLocale } from '../../lib/locale';
-import { Motes, useSfx } from './effects';
+import { useSfx } from './effects';
+import EmberCanvas from '../vendor/EmberCanvas';
 import { SectionFog } from './atmospherics';
 
 interface Props {
@@ -49,7 +50,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
       {/* Backdrop image removed — section now sits cleanly on the
           continuous page bg with just grain + fog atmosphere. */}
       <SectionFog />
-      <Motes className="opacity-70" count={34} />
+      <EmberCanvas className="opacity-80" count={30} />
 
       <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8">
         {/* ─── TOP HAIRLINE — state registers, read-only ──────── */}
