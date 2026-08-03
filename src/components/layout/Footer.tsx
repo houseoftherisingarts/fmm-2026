@@ -306,6 +306,34 @@ const Footer: React.FC = () => {
             </Link>
           </div>
         </div>
+
+        {/* ── Signature de l'atelier ────────────────────────────── */}
+        {/* Sa propre ligne, sous les droits : la ligne de droits nomme
+            déjà Le Salon des Inconnus comme titulaire, et coller les
+            deux mentions côte à côte donnait une répétition maladroite.
+            Demandée par Alex le 2026-08-03. */}
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 pb-6 flex justify-center">
+          <a
+            href="https://www.lesalondesinconnus.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2.5 text-[11px] font-sans transition-colors"
+            style={{ color: 'var(--color-bone)' }}
+          >
+            <img
+              src="/salon/salon-logo.png"
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="h-6 w-auto opacity-60 group-hover:opacity-100 transition-opacity"
+            />
+            <span className="opacity-45 group-hover:opacity-80 transition-opacity uppercase tracking-[0.28em]">
+              {lang === 'FR'
+                ? 'Site développé par Le Salon des Inconnus'
+                : 'Website built by Le Salon des Inconnus'}
+            </span>
+          </a>
+        </div>
       </div>
 
       <BugReportModal open={bugOpen} onClose={() => setBugOpen(false)} />
