@@ -224,8 +224,15 @@ export function createPieceSystem(
     body.position.set(x, 0.1 + bh / 2, z);
     cap.position.set(x, 0.1 + bh + cr * 0.65, z);
     group.add(body, cap);
-    map[`${r},${c}`] = { body, cap, pType };
+    const entry: PieceEntry = {
+      body,
+      cap,
+      pType,
+      burstColor: materials[pfx].color.getHex(),
+    };
+    map[`${r},${c}`] = entry;
     clickables.push(body, cap);
+    attachModel(entry);
   };
 
   const rmPiece = (r: number, c: number, opts?: AnimOpts) => {
