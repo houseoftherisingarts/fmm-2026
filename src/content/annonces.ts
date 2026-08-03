@@ -34,9 +34,9 @@ export const ANNONCES: Annonce[] = [
     titleFR: 'Les chiens ne sont pas admis sur le site',
     titleEN: 'Dogs are not allowed on site',
     bodyFR:
-      'Des chevaux sont présents pendant tout le festival. Pour leur sécurité et pour celle de votre animal, aucun chien n’est admis sur le terrain, même tenu en laisse. Merci de prévoir une garde avant de partir.',
+      'Des chevaux sont présents pendant tout le festival, et notre couverture d’assurance tombe dès qu’un chien s’en approche. C’est le festival au complet qui perdrait sa protection. Aucun chien n’est donc admis sur le terrain, même tenu en laisse. Prévoyez une garde avant de partir.',
     bodyEN:
-      'Horses are on site for the whole festival. For their safety and your animal’s, no dogs are allowed on the grounds, even on a leash. Please arrange pet care before you head out.',
+      'Horses are on site for the whole festival, and our insurance coverage lapses the moment a dog comes near them. The entire festival would lose its protection. No dog is admitted on the grounds, even on a leash. Please arrange pet care before you head out.',
   },
   {
     id:   'apportez-comptant-2026',
