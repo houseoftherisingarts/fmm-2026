@@ -67,7 +67,7 @@ const VendorApplicationPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="max-w-2xl">
+          <div>
             <p
               className="font-sans uppercase tracking-[0.45em] text-[10px] md:text-[11px] mb-7 inline-flex items-center gap-2"
               style={{ color: '#D8B05A' }}
@@ -75,8 +75,11 @@ const VendorApplicationPage: React.FC = () => {
               <ShoppingBag size={12} />{t.eyebrow}
             </p>
 
+            {/* Le titre tenait dans un max-w-2xl : il cassait en deux
+                lignes avec un grand vide à droite. Il court maintenant sur
+                toute la largeur et reste sur une ligne dès sm. */}
             <h1
-              className="font-display leading-[1.02] tracking-[-0.005em] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-8"
+              className="font-display leading-[1.02] tracking-[-0.005em] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-8 sm:whitespace-nowrap"
               style={{
                 color: 'var(--color-bone)',
                 fontWeight: 400,
@@ -98,7 +101,7 @@ const VendorApplicationPage: React.FC = () => {
 
             <motion.p
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
-              className="font-sans text-base md:text-lg leading-[1.75]"
+              className="font-sans text-base md:text-lg leading-[1.75] max-w-2xl"
               style={{ color: 'rgba(244, 239, 227, 0.78)', fontWeight: 300 }}
             >
               {isEarly ? t.intro2027 : t.intro}

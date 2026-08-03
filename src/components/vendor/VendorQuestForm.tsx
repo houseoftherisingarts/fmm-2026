@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
@@ -167,6 +167,19 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
   const chapterValid = (id: Exclude<ChapterId, 5>): boolean =>
     CHAPTER_REQUIRED[id].every((k) => !validate(k));
 
+  // Chaque chapitre a sa propre hauteur. En changeant de chapitre la page
+  // rétrécit et le navigateur garde le même défilement : on se retrouvait
+  // projeté dans le pied de page. On recale la vue sur le haut du panneau.
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const focusCard = () => {
+    requestAnimationFrame(() => {
+      const el = cardRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    });
+  };
+
   const goNext = () => {
     if (chapter === 5) return;
     const id = chapter as Exclude<ChapterId, 5>;
@@ -193,21 +206,46 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
     }
     setDir(1);
     setChapter((c) => Math.min(5, (c + 1)) as ChapterId);
+    focusCard();
   };
   const goBack = () => {
     if (chapter === 1) return;
     setDir(-1);
     setChapter((c) => Math.max(1, (c - 1)) as ChapterId);
+    focusCard();
   };
   const goTo = (id: ChapterId) => {
+    if (id === chapter) return;
     setDir(id > chapter ? 1 : -1);
     setChapter(id);
+    focusCard();
   };
 
   // ── Submit ──
+  // Le formulaire n'est envoyable que si les quatre chapitres sont
+  // complets. On peut circuler librement, mais pas sceller un dossier
+  // troué : on est renvoyé au premier chapitre fautif, champs allumés.
+  const missingChapter = (): Exclude<ChapterId, 5> | null => {
+    for (const id of [1, 2, 3, 4] as Exclude<ChapterId, 5>[]) {
+      if (!chapterValid(id)) return id;
+    }
+    return null;
+  };
+  const allChaptersValid = missingChapter() === null;
+
   const onSubmit = async () => {
     if (!user) return;
-    if (!chapterValid(4)) { setChapter(4); return; }
+    const missing = missingChapter();
+    if (missing !== null) {
+      setTouched((prev) => ({
+        ...prev,
+        ...Object.fromEntries(CHAPTER_REQUIRED[missing].map((k) => [k, true])),
+      }));
+      setDir(missing > chapter ? 1 : -1);
+      setChapter(missing);
+      focusCard();
+      return;
+    }
     setSubmitState('submitting'); setErrMsg(null);
     try {
       const app: VendorApp = {
@@ -338,6 +376,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
       {/* ── Quest form card ──────────────────────────────────────── */}
       <TiltShell max={4} className="">
         <motion.div
+          ref={cardRef}
           animate={{
             boxShadow: `0 0 0 1px ${CHAPTER_ACCENT[chapter]}33, 0 0 60px -10px ${CHAPTER_ACCENT[chapter]}66, 0 24px 60px -20px rgba(0,0,0,0.85)`,
           }}
@@ -354,11 +393,10 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
             <JourneyPath
               chapter={chapter}
               completed={[1, 2, 3, 4].filter((i) => chapterValid(i as Exclude<ChapterId, 5>)) as number[]}
-              onJump={(id) => {
-                const target = id as ChapterId;
-                if (target < chapter) goTo(target);
-                else if ([1, 2, 3, 4].slice(0, target - 1).every((i) => chapterValid(i as Exclude<ChapterId, 5>))) goTo(target);
-              }}
+              // Navigation libre entre les chapitres : on peut sauter
+              // où on veut pour relire ou corriger. Ce qui reste verrouillé,
+              // c'est l'envoi, pas la circulation.
+              onJump={(id) => goTo(id as ChapterId)}
               labels={t.chapterLabels}
             />
           </div>
@@ -556,7 +594,8 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
             <motion.button
               type="button"
               onClick={onSubmit}
-              disabled={submitState === 'submitting'}
+              disabled={submitState === 'submitting' || !allChaptersValid}
+              title={allChaptersValid ? undefined : t.submitBlocked}
               whileHover={{ y: -2, scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               className="witcher-prompt disabled:opacity-50" data-primary="true"
@@ -1008,6 +1047,7 @@ const FR = {
   hydrating: 'Chargement de votre inscription…',
   back: 'Précédent', next: 'Suivant', edit: 'Modifier',
   seal: 'Sceller mon engagement', update: 'Mettre à jour mon inscription', sealing: 'Scellement…',
+  submitBlocked: 'Complétez les quatre chapitres avant de sceller.',
   yes: 'Oui', no: 'Non',
   error: 'Une erreur est survenue.',
   errRequired: 'Champ requis.',
@@ -1107,6 +1147,7 @@ const EN: typeof FR = {
   hydrating: 'Loading your registration…',
   back: 'Back', next: 'Next', edit: 'Edit',
   seal: 'Seal my pact', update: 'Update my registration', sealing: 'Sealing…',
+  submitBlocked: 'Complete all four chapters before sealing.',
   yes: 'Yes', no: 'No',
   error: 'Something went wrong.',
   errRequired: 'Required field.',
