@@ -63,12 +63,15 @@ export function setupScene(el: HTMLElement): SceneHandle {
     updateCam();
   };
 
-  // Animate the orbit radius for a cinematic push-in (king escape).
-  const pushCameraIn = (targetRadius: number, duration = 1.6) => {
+  // Rapproché cinématique (fuite du Roi). Le paramètre est une FRACTION
+  // du rayon courant, et non un rayon absolu : le rayon dépend
+  // maintenant du format de la scène, donc une valeur en dur zoomerait
+  // dans le vide sur téléphone.
+  const pushCameraIn = (factor: number, duration = 1.6) => {
     const state = { r: camR };
     gsap.killTweensOf(state);
     gsap.to(state, {
-      r: targetRadius,
+      r: camR * factor,
       duration,
       ease: 'power2.inOut',
       onUpdate: () => {
@@ -85,6 +88,8 @@ export function setupScene(el: HTMLElement): SceneHandle {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
+    camR = fitRadius(camera.aspect);
+    updateCam();
   };
 
   const attachResize = (): (() => void) => {
