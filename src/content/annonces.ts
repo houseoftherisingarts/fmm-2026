@@ -5,9 +5,6 @@
 // son inventaire. Ordre d'affichage = ordre du tableau.
 //
 // Pour ajouter une annonce : une entrée ici, FR et EN, avec un ton.
-// `alerte` = consigne à respecter (bordure rouge), `info` = bon à savoir
-// (bordure ambre).
-//
 // ⚠️ Le fil Facebook n'est PAS branché : tirer les publications de la
 // page demande un jeton de page Meta et une fonction serveur qui met en
 // cache dans Firestore (le navigateur ne peut pas porter le secret).
@@ -59,9 +56,9 @@ const TOUTES: Annonce[] = [
     titleFR: 'Imprimez votre billet avant de partir',
     titleEN: 'Print your ticket before you leave home',
     bodyFR:
-      'Le réseau cellulaire est faible sur le site et il n’y a pas de Wi-Fi public à l’entrée. Chercher son billet sur son téléphone au moment d’arriver peut tourner court. Imprimez votre confirmation Zeffy à la maison, ou téléchargez-la sur votre appareil pendant que vous avez encore du réseau. Votre coffre à billets, plus bas, garde une copie prête à télécharger.',
+      'Le réseau cellulaire est faible sur le site et il n’y a pas de Wi‑Fi public à l’entrée. Chercher son billet sur son téléphone au moment d’arriver peut tourner court. Imprimez votre confirmation Zeffy à la maison, ou téléchargez-la sur votre appareil pendant que vous avez encore du réseau. Votre coffre à billets, plus bas, garde une copie prête à télécharger.',
     bodyEN:
-      'Cell coverage is weak on site and there is no public Wi-Fi at the gate. Hunting for your ticket on your phone as you arrive can fall flat. Print your Zeffy confirmation at home, or download it to your device while you still have signal. Your ticket vault below keeps a copy ready to download.',
+      'Cell coverage is weak on site and there is no public Wi‑Fi at the gate. Hunting for your ticket on your phone as you arrive can fall flat. Print your Zeffy confirmation at home, or download it to your device while you still have signal. Your ticket vault below keeps a copy ready to download.',
   },
   {
     id:   'apportez-comptant-2026',
