@@ -208,6 +208,16 @@ export function buildBoard(scene: THREE.Scene): BoardHandle {
             for (const c of cosmetics) c.visible = on;
             for (const m of tileMats) m.opacity = on ? 1 : 0;
           },
+          census: () => {
+            const sc = group.parent as THREE.Scene | null;
+            return {
+              groupInScene: !!sc,
+              sceneChildren: sc ? sc.children.map((ch) => `${ch.type}:${ch.children.length}`) : [],
+              tileOpacity: tileMats[0]?.opacity,
+              cosmeticsVisible: cosmetics[0]?.visible,
+              modelScale: model.scale.x,
+            };
+          },
         };
       }
     },
