@@ -61,6 +61,11 @@ export interface PieceEntry {
   body: THREE.Mesh;
   cap: THREE.Mesh;
   pType: CellValue;
+  /** Couleur des particules de capture, figée à la création (le
+   *  matériau du corps devient invisible quand le GLB s'attache). */
+  burstColor: number;
+  /** Modèle Meshy attaché en enfant du corps, si chargé. */
+  model?: THREE.Object3D;
 }
 
 export interface AnimOpts {
