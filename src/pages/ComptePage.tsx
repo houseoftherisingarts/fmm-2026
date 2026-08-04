@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
@@ -29,7 +29,7 @@ const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; t
 
 const ComptePage: React.FC = () => {
   useCaravanPage();
-  const { user, loading, openSignIn, signOut, signInWithGoogle } = useAuth();
+  const { user, loading, isAdmin, openSignIn, signOut, signInWithGoogle } = useAuth();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -166,10 +166,21 @@ const ComptePage: React.FC = () => {
                 </p>
               </div>
             </div>
-            <button onClick={signOut}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory font-sans text-xs uppercase tracking-wider hover:bg-ivory hover:text-midnight-deep transition rounded-card">
-              <LogOut size={14} /> {t.signOut}
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Visible seulement pour les courriels autorisés (VITE_ADMIN_EMAILS
+                  ou un rôle Firestore) : useAuth() a déjà fait la vérification,
+                  ce lien ne fait qu'exposer ce que isAdmin sait déjà. */}
+              {isAdmin && (
+                <Link to="/admin"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-brass/50 text-brass font-sans text-xs uppercase tracking-wider hover:bg-brass hover:text-midnight-deep transition rounded-card">
+                  <ShieldCheck size={14} /> {t.adminSpace}
+                </Link>
+              )}
+              <button onClick={signOut}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory font-sans text-xs uppercase tracking-wider hover:bg-ivory hover:text-midnight-deep transition rounded-card">
+                <LogOut size={14} /> {t.signOut}
+              </button>
+            </div>
           </div>
 
           {/* Quick-access bar — always shows "Apply for a kiosk" for any
@@ -371,7 +382,7 @@ const inputCls = 'w-full bg-midnight-deep/50 border border-ivory-soft/20 px-3.5 
 const FR = {
   home: 'Accueil', eyebrow: 'Mon compte', title: 'Mon espace FMM',
   signedOutLead: 'Votre espace garde vos billets à l’abri, vous donne les avis du festival avant tout le monde, et ouvre le salon des jeux. C’est aussi d’ici que vous postulez comme bénévole ou marchand, et que vous suivez votre dossier.',
-  signIn: 'Se connecter', signOut: 'Déconnexion',
+  signIn: 'Se connecter', signOut: 'Déconnexion', adminSpace: 'Espace admin',
   profileEyebrow: 'Profil', profileTitle: 'Vos informations',
   displayName: 'Nom affiché', phone: 'Téléphone',
   save: 'Enregistrer', saving: 'Enregistrement…', saved: 'Enregistré.',
@@ -388,7 +399,7 @@ const FR = {
 const EN = {
   home: 'Home', eyebrow: 'My account', title: 'My FMM space',
   signedOutLead: 'Your space keeps your tickets safe, gives you festival notices before anyone else, and opens the games room. It is also where you apply as a volunteer or merchant, and follow your application.',
-  signIn: 'Sign in', signOut: 'Sign out',
+  signIn: 'Sign in', signOut: 'Sign out', adminSpace: 'Admin space',
   profileEyebrow: 'Profile', profileTitle: 'Your information',
   displayName: 'Display name', phone: 'Phone',
   save: 'Save', saving: 'Saving…', saved: 'Saved.',
