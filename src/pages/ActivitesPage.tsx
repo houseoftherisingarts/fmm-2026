@@ -276,6 +276,16 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
     return () => unsub();
   }, []);
 
+  // Programmation section visibility — admin-controlled via Firestore
+  // (siteFlags/programmation). Behourd starts hidden (incidents à gérer
+  // côté organisation, décision d'Alex 2026-08-04).
+  const [progFlags, setProgFlags] = useState<ProgFlags>(PROG_FLAGS_DEFAULTS);
+  useEffect(() => watchProgFlags(setProgFlags), []);
+
+  // Horaire card — repliée par défaut; cliquer déplie l'horaire 2025
+  // (souvenir) en dessous.
+  const [horaireOpen, setHoraireOpen] = useState(false);
+
   // Schedule day-tab state — index into liveSchedule. Default to
   // Saturday (idx 1), the marquee day with the densest line-up.
   const [activeDay, setActiveDay] = useState(1);
