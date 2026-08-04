@@ -1247,7 +1247,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                           Wix sont des photos carrées non détourées; le
                           cercle les unifie sans retoucher les fichiers. */}
                       <div
-                        className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
+                        className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden p-3 transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
                         style={{
                           border: '1px solid rgba(216, 155, 58, 0.35)',
                           boxShadow: 'inset 0 0 24px rgba(0,0,0,0.55)',
@@ -1259,7 +1259,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                           alt=""
                           aria-hidden
                           loading="lazy"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     </div>
