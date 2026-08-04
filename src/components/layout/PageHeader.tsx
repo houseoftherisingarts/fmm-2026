@@ -118,7 +118,7 @@ const PageHeader: React.FC<Props> = ({
           <div className="mt-4 md:mt-5 mb-7 flex items-baseline gap-3">
             <span className="h-px w-10 md:w-14 bg-gradient-to-r from-transparent via-brass/40 to-brass/70" />
             <p className="font-display title-medieval text-[11px] md:text-[12px] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[var(--color-brass-soft)] sm:whitespace-nowrap">
-              {lang === 'FR' ? '25–27 septembre 2026' : '25–27 September 2026'}
+              {dateline ?? (lang === 'FR' ? '25–27 septembre 2026' : '25–27 September 2026')}
             </p>
           </div>
 
