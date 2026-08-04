@@ -423,6 +423,45 @@ const SpotifyIcon: React.FC = () => (
   </svg>
 );
 
+// ─── Archives — grille compacte ─────────────────────────────────────
+// Simple consultation, pas de carrousel : petites cartes, teinte estompée.
+const ArchiveCard: React.FC<{ band: Band; lang: 'FR' | 'EN' }> = ({ band, lang }) => (
+  <div className="rounded-card border border-stone/25 bg-midnight-deep/35 overflow-hidden transition-colors hover:border-stone/45">
+    <div className="relative w-full aspect-video overflow-hidden">
+      <img
+        src={band.image || '/wix/musique/skarazula.webp'}
+        alt={band.imageAlt || band.name}
+        className="w-full h-full object-cover"
+        loading="lazy"
+        style={{ filter: 'sepia(0.45) saturate(0.7) brightness(0.92) contrast(1.05)' }}
+        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
+      />
+      {band.annee && (
+        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/60 border border-stone/40 font-sans text-[10px] uppercase tracking-widest text-stone">
+          {band.annee}
+        </span>
+      )}
+    </div>
+    <div className="p-4 md:p-5">
+      <h3 className="font-display title-medieval text-lg md:text-xl text-ivory-soft mb-1.5">{band.name}</h3>
+      <p className="font-editorial text-sm text-ivory-soft/70 leading-snug line-clamp-2">
+        {lang === 'FR' ? band.bioFR : band.bioEN}
+      </p>
+      {band.website && (
+        <a
+          href={band.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex items-center gap-1 font-sans text-[11px] uppercase tracking-widest text-stone hover:text-ivory-soft transition"
+        >
+          {lang === 'FR' ? 'Site web' : 'Website'}
+          <ArrowUpRight size={12} />
+        </a>
+      )}
+    </div>
+  </div>
+);
+
 // ─── Page ────────────────────────────────────────────────────────────
 const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
