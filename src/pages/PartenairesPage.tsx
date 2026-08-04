@@ -1,6 +1,7 @@
 import React from 'react';
 import {ArrowUpRight, Heart} from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
+import { useSiteFlags } from '../contexts/SiteFlagsContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { SPONSORS } from '../content';
 import SEO from '../components/SEO';
@@ -8,6 +9,8 @@ import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
+import CommanditaireHonneur from '../components/partenaires/CommanditaireHonneur';
+import SponsorInquiry from '../components/partenaires/SponsorInquiry';
 
 // Featured partners — long-form cards, cloned from the live Wix copy.
 const FEATURED = [
