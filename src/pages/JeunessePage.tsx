@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {ArrowUpRight, Check, Tent, TreePine, Compass, Swords} from 'lucide-react';
@@ -6,6 +6,7 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { db, isFirebaseReady } from '../firebase';
+import { watchProgFlags, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../firebase/programmationFlags';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
