@@ -1616,3 +1616,65 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   background: radial-gradient(circle at 34% 30%, #E8C87A 0%, #A9853C 55%, #4a3617 100%);
   box-shadow: 0 1px 2px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.35);
 }
+
+/* ── Édition Émeraude ───────────────────────────────────────────
+   Surcouche du thème caravane pour la page /partenaires-2027. Elle
+   s'ajoute à `fmm-caravan-page` plutôt que de la remplacer : tout le
+   travail structurel du shim caravane (sections transparentes, verre,
+   rails, boutons) reste en place, et seules les COULEURS basculent du
+   registre oxblood/cuivre vers l'émeraude des Chevaliers.
+
+   L'or reste l'accent unique. Or sur sinople : c'est l'accord
+   héraldique classique, et c'est celui des couvertures de la série.
+   Pour tout passer en vert, il suffit de retoner --color-amber-glow
+   et --color-brass ci-dessous. */
+.fmm-caravan-page.fmm-emeraude-page {
+  background-color: #02100A;
+  background-image:
+    radial-gradient(ellipse 90% 50% at 50% 25%, rgba(31, 122, 82, 0.18), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 75%, rgba(10, 69, 46, 0.20), transparent 60%),
+    linear-gradient(180deg, #04170F 0%, #063523 35%, #052A1B 65%, #02100A 100%);
+
+  /* Champ : oxblood → émeraude profonde */
+  --color-midnight:       #063523;
+  --color-midnight-deep:  #02100A;
+  --color-midnight-soft:  #0A452E;
+  --color-midnight-glass: rgb(6 53 35 / 0.65);
+  --color-velvet:         #0A452E;
+  --color-velvet-deep:    #02100A;
+  /* Lueurs et filigranes : cuivre → vert de jade */
+  --color-copper:         #1F7A52;
+  /* Accent : or héraldique, légèrement refroidi pour tenir sur le vert */
+  --color-amber-glow:     #E8C55A;
+  --color-mustard:        #D8B14A;
+  --color-brass:          #D8B75E;
+  --color-brass-soft:     #EBD07E;
+  /* Blocs éditoriaux clairs : parchemin → vert pâle */
+  --color-mist:           #BFD9C6;
+  --color-mist-deep:      #94B49F;
+}
+
+/* Le verre porte des rgba en dur, donc il se retone à la main. */
+.fmm-emeraude-page .caravan-glass {
+  background:
+    linear-gradient(180deg, rgba(120, 220, 170, 0.05), rgba(4, 30, 20, 0.55)),
+    rgb(4 26 17 / 0.88);
+  border: 1px solid rgba(216, 183, 94, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(232, 197, 90, 0.16),
+    inset 0 0 80px -30px rgba(31, 122, 82, 0.45),
+    0 30px 80px -30px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+.fmm-emeraude-page .glass-light {
+  background:
+    linear-gradient(180deg, rgba(120, 220, 170, 0.045), rgba(5, 34, 22, 0.5)),
+    rgba(4, 26, 17, 0.72) !important;
+  border-color: rgba(216, 183, 94, 0.20) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(232, 197, 90, 0.11),
+    0 18px 40px -22px rgba(0, 0, 0, 0.7) !important;
+}
+.fmm-emeraude-page .glass-on-photo {
+  background: rgba(4, 26, 17, 0.73) !important;
+}

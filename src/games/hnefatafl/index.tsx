@@ -103,11 +103,9 @@ interface GameStrings {
   loadingLead:  string;
   musiqueOn:    string;
   musiqueOff:   string;
-  shopEyebrow:  string;
   shopBoards:   string;
   shopPieces:   string;
   shopSoon:     string;
-  shopActive:   string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -170,11 +168,9 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     loadingLead: 'Le plateau est sculpté, les pièces arrivent de l\u2019atelier.',
     musiqueOn: 'Couper la musique',
     musiqueOff: 'Musique',
-    shopEyebrow: 'Le coffre',
     shopBoards: 'Plateaux',
     shopPieces: 'Pièces',
     shopSoon: 'Bientôt',
-    shopActive: 'En jeu',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -235,11 +231,9 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     loadingLead: 'The board is carved, the pieces are on their way.',
     musiqueOn: 'Mute the music',
     musiqueOff: 'Music',
-    shopEyebrow: 'The chest',
     shopBoards: 'Boards',
     shopPieces: 'Pieces',
     shopSoon: 'Coming soon',
-    shopActive: 'In play',
   },
 };
 
@@ -757,7 +751,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
   );
 
   return (
-    <div className="absolute inset-0 z-[5] flex items-center justify-center overflow-y-auto px-4 py-8 bg-[rgba(10,4,6,0.82)] backdrop-blur-md">
+    <div className="absolute inset-0 z-[5] flex items-center justify-center overflow-y-auto px-4 py-4 md:py-8 bg-[rgba(10,4,6,0.82)] backdrop-blur-md">
       <div className="w-full max-w-2xl text-center">
         <p className="font-editorial uppercase tracking-[0.4em] text-[10px] md:text-xs text-[var(--color-amber-glow)] mb-2 md:mb-3">
           {s.startSubtitle}

@@ -2,10 +2,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Calendar, MapPin, ChevronLeft, ChevronRight, X, Lock as LockIcon } from 'lucide-react';
 import { watchSchedule, CURRENT_SCHEDULE_YEAR, type ScheduleDay } from '../firebase/schedule';
 import { useUI } from '../contexts/AppContext';
-import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { useSfx, useHoverSfx } from '../components/marche/effects';
 import SEO from '../components/SEO';
@@ -16,7 +15,6 @@ import {
   DisplayTitle,
   HexPanel,
   HexMark,
-  ChevronButton,
   GildedFrame,
   SectionTopRail,
   SectionBottomRail,
@@ -27,13 +25,16 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// ── Schedule data (cloned from Wix /activités). 2025 schedule — dates
-// updated to 2026 (Sept 25-26-27); event details kept as-is. Mark for
-// review once 2026 line-up is locked.  TODO_VERIFY_2026
+// ── L'horaire de l'ÉDITION 2025, montré comme souvenir en attendant
+// celui de 2026 (décision d'Alex, 2026-08-03) : il donne une idée
+// fidèle du rythme d'une journée sans rien promettre. Les journées ne
+// portent plus de date : coller les dates 2026 sur des événements 2025
+// aurait été un mensonge. Quand l'horaire 2026 arrivera (via l'admin ou
+// ici), ce bloc reprendra des dates.
 const SCHEDULE = [
   {
-    dateFR: 'Vendredi 25 septembre',
-    dateEN: 'Friday September 25',
+    dateFR: 'Vendredi',
+    dateEN: 'Friday',
     items: [
       { time: '17h00', label: 'Ouverture des portes',                                 where: 'Site' },
       { time: '17h00', label: 'Ouverture de la Boustifaille — Village Bouffe',        where: 'Village gustatif' },
@@ -43,8 +44,8 @@ const SCHEDULE = [
     ],
   },
   {
-    dateFR: 'Samedi 26 septembre',
-    dateEN: 'Saturday September 26',
+    dateFR: 'Samedi',
+    dateEN: 'Saturday',
     items: [
       { time: '10h00',       label: 'Ouverture des portes',                            where: 'Site' },
       { time: '11h00–11h30', label: 'Démonstration de tissage',                        where: 'Village paysan' },
@@ -70,8 +71,8 @@ const SCHEDULE = [
     ],
   },
   {
-    dateFR: 'Dimanche 27 septembre',
-    dateEN: 'Sunday September 27',
+    dateFR: 'Dimanche',
+    dateEN: 'Sunday',
     items: [
       { time: '11h00–12h00', label: 'Jeu équestre',                                    where: 'Arène' },
       { time: '11h45–12h15', label: 'Parcours d’herboristerie',                        where: 'Village paysan' },
@@ -100,6 +101,8 @@ const ACTIVITIES: Array<{
   descEN:  string;
   image:   string;
   category: Category;
+  /** Activité en relâche : tuile grisée, mention « prochaine édition ». */
+  retiree?: boolean;
 }> = [
   { titleFR: 'Escrime',          titleEN: 'Fencing',           bodyFR: 'et autres combats',                                       bodyEN: 'and other combat arts',
     descFR: 'L’escrime artistique et le combat médiéval — sous l’œil du Chevalier Vert, des duels en armure complète, l’épée longue, le combat libre. Toute la gamme de la guerre courtoise et de la guerre brute, présentée par les fines lames du festival.',
@@ -112,7 +115,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Démonstrations',   titleEN: 'Demonstrations',    bodyFR: 'Forge, savoirs ancestraux',                               bodyEN: 'Forge, ancestral knowledge',
     descFR: 'Forge, fonderie, gravure sur os, planage de bois ancestral, tissage. Les artisans-démonstrateurs travaillent devant vous, expliquant chaque geste hérité d’une époque où la matière était travaillée à la main.',
     descEN: 'Forge, foundry, bone engraving, ancestral wood planing, weaving. The demonstrator-artisans work in front of you, explaining each gesture handed down from an age when matter was shaped by hand.',
-    image: '/wix/activites/1eb43235.webp', category: 'crafts' },
+    image: '/histoire/archives/lievre/thumb/2022-DSC00451.webp', category: 'crafts' },
   { titleFR: 'Joutes',           titleEN: 'Jousts',            bodyFR: 'Équestres',                                                bodyEN: 'On horseback',
     descFR: 'Joutes équestres à la lance et à l’épée. Chevaliers et destriers s’affrontent dans l’arène — une tradition millénaire remise au goût du jour.',
     descEN: 'Mounted joust with lance and sword. Knights and chargers face off in the arena — a thousand-year-old tradition brought up to date.',
@@ -124,11 +127,11 @@ const ACTIVITIES: Array<{
   { titleFR: 'Marché',           titleEN: 'Market',            bodyFR: 'Artisans et foire locale',                                 bodyEN: 'Artisans and local fair',
     descFR: 'Une cinquantaine d’artisans et marchands d’époque. Forgerons, costumiers, bijoutiers, brasseurs, herboristes. Achetez local, en armure ou en bourgeois.',
     descEN: 'Some fifty period artisans and merchants. Smiths, costumers, jewellers, brewers, herbalists. Buy local — in armour or in burgher’s garb.',
-    image: '/orb/marche.jpg', category: 'crafts' },
+    image: '/wix/home/marchand.jpg', category: 'crafts' },
   { titleFR: 'Danses et Rituels',titleEN: 'Dances & Rituals',  bodyFR: 'Völvas',                                                   bodyEN: 'Völvas',
     descFR: 'Les völvas du clan Hullsborg dansent autour du grand feu. Rituels nordiques, cérémonie de Freya, allumage solennel — un héritage spirituel partagé sous les étoiles.',
     descEN: 'The Hullsborg clan’s völvas dance around the great fire. Nordic rituals, Freya ceremony, solemn lighting — a shared spiritual heritage under the stars.',
-    image: '/wix/activites/3c294775.jpg', category: 'shows' },
+    image: '/histoire/archives/lena/thumb/2025-IMG_3550.webp', category: 'shows' },
   { titleFR: 'Espace Jeunesse',  titleEN: 'Youth Space',       bodyFR: 'Parc, jeux, animations, gardiennage',                     bodyEN: 'Park, games, activities, supervision',
     descFR: 'Un campement réservé aux jeunes seigneurs : ateliers d’écuyer, jeux d’adresse, contes, gardiennage encadré. L’enfance médiévale, mais sans la peste.',
     descEN: 'A camp reserved for young lords: squire workshops, skill games, tales, supervised babysitting. Medieval childhood — without the plague.',
@@ -145,10 +148,14 @@ const ACTIVITIES: Array<{
     descFR: 'Le nouveau village gustatif — cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille comme on aime.',
     descEN: 'The new food village — clan kitchens, table d’hôte, equinox banquet. Suckling pig, flatbread, stews, period pastries. Feasting and merrymaking as we love it.',
     image: '/wix/activites/1f021070.jpg', category: 'ripaille' },
-  { titleFR: 'Clinique Équestre',titleEN: 'Equestrian Clinic', bodyFR: 'Pour les spécialistes',                                    bodyEN: 'For experienced riders',
-    descFR: 'Pour les cavaliers expérimentés : cours intensifs sous les conseils des maîtres écuyers du festival. Travail au sol, jeux équestres, initiation à la joute. Inscription requise.',
-    descEN: 'For experienced riders: intensive courses under the festival’s master squires. Groundwork, equestrian games, joust initiation. Registration required.',
-    image: '/wix/activites/1c869c8b.jpg', category: 'family' },
+  { titleFR: 'Clinique Équestre',titleEN: 'Equestrian Clinic', bodyFR: 'Prochaine édition',                                        bodyEN: 'Next edition',
+    descFR: 'La clinique équestre fait relâche cette année : elle reviendra à la prochaine édition. Pour les cavaliers expérimentés : cours intensifs sous les conseils des maîtres écuyers du festival.',
+    descEN: 'The equestrian clinic is on hiatus this year: it returns next edition. For experienced riders: intensive courses under the festival’s master squires.',
+    image: '/wix/activites/1c869c8b.jpg', category: 'family', retiree: true },
+  { titleFR: 'Village Paysan',   titleEN: 'Peasant Village',   bodyFR: 'Artisans au travail',                                      bodyEN: 'Artisans at work',
+    descFR: 'Le campement des métiers : forge, tissage, équarrissage, coulage du bronze, gravure sur os. Les artisans y vivent la fin de semaine entière et travaillent sous vos yeux, entre les souches et les tentes de toile.',
+    descEN: 'The camp of trades: forge, weaving, squaring, bronze casting, bone engraving. The artisans live there all weekend and work before your eyes, among stumps and canvas tents.',
+    image: '/histoire/archives/lena/thumb/2025-IMG_8011.webp', category: 'crafts' },
   { titleFR: 'Tournois',         titleEN: 'Tournaments',       bodyFR: 'Et jeux d’adresse',                                        bodyEN: 'And skill games',
     descFR: 'Tournoi de bridge fight, combats vikings, jeux d’adresse à l’arc et au lancer de hache. Les meilleurs guerriers du festival s’affrontent pour la gloire — et un peu de bière.',
     descEN: 'Bridge-fight tournament, Viking combat, archery and axe-throwing competitions. The festival’s best warriors face off for glory — and a bit of beer.',
@@ -244,27 +251,6 @@ const HudMeter: React.FC<{
     </div>
   );
 };
-
-const HudPrompt: React.FC<{ glyph: string; label: string; accent?: boolean }> = ({ glyph, label, accent = false }) => (
-  <span className="inline-flex items-center gap-2">
-    <span
-      className="inline-flex items-center justify-center w-5 h-5 rounded-full font-sans text-[11px] font-semibold"
-      style={{
-        background: accent ? 'rgba(232, 177, 74, 0.15)' : 'rgba(244, 239, 227, 0.08)',
-        color: accent ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.78)',
-        border: `1px solid ${accent ? 'rgba(232, 177, 74, 0.4)' : 'rgba(244, 239, 227, 0.18)'}`,
-      }}
-    >
-      {glyph}
-    </span>
-    <span
-      className="font-sans uppercase tracking-[0.25em] text-[10px]"
-      style={{ color: accent ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.65)' }}
-    >
-      {label}
-    </span>
-  </span>
-);
 
 const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
@@ -802,7 +788,23 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       loading="lazy"
                       decoding="async"
                       className="fmm-grade-caravan absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                      style={a.retiree ? { filter: 'grayscale(0.85) brightness(0.6)' } : undefined}
                     />
+
+                    {/* Sceau de relâche : l'activité reviendra. */}
+                    {a.retiree && (
+                      <span
+                        className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] px-3 py-1.5 font-display title-medieval uppercase tracking-[0.28em] text-[10px] md:text-[11px] whitespace-nowrap"
+                        style={{
+                          color: 'rgba(244, 239, 227, 0.85)',
+                          border: '1px solid rgba(244, 239, 227, 0.45)',
+                          background: 'rgba(10, 2, 7, 0.55)',
+                          borderRadius: 4,
+                        }}
+                      >
+                        {lang === 'FR' ? 'Prochaine édition' : 'Next edition'}
+                      </span>
+                    )}
 
                     {/* Warm tint overlay — pushes residual hue cast
                         toward amber-copper, unifying photos that were
@@ -866,27 +868,32 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             })}
           </div>
 
-          {/* ── HUD bottom bar — Witcher inventory footer.
-              Left: Vitality-style progress meter (festival readiness).
-              Right: Toxicity-style meter (ticket availability).
-              Below: controller-prompt row (back / details / select). */}
+          {/* ── Jauge du compte à rebours ─────────────────────────
+              Les anciens « Prêt pour le festival 68 % » et « Billets
+              restants 32 % » étaient des chiffres inventés, et la
+              rangée de touches manette (○ □ △ ✕) singait une console
+              (retirés le 2026-08-03, demande d'Alex : « on n'est pas
+              sur un PlayStation »). La jauge dit maintenant une chose
+              VRAIE : la progression vers le jour d'ouverture, 100 % le
+              25 septembre 2026. Point de départ : l'annonce de
+              l'édition (1er mars 2026). */}
           <div
             className="acti-hud-bottom mt-6 px-2 py-4"
             style={{ borderTop: '1px solid rgba(216, 155, 58, 0.22)' }}
           >
-            <div className="grid md:grid-cols-2 gap-6 md:gap-12 mb-4">
-              <HudMeter label={t.meterReady} value={68} accent="amber" />
-              <HudMeter label={t.meterTickets} value={32} accent="copper" align="right" />
-            </div>
-            <div
-              className="acti-prompt-row flex items-center justify-end gap-4 md:gap-6 flex-wrap pt-3"
-              style={{ borderTop: '1px solid rgba(216, 155, 58, 0.12)' }}
-            >
-              <HudPrompt glyph="○" label={t.promptBack} />
-              <HudPrompt glyph="□" label={t.promptDetails} />
-              <HudPrompt glyph="△" label={t.promptFilter} />
-              <HudPrompt glyph="✕" label={t.promptSelect} accent />
-            </div>
+            {(() => {
+              const debut = new Date('2026-03-01T00:00:00-05:00').getTime();
+              const ouverture = new Date('2026-09-25T10:00:00-04:00').getTime();
+              const partEcoulee = Math.max(0, Math.min(1, (Date.now() - debut) / (ouverture - debut)));
+              const joursRestants = Math.max(0, Math.ceil((ouverture - Date.now()) / 86400000));
+              return (
+                <HudMeter
+                  label={joursRestants > 0 ? t.meterCountdown(joursRestants) : t.meterToday}
+                  value={Math.round(partEcoulee * 100)}
+                  accent="amber"
+                />
+              );
+            })()}
           </div>
 
           <SectionBottomRail
@@ -914,6 +921,14 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               <HexMark />
             </Eyebrow>
             <DisplayTitle size="lg" glow className="mb-2">{t.scheduleTitle}</DisplayTitle>
+            <p className="font-editorial italic text-base md:text-lg mt-3"
+               style={{ color: 'var(--color-amber-glow)' }}>
+              {t.schedule2026Soon}
+            </p>
+            <p className="font-editorial italic text-sm md:text-base mt-2 max-w-2xl mx-auto"
+               style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
+              {t.scheduleSouvenir}
+            </p>
           </div>
           {/* Day tabs — three illuminated day plates. Click to switch.
               The active plate gets amber-lit border + corner ticks. */}
@@ -1106,75 +1121,54 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             metaValue={t.vikingsMetaValue}
             className="sec-rail mb-10 md:mb-14"
           />
-          <div className="vikings-panel relative max-w-3xl mx-auto">
+          {/* Pleine largeur avec les VRAIS boucliers peints du festival
+              (les PNG détourés venaient du site Wix; les fichiers
+              /clans/shield-*.png n'ont jamais existé, la section
+              n'affichait que des pastilles de repli). 🚨 Les blasons ne
+              portent PAS de nom de clan : l'association bouclier-clan
+              n'est écrite nulle part et un mauvais appariement serait
+              pire que pas de nom. À câbler quand Alex la confirme. */}
+          <div className="vikings-panel relative">
             <EnergyPulse className="absolute inset-0 -z-0 opacity-40" />
             <GildedFrame inset={14} tone="amber" className="relative">
-              <div className="caravan-glass p-8 md:p-12 text-center">
+              <div className="caravan-glass p-8 md:p-14 text-center">
                 <Eyebrow tone="amber" className="mb-3 inline-flex items-center gap-3 justify-center">
                   <HexMark />
                   {t.vikingsEyebrow}
                   <HexMark />
                 </Eyebrow>
-                <DisplayTitle size="lg" glow className="mb-6">{t.vikingsTitle}</DisplayTitle>
-                <p className="font-editorial text-base md:text-xl leading-relaxed mb-8"
+                <DisplayTitle size="lg" glow className="mb-4">{t.vikingsTitle}</DisplayTitle>
+                <p className="font-editorial text-base md:text-xl leading-relaxed mb-3"
                    style={{ color: 'rgba(244, 239, 227, 0.85)' }}>
                   {t.vikingsBody}
                 </p>
-                {/* Clan shields — three transparent-bg PNGs sit on top of
-                    the gilded frame. Files live in /public/clans/ ; the
-                    user uploads them after the structure is in place.
-                    Fallback to a faint amber lozenge so the layout doesn't
-                    collapse if a file is missing. */}
-                <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto">
+                <p className="font-display title-medieval uppercase tracking-[0.4em] text-xs md:text-sm mb-10"
+                   style={{ color: 'var(--color-amber-glow)' }}>
+                  Hullsborg · Managarm · Berserkirs
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 items-center">
                   {[
-                    { id: 'hullsborg', name: 'Hullsborg', image: '/clans/shield-hullsborg.png' },
-                    { id: 'managarm',  name: 'Managarm',  image: '/clans/shield-managarm.png'  },
-                    { id: 'berserkir', name: 'Berserkirs', image: '/clans/shield-berserkirs.png' },
-                  ].map((clan) => (
-                    <figure key={clan.id} className="vikings-chip group flex flex-col items-center text-center">
-                      <div
-                        className="relative w-full aspect-square flex items-center justify-center"
-                        style={{
-                          filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.55)) drop-shadow(0 0 24px rgba(232,177,74,0.15))',
-                        }}
-                      >
-                        <img
-                          src={clan.image}
-                          alt=""
-                          aria-hidden
-                          loading="lazy"
-                          className="w-[78%] h-[78%] object-contain transition-transform duration-500 group-hover:scale-[1.04]"
-                          onError={(e) => {
-                            // Placeholder lozenge while the real shield isn't uploaded yet
-                            const el = e.currentTarget as HTMLImageElement;
-                            el.style.display = 'none';
-                            const fallback = el.nextElementSibling as HTMLElement | null;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                        <span
-                          aria-hidden
-                          className="absolute inset-[12%] hidden items-center justify-center rounded-full border-2"
-                          style={{
-                            borderColor: 'rgba(216, 155, 58, 0.45)',
-                            background: 'radial-gradient(circle at 50% 35%, rgba(232,177,74,0.18), rgba(176,141,58,0.06) 55%, transparent 75%)',
-                          }}
-                        >
-                          <span
-                            className="font-display title-medieval uppercase tracking-[0.35em] text-[10px] md:text-xs"
-                            style={{ color: 'var(--color-amber-glow)' }}
-                          >
-                            {clan.name}
-                          </span>
-                        </span>
-                      </div>
-                      <figcaption
-                        className="mt-3 md:mt-4 font-display title-medieval uppercase tracking-[0.35em] text-[10px] md:text-xs"
-                        style={{ color: 'var(--color-amber-glow)' }}
-                      >
-                        {clan.name}
-                      </figcaption>
-                    </figure>
+                    '/wix/activites/cecafbd2.png',
+                    '/wix/activites/bea10ace.png',
+                    '/wix/activites/4b9fc50f.png',
+                    '/wix/activites/90620f5a.png',
+                  ].map((src, i) => (
+                    <div
+                      key={src}
+                      className="vikings-chip group relative flex items-center justify-center"
+                      style={{
+                        filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.6)) drop-shadow(0 0 26px rgba(232,177,74,0.14))',
+                      }}
+                    >
+                      <img
+                        src={src}
+                        alt=""
+                        aria-hidden
+                        loading="lazy"
+                        className="w-full max-w-[220px] object-contain transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
+                        style={{ animationDelay: `${i * 0.4}s` }}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -1193,62 +1187,49 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             metaValue="II"
             className="sec-rail mb-10 md:mb-14"
           />
-          <div className="grid md:grid-cols-2 gap-5 md:gap-7">
-            {[
-              {
-                idx: 'I',
-                eyebrow: t.banquetEyebrow,
-                title:   t.banquetTitle,
-                body:    t.banquetBody,
-                cta:     t.banquetCta,
-                href:    addLocale('/nourriture', lang),
-                tone:    'amber' as const,
-                variant: 'gold' as const,
-              },
-              {
-                idx: 'II',
-                eyebrow: t.youthEyebrow,
-                title:   t.youthTitle,
-                body:    t.youthBody,
-                cta:     t.youthCta,
-                href:    addLocale('/jeunesse', lang),
-                tone:    'copper' as const,
-                variant: 'ghost' as const,
-              },
-            ].map((c, ci) => (
-              <HexPanel
-                key={c.title}
-                size="md"
-                className={`group h-full ${ci === 0 ? 'cross-card-left' : 'cross-card-right'}`}
-              >
-                <GildedFrame inset={12} tone={c.tone} className="h-full">
-                  <div className="caravan-glass p-7 md:p-9 flex flex-col h-full min-h-[260px]">
-                    <div className="flex items-baseline justify-between mb-3">
-                      <Eyebrow tone={c.tone}>
-                        {c.eyebrow}
-                      </Eyebrow>
-                      <span
-                        className="font-display title-medieval text-2xl leading-none opacity-80"
-                        style={{ color: 'var(--color-amber-glow)' }}
-                      >
-                        {c.idx}
-                      </span>
-                    </div>
-                    <DisplayTitle size="lg" className="text-2xl md:text-3xl mb-4">
-                      {c.title}
-                    </DisplayTitle>
-                    <p className="font-editorial text-base leading-relaxed mb-6 flex-1"
-                       style={{ color: 'rgba(244, 239, 227, 0.75)' }}>
-                      {c.body}
-                    </p>
-                    <ChevronButton to={c.href} variant={c.variant} onClick={playSelect} className="self-start ml-3">
-                      {c.cta}
-                    </ChevronButton>
+          {/* Le banquet règne seul, pleine largeur : le carré Espace
+              Jeunesse qui le flanquait est parti (demande d'Alex,
+              2026-08-03 : la jeunesse a déjà sa section plus haut dans
+              le bestiaire et sa page). Le menu n'étant pas scellé, le
+              bouton est un CADENAS, pas un lien : promettre un menu
+              qui n'existe pas ferait cliquer dans le vide. */}
+          <HexPanel size="md" className="group cross-card-left">
+            <GildedFrame inset={12} tone="amber">
+              <div className="caravan-glass p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <Eyebrow tone="amber">{t.banquetEyebrow}</Eyebrow>
+                    <span
+                      className="font-display title-medieval text-2xl leading-none opacity-80"
+                      style={{ color: 'var(--color-amber-glow)' }}
+                    >
+                      I
+                    </span>
                   </div>
-                </GildedFrame>
-              </HexPanel>
-            ))}
-          </div>
+                  <DisplayTitle size="lg" className="text-2xl md:text-4xl mb-4">
+                    {t.banquetTitle}
+                  </DisplayTitle>
+                  <p className="font-editorial text-base md:text-lg leading-relaxed"
+                     style={{ color: 'rgba(244, 239, 227, 0.75)' }}>
+                    {t.banquetBody}
+                  </p>
+                </div>
+                <div
+                  className="shrink-0 self-start md:self-center inline-flex items-center gap-2.5 px-6 py-3.5 rounded-card border font-sans text-[11px] md:text-xs uppercase tracking-[0.22em]"
+                  style={{
+                    borderColor: 'rgba(216, 155, 58, 0.35)',
+                    color: 'rgba(244, 239, 227, 0.65)',
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    cursor: 'default',
+                  }}
+                  aria-disabled
+                >
+                  <LockIcon size={13} style={{ color: 'var(--color-amber-glow)' }} />
+                  {t.banquetCta}
+                </div>
+              </div>
+            </GildedFrame>
+          </HexPanel>
         </div>
       </section>
 
@@ -1441,8 +1422,10 @@ const FR = {
   scheduleEyebrow: 'Chronique',
   scheduleTitle: 'Horaire et Programmation',
   scheduleMeta: 'Inscriptions',
-  scheduleNote: 'L’horaire est sujet à changement sans préavis.',
-  scheduleVersion: 'Édition · printemps 2026',
+  scheduleNote: 'L’horaire 2026 remplacera ce souvenir dès qu’il sera scellé.',
+  scheduleVersion: 'Souvenir · édition 2025',
+  schedule2026Soon: 'L’horaire 2026 sera dévoilé sous peu.',
+  scheduleSouvenir: 'En attendant, revoici l’horaire de l’an dernier, en souvenir : il donne une bonne idée du rythme d’une journée de festival.',
   dayLabel: 'Journée',
   activitiesEyebrow: 'Le grand programme',
   activitiesMeta: 'Activités',
@@ -1461,12 +1444,8 @@ const FR = {
   },
   prevCategory: 'Catégorie précédente',
   nextCategory: 'Catégorie suivante',
-  meterReady:   'Prêt pour le festival',
-  meterTickets: 'Billets restants',
-  promptBack:    'Retour',
-  promptDetails: 'Détails',
-  promptFilter:  'Filtrer',
-  promptSelect:  'Réserver',
+  meterCountdown: (j: number) => `Le festival ouvre dans ${j} jours`,
+  meterToday:     'Le festival est commencé',
   vikingsRailName: 'Les Clans restants',
   vikingsMeta: 'Présents',
   vikingsMetaValue: 'III',
@@ -1497,11 +1476,7 @@ const FR = {
   banquetEyebrow: 'Réservation requise',
   banquetTitle: 'Le Banquet de l’Équinoxe',
   banquetBody: 'Un grand banquet sera préparé par les chefs de clans du village gustatif. Le billet pour la grande tablée est vendu séparément des billets d’entrée.',
-  banquetCta: 'Voir le menu',
-  youthEyebrow: 'Pour les jeunes seigneurs',
-  youthTitle: 'Espace Jeunesse',
-  youthBody: 'Un espace dédié aux enfants avec une panoplie d’ateliers et activités. Certaines activités nécessitent une inscription.',
-  youthCta: 'Inscrire mon enfant',
+  banquetCta: 'Menu disponible sous peu',
 };
 
 const EN: typeof FR = {
@@ -1512,8 +1487,10 @@ const EN: typeof FR = {
   scheduleEyebrow: 'Chronicle',
   scheduleTitle: 'Schedule & Program',
   scheduleMeta: 'Entries',
-  scheduleNote: 'Schedule subject to change without notice.',
-  scheduleVersion: 'Build · spring 2026',
+  scheduleNote: 'The 2026 schedule will replace this keepsake once it is sealed.',
+  scheduleVersion: 'Keepsake · 2025 edition',
+  schedule2026Soon: 'The 2026 schedule will be unveiled shortly.',
+  scheduleSouvenir: 'Meanwhile, here is last year’s schedule, as a keepsake: it gives a fair idea of the rhythm of a festival day.',
   dayLabel: 'Day',
   activitiesEyebrow: 'The grand program',
   activitiesMeta: 'Activities',
@@ -1532,12 +1509,8 @@ const EN: typeof FR = {
   },
   prevCategory: 'Previous category',
   nextCategory: 'Next category',
-  meterReady:   'Festival readiness',
-  meterTickets: 'Tickets remaining',
-  promptBack:    'Back',
-  promptDetails: 'Details',
-  promptFilter:  'Filter',
-  promptSelect:  'Reserve',
+  meterCountdown: (j: number) => `The festival opens in ${j} days`,
+  meterToday:     'The festival has begun',
   vikingsRailName: 'The remaining clans',
   vikingsMeta: 'Present',
   vikingsMetaValue: 'III',
@@ -1568,11 +1541,7 @@ const EN: typeof FR = {
   banquetEyebrow: 'Reservation required',
   banquetTitle: 'The Equinox Banquet',
   banquetBody: 'A great banquet prepared by the clan chefs of the food village. The banquet seat is sold separately from regular entry tickets.',
-  banquetCta: 'See the menu',
-  youthEyebrow: 'For the young lords',
-  youthTitle: 'Youth Space',
-  youthBody: 'A dedicated space for children with a panoply of workshops and activities. Some activities require advance registration.',
-  youthCta: 'Sign up my child',
+  banquetCta: 'Menu available soon',
 };
 
 export default ActivitesPage;

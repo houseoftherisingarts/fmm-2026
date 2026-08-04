@@ -26,7 +26,11 @@ interface Band {
   bioEN:       string;
 }
 
-const BANDS_2026: Band[] = [
+// 🚨 Ces six groupes sont ceux des ÉDITIONS PASSÉES. La section les
+// présentait comme « Groupes 2026 » par erreur : la programmation 2026
+// n'était pas encore annoncée. Photos réassignées le 2026-08-03 selon
+// les corrections d'Alex (chaque portrait montre le bon groupe).
+const BANDS_ARCHIVES: Band[] = [
   {
     name:  'L’Harfang',
     image: '/wix/musique/407628b7.jpg',
@@ -35,48 +39,50 @@ const BANDS_2026: Band[] = [
   },
   {
     name:    'Skarazula',
-    image:   '/wix/musique/17e5523c.jpg',
+    image:   '/wix/musique/2c6a22e9.jpg',
     website: 'https://www.skarazula.com',
     bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans le monde riche et fascinant de la musique médiévale. Plus d’un instrument dans leur sac — beaucoup confectionnés par le groupe lui-même.',
     bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag — many handmade by the group itself.',
   },
   {
     name:    'Mystic Projekt',
-    image:   '/wix/musique/1c22d439.jpg',
+    image:   '/wix/musique/2bee56ee.jpg',
     website: 'https://mysticprojekt.bandcamp.com',
     bioFR: 'Chants féminins à travers les époques et le monde. Composé des musiciens-clefs de Saltarello (transe nordique abitibienne), Mystic Projekt explore les répertoires folkloriques celte, scandinave, est-européen, les ballades médiévales et les mélodies orientales.',
     bioEN: 'Feminine voices across eras and continents. Built around the key musicians of Saltarello (Nordic-trance, Abitibi), Mystic Projekt explores Celtic, Scandinavian and Eastern European folk repertoires, medieval ballads and oriental melodies.',
   },
   {
     name:  'Arrünn',
-    image: '/wix/musique/243cbf3c.jpg',
+    // Plan du vidéoclip « Sleipnir » : les cavaliers dans les hautes
+    // herbes. C'est LA photo du groupe, dixit Alex (2026-08-03).
+    image: '/wix/musique/715b30c7.png',
     bioFR: 'Groupe de musique néo-trad’ folk viking du clan Managarm. « Laissez-vous emmener par le talent, la magie et l’ivresse de ce merveilleux groupe. Un travail soigné tant par le son que par l’image. La passion, la culture et les voyages se ressentent par des lyrics portés par des voix envoûtantes. » — Tristan Reille',
     bioEN: 'Neo-trad Viking folk band from clan Managarm. "Let yourself be carried away by the talent, magic and intoxication of Arrünn. Careful work on stage and behind the camera. Passion, culture and travel come through in lyrics carried by spellbinding voices." — Tristan Reille',
   },
   {
     name:  'Trifolys',
-    image: '/wix/musique/2bee56ee.jpg',
+    image: '/wix/musique/243cbf3c.jpg',
     bioFR: 'Explorateurs des racines profondes de la musique dans un contexte historique différent et connexe.',
     bioEN: 'Explorers of music’s deepest roots in a different yet adjacent historical context.',
   },
   {
     name:  'Canteraine',
-    image: '/wix/musique/2c6a22e9.jpg',
+    image: '/wix/musique/1c22d439.jpg',
     bioFR: 'Canteraine — de l’occitan : « lieu où chantent les grenouilles ». Trio féminin alliant tradition française, instruments anciens et écriture contemporaine.',
     bioEN: 'Canteraine — from Occitan: "place where the frogs sing." Female trio bringing together French tradition, early instruments and contemporary writing.',
   },
 ];
 
-// Past editions — placeholder roster. Replace with the real archive once
-// we surface it (probably via Firestore once Tristan ports the historic
-// programming list).
-const BANDS_PAST: Band[] = [
-  {
-    name:  'Les Anciens',
-    image: '/wix/musique/skarazula.webp',
-    bioFR: 'Anciens compagnons des éditions précédentes — leurs noms et leurs visages reviendront ici dès que la liste d’archives sera prête.',
-    bioEN: 'Past companions from previous editions — their names and faces will return here once the archive list is ready.',
-  },
+// ── L'affiche 2026, par journée ─────────────────────────────────────
+// Liste d'Éric Pichette (2026-08-03), encore en construction : des noms
+// s'ajouteront. 🚨 Orthographes dictées de vive voix, à valider avant
+// publication : Sainte-Nigoune(?), Bic Oasis(?), Svarika(?),
+// Las Noches Bohemios(?), Alhambra(?). Fuego Bohemio est confirmé
+// (spectacle de la Troupe Caravane).
+const AFFICHE_2026: Array<{ jourFR: string; jourEN: string; groupes: string[] }> = [
+  { jourFR: 'Vendredi', jourEN: 'Friday',   groupes: ['Fuego Bohemio', 'Skarazula', 'St-Nigoune'] },
+  { jourFR: 'Samedi',   jourEN: 'Saturday', groupes: ['Bic Oasis', 'L’Harfang', 'Trifolys', 'Svarika'] },
+  { jourFR: 'Dimanche', jourEN: 'Sunday',   groupes: ['Las Noches Bohemios', 'Alhambra'] },
 ];
 
 // ─── Bestiary carousel ───────────────────────────────────────────────
@@ -187,26 +193,25 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -dir * 30 }}
             transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-            className="grid lg:grid-cols-12 gap-6 md:gap-10 items-center p-6 md:p-12"
+            className="flex flex-col"
           >
-            {/* Portrait — left column */}
-            <div className="lg:col-span-6">
-              <div className={`relative aspect-[4/5] md:aspect-[3/4] overflow-hidden rounded-card border ${isPast ? 'border-stone/30' : 'border-brass/30'}`}>
-                <img
-                  src={band.image}
-                  alt={band.imageAlt || band.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  style={{ filter: imgFilter }}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
-                />
-                {/* Soft bottom vignette so the page-counter chip reads */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
-              </div>
+            {/* Photo pleine largeur : les portraits de groupes sont des
+                paysages; la colonne 4/5 les coupait (correction d'Alex,
+                2026-08-03). Bandeau 16/9 sur toute la largeur du cadre. */}
+            <div className={`relative w-full aspect-video overflow-hidden border-b ${isPast ? 'border-stone/30' : 'border-brass/30'}`}>
+              <img
+                src={band.image}
+                alt={band.imageAlt || band.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                style={{ filter: imgFilter }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
+              />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
             </div>
 
-            {/* Bestiary entry — right column */}
-            <div className="lg:col-span-6">
+            {/* Fiche du bestiaire, sous la photo */}
+            <div className="p-6 md:p-10">
               <p className={`font-editorial italic uppercase tracking-[0.3em] text-[10px] md:text-xs mb-3 ${isPast ? 'text-stone' : 'text-brass'}`}>
                 {String(idx + 1).padStart(2, '0')} · {artistLabel}
               </p>
@@ -344,18 +349,38 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             lead={t.section2026Lead}
             className="mb-10 md:mb-14"
           />
-          <Reveal from="up" delay={0.15}>
-            <BandsCarousel
-              bands={BANDS_2026}
-              variant="present"
-              lang={lang}
-              artistLabel={t.artist}
-              spotifyLabel={t.spotify}
-              websiteLabel={t.website}
-              prevLabel={t.prev}
-              nextLabel={t.next}
-            />
-          </Reveal>
+          <div className="grid md:grid-cols-3 gap-5 md:gap-7">
+            {AFFICHE_2026.map((jour, ji) => (
+              <Reveal key={jour.jourFR} from="up" delay={0.1 + ji * 0.08}>
+                <div
+                  className="h-full rounded-card border border-brass/30 p-6 md:p-8 text-center"
+                  style={{ background: 'rgba(10, 4, 6, 0.5)' }}
+                >
+                  <p className="font-editorial italic uppercase tracking-[0.35em] text-[11px] text-[var(--color-amber-glow)] mb-1.5">
+                    {ji + 1 === 1 ? 'I' : ji + 1 === 2 ? 'II' : 'III'}
+                  </p>
+                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-4">
+                    {lang === 'FR' ? jour.jourFR : jour.jourEN}
+                  </h3>
+                  <div className="divider-brass w-14 mx-auto mb-5 opacity-70" />
+                  <ul className="space-y-2.5">
+                    {jour.groupes.map((g) => (
+                      <li
+                        key={g}
+                        className="font-editorial text-base md:text-lg leading-snug"
+                        style={{ color: 'rgba(244, 239, 227, 0.88)' }}
+                      >
+                        {g}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mt-6 text-center font-editorial italic text-sm md:text-base text-ivory-soft/70">
+            {t.section2026Note}
+          </p>
         </div>
       </section>
 
@@ -373,7 +398,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
           </Reveal>
           <Reveal from="up" delay={0.15}>
             <BandsCarousel
-              bands={BANDS_PAST}
+              bands={BANDS_ARCHIVES}
               variant="past"
               lang={lang}
               artistLabel={t.artist}
@@ -428,11 +453,12 @@ const FR = {
   title: 'Musique',
   intro1: 'Derrière le théâtre, le cinéma, derrière les histoires, autour des ronds de feu, derrière les révolutions ou simplement pour mettre de l’ambiance dans ton salon — la musique est là, pour te tenir compagnie. Ici, nous rendons hommage aux bardes qui animeront ce weekend grandiose.',
   section2026Eyebrow: 'Programmation 2026',
-  section2026Title:   'Groupes 2026',
-  section2026Lead:    'L’Harfang et Skarazula reviennent — accompagnés cette année de Mystic Projekt, Arrünn, Trifolys et Canteraine. Utilisez les chevrons (ou ← →) pour parcourir le bestiaire musical.',
+  section2026Title:   'À l’affiche cette année',
+  section2026Lead:    'Les premiers noms de l’édition 2026, journée par journée. La programmation se complète encore : d’autres bardes s’ajouteront.',
+  section2026Note:    'Programmation en cours. Les horaires de passage seront annoncés sous peu.',
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Groupes des ans passés',
-  sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Galerie en cours de constitution.',
+  sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Utilisez les chevrons (ou ← →) pour parcourir le bestiaire musical.',
   artist:  'Artiste',
   spotify: 'Écouter sur Spotify',
   website: 'Site web',
@@ -450,11 +476,12 @@ const EN = {
   title: 'Music',
   intro1: 'Behind theater, cinema, behind stories, around fire circles, behind revolutions or just to set the mood in your living room — music is there to keep you company. Here we honour the bards who will animate this grand weekend.',
   section2026Eyebrow: '2026 programming',
-  section2026Title:   '2026 Bands',
-  section2026Lead:    'L’Harfang and Skarazula return — joined this year by Mystic Projekt, Arrünn, Trifolys and Canteraine. Use the chevrons (or ← →) to browse the musical bestiary.',
+  section2026Title:   'On this year’s bill',
+  section2026Lead:    'The first names of the 2026 edition, day by day. The lineup is still growing: more bards will join.',
+  section2026Note:    'Lineup in progress. Set times will be announced shortly.',
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Bands from past years',
-  sectionPastLead:    'The bards who animated previous editions of the festival. Gallery being assembled.',
+  sectionPastLead:    'The bards who animated previous editions of the festival. Use the chevrons (or ← →) to browse the musical bestiary.',
   artist:  'Artist',
   spotify: 'Listen on Spotify',
   website: 'Website',
