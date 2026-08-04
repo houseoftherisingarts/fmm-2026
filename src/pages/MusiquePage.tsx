@@ -475,24 +475,25 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
   const [groupes, setGroupes] = useState<GroupeMusical[]>([]);
   useEffect(() => watchGroupes(setGroupes), []);
 
+  const JOUR_ORDRE: Record<GroupeJour, number> = { vendredi: 0, samedi: 1, dimanche: 2 };
+
   const afficheLive = useMemo(() => {
     const surAffiche = groupes.filter((g) => g.statut === 'affiche');
     if (surAffiche.length === 0) return null;
-    const jours: Array<{ jour: GroupeJour; jourFR: string; jourEN: string }> = [
-      { jour: 'vendredi', jourFR: 'Vendredi', jourEN: 'Friday' },
-      { jour: 'samedi',   jourFR: 'Samedi',   jourEN: 'Saturday' },
-      { jour: 'dimanche', jourFR: 'Dimanche', jourEN: 'Sunday' },
-    ];
-    return jours
-      .map((j) => ({
-        jourFR: j.jourFR,
-        jourEN: j.jourEN,
-        groupes: surAffiche
-          .filter((g) => g.jour === j.jour)
-          .sort((a, b) => a.ordre - b.ordre)
-          .map((g) => g.nom),
-      }))
-      .filter((j) => j.groupes.length > 0);
+    return surAffiche
+      .sort((a, b) => {
+        const ai = a.jour ? JOUR_ORDRE[a.jour] : 99;
+        const bi = b.jour ? JOUR_ORDRE[b.jour] : 99;
+        return ai !== bi ? ai - bi : a.ordre - b.ordre;
+      })
+      .map((g): Band => ({
+        name:  g.nom,
+        image: g.photoUrl,
+        website: g.site,
+        bioFR: g.bioFR,
+        bioEN: g.bioEN,
+        jour:  g.jour,
+      }));
   }, [groupes]);
 
   const archivesLive = useMemo(() => {
@@ -501,15 +502,16 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
     return arch
       .sort((a, b) => (b.annee ?? 0) - (a.annee ?? 0) || a.ordre - b.ordre)
       .map((g): Band => ({
-        name:  g.annee ? `${g.nom} · ${g.annee}` : g.nom,
-        image: g.photoUrl || '/wix/musique/skarazula.webp',
+        name:  g.nom,
+        image: g.photoUrl,
         website: g.site,
         bioFR: g.bioFR,
         bioEN: g.bioEN,
+        annee: g.annee,
       }));
   }, [groupes]);
 
-  const affiche = afficheLive ?? AFFICHE_2026;
+  const affiche = afficheLive ?? AFFICHE_2026_BANDS;
   const archives = archivesLive ?? BANDS_ARCHIVES;
 
   return (
