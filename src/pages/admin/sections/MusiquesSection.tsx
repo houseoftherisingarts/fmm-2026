@@ -130,6 +130,34 @@ const MusiquesSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
         </div>
       </Card>
 
+      {/* Onglets : candidatures reçues vs programmation gérée par Pitch */}
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setTab('candidatures')}
+          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
+            tab === 'candidatures'
+              ? 'bg-brass/25 border-brass text-brass'
+              : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
+          }`}
+        >
+          <Music size={13} /> Candidatures
+        </button>
+        <button
+          onClick={() => setTab('groupes')}
+          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
+            tab === 'groupes'
+              ? 'bg-brass/25 border-brass text-brass'
+              : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
+          }`}
+        >
+          <Music2 size={13} /> Groupes
+        </button>
+      </div>
+
+      {tab === 'groupes' ? (
+        <GroupesMusicauxSection />
+      ) : (
+      <>
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex flex-wrap items-center gap-1">
