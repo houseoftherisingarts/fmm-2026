@@ -90,36 +90,6 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
         />
       )}
 
-      {/* 3 spaces overview */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <SectionFog edges="top" />
-        <Motes className="opacity-50" count={16} />
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-6" stagger={0.1}>
-            {SPACES.map((s) => {
-              const Icon = s.icon;
-              return (
-                <StaggerItem
-                  key={s.titleFR}
-                  as="article"
-                  className="glass-light rounded-card p-7 md:p-8 text-center transition-transform duration-300 hover:-translate-y-1"
-                >
-                  <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
-                    <Icon size={24} className="text-brass" />
-                  </div>
-                  <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
-                    {lang === 'FR' ? s.titleFR : s.titleEN}
-                  </h3>
-                  <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-snug">
-                    {lang === 'FR' ? s.bodyFR : s.bodyEN}
-                  </p>
-                </StaggerItem>
-              );
-            })}
-          </Stagger>
-        </div>
-      </section>
-
       {/* Jeux — playable medieval games */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -279,6 +249,39 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
           </Reveal>
         </div>
       </section>
+
+      {/* Au complet : vue d'ensemble de l'espace jeunesse (Tente,
+          Parc, Quêtes). Déplacée en toute fin de la section Jeunesse
+          (demande d'Alex, 2026-08-04) : c'était le tout premier bloc
+          sous l'en-tête, désormais le dernier. */}
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-50" count={16} />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-6" stagger={0.1}>
+            {SPACES.map((s) => {
+              const Icon = s.icon;
+              return (
+                <StaggerItem
+                  key={s.titleFR}
+                  as="article"
+                  className="glass-light rounded-card p-7 md:p-8 text-center transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
+                    <Icon size={24} className="text-brass" />
+                  </div>
+                  <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
+                    {lang === 'FR' ? s.titleFR : s.titleEN}
+                  </h3>
+                  <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-snug">
+                    {lang === 'FR' ? s.bodyFR : s.bodyEN}
+                  </p>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </div>
+      </section>
     </>
   );
 };
@@ -332,7 +335,7 @@ const FR = {
   youthYourEyebrow: 'Partenariats jeunesse',
   youthYourBody: 'Cet espace est réservé à un futur partenaire jeunesse souhaitant contribuer à faire évoluer le projet et animer les cœurs d’enfants.',
   jeuxEyebrow: 'Jeux médiévaux',
-  jeuxTitle: 'Joue avec nous',
+  jeuxTitle: 'Jeux médiévaux en ligne',
   hnefataflBody: 'Le jeu d’échecs viking, en 3D. Les Raiders encerclent, les Défenseurs protègent le Roi qui doit s’échapper vers un coin. Plateau 11×11, règles complètes, jouable sur mobile et au bureau.',
   hnefataflCta: 'Jouer maintenant',
   jeuxComingSoon: 'Bientôt',
@@ -376,7 +379,7 @@ const EN = {
   youthYourEyebrow: 'Youth partners',
   youthYourBody: 'This space is reserved for a future youth partner wishing to contribute to the project and animate young hearts.',
   jeuxEyebrow: 'Medieval games',
-  jeuxTitle: 'Come play',
+  jeuxTitle: 'Medieval games online',
   hnefataflBody: 'The Viking chess game, in 3D. Raiders surround, Defenders protect the King who must escape to a corner. 11×11 board, full rules, playable on mobile and desktop.',
   hnefataflCta: 'Play now',
   jeuxComingSoon: 'Coming soon',

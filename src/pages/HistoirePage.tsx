@@ -109,8 +109,12 @@ const PhotographerGroup: React.FC<{
             className="break-inside-avoid overflow-hidden rounded-card border border-brass/20 group cursor-zoom-in"
             onClick={() => onOpen(item.full, `${byLabel} ${photographer}`)}
           >
+            {/* fmm-no-grade : les photographes livrent leurs propres
+                couleurs, déjà travaillées. Le filtre chaud/désaturé
+                automatique de .fmm-caravan-page (voir index.css) ne
+                doit jamais s'appliquer ici. Demande d'Alex, 2026-08-04. */}
             <img decoding="async" src={item.thumb} alt={`${byLabel} ${photographer}`} loading="lazy"
-              className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" />
+              className="fmm-no-grade w-full h-auto block group-hover:scale-105 transition-transform duration-700" />
           </motion.figure>
         ))}
       </div>
