@@ -1224,17 +1224,19 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                    style={{ color: 'rgba(244, 239, 227, 0.85)' }}>
                   {t.vikingsBody}
                 </p>
-                <p className="font-display title-medieval uppercase tracking-[0.4em] text-xs md:text-sm mb-10"
-                   style={{ color: 'var(--color-amber-glow)' }}>
-                  Hullsborg · Managarm · Berserkirs
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 items-center">
+
+                {/* Appariement blason-clan tiré des attributs alt du site
+                    Wix d'origine (03-activites.html) : cecafbd2 est
+                    « hullsborg coin », 90620f5a est « Managarm », et
+                    bea10ace + 4b9fc50f sont deux faces « bersrkr coin »,
+                    ce que les runes du second (BIRSIRYRS) confirment. */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 items-start mt-8">
                   {[
-                    '/clans/bouclier-1.webp',
-                    '/clans/bouclier-2.webp',
-                    '/clans/bouclier-3.webp',
-                    '/clans/bouclier-4.webp',
-                  ].map((src, i) => (
+                    { src: '/clans/bouclier-1.webp', nom: 'Hullsborg' },
+                    { src: '/clans/bouclier-4.webp', nom: 'Managarm' },
+                    { src: '/clans/bouclier-2.webp', nom: 'Berserkirs' },
+                    { src: '/clans/bouclier-3.webp', nom: 'Berserkirs' },
+                  ].map(({ src, nom }, i) => (
                     <div
                       key={src}
                       className="vikings-chip group relative flex items-center justify-center"
@@ -1249,21 +1251,28 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                           haut et du bas). Chaque disque est déjà rond et
                           plein cadre : il remplit le cercle bord à bord,
                           sans padding et sans crop. */}
-                      <div
-                        className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
-                        style={{
-                          border: '1px solid rgba(216, 155, 58, 0.35)',
-                          boxShadow: 'inset 0 0 24px rgba(0,0,0,0.55)',
-                          animationDelay: `${i * 0.4}s`,
-                        }}
-                      >
-                        <img
-                          src={src}
-                          alt=""
-                          aria-hidden
-                          loading="lazy"
-                          className="w-full h-full object-contain"
-                        />
+                      <div className="flex flex-col items-center gap-4">
+                        <div
+                          className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
+                          style={{
+                            border: '1px solid rgba(216, 155, 58, 0.35)',
+                            boxShadow: 'inset 0 0 24px rgba(0,0,0,0.55)',
+                            animationDelay: `${i * 0.4}s`,
+                          }}
+                        >
+                          <img
+                            src={src}
+                            alt={nom}
+                            loading="lazy"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <p
+                          className="font-display title-medieval uppercase tracking-[0.35em] text-[11px] md:text-xs"
+                          style={{ color: 'var(--color-amber-glow)' }}
+                        >
+                          {nom}
+                        </p>
                       </div>
                     </div>
                   ))}
