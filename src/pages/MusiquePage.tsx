@@ -259,17 +259,25 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
           >
             {/* Photo pleine largeur : les portraits de groupes sont des
                 paysages; la colonne 4/5 les coupait (correction d'Alex,
-                2026-08-03). Bandeau 16/9 sur toute la largeur du cadre. */}
+                2026-08-03). Bandeau 16/9 sur toute la largeur du cadre.
+                Sans portrait fourni, un panneau orné tient la place
+                (jamais d'image cassée). */}
             <div className={`relative w-full aspect-video overflow-hidden border-b ${isPast ? 'border-stone/30' : 'border-brass/30'}`}>
-              <img
-                src={band.image}
-                alt={band.imageAlt || band.name}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                style={{ filter: imgFilter }}
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
-              />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
+              {band.image ? (
+                <>
+                  <img
+                    src={band.image}
+                    alt={band.imageAlt || band.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    style={{ filter: imgFilter }}
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
+                  />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
+                </>
+              ) : (
+                <PortraitPlaceholder variant={variant} label={lang === 'FR' ? 'Portrait à venir' : 'Portrait coming soon'} />
+              )}
             </div>
 
             {/* Fiche du bestiaire, sous la photo */}
@@ -277,6 +285,15 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
               <p className={`font-editorial italic uppercase tracking-[0.3em] text-[10px] md:text-xs mb-3 ${isPast ? 'text-stone' : 'text-brass'}`}>
                 {String(idx + 1).padStart(2, '0')} · {artistLabel}
               </p>
+              {band.jour && (
+                <span
+                  className={`inline-block mb-3 px-3 py-1 rounded-full border font-sans text-[10px] md:text-xs uppercase tracking-widest font-semibold ${
+                    isPast ? 'border-stone/40 text-stone' : 'border-brass/50 bg-brass/10 text-brass'
+                  }`}
+                >
+                  {lang === 'FR' ? JOUR_LABELS[band.jour].FR : JOUR_LABELS[band.jour].EN}
+                </span>
+              )}
               <h3 className={`font-display title-medieval text-3xl md:text-5xl mb-3 ${isPast ? 'text-ivory-soft' : 'text-ivory'}`}>
                 {band.name}
               </h3>
