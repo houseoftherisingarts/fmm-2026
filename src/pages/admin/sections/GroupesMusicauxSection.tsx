@@ -7,7 +7,7 @@ import {
   type GroupeMusical, type GroupeStatut, type GroupeJour, type GroupeInput,
 } from '../../../firebase/groupesMusicaux';
 import {
-  Card, EmptyState, PrimaryButton, GhostButton, DangerButton, Input, Textarea, Label,
+  Card, EmptyState, PrimaryButton, GhostButton, Input, Textarea, Label,
 } from '../primitives';
 
 // ─── Groupes musicaux : programmation gérée par Éric Pichette (Pitch) ──
