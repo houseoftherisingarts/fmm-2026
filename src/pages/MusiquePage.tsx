@@ -19,13 +19,21 @@ import { SectionFog } from '../components/marche/atmospherics';
 
 interface Band {
   name:        string;
-  image:       string;          // current photo (will be replaced by transparent PNG later)
+  image?:      string;          // absent tant que le portrait n'est pas fourni → panneau orné en attente
   imageAlt?:   string;
   spotify?:    string;
   website?:    string;
   bioFR:       string;
   bioEN:       string;
+  jour?:       'vendredi' | 'samedi' | 'dimanche'; // groupes « à l'affiche » seulement
+  annee?:      number;          // groupes « archives » seulement — petite étiquette sur la vignette
 }
+
+const JOUR_LABELS: Record<NonNullable<Band['jour']>, { FR: string; EN: string }> = {
+  vendredi: { FR: 'Vendredi', EN: 'Friday' },
+  samedi:   { FR: 'Samedi',   EN: 'Saturday' },
+  dimanche: { FR: 'Dimanche', EN: 'Sunday' },
+};
 
 // 🚨 Ces six groupes sont ceux des ÉDITIONS PASSÉES. La section les
 // présentait comme « Groupes 2026 » par erreur : la programmation 2026
