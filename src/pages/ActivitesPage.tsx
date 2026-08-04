@@ -1160,14 +1160,25 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                         filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.6)) drop-shadow(0 0 26px rgba(232,177,74,0.14))',
                       }}
                     >
-                      <img
-                        src={src}
-                        alt=""
-                        aria-hidden
-                        loading="lazy"
-                        className="w-full max-w-[220px] object-contain transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
-                        style={{ animationDelay: `${i * 0.4}s` }}
-                      />
+                      {/* Médaillon rond : deux des quatre PNG hérités du
+                          Wix sont des photos carrées non détourées; le
+                          cercle les unifie sans retoucher les fichiers. */}
+                      <div
+                        className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
+                        style={{
+                          border: '1px solid rgba(216, 155, 58, 0.35)',
+                          boxShadow: 'inset 0 0 24px rgba(0,0,0,0.55)',
+                          animationDelay: `${i * 0.4}s`,
+                        }}
+                      >
+                        <img
+                          src={src}
+                          alt=""
+                          aria-hidden
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
