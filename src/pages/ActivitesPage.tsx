@@ -1525,6 +1525,8 @@ const FR = {
   scheduleVersion: 'Souvenir · édition 2025',
   schedule2026Soon: 'L’horaire 2026 sera dévoilé sous peu.',
   scheduleSouvenir: 'En attendant, revoici l’horaire de l’an dernier, en souvenir : il donne une bonne idée du rythme d’une journée de festival.',
+  horaireCard2025Title: 'Horaire 2025 · Souvenir',
+  horaireCard2026Title: 'Horaire 2026 · Dévoilé sous peu',
   dayLabel: 'Journée',
   activitiesEyebrow: 'Le grand programme',
   activitiesMeta: 'Activités',
