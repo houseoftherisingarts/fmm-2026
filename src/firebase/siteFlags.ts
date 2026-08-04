@@ -17,6 +17,11 @@ export interface SiteFlags {
   // overlay, then flip it back off. Editor is also gated by isAdmin
   // so a leaked flag flip doesn't expose dev controls to the public.
   knightPlacementEditor:   boolean;
+  // Reveals the « Commanditaire d'honneur » block at the top of
+  // /partenaires. Separate from `pubPartenaires` on purpose: the sponsor
+  // is announced for the NEXT edition, so publishing the partners page
+  // for the current one must not reveal them ahead of time.
+  showCommanditaire:       boolean;
   // ── Per-page publication ──────────────────────────────────────────
   // The public teaser (site bientôt disponible) is simply the state where
   // NO page is published. Flip a page on from the admin (Paramètres →
