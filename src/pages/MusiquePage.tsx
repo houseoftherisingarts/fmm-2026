@@ -546,42 +546,25 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             lead={t.section2026Lead}
             className="mb-10 md:mb-14"
           />
-          <div className="grid md:grid-cols-3 gap-5 md:gap-7">
-            {affiche.map((jour: { jourFR: string; jourEN: string; groupes: string[] }, ji: number) => (
-              <Reveal key={jour.jourFR} from="up" delay={0.1 + ji * 0.08}>
-                <div
-                  className="h-full rounded-card border border-brass/30 p-6 md:p-8 text-center"
-                  style={{ background: 'rgba(10, 4, 6, 0.5)' }}
-                >
-                  <p className="font-editorial italic uppercase tracking-[0.35em] text-[11px] text-[var(--color-amber-glow)] mb-1.5">
-                    {ji + 1 === 1 ? 'I' : ji + 1 === 2 ? 'II' : 'III'}
-                  </p>
-                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-4">
-                    {lang === 'FR' ? jour.jourFR : jour.jourEN}
-                  </h3>
-                  <div className="divider-brass w-14 mx-auto mb-5 opacity-70" />
-                  <ul className="space-y-2.5">
-                    {jour.groupes.map((g: string) => (
-                      <li
-                        key={g}
-                        className="font-editorial text-base md:text-lg leading-snug"
-                        style={{ color: 'rgba(244, 239, 227, 0.88)' }}
-                      >
-                        {g}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal from="up" delay={0.1}>
+            <BandsCarousel
+              bands={affiche}
+              variant="present"
+              lang={lang}
+              artistLabel={t.artist}
+              spotifyLabel={t.spotify}
+              websiteLabel={t.website}
+              prevLabel={t.prev}
+              nextLabel={t.next}
+            />
+          </Reveal>
           <p className="mt-6 text-center font-editorial italic text-sm md:text-base text-ivory-soft/70">
             {t.section2026Note}
           </p>
         </div>
       </section>
 
-      {/* ── Bands des Ans Passés ── */}
+      {/* ── Bands des Ans Passés — archive compacte, pas de carrousel ── */}
       <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-transparent via-black/20 to-transparent">
         <Motes className="opacity-30" count={10} />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -593,18 +576,13 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
               {t.sectionPastLead}
             </p>
           </Reveal>
-          <Reveal from="up" delay={0.15}>
-            <BandsCarousel
-              bands={archives}
-              variant="past"
-              lang={lang}
-              artistLabel={t.artist}
-              spotifyLabel={t.spotify}
-              websiteLabel={t.website}
-              prevLabel={t.prev}
-              nextLabel={t.next}
-            />
-          </Reveal>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+            {archives.map((band: Band, bi: number) => (
+              <Reveal key={band.name} from="up" delay={0.08 + bi * 0.05}>
+                <ArchiveCard band={band} lang={lang} />
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
