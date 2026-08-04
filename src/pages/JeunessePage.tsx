@@ -307,6 +307,7 @@ const FR = {
   clanCta: 'Voir le clan',
   formEyebrow: 'Inscriptions',
   formTitle: 'Ateliers du samedi & dimanche',
+  ateliersSoon: 'Les inscriptions aux ateliers ouvriront sous peu.',
   enfant: 'Nom et prénom de l’enfant',
   parent: 'Nom et prénom du parent',
   jour: 'Jour',
