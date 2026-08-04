@@ -327,6 +327,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
           };
         },
         state: () => ({ turn: gs.turn, over: gs.over, sel: gs.sel, mode: configRef.current.mode, humanSide: configRef.current.humanSide, board: gs.board.map((row) => row.join('')) }),
+        // TEMPORAIRE : vérification du correctif « Nouvelle saga » du
+        // 2026-08-04. À retirer avant tout déploiement.
+        forceWin: () => onUi({ turn: gs.turn, over: true, msg: 'Test de fin de partie', vfx: null }),
       };
     }
 
