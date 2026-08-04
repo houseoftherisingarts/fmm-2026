@@ -97,6 +97,8 @@ interface GameStrings {
   builtBy:      string;
   builtLead:    string;
   builtCta:     string;
+  loadingTitle: string;
+  loadingLead:  string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -155,6 +157,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     builtBy: 'Jeu développé par Le Salon des Inconnus',
     builtLead: 'Le plateau, les pièces et le code viennent de l\u2019atelier du Salon des Inconnus, à Namur. Vous pouvez aussi emporter le jeu chez vous : il se télécharge dans la section outils.',
     builtCta: 'Les outils du Salon',
+    loadingTitle: 'On dresse la table',
+    loadingLead: 'Le plateau est sculpté, les pièces arrivent de l\u2019atelier.',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -211,6 +215,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     builtBy: 'Game built by Le Salon des Inconnus',
     builtLead: 'The board, the pieces and the code all come from the Salon des Inconnus workshop in Namur. You can also take the game home: it downloads from the tools section.',
     builtCta: 'The Salon\u2019s tools',
+    loadingTitle: 'Setting the table',
+    loadingLead: 'The board is carved, the pieces are on their way.',
   },
 };
 
@@ -759,6 +765,10 @@ const HnefataflPage: React.FC = () => {
     difficulty: 'medium',
   });
   const [gameKey, setGameKey] = useState(0);
+  // Avancement du chargement des modèles 3D. `pret` bascule quand tout
+  // est en scène, ou qu'un garde-fou a libéré la partie.
+  const [charge, setCharge] = useState(0);
+  const [pret, setPret] = useState(false);
   const [ui, setUi] = useState<UIState>({
     turn: 'attacker',
     over: false,
@@ -779,6 +789,8 @@ const HnefataflPage: React.FC = () => {
   const handleBegin = (next: GameConfig) => {
     setConfig(next);
     setGameKey((k) => k + 1);
+    setCharge(0);
+    setPret(false);
     setUi({ turn: 'attacker', over: false, msg: s.raidersFirst, vfx: null });
     setGameStarted(true);
   };
@@ -845,8 +857,67 @@ const HnefataflPage: React.FC = () => {
                 className="relative w-full h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
               >
                 {gameStarted && (
-                  <GameCanvas gameKey={gameKey} onUi={setUi} strings={s} config={config} />
+                  <GameCanvas
+                    gameKey={gameKey}
+                    onUi={setUi}
+                    strings={s}
+                    config={config}
+                    onLoad={(p, done) => {
+                      setCharge(p);
+                      if (done) setPret(true);
+                    }}
+                  />
                 )}
+
+                {/* ── Écran d'attente ─────────────────────────────
+                    Le plateau et les pièces pèsent près de 2,5 Mo :
+                    sans cet écran, la partie s'ouvrait sur un plateau
+                    procédural nu qui se transformait sous les yeux du
+                    joueur. La barre suit le vrai décompte du
+                    LoadingManager, pas un faux défilement. */}
+                <AnimatePresence>
+                  {gameStarted && !pret && (
+                    <motion.div
+                      key="chargement"
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6, ease: 'easeOut' }}
+                      className="absolute inset-0 z-[6] flex flex-col items-center justify-center px-6 text-center bg-[rgba(10,4,6,0.92)] backdrop-blur-md"
+                    >
+                      <img
+                        src="/salon/salon-logo.webp"
+                        alt=""
+                        aria-hidden
+                        className="h-12 w-auto opacity-70 mb-6 animate-pulse"
+                      />
+                      <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+                        {s.loadingLead}
+                      </p>
+                      <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight mb-7">
+                        {s.loadingTitle}
+                      </h3>
+                      {/* Jauge de laiton */}
+                      <div
+                        className="w-56 md:w-72 h-[3px] rounded-full overflow-hidden"
+                        style={{ background: 'rgba(244,239,227,0.12)' }}
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={Math.round(charge * 100)}
+                      >
+                        <div
+                          className="h-full rounded-full transition-[width] duration-300 ease-out"
+                          style={{
+                            width: `${Math.max(6, Math.round(charge * 100))}%`,
+                            background:
+                              'linear-gradient(90deg, var(--color-brass), var(--color-amber-glow))',
+                            boxShadow: '0 0 12px rgba(232,177,74,0.55)',
+                          }}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {!gameStarted && (
                   <>
