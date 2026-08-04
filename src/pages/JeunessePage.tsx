@@ -201,6 +201,10 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
               <p className="font-editorial text-base text-ivory-soft">{t.thanksBody}</p>
               <p className="font-editorial italic text-sm text-brass mt-4">{t.cashReminder}</p>
             </motion.div>
+          ) : !progFlags.ateliersJeunesse ? (
+            <div className="glass-light rounded-lg-card p-10 text-center">
+              <p className="font-editorial text-base text-ivory-soft">{t.ateliersSoon}</p>
+            </div>
           ) : (
             <form onSubmit={onSubmit} className="glass-light rounded-lg-card p-7 md:p-9 space-y-5">
               <Field label={t.enfant} required>
