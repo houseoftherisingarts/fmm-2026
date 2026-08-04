@@ -548,7 +548,7 @@ export const EquipeSection: React.FC = () => {
             >
               {m.photo ? (
                 <div className="aspect-[4/3] -mx-6 -mt-6 md:-mx-7 md:-mt-7 mb-5 overflow-hidden border-b border-brass/20">
-                  <img src={m.photo} alt={m.name} loading="lazy" className={`w-full h-full object-cover ${m.pos ?? 'object-[center_25%]'}`} />
+                  <img src={m.photo} alt={m.name} loading="lazy" className={`fmm-no-grade w-full h-full object-cover ${m.pos ?? 'object-[center_25%]'}`} />
                 </div>
               ) : (
                 <div className="aspect-[4/3] -mx-6 -mt-6 md:-mx-7 md:-mt-7 mb-5 border-b border-brass/20 bg-midnight-soft/40 flex items-center justify-center">
