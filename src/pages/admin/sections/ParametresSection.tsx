@@ -115,6 +115,37 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         </div>
       </Card>
 
+      {/* Programmation page section toggles */}
+      <Card className="p-6 md:p-8">
+        <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
+          <Eye size={14} /> Page Programmation : sections visibles
+        </h3>
+        <p className="font-editorial italic text-sm text-ivory-soft mb-5">
+          Bascules synchronisées en temps réel via Firestore (<code className="text-brass">siteFlags/programmation</code>).
+        </p>
+        {!env.fbReady && (
+          <p className="flex items-center gap-2 font-sans text-xs text-blush mb-4">
+            <ShieldAlert size={13} className="shrink-0" /> Firebase indisponible : ces bascules affichent les valeurs par défaut et ne s'enregistrent pas pour le moment.
+          </p>
+        )}
+        <div className="space-y-1">
+          {PROG_FLAG_ROWS.map(({ flag, label }) => (
+            <div key={flag} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
+              <span className="font-sans text-sm text-ivory">{label}</span>
+              <div className="flex items-center gap-3">
+                <span className={`font-display title-medieval text-xs ${progFlags[flag] ? 'text-emerald-400' : 'text-ivory-soft/50'}`}>
+                  {progFlags[flag] ? 'Allumé' : 'Éteint'}
+                </span>
+                <ProgToggle checked={progFlags[flag]} onChange={(v) => handleProgToggle(flag, v)} label={label} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="font-editorial italic text-xs text-ivory-soft/70 mt-5 pt-5 border-t border-ivory-soft/15">
+          Éteindre une section la retire de la page publique immédiatement. Le Béhourd et les Ateliers sont éteints par défaut.
+        </p>
+      </Card>
+
       {/* Configuration status */}
       <Card className="p-6 md:p-8">
         <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
