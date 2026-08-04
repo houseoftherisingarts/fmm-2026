@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { UI } from '../content';
+import { annoncerLecture, ecouterExclusivite } from '../lib/audioExclusif';
 
 // Musique d'ambiance du thème « Caravanes et Saltimbanques ».
 // Piste : Master of the Feast de Kevin MacLeod, CC BY
@@ -32,6 +33,13 @@ const AudioPlayer: React.FC = () => {
     audioRef.current.volume = 0.4;
   }, []);
 
+  // Une autre source démarre (chant de l'intro, musique du plateau) :
+  // ce lecteur se tait.
+  useEffect(() => ecouterExclusivite('entete', () => {
+    audioRef.current?.pause();
+    setPlaying(false);
+  }), []);
+
   if (!url) {
     // Pas de fichier local : le chip ouvre la piste-thème sur Spotify.
     return (
@@ -58,6 +66,7 @@ const AudioPlayer: React.FC = () => {
       audioRef.current.pause();
       setPlaying(false);
     } else {
+      annoncerLecture('entete');
       audioRef.current.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
     }
   };

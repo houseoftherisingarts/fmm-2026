@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 
 // ─── Le chant du prologue ────────────────────────────────────────────
 // Un bouton discret en bas à gauche de l'intro : le visiteur décide
@@ -27,7 +28,13 @@ const IntroChant: React.FC<{
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [chante, setChante] = useState(false);
 
-  // Le film arrive : on se tait.
+  // Une autre source démarre : le chant se tait.
+  useEffect(() => ecouterExclusivite('chant', () => {
+    audioRef.current?.pause();
+    setChante(false);
+  }), []);
+
+  // Le film arrive : le chant se tait.
   useEffect(() => {
     if (visible) return;
     audioRef.current?.pause();
@@ -43,6 +50,7 @@ const IntroChant: React.FC<{
       setChante(false);
       return;
     }
+    annoncerLecture('chant');
     a.volume = 0;
     a.play()
       .then(() => {

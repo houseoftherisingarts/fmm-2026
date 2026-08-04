@@ -53,13 +53,27 @@ const DECAL_URL   = '/fmm-logo-decal.png';
 const DECAL_H     = 7.4;
 const DECAL_RATIO = 512 / 626;
 
-// ── Palette du festival ───────────────────────────────────────────
-const WALNUT_LIGHT = 0x4a2f16;   // tuile claire, noyer chaud
-const WALNUT_DARK  = 0x2b1a0b;   // tuile sombre
-const VELVET_DEEP  = 0x1a050b;   // socle, velours du site
-const OXBLOOD      = 0x571414;   // trône
-const BRASS        = 0xc4a45a;   // laiton du site
-const BRASS_DEEP   = 0x7a5215;
+// ── Palettes procédurales ─────────────────────────────────────────
+// Deux ambiances : le noyer chaud du festival (secours sous le GLB) et
+// la pierre runique, plus froide et plus nordique. Meshy s'est montré
+// incapable de produire une grille 11x11 fiable (deux tentatives le
+// 2026-08-03 : des planches, pas un damier), alors le second plateau
+// est bâti ICI, où la grille est exacte par construction.
+interface Palette {
+  clair: number; sombre: number; socle: number; socleHaut: number;
+  trone: number; metal: number; metalSombre: number; brillance: number;
+}
+
+const PALETTES: Record<string, Palette> = {
+  noyer: {
+    clair: 0x4a2f16, sombre: 0x2b1a0b, socle: 0x1a050b, socleHaut: 0x241207,
+    trone: 0x571414, metal: 0xc4a45a, metalSombre: 0x7a5215, brillance: 26,
+  },
+  pierre: {
+    clair: 0x6a6558, sombre: 0x413d36, socle: 0x14161a, socleHaut: 0x22252a,
+    trone: 0x3a5a4a, metal: 0x9aa3ab, metalSombre: 0x555c63, brillance: 8,
+  },
+};
 
 export function buildBoard(
   scene: THREE.Scene,
@@ -71,6 +85,7 @@ export function buildBoard(
   setId: string = BOARD_DEFAUT,
 ): BoardHandle {
   const jeu: BoardSet = boardSet(setId);
+  const pal = PALETTES[jeu.palette ?? 'noyer'] ?? PALETTES.noyer;
   const group = new THREE.Group();
   scene.add(group);
 
@@ -85,7 +100,7 @@ export function buildBoard(
 
   const baseDeep = new THREE.Mesh(
     new THREE.BoxGeometry(span + 2.2, 0.5, span + 2.2),
-    new THREE.MeshPhongMaterial({ color: VELVET_DEEP, shininess: 8 }),
+    new THREE.MeshPhongMaterial({ color: pal.socle, shininess: 8 }),
   );
   baseDeep.position.y = -0.42;
   baseDeep.receiveShadow = true;
@@ -94,7 +109,7 @@ export function buildBoard(
 
   const baseTop = new THREE.Mesh(
     new THREE.BoxGeometry(span + 1.5, 0.3, span + 1.5),
-    new THREE.MeshPhongMaterial({ color: 0x241207, shininess: 14 }),
+    new THREE.MeshPhongMaterial({ color: pal.socleHaut, shininess: 14 }),
   );
   baseTop.position.y = -0.12;
   baseTop.receiveShadow = true;
@@ -103,7 +118,7 @@ export function buildBoard(
 
   // Filet de laiton qui court autour du champ de jeu
   const railMat = new THREE.MeshPhongMaterial({
-    color: BRASS,
+    color: pal.metal,
     emissive: 0x1f1502,
     shininess: 140,
     specular: 0xffe9b0,
@@ -132,11 +147,11 @@ export function buildBoard(
   for (let r = 0; r < N; r++) {
     const row: THREE.Mesh[] = [];
     for (let c = 0; c < N; c++) {
-      let col = (r + c) % 2 === 0 ? WALNUT_LIGHT : WALNUT_DARK;
+      let col = (r + c) % 2 === 0 ? pal.clair : pal.sombre;
       let emissive = 0x000000;
-      if (isThrone(r, c)) { col = OXBLOOD; emissive = 0x1a0202; }
-      if (isCorner(r, c)) { col = BRASS_DEEP; emissive = 0x171004; }
-      const mat = new THREE.MeshPhongMaterial({ color: col, shininess: 26, emissive });
+      if (isThrone(r, c)) { col = pal.trone; emissive = 0x1a0202; }
+      if (isCorner(r, c)) { col = pal.metalSombre; emissive = 0x171004; }
+      const mat = new THREE.MeshPhongMaterial({ color: col, shininess: pal.brillance, emissive });
       const sq = new THREE.Mesh(sqGeo, mat);
       sq.position.set((c - MID) * CELL, 0.05, (r - MID) * CELL);
       sq.receiveShadow = true;
@@ -151,7 +166,7 @@ export function buildBoard(
 
   // ── Incrustations de laiton : coins et trône ────────────────────
   const inlayMat = new THREE.MeshPhongMaterial({
-    color: BRASS,
+    color: pal.metal,
     emissive: 0x241902,
     shininess: 160,
     specular: 0xfff0c0,

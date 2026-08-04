@@ -31,6 +31,8 @@ export interface BoardSet {
   rotY?:     number;
   /** Teinte du blason peint au centre, et sa présence. */
   decal?:    { couleur: number; opacite: number };
+  /** Palette du plateau procédural (voir PALETTES dans boardMesh). */
+  palette?:  'noyer' | 'pierre';
 }
 
 export interface PieceSet {
@@ -61,6 +63,27 @@ export const BOARD_SETS: BoardSet[] = [
     y: -0.63,
     rotY: 0,
     decal: { couleur: 0xd8bd82, opacite: 0.36 },
+    palette: 'noyer',
+  },
+  {
+    id: 'pierre',
+    statut: 'disponible',
+    nomFR: 'La pierre runique',
+    nomEN: 'The rune stone',
+    texteFR: 'Un damier taillé net dans la pierre, filets de fer et trône de mousse. Sobre, lisible, et il s\u2019ouvre sans rien faire attendre.',
+    texteEN: 'A grid cut cleanly into stone, iron rails and a mossy throne. Plain, legible, and it opens with nothing to wait for.',
+    vignette: '/games/hnefatafl/vignettes/pierre.webp',
+    palette: 'pierre',
+    decal: { couleur: 0xc8d0d8, opacite: 0.22 },
+  },
+  {
+    id: 'bientot',
+    statut: 'bientot',
+    nomFR: 'D\u2019autres plateaux',
+    nomEN: 'More boards',
+    texteFR: 'De nouveaux plateaux arrivent, dont ceux de nos commanditaires : soutenir le festival, c\u2019est aussi avoir sa table.',
+    texteEN: 'New boards are on the way, including our sponsors\u2019: backing the festival also means having your own table.',
+    vignette: '',
   },
 ];
 
@@ -79,6 +102,30 @@ export const PIECE_SETS: PieceSet[] = [
       3: '/games/hnefatafl/models/piece-king.glb',
     },
     scales: { 1: 0.45, 2: 0.45, 3: 0.63 },
+  },
+  {
+    id: 'jarl',
+    statut: 'disponible',
+    nomFR: 'La hird du Jarl',
+    nomEN: 'The Jarl\u2019s hird',
+    texteFR: 'Des hommes, pas des bêtes : guerriers à la hache et au bouclier rond, porteuses de pavois, et un Jarl en manteau de fourrure à la place du roi couronné.',
+    texteEN: 'Men, not beasts: axe and round-shield warriors, shield-bearers, and a fur-cloaked Jarl in place of the crowned king.',
+    vignette: '/games/hnefatafl/vignettes/jarl.webp',
+    urls: {
+      1: '/games/hnefatafl/models/piece-raider2.glb',
+      2: '/games/hnefatafl/models/piece-defender2.glb',
+      3: '/games/hnefatafl/models/piece-jarl.glb',
+    },
+    scales: { 1: 0.54, 2: 0.54, 3: 0.74 },
+  },
+  {
+    id: 'bientot',
+    statut: 'bientot',
+    nomFR: 'D\u2019autres troupes',
+    nomEN: 'More companies',
+    texteFR: 'De nouvelles pièces arrivent. Les commanditaires du festival auront les leurs.',
+    texteEN: 'New pieces are on the way. Festival sponsors will have their own.',
+    vignette: '',
   },
 ];
 

@@ -11,7 +11,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -36,6 +36,8 @@ import { buildBoard } from './boardMesh';
 import { createPieceSystem } from './pieceMesh';
 import { createHighlightSystem } from './highlightSystem';
 import { pickMove, type Difficulty } from './cpuPlayer';
+import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix } from './assets';
+import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 
 type Mode = 'two-player' | 'vs-cpu';
 
@@ -99,6 +101,15 @@ interface GameStrings {
   builtCta:     string;
   loadingTitle: string;
   loadingLead:  string;
+  musiqueOn:    string;
+  musiqueOff:   string;
+  shopEyebrow:  string;
+  shopTitle:    string;
+  shopLead:     string;
+  shopBoards:   string;
+  shopPieces:   string;
+  shopSoon:     string;
+  shopActive:   string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -159,6 +170,15 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     builtCta: 'Les outils du Salon',
     loadingTitle: 'On dresse la table',
     loadingLead: 'Le plateau est sculpté, les pièces arrivent de l\u2019atelier.',
+    musiqueOn: 'Couper la musique',
+    musiqueOff: 'Musique',
+    shopEyebrow: 'Le coffre',
+    shopTitle: 'Votre plateau, vos pièces',
+    shopLead: 'Choisissez le plateau et les pièces séparément. Votre choix est gardé sur cet appareil, et suivra votre compte quand le coffre sera rattaché à l\u2019espace client.',
+    shopBoards: 'Plateaux',
+    shopPieces: 'Pièces',
+    shopSoon: 'Bientôt',
+    shopActive: 'En jeu',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -217,6 +237,15 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     builtCta: 'The Salon\u2019s tools',
     loadingTitle: 'Setting the table',
     loadingLead: 'The board is carved, the pieces are on their way.',
+    musiqueOn: 'Mute the music',
+    musiqueOff: 'Music',
+    shopEyebrow: 'The chest',
+    shopTitle: 'Your board, your pieces',
+    shopLead: 'Pick the board and the pieces separately. Your choice is kept on this device, and will follow your account once the chest is tied to the client space.',
+    shopBoards: 'Boards',
+    shopPieces: 'Pieces',
+    shopSoon: 'Coming soon',
+    shopActive: 'In play',
   },
 };
 
@@ -230,9 +259,12 @@ interface GameCanvasProps {
   /** Avancement du chargement des modèles, de 0 à 1, puis `true` quand
    *  tout est en scène (ou qu'un asset a définitivement échoué). */
   onLoad: (progress: number, done: boolean) => void;
+  /** Jeux d'assets choisis dans le coffre. */
+  boardSetId: string;
+  pieceSetId: string;
 }
 
-const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config, onLoad }) => {
+const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config, onLoad, boardSetId, pieceSetId }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const stringsRef = useRef(strings);
   stringsRef.current = strings;
@@ -281,8 +313,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
     };
     const secours = window.setTimeout(release, 15000);
 
-    const { clickables } = buildBoard(scene.scene, () => alive, manager);
-    const pieces = createPieceSystem(scene.scene, clickables, undefined, manager);
+    const { clickables } = buildBoard(scene.scene, () => alive, manager, boardSetId);
+    const pieces = createPieceSystem(scene.scene, clickables, undefined, manager, pieceSetId);
     const hl = createHighlightSystem(scene.scene);
 
     // ── Sonde de développement ──────────────────────────────────────
@@ -751,6 +783,52 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin 
   );
 };
 
+// ─── Musique du plateau ─────────────────────────────────────────────
+// Facultative, jamais automatique, et exclusive : elle coupe le lecteur
+// de l'en-tête quand elle démarre (et réciproquement).
+// Piste : « Nordic Wist » de Kevin MacLeod, CC BY 4.0.
+const MUSIQUE_URL = '/audio/nordic-wist.mp3';
+const MUSIQUE_TITRE = 'Nordic Wist · Kevin MacLeod';
+
+const BoutonMusique: React.FC<{ onLabel: string; offLabel: string }> = ({ onLabel, offLabel }) => {
+  const ref = useRef<HTMLAudioElement | null>(null);
+  const [joue, setJoue] = useState(false);
+
+  useEffect(() => ecouterExclusivite('hnefatafl', () => {
+    ref.current?.pause();
+    setJoue(false);
+  }), []);
+
+  const basculer = () => {
+    const a = ref.current;
+    if (!a) return;
+    if (joue) { a.pause(); setJoue(false); return; }
+    annoncerLecture('hnefatafl');
+    a.volume = 0.3;
+    a.play().then(() => setJoue(true)).catch(() => setJoue(false));
+  };
+
+  return (
+    <>
+      <audio ref={ref} src={MUSIQUE_URL} loop preload="none" />
+      <button
+        type="button"
+        onClick={basculer}
+        title={MUSIQUE_TITRE}
+        aria-pressed={joue}
+        className={`shrink-0 inline-flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-card border transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em] ${
+          joue
+            ? 'border-brass/60 text-ivory'
+            : 'border-brass/30 text-ivory-soft hover:text-ivory hover:border-brass/60'
+        }`}
+      >
+        {joue ? <VolumeX size={12} /> : <Music size={12} />}
+        <span className="hidden sm:inline">{joue ? onLabel : offLabel}</span>
+      </button>
+    </>
+  );
+};
+
 const HnefataflPage: React.FC = () => {
   // Pose l'atmosphère de la caravane sur <body> : brumes, grain, noir
   // chaud. C'est ce hook qui raccroche la page au reste du site.
@@ -769,6 +847,9 @@ const HnefataflPage: React.FC = () => {
   // est en scène, ou qu'un garde-fou a libéré la partie.
   const [charge, setCharge] = useState(0);
   const [pret, setPret] = useState(false);
+  // Jeux d'assets choisis dans le coffre. Relire au montage seulement :
+  // changer de jeu en pleine partie remonterait la scène 3D.
+  const [choix, setChoix] = useState(() => lireChoix());
   const [ui, setUi] = useState<UIState>({
     turn: 'attacker',
     over: false,
@@ -838,6 +919,8 @@ const HnefataflPage: React.FC = () => {
                     {gameStarted ? ui.msg : s.tableReady}
                   </span>
                 </span>
+                <span className="shrink-0 inline-flex items-center gap-2">
+                  <BoutonMusique onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
                 {gameStarted && (
                   <button
                     type="button"
@@ -848,6 +931,7 @@ const HnefataflPage: React.FC = () => {
                     <span className="hidden sm:inline">{s.newSaga}</span>
                   </button>
                 )}
+                </span>
               </div>
 
               {/* La scène 3D. Hauteur bornée : la page respire au lieu
@@ -862,6 +946,8 @@ const HnefataflPage: React.FC = () => {
                     onUi={setUi}
                     strings={s}
                     config={config}
+                    boardSetId={choix.plateau}
+                    pieceSetId={choix.pieces}
                     onLoad={(p, done) => {
                       setCharge(p);
                       if (done) setPret(true);
@@ -1002,6 +1088,105 @@ const HnefataflPage: React.FC = () => {
               </div>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ── Le coffre : plateaux et pièces ──────────────────────── */}
+      <section className="relative pb-16 md:pb-24">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <Reveal>
+            <div className="text-center mb-9 md:mb-12">
+              <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+                {s.shopEyebrow}
+              </p>
+              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.06]">
+                {s.shopTitle}
+              </h2>
+              <div className="divider-brass w-24 mx-auto mt-5" />
+              <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-relaxed max-w-2xl mx-auto mt-5">
+                {s.shopLead}
+              </p>
+            </div>
+          </Reveal>
+
+          {([
+            { titre: s.shopBoards, items: BOARD_SETS, actif: choix.plateau,
+              choisir: (id: string) => { const n = { ...choix, plateau: id }; setChoix(n); ecrireChoix(n.plateau, n.pieces); } },
+            { titre: s.shopPieces, items: PIECE_SETS, actif: choix.pieces,
+              choisir: (id: string) => { const n = { ...choix, pieces: id }; setChoix(n); ecrireChoix(n.plateau, n.pieces); } },
+          ]).map((rayon) => (
+            <div key={rayon.titre} className="mb-10 last:mb-0">
+              <p className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70 mb-4">
+                {rayon.titre}
+              </p>
+              <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+                {rayon.items.map((it) => {
+                  const dispo = it.statut === 'disponible';
+                  const on = dispo && it.id === rayon.actif;
+                  return (
+                    <StaggerItem key={it.id} as="div">
+                      <button
+                        type="button"
+                        disabled={!dispo}
+                        onClick={() => dispo && rayon.choisir(it.id)}
+                        aria-pressed={on}
+                        className={`group relative w-full h-full text-left rounded-card overflow-hidden border transition-all duration-300 ${
+                          on
+                            ? 'border-brass/70 shadow-[0_0_26px_rgba(232,177,74,0.22)]'
+                            : dispo
+                              ? 'border-white/12 hover:border-brass/50 hover:-translate-y-1'
+                              : 'border-white/8 opacity-55 cursor-not-allowed'
+                        }`}
+                      >
+                        <span className="block relative aspect-video overflow-hidden bg-black/40">
+                          {dispo ? (
+                            <img
+                              src={it.vignette}
+                              alt=""
+                              aria-hidden
+                              loading="lazy"
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                          ) : (
+                            <span className="absolute inset-0 flex items-center justify-center text-brass/40">
+                              <Lock size={22} />
+                            </span>
+                          )}
+                          <span
+                            aria-hidden
+                            className="absolute inset-0"
+                            style={{ background: 'linear-gradient(180deg, rgba(10,2,7,0.15) 0%, rgba(10,2,7,0.88) 100%)' }}
+                          />
+                          {/* Pastille seulement quand elle DIT quelque
+                              chose : en jeu, ou bientôt. Une carte
+                              disponible et non choisie n'en porte pas,
+                              sinon on affichait une pastille vide. */}
+                          {(on || !dispo) && (
+                            <span
+                              className={`absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] font-sans ${
+                                on ? 'bg-brass text-[#1A0A05]' : 'bg-black/60 text-ivory-soft border border-white/15'
+                              }`}
+                            >
+                              {on && <Check size={10} />}
+                              {on ? s.shopActive : s.shopSoon}
+                            </span>
+                          )}
+                        </span>
+                        <span className="block px-4 py-3.5">
+                          <span className={`block font-display title-medieval text-base md:text-lg leading-snug mb-1.5 ${on ? 'text-ivory' : 'text-ivory/85 group-hover:text-ivory'}`}>
+                            {lang === 'FR' ? it.nomFR : it.nomEN}
+                          </span>
+                          <span className="block font-editorial italic text-[13px] text-ivory-soft leading-snug">
+                            {lang === 'FR' ? it.texteFR : it.texteEN}
+                          </span>
+                        </span>
+                      </button>
+                    </StaggerItem>
+                  );
+                })}
+              </Stagger>
+            </div>
+          ))}
         </div>
       </section>
 
