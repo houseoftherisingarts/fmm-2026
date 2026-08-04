@@ -1159,6 +1159,31 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               </div>
             </GildedFrame>
           </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </GildedFrame>
+            </HexPanel>
+
+            <HexPanel size="md" className="mt-4">
+              <GildedFrame inset={12} tone="copper">
+                <div
+                  className="caravan-glass p-6 md:p-8 flex items-center justify-between gap-4"
+                  style={{ cursor: 'default' }}
+                  aria-disabled
+                >
+                  <div>
+                    <Eyebrow tone="copper" className="mb-2">{t.scheduleEyebrow}</Eyebrow>
+                    <DisplayTitle size="lg" className="text-2xl md:text-3xl">{t.horaireCard2026Title}</DisplayTitle>
+                  </div>
+                  <LockIcon size={22} className="shrink-0" style={{ color: 'var(--color-copper)' }} />
+                </div>
+              </GildedFrame>
+            </HexPanel>
+          </div>
+
           <SectionBottomRail
             hint={t.scheduleNote}
             meta={t.scheduleVersion}
@@ -1166,9 +1191,11 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           />
         </div>
       </section>
+      )}
 
       {/* ── Vikings — Compendium entry ── */}
-      <section className="vikings-section relative py-16 md:py-24 overflow-hidden">
+      {progFlags.clans && (
+      <section id="clans" className="vikings-section relative py-16 md:py-24 overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <SectionTopRail
             index="03"
