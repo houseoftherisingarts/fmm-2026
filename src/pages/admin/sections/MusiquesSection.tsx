@@ -287,6 +287,8 @@ const MusiquesSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
           })}
         </div>
       )}
+      </>
+      )}
     </div>
   );
 };
