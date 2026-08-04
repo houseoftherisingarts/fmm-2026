@@ -41,6 +41,7 @@ const BenevolePage     = lazy(() => import('./pages/BenevolePage'));
 const BenevoleSpacePage = lazy(() => import('./pages/BenevoleSpacePage'));
 const HebergementPage  = lazy(() => import('./pages/HebergementPage'));
 const PartenairesPage  = lazy(() => import('./pages/PartenairesPage'));
+const Partenaires2027Page = lazy(() => import('./pages/Partenaires2027Page'));
 // Merged pillar pages (édition 2026 consolidation).
 const ProgrammationPage    = lazy(() => import('./pages/ProgrammationPage'));
 const LeVillagePage        = lazy(() => import('./pages/LeVillagePage'));
