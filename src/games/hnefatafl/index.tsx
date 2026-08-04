@@ -36,7 +36,7 @@ import { buildBoard } from './boardMesh';
 import { createPieceSystem } from './pieceMesh';
 import { createHighlightSystem } from './highlightSystem';
 import { pickMove, type Difficulty } from './cpuPlayer';
-import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix } from './assets';
+import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
 import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 
 type Mode = 'two-player' | 'vs-cpu';
@@ -848,7 +848,7 @@ const CoffreRail: React.FC<{
   choix:    { plateau: string; pieces: string };
   setChoix: (c: { plateau: string; pieces: string }) => void;
   lang:     'FR' | 'EN';
-  s:        Strings;
+  s:        GameStrings;
   enPartie: boolean;
 }> = ({ choix, setChoix, lang, s, enPartie }) => {
   const poser = (cle: 'plateau' | 'pieces', id: string) => {
@@ -1040,11 +1040,21 @@ const HnefataflPage: React.FC = () => {
                 </span>
               </div>
 
+              {/* Le plateau et le coffre partagent le même cadre. */}
+              <div className="flex flex-col lg:flex-row">
+                <CoffreRail
+                  choix={choix}
+                  setChoix={setChoix}
+                  lang={lang}
+                  s={s}
+                  enPartie={gameStarted}
+                />
+
               {/* La scène 3D. Hauteur bornée : la page respire au lieu
                   de verrouiller 100vh, et le pied de page reste
                   atteignable. */}
               <div
-                className="relative w-full h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
+                className="relative flex-1 min-w-0 lg:order-first h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
               >
                 {gameStarted && (
                   <GameCanvas
