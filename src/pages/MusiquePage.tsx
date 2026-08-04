@@ -34,6 +34,7 @@ const JOUR_LABELS: Record<NonNullable<Band['jour']>, { FR: string; EN: string }>
   samedi:   { FR: 'Samedi',   EN: 'Saturday' },
   dimanche: { FR: 'Dimanche', EN: 'Sunday' },
 };
+const JOUR_ORDRE: Record<GroupeJour, number> = { vendredi: 0, samedi: 1, dimanche: 2 };
 
 // 🚨 Ces six groupes sont ceux des ÉDITIONS PASSÉES. La section les
 // présentait comme « Groupes 2026 » par erreur : la programmation 2026
