@@ -1230,10 +1230,10 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 items-center">
                   {[
-                    '/wix/activites/cecafbd2.png',
-                    '/wix/activites/bea10ace.png',
-                    '/wix/activites/4b9fc50f.png',
-                    '/wix/activites/90620f5a.png',
+                    '/clans/bouclier-1.webp',
+                    '/clans/bouclier-2.webp',
+                    '/clans/bouclier-3.webp',
+                    '/clans/bouclier-4.webp',
                   ].map((src, i) => (
                     <div
                       key={src}
