@@ -76,6 +76,7 @@ const FR = {
 const EN: typeof FR = {
   eyebrow: '2027 edition',
   title:   'Partners 2027',
+  dateline: 'Fall 2027 · dates to come',
   intro:   'Every edition of the festival is carried by an invited figure. Here is the one walking with us in 2027, and where you will meet us together before the festival.',
   becomeEyebrow: 'The next seat',
   becomeTitle:   'Sponsor of honour 2028',
