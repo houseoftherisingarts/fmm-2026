@@ -1270,9 +1270,11 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           </div>
         </div>
       </section>
+      )}
 
       {/* ── Banquet + Youth — Champion-select cross-promo ── */}
-      <section className="cross-section py-16 md:py-24">
+      {progFlags.banquet && (
+      <section id="banquet" className="cross-section py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <SectionTopRail
             index="04"
