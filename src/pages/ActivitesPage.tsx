@@ -1242,11 +1242,15 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                         filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.6)) drop-shadow(0 0 26px rgba(232,177,74,0.14))',
                       }}
                     >
-                      {/* Médaillon rond : deux des quatre PNG hérités du
-                          Wix sont des photos carrées non détourées; le
-                          cercle les unifie sans retoucher les fichiers. */}
+                      {/* Médaillon rond. Les fichiers /clans/bouclier-N.webp
+                          sont les ORIGINAUX Wix complets (retrouvés le
+                          2026-08-04 via leur hachage média : les copies du
+                          dépôt étaient des recadrages de galerie amputés du
+                          haut et du bas). Chaque disque est déjà rond et
+                          plein cadre : il remplit le cercle bord à bord,
+                          sans padding et sans crop. */}
                       <div
-                        className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden p-3 transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
+                        className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
                         style={{
                           border: '1px solid rgba(216, 155, 58, 0.35)',
                           boxShadow: 'inset 0 0 24px rgba(0,0,0,0.55)',
