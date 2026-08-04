@@ -58,6 +58,15 @@ service firebase.storage {
         && (request.resource == null || request.resource.size < 50 * 1024 * 1024);
     }
 
+    // ── Groupes musicaux (programmation, section admin Musique) ──
+    // Photo de chaque groupe à l'affiche ou aux archives. Lecture
+    // publique (la page publique Musique les affiche), écriture admin
+    // seulement (Éric Pichette gère la programmation).
+    match /groupes/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     // ── User avatars ────────────────────────────────────────────
     match /users/{uid}/{allPaths=**} {
       allow read:  if true;
