@@ -156,7 +156,7 @@ export async function updateGroupe(id: string, patch: Partial<GroupeInput>): Pro
   // l'aurait laissé traîner de l'ancien état).
   if (patch.statut === 'affiche') data.annee = undefined;
   if (patch.statut === 'archive') data.jour = undefined;
-  await updateDoc(doc(db, COL, id), data as Record<string, unknown>);
+  await updateDoc(doc(db, COL, id), data as any);
 }
 
 export async function deleteGroupe(id: string): Promise<void> {
