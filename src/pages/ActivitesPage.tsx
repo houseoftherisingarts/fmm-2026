@@ -1592,6 +1592,8 @@ const EN: typeof FR = {
   scheduleVersion: 'Keepsake · 2025 edition',
   schedule2026Soon: 'The 2026 schedule will be unveiled shortly.',
   scheduleSouvenir: 'Meanwhile, here is last year’s schedule, as a keepsake: it gives a fair idea of the rhythm of a festival day.',
+  horaireCard2025Title: '2025 Schedule · Keepsake',
+  horaireCard2026Title: '2026 Schedule · Revealed soon',
   dayLabel: 'Day',
   activitiesEyebrow: 'The grand program',
   activitiesMeta: 'Activities',
