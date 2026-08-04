@@ -1,7 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Settings, ShieldAlert, Globe, Database, Music, Eye } from 'lucide-react';
 import { Card, ToggleSwitch } from '../primitives';
 import { PILLAR_PUBLISH_FLAGS, PUBLISH_FLAG_KEYS } from '../../../firebase/siteFlags';
+import { watchProgFlags, setProgFlag, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../../../firebase/programmationFlags';
+
+// Libellés FR des sections de la page publique Programmation, dans l'ordre
+// d'affichage souhaité par Tristan.
+const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
+  { flag: 'bestiaire',        label: 'Bestiaire des activités' },
+  { flag: 'horaire',          label: 'Horaire (souvenir 2025)' },
+  { flag: 'clans',            label: 'Les Clans restants' },
+  { flag: 'banquet',          label: "Banquet de l'Équinoxe" },
+  { flag: 'behourd',          label: 'Tournoi de Béhourd' },
+  { flag: 'ateliersJeunesse', label: 'Ateliers Jeunesse (inscriptions)' },
+];
+
+// Interrupteur accessible (role="switch" + aria-pressed) dans le style admin
+// existant, réimplémenté ici en <button> réel plutôt que le <span> de
+// ToggleSwitch dans primitives.tsx.
+const ProgToggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void; label: string }> = ({ checked, onChange, label }) => (
+  <button
+    type="button"
+    role="switch"
+    aria-pressed={checked}
+    aria-label={label}
+    onClick={() => onChange(!checked)}
+    className="w-10 h-6 relative transition-colors"
+    style={{
+      background: checked ? 'var(--admin-accent)' : 'rgba(228, 236, 247, 0.12)',
+      border: '1px solid var(--admin-line)',
+    }}
+  >
+    <span
+      className="absolute top-0.5 w-5 h-5 transition-transform"
+      style={{
+        left: checked ? '1.1rem' : '2px',
+        background: checked ? 'var(--admin-bg-deep)' : 'var(--admin-text)',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
+      }}
+    />
+  </button>
+);
 
 interface Props {
   flags: Record<string, unknown>;
