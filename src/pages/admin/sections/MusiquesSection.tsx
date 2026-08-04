@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, ChevronRight, Download, Music, ExternalLink, Crown } from 'lucide-react';
+import { ChevronDown, ChevronRight, Download, Music, Music2, ExternalLink, Crown } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Badge, Card, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
 import { CURRENT_YEAR } from '../../../firebase/applications';
 import {
   type MusicianApp, type MusicianStatus,
 } from '../../../firebase/musicians';
+import GroupesMusicauxSection from './GroupesMusicauxSection';
 
 interface Props {
   fetchAll:  () => Promise<MusicianApp[]>;
