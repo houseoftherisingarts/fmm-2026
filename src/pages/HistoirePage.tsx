@@ -149,7 +149,7 @@ const PhotoLightbox: React.FC<{ src: string; alt: string; onClose: () => void }>
       onClick={onClose}
       role="dialog" aria-modal="true"
     >
-      <img src={src} alt={alt} className="max-w-[94vw] max-h-[90vh] w-auto h-auto rounded-card border border-brass/30 shadow-2xl" />
+      <img src={src} alt={alt} className="fmm-no-grade max-w-[94vw] max-h-[90vh] w-auto h-auto rounded-card border border-brass/30 shadow-2xl" />
       <button
         onClick={onClose}
         aria-label="Fermer"
