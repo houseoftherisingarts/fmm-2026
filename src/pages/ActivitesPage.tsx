@@ -1328,10 +1328,12 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           </HexPanel>
         </div>
       </section>
+      )}
 
       {/* ── Tournoi de Behourd 2027 — early registration ──────────────
           Inscription anticipée (1 an d'avance). Form saves to Firestore
           (behourd/{autoId}) and then opens the Zeffy payment link. */}
+      {progFlags.behourd && (
       <section className="behourd-section relative py-16 md:py-24 overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <SectionTopRail
