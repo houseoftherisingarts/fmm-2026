@@ -81,12 +81,19 @@ const TOUTES: Annonce[] = [
     id:   'connexion-etoiles-2026',
     tone: 'appel',
     date: '2026-08-03',
-    titleFR: 'Offrez la connexion aux étoiles',
-    titleEN: 'Offer the connection to the stars',
+    // Texte d'Alex, mot pour mot (2026-08-03). Seul l'emoji du titre a
+    // été retiré : une émoticône en couleur sur un parchemin gravé en
+    // Cinzel jure avec tout le reste. À remettre s'il y tient.
+    titleFR: 'Votre don aide à apporter le Réseau jusqu’à Montpellier',
+    titleEN: 'Your gift helps bring the Network all the way to Montpellier',
     bodyFR:
-      'Montpellier est un village que le réseau n’a jamais trouvé. Trois cent soixante-deux jours par année, c’est exactement pour cela que le lieu est beau. Les trois autres, il faut bien que les marchands encaissent et que vous puissiez montrer votre billet à l’entrée. Nous installons deux antennes tournées vers le ciel, le temps de la fin de semaine. Il nous manque 1 400 $, et chaque nom donné entre au Temple de la renommée.',
+      'Comme tout village dans les montagnes, le village de Montpellier est coupé des ondes du monde extérieur. Il nous faut donc nous tourner vers le ciel pour recevoir la fréquence du dieu de l’argent.\n\n'
+      + 'Afin de faciliter les transactions sur le site, il est impératif au festival de trouver une façon de procurer au village le signal des étoiles.\n\n'
+      + 'En achetant une antenne massive, vous permettrez non seulement au festival médiéval de Montpellier mais aussi à d’autres festivals de voir le jour et de survivre sur le territoire montagneux de la Petite Nation.',
     bodyEN:
-      'Montpellier is a village the network never found. Three hundred and sixty-two days a year, that is exactly what makes the place beautiful. The other three, the merchants have to get paid and you have to show your ticket at the gate. We are raising two antennas toward the sky for the length of the weekend. We are 1,400 $ short, and every name given enters the Hall of Fame.',
+      'Like every village in the mountains, Montpellier is cut off from the airwaves of the outside world. So we must turn to the sky to receive the frequency of the god of money.\n\n'
+      + 'To make transactions possible on the grounds, the festival must find a way to bring the village the signal of the stars.\n\n'
+      + 'By buying one massive antenna, you will allow not only the Festival Médiéval de Montpellier but other festivals too to come to life and survive on the mountainous land of the Petite Nation.',
     cta: {
       url:     ZEFFY_LEVEE_URL,
       labelFR: 'Porter la lumière',
@@ -95,6 +102,9 @@ const TOUTES: Annonce[] = [
   },
 ];
 
-// Un avis muni d'un bouton sans adresse n'est pas un avis, c'est une
-// impasse. Il attend en coulisses jusqu'à ce que l'adresse existe.
-export const ANNONCES: Annonce[] = TOUTES.filter((a) => !a.cta || a.cta.url);
+// Un bouton sans adresse est une impasse : nous le retirons. L'avis,
+// lui, reste affiché, parce que le texte vaut par lui-même. Le bouton
+// réapparaît tout seul le jour où ZEFFY_LEVEE_URL est remplie.
+export const ANNONCES: Annonce[] = TOUTES.map((a) =>
+  a.cta && !a.cta.url ? { ...a, cta: undefined } : a,
+);

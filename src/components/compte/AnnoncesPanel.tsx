@@ -129,9 +129,16 @@ const AnnonceNotice: React.FC<{ a: Annonce; lang: 'FR' | 'EN'; index: number }> 
         <h3 className="font-display text-lg md:text-xl text-[#2a1505] text-center mb-3 leading-snug">
           {fr ? a.titleFR : a.titleEN}
         </h3>
-        <p className="font-sans text-[13px] md:text-sm text-[#3a2618] leading-[1.65] text-pretty">
-          {fr ? a.bodyFR : a.bodyEN}
-        </p>
+        {/* Les alinéas de l'auteur sont respectés : un avis long se lit
+            en paragraphes, pas en pavé. Séparateur : une ligne vide. */}
+        {(fr ? a.bodyFR : a.bodyEN).split('\n\n').map((para, i) => (
+          <p
+            key={i}
+            className="font-sans text-[13px] md:text-sm text-[#3a2618] leading-[1.65] text-pretty mt-3 first:mt-0"
+          >
+            {para}
+          </p>
+        ))}
 
         {a.cta && (
           <div className="text-center mt-5">

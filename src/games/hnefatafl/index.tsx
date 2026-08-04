@@ -910,7 +910,7 @@ const CoffreRail: React.FC<{
                       )}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className={`block font-display title-medieval text-[12.5px] leading-tight truncate ${on ? 'text-ivory' : 'text-ivory/80 group-hover:text-ivory'}`}>
+                      <span className={`block font-display title-medieval text-[12.5px] leading-[1.15] ${on ? 'text-ivory' : 'text-ivory/80 group-hover:text-ivory'}`}>
                         {lang === 'FR' ? it.nomFR : it.nomEN}
                       </span>
                       <span className="block font-sans text-[8.5px] uppercase tracking-[0.18em] text-ivory-soft/55 mt-0.5">
@@ -1205,105 +1205,6 @@ const HnefataflPage: React.FC = () => {
               </div>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* ── Le coffre : plateaux et pièces ──────────────────────── */}
-      <section className="relative pb-16 md:pb-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <Reveal>
-            <div className="text-center mb-9 md:mb-12">
-              <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
-                {s.shopEyebrow}
-              </p>
-              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.06]">
-                {s.shopTitle}
-              </h2>
-              <div className="divider-brass w-24 mx-auto mt-5" />
-              <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-relaxed max-w-2xl mx-auto mt-5">
-                {s.shopLead}
-              </p>
-            </div>
-          </Reveal>
-
-          {([
-            { titre: s.shopBoards, items: BOARD_SETS, actif: choix.plateau,
-              choisir: (id: string) => { const n = { ...choix, plateau: id }; setChoix(n); ecrireChoix(n.plateau, n.pieces); } },
-            { titre: s.shopPieces, items: PIECE_SETS, actif: choix.pieces,
-              choisir: (id: string) => { const n = { ...choix, pieces: id }; setChoix(n); ecrireChoix(n.plateau, n.pieces); } },
-          ]).map((rayon) => (
-            <div key={rayon.titre} className="mb-10 last:mb-0">
-              <p className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70 mb-4">
-                {rayon.titre}
-              </p>
-              <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-                {rayon.items.map((it) => {
-                  const dispo = it.statut === 'disponible';
-                  const on = dispo && it.id === rayon.actif;
-                  return (
-                    <StaggerItem key={it.id} as="div">
-                      <button
-                        type="button"
-                        disabled={!dispo}
-                        onClick={() => dispo && rayon.choisir(it.id)}
-                        aria-pressed={on}
-                        className={`group relative w-full h-full text-left rounded-card overflow-hidden border transition-all duration-300 ${
-                          on
-                            ? 'border-brass/70 shadow-[0_0_26px_rgba(232,177,74,0.22)]'
-                            : dispo
-                              ? 'border-white/12 hover:border-brass/50 hover:-translate-y-1'
-                              : 'border-white/8 opacity-55 cursor-not-allowed'
-                        }`}
-                      >
-                        <span className="block relative aspect-video overflow-hidden bg-black/40">
-                          {dispo ? (
-                            <img
-                              src={it.vignette}
-                              alt=""
-                              aria-hidden
-                              loading="lazy"
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
-                          ) : (
-                            <span className="absolute inset-0 flex items-center justify-center text-brass/40">
-                              <Lock size={22} />
-                            </span>
-                          )}
-                          <span
-                            aria-hidden
-                            className="absolute inset-0"
-                            style={{ background: 'linear-gradient(180deg, rgba(10,2,7,0.15) 0%, rgba(10,2,7,0.88) 100%)' }}
-                          />
-                          {/* Pastille seulement quand elle DIT quelque
-                              chose : en jeu, ou bientôt. Une carte
-                              disponible et non choisie n'en porte pas,
-                              sinon on affichait une pastille vide. */}
-                          {(on || !dispo) && (
-                            <span
-                              className={`absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] font-sans ${
-                                on ? 'bg-brass text-[#1A0A05]' : 'bg-black/60 text-ivory-soft border border-white/15'
-                              }`}
-                            >
-                              {on && <Check size={10} />}
-                              {on ? s.shopActive : s.shopSoon}
-                            </span>
-                          )}
-                        </span>
-                        <span className="block px-4 py-3.5">
-                          <span className={`block font-display title-medieval text-base md:text-lg leading-snug mb-1.5 ${on ? 'text-ivory' : 'text-ivory/85 group-hover:text-ivory'}`}>
-                            {lang === 'FR' ? it.nomFR : it.nomEN}
-                          </span>
-                          <span className="block font-editorial italic text-[13px] text-ivory-soft leading-snug">
-                            {lang === 'FR' ? it.texteFR : it.texteEN}
-                          </span>
-                        </span>
-                      </button>
-                    </StaggerItem>
-                  );
-                })}
-              </Stagger>
-            </div>
-          ))}
         </div>
       </section>
 
