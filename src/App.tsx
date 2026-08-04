@@ -276,6 +276,17 @@ const PillarGate: React.FC<{ pillarKey: PillarKey; children: React.ReactElement 
   return <Navigate to="/" replace />;
 };
 
+// Même logique que PillarGate, mais adossée à un drapeau libre plutôt
+// qu'à un pilier. Sert /partenaires-2027 : la page du commanditaire de
+// l'édition SUIVANTE ne doit pas s'ouvrir parce que /partenaires, la page
+// de l'édition courante, a été publiée. Les deux vies sont séparées.
+const FlagGate: React.FC<{ flag: keyof SiteFlags; children: React.ReactElement }> = ({ flag, children }) => {
+  const { flags, ready } = useSiteFlags();
+  if (SITE_MODE === 'live' || flags[flag]) return children;
+  if (!ready) return null;
+  return <Navigate to="/" replace />;
+};
+
 function pillarRoutes() {
   const out: React.ReactNode[] = [];
   for (const p of PILLARS) {
