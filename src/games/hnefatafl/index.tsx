@@ -104,13 +104,10 @@ interface GameStrings {
   musiqueOn:    string;
   musiqueOff:   string;
   shopEyebrow:  string;
-  shopTitle:    string;
-  shopLead:     string;
   shopBoards:   string;
   shopPieces:   string;
   shopSoon:     string;
   shopActive:   string;
-  shopNextSaga: string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -174,13 +171,10 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     musiqueOn: 'Couper la musique',
     musiqueOff: 'Musique',
     shopEyebrow: 'Le coffre',
-    shopTitle: 'Votre plateau, vos pièces',
-    shopLead: 'Choisissez le plateau et les pièces séparément. Votre choix est gardé sur cet appareil, et suivra votre compte quand le coffre sera rattaché à l\u2019espace client.',
     shopBoards: 'Plateaux',
     shopPieces: 'Pièces',
     shopSoon: 'Bientôt',
     shopActive: 'En jeu',
-    shopNextSaga: 'Prend effet à la prochaine saga.',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -242,13 +236,10 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     musiqueOn: 'Mute the music',
     musiqueOff: 'Music',
     shopEyebrow: 'The chest',
-    shopTitle: 'Your board, your pieces',
-    shopLead: 'Pick the board and the pieces separately. Your choice is kept on this device, and will follow your account once the chest is tied to the client space.',
     shopBoards: 'Boards',
     shopPieces: 'Pieces',
     shopSoon: 'Coming soon',
     shopActive: 'In play',
-    shopNextSaga: 'Takes effect on the next saga.',
   },
 };
 
@@ -681,7 +672,7 @@ const Pill: React.FC<PillProps> = ({ active, onClick, icon, children }) => (
     type="button"
     onClick={onClick}
     aria-pressed={active}
-    className={`inline-flex items-center gap-2 px-4 py-2.5 md:px-5 rounded-card border font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] transition-colors duration-200 min-h-[44px] ${
+    className={`inline-flex items-center gap-2 px-3 py-2 md:px-5 md:py-2.5 rounded-card border font-sans text-[10px] md:text-xs uppercase tracking-[0.12em] md:tracking-[0.18em] transition-colors duration-200 min-h-[44px] ${
       active
         ? 'bg-brass text-[#1A0A05] border-brass'
         : 'bg-black/30 text-ivory-soft border-brass/35 hover:border-brass hover:text-ivory'
@@ -692,20 +683,73 @@ const Pill: React.FC<PillProps> = ({ active, onClick, icon, children }) => (
   </button>
 );
 
+// Pastille de jeu : même grammaire que Pill, avec la vignette de l'objet.
+// C'est ce qui permet de choisir sa table et ses hommes SANS quitter
+// l'écran de préparation, à la manière d'un lobby de Gwent.
+const PilleJeu: React.FC<{
+  it:      BoardSet | PieceSet;
+  active:  boolean;
+  lang:    'FR' | 'EN';
+  soon:    string;
+  onClick: () => void;
+}> = ({ it, active, lang, soon, onClick }) => {
+  const dispo = it.statut === 'disponible';
+  return (
+    <button
+      type="button"
+      disabled={!dispo}
+      onClick={onClick}
+      aria-pressed={active}
+      title={lang === 'FR' ? it.texteFR : it.texteEN}
+      className={`inline-flex items-center gap-2 md:gap-2.5 p-1 pr-2.5 md:p-1.5 md:pr-4 rounded-card border font-sans text-[10px] md:text-xs uppercase tracking-[0.12em] md:tracking-[0.14em] transition-colors duration-200 min-h-[44px] ${
+        active
+          ? 'bg-brass text-[#1A0A05] border-brass'
+          : dispo
+            ? 'bg-black/30 text-ivory-soft border-brass/35 hover:border-brass hover:text-ivory'
+            : 'bg-black/30 text-ivory-soft/50 border-brass/20 opacity-55 cursor-not-allowed'
+      }`}
+    >
+      <span className="relative w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-[3px] overflow-hidden bg-black/50">
+        {dispo ? (
+          <img
+            src={it.vignette}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center text-brass/40">
+            <Lock size={12} />
+          </span>
+        )}
+      </span>
+      <span className="text-left leading-tight max-w-[84px] md:max-w-[120px]">
+        {lang === 'FR' ? it.nomFR : it.nomEN}
+        {!dispo && <span className="block text-[9px] tracking-[0.2em] opacity-70">{soon}</span>}
+      </span>
+      {active && <Check size={12} className="shrink-0" />}
+    </button>
+  );
+};
+
 // ─── Start screen overlay ───────────────────────────────────────────
 interface StartScreenProps {
   initial: GameConfig;
   strings: GameStrings;
   onBegin: (config: GameConfig) => void;
+  lang:    'FR' | 'EN';
+  choix:   { plateau: string; pieces: string };
+  onChoix: (cle: 'plateau' | 'pieces', id: string) => void;
 }
-const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin }) => {
+const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin, lang, choix, onChoix }) => {
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [humanSide, setHumanSide] = useState<Side>(initial.humanSide);
   const [difficulty, setDifficulty] = useState<Difficulty>(initial.difficulty);
 
   const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-    <div className="mb-6 text-center">
-      <p className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70 mb-3">
+    <div className="mb-4 md:mb-6 text-center">
+      <p className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70 mb-2 md:mb-3">
         {label}
       </p>
       <div className="flex flex-wrap justify-center gap-2.5">{children}</div>
@@ -714,14 +758,14 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin 
 
   return (
     <div className="absolute inset-0 z-[5] flex items-center justify-center overflow-y-auto px-4 py-8 bg-[rgba(10,4,6,0.82)] backdrop-blur-md">
-      <div className="w-full max-w-lg text-center">
-        <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+      <div className="w-full max-w-2xl text-center">
+        <p className="font-editorial uppercase tracking-[0.4em] text-[10px] md:text-xs text-[var(--color-amber-glow)] mb-2 md:mb-3">
           {s.startSubtitle}
         </p>
-        <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.06]">
+        <h2 className="font-display title-medieval text-2xl md:text-5xl text-ivory leading-[1.06]">
           {s.startTitle}
         </h2>
-        <div className="divider-brass w-24 mx-auto mt-5 mb-8" />
+        <div className="divider-brass w-24 mx-auto mt-4 mb-5 md:mt-5 md:mb-8" />
 
         <Row label={s.modeLabel}>
           <Pill
@@ -772,6 +816,32 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin 
             </Row>
           </>
         )}
+
+        <Row label={s.shopBoards}>
+          {BOARD_SETS.map((b) => (
+            <PilleJeu
+              key={b.id}
+              it={b}
+              lang={lang}
+              soon={s.shopSoon}
+              active={choix.plateau === b.id}
+              onClick={() => onChoix('plateau', b.id)}
+            />
+          ))}
+        </Row>
+
+        <Row label={s.shopPieces}>
+          {PIECE_SETS.map((b) => (
+            <PilleJeu
+              key={b.id}
+              it={b}
+              lang={lang}
+              soon={s.shopSoon}
+              active={choix.pieces === b.id}
+              onClick={() => onChoix('pieces', b.id)}
+            />
+          ))}
+        </Row>
 
         <button
           type="button"
@@ -829,109 +899,6 @@ const BoutonMusique: React.FC<{ onLabel: string; offLabel: string }> = ({ onLabe
         <span className="hidden sm:inline">{joue ? onLabel : offLabel}</span>
       </button>
     </>
-  );
-};
-
-// ─── Le coffre, devenu rail ─────────────────────────────────────────
-// Il occupait une section entière sous le jeu, avec de grandes cartes en
-// grille : deux meubles séparés, alors que choisir sa table fait partie
-// de la partie. Depuis le 2026-08-03 il vit DANS le cadre du jeu, en
-// colonne à droite sur grand écran et en bandeau au-dessus du plateau
-// sur petit. Le plateau d'abord, les pièces ensuite, comme on dresse une
-// table avant d'y poser les hommes.
-//
-// ⚠️ Les identifiants d'assets sont lus quand la scène se construit
-// (l'effet de GameCanvas ne dépend que de `gameKey`). Changer de jeu en
-// pleine partie ne remonte donc RIEN sous les yeux du joueur : le rail le
-// dit au lieu de laisser croire à un clic mort.
-const CoffreRail: React.FC<{
-  choix:    { plateau: string; pieces: string };
-  setChoix: (c: { plateau: string; pieces: string }) => void;
-  lang:     'FR' | 'EN';
-  s:        GameStrings;
-  enPartie: boolean;
-}> = ({ choix, setChoix, lang, s, enPartie }) => {
-  const poser = (cle: 'plateau' | 'pieces', id: string) => {
-    const n = { ...choix, [cle]: id };
-    setChoix(n);
-    ecrireChoix(n.plateau, n.pieces);
-  };
-
-  const rayons = [
-    { cle: 'plateau' as const, titre: s.shopBoards, items: BOARD_SETS as (BoardSet | PieceSet)[], actif: choix.plateau },
-    { cle: 'pieces'  as const, titre: s.shopPieces, items: PIECE_SETS as (BoardSet | PieceSet)[], actif: choix.pieces  },
-  ];
-
-  return (
-    <aside
-      aria-label={s.shopEyebrow}
-      className="shrink-0 lg:w-[214px] border-b lg:border-b-0 lg:border-l border-brass/20"
-      style={{ background: 'rgba(0,0,0,0.28)' }}
-    >
-      <div className="flex lg:flex-col gap-5 lg:gap-4 p-3 md:p-4 overflow-x-auto lg:overflow-visible">
-        {rayons.map((r) => (
-          <div key={r.cle} className="shrink-0">
-            <p className="font-sans text-[9px] uppercase tracking-[0.32em] text-brass/70 mb-2 px-0.5">
-              {r.titre}
-            </p>
-            <div className="flex lg:flex-col gap-2">
-              {r.items.map((it) => {
-                const dispo = it.statut === 'disponible';
-                const on = dispo && it.id === r.actif;
-                return (
-                  <button
-                    key={it.id}
-                    type="button"
-                    disabled={!dispo}
-                    onClick={() => dispo && poser(r.cle, it.id)}
-                    aria-pressed={on}
-                    title={lang === 'FR' ? it.texteFR : it.texteEN}
-                    className={`group flex items-center gap-2.5 shrink-0 w-[168px] lg:w-full p-1.5 rounded-card border text-left transition-all duration-300 ${
-                      on
-                        ? 'border-brass/70 shadow-[0_0_18px_rgba(232,177,74,0.18)] bg-brass/10'
-                        : dispo
-                          ? 'border-white/10 hover:border-brass/50 hover:bg-white/[0.04]'
-                          : 'border-white/8 opacity-45 cursor-not-allowed'
-                    }`}
-                  >
-                    <span className="relative w-10 h-10 shrink-0 rounded-[4px] overflow-hidden bg-black/50">
-                      {dispo ? (
-                        <img
-                          src={it.vignette}
-                          alt=""
-                          aria-hidden
-                          loading="lazy"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      ) : (
-                        <span className="absolute inset-0 flex items-center justify-center text-brass/40">
-                          <Lock size={13} />
-                        </span>
-                      )}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className={`block font-display title-medieval text-[12.5px] leading-[1.15] ${on ? 'text-ivory' : 'text-ivory/80 group-hover:text-ivory'}`}>
-                        {lang === 'FR' ? it.nomFR : it.nomEN}
-                      </span>
-                      <span className="block font-sans text-[8.5px] uppercase tracking-[0.18em] text-ivory-soft/55 mt-0.5">
-                        {on ? s.shopActive : !dispo ? s.shopSoon : ' '}
-                      </span>
-                    </span>
-                    {on && <Check size={12} className="shrink-0 text-brass mr-1" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-
-        {enPartie && (
-          <p className="hidden lg:block font-editorial italic text-[10.5px] leading-snug text-ivory-soft/55 pt-1">
-            {s.shopNextSaga}
-          </p>
-        )}
-      </div>
-    </aside>
   );
 };
 
@@ -1040,21 +1007,11 @@ const HnefataflPage: React.FC = () => {
                 </span>
               </div>
 
-              {/* Le plateau et le coffre partagent le même cadre. */}
-              <div className="flex flex-col lg:flex-row">
-                <CoffreRail
-                  choix={choix}
-                  setChoix={setChoix}
-                  lang={lang}
-                  s={s}
-                  enPartie={gameStarted}
-                />
-
               {/* La scène 3D. Hauteur bornée : la page respire au lieu
                   de verrouiller 100vh, et le pied de page reste
                   atteignable. */}
               <div
-                className="relative flex-1 min-w-0 lg:order-first h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
+                className="relative w-full h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
               >
                 {gameStarted && (
                   <GameCanvas
@@ -1131,7 +1088,18 @@ const HnefataflPage: React.FC = () => {
                       className="absolute inset-0 bg-cover bg-center"
                       style={{ backgroundImage: 'url(/photos/hnefatafl-card.webp)' }}
                     />
-                    <StartScreen initial={config} strings={s} onBegin={handleBegin} />
+                    <StartScreen
+                      initial={config}
+                      strings={s}
+                      onBegin={handleBegin}
+                      lang={lang}
+                      choix={choix}
+                      onChoix={(cle, id) => {
+                        const n = { ...choix, [cle]: id };
+                        setChoix(n);
+                        ecrireChoix(n.plateau, n.pieces);
+                      }}
+                    />
                   </>
                 )}
 
@@ -1188,7 +1156,6 @@ const HnefataflPage: React.FC = () => {
                     </button>
                   </motion.div>
                 )}
-              </div>
               </div>
 
               {/* Légende. Elle ENVELOPPE au lieu de déborder : l'ancien
