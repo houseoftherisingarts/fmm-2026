@@ -110,6 +110,7 @@ interface GameStrings {
   shopPieces:   string;
   shopSoon:     string;
   shopActive:   string;
+  shopNextSaga: string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -179,6 +180,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopPieces: 'Pièces',
     shopSoon: 'Bientôt',
     shopActive: 'En jeu',
+    shopNextSaga: 'Prend effet à la prochaine saga.',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -246,6 +248,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopPieces: 'Pieces',
     shopSoon: 'Coming soon',
     shopActive: 'In play',
+    shopNextSaga: 'Takes effect on the next saga.',
   },
 };
 
@@ -826,6 +829,109 @@ const BoutonMusique: React.FC<{ onLabel: string; offLabel: string }> = ({ onLabe
         <span className="hidden sm:inline">{joue ? onLabel : offLabel}</span>
       </button>
     </>
+  );
+};
+
+// ─── Le coffre, devenu rail ─────────────────────────────────────────
+// Il occupait une section entière sous le jeu, avec de grandes cartes en
+// grille : deux meubles séparés, alors que choisir sa table fait partie
+// de la partie. Depuis le 2026-08-03 il vit DANS le cadre du jeu, en
+// colonne à droite sur grand écran et en bandeau au-dessus du plateau
+// sur petit. Le plateau d'abord, les pièces ensuite, comme on dresse une
+// table avant d'y poser les hommes.
+//
+// ⚠️ Les identifiants d'assets sont lus quand la scène se construit
+// (l'effet de GameCanvas ne dépend que de `gameKey`). Changer de jeu en
+// pleine partie ne remonte donc RIEN sous les yeux du joueur : le rail le
+// dit au lieu de laisser croire à un clic mort.
+const CoffreRail: React.FC<{
+  choix:    { plateau: string; pieces: string };
+  setChoix: (c: { plateau: string; pieces: string }) => void;
+  lang:     'FR' | 'EN';
+  s:        Strings;
+  enPartie: boolean;
+}> = ({ choix, setChoix, lang, s, enPartie }) => {
+  const poser = (cle: 'plateau' | 'pieces', id: string) => {
+    const n = { ...choix, [cle]: id };
+    setChoix(n);
+    ecrireChoix(n.plateau, n.pieces);
+  };
+
+  const rayons = [
+    { cle: 'plateau' as const, titre: s.shopBoards, items: BOARD_SETS as (BoardSet | PieceSet)[], actif: choix.plateau },
+    { cle: 'pieces'  as const, titre: s.shopPieces, items: PIECE_SETS as (BoardSet | PieceSet)[], actif: choix.pieces  },
+  ];
+
+  return (
+    <aside
+      aria-label={s.shopEyebrow}
+      className="shrink-0 lg:w-[214px] border-b lg:border-b-0 lg:border-l border-brass/20"
+      style={{ background: 'rgba(0,0,0,0.28)' }}
+    >
+      <div className="flex lg:flex-col gap-5 lg:gap-4 p-3 md:p-4 overflow-x-auto lg:overflow-visible">
+        {rayons.map((r) => (
+          <div key={r.cle} className="shrink-0">
+            <p className="font-sans text-[9px] uppercase tracking-[0.32em] text-brass/70 mb-2 px-0.5">
+              {r.titre}
+            </p>
+            <div className="flex lg:flex-col gap-2">
+              {r.items.map((it) => {
+                const dispo = it.statut === 'disponible';
+                const on = dispo && it.id === r.actif;
+                return (
+                  <button
+                    key={it.id}
+                    type="button"
+                    disabled={!dispo}
+                    onClick={() => dispo && poser(r.cle, it.id)}
+                    aria-pressed={on}
+                    title={lang === 'FR' ? it.texteFR : it.texteEN}
+                    className={`group flex items-center gap-2.5 shrink-0 w-[168px] lg:w-full p-1.5 rounded-card border text-left transition-all duration-300 ${
+                      on
+                        ? 'border-brass/70 shadow-[0_0_18px_rgba(232,177,74,0.18)] bg-brass/10'
+                        : dispo
+                          ? 'border-white/10 hover:border-brass/50 hover:bg-white/[0.04]'
+                          : 'border-white/8 opacity-45 cursor-not-allowed'
+                    }`}
+                  >
+                    <span className="relative w-10 h-10 shrink-0 rounded-[4px] overflow-hidden bg-black/50">
+                      {dispo ? (
+                        <img
+                          src={it.vignette}
+                          alt=""
+                          aria-hidden
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <span className="absolute inset-0 flex items-center justify-center text-brass/40">
+                          <Lock size={13} />
+                        </span>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className={`block font-display title-medieval text-[12.5px] leading-tight truncate ${on ? 'text-ivory' : 'text-ivory/80 group-hover:text-ivory'}`}>
+                        {lang === 'FR' ? it.nomFR : it.nomEN}
+                      </span>
+                      <span className="block font-sans text-[8.5px] uppercase tracking-[0.18em] text-ivory-soft/55 mt-0.5">
+                        {on ? s.shopActive : !dispo ? s.shopSoon : ' '}
+                      </span>
+                    </span>
+                    {on && <Check size={12} className="shrink-0 text-brass mr-1" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {enPartie && (
+          <p className="hidden lg:block font-editorial italic text-[10.5px] leading-snug text-ivory-soft/55 pt-1">
+            {s.shopNextSaga}
+          </p>
+        )}
+      </div>
+    </aside>
   );
 };
 
