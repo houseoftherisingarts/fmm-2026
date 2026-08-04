@@ -38,6 +38,7 @@ const Partenaires2027Page: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
+        dateline={t.dateline}
         orbImage="/wix/partenaires/2a2a4608.jpg"
         orbImagePosition="center"
       />
