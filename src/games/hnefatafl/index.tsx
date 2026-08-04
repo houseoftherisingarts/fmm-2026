@@ -1189,6 +1189,7 @@ const HnefataflPage: React.FC = () => {
                   </motion.div>
                 )}
               </div>
+              </div>
 
               {/* Légende. Elle ENVELOPPE au lieu de déborder : l'ancien
                   bandeau en nowrap sortait de l'écran sur mobile. */}
