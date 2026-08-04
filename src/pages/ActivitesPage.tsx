@@ -1362,6 +1362,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           </div>
         </div>
       </section>
+      )}
 
       {/* ── Activity flip-expand modal ──────────────────────────────
           Clicking a tile in the bestiary opens the activity in a
