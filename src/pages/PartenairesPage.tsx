@@ -59,7 +59,6 @@ const SHORT = [
 const PartenairesPage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
-  const { flags } = useSiteFlags();
   const t = lang === 'FR' ? FR : EN;
   return (
     <>
