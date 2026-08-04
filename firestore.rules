@@ -224,6 +224,12 @@ service cloud.firestore {
     match /teamPolls/{docId}   { allow read, write: if isAdmin(); }
     // Invités : liste des entrées gratuites tenue pour la porte.
     match /guestList/{docId}   { allow read, write: if isAdmin(); }
+    // Groupes musicaux (programmation, section admin Musique — Éric
+    // Pichette). Nommée `groupesMusicaux` et non `groupes` : cette
+    // dernière est déjà prise par les demandes de visite de groupes
+    // (GroupesPage.tsx, voir plus bas). Lecture publique : la page
+    // publique Musique lit cette collection.
+    match /groupesMusicaux/{docId} { allow read: if true; allow write: if isAdmin(); }
 
     // ── Public-create, admin-managed inquiry collections ─────────
     // Inquiry / newsletter / contact / behourd forms. Allow create
