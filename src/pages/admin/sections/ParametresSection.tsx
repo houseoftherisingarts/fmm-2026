@@ -48,6 +48,20 @@ interface Props {
 }
 
 const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
+  const [progFlags, setProgFlags] = useState<ProgFlags>(PROG_FLAGS_DEFAULTS);
+
+  useEffect(() => {
+    const unsubscribe = watchProgFlags(setProgFlags);
+    return unsubscribe;
+  }, []);
+
+  const handleProgToggle = (champ: keyof ProgFlags, valeur: boolean) => {
+    setProgFlags((prev) => ({ ...prev, [champ]: valeur }));
+    setProgFlag(champ, valeur).catch(() => {
+      // Firestore indisponible : l'avertissement du bloc couvre déjà ce cas.
+    });
+  };
+
   const env = {
     siteMode:   import.meta.env.VITE_SITE_MODE || 'live',
     devBypass:  import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true',
