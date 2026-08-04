@@ -151,9 +151,9 @@ export async function updateGroupe(id: string, patch: Partial<GroupeInput>): Pro
   if (!db) throw new Error('Firebase not configured');
   const data = stripUndefined({ ...patch, updatedAt: serverTimestamp() });
   // Le statut décide quel champ (jour/année) est pertinent : si le patch
-  // change le statut, on efface explicitement le champ devenu inutile
-  // (Firestore ne le fait pas tout seul, et stripUndefined l'aurait
-  // laissé traîner de l'ancien état).
+  // change le statut, nous effaçons explicitement le champ devenu
+  // inutile (Firestore ne le fait pas tout seul, et stripUndefined
+  // l'aurait laissé traîner de l'ancien état).
   if (patch.statut === 'affiche') data.annee = undefined;
   if (patch.statut === 'archive') data.jour = undefined;
   await updateDoc(doc(db, COL, id), data as Record<string, unknown>);
