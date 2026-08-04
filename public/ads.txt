@@ -1,0 +1,10 @@
+# ads.txt — Authorized Digital Sellers (IAB Tech Lab)
+# Déclare qui a le droit de vendre les emplacements publicitaires de ce
+# domaine. Sans ce fichier, AdSense affiche un avertissement permanent et
+# une partie des annonceurs refuse d'enchérir, ce qui coupe le revenu.
+# Servi à la racine : https://festivalmedievaldemontpellier.org/ads.txt
+#
+# Éditeur : Festival Médiéval de Montpellier, compte créé le 2026-08-03.
+# Le dernier champ est l'identifiant Google d'AdSense chez TAG, le même
+# pour tous les éditeurs AdSense.
+google.com, pub-7365982984401895, DIRECT, f08c47fec0942fa0

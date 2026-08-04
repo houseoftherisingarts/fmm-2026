@@ -1011,7 +1011,7 @@ const HnefataflPage: React.FC = () => {
                   de verrouiller 100vh, et le pied de page reste
                   atteignable. */}
               <div
-                className="relative w-full h-[clamp(380px,56vh,520px)] md:h-[clamp(480px,72vh,780px)]"
+                className="relative w-full h-[clamp(380px,68vh,560px)] md:h-[clamp(480px,72vh,780px)]"
               >
                 {gameStarted && (
                   <GameCanvas
