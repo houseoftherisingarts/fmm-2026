@@ -39,6 +39,11 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
   const [errMsg, setErrMsg] = useState<string | null>(null);
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setForm((p) => ({ ...p, [k]: v }));
 
+  // Le formulaire d'inscription aux ateliers reste masqué tant que le
+  // clan qui les anime n'est pas confirmé (siteFlags/programmation).
+  const [progFlags, setProgFlags] = useState<ProgFlags>(PROG_FLAGS_DEFAULTS);
+  useEffect(() => watchProgFlags(setProgFlags), []);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.enfant || !form.parent || !form.email || !form.telephone || !form.jour || !form.consent) return;
