@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { watchGroupes, type GroupeMusical, type GroupeJour } from '../firebase/groupesMusicaux';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
@@ -316,6 +317,51 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
+
+  // ── Les groupes vivent dans Firestore (gérés par Éric Pichette dans
+  //    l'admin, temps réel). Tant que la collection est vide, les
+  //    listes statiques ci-dessus font foi : le jour où Éric ajoute son
+  //    premier groupe, sa liste prend le dessus sans redéploiement.
+  const [groupes, setGroupes] = useState<GroupeMusical[]>([]);
+  useEffect(() => watchGroupes(setGroupes), []);
+
+  const afficheLive = useMemo(() => {
+    const surAffiche = groupes.filter((g) => g.statut === 'affiche');
+    if (surAffiche.length === 0) return null;
+    const jours: Array<{ jour: GroupeJour; jourFR: string; jourEN: string }> = [
+      { jour: 'vendredi', jourFR: 'Vendredi', jourEN: 'Friday' },
+      { jour: 'samedi',   jourFR: 'Samedi',   jourEN: 'Saturday' },
+      { jour: 'dimanche', jourFR: 'Dimanche', jourEN: 'Sunday' },
+    ];
+    return jours
+      .map((j) => ({
+        jourFR: j.jourFR,
+        jourEN: j.jourEN,
+        groupes: surAffiche
+          .filter((g) => g.jour === j.jour)
+          .sort((a, b) => a.ordre - b.ordre)
+          .map((g) => g.nom),
+      }))
+      .filter((j) => j.groupes.length > 0);
+  }, [groupes]);
+
+  const archivesLive = useMemo(() => {
+    const arch = groupes.filter((g) => g.statut === 'archive');
+    if (arch.length === 0) return null;
+    return arch
+      .sort((a, b) => (b.annee ?? 0) - (a.annee ?? 0) || a.ordre - b.ordre)
+      .map((g): Band => ({
+        name:  g.annee ? `${g.nom} · ${g.annee}` : g.nom,
+        image: g.photoUrl || '/wix/musique/skarazula.webp',
+        website: g.site,
+        bioFR: g.bioFR,
+        bioEN: g.bioEN,
+      }));
+  }, [groupes]);
+
+  const affiche = afficheLive ?? AFFICHE_2026;
+  const archives = archivesLive ?? BANDS_ARCHIVES;
+
   return (
     <>
       {!embedded && <SEO title={t.title} description={t.intro1} />}
@@ -350,7 +396,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             className="mb-10 md:mb-14"
           />
           <div className="grid md:grid-cols-3 gap-5 md:gap-7">
-            {AFFICHE_2026.map((jour, ji) => (
+            {affiche.map((jour: { jourFR: string; jourEN: string; groupes: string[] }, ji: number) => (
               <Reveal key={jour.jourFR} from="up" delay={0.1 + ji * 0.08}>
                 <div
                   className="h-full rounded-card border border-brass/30 p-6 md:p-8 text-center"
@@ -364,7 +410,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
                   </h3>
                   <div className="divider-brass w-14 mx-auto mb-5 opacity-70" />
                   <ul className="space-y-2.5">
-                    {jour.groupes.map((g) => (
+                    {jour.groupes.map((g: string) => (
                       <li
                         key={g}
                         className="font-editorial text-base md:text-lg leading-snug"
@@ -398,7 +444,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
           </Reveal>
           <Reveal from="up" delay={0.15}>
             <BandsCarousel
-              bands={BANDS_ARCHIVES}
+              bands={archives}
               variant="past"
               lang={lang}
               artistLabel={t.artist}
