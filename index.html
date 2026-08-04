@@ -29,7 +29,12 @@
          🚨 Loi 25 (Québec) : le consentement se règle du côté d'AdSense,
          par la plateforme de gestion du consentement (CMP) certifiée
          qu'on choisit à l'étape de la demande d'examen. Ne pas bricoler
-         un blocage maison ici sans avoir réglé la CMP d'abord. -->
+         un blocage maison ici sans avoir réglé la CMP d'abord.
+         ⚠️ PAS d'attribut `integrity` (SRI) sur cette balise, malgré ce
+         que conseillent les linters de sécurité : Google republie ce
+         fichier en continu et ne publie aucune empreinte. Une empreinte
+         figée bloquerait le script au premier changement, et les
+         annonces cesseraient de s'afficher sans erreur visible. -->
     <script async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7365982984401895"
       crossorigin="anonymous"></script>
