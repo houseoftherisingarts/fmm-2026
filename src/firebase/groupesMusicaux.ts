@@ -8,7 +8,7 @@
 // en lecture seule (branchement fait par un autre agent).
 
 import {
-  collection, doc, getDocs, addDoc, updateDoc, deleteDoc, setDoc,
+  collection, doc, getDocs, updateDoc, deleteDoc, setDoc,
   onSnapshot, serverTimestamp, type Timestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
