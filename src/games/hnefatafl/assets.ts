@@ -129,9 +129,12 @@ export const PIECE_SETS: PieceSet[] = [
   },
 ];
 
-// Jeux par défaut : ceux qui existaient avant la boutique.
+// Jeux par défaut, choisis à l'œil : le chêne du festival porte le blason
+// et c'est la table du FMM, et la hird du Jarl sculpte de vrais hommes là
+// où les loups restaient des bêtes. Un joueur qui a déjà choisi garde son
+// choix, gardé dans le navigateur.
 export const BOARD_DEFAUT = 'chene';
-export const PIECES_DEFAUT = 'loups';
+export const PIECES_DEFAUT = 'jarl';
 
 export const boardSet = (id: string): BoardSet =>
   BOARD_SETS.find((b) => b.id === id && b.statut === 'disponible')
