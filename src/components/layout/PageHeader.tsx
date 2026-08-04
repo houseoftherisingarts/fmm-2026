@@ -59,6 +59,7 @@ const PageHeader: React.FC<Props> = ({
   orbImagePosition = 'center',
   orbVideo,
   ctas = [],
+  dateline,
 }) => {
   const { lang } = useUI();
   // Re-key the orb sweep on first paint AND on every hover, so the
