@@ -945,6 +945,12 @@ const HnefataflPage: React.FC = () => {
 
   const returnToMenu = () => {
     setGameStarted(false);
+    // 🚨 L'écran de victoire (ui.over) n'est pas gardé par `gameStarted` :
+    // il flotte en z-[5] au-dessus du lobby pour pouvoir s'afficher
+    // pendant la partie. Sans ce reset, il restait collé à l'écran après
+    // « Nouvelle saga », masquant le lobby et donnant l'impression que
+    // le bouton ne faisait rien. Bug signalé par Alex le 2026-08-04.
+    setUi({ turn: 'attacker', over: false, msg: s.raidersFirst, vfx: null });
   };
 
   // Pastille de tour : oxblood du site pour les Raiders, os pour les
