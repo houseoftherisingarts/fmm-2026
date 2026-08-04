@@ -72,12 +72,6 @@ const PartenairesPage: React.FC = () => {
         orbImagePosition="center"
       />
 
-      {/* Commanditaire d'honneur de la prochaine édition. Gardé par son
-          propre drapeau (Admin → Paramètres → showCommanditaire) pour que
-          publier cette page maintenant ne dévoile pas 2027. En local avec
-          VITE_SITE_MODE=live, la section s'affiche pour la construire. */}
-      {(flags.showCommanditaire || PREVIEW_ALL) && <CommanditaireHonneur />}
-
       {/* Press / sponsor logo wall */}
       <section className="py-12 md:py-16">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
