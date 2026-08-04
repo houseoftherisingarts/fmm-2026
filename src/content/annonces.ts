@@ -31,11 +31,9 @@ export interface Annonce {
   cta?: { url: string; labelFR: string; labelEN: string };
 }
 
-// Levée de fonds Zeffy pour la connectivité du site (deux antennes
-// Starlink, 1 400 $). À REMPLIR quand la campagne Zeffy existe : tant que
-// cette adresse est vide, l'avis « Connexion aux étoiles » reste hors du
-// tableau plutôt que d'y pendre un bouton mort.
-const ZEFFY_LEVEE_URL = '';
+// Levée de fonds Zeffy pour la connectivité du site (antenne satellite).
+// Adresse fournie par Alex le 2026-08-03 et vérifiée (200).
+const ZEFFY_LEVEE_URL = 'https://www.zeffy.com/fr-CA/donation-form/apportez-le-reseau-a-montpellier';
 
 const TOUTES: Annonce[] = [
   {
