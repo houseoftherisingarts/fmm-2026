@@ -389,9 +389,4 @@ const GroupeEditor: React.FC<{
   );
 };
 
-// DangerButton importé mais non utilisé directement dans ce fichier (la
-// suppression passe par un bouton icône dans GroupeCard) : conservé pour
-// cohérence si un futur bouton de confirmation en ligne en a besoin.
-void DangerButton;
-
 export default GroupesMusicauxSection;
