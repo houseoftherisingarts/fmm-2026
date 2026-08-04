@@ -8,10 +8,10 @@
 // d'un rappel des règles. Toute couleur en dur a été remplacée par les
 // jetons du design system (--color-bone, --color-brass, etc).
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2 } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -106,6 +106,8 @@ interface GameStrings {
   shopBoards:   string;
   shopPieces:   string;
   shopSoon:     string;
+  pleinEcran:        string;
+  quitterPleinEcran: string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -171,6 +173,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopBoards: 'Plateaux',
     shopPieces: 'Pièces',
     shopSoon: 'Bientôt',
+    pleinEcran: 'Plein écran',
+    quitterPleinEcran: 'Quitter le plein écran',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -234,6 +238,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopBoards: 'Boards',
     shopPieces: 'Pieces',
     shopSoon: 'Coming soon',
+    pleinEcran: 'Fullscreen',
+    quitterPleinEcran: 'Exit fullscreen',
   },
 };
 
@@ -857,27 +863,45 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
 const MUSIQUE_URL = '/audio/nordic-wist.mp3';
 const MUSIQUE_TITRE = 'Nordic Wist · Kevin MacLeod';
 
-const BoutonMusique: React.FC<{ onLabel: string; offLabel: string }> = ({ onLabel, offLabel }) => {
-  const ref = useRef<HTMLAudioElement | null>(null);
+export interface BoutonMusiqueHandle {
+  /** Lance la musique si elle ne joue pas déjà. Appelé au premier clic
+   *  sur « Commencer la partie » : c'est un vrai geste utilisateur, donc
+   *  le navigateur autorise la lecture avec son sans qu'on ait à
+   *  attendre un second clic sur ce bouton précis. Idempotent : ne
+   *  relance rien si la musique joue déjà. */
+  demarrer(): void;
+}
+
+const BoutonMusique = forwardRef<BoutonMusiqueHandle, { onLabel: string; offLabel: string }>(
+  ({ onLabel, offLabel }, ref) => {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [joue, setJoue] = useState(false);
 
   useEffect(() => ecouterExclusivite('hnefatafl', () => {
-    ref.current?.pause();
+    audioRef.current?.pause();
     setJoue(false);
   }), []);
 
-  const basculer = () => {
-    const a = ref.current;
-    if (!a) return;
-    if (joue) { a.pause(); setJoue(false); return; }
+  const jouer = () => {
+    const a = audioRef.current;
+    if (!a || joue) return;
     annoncerLecture('hnefatafl');
     a.volume = 0.3;
     a.play().then(() => setJoue(true)).catch(() => setJoue(false));
   };
 
+  useImperativeHandle(ref, () => ({ demarrer: jouer }), [joue]);
+
+  const basculer = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (joue) { a.pause(); setJoue(false); return; }
+    jouer();
+  };
+
   return (
     <>
-      <audio ref={ref} src={MUSIQUE_URL} loop preload="none" />
+      <audio ref={audioRef} src={MUSIQUE_URL} loop preload="none" />
       <button
         type="button"
         onClick={basculer}
@@ -894,7 +918,7 @@ const BoutonMusique: React.FC<{ onLabel: string; offLabel: string }> = ({ onLabe
       </button>
     </>
   );
-};
+});
 
 const HnefataflPage: React.FC = () => {
   // Pose l'atmosphère de la caravane sur <body> : brumes, grain, noir
@@ -904,6 +928,9 @@ const HnefataflPage: React.FC = () => {
   const s = useMemo(() => STRINGS[lang], [lang]);
 
   const [gameStarted, setGameStarted] = useState(false);
+  const musiqueRef = useRef<BoutonMusiqueHandle>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const [pleinEcran, setPleinEcran] = useState(false);
   const [config, setConfig] = useState<GameConfig>({
     mode: 'two-player',
     humanSide: 'defender',
@@ -941,6 +968,11 @@ const HnefataflPage: React.FC = () => {
     setPret(false);
     setUi({ turn: 'attacker', over: false, msg: s.raidersFirst, vfx: null });
     setGameStarted(true);
+    // Le clic sur « Commencer la partie » EST le geste utilisateur qui
+    // autorise la lecture avec son : la musique démarre ici plutôt que
+    // d'attendre un second clic sur son propre bouton. Demande d'Alex,
+    // 2026-08-04.
+    musiqueRef.current?.demarrer();
   };
 
   const returnToMenu = () => {
@@ -951,6 +983,26 @@ const HnefataflPage: React.FC = () => {
     // « Nouvelle saga », masquant le lobby et donnant l'impression que
     // le bouton ne faisait rien. Bug signalé par Alex le 2026-08-04.
     setUi({ turn: 'attacker', over: false, msg: s.raidersFirst, vfx: null });
+  };
+
+  // Plein écran : bascule le conteneur de la scène, pas la page
+  // entière (le bandeau d'état et la légende restent visibles). On
+  // écoute l'événement natif plutôt que de ne se fier qu'au clic, parce
+  // que le navigateur peut aussi sortir du plein écran via Échap ou un
+  // raccourci système, et l'état affiché doit suivre.
+  useEffect(() => {
+    const surChangement = () => setPleinEcran(document.fullscreenElement === sceneRef.current);
+    document.addEventListener('fullscreenchange', surChangement);
+    return () => document.removeEventListener('fullscreenchange', surChangement);
+  }, []);
+
+  const basculerPleinEcran = () => {
+    if (!sceneRef.current) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else {
+      sceneRef.current.requestFullscreen().catch(() => {});
+    }
   };
 
   // Pastille de tour : oxblood du site pour les Raiders, os pour les
@@ -993,7 +1045,17 @@ const HnefataflPage: React.FC = () => {
                   </span>
                 </span>
                 <span className="shrink-0 inline-flex items-center gap-2">
-                  <BoutonMusique onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
+                  <BoutonMusique ref={musiqueRef} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
+                  <button
+                    type="button"
+                    onClick={basculerPleinEcran}
+                    title={pleinEcran ? s.quitterPleinEcran : s.pleinEcran}
+                    aria-pressed={pleinEcran}
+                    className="shrink-0 inline-flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-card border border-brass/30 text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+                  >
+                    {pleinEcran ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                    <span className="hidden sm:inline">{pleinEcran ? s.quitterPleinEcran : s.pleinEcran}</span>
+                  </button>
                 {gameStarted && (
                   <button
                     type="button"
@@ -1011,7 +1073,8 @@ const HnefataflPage: React.FC = () => {
                   de verrouiller 100vh, et le pied de page reste
                   atteignable. */}
               <div
-                className="relative w-full h-[clamp(380px,68vh,560px)] md:h-[clamp(480px,72vh,780px)]"
+                ref={sceneRef}
+                className="relative w-full h-[clamp(380px,68vh,560px)] md:h-[clamp(480px,72vh,780px)] bg-[#0a0406]"
               >
                 {gameStarted && (
                   <GameCanvas
