@@ -475,8 +475,6 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
   const [groupes, setGroupes] = useState<GroupeMusical[]>([]);
   useEffect(() => watchGroupes(setGroupes), []);
 
-  const JOUR_ORDRE: Record<GroupeJour, number> = { vendredi: 0, samedi: 1, dimanche: 2 };
-
   const afficheLive = useMemo(() => {
     const surAffiche = groupes.filter((g) => g.statut === 'affiche');
     if (surAffiche.length === 0) return null;
