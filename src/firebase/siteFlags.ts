@@ -46,6 +46,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   vendorApplicationsOpen:  true,
   showCountdown:           true,
   knightPlacementEditor:   false,
+  showCommanditaire:       false,
   // All pages start unpublished → the public sees the teaser until each is
   // flipped on one by one.
   pubActivites:            false,
