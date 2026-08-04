@@ -351,6 +351,7 @@ const EN = {
   clanCta: 'See the clan',
   formEyebrow: 'Sign-ups',
   formTitle: 'Saturday & Sunday workshops',
+  ateliersSoon: 'Workshop sign-ups will open shortly.',
   enfant: 'Child’s first and last name',
   parent: 'Parent’s first and last name',
   jour: 'Day',
