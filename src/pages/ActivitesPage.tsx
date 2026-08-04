@@ -635,7 +635,8 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       )}
 
       {/* ── Activity grid — Bestiary register ── */}
-      <section className="py-16 md:py-24">
+      {progFlags.bestiaire && (
+      <section id="bestiaire" className="py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <SectionTopRail
             index="01"
