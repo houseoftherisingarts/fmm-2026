@@ -44,6 +44,10 @@ interface Props {
   orbVideo?:    string;
   /** Up to two CTAs displayed below the intro. */
   ctas?:        PageHeaderCta[];
+  /** Remplace la ligne de dates. Sans cette prop, le bandeau affiche les
+   *  dates de l'édition courante. Les pages qui parlent d'une AUTRE
+   *  édition doivent la passer, sinon elles annoncent la mauvaise date. */
+  dateline?:    string;
 }
 
 const PageHeader: React.FC<Props> = ({
