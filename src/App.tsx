@@ -332,6 +332,10 @@ const App: React.FC = () => (
                 <Route path="/backuppage"    element={<WelcomePage />} />
                 <Route path="/en/backuppage" element={<WelcomePage />} />
                 {pillarRoutes()}
+                {/* Page à part, sur son propre slug, gardée par son propre
+                    drapeau : publier /partenaires n'ouvre pas celle-ci. */}
+                <Route path="/partenaires-2027" element={<FlagGate flag="showCommanditaire"><Partenaires2027Page /></FlagGate>} />
+                <Route path="/en/partners-2027" element={<FlagGate flag="showCommanditaire"><Partenaires2027Page /></FlagGate>} />
                 <Route path="/admin"  element={<AdminPage />} />
                 <Route path="/admin/personne/:slug" element={<PersonProfilePage />} />
                 <Route path="/admin/benevole/:uid"  element={<BenevoleProfilePage />} />
