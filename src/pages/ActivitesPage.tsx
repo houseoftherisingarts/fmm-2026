@@ -944,6 +944,48 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               {t.scheduleSouvenir}
             </p>
           </div>
+
+          {/* ── Horaire replié en deux cartes ────────────────────
+              Carte 1 (souvenir 2025) repliée par défaut; cliquer déplie
+              le markup existant (onglets + chronologie) sans le
+              modifier. Carte 2 (2026) verrouillée : le programme n'est
+              pas scellé. Décision d'Alex, 2026-08-04. */}
+          <div className="mb-4">
+            <HexPanel size="md">
+              <GildedFrame inset={12} tone="amber">
+                <div className="caravan-glass relative">
+                  <button
+                    type="button"
+                    onClick={() => setHoraireOpen((v) => !v)}
+                    aria-expanded={horaireOpen}
+                    aria-controls="horaire-2025-content"
+                    className="w-full flex items-center justify-between gap-4 p-6 md:p-8 text-left cursor-pointer"
+                  >
+                    <div>
+                      <Eyebrow tone="amber" className="mb-2">{t.scheduleVersion}</Eyebrow>
+                      <DisplayTitle size="lg" className="text-2xl md:text-3xl">{t.horaireCard2025Title}</DisplayTitle>
+                    </div>
+                    <ChevronDown
+                      size={22}
+                      className="shrink-0 transition-transform duration-400"
+                      style={{
+                        color: 'var(--color-amber-glow)',
+                        transform: horaireOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                      }}
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {horaireOpen && (
+                      <motion.div
+                        key="horaire-2025-content"
+                        id="horaire-2025-content"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        style={{ overflow: 'hidden' }}
+                      >
+                        <div className="px-6 md:px-8 pb-6 md:pb-8">
           {/* Day tabs — three illuminated day plates. Click to switch.
               The active plate gets amber-lit border + corner ticks. */}
           <div className="sched-day-tabs grid grid-cols-3 gap-3 md:gap-5 mb-6 md:mb-8">
