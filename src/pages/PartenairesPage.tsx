@@ -219,6 +219,13 @@ const PartenairesPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
             {t.becomeCta} <ArrowUpRight size={14} />
           </a>
+
+          {/* Voie séparée : la commandite d'honneur de l'an prochain.
+              Une seule place, donc un formulaire qui va directement dans
+              la boîte personnelle d'Alex plutôt qu'un mailto public. */}
+          <div className="mt-10 pt-8 border-t border-brass/20">
+            <SponsorInquiry />
+          </div>
         </Reveal>
       </section>
     </>
