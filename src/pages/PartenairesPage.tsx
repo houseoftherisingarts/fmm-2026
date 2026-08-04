@@ -12,6 +12,10 @@ import { SectionFog } from '../components/marche/atmospherics';
 import CommanditaireHonneur from '../components/partenaires/CommanditaireHonneur';
 import SponsorInquiry from '../components/partenaires/SponsorInquiry';
 
+// Local dev preview: VITE_SITE_MODE=live shows unpublished blocks so they
+// can be built without exposing them. `npm run deploy` forces 'placeholder'.
+const PREVIEW_ALL = import.meta.env.VITE_SITE_MODE === 'live';
+
 // Featured partners — long-form cards, cloned from the live Wix copy.
 const FEATURED = [
   {
