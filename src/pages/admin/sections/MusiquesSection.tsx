@@ -28,6 +28,7 @@ const MusiquesSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
   const [expandedUid, setExpandedUid] = useState<string | null>(null);
   const [notesDraft, setNotesDraft]   = useState<Record<string, string>>({});
   const [error, setError]   = useState<string | null>(null);
+  const [tab, setTab] = useState<'candidatures' | 'groupes'>('candidatures');
 
   const { user: adminUser } = useAuth();
 
