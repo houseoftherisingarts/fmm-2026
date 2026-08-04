@@ -29,7 +29,7 @@ import { logPageView } from './firebase';
 import { trackPixelPageView } from './lib/metaPixel';
 import { getLocaleFromPath } from './lib/locale';
 import { PILLARS, type PillarKey } from './content';
-import { isPillarVisible } from './firebase/siteFlags';
+import { isPillarVisible, type SiteFlags } from './firebase/siteFlags';
 
 // Lazy-loaded routes.
 const OrbHomePage      = lazy(() => import('./pages/OrbHomePage'));
