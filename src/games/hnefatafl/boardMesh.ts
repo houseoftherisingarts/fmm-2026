@@ -21,6 +21,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { CELL, MID, N, isCorner, isThrone } from './gameLogic';
+import { boardSet, BOARD_DEFAUT, type BoardSet } from './assets';
 
 export interface BoardHandle {
   squares: THREE.Mesh[][];
@@ -39,11 +40,10 @@ export interface BoardHandle {
 // logiques (0,0)/(0,10)/(10,0)/(10,10), et le champ peint arrive à
 // y = 0.10, le niveau des socles de pièces. Aucun décalage x/z : le
 // damier peint est centré dans le modèle.
-const GLB_URL   = '/games/hnefatafl/models/board.glb';
+// La rotation de mise à plat est commune à tous les modèles Meshy
+// (couchés dans le plan XY). Le reste du calage vit dans assets.ts,
+// mesuré plateau par plateau.
 const GLB_ROT_X = -Math.PI / 2;
-const GLB_SCALE = 7.85;
-const GLB_Y     = -0.63;
-const GLB_ROT_Y = 0;
 
 // ── Blason peint au centre ────────────────────────────────────────
 // Texture blanche découpée sur son alpha (public/fmm-logo-decal.png,
@@ -67,7 +67,10 @@ export function buildBoard(
   /** Gestionnaire partagé : compte le GLB, ses textures et le décalque
    *  dans la barre de progression de l'écran d'attente. */
   manager?: THREE.LoadingManager,
+  /** Identifiant du jeu de plateau choisi en boutique. */
+  setId: string = BOARD_DEFAUT,
 ): BoardHandle {
+  const jeu: BoardSet = boardSet(setId);
   const group = new THREE.Group();
   scene.add(group);
 
@@ -189,12 +192,12 @@ export function buildBoard(
   // la lumière des torches et s'assombrisse dans l'ombre, comme une
   // vraie dorure usée. Sous la surbrillance (0.16) pour ne jamais
   // masquer les cases jouables.
-  {
+  if (jeu.decal) {
     const decalGeo = new THREE.PlaneGeometry(DECAL_H * DECAL_RATIO, DECAL_H);
     const decalMat = new THREE.MeshPhongMaterial({
-      color: 0xd8bd82,
+      color: jeu.decal.couleur,
       transparent: true,
-      opacity: 0.36,
+      opacity: jeu.decal.opacite,
       depthWrite: false,
       shininess: 8,
     });
@@ -215,22 +218,27 @@ export function buildBoard(
   }
 
   // ── Le plateau sculpté de Meshy, par-dessus ─────────────────────
+  if (!jeu.url) {
+    // Jeu sans modèle : le plateau procédural EST le plateau.
+    return { squares, clickables, decorations: [] };
+  }
+
   const draco = new DRACOLoader(manager);
   draco.setDecoderPath('/draco/');
   const loader = new GLTFLoader(manager);
   loader.setDRACOLoader(draco);
 
   loader.load(
-    GLB_URL,
+    jeu.url,
     (gltf) => {
       // StrictMode monte le jeu deux fois : le callback du montage MORT
       // arrive quand même. On ne garde que le vivant.
       if (isAlive && !isAlive()) return;
       const model = gltf.scene;
       model.rotation.x = GLB_ROT_X;
-      model.rotation.y = GLB_ROT_Y;
-      model.scale.setScalar(GLB_SCALE);
-      model.position.y = GLB_Y;
+      model.rotation.y = jeu.rotY ?? 0;
+      model.scale.setScalar(jeu.scale ?? 7.85);
+      model.position.y = jeu.y ?? 0;
       model.traverse((o) => {
         if ((o as THREE.Mesh).isMesh) {
           o.receiveShadow = true;

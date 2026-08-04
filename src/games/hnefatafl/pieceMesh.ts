@@ -19,18 +19,12 @@ import gsap from 'gsap';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { CELL, MID, type CellValue } from './gameLogic';
+import { pieceSet, PIECES_DEFAUT, type PieceSet } from './assets';
 
-// ── GLB des pièces ──────────────────────────────────────────────────
-const MODEL_URLS: Record<CellValue & number, string> = {
-  1: '/games/hnefatafl/models/piece-raider.glb',
-  2: '/games/hnefatafl/models/piece-defender.glb',
-  3: '/games/hnefatafl/models/piece-king.glb',
-} as Record<CellValue & number, string>;
-
-// Hauteur GLB brute = 1.9. Cibles : pions ≈ 0.85, roi ≈ 1.2 (mêmes
-// silhouettes que les pièces procédurales, donc mêmes cadrages caméra).
-const MODEL_SCALE: Record<number, number> = { 1: 0.45, 2: 0.45, 3: 0.63 };
-const MODEL_BASE = -0.95; // base locale des modèles Meshy avant échelle
+// Les URL et les échelles vivent dans assets.ts, un bloc par jeu de
+// pièces. Meshy normalise ses sorties à une hauteur de 1.9 (y de -0.95
+// à 0.95), d'où une base locale commune.
+const MODEL_BASE = -0.95;
 
 export interface PieceMaterials {
   a: THREE.MeshPhongMaterial;
@@ -88,7 +82,10 @@ export function createPieceSystem(
   /** Gestionnaire partagé avec le plateau : les trois pièces et leurs
    *  textures comptent dans la même barre de progression. */
   manager?: THREE.LoadingManager,
+  /** Identifiant du jeu de pièces choisi en boutique. */
+  setId: string = PIECES_DEFAUT,
 ): PieceSystem {
+  const jeu: PieceSet = pieceSet(setId);
   const group = new THREE.Group();
   scene.add(group);
   const map: Record<string, PieceEntry> = {};
@@ -105,7 +102,7 @@ export function createPieceSystem(
   const attachModel = (entry: PieceEntry) => {
     const proto = loadedModels[entry.pType as number];
     if (!proto || entry.model || disposed) return;
-    const s = MODEL_SCALE[entry.pType as number];
+    const s = jeu.scales?.[entry.pType as number] ?? 0.45;
     const isK = entry.pType === 3;
     const bh = isK ? 0.92 : 0.56;
     const clone = proto.clone(true);
@@ -132,14 +129,16 @@ export function createPieceSystem(
     entry.cap.material = invisibleMat;
   };
 
-  {
+  if (jeu.urls) {
     const draco = new DRACOLoader(manager);
     draco.setDecoderPath('/draco/');
     const loader = new GLTFLoader(manager);
     loader.setDRACOLoader(draco);
     for (const t of [1, 2, 3] as const) {
+      const url = jeu.urls[t];
+      if (!url) continue;
       loader.load(
-        MODEL_URLS[t],
+        url,
         (gltf) => {
           if (disposed) return;
           loadedModels[t] = gltf.scene;
@@ -148,7 +147,7 @@ export function createPieceSystem(
           }
         },
         undefined,
-        (err) => console.warn('[hnefatafl] pièce GLB indisponible', MODEL_URLS[t], err),
+        (err) => console.warn('[hnefatafl] pièce GLB indisponible', url, err),
       );
     }
   }
