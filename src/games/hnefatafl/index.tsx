@@ -221,9 +221,12 @@ interface GameCanvasProps {
   onUi: (ui: UIState) => void;
   strings: GameStrings;
   config: GameConfig;
+  /** Avancement du chargement des modèles, de 0 à 1, puis `true` quand
+   *  tout est en scène (ou qu'un asset a définitivement échoué). */
+  onLoad: (progress: number, done: boolean) => void;
 }
 
-const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config }) => {
+const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config, onLoad }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const stringsRef = useRef(strings);
   stringsRef.current = strings;
@@ -243,8 +246,37 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
     const scene = setupScene(el);
     const detachResize = scene.attachResize();
 
-    const { clickables } = buildBoard(scene.scene, () => alive);
-    const pieces = createPieceSystem(scene.scene, clickables);
+    // ── Chargement des modèles ──────────────────────────────────────
+    // Un seul gestionnaire pour le plateau, les trois pièces, leurs
+    // textures et le décalque : l'écran d'attente montre donc un vrai
+    // avancement, pas une animation décorative.
+    //
+    // 🚨 Deux garde-fous, parce qu'un écran d'attente qui ne se lève
+    // jamais est pire que pas d'écran du tout :
+    //   · onError laisse quand même passer (le jeu tourne avec le
+    //     plateau procédural si un GLB manque);
+    //   · un délai maximal libère la partie même si le réseau meurt en
+    //     plein téléchargement, cas où ni onLoad ni onError ne tombent.
+    const manager = new THREE.LoadingManager();
+    let released = false;
+    const release = () => {
+      if (released || !alive) return;
+      released = true;
+      onLoad(1, true);
+    };
+    manager.onProgress = (_url, loaded, total) => {
+      if (!alive || released) return;
+      onLoad(total > 0 ? loaded / total : 0, false);
+    };
+    manager.onLoad = release;
+    manager.onError = (url) => {
+      console.warn('[hnefatafl] asset introuvable, la partie continue sans lui', url);
+      release();
+    };
+    const secours = window.setTimeout(release, 15000);
+
+    const { clickables } = buildBoard(scene.scene, () => alive, manager);
+    const pieces = createPieceSystem(scene.scene, clickables, undefined, manager);
     const hl = createHighlightSystem(scene.scene);
 
     // ── Sonde de développement ──────────────────────────────────────
@@ -570,6 +602,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config 
 
     return () => {
       alive = false;
+      clearTimeout(secours);
       cancelAnimationFrame(raf);
       cancelCpu();
       detachResize();

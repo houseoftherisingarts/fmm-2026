@@ -85,6 +85,9 @@ export function createPieceSystem(
   scene: THREE.Scene,
   clickables: THREE.Object3D[],
   materials: PieceMaterials = createPieceMaterials(),
+  /** Gestionnaire partagé avec le plateau : les trois pièces et leurs
+   *  textures comptent dans la même barre de progression. */
+  manager?: THREE.LoadingManager,
 ): PieceSystem {
   const group = new THREE.Group();
   scene.add(group);
@@ -130,9 +133,9 @@ export function createPieceSystem(
   };
 
   {
-    const draco = new DRACOLoader();
+    const draco = new DRACOLoader(manager);
     draco.setDecoderPath('/draco/');
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader(manager);
     loader.setDRACOLoader(draco);
     for (const t of [1, 2, 3] as const) {
       loader.load(

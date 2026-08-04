@@ -61,7 +61,13 @@ const OXBLOOD      = 0x571414;   // trône
 const BRASS        = 0xc4a45a;   // laiton du site
 const BRASS_DEEP   = 0x7a5215;
 
-export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHandle {
+export function buildBoard(
+  scene: THREE.Scene,
+  isAlive?: () => boolean,
+  /** Gestionnaire partagé : compte le GLB, ses textures et le décalque
+   *  dans la barre de progression de l'écran d'attente. */
+  manager?: THREE.LoadingManager,
+): BoardHandle {
   const group = new THREE.Group();
   scene.add(group);
 
@@ -200,7 +206,7 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
     // Surtout PAS dans `cosmetics` : le blason survit à l'arrivée du
     // GLB, c'est précisément sur le beau plateau qu'il doit se voir.
 
-    new THREE.TextureLoader().load(DECAL_URL, (tex) => {
+    new THREE.TextureLoader(manager).load(DECAL_URL, (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = 8;
       decalMat.map = tex;
@@ -209,9 +215,9 @@ export function buildBoard(scene: THREE.Scene, isAlive?: () => boolean): BoardHa
   }
 
   // ── Le plateau sculpté de Meshy, par-dessus ─────────────────────
-  const draco = new DRACOLoader();
+  const draco = new DRACOLoader(manager);
   draco.setDecoderPath('/draco/');
-  const loader = new GLTFLoader();
+  const loader = new GLTFLoader(manager);
   loader.setDRACOLoader(draco);
 
   loader.load(
