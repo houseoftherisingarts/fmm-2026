@@ -66,6 +66,7 @@ const Partenaires2027Page: React.FC = () => {
 const FR = {
   eyebrow: 'Édition 2027',
   title:   'Partenaires 2027',
+  dateline: 'Automne 2027 · dates à venir',
   intro:   'Chaque édition du festival est portée par une figure invitée. Voici celle qui marchera avec nous en 2027, et les rendez-vous où vous nous croiserez ensemble avant le festival.',
   becomeEyebrow: 'La place suivante',
   becomeTitle:   'Commanditaire d’honneur 2028',
