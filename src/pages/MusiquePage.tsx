@@ -83,15 +83,68 @@ const BANDS_ARCHIVES: Band[] = [
 ];
 
 // ── L'affiche 2026, par journée ─────────────────────────────────────
-// Liste d'Éric Pichette (2026-08-03), encore en construction : des noms
-// s'ajouteront. 🚨 Orthographes dictées de vive voix, à valider avant
-// publication : Sainte-Nigoune(?), Bic Oasis(?), Svarika(?),
-// Las Noches Bohemios(?), Alhambra(?). Fuego Bohemio est confirmé
-// (spectacle de la Troupe Caravane).
-const AFFICHE_2026: Array<{ jourFR: string; jourEN: string; groupes: string[] }> = [
-  { jourFR: 'Vendredi', jourEN: 'Friday',   groupes: ['Fuego Bohemio', 'Skarazula', 'St-Nigoune'] },
-  { jourFR: 'Samedi',   jourEN: 'Saturday', groupes: ['Bic Oasis', 'L’Harfang', 'Trifolys', 'Svarika'] },
-  { jourFR: 'Dimanche', jourEN: 'Sunday',   groupes: ['Las Noches Bohemios', 'Alhambra'] },
+// Liste d'Éric Pichette, confirmée et orthographes vérifiées le
+// 2026-08-04 : Fuego Bohemio (spectacle de la Troupe Caravane), Svarica
+// (pas Svarika). Encore en construction : d'autres noms s'ajouteront.
+const AFFICHE_2026_BANDS: Band[] = [
+  {
+    name:  'Fuego Bohemio',
+    jour:  'vendredi',
+    bioFR: 'Spectacle festif de musique et de danse gitane porté par la troupe CARAVANE : rumba flamenca, chants romani et danses improvisées.',
+    bioEN: 'A festive show of music and gypsy dance carried by the CARAVANE troupe: rumba flamenca, Romani songs and improvised dances.',
+  },
+  {
+    name:    'Skarazula',
+    jour:    'vendredi',
+    image:   '/wix/musique/2c6a22e9.jpg',
+    website: 'https://www.skarazula.com',
+    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans le monde riche et fascinant de la musique médiévale. Plus d’un instrument dans leur sac, plusieurs confectionnés par le groupe lui-même.',
+    bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
+  },
+  {
+    name:  'St-Nigoune',
+    jour:  'vendredi',
+    bioFR: 'Portrait et description à venir.',
+    bioEN: 'Portrait and description to come.',
+  },
+  {
+    name:  'Bic Oasis',
+    jour:  'samedi',
+    bioFR: 'Portrait et description à venir.',
+    bioEN: 'Portrait and description to come.',
+  },
+  {
+    name:  'L’Harfang',
+    jour:  'samedi',
+    image: '/wix/musique/407628b7.jpg',
+    bioFR: 'Jouant pour le festival depuis le tout début, L’Harfang est un duo de musique folklorique, médiévale, baroque et balfolk moderne. Vielle à roue (Alison Gowan) et musette 16 pouces (Éric Pichette).',
+    bioEN: 'Playing the festival since the very beginning, L’Harfang is a folk/medieval/baroque/balfolk duo led by hurdy-gurdy (Alison Gowan) and 16-inch musette bagpipe (Éric Pichette).',
+  },
+  {
+    name:  'Trifolys',
+    jour:  'samedi',
+    image: '/wix/musique/243cbf3c.jpg',
+    bioFR: 'Explorateurs des racines profondes de la musique dans un contexte historique différent et connexe.',
+    bioEN: 'Explorers of music’s deepest roots in a different yet adjacent historical context.',
+  },
+  {
+    name:  'Svarica',
+    jour:  'samedi',
+    bioFR: 'Né autour du feu du campement des Cordelian à Bicolline, Svarica marie rythmes tziganes, klezmer et ska festif : guitares, hautbois, accordéon, trombone et batterie, avec un seul objectif, faire danser.',
+    bioEN: 'Born around the fire of the Cordelian camp at Bicolline, Svarica weds Romani rhythms, klezmer and festive ska: guitars, oboe, accordion, trombone and drums, with one goal, to make you dance.',
+  },
+  {
+    name:  'Las Noches Bohemios',
+    jour:  'dimanche',
+    bioFR: 'Portrait et description à venir.',
+    bioEN: 'Portrait and description to come.',
+  },
+  {
+    name:  'Alhambra',
+    jour:  'dimanche',
+    bioFR: 'Portrait et description à venir.',
+    bioEN: 'Portrait and description to come.',
+  },
 ];
 
 // ─── Bestiary carousel ───────────────────────────────────────────────
