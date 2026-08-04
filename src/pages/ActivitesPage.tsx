@@ -915,9 +915,11 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           />
         </div>
       </section>
+      )}
 
       {/* ── Schedule — Quest Log (3 day plates) ── */}
-      <section className="py-16 md:py-24">
+      {progFlags.horaire && (
+      <section id="horaire" className="py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <SectionTopRail
             index="02"
