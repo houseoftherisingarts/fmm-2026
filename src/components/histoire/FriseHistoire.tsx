@@ -166,6 +166,8 @@ const FriseHistoire: React.FC = () => {
     current: fr ? 'En cours' : 'Current',
   };
 
+  if (!revealed) return null;
+
   if (staticFallback) {
     return (
       <section className="relative py-16 md:py-24 overflow-hidden">
