@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useUI } from '../../contexts/AppContext';
+import { useSiteFlags } from '../../contexts/SiteFlagsContext';
 import { FRISE_HISTOIRE } from '../../content/histoireFrise';
 import { IconHourglass } from '../icons/GameIcons';
 import EmberCanvas from '../vendor/EmberCanvas';
