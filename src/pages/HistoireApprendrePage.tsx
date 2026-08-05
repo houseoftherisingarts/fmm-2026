@@ -21,6 +21,8 @@ import {
 // → Aux origines du cirque → Une époque aux réalités variées
 // → Formations et démonstrations → Plongez dans nos archives (machine
 // à remonter le temps + film Viking) → L'équipe.
+// Frise animée ajoutée après « 5 ans d'histoire » le 2026-08-05, derrière
+// `showHistoireFrise` (éteint) — invisible tant qu'Alex ne l'a pas validée.
 const HistoireApprendrePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
