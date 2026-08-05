@@ -3,7 +3,7 @@ import {
   LayoutDashboard, HandHeart, ShoppingBag, Users, MessageSquare, Mail,
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
-  Hash, Bug, Camera, CalendarCheck2, TicketCheck,
+  Hash, Bug, Camera, CalendarCheck2, TicketCheck, Wallet,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
@@ -27,6 +27,7 @@ export type AdminSectionId =
   | 'bar'
   | 'dispos'
   | 'mariages'
+  | 'finances'
   | 'comptes'
   | 'invites'
   | 'messages'
@@ -59,6 +60,7 @@ const NAV: NavItem[] = [
   { id: 'bar',        label: 'Bar',             icon: Beer },
   { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2 },
   { id: 'mariages',   label: 'Mariages',        icon: Heart },
+  { id: 'finances',   label: 'Finances',        icon: Wallet },
   { id: 'comptes',    label: 'Comptes',         icon: Users },
   { id: 'invites',    label: 'Invités',         icon: TicketCheck },
   { id: 'messages',   label: 'Messages',        icon: MessageSquare },

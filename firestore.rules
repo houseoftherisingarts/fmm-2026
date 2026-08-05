@@ -219,6 +219,13 @@ service cloud.firestore {
     // tab (internal — different from inquiry-form `contacts`).
     match /bar/{docId}         { allow read, write: if isAdmin(); }
     match /schedule/{docId}    { allow read, write: if isAdmin(); }
+    // Finances (section admin Finances) : budget, comptes, répartition,
+    // métadonnées des documents téléversés. Données sensibles, jamais
+    // publiques.
+    match /financeCategories/{docId}  { allow read, write: if isAdmin(); }
+    match /financeAccounts/{docId}    { allow read, write: if isAdmin(); }
+    match /financeAllocation/{docId}  { allow read, write: if isAdmin(); }
+    match /financeDocuments/{docId}   { allow read, write: if isAdmin(); }
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
     // Team availability polls (Disponibilités : Doodle interne).
     match /teamPolls/{docId}   { allow read, write: if isAdmin(); }

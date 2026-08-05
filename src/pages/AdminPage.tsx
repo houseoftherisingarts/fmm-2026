@@ -47,6 +47,7 @@ const HoraireSection      = lazy(() => import('./admin/sections/HoraireSection')
 const BarSection          = lazy(() => import('./admin/sections/BarSection'));
 const DisposSection       = lazy(() => import('./admin/sections/DisposSection'));
 const MariagesSection     = lazy(() => import('./admin/sections/MariagesSection'));
+const FinancesSection     = lazy(() => import('./admin/sections/FinancesSection'));
 const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection'));
 const InvitesSection      = lazy(() => import('./admin/sections/InvitesSection'));
 const MessagesSection     = lazy(() => import('./admin/sections/MessagesSection'));
@@ -172,6 +173,7 @@ const AdminPage: React.FC = () => {
       case 'bar':        return <BarSection         devBypass={DEV_BYPASS} />;
       case 'dispos':     return <DisposSection />;
       case 'mariages':   return <MariagesSection    devBypass={DEV_BYPASS} />;
+      case 'finances':   return <FinancesSection />;
       case 'comptes':    return <ComptesSection    devBypass={DEV_BYPASS} />;
       case 'invites':    return <InvitesSection />;
       case 'messages':   return <MessagesSection   devBypass={DEV_BYPASS} />;

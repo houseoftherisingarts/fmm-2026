@@ -85,6 +85,14 @@ service firebase.storage {
       allow delete: if isOwner(uid) || isAdmin();
     }
 
+    // ── Documents financiers (section admin Finances) ────────────
+    // États financiers, factures, rapports. Contrairement à /media et
+    // /archives-uploads, PAS de lecture publique : données financières,
+    // admin seulement des deux côtés.
+    match /finances/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+
     // Deny everything else by default.
   }
 }
