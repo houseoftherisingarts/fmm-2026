@@ -22,6 +22,11 @@ export interface SiteFlags {
   // is announced for the NEXT edition, so publishing the partners page
   // for the current one must not reveal them ahead of time.
   showCommanditaire:       boolean;
+  // Révèle la frise animée de l'histoire du festival (section Histoire &
+  // Apprendre). En préparation — éteinte par défaut le temps qu'Alex la
+  // valide; se comporte comme les autres drapeaux `show*` (toujours visible
+  // en dev local via VITE_SITE_MODE=live, respectée en production).
+  showHistoireFrise:       boolean;
   // ── Per-page publication ──────────────────────────────────────────
   // The public teaser (site bientôt disponible) is simply the state where
   // NO page is published. Flip a page on from the admin (Paramètres →
