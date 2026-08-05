@@ -42,3 +42,14 @@ Choix pris (non explicité dans la demande) : quatre onglets internes plutôt qu
 6. Commit sur `main`.
 
 Pas de mode `devBypass`/mock pour cette section (comme `DisposSection`/`InvitesSection`) : c'est un outil financier réel, l'état vide gracieux (Firestore/Storage non configurés → listes vides + bannière d'erreur) suffit, cohérent avec le reste de l'admin.
+
+## Addenda — Carnet de contacts (même session, ajout d'Alex)
+
+Deuxième section admin, construite après Finances. Référence visuelle trouvée : `~/Documents/quest-grimoire` (The Quest Book), panneau PNJ (`NpcPanel.tsx`) — liste + fiche détaillée, monogramme doré en cercle, libellés en petites capitales dorées. L'admin FMM porte déjà cette même grammaire (fond midnight, accent laiton, `Card`/eyebrows), donc réutilisation directe des primitives existantes plutôt qu'un nouveau style.
+
+- `carnetContacts/{id}` (Firestore) — `{ name, role, allegiance, fonction, organisation, email, phone, notes, lastContactAt, photoUrl, photoPath, archived, order }`. Collection distincte de `contacts` (déjà prise par le formulaire public "Nous contacter").
+- `carnet-contacts/{timestamp}.webp` (Storage) — portraits, recadrés en carré côté client (même patron que `AvatarUpload.tsx`).
+- `src/firebase/carnetContacts.ts` + `src/pages/admin/sections/CarnetContactsSection.tsx` (nouveaux).
+- Admin-only des deux côtés (Firestore + Storage), aucune lecture publique : l'allégeance et les notes portent un jugement sur des personnes réelles. Commenté explicitement en tête des deux fichiers.
+- Pas de suppression franche : seulement `setContactArchived` (archiver/désarchiver). Aucune fonction de suppression n'existe dans le module.
+- Accès : super, CA, organisateurs (mêmes rôles que Finances) — pas bénévoles/cuisine.

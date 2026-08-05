@@ -93,6 +93,12 @@ service firebase.storage {
       allow read, write: if isAdmin();
     }
 
+    // ── Portraits du carnet de contacts (section admin) ───────────
+    // Personnes réelles (élus, partenaires…), pas de lecture publique.
+    match /carnet-contacts/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+
     // Deny everything else by default.
   }
 }
