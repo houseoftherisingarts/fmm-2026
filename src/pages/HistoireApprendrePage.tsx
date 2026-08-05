@@ -8,6 +8,7 @@ import {
   HistoireChapterSection, NiGnSection, ArchivesPhotosSection,
   PlongezArchivesSection, EquipeSection,
 } from './HistoirePage';
+import FriseHistoire from '../components/histoire/FriseHistoire';
 import {
   ApprendreChapterSection, ThemeCaravanesSection, OriginesCirqueSection,
   EpoqueSection, FormationsSection,
