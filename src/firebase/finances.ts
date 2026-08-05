@@ -5,7 +5,7 @@
 // Collections :
 //   financeCategories/{id}   — budget par catégorie
 //   financeAccounts/{id}     — soldes des comptes (Desjardins, Square, Zeffy, dette…)
-//   financeAllocation/settings — doc unique, répartition façon Coffre (investir/épargner/essentiel)
+//   financeAllocation/settings — doc unique, répartition en 3 enveloppes (investir/épargner/essentiel)
 //   financeDocuments/{id}    — métadonnées des documents téléversés dans Storage
 
 import {
@@ -158,7 +158,7 @@ export async function deleteAccount(id: string): Promise<void> {
   await deleteDoc(doc(db, ACCOUNTS_COL, id));
 }
 
-// ── Répartition façon Coffre (investir / épargner / essentiel) ─────
+// ── Répartition en 3 enveloppes (investir / épargner / essentiel) ──
 
 const ALLOCATION_COL = 'financeAllocation';
 const ALLOCATION_DOC = 'settings';

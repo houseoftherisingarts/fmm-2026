@@ -210,7 +210,11 @@ const AdminPage: React.FC = () => {
         </>
       );
     }
-    const isPreviewingDev = selectedRole !== 'super';
+    // The dev-bypass user's actual clearance is always super — walking
+    // through a different door here is just picking which scope to
+    // preview, never an access downgrade. A super-admin's own clearance
+    // never needs the "preview mode" banner (confusing, no signal for
+    // them), so it stays off in this branch.
     return (
       <>
         <SEO title={`Admin (DEV) · ${ROLE_LABELS[selectedRole].FR}`} noindex />
@@ -223,11 +227,7 @@ const AdminPage: React.FC = () => {
           adminRole={selectedRole}
           actualAdminRole="super"
           onAdminRoleChange={setSelectedRole}
-          previewBanner={
-            isPreviewingDev
-              ? { role: selectedRole, onBack: () => setSelectedRole(null) }
-              : null
-          }
+          previewBanner={null}
           onBackToGates={() => setSelectedRole(null)}
         >
           <Suspense fallback={<SectionFallback />}>
@@ -287,10 +287,12 @@ const AdminPage: React.FC = () => {
 
   // Through the gate — render the shell scoped to the chosen role.
   // Preview banner fires whenever the role they're VIEWING AS differs
-  // from their actual clearance (super-admin via gate, or any admin
-  // who hit the "View as" toggle in the sidebar).
+  // from their actual clearance (any admin who hit the "View as" toggle
+  // in the sidebar) — except for super-admins, whose own clearance is
+  // always full access, so the "preview mode" framing would only
+  // confuse them about which door they walked through.
   const actualRoleForShell = isSuperAdmin ? 'super' : adminRole;
-  const isPreviewing = selectedRole !== actualRoleForShell;
+  const isPreviewing = actualRoleForShell !== 'super' && selectedRole !== actualRoleForShell;
   return (
     <>
       <SEO title={`Admin · ${ROLE_LABELS[effectiveRole ?? 'super'].FR}`} noindex />

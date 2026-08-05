@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Wallet, PiggyBank, Landmark, FileText, Plus, X, Trash2, Pencil, Check,
-  Upload, Download, TrendingUp, ShieldCheck, Anchor,
+  Upload, Download, TrendingUp, ShieldCheck, Anchor, LayoutDashboard,
 } from 'lucide-react';
 import {
   Card, EmptyState, GhostButton, PrimaryButton, downloadCsv, fmtDate,
@@ -16,21 +16,32 @@ import {
 } from '../../../firebase/finances';
 
 // ─── Finances ────────────────────────────────────────────────────────
-// Inspirée du Coffre des Inconnus (pots, catégories, répartition en
-// trois parts) mais habillée aux couleurs du festival. Quatre onglets :
-// Budget, Comptes, Répartition, Documents. Admin seulement (super/CA/
-// organisateurs) — voir adminPermissions.ts et firestore.rules.
+// Un tableau de bord (budget par catégories + comptes + répartition,
+// lisibles d'un coup d'œil) et un onglet Documents à part. Admin
+// seulement (super/CA/organisateurs) — voir adminPermissions.ts et
+// firestore.rules.
 
 const fmtCAD = (n: number) =>
   new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(n);
 
-type Tab = 'budget' | 'comptes' | 'repartition' | 'documents';
+// Traduit une erreur Firebase en phrase compréhensible sans jargon.
+// L'appelant précise l'action en cours pour un message situé.
+const humanizeError = (e: unknown, action: 'charger ces données' | 'enregistrer' | 'supprimer' | 'téléverser le fichier'): string => {
+  const code = (e as { code?: string } | null)?.code ?? '';
+  if (code === 'permission-denied') {
+    return 'Accès refusé : votre compte n’a pas la permission nécessaire en ce moment. Demandez à qui gère le site de vérifier vos accès admin.';
+  }
+  if (code === 'unavailable' || code === 'deadline-exceeded') {
+    return 'Connexion instable, réessayez dans un instant.';
+  }
+  return `Impossible de ${action} pour l’instant. Réessayez, et si ça persiste, prévenez qui gère le site.`;
+};
+
+type Tab = 'dashboard' | 'documents';
 
 const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
-  { id: 'budget',      label: 'Budget',      icon: Wallet },
-  { id: 'comptes',     label: 'Comptes',     icon: Landmark },
-  { id: 'repartition', label: 'Répartition', icon: PiggyBank },
-  { id: 'documents',   label: 'Documents',   icon: FileText },
+  { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+  { id: 'documents', label: 'Documents',       icon: FileText },
 ];
 
 const inputCls =
@@ -46,7 +57,7 @@ const Field: React.FC<{ label: string; children: React.ReactNode; full?: boolean
 );
 
 const ErrorBanner: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => (
-  <Card className="p-4 border border-blush/40 bg-blush/8">
+  <Card className="p-4 border border-blush/40 bg-blush/8 !rounded-card">
     <div className="flex items-center justify-between gap-3">
       <p className="font-sans text-sm text-blush">{message}</p>
       <button onClick={onClose} className="text-blush/60 hover:text-blush transition shrink-0">
@@ -62,8 +73,14 @@ const Spinner: React.FC = () => (
   </div>
 );
 
+const SectionTitle: React.FC<{ icon: React.ComponentType<{ size?: number; className?: string }>; children: React.ReactNode }> = ({ icon: Icon, children }) => (
+  <h2 className="font-display title-medieval text-xl text-brass uppercase tracking-widest inline-flex items-center gap-2">
+    <Icon size={16} /> {children}
+  </h2>
+);
+
 const FinancesSection: React.FC = () => {
-  const [tab, setTab] = useState<Tab>('budget');
+  const [tab, setTab] = useState<Tab>('dashboard');
 
   return (
     <div className="space-y-5">
@@ -80,52 +97,159 @@ const FinancesSection: React.FC = () => {
         ))}
       </div>
 
-      {tab === 'budget' && <BudgetTab />}
-      {tab === 'comptes' && <ComptesTab />}
-      {tab === 'repartition' && <RepartitionTab />}
+      {tab === 'dashboard' && <DashboardTab />}
       {tab === 'documents' && <DocumentsTab />}
     </div>
   );
 };
 
-// ─── Onglet Budget ───────────────────────────────────────────────────
+// ─── Tableau de bord : budget + comptes + répartition, ensemble ──────
+// Les trois concepts se parlent (un dollar budgété vit dans un compte
+// et se range dans une des trois enveloppes de répartition), donc ils
+// vivent sur le même écran plutôt que dans des onglets séparés.
 
-const BudgetTab: React.FC = () => {
-  const [items, setItems] = useState<FinanceCategory[]>([]);
+const DashboardTab: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showAdd, setShowAdd] = useState(false);
-  const [editing, setEditing] = useState<FinanceCategory | null>(null);
 
-  const reload = async () => {
+  const [categories, setCategories] = useState<FinanceCategory[]>([]);
+  const [catError, setCatError] = useState<string | null>(null);
+
+  const [accounts, setAccounts] = useState<FinanceAccount[]>([]);
+  const [accError, setAccError] = useState<string | null>(null);
+
+  const [allocation, setAllocationState] = useState<FinanceAllocation>({ investir: 0, epargne: 0, essentiel: 0 });
+  const [allocError, setAllocError] = useState<string | null>(null);
+  const [allocSaving, setAllocSaving] = useState(false);
+
+  const reloadCategories = async () => {
     try {
-      await seedDefaultCategories();
-      setItems(await listCategories());
-      setError(null);
+      const list = await listCategories();
+      setCategories(list);
+      setCatError(null);
+      // Collection vide : on tente de précharger les catégories de
+      // départ en tâche de fond. Un échec ici (ex. droits d'écriture
+      // manquants) ne doit pas transformer un état vide en erreur.
+      if (list.length === 0) {
+        seedDefaultCategories()
+          .then(() => listCategories())
+          .then(setCategories)
+          .catch((e) => console.warn('[FinancesSection] seedDefaultCategories failed (non bloquant):', e));
+      }
     } catch (e) {
       console.warn('[FinancesSection] listCategories failed:', e);
-      setItems([]);
-      setError('Impossible de charger le budget. Vérifiez la configuration Firebase.');
-    } finally {
-      setLoading(false);
+      setCategories([]);
+      setCatError(humanizeError(e, 'charger ces données'));
     }
   };
-  useEffect(() => { reload(); }, []);
+
+  const reloadAccounts = async () => {
+    try {
+      const list = await listAccounts();
+      setAccounts(list);
+      setAccError(null);
+      if (list.length === 0) {
+        seedDefaultAccounts()
+          .then(() => listAccounts())
+          .then(setAccounts)
+          .catch((e) => console.warn('[FinancesSection] seedDefaultAccounts failed (non bloquant):', e));
+      }
+    } catch (e) {
+      console.warn('[FinancesSection] listAccounts failed:', e);
+      setAccounts([]);
+      setAccError(humanizeError(e, 'charger ces données'));
+    }
+  };
+
+  const reloadAllocation = async () => {
+    try {
+      setAllocationState(await getAllocation());
+      setAllocError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] getAllocation failed:', e);
+      setAllocError(humanizeError(e, 'charger ces données'));
+    }
+  };
+
+  useEffect(() => {
+    Promise.allSettled([reloadCategories(), reloadAccounts(), reloadAllocation()]).finally(() => setLoading(false));
+  }, []);
 
   const totals = useMemo(() => ({
-    budgeted: items.reduce((s, c) => s + c.budgeted, 0),
-    actual: items.reduce((s, c) => s + c.actual, 0),
-  }), [items]);
+    budgeted: categories.reduce((s, c) => s + c.budgeted, 0),
+    actual: categories.reduce((s, c) => s + c.actual, 0),
+  }), [categories]);
   const totalEcart = totals.budgeted - totals.actual;
+  const soldeNet = accounts.reduce((s, a) => s + a.balance, 0);
+
+  const onSaveAllocation = async () => {
+    setAllocSaving(true);
+    try {
+      await setAllocation(allocation);
+      setAllocError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] setAllocation failed:', e);
+      setAllocError(humanizeError(e, 'enregistrer'));
+    }
+    setAllocSaving(false);
+  };
+
+  if (loading) return <Spinner />;
+
+  return (
+    <div className="space-y-5">
+      {/* Vue d'ensemble — budget + comptes, un coup d'œil */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Stat label="Budgété"           value={fmtCAD(totals.budgeted)} />
+        <Stat label="Dépensé"           value={fmtCAD(totals.actual)} />
+        <Stat label="Écart budget"      value={fmtCAD(totalEcart)} tone={totalEcart < 0 ? 'blush' : 'emerald'} />
+        <Stat label="Solde net comptes" value={fmtCAD(soldeNet)} tone={soldeNet < 0 ? 'blush' : 'emerald'} />
+      </div>
+
+      {/* Répartition — bande compacte, sous les stats */}
+      <RepartitionBand
+        allocation={allocation}
+        onChange={setAllocationState}
+        onSave={onSaveAllocation}
+        saving={allocSaving}
+        error={allocError}
+        onClearError={() => setAllocError(null)}
+      />
+
+      {/* Budget + Comptes côte à côte */}
+      <div className="grid lg:grid-cols-2 gap-5">
+        <BudgetColumn
+          items={categories} error={catError} onClearError={() => setCatError(null)}
+          reload={reloadCategories}
+        />
+        <ComptesColumn
+          items={accounts} error={accError} onClearError={() => setAccError(null)}
+          reload={reloadAccounts}
+        />
+      </div>
+    </div>
+  );
+};
+
+// ─── Colonne Budget ──────────────────────────────────────────────────
+
+const BudgetColumn: React.FC<{
+  items: FinanceCategory[];
+  error: string | null;
+  onClearError: () => void;
+  reload: () => Promise<void>;
+}> = ({ items, error, onClearError, reload }) => {
+  const [showAdd, setShowAdd] = useState(false);
+  const [editing, setEditing] = useState<FinanceCategory | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const onSave = async (data: Omit<FinanceCategory, 'id'>, id?: string) => {
     try {
       if (id) await updateCategory(id, data);
       else await addCategory(data);
-      setError(null);
+      setSaveError(null);
     } catch (e) {
       console.warn('[FinancesSection] save category failed:', e);
-      setError('Échec de la sauvegarde.');
+      setSaveError(humanizeError(e, 'enregistrer'));
     }
     setShowAdd(false); setEditing(null); reload();
   };
@@ -134,10 +258,10 @@ const BudgetTab: React.FC = () => {
     if (!confirm(`Retirer la catégorie « ${c.name} » ?`)) return;
     try {
       await deleteCategory(c.id);
-      setError(null);
+      setSaveError(null);
     } catch (e) {
       console.warn('[FinancesSection] delete category failed:', e);
-      setError('Échec de la suppression.');
+      setSaveError(humanizeError(e, 'supprimer'));
     }
     reload();
   };
@@ -146,28 +270,17 @@ const BudgetTab: React.FC = () => {
     categorie: c.name, budgete: c.budgeted, reel: c.actual, ecart: c.budgeted - c.actual,
   })));
 
-  if (loading) return <Spinner />;
-
   return (
-    <div className="space-y-5">
-      {error && <ErrorBanner message={error} onClose={() => setError(null)} />}
-
-      {/* Total général */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Stat label="Budgété"  value={fmtCAD(totals.budgeted)} />
-        <Stat label="Dépensé"  value={fmtCAD(totals.actual)} />
-        <Stat label="Écart"    value={fmtCAD(totalEcart)} tone={totalEcart < 0 ? 'blush' : 'emerald'} />
-      </div>
-
+    <div className="space-y-3">
       <div className="flex items-end justify-between gap-3 flex-wrap">
-        <p className="font-editorial italic text-xs text-ivory-soft/60">
-          Ajoutez, modifiez ou retirez des catégories librement.
-        </p>
+        <SectionTitle icon={Wallet}>Budget</SectionTitle>
         <div className="flex items-center gap-2">
           <GhostButton onClick={() => { setEditing(null); setShowAdd(true); }}><Plus size={12} /> Catégorie</GhostButton>
-          <GhostButton onClick={exportCsv}><Download size={12} /> CSV</GhostButton>
+          {items.length > 0 && <GhostButton onClick={exportCsv}><Download size={12} /> CSV</GhostButton>}
         </div>
       </div>
+
+      {(error || saveError) && <ErrorBanner message={(error || saveError)!} onClose={() => { onClearError(); setSaveError(null); }} />}
 
       {(showAdd || editing) && (
         <CategoryForm
@@ -178,7 +291,18 @@ const BudgetTab: React.FC = () => {
       )}
 
       {items.length === 0 ? (
-        <Card><EmptyState icon={Wallet}>Aucune catégorie de budget pour l’instant.</EmptyState></Card>
+        <Card className="!rounded-card">
+          <EmptyState>
+            <>
+              Aucune catégorie de budget pour l’instant.
+              <div className="mt-4">
+                <GhostButton onClick={() => { setEditing(null); setShowAdd(true); }}>
+                  <Plus size={12} /> Créer la première catégorie
+                </GhostButton>
+              </div>
+            </>
+          </EmptyState>
+        </Card>
       ) : (
         <div className="space-y-2">
           {items.map((c) => {
@@ -186,7 +310,7 @@ const BudgetTab: React.FC = () => {
             const pct = c.budgeted > 0 ? Math.min(100, Math.round((c.actual / c.budgeted) * 100)) : (c.actual > 0 ? 100 : 0);
             const over = c.actual > c.budgeted && c.budgeted > 0;
             return (
-              <Card key={c.id} className="p-4">
+              <Card key={c.id} className="p-4 !rounded-card">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="min-w-0">
                     <p className="font-display title-medieval text-sm text-ivory truncate">{c.name}</p>
@@ -231,7 +355,7 @@ const CategoryForm: React.FC<{
   const [actual, setActual] = useState(initial?.actual ?? 0);
 
   return (
-    <Card className="p-5">
+    <Card className="p-5 !rounded-card">
       <div className="flex items-start justify-between gap-3 mb-4">
         <h3 className="font-display title-medieval text-lg text-ivory">{initial ? 'Édition' : 'Nouvelle catégorie'}</h3>
         <button onClick={onCancel} className="text-ivory-soft/60 hover:text-ivory transition"><X size={16} /></button>
@@ -261,38 +385,26 @@ const CategoryForm: React.FC<{
   );
 };
 
-// ─── Onglet Comptes ──────────────────────────────────────────────────
+// ─── Colonne Comptes ─────────────────────────────────────────────────
 
-const ComptesTab: React.FC = () => {
-  const [items, setItems] = useState<FinanceAccount[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const ComptesColumn: React.FC<{
+  items: FinanceAccount[];
+  error: string | null;
+  onClearError: () => void;
+  reload: () => Promise<void>;
+}> = ({ items, error, onClearError, reload }) => {
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<FinanceAccount | null>(null);
-
-  const reload = async () => {
-    try {
-      await seedDefaultAccounts();
-      setItems(await listAccounts());
-      setError(null);
-    } catch (e) {
-      console.warn('[FinancesSection] listAccounts failed:', e);
-      setItems([]);
-      setError('Impossible de charger les comptes. Vérifiez la configuration Firebase.');
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => { reload(); }, []);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const onSave = async (data: Omit<FinanceAccount, 'id'>, id?: string) => {
     try {
       if (id) await updateAccount(id, data);
       else await addAccount(data);
-      setError(null);
+      setSaveError(null);
     } catch (e) {
       console.warn('[FinancesSection] save account failed:', e);
-      setError('Échec de la sauvegarde.');
+      setSaveError(humanizeError(e, 'enregistrer'));
     }
     setShowAdd(false); setEditing(null); reload();
   };
@@ -301,44 +413,44 @@ const ComptesTab: React.FC = () => {
     if (!confirm(`Retirer le compte « ${a.name} » ?`)) return;
     try {
       await deleteAccount(a.id);
-      setError(null);
+      setSaveError(null);
     } catch (e) {
       console.warn('[FinancesSection] delete account failed:', e);
-      setError('Échec de la suppression.');
+      setSaveError(humanizeError(e, 'supprimer'));
     }
     reload();
   };
 
-  const soldeNet = items.reduce((s, a) => s + a.balance, 0);
-
-  if (loading) return <Spinner />;
-
   return (
-    <div className="space-y-5">
-      {error && <ErrorBanner message={error} onClose={() => setError(null)} />}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <Stat label="Comptes suivis" value={String(items.length)} />
-        <Stat label="Solde net" value={fmtCAD(soldeNet)} sub="entrer la dette en négatif" tone={soldeNet < 0 ? 'blush' : 'emerald'} />
-      </div>
-
+    <div className="space-y-3">
       <div className="flex items-end justify-between gap-3 flex-wrap">
-        <p className="font-editorial italic text-xs text-ivory-soft/60">
-          Desjardins, Square, Zeffy, dette… ajoutez n’importe quel compte.
-        </p>
+        <SectionTitle icon={Landmark}>Comptes</SectionTitle>
         <GhostButton onClick={() => { setEditing(null); setShowAdd(true); }}><Plus size={12} /> Compte</GhostButton>
       </div>
+
+      {(error || saveError) && <ErrorBanner message={(error || saveError)!} onClose={() => { onClearError(); setSaveError(null); }} />}
 
       {(showAdd || editing) && (
         <AccountForm initial={editing} onCancel={() => { setShowAdd(false); setEditing(null); }} onSubmit={onSave} />
       )}
 
       {items.length === 0 ? (
-        <Card><EmptyState icon={Landmark}>Aucun compte pour l’instant.</EmptyState></Card>
+        <Card className="!rounded-card">
+          <EmptyState>
+            <>
+              Aucun compte pour l’instant.
+              <div className="mt-4">
+                <GhostButton onClick={() => { setEditing(null); setShowAdd(true); }}>
+                  <Plus size={12} /> Créer le premier compte
+                </GhostButton>
+              </div>
+            </>
+          </EmptyState>
+        </Card>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-2 gap-3">
           {items.map((a) => (
-            <Card key={a.id} className="p-4">
+            <Card key={a.id} className="p-4 !rounded-card">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-display title-medieval text-sm text-ivory truncate">{a.name}</p>
@@ -371,7 +483,7 @@ const AccountForm: React.FC<{
   const [currency, setCurrency] = useState(initial?.currency ?? 'CAD');
 
   return (
-    <Card className="p-5">
+    <Card className="p-5 !rounded-card">
       <div className="flex items-start justify-between gap-3 mb-4">
         <h3 className="font-display title-medieval text-lg text-ivory">{initial ? 'Édition' : 'Nouveau compte'}</h3>
         <button onClick={onCancel} className="text-ivory-soft/60 hover:text-ivory transition"><X size={16} /></button>
@@ -380,7 +492,7 @@ const AccountForm: React.FC<{
         e.preventDefault();
         if (!name.trim()) return;
         onSubmit({ name: name.trim(), type, balance: Number(balance) || 0, currency: currency.trim() || 'CAD', order: initial?.order ?? Date.now() }, initial?.id);
-      }} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      }} className="grid sm:grid-cols-2 gap-3">
         <Field label="Nom" full>
           <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ex. : Desjardins" className={inputCls} />
         </Field>
@@ -397,7 +509,7 @@ const AccountForm: React.FC<{
         <Field label="Devise">
           <input value={currency} onChange={(e) => setCurrency(e.target.value)} placeholder="CAD" className={inputCls} />
         </Field>
-        <div className="sm:col-span-2 lg:col-span-4 flex gap-2 justify-end mt-2">
+        <div className="sm:col-span-2 flex gap-2 justify-end mt-2">
           <button type="button" onClick={onCancel} className="px-4 py-2 text-ivory-soft hover:text-ivory text-xs font-sans uppercase tracking-wider">Annuler</button>
           <button type="submit" className="px-4 py-2 bg-brass text-midnight-deep font-sans text-xs uppercase tracking-wider font-semibold rounded-card hover:bg-brass-soft transition inline-flex items-center gap-1.5">
             <Check size={12} /> {initial ? 'Mettre à jour' : 'Créer'}
@@ -408,7 +520,7 @@ const AccountForm: React.FC<{
   );
 };
 
-// ─── Onglet Répartition (façon Coffre des Inconnus) ─────────────────
+// ─── Bande Répartition (investir / épargner / essentiel) ─────────────
 
 const PART_META = {
   investir:  { label: 'Investir',  icon: TrendingUp,  color: '#5A8FD6' },
@@ -416,85 +528,63 @@ const PART_META = {
   essentiel: { label: 'Essentiel', icon: Anchor,       color: '#C9A85A' },
 } as const;
 
-const RepartitionTab: React.FC = () => {
-  const [allocation, setAllocationState] = useState<FinanceAllocation>({ investir: 0, epargne: 0, essentiel: 0 });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    getAllocation()
-      .then(setAllocationState)
-      .catch((e) => { console.warn('[FinancesSection] getAllocation failed:', e); setError('Impossible de charger la répartition.'); })
-      .finally(() => setLoading(false));
-  }, []);
-
+const RepartitionBand: React.FC<{
+  allocation: FinanceAllocation;
+  onChange: (a: FinanceAllocation) => void;
+  onSave: () => void;
+  saving: boolean;
+  error: string | null;
+  onClearError: () => void;
+}> = ({ allocation, onChange, onSave, saving, error, onClearError }) => {
   const total = allocation.investir + allocation.epargne + allocation.essentiel;
 
-  const onSave = async () => {
-    setSaving(true);
-    try {
-      await setAllocation(allocation);
-      setError(null);
-    } catch (e) {
-      console.warn('[FinancesSection] setAllocation failed:', e);
-      setError('Échec de la sauvegarde.');
-    }
-    setSaving(false);
-  };
-
-  if (loading) return <Spinner />;
-
   return (
-    <div className="space-y-5">
-      {error && <ErrorBanner message={error} onClose={() => setError(null)} />}
+    <div className="space-y-3">
+      {error && <ErrorBanner message={error} onClose={onClearError} />}
+      <Card className="p-4 !rounded-card">
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+          <SectionTitle icon={PiggyBank}>Répartition</SectionTitle>
+          <p className={`font-sans text-[11px] ${total === 100 ? 'text-ivory-soft/60' : 'text-blush'}`}>
+            Total : {total}% {total !== 100 && '(vise 100%)'}
+          </p>
+        </div>
 
-      <p className="font-editorial italic text-sm text-ivory-soft">
-        Comme les pots des enfants au Coffre des Inconnus : chaque dollar du festival se répartit en trois parts.
-      </p>
-
-      {/* Barre empilée */}
-      <Card className="p-4">
-        <div className="h-4 rounded-pill overflow-hidden flex border border-ivory-soft/10">
+        <div className="h-3 rounded-pill overflow-hidden flex border border-ivory-soft/10 mb-4">
           {(Object.keys(PART_META) as (keyof FinanceAllocation)[]).map((k) => {
             const pct = total > 0 ? (allocation[k] / total) * 100 : 0;
             return <div key={k} style={{ width: `${pct}%`, background: PART_META[k].color }} />;
           })}
         </div>
-        <div className={`mt-2 font-sans text-[11px] ${total === 100 ? 'text-ivory-soft/60' : 'text-blush'}`}>
-          Total : {total}% {total !== 100 && '(vise 100%)'}
-        </div>
-      </Card>
 
-      <div className="grid sm:grid-cols-3 gap-3">
-        {(Object.keys(PART_META) as (keyof FinanceAllocation)[]).map((k) => {
-          const { label, icon: Icon, color } = PART_META[k];
-          return (
-            <Card key={k} className="p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-7 h-7 rounded-card flex items-center justify-center" style={{ background: `${color}22`, color }}>
+        <div className="grid sm:grid-cols-3 gap-3">
+          {(Object.keys(PART_META) as (keyof FinanceAllocation)[]).map((k) => {
+            const { label, icon: Icon, color } = PART_META[k];
+            return (
+              <div key={k} className="flex items-center gap-2">
+                <span className="w-7 h-7 shrink-0 rounded-card flex items-center justify-center" style={{ background: `${color}22`, color }}>
                   <Icon size={14} />
                 </span>
-                <p className="font-display title-medieval text-sm text-ivory">{label}</p>
+                <label className="sr-only" htmlFor={`alloc-${k}`}>{label}</label>
+                <div className="flex-1 flex items-center gap-2">
+                  <input
+                    id={`alloc-${k}`}
+                    type="number" min={0} max={100} value={allocation[k]}
+                    onChange={(e) => onChange({ ...allocation, [k]: Number(e.target.value) || 0 })}
+                    className={`${inputCls} tabular-nums`}
+                  />
+                  <span className="font-sans text-ivory-soft text-sm">%</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number" min={0} max={100} value={allocation[k]}
-                  onChange={(e) => setAllocationState((prev) => ({ ...prev, [k]: Number(e.target.value) || 0 }))}
-                  className={`${inputCls} tabular-nums`}
-                />
-                <span className="font-sans text-ivory-soft text-sm">%</span>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      <div className="flex justify-end">
-        <PrimaryButton onClick={onSave} disabled={saving}>
-          <ShieldCheck size={12} /> {saving ? 'Sauvegarde…' : 'Sauvegarder la répartition'}
-        </PrimaryButton>
-      </div>
+        <div className="flex justify-end mt-4">
+          <PrimaryButton onClick={onSave} disabled={saving}>
+            <ShieldCheck size={12} /> {saving ? 'Sauvegarde…' : 'Sauvegarder la répartition'}
+          </PrimaryButton>
+        </div>
+      </Card>
     </div>
   );
 };
@@ -517,7 +607,7 @@ const DocumentsTab: React.FC = () => {
     } catch (e) {
       console.warn('[FinancesSection] listDocuments failed:', e);
       setDocs([]);
-      setError('Impossible de charger les documents. Vérifiez la configuration Firebase.');
+      setError(humanizeError(e, 'charger ces données'));
     } finally {
       setLoading(false);
     }
@@ -531,7 +621,7 @@ const DocumentsTab: React.FC = () => {
       setError(null);
     } catch (e) {
       console.warn('[FinancesSection] uploadDocument failed:', e);
-      setError('Échec du téléversement.');
+      setError(humanizeError(e, 'téléverser le fichier'));
     }
     setBusy(false);
     setShowUpload(false);
@@ -545,7 +635,7 @@ const DocumentsTab: React.FC = () => {
       setError(null);
     } catch (e) {
       console.warn('[FinancesSection] deleteDocument failed:', e);
-      setError('Échec de la suppression.');
+      setError(humanizeError(e, 'supprimer'));
     }
     reload();
   };
@@ -568,9 +658,20 @@ const DocumentsTab: React.FC = () => {
       )}
 
       {docs.length === 0 ? (
-        <Card><EmptyState icon={FileText}>Aucun document téléversé pour l’instant.</EmptyState></Card>
+        <Card className="!rounded-card">
+          <EmptyState>
+            <>
+              Aucun document téléversé pour l’instant.
+              <div className="mt-4">
+                <GhostButton onClick={() => setShowUpload(true)}>
+                  <Upload size={12} /> Téléverser le premier document
+                </GhostButton>
+              </div>
+            </>
+          </EmptyState>
+        </Card>
       ) : (
-        <Card className="overflow-x-auto">
+        <Card className="overflow-x-auto !rounded-card">
           <table className="w-full text-sm font-sans">
             <thead>
               <tr className="text-left border-b border-ivory-soft/10">
@@ -620,7 +721,7 @@ const UploadForm: React.FC<{
   const [year, setYear] = useState(new Date().getFullYear());
 
   return (
-    <Card className="p-5">
+    <Card className="p-5 !rounded-card">
       <div className="flex items-start justify-between gap-3 mb-4">
         <h3 className="font-display title-medieval text-lg text-ivory">Téléverser un document</h3>
         <button onClick={onCancel} className="text-ivory-soft/60 hover:text-ivory transition"><X size={16} /></button>
@@ -666,7 +767,7 @@ const Th: React.FC<{ children?: React.ReactNode; className?: string }> = ({ chil
 );
 
 const Stat: React.FC<{ label: string; value: string; sub?: string; tone?: 'emerald' | 'blush' }> = ({ label, value, sub, tone }) => (
-  <Card className="p-4">
+  <Card className="p-4 !rounded-card">
     <p className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest">{label}</p>
     <p className={`font-sans text-xl tabular-nums mt-1.5 ${tone === 'blush' ? 'text-blush' : tone === 'emerald' ? 'text-emerald-400' : 'text-ivory'}`}>{value}</p>
     {sub && <p className="font-editorial italic text-[11px] text-ivory-soft/60 mt-0.5">{sub}</p>}
