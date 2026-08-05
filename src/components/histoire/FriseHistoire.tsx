@@ -35,9 +35,16 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 // que d'ajouter un nouvel actif (Alex, 2026-08-05 : « le son synchronisé »).
 const STEP_SFX = '/orb/sfx/hover.mp3';
 
+// Local dev (VITE_SITE_MODE=live) previews every in-progress section;
+// production respects the Firestore flag — same convention as NavBar,
+// Footer and OrbHomePage.
+const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
+
 const FriseHistoire: React.FC = () => {
   const { lang } = useUI();
   const fr = lang === 'FR';
+  const { flags } = useSiteFlags();
+  const revealed = PREVIEW_ALL || flags.showHistoireFrise;
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const stopRefs = useRef<(HTMLDivElement | null)[]>([]);
