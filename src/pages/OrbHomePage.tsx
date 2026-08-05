@@ -10,6 +10,8 @@ import { addLocale } from '../lib/locale';
 import { useCountdown } from '../lib/useCountdown';
 import { usePerfTier } from '../lib/usePerfTier';
 import SEO from '../components/SEO';
+import Brume from '../components/Brume';
+import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 
 // Pattern adapted from le-salon-des-inconnus apps/hub/src/HubOrb.tsx —
 // vertical list of choices on the left, glass orb on the right with
