@@ -1776,7 +1776,7 @@ const OrbHomePage: React.FC = () => {
           en bas, et un fondu haut qui recoud la couture avec le héros
           de l'orbe. Gradients statiques : aucun coût d'animation. */}
       <section
-        className="relative py-16 md:py-24 overflow-hidden"
+        className="relative py-16 md:py-24 overflow-x-clip"
         style={{
           backgroundColor: '#0A0207',
           backgroundImage: [
