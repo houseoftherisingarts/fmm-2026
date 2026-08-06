@@ -124,6 +124,9 @@ const DashboardTab: React.FC = () => {
   const [allocError, setAllocError] = useState<string | null>(null);
   const [allocSaving, setAllocSaving] = useState(false);
 
+  const [receivables, setReceivables] = useState<FinanceReceivable[]>([]);
+  const [recError, setRecError] = useState<string | null>(null);
+
   const reloadCategories = async () => {
     try {
       const list = await listCategories();
