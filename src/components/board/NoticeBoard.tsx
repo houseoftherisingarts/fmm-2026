@@ -127,15 +127,15 @@ export const IronBar: React.FC<{ className?: string }> = ({ className = '' }) =>
     {/* Bossage central : plaque de fer + losange de cuivre, le seul
         point de couleur de la pièce. */}
     <span
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[38px] h-[24px] md:w-[46px] md:h-[28px]"
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[52px] h-[31px] md:w-[64px] md:h-[38px]"
       style={{
-        background: 'linear-gradient(180deg, #554d45 0%, #2a241f 45%, #100d0b 100%)',
+        background: 'linear-gradient(180deg, #6b6053 0%, #3a3128 22%, #1c1611 60%, #0a0705 100%)',
         clipPath: 'polygon(14% 0, 86% 0, 100% 50%, 86% 100%, 14% 100%, 0 50%)',
-        boxShadow: '0 6px 16px rgba(0,0,0,0.8)',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.85)',
       }}
     >
       <span
-        className="w-[11px] h-[11px] md:w-[13px] md:h-[13px]"
+        className="w-[14px] h-[14px] md:w-[17px] md:h-[17px]"
         style={{
           clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
           background: 'radial-gradient(circle at 34% 30%, #f2dfa8 0%, #C9A85A 45%, #7a5a17 100%)',
