@@ -1766,8 +1766,8 @@ const OrbHomePage: React.FC = () => {
         `}</style>
       </main>
 
-      {/* Tableau d'annonces — même composant que l'espace client, en bas
-          de la page de choix : c'est la première chose qu'on voit en
+      {/* Tableau d'annonces : même composant que l'espace client, en bas
+          de la page de choix. C'est la première chose qu'on voit en
           descendant, avant même de se connecter (Alex, 2026-08-05). */}
       <section className="relative bg-midnight-deep py-12 md:py-16 overflow-hidden">
         <Brume />
