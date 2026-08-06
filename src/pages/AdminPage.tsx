@@ -139,9 +139,24 @@ const BYPASS_USER = {
 const AdminPage: React.FC = () => {
   const { user, loading, openSignIn, signOut, adminRole, isSuperAdmin, roleLoading } = useAuth();
   const { flags, setFlag } = useSiteFlags();
-  const location = useLocation();
-  const initialSection = (location.state as { section?: AdminSectionId } | null)?.section ?? 'dashboard';
-  const [section, setSection] = useState<AdminSectionId>(initialSection);
+  const navigate = useNavigate();
+  const { section: sectionParam } = useParams<{ section?: string }>();
+
+  // The URL is the source of truth for which section is open. `/admin`
+  // alone means dashboard; `/admin/<id>` opens that section when it's a
+  // real, known id — an unknown segment (typo, dead link) also falls
+  // back to dashboard rather than rendering nothing.
+  const section: AdminSectionId =
+    sectionParam && (ADMIN_SECTION_IDS as string[]).includes(sectionParam)
+      ? (sectionParam as AdminSectionId)
+      : 'dashboard';
+
+  // Changing section navigates — keeps the address bar and the open
+  // section in sync in both directions (click a nav item → URL updates;
+  // reload a deep link → the right section opens).
+  const setSection = (id: AdminSectionId) => {
+    navigate(id === 'dashboard' ? '/admin' : `/admin/${id}`);
+  };
 
   // The role the visitor walked through the gate as. Super-admins can
   // pick anyone's door for preview; everyone else can only pick their
