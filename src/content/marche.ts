@@ -148,7 +148,7 @@ export const DIGITAL_VENDORS: MarcheKiosk[] = [
     tagFR: 'Patrons de couture & outils numériques',
     tagEN: 'Sewing patterns & digital tools',
     bioFR:
-      'Pour une immersion complète, prépare toi-même ton costume médiéval. Julie-Chantal te propose une variété de patrons de couture et autres outils numériques pour t’aider à confectionner les costumes de toute la famille.',
+      'Pour une immersion complète, confectionnez votre propre costume médiéval. Julie-Chantal propose une variété de patrons de couture et d’autres outils numériques pour vous aider à habiller toute la famille.',
     bioEN:
       'For full immersion, sew your own medieval garb. Julie-Chantal offers a variety of sewing patterns and digital tools to help you costume the whole family.',
     image: '/wix/marche/c8a35365.jpg',
