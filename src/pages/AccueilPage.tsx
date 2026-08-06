@@ -524,7 +524,7 @@ const FR = {
     eyebrow: 'Le Moyen Âge',
     title: 'Apprendre, c’est traverser les siècles',
     body1: 'Le « médiéval » ou le « Moyen Âge », bien que souvent associé à l’Europe, est aussi une ère vaste qui s’étend sur des siècles et des territoires variés. Avant l’époque des grandes colonisations, comment vivaient les différentes sociétés du monde ? Une plongée loin des clichés de chevaliers : une ouverture sur les multiples facettes de cette période à travers le monde.',
-    body2: 'Sous la cacophonie des idées reçues, quelle beauté se cachait dans les nuances de cette histoire aux traits plus fins ? De ces idéologies, pratiques et savoirs essentiels, lesquels nous inspirent encore aujourd’hui ?',
+    body2: 'Sous la cacophonie des idées reçues, quelle beauté se cachait dans les nuances de cette histoire aux traits plus fins ? De ces idéologies, pratiques et savoirs essentiels, desquels peut-on encore s’inspirer aujourd’hui ?',
     cta: 'Apprendre',
   },
   billetterie: {
