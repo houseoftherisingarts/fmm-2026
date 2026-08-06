@@ -81,6 +81,11 @@ const NAV: NavItem[] = [
 
 const ALL_SECTION_IDS: AdminSectionId[] = NAV.map((n) => n.id);
 
+// Exported so AdminPage / App.tsx can validate a URL's `:section` segment
+// against the real list of sections — the id IS the URL segment (already
+// lowercase French, no accents), so no separate mapping table is needed.
+export const ADMIN_SECTION_IDS: AdminSectionId[] = ALL_SECTION_IDS;
+
 interface Props {
   user: Pick<User, 'email' | 'displayName' | 'photoURL'> | { email: string; displayName?: string | null; photoURL?: string | null };
   section: AdminSectionId;
