@@ -226,6 +226,7 @@ service cloud.firestore {
     match /financeAccounts/{docId}    { allow read, write: if isAdmin(); }
     match /financeAllocation/{docId}  { allow read, write: if isAdmin(); }
     match /financeDocuments/{docId}   { allow read, write: if isAdmin(); }
+    match /financeReceivables/{docId} { allow read, write: if isAdmin(); }
     // Carnet de contacts (section admin Carnet de contacts) : organisateurs,
     // élus, partenaires, fournisseurs — avec rôle et allégeance. Donnée
     // sensible sur des personnes réelles, jamais publique. Collection
