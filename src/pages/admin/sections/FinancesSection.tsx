@@ -222,12 +222,19 @@ const DashboardTab: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      {/* Vue d'ensemble — budget + comptes, un coup d'œil */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* Trésorerie — le chiffre le plus important de l'écran, répartie
+          automatiquement selon la Répartition ci-dessous. À recevoir vit
+          juste à côté, jamais additionné dedans : ce n'est pas en banque. */}
+      <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
+        <TresorerieHero total={tresorerie} allocation={allocation} />
+        <ARecevoirStat total={totalARecevoir} count={receivables.filter((r) => r.status === 'promis' || r.status === 'facture').length} />
+      </div>
+
+      {/* Vue d'ensemble — budget, un coup d'œil */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <Stat label="Budgété"           value={fmtCAD(totals.budgeted)} />
         <Stat label="Dépensé"           value={fmtCAD(totals.actual)} />
         <Stat label="Écart budget"      value={fmtCAD(totalEcart)} tone={totalEcart < 0 ? 'blush' : 'emerald'} />
-        <Stat label="Solde net comptes" value={fmtCAD(soldeNet)} tone={soldeNet < 0 ? 'blush' : 'emerald'} />
       </div>
 
       {/* Répartition — bande compacte, sous les stats */}
@@ -251,9 +258,77 @@ const DashboardTab: React.FC = () => {
           reload={reloadAccounts}
         />
       </div>
+
+      {/* À recevoir — argent promis, pas encore en banque */}
+      <ReceivablesColumn
+        items={receivables} error={recError} onClearError={() => setRecError(null)}
+        reload={reloadReceivables}
+      />
     </div>
   );
 };
+
+// ─── Trésorerie — grand écran du total ────────────────────────────────
+// Desjardins + Square + Zeffy (tous les comptes de liquidité), dette
+// exclue. Répartie automatiquement selon la Répartition configurée
+// plus bas — chaque part normalisée pour toujours sommer au total,
+// même si la Répartition ne fait pas exactement 100%.
+
+const TresorerieHero: React.FC<{ total: number; allocation: FinanceAllocation }> = ({ total, allocation }) => {
+  const totalPct = allocation.investir + allocation.epargne + allocation.essentiel;
+  return (
+    <Card className="p-6 md:p-8 !rounded-card border border-brass/30 bg-brass/[0.04]">
+      <p className="font-display title-medieval text-xs text-brass uppercase tracking-widest inline-flex items-center gap-2">
+        <Coins size={14} /> Trésorerie totale
+      </p>
+      <p className="font-sans text-5xl md:text-6xl tabular-nums text-ivory mt-2 leading-none">
+        {fmtCAD(total)}
+      </p>
+      <p className="font-editorial italic text-xs text-ivory-soft/60 mt-2">
+        Desjardins + Square + Zeffy — dette exclue
+      </p>
+
+      <div className="grid sm:grid-cols-3 gap-3 mt-6">
+        {(Object.keys(PART_META) as (keyof FinanceAllocation)[]).map((k) => {
+          const { label, icon: Icon, color } = PART_META[k];
+          const pct = allocation[k];
+          const share = totalPct > 0 ? total * (pct / totalPct) : 0;
+          return (
+            <div key={k} className="flex items-center gap-2.5 px-3 py-2.5 rounded-card border border-ivory-soft/10 bg-midnight-deep/30">
+              <span className="w-8 h-8 shrink-0 rounded-card flex items-center justify-center" style={{ background: `${color}22`, color }}>
+                <Icon size={16} />
+              </span>
+              <div className="min-w-0">
+                <p className="font-sans text-[11px] uppercase tracking-widest text-ivory-soft/70 truncate">{label}</p>
+                <p className="font-sans text-sm tabular-nums text-ivory">
+                  {fmtCAD(share)} <span className="text-ivory-soft/60">({pct}%)</span>
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+};
+
+// ─── À recevoir — carte de total, à côté de la trésorerie ─────────────
+// Volontairement une carte séparée : jamais additionnée à la
+// trésorerie ci-dessus, pour que la distinction saute aux yeux.
+
+const ARecevoirStat: React.FC<{ total: number; count: number }> = ({ total, count }) => (
+  <Card className="p-6 md:p-8 !rounded-card border border-ivory-soft/15 border-dashed">
+    <p className="font-display title-medieval text-xs text-ivory-soft/70 uppercase tracking-widest inline-flex items-center gap-2">
+      <Clock size={14} /> À recevoir
+    </p>
+    <p className="font-sans text-3xl md:text-4xl tabular-nums text-ivory-soft mt-2 leading-none">
+      {fmtCAD(total)}
+    </p>
+    <p className="font-editorial italic text-xs text-ivory-soft/50 mt-2">
+      {count > 0 ? `${count} montant${count > 1 ? 's' : ''} promis, pas encore en banque` : 'Pas encore en banque — pas dans la trésorerie'}
+    </p>
+  </Card>
+);
 
 // ─── Colonne Budget ──────────────────────────────────────────────────
 
