@@ -63,83 +63,91 @@ export const NoticeBoard: React.FC<{
   </div>
 );
 
-// ─── IronBar: barre de fer forgé posée sur une couture ──────────
-// Même ferronnerie que les coins du panneau d'avis : fer sombre
-// bruni, arête haute qui accroche la lumière, rivets d'acier et
-// losange de cuivre au centre. Sert à masquer la jointure entre
-// deux bandes de la page (accueil : héros de l'orbe → avis).
-// Full-bleed, pas de bloc centré : la barre traverse l'écran.
+// ─── IronBar: séparateur métallique posé sur une couture ────────
+// Vocabulaire des portes de la Chambre du Conseil (`GateScreen`), à
+// la demande d'Alex le 2026-08-06 : le ruban métallique qui coiffe
+// chaque carte de porte (dégradé ombre → accent → spéculaire →
+// accent → ombre, fondu aux deux bouts), le médaillon hex à cinq
+// arrêts, et les équerres en L des contours de cartes. Ton or
+// « super » : c'est celui de l'accueil.
+//
+// Sert à masquer la jointure entre deux bandes de page (accueil :
+// héros de l'orbe → avis de la caravane). Full-bleed, aucun bloc
+// centré, aucune image, aucune animation.
+const OR = {
+  shadow:    '#3c2a0d',
+  accent:    '#a07832',
+  highlight: '#d4a857',
+  specular:  '#fde2a3',
+  glow:      'rgba(168, 128, 48, 0.42)',
+};
+
+// Même recette que `metallicRibbonBg` des portes.
+const RUBAN = `linear-gradient(90deg, transparent 0%, ${OR.shadow}80 8%, ${OR.accent} 28%, ${OR.specular} 50%, ${OR.accent} 72%, ${OR.shadow}80 92%, transparent 100%)`;
+// Même recette que `metallicDiscBg` des portes.
+const MEDAILLON = `linear-gradient(135deg, ${OR.specular} 0%, ${OR.highlight} 22%, ${OR.accent} 45%, ${OR.shadow} 58%, ${OR.accent} 75%, ${OR.highlight} 100%)`;
+
 export const IronBar: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div aria-hidden className={`relative w-full ${className}`}>
-    {/* Ombre portée sous la barre : la couture disparaît dessous. */}
+    {/* Ombre douce sous le ruban : la couture disparaît dessous. */}
     <span
-      className="absolute inset-x-0 top-1/2 h-14 -translate-y-1/2 pointer-events-none"
-      style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 50%, rgba(0,0,0,0.85), transparent 72%)' }}
+      className="absolute inset-x-0 top-1/2 h-16 -translate-y-1/2 pointer-events-none"
+      style={{ background: 'radial-gradient(ellipse 65% 100% at 50% 50%, rgba(0,0,0,0.88), transparent 74%)' }}
     />
-    {/* Le fer. Dégradé vertical en sept arrêts : arête qui accroche la
-        lumière, corps creux, ventre sombre, retour de lueur chaude en
-        bas — l'épaisseur vient de là, pas d'une image. */}
-    <div
-      className="relative h-[19px] md:h-[25px] w-full"
+    {/* Ruban principal, 2 px comme le liseré haut d'une carte de porte. */}
+    <span
+      className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 pointer-events-none"
+      style={{ background: RUBAN, filter: `drop-shadow(0 0 6px ${OR.glow})` }}
+    />
+    {/* Écho fin sous le ruban : le double filet des contours de cartes. */}
+    <span
+      className="absolute inset-x-0 top-1/2 h-px translate-y-[5px] pointer-events-none opacity-60"
+      style={{ background: RUBAN }}
+    />
+    {/* Équerres en L, reprises des coins de carte : deux à gauche,
+        deux à droite, elles referment le séparateur comme un contour. */}
+    {[
+      { side: 'left'  as const, x: '4%'  },
+      { side: 'left'  as const, x: '16%' },
+      { side: 'right' as const, x: '84%' },
+      { side: 'right' as const, x: '96%' },
+    ].map(({ side, x }, i) => (
+      <span
+        key={`${side}-${x}-${i}`}
+        className="absolute top-1/2 w-[13px] h-[13px] -translate-y-1/2 pointer-events-none"
+        style={{
+          left: x,
+          borderColor: OR.highlight,
+          borderTopWidth: 1.5,
+          borderTopStyle: 'solid',
+          ...(side === 'left'
+            ? { borderLeftWidth: 1.5, borderLeftStyle: 'solid' as const }
+            : { borderRightWidth: 1.5, borderRightStyle: 'solid' as const }),
+          filter: `drop-shadow(0 0 6px ${OR.glow})`,
+        }}
+      />
+    ))}
+    {/* Médaillon central : losange métallique à cinq arrêts, comme le
+        sceau de chaque porte. Seul relief de la pièce. */}
+    <span
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[26px] h-[26px] md:w-[32px] md:h-[32px]"
       style={{
-        background:
-          'linear-gradient(180deg, #4a423a 0%, #7a6e60 4%, #3c342b 16%, #241d16 34%, #120e0a 52%, #1c1610 66%, #382e23 84%, #241c14 94%, #0b0806 100%)',
+        background: MEDAILLON,
+        clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
         boxShadow: [
-          'inset 0 1px 0 rgba(255, 236, 196, 0.30)',
-          'inset 0 -2px 3px rgba(0, 0, 0, 0.85)',
-          '0 14px 32px rgba(0, 0, 0, 0.8)',
+          `inset 0 1px 0 ${OR.specular}aa`,
+          `inset 0 -1px 0 ${OR.shadow}cc`,
+          `0 0 22px -2px ${OR.glow}`,
+          '0 4px 10px -2px rgba(0,0,0,0.55)',
         ].join(', '),
       }}
     >
-      {/* Martelage : coups de marteau irréguliers, très discrets. */}
       <span
-        className="absolute inset-0 opacity-[0.18] pointer-events-none"
+        className="w-[8px] h-[8px] md:w-[10px] md:h-[10px]"
         style={{
-          backgroundImage:
-            'repeating-linear-gradient(97deg, rgba(255,240,210,0.14) 0 1px, transparent 1px 9px, rgba(0,0,0,0.5) 9px 11px, transparent 11px 23px)',
-        }}
-      />
-      {/* Braise du fond qui léchouille le bas de la ferrure. */}
-      <span
-        className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
-        style={{ background: 'linear-gradient(180deg, transparent, rgba(184, 106, 42, 0.28))' }}
-      />
-      {/* Filet de cuivre sous la barre : rappelle l'or du festival et
-          fond la barre dans la braise du fond. */}
-      <span
-        className="absolute inset-x-0 -bottom-px h-px pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,90,0.5) 18%, rgba(232,177,74,0.7) 50%, rgba(201,168,90,0.5) 82%, transparent)' }}
-      />
-      {/* Rivets, espacés comme sur une ferrure de porte : tête de fer
-          brunie avec un reflet de cuivre, jamais de blanc. */}
-      {[3, 17, 83, 97].map((left) => (
-        <span
-          key={left}
-          className="absolute top-1/2 w-[10px] h-[10px] md:w-[13px] md:h-[13px] rounded-full -translate-y-1/2 -translate-x-1/2"
-          style={{
-            left: `${left}%`,
-            background: 'radial-gradient(circle at 34% 28%, #d9c391 0%, #9a7c42 30%, #574326 62%, #1b1410 100%)',
-            boxShadow: 'inset 0 -1px 2px rgba(0,0,0,0.7), 0 2px 4px rgba(0,0,0,0.8), 0 0 6px rgba(184,106,42,0.25)',
-          }}
-        />
-      ))}
-    </div>
-    {/* Bossage central : plaque de fer + losange de cuivre, le seul
-        point de couleur de la pièce. */}
-    <span
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[52px] h-[31px] md:w-[64px] md:h-[38px]"
-      style={{
-        background: 'linear-gradient(180deg, #6b6053 0%, #3a3128 22%, #1c1611 60%, #0a0705 100%)',
-        clipPath: 'polygon(14% 0, 86% 0, 100% 50%, 86% 100%, 14% 100%, 0 50%)',
-        boxShadow: '0 8px 20px rgba(0,0,0,0.85)',
-      }}
-    >
-      <span
-        className="w-[14px] h-[14px] md:w-[17px] md:h-[17px]"
-        style={{
-          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
-          background: 'radial-gradient(circle at 34% 30%, #f2dfa8 0%, #C9A85A 45%, #7a5a17 100%)',
-          boxShadow: '0 0 10px rgba(232,177,74,0.45)',
+          clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
+          background: OR.shadow,
+          boxShadow: `0 1px 0 ${OR.specular}88`,
         }}
       />
     </span>
