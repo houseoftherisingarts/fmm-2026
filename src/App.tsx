@@ -339,6 +339,11 @@ const App: React.FC = () => (
                 <Route path="/admin"  element={<AdminPage />} />
                 <Route path="/admin/personne/:slug" element={<PersonProfilePage />} />
                 <Route path="/admin/benevole/:uid"  element={<BenevoleProfilePage />} />
+                {/* Named section routes — /admin/finances, /admin/carnet, etc.
+                    :section is validated against ADMIN_SECTION_IDS inside
+                    AdminPage; an unknown or forbidden segment falls back to
+                    the dashboard, same as today. */}
+                <Route path="/admin/:section" element={<AdminPage />} />
                 <Route path="/espace-benevole"      element={<BenevoleSpacePage />} />
                 <Route path="/en/volunteer-space"   element={<BenevoleSpacePage />} />
                 <Route path="/communaute"                       element={<CommunautePage />} />
