@@ -168,9 +168,10 @@ const AdminPage: React.FC = () => {
   // Super-admins picking the CA door, for instance, see the CA scope.
   const effectiveRole: AdminRole | null = selectedRole;
 
-  // Guard: if the URL state landed on a section this role can't open,
-  // bounce them back to the dashboard. Also runs when the effective
-  // role changes (e.g., super-admin switched gates mid-session).
+  // Guard: if the URL (a deep link, or a role picked at the gate) points
+  // at a section this role can't open, bounce back to the dashboard —
+  // never render a forbidden section. Also runs when the effective role
+  // changes (e.g., super-admin switched gates mid-session).
   useEffect(() => {
     if (!effectiveRole) return;
     if (!canAccess(effectiveRole, section)) setSection('dashboard');
