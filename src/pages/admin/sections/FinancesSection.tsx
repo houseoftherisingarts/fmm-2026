@@ -230,11 +230,12 @@ const DashboardTab: React.FC = () => {
         <ARecevoirStat total={totalARecevoir} count={receivables.filter((r) => r.status === 'promis' || r.status === 'facture').length} />
       </div>
 
-      {/* Vue d'ensemble — budget, un coup d'œil */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {/* Vue d'ensemble — budget + comptes, un coup d'œil */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Stat label="Budgété"           value={fmtCAD(totals.budgeted)} />
         <Stat label="Dépensé"           value={fmtCAD(totals.actual)} />
         <Stat label="Écart budget"      value={fmtCAD(totalEcart)} tone={totalEcart < 0 ? 'blush' : 'emerald'} />
+        <Stat label="Solde net comptes" value={fmtCAD(soldeNet)} tone={soldeNet < 0 ? 'blush' : 'emerald'} />
       </div>
 
       {/* Répartition — bande compacte, sous les stats */}
