@@ -51,7 +51,7 @@ const BANDS_ARCHIVES: Band[] = [
     name:    'Skarazula',
     image:   '/wix/musique/2c6a22e9.jpg',
     website: 'https://www.skarazula.com',
-    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans le monde riche et fascinant de la musique médiévale. Plus d’un instrument dans leur sac, beaucoup confectionnés par le groupe lui-même.',
+    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans l’univers foisonnant de la musique médiévale. Plus d’un instrument dans leur sac, beaucoup confectionnés par le groupe lui-même.',
     bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
   },
   {
