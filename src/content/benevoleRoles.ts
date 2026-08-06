@@ -106,7 +106,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
     ],
     competences: [
       "Attitude chaleureuse, énergie positive et sens de l'accueil",
-      'Esprit de collaboration et aisance dans un environnement dynamique',
+      'Sens de l’orientation et jugement rapide pour fluidifier le trafic',
       "Excellente communication avec l'équipe",
       'Confort à rester debout et à être en mouvement continu',
     ],
