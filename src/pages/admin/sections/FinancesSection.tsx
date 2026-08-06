@@ -620,6 +620,185 @@ const AccountForm: React.FC<{
   );
 };
 
+// ─── Colonne À recevoir ────────────────────────────────────────────
+// Argent promis mais pas encore encaissé — subventions, commandites,
+// factures clients. Total tenu à part de la trésorerie (voir hero
+// plus haut), pour qu'on ne confonde jamais promis et en banque.
+
+const RECEIVABLE_STATUS_TONE: Record<ReceivableStatus, string> = {
+  promis: 'text-ivory-soft',
+  facture: 'text-brass',
+  recu: 'text-emerald-400',
+  perdu: 'text-blush',
+};
+
+const ReceivablesColumn: React.FC<{
+  items: FinanceReceivable[];
+  error: string | null;
+  onClearError: () => void;
+  reload: () => Promise<void>;
+}> = ({ items, error, onClearError, reload }) => {
+  const [showAdd, setShowAdd] = useState(false);
+  const [editing, setEditing] = useState<FinanceReceivable | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const onSave = async (data: Omit<FinanceReceivable, 'id'>, id?: string) => {
+    try {
+      if (id) await updateReceivable(id, data);
+      else await addReceivable(data);
+      setSaveError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] save receivable failed:', e);
+      setSaveError(humanizeError(e, 'enregistrer'));
+    }
+    setShowAdd(false); setEditing(null); reload();
+  };
+
+  const onDelete = async (r: FinanceReceivable) => {
+    if (!confirm(`Retirer « ${r.source} » de l’argent à recevoir ?`)) return;
+    try {
+      await deleteReceivable(r.id);
+      setSaveError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] delete receivable failed:', e);
+      setSaveError(humanizeError(e, 'supprimer'));
+    }
+    reload();
+  };
+
+  const exportCsv = () => downloadCsv('fmm-a-recevoir.csv', items.map((r) => ({
+    source: r.source, montant: r.amount, type: RECEIVABLE_TYPE_LABEL[r.type],
+    date_attendue: r.expectedDate, statut: RECEIVABLE_STATUS_LABEL[r.status], notes: r.notes,
+  })));
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-end justify-between gap-3 flex-wrap">
+        <SectionTitle icon={HandCoins}>À recevoir</SectionTitle>
+        <div className="flex items-center gap-2">
+          <GhostButton onClick={() => { setEditing(null); setShowAdd(true); }}><Plus size={12} /> Montant à recevoir</GhostButton>
+          {items.length > 0 && <GhostButton onClick={exportCsv}><Download size={12} /> CSV</GhostButton>}
+        </div>
+      </div>
+
+      {(error || saveError) && <ErrorBanner message={(error || saveError)!} onClose={() => { onClearError(); setSaveError(null); }} />}
+
+      {(showAdd || editing) && (
+        <ReceivableForm
+          initial={editing}
+          onCancel={() => { setShowAdd(false); setEditing(null); }}
+          onSubmit={onSave}
+        />
+      )}
+
+      {items.length === 0 ? (
+        <Card className="!rounded-card">
+          <EmptyState>
+            <>
+              Rien à recevoir pour l’instant.
+              <div className="mt-4">
+                <GhostButton onClick={() => { setEditing(null); setShowAdd(true); }}>
+                  <Plus size={12} /> Ajouter un montant à recevoir
+                </GhostButton>
+              </div>
+            </>
+          </EmptyState>
+        </Card>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {items.map((r) => (
+            <Card key={r.id} className="p-4 !rounded-card">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="min-w-0">
+                  <p className="font-display title-medieval text-sm text-ivory truncate">{r.source}</p>
+                  <p className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft/60 mt-0.5">{RECEIVABLE_TYPE_LABEL[r.type]}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button onClick={() => { setShowAdd(false); setEditing(r); }} className="text-ivory-soft/50 hover:text-brass transition" title="Éditer"><Pencil size={13} /></button>
+                  <button onClick={() => onDelete(r)} className="text-ivory-soft/50 hover:text-blush transition" title="Supprimer"><Trash2 size={13} /></button>
+                </div>
+              </div>
+              <p className="font-sans text-xl tabular-nums text-ivory">{fmtCAD(r.amount)}</p>
+              <div className="flex items-center justify-between gap-2 mt-2">
+                <span className={`font-sans text-[11px] uppercase tracking-wider ${RECEIVABLE_STATUS_TONE[r.status]}`}>
+                  {RECEIVABLE_STATUS_LABEL[r.status]}
+                </span>
+                {r.expectedDate && (
+                  <span className="font-sans text-[11px] text-ivory-soft/60 tabular-nums">Attendu : {r.expectedDate}</span>
+                )}
+              </div>
+              {r.notes && <p className="font-editorial italic text-xs text-ivory-soft/60 mt-2">{r.notes}</p>}
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ReceivableForm: React.FC<{
+  initial: FinanceReceivable | null;
+  onCancel: () => void;
+  onSubmit: (data: Omit<FinanceReceivable, 'id'>, id?: string) => void;
+}> = ({ initial, onCancel, onSubmit }) => {
+  const [source, setSource] = useState(initial?.source ?? '');
+  const [amount, setAmount] = useState(initial?.amount ?? 0);
+  const [type, setType] = useState<ReceivableType>(initial?.type ?? 'subvention');
+  const [expectedDate, setExpectedDate] = useState(initial?.expectedDate ?? '');
+  const [status, setStatus] = useState<ReceivableStatus>(initial?.status ?? 'promis');
+  const [notes, setNotes] = useState(initial?.notes ?? '');
+
+  return (
+    <Card className="p-5 !rounded-card">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <h3 className="font-display title-medieval text-lg text-ivory">{initial ? 'Édition' : 'Nouveau montant à recevoir'}</h3>
+        <button onClick={onCancel} className="text-ivory-soft/60 hover:text-ivory transition"><X size={16} /></button>
+      </div>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        if (!source.trim()) return;
+        onSubmit({
+          source: source.trim(), amount: Number(amount) || 0, type, expectedDate,
+          status, notes: notes.trim(), order: initial?.order ?? Date.now(),
+        }, initial?.id);
+      }} className="grid sm:grid-cols-2 gap-3">
+        <Field label="Qui doit (source)" full>
+          <input value={source} onChange={(e) => setSource(e.target.value)} required placeholder="Ex. : Ministère de la Culture" className={inputCls} />
+        </Field>
+        <Field label="Montant ($)">
+          <input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(Number(e.target.value))} className={inputCls} />
+        </Field>
+        <Field label="Type">
+          <select value={type} onChange={(e) => setType(e.target.value as ReceivableType)} className={inputCls}>
+            {(Object.keys(RECEIVABLE_TYPE_LABEL) as ReceivableType[]).map((k) => (
+              <option key={k} value={k}>{RECEIVABLE_TYPE_LABEL[k]}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Date attendue">
+          <input type="date" value={expectedDate} onChange={(e) => setExpectedDate(e.target.value)} className={inputCls} />
+        </Field>
+        <Field label="Statut">
+          <select value={status} onChange={(e) => setStatus(e.target.value as ReceivableStatus)} className={inputCls}>
+            {(Object.keys(RECEIVABLE_STATUS_LABEL) as ReceivableStatus[]).map((k) => (
+              <option key={k} value={k}>{RECEIVABLE_STATUS_LABEL[k]}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Notes" full>
+          <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optionnel" className={inputCls} />
+        </Field>
+        <div className="sm:col-span-2 flex gap-2 justify-end mt-2">
+          <button type="button" onClick={onCancel} className="px-4 py-2 text-ivory-soft hover:text-ivory text-xs font-sans uppercase tracking-wider">Annuler</button>
+          <button type="submit" className="px-4 py-2 bg-brass text-midnight-deep font-sans text-xs uppercase tracking-wider font-semibold rounded-card hover:bg-brass-soft transition inline-flex items-center gap-1.5">
+            <Check size={12} /> {initial ? 'Mettre à jour' : 'Créer'}
+          </button>
+        </div>
+      </form>
+    </Card>
+  );
+};
+
 // ─── Bande Répartition (investir / épargner / essentiel) ─────────────
 
 const PART_META = {
