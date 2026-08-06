@@ -109,7 +109,7 @@ const PersonProfilePage: React.FC = () => {
       <>
         <SEO title={`Profil · ${person?.name || 'Personne'}`} noindex />
         <AdminShell user={BYPASS_USER} section="matrice"
-          onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
+          onSectionChange={(s) => navigate(s === 'dashboard' ? '/admin' : `/admin/${s}`)}
           onSignOut={signOut} devBanner>
           <Body person={person} loading={dataLoading} personTasks={personTasks}
             allRolesById={allRolesById} aggregatedDeps={aggregatedDeps}
@@ -127,7 +127,7 @@ const PersonProfilePage: React.FC = () => {
     <>
       <SEO title={`Profil · ${person?.name || 'Personne'}`} noindex />
       <AdminShell user={user} section="matrice"
-        onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
+        onSectionChange={(s) => navigate(s === 'dashboard' ? '/admin' : `/admin/${s}`)}
         onSignOut={signOut}>
         <Body person={person} loading={dataLoading} personTasks={personTasks}
           allRolesById={allRolesById} aggregatedDeps={aggregatedDeps}

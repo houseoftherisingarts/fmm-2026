@@ -96,7 +96,7 @@ const BenevoleProfilePage: React.FC = () => {
       <>
         <SEO title={`Profil bénévole · ${b?.displayName || ''}`} noindex />
         <AdminShell user={BYPASS_USER} section="benevoles"
-          onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
+          onSectionChange={(s) => navigate(s === 'dashboard' ? '/admin' : `/admin/`)}
           onSignOut={signOut} devBanner>
           <Body b={b} loading={dataLoading} updateOne={updateOne} reload={reload}
             adminUid={'dev-bypass'} adminName={BYPASS_USER.displayName} />
@@ -113,7 +113,7 @@ const BenevoleProfilePage: React.FC = () => {
     <>
       <SEO title={`Profil bénévole · ${b?.displayName || ''}`} noindex />
       <AdminShell user={user} section="benevoles"
-        onSectionChange={(s) => navigate('/admin', { state: { section: s } })}
+        onSectionChange={(s) => navigate(s === 'dashboard' ? '/admin' : `/admin/`)}
         onSignOut={signOut}>
         <Body b={b} loading={dataLoading} updateOne={updateOne} reload={reload}
           adminUid={user.uid} adminName={user.displayName || user.email || 'FMM'} />
