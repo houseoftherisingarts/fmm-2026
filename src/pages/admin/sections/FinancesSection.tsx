@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Wallet, PiggyBank, Landmark, FileText, Plus, X, Trash2, Pencil, Check,
-  Upload, Download, TrendingUp, ShieldCheck, Anchor, LayoutDashboard,
+  Upload, Download, TrendingUp, ShieldCheck, Anchor, LayoutDashboard, Coins,
+  HandCoins, Clock,
 } from 'lucide-react';
 import {
   Card, EmptyState, GhostButton, PrimaryButton, downloadCsv, fmtDate,
@@ -11,8 +12,10 @@ import {
   listAccounts, seedDefaultAccounts, addAccount, updateAccount, deleteAccount,
   getAllocation, setAllocation,
   listDocuments, uploadDocument, deleteDocument,
-  ACCOUNT_TYPE_LABEL,
+  listReceivables, addReceivable, updateReceivable, deleteReceivable,
+  ACCOUNT_TYPE_LABEL, RECEIVABLE_TYPE_LABEL, RECEIVABLE_STATUS_LABEL,
   type FinanceCategory, type FinanceAccount, type AccountType, type FinanceAllocation, type FinanceDocument,
+  type FinanceReceivable, type ReceivableType, type ReceivableStatus,
 } from '../../../firebase/finances';
 
 // ─── Finances ────────────────────────────────────────────────────────
