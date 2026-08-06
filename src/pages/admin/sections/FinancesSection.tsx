@@ -176,8 +176,19 @@ const DashboardTab: React.FC = () => {
     }
   };
 
+  const reloadReceivables = async () => {
+    try {
+      setReceivables(await listReceivables());
+      setRecError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] listReceivables failed:', e);
+      setReceivables([]);
+      setRecError(humanizeError(e, 'charger ces données'));
+    }
+  };
+
   useEffect(() => {
-    Promise.allSettled([reloadCategories(), reloadAccounts(), reloadAllocation()]).finally(() => setLoading(false));
+    Promise.allSettled([reloadCategories(), reloadAccounts(), reloadAllocation(), reloadReceivables()]).finally(() => setLoading(false));
   }, []);
 
   const totals = useMemo(() => ({
@@ -186,6 +197,14 @@ const DashboardTab: React.FC = () => {
   }), [categories]);
   const totalEcart = totals.budgeted - totals.actual;
   const soldeNet = accounts.reduce((s, a) => s + a.balance, 0);
+  // Trésorerie = comptes de liquidité seulement (banque, paiement, autre) —
+  // la dette n'est jamais de l'argent qu'on a.
+  const tresorerie = accounts.filter((a) => a.type !== 'dette').reduce((s, a) => s + a.balance, 0);
+  // À recevoir : promis ou facturé seulement — une fois « reçu », l'argent
+  // vit déjà dans un compte plus haut ; « perdu » ne compte plus.
+  const totalARecevoir = receivables
+    .filter((r) => r.status === 'promis' || r.status === 'facture')
+    .reduce((s, r) => s + r.amount, 0);
 
   const onSaveAllocation = async () => {
     setAllocSaving(true);
