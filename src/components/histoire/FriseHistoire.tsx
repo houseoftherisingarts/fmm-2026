@@ -44,7 +44,7 @@ const FriseHistoire: React.FC = () => {
   const { lang } = useUI();
   const fr = lang === 'FR';
   const { flags } = useSiteFlags();
-  const revealed = true || PREVIEW_ALL || flags.showHistoireFrise; // TEMP: visual QA only, reverted before done
+  const revealed = PREVIEW_ALL || flags.showHistoireFrise;
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const stopRefs = useRef<(HTMLDivElement | null)[]>([]);
