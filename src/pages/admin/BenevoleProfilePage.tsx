@@ -209,7 +209,7 @@ const Body: React.FC<{
           `linear-gradient(135deg, hsl(${hue} 38% 22%), hsl(${(hue + 35) % 360} 30% 14%) 70%, var(--color-midnight-deep))` }}>
         <div className="absolute inset-0 brume opacity-30 mix-blend-screen pointer-events-none" />
         <div className="absolute inset-0 grain pointer-events-none" />
-        <Link to="/admin" state={{ section: 'benevoles' }}
+        <Link to="/admin/benevoles"
           className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-card bg-midnight-deep/50 backdrop-blur border border-ivory-soft/15 text-ivory-soft hover:text-brass hover:border-brass transition font-sans text-xs uppercase tracking-widest">
           <ArrowLeft size={12} /> Retour aux bénévoles
         </Link>
