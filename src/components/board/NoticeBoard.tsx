@@ -63,6 +63,83 @@ export const NoticeBoard: React.FC<{
   </div>
 );
 
+// ─── IronBar: barre de fer forgé posée sur une couture ──────────
+// Même ferronnerie que les coins du panneau d'avis : fer sombre
+// bruni, arête haute qui accroche la lumière, rivets d'acier et
+// losange de cuivre au centre. Sert à masquer la jointure entre
+// deux bandes de la page (accueil : héros de l'orbe → avis).
+// Full-bleed, pas de bloc centré : la barre traverse l'écran.
+export const IronBar: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div aria-hidden className={`relative w-full ${className}`}>
+    {/* Ombre portée sous la barre : la couture disparaît dessous. */}
+    <span
+      className="absolute inset-x-0 top-1/2 h-14 -translate-y-1/2 pointer-events-none"
+      style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 50%, rgba(0,0,0,0.85), transparent 72%)' }}
+    />
+    {/* Le fer. Dégradé vertical : arête claire en haut, creux au
+        milieu, retour de lumière en bas, comme une barre martelée. */}
+    <div
+      className="relative h-[13px] md:h-[17px] w-full"
+      style={{
+        background: [
+          'linear-gradient(180deg, #6a625a 0%, #443d36 14%, #241f1a 46%, #14100d 62%, #322b25 88%, #171310 100%)',
+        ].join(', '),
+        boxShadow: [
+          'inset 0 1px 0 rgba(255, 238, 205, 0.28)',
+          'inset 0 -1px 0 rgba(0, 0, 0, 0.9)',
+          '0 10px 26px rgba(0, 0, 0, 0.75)',
+        ].join(', '),
+      }}
+    >
+      {/* Martelage : stries verticales très basses en opacité. */}
+      <span
+        className="absolute inset-0 opacity-25 pointer-events-none"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(90deg, rgba(255,240,210,0.10) 0 1px, transparent 1px 7px, rgba(0,0,0,0.35) 7px 8px, transparent 8px 15px)',
+        }}
+      />
+      {/* Filet de cuivre sous la barre : rappelle l'or du festival et
+          fond la barre dans la braise du fond. */}
+      <span
+        className="absolute inset-x-0 -bottom-px h-px pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,90,0.55) 18%, rgba(232,177,74,0.75) 50%, rgba(201,168,90,0.55) 82%, transparent)' }}
+      />
+      {/* Rivets d'acier, espacés comme sur une ferrure de porte. */}
+      {[4, 22, 78, 96].map((left) => (
+        <span
+          key={left}
+          className="absolute top-1/2 w-[7px] h-[7px] md:w-[9px] md:h-[9px] rounded-full -translate-y-1/2 -translate-x-1/2"
+          style={{
+            left: `${left}%`,
+            background: 'radial-gradient(circle at 32% 28%, #d7cec0 0%, #8d8478 38%, #4a423a 72%, #1d1815 100%)',
+            boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.7)',
+          }}
+        />
+      ))}
+    </div>
+    {/* Bossage central : plaque de fer + losange de cuivre, le seul
+        point de couleur de la pièce. */}
+    <span
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[38px] h-[24px] md:w-[46px] md:h-[28px]"
+      style={{
+        background: 'linear-gradient(180deg, #554d45 0%, #2a241f 45%, #100d0b 100%)',
+        clipPath: 'polygon(14% 0, 86% 0, 100% 50%, 86% 100%, 14% 100%, 0 50%)',
+        boxShadow: '0 6px 16px rgba(0,0,0,0.8)',
+      }}
+    >
+      <span
+        className="w-[11px] h-[11px] md:w-[13px] md:h-[13px]"
+        style={{
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
+          background: 'radial-gradient(circle at 34% 30%, #f2dfa8 0%, #C9A85A 45%, #7a5a17 100%)',
+          boxShadow: '0 0 10px rgba(232,177,74,0.45)',
+        }}
+      />
+    </span>
+  </div>
+);
+
 // ─── Parchment: un avis épinglé sur le panneau ──────────────────
 export const Parchment: React.FC<{
   tilt?: number;
