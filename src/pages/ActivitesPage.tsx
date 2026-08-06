@@ -146,7 +146,7 @@ const ACTIVITIES: Array<{
     descEN: 'Once night falls, the fire kindles, the drums come alive and the festival becomes a great medieval ball. Open to all: jig or bourrée, danced around the flames till morning.',
     image: '/activites/webp/2c6a22e9.webp', category: 'shows' },
   { titleFR: 'Boustifaille',     titleEN: 'Feast',             bodyFR: 'La becquetance et la ripaille avec le nouveau village gustatif', bodyEN: 'Eating and feasting at the new food village',
-    descFR: 'Le nouveau village gustatif : cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille comme on aime.',
+    descFR: 'Le nouveau village gustatif : cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille, comme nous les aimons.',
     descEN: 'The new food village: clan kitchens, table d’hôte, equinox banquet. Suckling pig, flatbread, stews, period pastries. Feasting and merrymaking as we love it.',
     image: '/activites/webp/1f021070.webp', category: 'ripaille' },
   { titleFR: 'Clinique Équestre',titleEN: 'Equestrian Clinic', bodyFR: 'Prochaine édition',                                        bodyEN: 'Next edition',
