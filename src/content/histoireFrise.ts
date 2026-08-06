@@ -1,10 +1,10 @@
-// Frise animée de l'histoire du festival — section Histoire & Apprendre.
+// Frise animée de l'histoire du festival, section Histoire & Apprendre.
 // Contenu dicté par Alex (2026-08-05) : l'ordre des 8 jalons est certain,
 // les années sont déduites du seul fait daté du site ("Fondé en 2021",
 // HistoirePage.tsx) additionné année par année jusqu'à 2026 (SITE.year,
 // confirmé) puis au-delà pour les deux éditions à venir. Les années 2022 à
 // 2025 ne sont donc pas trouvées telles quelles dans une source, mais
-// déduites par arithmétique simple sur une base vérifiée — à confirmer par
+// déduites par arithmétique simple sur une base vérifiée : à confirmer par
 // Alex avant publication (`showHistoireFrise` reste éteint jusque-là).
 
 export interface FriseStop {
