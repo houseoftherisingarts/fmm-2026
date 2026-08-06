@@ -264,7 +264,7 @@ const FriseHistoire: React.FC = () => {
           })}
         </div>
 
-        {/* Panneau du jalon actif — libellé + note, sous la ligne */}
+        {/* Panneau du jalon actif : libellé + note, sous la ligne */}
         <div className="absolute left-1/2 -translate-x-1/2 top-[58%] w-[min(560px,88vw)] text-center z-20">
           {FRISE_HISTOIRE.map((s, i) => (
             <div
