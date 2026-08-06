@@ -1792,6 +1792,11 @@ const OrbHomePage: React.FC = () => {
           className="absolute inset-x-0 top-0 h-24 md:h-32 pointer-events-none"
           style={{ background: 'linear-gradient(180deg, #05070A 0%, rgba(6,1,4,0.6) 55%, transparent 100%)' }}
         />
+        {/* Barre de fer forgé posée à cheval sur la couture : la
+            jointure héros/avis passe sous la ferrure. */}
+        <div className="absolute inset-x-0 top-0 -translate-y-1/2 z-20">
+          <IronBar />
+        </div>
         {/* Vignette : les bords retombent dans l'ombre, le tableau reste
             le seul point éclairé de la bande. */}
         <span
