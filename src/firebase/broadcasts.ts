@@ -110,7 +110,7 @@ Si tu as coché « charge de téléphone seulement » : une zone commune sera di
     body:
 `Quelques rappels essentiels avant le festival :
 
-• Assurance responsabilité civile : obligatoire pour tout kiosque qui vend ou fait manipuler des produits. Si tu n’en as pas, contacte-nous, on a des options collectives.
+• Assurance responsabilité civile : obligatoire pour tout kiosque qui vend ou fait manipuler des produits. Si tu n’en as pas, contacte-nous : nous avons des options collectives.
 • Manipulation alimentaire : permis MAPAQ pour la vente de nourriture préparée. Communique tes documents à l’avance.
 • Trousse de premiers soins : un poste médical est installé sur le site. Pour toute urgence, signale-le à un bénévole en t-shirt mauve.
 
