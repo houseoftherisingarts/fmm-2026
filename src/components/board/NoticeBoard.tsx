@@ -76,44 +76,50 @@ export const IronBar: React.FC<{ className?: string }> = ({ className = '' }) =>
       className="absolute inset-x-0 top-1/2 h-14 -translate-y-1/2 pointer-events-none"
       style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 50%, rgba(0,0,0,0.85), transparent 72%)' }}
     />
-    {/* Le fer. Dégradé vertical : arête claire en haut, creux au
-        milieu, retour de lumière en bas, comme une barre martelée. */}
+    {/* Le fer. Dégradé vertical en sept arrêts : arête qui accroche la
+        lumière, corps creux, ventre sombre, retour de lueur chaude en
+        bas — l'épaisseur vient de là, pas d'une image. */}
     <div
-      className="relative h-[13px] md:h-[17px] w-full"
+      className="relative h-[19px] md:h-[25px] w-full"
       style={{
-        background: [
-          'linear-gradient(180deg, #6a625a 0%, #443d36 14%, #241f1a 46%, #14100d 62%, #322b25 88%, #171310 100%)',
-        ].join(', '),
+        background:
+          'linear-gradient(180deg, #4a423a 0%, #7a6e60 4%, #3c342b 16%, #241d16 34%, #120e0a 52%, #1c1610 66%, #382e23 84%, #241c14 94%, #0b0806 100%)',
         boxShadow: [
-          'inset 0 1px 0 rgba(255, 238, 205, 0.28)',
-          'inset 0 -1px 0 rgba(0, 0, 0, 0.9)',
-          '0 10px 26px rgba(0, 0, 0, 0.75)',
+          'inset 0 1px 0 rgba(255, 236, 196, 0.30)',
+          'inset 0 -2px 3px rgba(0, 0, 0, 0.85)',
+          '0 14px 32px rgba(0, 0, 0, 0.8)',
         ].join(', '),
       }}
     >
-      {/* Martelage : stries verticales très basses en opacité. */}
+      {/* Martelage : coups de marteau irréguliers, très discrets. */}
       <span
-        className="absolute inset-0 opacity-25 pointer-events-none"
+        className="absolute inset-0 opacity-[0.18] pointer-events-none"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(90deg, rgba(255,240,210,0.10) 0 1px, transparent 1px 7px, rgba(0,0,0,0.35) 7px 8px, transparent 8px 15px)',
+            'repeating-linear-gradient(97deg, rgba(255,240,210,0.14) 0 1px, transparent 1px 9px, rgba(0,0,0,0.5) 9px 11px, transparent 11px 23px)',
         }}
+      />
+      {/* Braise du fond qui léchouille le bas de la ferrure. */}
+      <span
+        className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+        style={{ background: 'linear-gradient(180deg, transparent, rgba(184, 106, 42, 0.28))' }}
       />
       {/* Filet de cuivre sous la barre : rappelle l'or du festival et
           fond la barre dans la braise du fond. */}
       <span
         className="absolute inset-x-0 -bottom-px h-px pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,90,0.55) 18%, rgba(232,177,74,0.75) 50%, rgba(201,168,90,0.55) 82%, transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,90,0.5) 18%, rgba(232,177,74,0.7) 50%, rgba(201,168,90,0.5) 82%, transparent)' }}
       />
-      {/* Rivets d'acier, espacés comme sur une ferrure de porte. */}
-      {[4, 22, 78, 96].map((left) => (
+      {/* Rivets, espacés comme sur une ferrure de porte : tête de fer
+          brunie avec un reflet de cuivre, jamais de blanc. */}
+      {[3, 17, 83, 97].map((left) => (
         <span
           key={left}
-          className="absolute top-1/2 w-[7px] h-[7px] md:w-[9px] md:h-[9px] rounded-full -translate-y-1/2 -translate-x-1/2"
+          className="absolute top-1/2 w-[10px] h-[10px] md:w-[13px] md:h-[13px] rounded-full -translate-y-1/2 -translate-x-1/2"
           style={{
             left: `${left}%`,
-            background: 'radial-gradient(circle at 32% 28%, #d7cec0 0%, #8d8478 38%, #4a423a 72%, #1d1815 100%)',
-            boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.7)',
+            background: 'radial-gradient(circle at 34% 28%, #d9c391 0%, #9a7c42 30%, #574326 62%, #1b1410 100%)',
+            boxShadow: 'inset 0 -1px 2px rgba(0,0,0,0.7), 0 2px 4px rgba(0,0,0,0.8), 0 0 6px rgba(184,106,42,0.25)',
           }}
         />
       ))}
