@@ -23,7 +23,7 @@ export interface SiteFlags {
   // for the current one must not reveal them ahead of time.
   showCommanditaire:       boolean;
   // Révèle la frise animée de l'histoire du festival (section Histoire &
-  // Apprendre). En préparation — éteinte par défaut le temps qu'Alex la
+  // Apprendre). En préparation, éteinte par défaut le temps qu'Alex la
   // valide; se comporte comme les autres drapeaux `show*` (toujours visible
   // en dev local via VITE_SITE_MODE=live, respectée en production).
   showHistoireFrise:       boolean;
