@@ -1769,8 +1769,37 @@ const OrbHomePage: React.FC = () => {
       {/* Tableau d'annonces : même composant que l'espace client, en bas
           de la page de choix. C'est la première chose qu'on voit en
           descendant, avant même de se connecter (Alex, 2026-08-05). */}
-      <section className="relative bg-midnight-deep py-12 md:py-16 overflow-hidden">
-        <Brume />
+      {/* Fond : registre caravane (braise + oxblood), pas la brume.
+          La .brume est un fog blanc en mix-blend screen à 0.7 : sur une
+          section sombre elle lavait tout le panneau en gris acier, le
+          même défaut que les pages piliers corrigent en la masquant.
+          Ici : noir de suie, halo d'ambre derrière le tableau, oxblood
+          en bas, et un fondu haut qui recoud la couture avec le héros
+          de l'orbe. Gradients statiques : aucun coût d'animation. */}
+      <section
+        className="relative py-16 md:py-24 overflow-hidden"
+        style={{
+          backgroundColor: '#0A0207',
+          backgroundImage: [
+            'radial-gradient(ellipse 70% 45% at 50% 18%, rgba(201, 118, 42, 0.16), transparent 62%)',
+            'radial-gradient(ellipse 85% 55% at 50% 92%, rgba(123, 30, 45, 0.20), transparent 68%)',
+            'linear-gradient(180deg, #060104 0%, #14040A 38%, #1A050B 66%, #0A0207 100%)',
+          ].join(', '),
+        }}
+      >
+        {/* Couture avec le héros : le haut de la section se fond au noir. */}
+        <span
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-24 md:h-32 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #05070A 0%, rgba(6,1,4,0.6) 55%, transparent 100%)' }}
+        />
+        {/* Vignette : les bords retombent dans l'ombre, le tableau reste
+            le seul point éclairé de la bande. */}
+        <span
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ boxShadow: 'inset 0 0 220px 60px rgba(0,0,0,0.75)' }}
+        />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <AnnoncesPanel lang={lang} />
         </div>
