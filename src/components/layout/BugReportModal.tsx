@@ -26,7 +26,7 @@ const T = {
     send: 'Envoyer le signalement',
     sending: 'Envoi…',
     thanksTitle: 'Merci !',
-    thanksBody: 'Votre signalement est bien reçu. On regarde ça.',
+    thanksBody: 'Votre signalement est bien reçu. Nous nous en occupons.',
     close: 'Fermer',
     errRequired: 'Décrivez le problème avant d’envoyer.',
     errSend: 'Échec de l’envoi. Réessayez dans un instant.',
