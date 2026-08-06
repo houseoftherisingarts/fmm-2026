@@ -90,7 +90,7 @@ Le campement reste ouvert jusqu’au lundi midi pour le démontage.`,
 • Les enseignes néon ou rétro-éclairées
 • Les emballages plastique apparents (boîtes en carton ou en bois OK)
 
-Si tu as un doute sur un élément, envoie-nous une photo ici, on te répondra.`,
+Si tu as un doute sur un élément, envoie-nous une photo ici, nous te répondrons.`,
   },
   electricity: {
     id: 'electricity',
