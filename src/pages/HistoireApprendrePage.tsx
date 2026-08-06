@@ -42,7 +42,7 @@ const HistoireApprendrePage: React.FC = () => {
       />
 
       <HistoireChapterSection />
-      {/* Frise animée — en préparation, derrière `showHistoireFrise`
+      {/* Frise animée : en préparation, derrière `showHistoireFrise`
           (voir FriseHistoire.tsx). Ne rend rien tant que le drapeau
           est éteint. */}
       <FriseHistoire />
