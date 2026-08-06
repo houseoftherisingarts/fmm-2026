@@ -294,7 +294,7 @@ const AdminPage: React.FC = () => {
           userEmail={user?.email ?? ''}
           onSignIn={openSignIn}
           onSignOut={signOut}
-          onEnter={(role) => { setSelectedRole(role); setSection('dashboard'); }}
+          onEnter={(role) => setSelectedRole(role)}
         />
       </>
     );
