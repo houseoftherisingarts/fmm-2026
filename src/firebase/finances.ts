@@ -17,12 +17,51 @@ import { db, storage } from '../firebase';
 
 // ── Types ─────────────────────────────────────────────────────────
 
+// Une ligne à l'intérieur d'une catégorie : un performeur, un groupe,
+// une facture précise, etc. `amount` est TOUJOURS le montant AVANT
+// taxes : on ne stocke jamais le montant taxé, on le recalcule à
+// l'affichage (voir QC_TAX_MULTIPLIER / lineTotal ci-dessous).
+export interface FinanceCategoryLine {
+  id: string;
+  name: string;
+  amount: number;   // avant taxes
+  taxable: boolean; // coche « + taxes »
+  notes: string;
+}
+
 export interface FinanceCategory {
   id: string;
   name: string;
   budgeted: number;
   actual: number;
   order: number;
+  // Sous-catégories facultatives. Dès qu'une catégorie en a au moins
+  // une, son montant réel affiché (voir categoryActual) devient la
+  // somme de ces lignes plutôt que le champ `actual` saisi à la main.
+  lines?: FinanceCategoryLine[];
+}
+
+// Taux de taxes du Québec (TPS 5 % + TVQ 9,975 %), un seul endroit à
+// changer si jamais les taux bougent.
+export const QC_TAX_RATE = 0.14975;
+export const QC_TAX_MULTIPLIER = 1 + QC_TAX_RATE;
+
+// Montant d'une ligne, taxes incluses si elle est cochée « + taxes ».
+export function lineTotal(line: FinanceCategoryLine): number {
+  return line.taxable ? line.amount * QC_TAX_MULTIPLIER : line.amount;
+}
+
+// Somme des lignes d'une catégorie, taxes comprises pour celles qui
+// sont cochées.
+export function categoryLinesTotal(cat: Pick<FinanceCategory, 'lines'>): number {
+  return (cat.lines ?? []).reduce((sum, l) => sum + lineTotal(l), 0);
+}
+
+// Le montant réel (dépensé) à afficher pour une catégorie : la somme
+// de ses lignes dès qu'elle en a une ou plus, sinon le champ `actual`
+// saisi à la main (comportement d'avant les sous-catégories).
+export function categoryActual(cat: Pick<FinanceCategory, 'actual' | 'lines'>): number {
+  return cat.lines && cat.lines.length > 0 ? categoryLinesTotal(cat) : cat.actual;
 }
 
 export type AccountType = 'banque' | 'paiement' | 'dette' | 'autre';
@@ -142,6 +181,40 @@ export async function updateCategory(id: string, patch: Partial<Omit<FinanceCate
 export async function deleteCategory(id: string): Promise<void> {
   if (!db) throw new Error('Firebase non configuré');
   await deleteDoc(doc(db, CATEGORIES_COL, id));
+}
+
+// ── Lignes d'une catégorie (performeurs, groupes…) ──────────────────
+// Vivent dans le champ `lines` du document de catégorie plutôt que
+// dans une collection à part : peu de lignes par catégorie, toujours
+// lues et écrites avec leur catégorie, donc plus simple à lire et à
+// écrire ainsi. Rien à ajouter à firestore.rules : la règle existante
+// sur financeCategories/{docId} couvre déjà ce champ.
+
+export async function addCategoryLine(
+  catId: string, currentLines: FinanceCategoryLine[], line: Omit<FinanceCategoryLine, 'id'>,
+): Promise<FinanceCategoryLine[]> {
+  if (!db) throw new Error('Firebase non configuré');
+  const next = [...currentLines, { ...line, id: crypto.randomUUID() }];
+  await updateDoc(doc(db, CATEGORIES_COL, catId), { lines: next, updatedAt: serverTimestamp() });
+  return next;
+}
+
+export async function updateCategoryLine(
+  catId: string, currentLines: FinanceCategoryLine[], lineId: string, patch: Partial<Omit<FinanceCategoryLine, 'id'>>,
+): Promise<FinanceCategoryLine[]> {
+  if (!db) throw new Error('Firebase non configuré');
+  const next = currentLines.map((l) => (l.id === lineId ? { ...l, ...stripUndefined(patch) } : l));
+  await updateDoc(doc(db, CATEGORIES_COL, catId), { lines: next, updatedAt: serverTimestamp() });
+  return next;
+}
+
+export async function deleteCategoryLine(
+  catId: string, currentLines: FinanceCategoryLine[], lineId: string,
+): Promise<FinanceCategoryLine[]> {
+  if (!db) throw new Error('Firebase non configuré');
+  const next = currentLines.filter((l) => l.id !== lineId);
+  await updateDoc(doc(db, CATEGORIES_COL, catId), { lines: next, updatedAt: serverTimestamp() });
+  return next;
 }
 
 // ── Comptes ───────────────────────────────────────────────────────

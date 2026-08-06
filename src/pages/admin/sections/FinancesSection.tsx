@@ -2,19 +2,21 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Wallet, PiggyBank, Landmark, FileText, Plus, X, Trash2, Pencil, Check,
   Upload, Download, TrendingUp, ShieldCheck, Anchor, LayoutDashboard, Coins,
-  HandCoins, Clock,
+  HandCoins, Clock, ChevronDown,
 } from 'lucide-react';
 import {
-  Card, EmptyState, GhostButton, PrimaryButton, downloadCsv, fmtDate,
+  Card, EmptyState, GhostButton, PrimaryButton, ToggleSwitch, downloadCsv, fmtDate,
 } from '../primitives';
 import {
   listCategories, seedDefaultCategories, addCategory, updateCategory, deleteCategory,
+  addCategoryLine, updateCategoryLine, deleteCategoryLine, categoryActual, lineTotal, QC_TAX_MULTIPLIER,
   listAccounts, seedDefaultAccounts, addAccount, updateAccount, deleteAccount,
   getAllocation, setAllocation,
   listDocuments, uploadDocument, deleteDocument,
   listReceivables, addReceivable, updateReceivable, deleteReceivable,
   ACCOUNT_TYPE_LABEL, RECEIVABLE_TYPE_LABEL, RECEIVABLE_STATUS_LABEL,
-  type FinanceCategory, type FinanceAccount, type AccountType, type FinanceAllocation, type FinanceDocument,
+  type FinanceCategory, type FinanceCategoryLine, type FinanceAccount, type AccountType,
+  type FinanceAllocation, type FinanceDocument,
   type FinanceReceivable, type ReceivableType, type ReceivableStatus,
 } from '../../../firebase/finances';
 
@@ -193,7 +195,7 @@ const DashboardTab: React.FC = () => {
 
   const totals = useMemo(() => ({
     budgeted: categories.reduce((s, c) => s + c.budgeted, 0),
-    actual: categories.reduce((s, c) => s + c.actual, 0),
+    actual: categories.reduce((s, c) => s + categoryActual(c), 0),
   }), [categories]);
   const totalEcart = totals.budgeted - totals.actual;
   const soldeNet = accounts.reduce((s, a) => s + a.balance, 0);
@@ -342,6 +344,13 @@ const BudgetColumn: React.FC<{
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<FinanceCategory | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => setExpanded((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
 
   const onSave = async (data: Omit<FinanceCategory, 'id'>, id?: string) => {
     try {
@@ -368,7 +377,7 @@ const BudgetColumn: React.FC<{
   };
 
   const exportCsv = () => downloadCsv('fmm-budget.csv', items.map((c) => ({
-    categorie: c.name, budgete: c.budgeted, reel: c.actual, ecart: c.budgeted - c.actual,
+    categorie: c.name, budgete: c.budgeted, reel: categoryActual(c), ecart: c.budgeted - categoryActual(c),
   })));
 
   return (
@@ -406,43 +415,210 @@ const BudgetColumn: React.FC<{
         </Card>
       ) : (
         <div className="space-y-2">
-          {items.map((c) => {
-            const ecart = c.budgeted - c.actual;
-            const pct = c.budgeted > 0 ? Math.min(100, Math.round((c.actual / c.budgeted) * 100)) : (c.actual > 0 ? 100 : 0);
-            const over = c.actual > c.budgeted && c.budgeted > 0;
-            return (
-              <Card key={c.id} className="p-4 !rounded-card">
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="min-w-0">
-                    <p className="font-display title-medieval text-sm text-ivory truncate">{c.name}</p>
-                    <p className="font-sans text-xs text-ivory-soft/70 tabular-nums mt-0.5">
-                      {fmtCAD(c.actual)} / {fmtCAD(c.budgeted)}
-                      <span className={`ml-2 ${ecart < 0 ? 'text-blush' : 'text-emerald-400'}`}>
-                        ({ecart >= 0 ? 'reste ' : 'dépassé de '}{fmtCAD(Math.abs(ecart))})
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button onClick={() => { setShowAdd(false); setEditing(c); }}
-                      className="text-ivory-soft/50 hover:text-brass transition" title="Éditer">
-                      <Pencil size={13} />
-                    </button>
-                    <button onClick={() => onDelete(c)}
-                      className="text-ivory-soft/50 hover:text-blush transition" title="Supprimer">
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                </div>
-                <div className="h-2 rounded-pill bg-midnight-deep/60 border border-ivory-soft/10 overflow-hidden">
-                  <div className={`h-full rounded-pill transition-all ${over ? 'bg-blush' : 'bg-brass'}`}
-                    style={{ width: `${pct}%` }} />
-                </div>
-              </Card>
-            );
-          })}
+          {items.map((c) => (
+            <CategoryCard
+              key={c.id}
+              category={c}
+              expanded={expanded.has(c.id)}
+              onToggleExpand={() => toggleExpanded(c.id)}
+              onEdit={() => { setShowAdd(false); setEditing(c); }}
+              onDelete={() => onDelete(c)}
+              reload={reload}
+            />
+          ))}
         </div>
       )}
     </div>
+  );
+};
+
+// ─── Carte d'une catégorie : dépliable en lignes (performeurs, groupes,
+// factures…) qui s'additionnent pour former le montant réel. ─────────
+
+const CategoryCard: React.FC<{
+  category: FinanceCategory;
+  expanded: boolean;
+  onToggleExpand: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  reload: () => Promise<void>;
+}> = ({ category: c, expanded, onToggleExpand, onEdit, onDelete, reload }) => {
+  const lines = c.lines ?? [];
+  const actual = categoryActual(c);
+  const ecart = c.budgeted - actual;
+  const pct = c.budgeted > 0 ? Math.min(100, Math.round((actual / c.budgeted) * 100)) : (actual > 0 ? 100 : 0);
+  const over = actual > c.budgeted && c.budgeted > 0;
+
+  const [addingLine, setAddingLine] = useState(false);
+  const [editingLine, setEditingLine] = useState<FinanceCategoryLine | null>(null);
+  const [lineError, setLineError] = useState<string | null>(null);
+
+  const onSaveLine = async (data: Omit<FinanceCategoryLine, 'id'>, lineId?: string) => {
+    try {
+      if (lineId) await updateCategoryLine(c.id, lines, lineId, data);
+      else await addCategoryLine(c.id, lines, data);
+      setLineError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] save category line failed:', e);
+      setLineError(humanizeError(e, 'enregistrer'));
+    }
+    setAddingLine(false); setEditingLine(null); reload();
+  };
+
+  const onDeleteLine = async (line: FinanceCategoryLine) => {
+    if (!confirm(`Retirer « ${line.name} » de « ${c.name} » ?`)) return;
+    try {
+      await deleteCategoryLine(c.id, lines, line.id);
+      setLineError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] delete category line failed:', e);
+      setLineError(humanizeError(e, 'supprimer'));
+    }
+    reload();
+  };
+
+  return (
+    <Card className="!rounded-card overflow-hidden">
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <button type="button" onClick={onToggleExpand} className="flex items-start gap-2 min-w-0 flex-1 text-left">
+            <ChevronDown size={14}
+              className={`mt-1 shrink-0 text-ivory-soft/50 transition-transform ${expanded ? '' : '-rotate-90'}`} />
+            <div className="min-w-0">
+              <p className="font-display title-medieval text-sm text-ivory truncate">{c.name}</p>
+              <p className="font-sans text-xs text-ivory-soft/70 tabular-nums mt-0.5">
+                {fmtCAD(actual)} / {fmtCAD(c.budgeted)}
+                <span className={`ml-2 ${ecart < 0 ? 'text-blush' : 'text-emerald-400'}`}>
+                  ({ecart >= 0 ? 'reste ' : 'dépassé de '}{fmtCAD(Math.abs(ecart))})
+                </span>
+                {lines.length > 0 && (
+                  <span className="ml-2 text-ivory-soft/40">
+                    · {lines.length} ligne{lines.length > 1 ? 's' : ''}
+                  </span>
+                )}
+              </p>
+            </div>
+          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button onClick={onEdit} className="text-ivory-soft/50 hover:text-brass transition" title="Éditer">
+              <Pencil size={13} />
+            </button>
+            <button onClick={onDelete} className="text-ivory-soft/50 hover:text-blush transition" title="Supprimer">
+              <Trash2 size={13} />
+            </button>
+          </div>
+        </div>
+        <div className="h-2 rounded-pill bg-midnight-deep/60 border border-ivory-soft/10 overflow-hidden">
+          <div className={`h-full rounded-pill transition-all ${over ? 'bg-blush' : 'bg-brass'}`}
+            style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="border-t border-ivory-soft/10 bg-midnight-deep/20 p-4 space-y-2">
+          {lineError && <ErrorBanner message={lineError} onClose={() => setLineError(null)} />}
+
+          {lines.length === 0 && !addingLine && (
+            <p className="font-editorial italic text-xs text-ivory-soft/50">
+              Aucune ligne pour l’instant : le montant réel ci-dessus reste saisi à la main.
+            </p>
+          )}
+
+          {lines.map((line) => (
+            <div key={line.id}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-card border border-ivory-soft/10 bg-midnight-deep/30">
+              <div className="min-w-0">
+                <p className="font-sans text-sm text-ivory truncate">{line.name}</p>
+                {line.notes && <p className="font-editorial italic text-[11px] text-ivory-soft/50 mt-0.5 truncate">{line.notes}</p>}
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="text-right">
+                  <p className="font-sans text-sm tabular-nums text-ivory">{fmtCAD(lineTotal(line))}</p>
+                  {line.taxable && (
+                    <p className="font-sans text-[10px] tabular-nums text-ivory-soft/50">{fmtCAD(line.amount)} + taxes</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button onClick={() => { setAddingLine(false); setEditingLine(line); }}
+                    className="text-ivory-soft/50 hover:text-brass transition" title="Éditer la ligne">
+                    <Pencil size={12} />
+                  </button>
+                  <button onClick={() => onDeleteLine(line)}
+                    className="text-ivory-soft/50 hover:text-blush transition" title="Supprimer la ligne">
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {(addingLine || editingLine) ? (
+            <LineForm
+              initial={editingLine}
+              onCancel={() => { setAddingLine(false); setEditingLine(null); }}
+              onSubmit={onSaveLine}
+            />
+          ) : (
+            <GhostButton onClick={() => { setEditingLine(null); setAddingLine(true); }}>
+              <Plus size={12} /> Ligne
+            </GhostButton>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+};
+
+// ─── Formulaire d'une ligne (performeur, groupe…) ────────────────────
+
+const LineForm: React.FC<{
+  initial: FinanceCategoryLine | null;
+  onCancel: () => void;
+  onSubmit: (data: Omit<FinanceCategoryLine, 'id'>, id?: string) => void;
+}> = ({ initial, onCancel, onSubmit }) => {
+  const [name, setName] = useState(initial?.name ?? '');
+  const [amount, setAmount] = useState(initial?.amount ?? 0);
+  const [taxable, setTaxable] = useState(initial?.taxable ?? false);
+  const [notes, setNotes] = useState(initial?.notes ?? '');
+
+  const amountNum = Number(amount) || 0;
+
+  return (
+    <Card className="p-4 !rounded-card border border-brass/25">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <h4 className="font-display title-medieval text-sm text-ivory">{initial ? 'Édition de la ligne' : 'Nouvelle ligne'}</h4>
+        <button onClick={onCancel} className="text-ivory-soft/60 hover:text-ivory transition"><X size={14} /></button>
+      </div>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        onSubmit({ name: name.trim(), amount: amountNum, taxable, notes: notes.trim() }, initial?.id);
+      }} className="grid sm:grid-cols-2 gap-3">
+        <Field label="Nom (performeur, groupe…)" full>
+          <input value={name} onChange={(e) => setName(e.target.value)} required
+            placeholder="Ex. : Skarazula" className={inputCls} />
+        </Field>
+        <Field label="Montant avant taxes ($)">
+          <input type="number" min={0} step="0.01" value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))} className={inputCls} />
+        </Field>
+        <Field label="Notes">
+          <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optionnel" className={inputCls} />
+        </Field>
+        <div className="sm:col-span-2 flex items-center justify-between gap-3 flex-wrap">
+          <ToggleSwitch checked={taxable} onChange={setTaxable} label="+ taxes (TPS/TVQ, 14,975 %)" />
+          <p className="font-sans text-xs tabular-nums text-ivory-soft/70">
+            {taxable ? `${fmtCAD(amountNum)} → ${fmtCAD(amountNum * QC_TAX_MULTIPLIER)} avec taxes` : fmtCAD(amountNum)}
+          </p>
+        </div>
+        <div className="sm:col-span-2 flex gap-2 justify-end mt-1">
+          <button type="button" onClick={onCancel} className="px-4 py-2 text-ivory-soft hover:text-ivory text-xs font-sans uppercase tracking-wider">Annuler</button>
+          <button type="submit" className="px-4 py-2 bg-brass text-midnight-deep font-sans text-xs uppercase tracking-wider font-semibold rounded-card hover:bg-brass-soft transition inline-flex items-center gap-1.5">
+            <Check size={12} /> {initial ? 'Mettre à jour' : 'Ajouter'}
+          </button>
+        </div>
+      </form>
+    </Card>
   );
 };
 
@@ -454,6 +630,7 @@ const CategoryForm: React.FC<{
   const [name, setName] = useState(initial?.name ?? '');
   const [budgeted, setBudgeted] = useState(initial?.budgeted ?? 0);
   const [actual, setActual] = useState(initial?.actual ?? 0);
+  const hasLines = !!initial?.lines && initial.lines.length > 0;
 
   return (
     <Card className="p-5 !rounded-card">
@@ -464,7 +641,10 @@ const CategoryForm: React.FC<{
       <form onSubmit={(e) => {
         e.preventDefault();
         if (!name.trim()) return;
-        onSubmit({ name: name.trim(), budgeted: Number(budgeted) || 0, actual: Number(actual) || 0, order: initial?.order ?? Date.now() }, initial?.id);
+        onSubmit({
+          name: name.trim(), budgeted: Number(budgeted) || 0, actual: Number(actual) || 0,
+          order: initial?.order ?? Date.now(), lines: initial?.lines,
+        }, initial?.id);
       }} className="grid sm:grid-cols-3 gap-3">
         <Field label="Nom" full>
           <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ex. : Sécurité" className={inputCls} />
@@ -472,8 +652,15 @@ const CategoryForm: React.FC<{
         <Field label="Montant budgété ($)">
           <input type="number" min={0} step="0.01" value={budgeted} onChange={(e) => setBudgeted(Number(e.target.value))} className={inputCls} />
         </Field>
-        <Field label="Montant réel dépensé ($)">
-          <input type="number" min={0} step="0.01" value={actual} onChange={(e) => setActual(Number(e.target.value))} className={inputCls} />
+        <Field label={hasLines ? 'Montant réel dépensé (calculé)' : 'Montant réel dépensé ($)'}>
+          <input type="number" min={0} step="0.01" value={actual} disabled={hasLines}
+            onChange={(e) => setActual(Number(e.target.value))}
+            className={`${inputCls} ${hasLines ? 'opacity-50 cursor-not-allowed' : ''}`} />
+          {hasLines && (
+            <p className="font-editorial italic text-[11px] text-ivory-soft/50 mt-1">
+              Calculé à partir des lignes de la catégorie, fermez ce formulaire pour les voir.
+            </p>
+          )}
         </Field>
         <div className="sm:col-span-3 flex gap-2 justify-end mt-2">
           <button type="button" onClick={onCancel} className="px-4 py-2 text-ivory-soft hover:text-ivory text-xs font-sans uppercase tracking-wider">Annuler</button>
