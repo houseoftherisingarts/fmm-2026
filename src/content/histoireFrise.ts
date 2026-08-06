@@ -14,7 +14,7 @@ export interface FriseStop {
   current?: boolean;
   titleFR: string;
   titleEN: string;
-  /** Sous-titre court, sans détail inventé — seuls les faits déjà établis
+  /** Sous-titre court, sans détail inventé : seuls les faits déjà établis
    *  ailleurs sur le site (fondation, édition en cours) sont repris ici. */
   noteFR?: string;
   noteEN?: string;
