@@ -24,19 +24,19 @@ if (typeof window !== 'undefined') {
 // prefers-reduced-motion get a plain vertical list below (no pin, no
 // scroll-jacking), same fallback pattern as CinematicOpening.tsx.
 //
-// 🚨 En préparation — gardée derrière le drapeau `showHistoireFrise`
+// 🚨 En préparation : gardée derrière le drapeau `showHistoireFrise`
 // (éteint par défaut). Ne pas retirer le FlagGate qui l'entoure.
 
 const N = FRISE_HISTOIRE.length;
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-// Léger frottement de pas — réutilise le SFX déjà servi par l'orbe plutôt
+// Léger frottement de pas, réutilise le SFX déjà servi par l'orbe plutôt
 // que d'ajouter un nouvel actif (Alex, 2026-08-05 : « le son synchronisé »).
 const STEP_SFX = '/orb/sfx/hover.mp3';
 
 // Local dev (VITE_SITE_MODE=live) previews every in-progress section;
-// production respects the Firestore flag — same convention as NavBar,
+// production respects the Firestore flag, same convention as NavBar,
 // Footer and OrbHomePage.
 const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
 
