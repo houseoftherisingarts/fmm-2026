@@ -220,7 +220,7 @@ const AdminPage: React.FC = () => {
             signedIn
             userEmail={BYPASS_USER.email}
             onSignOut={signOut}
-            onEnter={(role) => { setSelectedRole(role); setSection('dashboard'); }}
+            onEnter={(role) => setSelectedRole(role)}
           />
         </>
       );
