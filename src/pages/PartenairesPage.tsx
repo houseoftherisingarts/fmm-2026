@@ -9,7 +9,7 @@ import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 
-// Featured partners — long-form cards, cloned from the live Wix copy.
+// Featured partners: long-form cards, cloned from the live Wix copy.
 const FEATURED = [
   {
     name: 'Municipalité de Montpellier',
@@ -20,8 +20,8 @@ const FEATURED = [
   },
   {
     name: 'Groupe Gagnon',
-    bioFR: 'Depuis la première itération, Le Groupe Gagnon est un de nos partenaires les plus fidèles et les plus généreux. Nous sommes fiers d’acheter local — et ils sont fiers de commanditer local.',
-    bioEN: 'Since the very first edition, Groupe Gagnon has been one of our most loyal and generous partners. We are proud to buy local — and they are proud to sponsor local.',
+    bioFR: 'Depuis la première itération, Le Groupe Gagnon est un de nos partenaires les plus fidèles et les plus généreux. Nous sommes fiers d’acheter local, et ils sont fiers de commanditer local.',
+    bioEN: 'Since the very first edition, Groupe Gagnon has been one of our most loyal and generous partners. We are proud to buy local, and they are proud to sponsor local.',
     href: '#TODO_groupe-gagnon',
     cta: { FR: 'Quincaillerie', EN: 'Hardware store' },
   },
@@ -34,8 +34,8 @@ const FEATURED = [
   },
   {
     name: 'Ferme Coopérative Agricola',
-    bioFR: 'Agricola est une coopérative de travailleur·euse·s — elle appartient aux personnes qui cultivent votre nourriture. Nous croyons que la nourriture devrait construire la communauté, être écologiquement durable, et être un plaisir à grandir et à manger.',
-    bioEN: 'Agricola is a worker cooperative — owned by the people who grow your food. We believe food should build community, be ecologically sustainable, and be a joy to grow and eat.',
+    bioFR: 'Agricola est une coopérative de travailleur·euse·s : elle appartient aux personnes qui cultivent votre nourriture. Nous croyons que la nourriture devrait construire la communauté, être écologiquement durable, et être un plaisir à grandir et à manger.',
+    bioEN: 'Agricola is a worker cooperative: owned by the people who grow your food. We believe food should build community, be ecologically sustainable, and be a joy to grow and eat.',
     href: '#TODO_agricola',
     cta: { FR: 'Site et paniers', EN: 'Site and baskets' },
   },
@@ -52,7 +52,7 @@ const FEATURED = [
 const SHORT = [
   { name: 'Municipalité de Duhamel',     tag: { FR: 'Municipalité naturelle',                       EN: 'Natural municipality' } },
   { name: 'Académie Scrimicie',          tag: { FR: 'École d’escrime AMHE',                          EN: 'AMHE fencing school' } },
-  { name: 'Le Salon des Inconnus',       tag: { FR: 'Auberge d’artistes — sites web',               EN: 'Artists’ inn — web design' } },
+  { name: 'Le Salon des Inconnus',       tag: { FR: 'Auberge d’artistes · sites web',               EN: 'Artists’ inn · web design' } },
   { name: 'SABCO',                       tag: { FR: 'Nettoyage au jet de sable',                     EN: 'Sandblasting services' } },
 ];
 
@@ -136,7 +136,7 @@ const PartenairesPage: React.FC = () => {
         })}
       </section>
 
-      {/* Smaller partners — short text cards arranged around a
+      {/* Smaller partners, short text cards arranged around a
           Vikings-fight centerpiece. Visuals (copper backdrop glow,
           drop-shadow, bottom-fade mask) cloned from the Green-Knight
           centerpiece on /activites. On desktop the centerpiece occupies
@@ -147,7 +147,7 @@ const PartenairesPage: React.FC = () => {
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <ChapterIntro eyebrow={t.partnersEyebrow} title={t.partnersTitle} className="mb-10" />
           <Stagger as="div" className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 [grid-auto-flow:dense] items-stretch" stagger={0.08}>
-            {/* ── Centerpiece — Vikings fight figure with copper glow + bottom fade ── */}
+            {/* ── Centerpiece: Vikings fight figure with copper glow + bottom fade ── */}
             <div
               aria-hidden
               className="relative col-span-2 row-span-1 md:col-start-2 md:col-span-2 md:row-span-2 min-h-[280px] md:min-h-[360px] flex items-end justify-center"
@@ -220,7 +220,7 @@ const FR = {
   becomeEyebrow: 'Rejoindre la cour', becomeTitle: 'Votre partenariat ici',
   becomeBody: 'Cet espace est réservé à un futur partenaire VIP souhaitant contribuer à faire évoluer le projet. Pour devenir partenaire VIP, écrivez-nous.',
   becomeCta: 'Devenir partenaire',
-  becomeMail: 'Devenir partenaire — FMM 2026',
+  becomeMail: 'Devenir partenaire : FMM 2026',
 };
 const EN = {
   home: 'Home', eyebrow: 'With us', title: 'Our Partners',
@@ -231,7 +231,7 @@ const EN = {
   becomeEyebrow: 'Join the court', becomeTitle: 'Your partnership here',
   becomeBody: 'This spot is reserved for a future VIP partner wishing to help grow the project. To become a VIP partner, write to us.',
   becomeCta: 'Become a partner',
-  becomeMail: 'Become a partner — FMM 2026',
+  becomeMail: 'Become a partner: FMM 2026',
 };
 
 export default PartenairesPage;

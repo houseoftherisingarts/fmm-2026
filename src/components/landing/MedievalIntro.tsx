@@ -4,7 +4,7 @@ import { usePerfTier } from '../../lib/usePerfTier';
 import IntroChant from './IntroChant';
 
 /**
- * MedievalIntro — cinematic scroll prologue for the FMM site.
+ * MedievalIntro: cinematic scroll prologue for the FMM site.
  * Scroll-scrubbed 1080p clip of the veilleur and the crystal ball, with a
  * forged-metal title sequence over it: (1) Festival Médiéval de Montpellier,
  * (2) the dates, (3) a fire burst that fades into the main page (the theme
@@ -353,13 +353,13 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
     autoRef.current = requestAnimationFrame(step);
   }
 
-  // beat 1 — the name (present from the first frame, then disappears as you scroll)
+  // beat 1: the name (present from the first frame, then disappears as you scroll)
   const b1 = useTransform(progress, [0, 0.22, 0.30], [1, 1, 0]);
   const b1y = useTransform(progress, [0, 0.30], ['0px', '-26px']);
   // left scrim that gives the editorial column its legibility; fades out by the
   // time the burst nears
   const leftScrim = useTransform(progress, [0, 0.5, 0.64], [1, 1, 0]);
-  // beat 2 — the dates
+  // beat 2: the dates
   const b2 = useTransform(progress, [0.36, 0.43, 0.5, 0.57], [0, 1, 1, 0]);
   const b2y = useTransform(progress, [0.36, 0.57], ['22px', '-22px']);
   // scene atmosphere
@@ -369,10 +369,10 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
   // the screen-blended ambient fire fades out as you scroll, so its expensive
   // full-screen composite isn't paid during the scrub
   const fireOp = useTransform(progress, [0, 0.05], [0.78, 0]);
-  // beat 3 — the fire burst, now the standalone finale (theme title dropped)
+  // beat 3: the fire burst, now the standalone finale (theme title dropped)
   const burst = useTransform(progress, [0.82, 0.95, 1], [0, 1, 1]);
   // Ken Burns push-in into the explosion: as the orb bursts, the scene scales
-  // up past the 6% offset so its left edge clears the viewport — the expanding
+  // up past the 6% offset so its left edge clears the viewport. The expanding
   // frame swallows the seam exactly when the white flash would expose it.
   const sceneScale = useTransform(progress, [0.60, 0.74], [1, 1.16]);
   // the left seam mask doubles as the editorial-side vignette while the scene
@@ -408,7 +408,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
           <div ref={trackRef} onScroll={onScroll} className="absolute inset-0 overflow-y-auto overflow-x-hidden">
             <div style={{ height: '480vh', position: 'relative' }}>
               <div className="mi-stage" style={{ position: 'sticky', top: 0, overflow: 'hidden' }}>
-                {/* idle torch loop — seamless native loop, no scroll needed */}
+                {/* idle torch loop: seamless native loop, no scroll needed */}
                 <motion.video
                   ref={idleRef}
                   className="absolute inset-0 h-full w-full object-cover"
@@ -424,7 +424,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   animate={{ opacity: scrollStarted ? 0 : 1 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
                 />
-                {/* scrubbed scene — a canvas frame-sequence (no video seek),
+                {/* scrubbed scene: a canvas frame-sequence (no video seek),
                     revealed and driven by scroll once scrolling starts */}
                 <motion.div
                   className="absolute inset-0"
@@ -436,19 +436,19 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   <FrameScrubber progress={progress} active={scrollStarted} />
                 </motion.div>
 
-                {/* seam seal — the 6% horizontal shift exposes the frame's left
+                {/* seam seal: the 6% horizontal shift exposes the frame's left
                     edge; a permanent dark gradient pinned to that edge buries it
                     (and reads as the left vignette), so the shift stays seamless
                     at every scroll position, scrim faded or not */}
                 <motion.div className="pointer-events-none absolute inset-y-0 left-0 w-[14%]" style={{ opacity: seamOp, background: 'linear-gradient(to right, #04060b 0%, #04060b 43%, rgba(4,6,11,0) 100%)' }} />
 
-                {/* moody vignette over the early frames — also masks the plate seam */}
+                {/* moody vignette over the early frames, also masks the plate seam */}
                 {/* moody vignette, dialled back ~30% so the torches at the
                     edges read better */}
                 <motion.div className="pointer-events-none absolute inset-0" style={{ opacity: moody, background: 'radial-gradient(116% 96% at 50% 47%, transparent 30%, rgba(3,5,9,0.42) 66%, rgba(1,2,5,0.68) 100%), linear-gradient(to right, rgba(1,2,5,0.66) 0%, transparent 24%, transparent 76%, rgba(1,2,5,0.66) 100%), linear-gradient(to bottom, rgba(1,2,5,0.56) 0%, transparent 22%, transparent 74%, rgba(1,2,5,0.6) 100%)' }} />
                 <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(125% 105% at 50% 50%, transparent 56%, rgba(3,6,12,0.4) 86%, rgba(3,6,12,0.72) 100%)' }} />
 
-                {/* atmospheric fire — home page's flame layer (/orb/fire.mp4),
+                {/* atmospheric fire: home page's flame layer (/orb/fire.mp4),
                     held back in the centre so it doesn't crowd the knight: a
                     horizontal mask keeps the flames at the sides (the torches)
                     and fades them across the middle. */}
@@ -477,7 +477,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                 {/* localized dark scrim so the metal reads while the stone brightens */}
                 <motion.div className="pointer-events-none absolute inset-0" style={{ opacity: textScrim, background: 'radial-gradient(60% 42% at 50% 48%, rgba(3,5,10,0.85) 0%, rgba(3,5,10,0) 72%)' }} />
 
-                {/* fire burst — only mounted (and decoded) as the burst nears,
+                {/* fire burst: only mounted (and decoded) as the burst nears,
                     not played invisibly from idle */}
                 {!lite && bufferFilm && (
                   <motion.video
@@ -492,11 +492,11 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   />
                 )}
 
-                {/* left scrim — carves the editorial column's legibility well
+                {/* left scrim: carves the editorial column's legibility well
                     without touching the scene's framing */}
                 <motion.div className="pointer-events-none absolute inset-0" style={{ opacity: leftScrim, background: 'linear-gradient(to right, rgba(3,4,9,0.9) 0%, rgba(3,4,9,0.55) 30%, transparent 56%)' }} />
 
-                {/* beat 1 — editorial left column, live Cinzel wordmark with a
+                {/* beat 1: editorial left column, live Cinzel wordmark with a
                     crest above; words rise into focus on load, recede on scroll */}
                 <div className="mi-title pointer-events-none absolute left-[6vw] top-1/2 -translate-y-1/2 max-w-[48vw]">
                   <motion.div className="flex flex-col items-start text-left" style={{ opacity: b1, y: b1y }}>
@@ -534,7 +534,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   </motion.div>
                 </div>
 
-                {/* scroll cue — quiet invitation; click it to auto-play the
+                {/* scroll cue: quiet invitation; click it to auto-play the
                     prologue at a cinematic pace */}
                 <motion.div className="mi-cue pointer-events-none absolute inset-x-0 bottom-[5vh] flex justify-center" style={{ opacity: cue }}>
                   <button
@@ -548,7 +548,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   </button>
                 </motion.div>
 
-                {/* beat 2 — the dates, same left column as the name */}
+                {/* beat 2: the dates, same left column as the name */}
                 <div className="pointer-events-none absolute left-[6vw] top-1/2 -translate-y-1/2 max-w-[48vw]">
                   <motion.div className="flex flex-col items-start text-left" style={{ opacity: b2, y: b2y }}>
                     <div className="fmm-rule-silver mb-5 w-28 sm:w-40" />
@@ -558,7 +558,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   </motion.div>
                 </div>
 
-                {/* the knight himself is the play control — clicking him auto-
+                {/* the knight himself is the play control: clicking him auto-
                     plays the whole sequence (prologue scrub → festival film)
                     with no scrolling. The click is a real gesture, so the
                     film's sound is allowed. No visible affordance: the scene
@@ -571,7 +571,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                   style={{ width: '34vw', height: '78vh', transform: 'translate(calc(-50% + 6vw), -50%)', cursor: 'pointer' }}
                 />
 
-                {/* beat 3 — the fire burst alone carries the finale; the
+                {/* beat 3: the fire burst alone carries the finale; the
                     theme title lives on the home page, so it's dropped here. */}
 
               </div>
@@ -579,7 +579,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
           </div>
           )}
 
-          {/* Festival film — buffered as the burst nears, then takes over with
+          {/* Festival film: buffered as the burst nears, then takes over with
               sound. On end (or skip) we fade into the main site. */}
           {(bufferFilm || phase === 'video') && (
             <motion.div
@@ -614,7 +614,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
               Masqué pendant le film, qui porte déjà son propre son. */}
           <IntroChant visible={phase !== 'video'} silver={SILVER} fontAlt={fontAlt} />
 
-          {/* Skip intro — bottom-right, present through both the prologue and
+          {/* Skip intro: bottom-right, present through both the prologue and
               the film; always lands on the main site. */}
           <button
             onClick={enterSite}

@@ -1,4 +1,4 @@
-// ─── Hnefatafl — plateau : GLB de Meshy + secours procédural ────────
+// ─── Hnefatafl · plateau : GLB de Meshy + secours procédural ────────
 // Le plateau sculpté d'Alex (Meshy) est revenu le 2026-08-03, compressé
 // de 34 Mo à 1,96 Mo (draco + textures webp 1024). Il se pose PAR-DESSUS
 // une grille procédurale qui, elle, reste la seule vérité du jeu :

@@ -179,7 +179,7 @@ const MariagesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
 
 const FR = {
   home: 'Accueil', eyebrow: 'Cérémonie d’époque', title: 'Célébrez votre mariage au FMM en 2026',
-  intro1: 'En 2022, un mariage a été célébré sur le site du festival. Si l’idée de célébrer un mariage médiéval, chrétien, laïc, païen, viking, celte, ou simplement au cœur des festivités — vous attire, nous sommes ouverts au projet. Si vous comptez vous marier en 2026, écrivez-nous.',
+  intro1: 'En 2022, un mariage a été célébré sur le site du festival. Si l’idée de célébrer un mariage médiéval, chrétien, laïc, païen, viking, celte, ou simplement au cœur des festivités, vous attire, nous sommes ouverts au projet. Si vous comptez vous marier en 2026, écrivez-nous.',
   intro2: 'À noter : envoyer ce formulaire ne garantit pas l’admissibilité du projet ni l’acceptation de la demande.',
   formEyebrow: 'Formulaire d’intérêt', formTitle: 'Parlez-nous de votre mariage',
   prenom: 'Prénom', nom: 'Nom', email: 'Courriel', telephone: 'Téléphone',
@@ -192,7 +192,7 @@ const FR = {
   guestPlaceholder: 'p. ex. 60-80 invités',
   vibe: 'Décrivez-nous votre mariage idéal au FMM',
   vibePlaceholder: 'Ambiance, époque, déroulement, attentes…',
-  shopNote: 'Note : les boutiques sont ouvertes pendant le festival — vos invités peuvent facilement se procurer un costume sur place.',
+  shopNote: 'Note : les boutiques sont ouvertes pendant le festival ; vos invités peuvent facilement se procurer un costume sur place.',
   donationLabel: 'Don facultatif au « clergé du FMM »',
   donationLead: 'Le FMM est une OBNL gérée par des bénévoles. En donnant, vous devenez mécène et aidez le projet de mariages à prendre son envol définitif.',
   consent: 'Je comprends que cet envoi constitue une demande d’information et n’engage rien.',
@@ -202,7 +202,7 @@ const FR = {
 };
 const EN = {
   home: 'Home', eyebrow: 'Period ceremony', title: 'Celebrate your wedding at FMM 2026',
-  intro1: 'In 2022 a wedding was held on the festival site. If the idea of a medieval, Christian, secular, pagan, Viking, Celtic, or simply festival-centred — wedding draws you in, we are open to the project. If you plan to marry in 2026, write to us.',
+  intro1: 'In 2022 a wedding was held on the festival site. If the idea of a medieval, Christian, secular, pagan, Viking, Celtic, or simply festival-centred wedding draws you in, we are open to the project. If you plan to marry in 2026, write to us.',
   intro2: 'Note: submitting this form does not guarantee project eligibility or acceptance.',
   formEyebrow: 'Interest form', formTitle: 'Tell us about your wedding',
   prenom: 'First name', nom: 'Last name', email: 'Email', telephone: 'Phone',
@@ -215,7 +215,7 @@ const EN = {
   guestPlaceholder: 'e.g. 60-80 guests',
   vibe: 'Describe your ideal wedding at FMM',
   vibePlaceholder: 'Atmosphere, era, flow, expectations…',
-  shopNote: 'Note: shops are open during the festival — your guests can easily get a costume on site.',
+  shopNote: 'Note: shops are open during the festival; your guests can easily get a costume on site.',
   donationLabel: 'Optional donation to the "FMM clergy"',
   donationLead: 'FMM is a non-profit run by volunteers. By donating, you become a patron and help the wedding project take definitive flight.',
   consent: 'I understand this submission is an inquiry and commits nothing.',

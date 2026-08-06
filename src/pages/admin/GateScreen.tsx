@@ -29,13 +29,13 @@ interface Props {
   onSignIn?: () => void;
   /** True when the visitor is signed in; false for anonymous visitors. */
   signedIn: boolean;
-  /** Email of the signed-in user — shown on the denied overlay. */
+  /** Email of the signed-in user, shown on the denied overlay. */
   userEmail: string;
 }
 
 // Thematic icon + motif per role. Icons are lucide medieval-flavoured
 // glyphs (Crown, Scroll, Shield, Hammer, Flame). Motifs are short
-// French poetics for the chip under the icon — no colour names; the
+// French poetics for the chip under the icon: no colour names; the
 // Johnnie Walker tone shows up only on the chrome (border, corners,
 // pip, footer accent, hover glint).
 const DOOR_META: Record<AdminRole, {
@@ -58,17 +58,17 @@ const DOOR_META: Record<AdminRole, {
 // surface instead of sitting as a flat tint.
 //
 // Reference: the project's `.divider-brass` (a transparent → gold →
-// transparent hairline) — that fade-in/fade-out aesthetic is the
+// transparent hairline): that fade-in/fade-out aesthetic is the
 // signature of the metallic ribbon used here on top + above footer.
 //
-//   shadow    — deepest stop, for the dark band in the polished disc
-//   accent    — the door's identity colour (mid tone, also used for
+//   shadow:    deepest stop, for the dark band in the polished disc
+//   accent:    the door's identity colour (mid tone, also used for
 //               the simple 1px border around the card)
-//   highlight — brighter shade, used for the lit edge of the metal
-//   specular  — the bright "catch-light" stop at the very top of the
+//   highlight: brighter shade, used for the lit edge of the metal
+//   specular:  the bright "catch-light" stop at the very top of the
 //               metallic gradient (almost white-hot)
-//   glow      — rgba halo bloom for the outer shadow
-//   bgTop / bgBottom — tinted-charcoal gradient for the card body
+//   glow:      rgba halo bloom for the outer shadow
+//   bgTop / bgBottom: tinted-charcoal gradient for the card body
 const DOOR_TONE: Record<AdminRole, {
   shadow:    string;
   accent:    string;
@@ -78,7 +78,7 @@ const DOOR_TONE: Record<AdminRole, {
   bgTop:     string;
   bgBottom:  string;
 }> = {
-  // Champagne / antique metallic gold — warm bronze, no lemon yellow.
+  // Champagne / antique metallic gold: warm bronze, no lemon yellow.
   super: {
     shadow:    '#3c2a0d',
     accent:    '#a07832',
@@ -88,7 +88,7 @@ const DOOR_TONE: Record<AdminRole, {
     bgTop:     '#18130e',
     bgBottom:  '#0a0604',
   },
-  // Royal blue — Rolls-Royce-deep sapphire (no cobalt brightness).
+  // Royal blue: Rolls-Royce-deep sapphire (no cobalt brightness).
   ca: {
     shadow:    '#070e22',
     accent:    '#1f365a',
@@ -98,7 +98,7 @@ const DOOR_TONE: Record<AdminRole, {
     bgTop:     '#060c1e',
     bgBottom:  '#02040e',
   },
-  // Same metallic gold as 'super' — Organisateurs share the gold ribbon.
+  // Same metallic gold as 'super'. Organisateurs share the gold ribbon.
   organisateur: {
     shadow:    '#3c2a0d',
     accent:    '#a07832',
@@ -108,7 +108,7 @@ const DOOR_TONE: Record<AdminRole, {
     bgTop:     '#18130e',
     bgBottom:  '#0a0604',
   },
-  // Satin forest green — deep British-racing register, muted sheen.
+  // Satin forest green: deep British-racing register, muted sheen.
   super_benevole: {
     shadow:    '#082014',
     accent:    '#1a4429',
@@ -118,7 +118,7 @@ const DOOR_TONE: Record<AdminRole, {
     bgTop:     '#07120e',
     bgBottom:  '#030806',
   },
-  // Obsidian with platinum silver highlight — gunmetal sheen on the
+  // Obsidian with platinum silver highlight: gunmetal sheen on the
   // metallic disc.
   benevole: {
     shadow:    '#050507',
@@ -129,7 +129,7 @@ const DOOR_TONE: Record<AdminRole, {
     bgTop:     '#131316',
     bgBottom:  '#050506',
   },
-  // Ribbon red — warm orange undertone, like fire-engine / signal red.
+  // Ribbon red: warm orange undertone, like fire-engine / signal red.
   kitchen: {
     shadow:    '#4a1208',
     accent:    '#c8351e',
@@ -141,13 +141,13 @@ const DOOR_TONE: Record<AdminRole, {
   },
 };
 
-// Reusable metallic-disc gradient — five stops simulate light → shadow
+// Reusable metallic-disc gradient: five stops simulate light → shadow
 // → light across a polished medallion. Diagonal angle reads as if a
 // lamp is above-left.
 const metallicDiscBg = (t: typeof DOOR_TONE[AdminRole]): string =>
   `linear-gradient(135deg, ${t.specular} 0%, ${t.highlight} 22%, ${t.accent} 45%, ${t.shadow} 58%, ${t.accent} 75%, ${t.highlight} 100%)`;
 
-// Top / bottom ribbon — mirrors the `.divider-brass` fade, but uses
+// Top / bottom ribbon: mirrors the `.divider-brass` fade, but uses
 // the role's metallic gradient instead of solid brass.
 const metallicRibbonBg = (t: typeof DOOR_TONE[AdminRole]): string =>
   `linear-gradient(90deg, transparent 0%, ${t.shadow}80 8%, ${t.accent} 28%, ${t.specular} 50%, ${t.accent} 72%, ${t.shadow}80 92%, transparent 100%)`;
@@ -174,7 +174,7 @@ const GateScreen: React.FC<Props> = ({ actualRole, isSuperAdmin, onEnter, onSign
     return actualRole === role;
   };
 
-  // Knocking on a door always routes through canEnter — anonymous
+  // Knocking on a door always routes through canEnter. Anonymous
   // visitors and signed-in visitors without the right role both land
   // on the HALT page. Only the central "Se connecter" plaque opens
   // the sign-in modal.
@@ -183,7 +183,7 @@ const GateScreen: React.FC<Props> = ({ actualRole, isSuperAdmin, onEnter, onSign
     else setDeniedRole(role);
   };
 
-  // Doors to render — super-admins see CA→Kitchen (their `'super'` door
+  // Doors to render: super-admins see CA→Kitchen (their `'super'` door
   // is implicit, since any door opens for them).
   const doors = ALL_ROLES.filter((r) => r !== 'super' && DOOR_ORDER.includes(r))
     .sort((a, b) => DOOR_ORDER.indexOf(a) - DOOR_ORDER.indexOf(b));
@@ -208,7 +208,7 @@ const GateScreen: React.FC<Props> = ({ actualRole, isSuperAdmin, onEnter, onSign
     >
       {/* Top-right corner: only the discreet "Quitter" pill, and only
           for signed-in visitors. Anonymous visitors don't get a corner
-          button — the central plaque is the only call to action. */}
+          button. The central plaque is the only call to action. */}
       {signedIn && (
         <button
           type="button"
@@ -253,7 +253,7 @@ const GateScreen: React.FC<Props> = ({ actualRole, isSuperAdmin, onEnter, onSign
           style={{ color: 'rgba(244, 239, 227, 0.75)' }}
         >
           Cinq seuils mènent au tableau de bord. Chaque porte n’obéit qu’à
-          la clef qui lui correspond — sauf à celui qui détient toutes
+          la clef qui lui correspond, sauf à celui qui détient toutes
           les clefs.
         </motion.p>
         {isSuperAdmin && (
@@ -267,7 +267,7 @@ const GateScreen: React.FC<Props> = ({ actualRole, isSuperAdmin, onEnter, onSign
               border: '1px solid rgba(232, 177, 74, 0.4)',
             }}
           >
-            <Crown size={10} /> Maître des clefs — toutes les portes vous obéissent
+            <Crown size={10} /> Maître des clefs, toutes les portes vous obéissent
           </motion.p>
         )}
 
@@ -286,7 +286,7 @@ const GateScreen: React.FC<Props> = ({ actualRole, isSuperAdmin, onEnter, onSign
             >
               Avant de toquer à l’une des portes, vous devrez décliner votre identité.
             </p>
-            {/* Medieval plaque — octagonal hex clip + double bevel +
+            {/* Medieval plaque: octagonal hex clip + double bevel +
                 corner ornaments. Sits between the intro paragraph and
                 the door grid so it reads as a ceremonial threshold. */}
             <div className="relative inline-block group">
@@ -395,7 +395,7 @@ const Door: React.FC<{
         clipPath: 'polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px)',
       }}
     >
-      {/* Top metallic ribbon — divider-brass aesthetic, fades at edges */}
+      {/* Top metallic ribbon: divider-brass aesthetic, fades at edges */}
       <span
         aria-hidden
         className="absolute pointer-events-none"
@@ -413,7 +413,7 @@ const Door: React.FC<{
 
       {/* Icon + motif */}
       <div className="px-6 pt-10 flex flex-col items-center gap-3 text-center">
-        {/* Metallic medallion — five-stop diagonal gradient (specular →
+        {/* Metallic medallion: five-stop diagonal gradient (specular →
             highlight → accent → shadow → accent → highlight) simulates
             a polished hex coin. The icon is rendered in the shadow
             tone so it reads as engraved/stamped into the metal. */}
@@ -449,7 +449,7 @@ const Door: React.FC<{
         </span>
       </div>
 
-      {/* Title — always rendered in bone for a premium, crisp look */}
+      {/* Title: always rendered in bone for a premium, crisp look */}
       <div className="px-6 pt-3 pb-4 text-center">
         <h3
           className="font-display title-medieval text-xl md:text-2xl tracking-[0.04em] uppercase leading-tight"
@@ -467,7 +467,7 @@ const Door: React.FC<{
         {ROLE_DESCRIPTIONS[role].FR}
       </p>
 
-      {/* Footer — divider-brass-style hairline as the band's top stroke,
+      {/* Footer: divider-brass-style hairline as the band's top stroke,
           then the role's chip text + pip. */}
       <div
         className="relative px-6 py-3 flex items-center justify-between gap-3"
@@ -499,7 +499,7 @@ const Door: React.FC<{
         )}
       </div>
 
-      {/* Hover sweep — diagonal specular glint */}
+      {/* Hover sweep: diagonal specular glint */}
       {unlocked && (
         <span
           aria-hidden
@@ -551,7 +551,7 @@ const PlaqueCorners: React.FC = () => {
 };
 
 // ─── AccessDenied (gate context) ─────────────────────────────────────
-// Thin wrapper around the shared HaltScreen — gate-specific copy.
+// Thin wrapper around the shared HaltScreen: gate-specific copy.
 // When the visitor knocks on the Bénévoles or Super-Bénévoles door
 // without a key, surface a secondary CTA pointing at the bénévole
 // application form so they can apply on the spot instead of bouncing.
@@ -570,7 +570,7 @@ const AccessDenied: React.FC<{
           <p>
             Vous frappez à la porte de la{' '}
             <strong style={{ color: '#e6a3a3' }}>{ROLE_LABELS[attempted].FR}</strong>
-            {' '}— votre clef n’y répond pas.
+            {'. '}Votre clef n’y répond pas.
           </p>
           <p className="text-xs md:text-sm" style={{ color: 'rgba(244, 239, 227, 0.55)' }}>
             {actualRole

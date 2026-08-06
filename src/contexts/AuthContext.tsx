@@ -19,7 +19,7 @@ import type { AdminRole } from '../lib/adminPermissions';
 
 // Allowlist: who counts as a SUPER ADMIN by email. Sourced from
 // VITE_ADMIN_EMAILS (comma-separated). Each entry is either a full
-// email or a bare domain — domain entries grant super-admin to anyone
+// email or a bare domain: domain entries grant super-admin to anyone
 // signed in with an email at that domain. Super-admins always have
 // `adminRole === 'super'` regardless of any Firestore role doc.
 function getSuperAdminAllowlist(): string[] {
@@ -122,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try { await updateProfile(cred.user, { displayName: displayName.trim() }); }
       catch (e) { console.warn('[Auth] updateProfile failed:', e); }
     }
-    // No verification email — accounts are usable immediately on creation.
+    // No verification email: accounts are usable immediately on creation.
     setOpen(false);
   };
 
@@ -145,7 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await fbSignOut(auth);
   };
 
-  // Super-admin allowlist still wins — those emails are always 'super'
+  // Super-admin allowlist still wins: those emails are always 'super'
   // without needing a Firestore role doc.
   const isSuperAdmin = useMemo(() => {
     if (!user?.email) return false;

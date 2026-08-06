@@ -121,13 +121,13 @@ const HomeWithIntro: React.FC = () => {
   // ?intro in the URL forces the prologue to replay every load (handy while iterating)
   const force = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('intro');
   // Placeholder/presale mode: the knight intro IS the teaser, so it replays on
-  // every visit — we don't honour the once-per-session `fmm_intro_seen` gate,
+  // every visit: we don't honour the once-per-session `fmm_intro_seen` gate,
   // and we ignore reduced-motion (Alex runs with it on; see fmm_orb_logo_video).
   const presale = SITE_MODE === 'placeholder';
   const [entered, setEntered] = useState<boolean>(
     () => !force && !presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
   );
-  // Reduced-motion skips the prologue by default — but an explicit ?intro in
+  // Reduced-motion skips the prologue by default, but an explicit ?intro in
   // the URL forces it to play even under reduced-motion (handy for previewing
   // the cinematic hero without toggling the OS setting).
   const skipIntro = reduce && !presale;
@@ -185,7 +185,7 @@ const AnalyticsPageViews: React.FC = () => {
   return null;
 };
 
-// Routes treated as one-shot immersive landings — hide global chrome.
+// Routes treated as one-shot immersive landings: hide global chrome.
 const isImmersive = (pathname: string) =>
   pathname === '/'
   || pathname === '/en'
@@ -271,7 +271,7 @@ const PillarGate: React.FC<{ pillarKey: PillarKey; children: React.ReactElement 
   if (isPillarVisible(flags, pillarKey, SITE_MODE === 'live')) return children;
   // First-ever visit: flags are still the all-off defaults until the first
   // Firestore snapshot lands. Bouncing now would send a shared link to a
-  // PUBLISHED pillar back to the teaser — hold until we actually know.
+  // PUBLISHED pillar back to the teaser: hold until we actually know.
   if (!ready) return null;
   return <Navigate to="/" replace />;
 };
@@ -311,7 +311,7 @@ const App: React.FC = () => (
           <LocaleSync />
           <AnalyticsPageViews />
           <Chrome />
-          {/* Global fire backdrop — only mounted while <body> carries
+          {/* Global fire backdrop: only mounted while <body> carries
               `.fmm-caravan-page` (set by useCaravanPage()). Skipping the
               feu global : présent sur toutes les pages sauf l'admin et
               l'accueil-orbe, qui rend sa propre FireCanvas (évite de
@@ -328,7 +328,7 @@ const App: React.FC = () => (
                 <Route path="/labo-titre" element={<TitleLab />} />
                 <Route path="/accueil"    element={<AccueilPage />} />
                 <Route path="/en/accueil" element={<AccueilPage />} />
-                {/* Legacy Viking WelcomePage — kept hidden for reference. */}
+                {/* Legacy Viking WelcomePage: kept hidden for reference. */}
                 <Route path="/backuppage"    element={<WelcomePage />} />
                 <Route path="/en/backuppage" element={<WelcomePage />} />
                 {pillarRoutes()}
@@ -339,7 +339,7 @@ const App: React.FC = () => (
                 <Route path="/admin"  element={<AdminPage />} />
                 <Route path="/admin/personne/:slug" element={<PersonProfilePage />} />
                 <Route path="/admin/benevole/:uid"  element={<BenevoleProfilePage />} />
-                {/* Named section routes — /admin/finances, /admin/carnet, etc.
+                {/* Named section routes: /admin/finances, /admin/carnet, etc.
                     :section is validated against ADMIN_SECTION_IDS inside
                     AdminPage; an unknown or forbidden segment falls back to
                     the dashboard, same as today. */}
@@ -377,14 +377,14 @@ const App: React.FC = () => (
                 <Route path="/contact"    element={<ContactPage />} />
                 <Route path="/en/contact" element={<ContactPage />} />
 
-                {/* Legacy slug redirects — old scaffold paths and Wix variants. */}
+                {/* Legacy slug redirects: old scaffold paths and Wix variants. */}
                 <Route path="/festival-medieval-de-montpellier" element={<Navigate to="/" replace />} />
                 <Route path="/horaire"            element={<Navigate to="/activites" replace />} />
                 <Route path="/banquet"            element={<Navigate to="/marche" replace />} />
                 <Route path="/benevoles"          element={<Navigate to="/benevole" replace />} />
                 <Route path="/archives"           element={<Navigate to="/histoire" replace />} />
 
-                {/* Édition 2026 merge — absorbed pillars redirect to their
+                {/* Édition 2026 merge: absorbed pillars redirect to their
                     new merged page; Chevaux is retired to the home. */}
                 <Route path="/musique"     element={<Navigate to="/activites" replace />} />
                 <Route path="/en/music"    element={<Navigate to="/en/activities" replace />} />

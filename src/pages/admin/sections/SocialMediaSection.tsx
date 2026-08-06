@@ -63,7 +63,7 @@ const remove = async (id: string): Promise<void> => {
 const SocialMediaSection: React.FC = () => {
   const { user, adminRole, isSuperAdmin } = useAuth();
 
-  // Léna detection — by displayName / email. Lena gets the studio
+  // Léna detection: by displayName / email. Lena gets the studio
   // tab open by default + admin actions; everyone else lands on the
   // request tab. Super-admins always see everything.
   const displayName = (user?.displayName || '').toLowerCase();
@@ -82,7 +82,7 @@ const SocialMediaSection: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header — personalised for Lena */}
+      {/* Header: personalised for Lena */}
       <Card className="p-6 md:p-8">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-card bg-brass/15 border border-brass/40 text-brass flex items-center justify-center shrink-0">
@@ -90,14 +90,14 @@ const SocialMediaSection: React.FC = () => {
           </div>
           <div className="flex-1">
             <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-[10px] font-semibold mb-1">
-              {isLena ? 'Studio social — bienvenue Léna' : 'Médias sociaux · responsable Léna LeBozec'}
+              {isLena ? 'Studio social : bienvenue Léna' : 'Médias sociaux · responsable Léna LeBozec'}
             </p>
             <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-1">
               {isLena ? 'Ton calendrier de publications' : 'Demander une publication à Léna'}
             </h2>
             <p className="font-editorial italic text-sm text-ivory-soft">
               {isLena
-                ? 'Toutes les demandes de publications atterrissent ici. Planifie, compose, marque comme publié — les publications "posted" remontent automatiquement dans la Médiathèque.'
+                ? 'Toutes les demandes de publications atterrissent ici. Planifie, compose, marque comme publié. Les publications "posted" remontent automatiquement dans la Médiathèque.'
                 : 'Soumettez une demande de publication. Léna voit toutes les demandes ici, les planifie et les publie sur les réseaux du festival.'}
             </p>
           </div>
@@ -201,7 +201,7 @@ const RequestTab: React.FC<RequestTabProps> = ({ user, onCreated }) => {
 
       <Card className="p-6 md:p-8 space-y-5">
         <Row label="Titre interne *">
-          <input className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Annonce — Programmation musicale" />
+          <input className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex. : Annonce, programmation musicale" />
         </Row>
         <Row label="Message à publier *">
           <textarea rows={5} className={inputClass} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Ce que tu veux que Léna publie. Léna peut peaufiner avant de poster." />

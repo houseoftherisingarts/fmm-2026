@@ -6,14 +6,14 @@ import SEO from '../components/SEO';
 
 // Renders the Wix-style "back in May" placeholder: misty fog backdrop,
 // vertical 2026 poster card, dates + ticket button. Toggled via env
-// (VITE_SITE_MODE=placeholder) — defaults off in favor of the live home.
+// (VITE_SITE_MODE=placeholder): defaults off in favor of the live home.
 const PlaceholderHome: React.FC = () => {
   const { lang } = useUI();
   return (
     <>
       <SEO />
       <main className="relative min-h-screen flex items-center justify-center bg-midnight-deep text-ivory overflow-hidden">
-        {/* Foggy backdrop — generic torch+sword cinematic; swap when ready. */}
+        {/* Foggy backdrop: generic torch+sword cinematic; swap when ready. */}
         <img
           src="/wix/home/fire-night.jpg"
           alt=""
@@ -28,7 +28,7 @@ const PlaceholderHome: React.FC = () => {
           <div className="glass-on-photo rounded-lg-card overflow-hidden max-w-xs mx-auto md:mx-0">
             <img
               src="/hero/fmm-poster-card.jpg"
-              alt="FMM 2026 — 25-26-27 septembre"
+              alt="FMM 2026 : 25-26-27 septembre"
               className="w-full h-auto"
               loading="eager"
               fetchPriority="high"

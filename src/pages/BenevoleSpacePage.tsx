@@ -23,7 +23,7 @@ import ApprovalDocs from '../components/benevole/ApprovalDocs';
 
 // ─── Bénévole personal dashboard ───────────────────────────────────
 // A *separate*, simplified post-acceptance space. Distinct from /admin:
-// no CRM, no tasks, no role matrix — just the bénévole's own info,
+// no CRM, no tasks, no role matrix: just the bénévole's own info,
 // shifts, key contacts, and pickup/check-in instructions for the day.
 //
 // Gating: requires sign-in + bénévole app status === 'accepted'.
@@ -72,7 +72,7 @@ const BenevoleSpacePage: React.FC = () => {
   const [isDemo, setIsDemo] = useState(false);
   const [teams, setTeams] = useState<Team[]>([]);
 
-  // Hydrate team list once — we just need to render the bénévole's team.
+  // Hydrate team list once: we just need to render the bénévole's team.
   // Mock teams only merge in development; production stays clean.
   useEffect(() => {
     let cancelled = false;
@@ -160,8 +160,8 @@ const BenevoleSpacePage: React.FC = () => {
       <FullPageStub
         title={lang === 'FR' ? 'Candidature non retenue' : 'Application not retained'}
         body={lang === 'FR'
-          ? "Pour cette édition, votre candidature n'a pas été retenue. Merci pour l'intérêt — n'hésitez pas à postuler de nouveau l'an prochain."
-          : "For this edition, your application was not retained. Thanks for your interest — feel free to apply again next year."}
+          ? "Pour cette édition, votre candidature n'a pas été retenue. Merci pour l'intérêt. N'hésitez pas à postuler de nouveau l'an prochain."
+          : "For this edition, your application was not retained. Thanks for your interest. Feel free to apply again next year."}
         primary={{ label: lang === 'FR' ? 'Retour' : 'Back', to: addLocale('/', lang) }}
         secondary={{ label: lang === 'FR' ? 'Déconnexion' : 'Sign out', fn: signOut }}
       />
@@ -229,7 +229,7 @@ const BenevoleSpacePage: React.FC = () => {
                 </span>
                 {b.status === 'accepted' && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-card border border-brass/50 bg-brass/15 text-brass font-display title-medieval text-[10px] uppercase tracking-widest">
-                    <Sparkles size={10} /> {lang === 'FR' ? 'Approuvé·e — bienvenue !' : 'Approved — welcome!'}
+                    <Sparkles size={10} /> {lang === 'FR' ? 'Approuvé·e, bienvenue !' : 'Approved, welcome!'}
                   </span>
                 )}
                 {(b.badges || []).map((label) => (
@@ -275,7 +275,7 @@ const BenevoleSpacePage: React.FC = () => {
       {/* Main */}
       <section className="py-10 md:py-14">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6">
-          {/* Left — schedule + practical info */}
+          {/* Left: schedule + practical info */}
           <div className="lg:col-span-8 space-y-5">
 
             {/* Documents à signer (post-acceptance) */}
@@ -335,13 +335,13 @@ const BenevoleSpacePage: React.FC = () => {
               )}
             </Card>
 
-            {/* Documents importants — programmation, carte, contacts, rôles */}
+            {/* Documents importants : programmation, carte, contacts, rôles */}
             <Card>
               <DocumentsShelf lang={lang} />
             </Card>
 
             {/* Infos pratiques : bloc RETIRÉ le 2026-07-28 à la demande de
-                Maïté — le contenu (tente, parking, repas, invitations) était
+                Maïté, le contenu (tente, parking, repas, invitations) était
                 inventé. À remettre seulement avec ses vraies infos validées. */}
 
             {/* Messagerie avec Maïté / FMM */}
@@ -374,7 +374,7 @@ const BenevoleSpacePage: React.FC = () => {
             </Card>
           </div>
 
-          {/* Right — me + contacts */}
+          {/* Right: me + contacts */}
           <aside className="lg:col-span-4 space-y-5">
             <Card>
               <SectionTitle icon={Sparkles} dense>

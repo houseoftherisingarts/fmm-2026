@@ -19,7 +19,7 @@ const WORDMARK_SRC = '/petite-monnaie/petite-monnaie-wordmark-reverse-1054.png';
 // pas une image plate, c'est une pièce de laiton frappée. Elle flotte au
 // repos, s'incline sous le curseur, et un reflet balaie sa surface.
 // Statique sous prefers-reduced-motion.
-// ─── Petite Monnaie — la monnaie du festival ─────────────────────────
+// ─── Petite Monnaie : la monnaie du festival ─────────────────────────
 // Les faits de cette page : le FMM accepte la Petite Monnaie (1 petite-
 // monnaie = 1 $ CA); le réseau cellulaire est capricieux sur le site,
 // donc le comptant garde les files fluides; un kiosque à l'entrée

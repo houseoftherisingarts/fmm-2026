@@ -1,10 +1,10 @@
-// ─── Festival schedule — Firestore CRUD ─────────────────────────────
+// ─── Festival schedule: Firestore CRUD ─────────────────────────────
 // One doc per year at `schedule/{year}` holding an ordered array of
 // days, each with its own items. The admin Horaire section writes to
 // this doc; ActivitesPage subscribes to it for the public site.
 //
 // We keep the doc shape simple (a single document, no subcollection)
-// so admins can write the entire schedule in one transaction — easy
+// so admins can write the entire schedule in one transaction: easy
 // to reason about, easy to roll back.
 
 import {
@@ -50,7 +50,7 @@ export async function getSchedule(year: number = CURRENT_SCHEDULE_YEAR): Promise
   return fromSnap(snap);
 }
 
-// Live listener — public site uses this so a save in the admin shows
+// Live listener: public site uses this so a save in the admin shows
 // up on /activites instantly (no rebuild, no F5).
 export function watchSchedule(
   year: number,
@@ -111,7 +111,7 @@ export function parseScheduleBlock(text: string): ScheduleItem[] {
   return out;
 }
 
-// Inverse of parseScheduleBlock — used to seed the textarea from the
+// Inverse of parseScheduleBlock: used to seed the textarea from the
 // stored items so admins see the same shape they pasted.
 export function formatScheduleBlock(items: ScheduleItem[]): string {
   return items.map((it) => [it.time, it.label, it.where].filter(Boolean).join(' | ')).join('\n');

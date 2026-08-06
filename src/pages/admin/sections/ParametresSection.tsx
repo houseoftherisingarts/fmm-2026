@@ -97,7 +97,7 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         </div>
       </Card>
 
-      {/* Per-page publication — reveal categories one by one */}
+      {/* Per-page publication: reveal categories one by one */}
       <Card className="p-6 md:p-8">
         <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
           <Eye size={14} /> Publication des pages
@@ -165,7 +165,7 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         <div className="mt-5 pt-5 border-t border-ivory-soft/15">
           <p className="font-display title-medieval text-xs text-brass mb-2">Admins (allowlist)</p>
           {env.admins.length === 0 ? (
-            <p className="font-editorial italic text-sm text-blush">Aucun admin défini — n’importe qui peut se connecter sans gate.</p>
+            <p className="font-editorial italic text-sm text-blush">Aucun admin défini: n’importe qui peut se connecter sans gate.</p>
           ) : (
             <ul className="space-y-1">
               {env.admins.map((a) => (

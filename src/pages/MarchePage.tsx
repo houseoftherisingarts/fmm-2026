@@ -17,17 +17,17 @@ import SealedScroll, { type SealedCopy } from '../components/marche/SealedScroll
 
 // ─── /marche ─────────────────────────────────────────────────────────
 // Top-to-bottom:
-//   1. PageHeader   — shared orb header with section-specific image
+//   1. PageHeader   : shared orb header with section-specific image
 //                     (/orb/marche.jpg). Same chrome as every pillar.
-//   2. AtelierHall  — Premium pavilion, champion-select layout
-//   3. MarketSquare — 15 on-site kiosks, item-shop grid + modal
-//   4. MerchantPact — Become-a-merchant CTA with stat plates
-//   5. SealedScroll — Digital partners, 3D-tilt flip cards
+//   2. AtelierHall  : Premium pavilion, champion-select layout
+//   3. MarketSquare : 15 on-site kiosks, item-shop grid + modal
+//   4. MerchantPact : Become-a-merchant CTA with stat plates
+//   5. SealedScroll : Digital partners, 3D-tilt flip cards
 const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { lang } = useUI();
   const c = lang === 'FR' ? FR : EN;
 
-  // Single continuous page background — toggled on <body> for the
+  // Single continuous page background: toggled on <body> for the
   // duration of this route. All /marche sections are transparent and
   // sit on top of this one gradient, so there's literally no per-
   // section paint to seam.
@@ -36,7 +36,7 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     return () => { document.body.classList.remove('fmm-caravan-page'); };
   }, []);
 
-  // Per-vendor image override map — populated from Firestore on mount.
+  // Per-vendor image override map: populated from Firestore on mount.
   // Precedence (highest first):
   //   1. Jesse's CRM override (crm/vendor-image-overrides)         ← here
   //   2. Vendor's self-uploaded mainPhotoUrl (future, not yet wired)

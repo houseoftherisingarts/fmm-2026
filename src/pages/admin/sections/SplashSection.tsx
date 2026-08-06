@@ -50,13 +50,13 @@ VITE_SITE_MODE=${isPlaceholder ? 'live' : 'placeholder'}    # ${isPlaceholder ? 
         </p>
       </Card>
 
-      {/* Dev tools — knight placement editor on /. Hidden by default; flip
+      {/* Dev tools: knight placement editor on /. Hidden by default; flip
           on to expose the on-page pencil button, fine-tune the overlay,
           then flip back off so visitors don't see it. Gated additionally
           by isAdmin on the public page. */}
       <Card className="p-6 md:p-8">
         <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
-          <Wrench size={14} /> Outils — placement du chevalier
+          <Wrench size={14} /> Outils : placement du chevalier
         </h3>
         <p className="font-editorial italic text-sm text-ivory-soft mb-5">
           Active le pinceau en haut à droite de la page d’accueil pour bouger / redimensionner le chevalier qui tient la sphère. Réservé aux admins, à éteindre une fois le réglage figé.
@@ -84,7 +84,7 @@ VITE_SITE_MODE=${isPlaceholder ? 'live' : 'placeholder'}    # ${isPlaceholder ? 
           <iframe src="/?preview=placeholder" className="w-full h-full" title="Aperçu placeholder" />
         </div>
         <p className="font-editorial italic text-[11px] text-ivory-soft/50 mt-2 text-center">
-          Aperçu via iframe — l’ouverture dans un nouvel onglet montre le mode réellement actif.
+          Aperçu via iframe : l’ouverture dans un nouvel onglet montre le mode réellement actif.
         </p>
       </Card>
     </div>

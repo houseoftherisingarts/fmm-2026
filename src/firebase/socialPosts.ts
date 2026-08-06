@@ -77,7 +77,7 @@ export async function listSocialPosts(pageSize = 500): Promise<SocialPost[]> {
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SocialPost) }));
 }
 
-/** Real-time stream — drives the admin section's live list. */
+/** Real-time stream: drives the admin section's live list. */
 export function subscribeSocialPosts(cb: (rows: SocialPost[]) => void): () => void {
   if (!db) { cb([]); return () => {}; }
   const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'), fsLimit(500));
@@ -88,7 +88,7 @@ export function subscribeSocialPosts(cb: (rows: SocialPost[]) => void): () => vo
   );
 }
 
-/** Streams only "posted" entries — feeds Mediatheque → Déjà publié. */
+/** Streams only "posted" entries: feeds Mediatheque → Déjà publié. */
 export function subscribePostedSocialPosts(cb: (rows: SocialPost[]) => void): () => void {
   if (!db) { cb([]); return () => {}; }
   const q = query(

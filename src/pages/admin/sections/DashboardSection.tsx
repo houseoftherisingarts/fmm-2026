@@ -71,7 +71,7 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
           return;
         }
 
-        // Live returned empty — fall back to mock if devBypass
+        // Live returned empty: fall back to mock if devBypass
         if (devBypass) {
           const [mockBens, mockVens] = await Promise.all([
             mockListBenevoles(),
@@ -147,7 +147,7 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
             <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-[10px] font-semibold mb-2">
               Bienvenue à la cour
             </p>
-            <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-1">FMM 2026 — Tableau de bord</h2>
+            <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-1">FMM 2026 : Tableau de bord</h2>
             <p className="font-editorial text-sm text-ivory-soft max-w-2xl">
               Survolez les candidatures, validez les marchands, gardez un œil sur l’infolettre et l’inbox.
               Cliquez une carte ci-dessous pour ouvrir la section.
@@ -174,7 +174,7 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
         ))}
       </div>
 
-      {/* Status breakdown — bénévoles + marchands */}
+      {/* Status breakdown: bénévoles + marchands */}
       <div className="grid md:grid-cols-2 gap-5">
         <BreakdownCard
           title="Bénévoles" pending={bPending} accepted={bAccepted} rejected={bRejected}

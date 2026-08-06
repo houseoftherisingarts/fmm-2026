@@ -89,7 +89,7 @@ export const ApprendreChapterSection: React.FC = () => {
             </Reveal>
           </div>
 
-          {/* Au-delà des clichés — the chapter's manifesto + examples */}
+          {/* Au-delà des clichés: the chapter's manifesto + examples */}
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end mb-10 md:mb-14">
             <CinematicReveal className="lg:col-span-6">
               <p className="font-editorial uppercase tracking-[0.3em] text-xs mb-3 text-brass">{t.appelEyebrow}</p>

@@ -1,5 +1,5 @@
 // Meta (Facebook) Pixel loader + page-view tracker.
-// Gated behind user consent — `loadMetaPixel()` is called from the
+// Gated behind user consent: `loadMetaPixel()` is called from the
 // ConsentBanner once accepted. Until then, `window.fbq` is undefined
 // and `trackPixelPageView()` no-ops.
 

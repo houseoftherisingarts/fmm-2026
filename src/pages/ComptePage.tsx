@@ -183,7 +183,7 @@ const ComptePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick-access bar — always shows "Apply for a kiosk" for any
+          {/* Quick-access bar: always shows "Apply for a kiosk" for any
               signed-in client. Surfaces the bénévole space prominently
               when accepted. */}
           <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -203,7 +203,7 @@ const ComptePage: React.FC = () => {
                 </Link>
               </>
             )}
-            {/* Kiosk CTA — label adapts to vendor application state. */}
+            {/* Kiosk CTA: label adapts to vendor application state. */}
             <Link
               to={addLocale('/marche/inscription', lang)}
               className={

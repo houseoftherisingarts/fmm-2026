@@ -1,4 +1,4 @@
-// ─── Hnefatafl — piece materials + mk/rm/mv pieces ───────────────────
+// Hnefatafl: piece materials + mk/rm/mv pieces
 // Pieces are two-part: a tapered cylinder body and a spherical cap.
 // Each part registers its (r,c) in userData so the raycaster lookup
 // can resolve to a board cell regardless of which surface was hit.
@@ -266,7 +266,7 @@ export function createPieceSystem(
         if (!disposed) opts?.onComplete?.();
       },
     });
-    // Sink slightly and shrink to nothing — like falling through the board.
+    // Sink slightly and shrink to nothing, like falling through the board.
     tl.to([body.position, cap.position], {
       y: '-=0.4',
       duration: 0.35,
@@ -337,7 +337,7 @@ export function createPieceSystem(
     disposed = true;
     // Kill any in-flight tweens on tracked pieces so they can't fire after
     // the canvas is torn down. (Capture-burst particles aren't tracked
-    // here — their tweens write to disposed THREE objects after teardown,
+    // here: their tweens write to disposed THREE objects after teardown,
     // which is benign.)
     for (const k of Object.keys(map)) {
       const e = map[k];

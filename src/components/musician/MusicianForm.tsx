@@ -12,7 +12,7 @@ import {
 } from '../../firebase/musicians';
 import { mockUpsertMusicianApp } from '../../firebase/mockMusicians';
 
-// DEV-only bypass — same flag used by AdminPage. Lets the form write
+// DEV-only bypass: same flag used by AdminPage. Lets the form write
 // to the in-memory mock store offline.
 const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.meta.env.DEV;
 
@@ -512,7 +512,7 @@ const FR = {
   genresOther: 'Précisez votre genre',
   performerCount: 'Nombre de musicien·nes',
   performerNames: 'Membres (optionnel)',
-  performerNamesPh: 'Noms / instruments — un par ligne',
+  performerNamesPh: 'Noms / instruments (un par ligne)',
   daysAvailable: 'Jours de disponibilité',
   dayLabel: { vendredi: 'Vendredi', samedi: 'Samedi', dimanche: 'Dimanche' } as Record<string, string>,
   preferredStage: 'Scène souhaitée',
@@ -558,7 +558,7 @@ const FR = {
   loadInWindowPh: 'Ex.: vendredi 14h-16h',
   accessibilityNeeds: 'Besoins d’accessibilité',
   feeExpectation: 'Cachet / attentes financières',
-  feeExpectationPh: 'Champ libre — Pitch vous reviendra',
+  feeExpectationPh: 'Champ libre : Pitch vous reviendra',
   hasContract: 'Nous avons un contrat-type',
   contractNotes: 'Précisions contrat',
   invoiceEntity: 'Entité de facturation',
@@ -592,7 +592,7 @@ const EN: typeof FR = {
   genresOther: 'Describe your genre',
   performerCount: 'Number of performers',
   performerNames: 'Roster (optional)',
-  performerNamesPh: 'Names / instruments — one per line',
+  performerNamesPh: 'Names / instruments (one per line)',
   daysAvailable: 'Days available',
   dayLabel: { vendredi: 'Friday', samedi: 'Saturday', dimanche: 'Sunday' } as Record<string, string>,
   preferredStage: 'Preferred stage',
@@ -638,7 +638,7 @@ const EN: typeof FR = {
   loadInWindowPh: 'e.g. Friday 2-4pm',
   accessibilityNeeds: 'Accessibility needs',
   feeExpectation: 'Fee / financial expectations',
-  feeExpectationPh: 'Free text — Pitch will follow up',
+  feeExpectationPh: 'Free text: Pitch will follow up',
   hasContract: 'We have a standard contract',
   contractNotes: 'Contract notes',
   invoiceEntity: 'Invoice entity',
@@ -648,7 +648,7 @@ const EN: typeof FR = {
   submitting: 'Sending…',
   errRequired: 'Missing required fields (band name, contact, phone, bio).',
   errSubmit:   'Could not submit the application. Try again or email admin@festivalmedievaldemontpellier.org.',
-  thanksTitle: 'Thanks — application received',
+  thanksTitle: 'Thanks: application received',
   thanksBody:  'Pitch (Éric Pichette) will read it and follow up by email. You can edit your answers by coming back here.',
 };
 

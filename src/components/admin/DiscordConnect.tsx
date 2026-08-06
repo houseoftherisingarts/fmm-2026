@@ -1,11 +1,11 @@
-// DiscordConnect — "Connect your Discord" card for admin profiles.
+// DiscordConnect: "Connect your Discord" card for admin profiles.
 //
 // Two operating modes:
-//   1. OAuth mode  — VITE_DISCORD_CLIENT_ID is set in .env.local.
+//   1. OAuth mode  : VITE_DISCORD_CLIENT_ID is set in .env.local.
 //      A button redirects to Discord's OAuth2 implicit grant. On
 //      callback the access_token arrives in the URL fragment and we
 //      exchange it for the user profile, then save to Firestore.
-//   2. Manual mode — no client ID configured. An input lets the
+//   2. Manual mode : no client ID configured. An input lets the
 //      user type their Discord username directly (no auth).
 //
 // The component is self-contained: it reads / writes Firestore and
@@ -209,7 +209,7 @@ const DiscordConnect: React.FC = () => {
       {/* Unlinked state */}
       {status !== 'loading' && !profile && (
         <>
-          {/* OAuth button — shown when Discord app is configured */}
+          {/* OAuth button: shown when Discord app is configured */}
           {DISCORD_CLIENT_ID ? (
             <button
               type="button"
@@ -222,7 +222,7 @@ const DiscordConnect: React.FC = () => {
             </button>
           ) : (
             <>
-              {/* Manual input — shown when no OAuth app is configured */}
+              {/* Manual input: shown when no OAuth app is configured */}
               <p className="font-sans text-[11px]" style={{ color: 'var(--admin-text-mute)' }}>
                 Entrez votre pseudo Discord pour apparaître dans l'annuaire de l'équipe.
               </p>

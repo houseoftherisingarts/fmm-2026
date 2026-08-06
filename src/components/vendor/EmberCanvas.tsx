@@ -92,13 +92,13 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
       if (!visible) { raf = 0; return; }
       const dt = Math.min(48, now - last); last = now;
       ctx.clearRect(0, 0, w, h);
-      // Additive glow — embers brighten where they overlap.
+      // Additive glow: embers brighten where they overlap.
       ctx.globalCompositeOperation = 'lighter';
 
       for (const e of embers) {
         e.life += dt;
         if (e.life > e.maxLife || e.y < -20) { spawn(e); continue; }
-        // Wind sway — lateral nudge tied to vertical position.
+        // Wind sway: lateral nudge tied to vertical position.
         e.vx += Math.sin((e.life / 700) + e.x * 0.01) * 0.0035;
         e.x += e.vx * dt * 0.06;
         // Facteur de hauteur : sur une section haute, les braises

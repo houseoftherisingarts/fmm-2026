@@ -21,11 +21,11 @@ const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.me
 // correspondant, dans l'onglet Courrier.
 //
 // Mandatory fields: email, department, subject, body. Display name is
-// optional — defaults to "Anonyme" if left empty so the admin always
+// optional: defaults to "Anonyme" if left empty so the admin always
 // sees a sender label. Email is mandatory because admin replies will
 // route back to that address.
 //
-// We deliberately keep the form simple (no captcha yet) — when the
+// We deliberately keep the form simple (no captcha yet): when the
 // volume gets noisy add reCAPTCHA / hCaptcha at this seam.
 
 const ContactPage: React.FC = () => {
@@ -231,7 +231,7 @@ const ContactPage: React.FC = () => {
             </div>
           </GildedFrame>
 
-          {/* Alternative contact channels — for visitors who prefer
+          {/* Alternative contact channels: for visitors who prefer
               a direct email / phone instead of the form. */}
           <div className="mt-10 grid sm:grid-cols-3 gap-4 text-center font-editorial">
             <ChannelCard icon={Mail}    label={SITE.contact.email}    href={`mailto:${SITE.contact.email}`} />

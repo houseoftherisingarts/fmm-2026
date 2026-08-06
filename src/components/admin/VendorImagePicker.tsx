@@ -17,7 +17,7 @@ interface Props {
   /** Admin doing the editing. */
   editorUid: string;
   onClose: () => void;
-  /** Called when an override is saved or cleared — caller can refresh. */
+  /** Called when an override is saved or cleared: caller can refresh. */
   onSaved?: () => void;
 }
 
@@ -155,9 +155,9 @@ const VendorImagePicker: React.FC<Props> = ({
           </p>
         )}
 
-        {/* Body — two columns */}
+        {/* Body: two columns */}
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[260px_1fr]">
-          {/* Left — vendor list */}
+          {/* Left: vendor list */}
           <aside className="border-r border-ivory-soft/15 overflow-y-auto bg-midnight/40">
             {loading ? (
               <p className="p-5 font-editorial italic text-xs text-ivory-soft">Chargement…</p>
@@ -204,7 +204,7 @@ const VendorImagePicker: React.FC<Props> = ({
             )}
           </aside>
 
-          {/* Right — image grid */}
+          {/* Right: image grid */}
           <main className="overflow-y-auto p-4 md:p-6 bg-midnight-deep">
             {!focused ? (
               <p className="font-editorial italic text-ivory-soft text-sm">

@@ -19,7 +19,7 @@ import {
   type BenevoleApp, type AppStatus,
 } from '../../firebase/applications';
 import { mockGetBenevole, mockSetBenevoleStatus } from '../../firebase/mockApplications';
-// Vocabulaire du formulaire public — la fiche admin rend les réponses avec
+// Vocabulaire du formulaire public: la fiche admin rend les réponses avec
 // exactement les mêmes libellés que ce que le bénévole a coché.
 import {
   STATIONS, DAYS, STATION_PREF_LABELS, HEARD_FROM, PRONOUNS, AGE_RANGES, PRIOR_FMM,
@@ -75,8 +75,8 @@ const BenevoleProfilePage: React.FC = () => {
   const [b, setB] = useState<BenevoleApp | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
 
-  // mock-prefixed uids always go through the in-memory showcase store —
-  // lets demo profiles work in dev without needing DEV_BYPASS.
+  // mock-prefixed uids always go through the in-memory showcase store.
+  // Lets demo profiles work in dev without needing DEV_BYPASS.
   const isMockUid = uid.startsWith('mock-');
   const useMock = DEV_BYPASS || isMockUid;
   const fetchOne  = (id: string) => useMock ? mockGetBenevole(id) : getBenevoleApp(id);
@@ -147,7 +147,7 @@ const Body: React.FC<{
     return () => { cancelled = true; };
   }, [b]);
 
-  // Load teams once — small list, fine to merge live + mock as in EquipesSection.
+  // Load teams once: small list, fine to merge live + mock as in EquipesSection.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -258,7 +258,7 @@ const Body: React.FC<{
       {/* Body */}
       <div className="px-4 md:px-8 mt-8 md:mt-10 pb-12">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-6">
-          {/* Left column — main */}
+          {/* Left column: main */}
           <div className="lg:col-span-8 space-y-5">
 
             {/* Message */}
@@ -266,10 +266,10 @@ const Body: React.FC<{
               <SectionTitle icon={Heart}>Message de candidature</SectionTitle>
               {b.message
                 ? <p className="font-editorial text-base text-ivory-soft whitespace-pre-line leading-relaxed">{b.message}</p>
-                : <p className="font-editorial italic text-ivory-soft/60">— aucun message —</p>}
+                : <p className="font-editorial italic text-ivory-soft/60">(aucun message)</p>}
             </Card>
 
-            {/* Questionnaire de candidature — les VRAIS champs du formulaire
+            {/* Questionnaire de candidature: les VRAIS champs du formulaire
                 public (daysAvailable, stationPreferences, etc.), rendus avec
                 le même vocabulaire. Sans cette carte, Maïté ne voyait qu'une
                 fraction des réponses (les blocs plus bas lisent des champs
@@ -434,7 +434,7 @@ const Body: React.FC<{
             <Card className="p-5 md:p-6 border border-brass/30">
               <SectionTitle icon={Save}>Notes admin (privées)</SectionTitle>
               <textarea rows={3} value={notesDraft} onChange={(e) => setNotesDraft(e.target.value)}
-                placeholder="Notes internes — ne sont jamais visibles par le bénévole."
+                placeholder="Notes internes : ne sont jamais visibles par le bénévole."
                 className="w-full bg-midnight-deep/60 border border-ivory-soft/20 px-3 py-2 text-sm font-sans text-ivory placeholder:text-stone focus:border-brass focus:outline-none rounded-card resize-y" />
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <button onClick={() => setStatus('accepted')} disabled={saving}
@@ -457,7 +457,7 @@ const Body: React.FC<{
             </Card>
           </div>
 
-          {/* Right column — meta */}
+          {/* Right column: meta */}
           <aside className="lg:col-span-4 space-y-5">
 
             <Card className="p-5">
@@ -569,7 +569,7 @@ const Body: React.FC<{
                   disabled={saving || teams.length === 0}
                   className="w-full bg-midnight-deep/60 border border-ivory-soft/20 px-2.5 py-2 rounded-card text-sm font-sans text-ivory focus:border-brass focus:outline-none disabled:opacity-50"
                 >
-                  <option value="">— aucune —</option>
+                  <option value="">(aucune)</option>
                   {teams.map((t) => (
                     <option key={t.id} value={t.id}>{t.icon ? `${t.icon} ` : ''}{t.name}</option>
                   ))}

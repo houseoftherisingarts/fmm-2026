@@ -1,7 +1,7 @@
-// ─── Departments — public contact form + admin mailboxes ─────────────
+// ─── Departments: public contact form + admin mailboxes ─────────────
 // Each entry powers two surfaces:
 //   1. The dropdown on the public /contact form ("À quel département
-//      écrivez-vous ?") — the visitor picks one before sending.
+//      écrivez-vous ?"): the visitor picks one before sending.
 //   2. A shared inbox inside the admin Mail tab visible to super, CA,
 //      and Organisateurs. Every admin can read every department box.
 //

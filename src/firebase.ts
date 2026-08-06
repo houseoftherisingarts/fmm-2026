@@ -1,4 +1,4 @@
-// Firebase init — offline-safe pattern.
+// Firebase init: offline-safe pattern.
 // All Firebase features are gated on the project ID being configured in
 // .env.local. Without it, the site renders as a static SPA: forms degrade
 // gracefully, analytics no-ops, admin route refuses sign-in.
@@ -6,7 +6,7 @@ import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
-// firebase/analytics is dynamically imported only after LOI 25 consent —
+// firebase/analytics is dynamically imported only after LOI 25 consent:
 // keeps it out of the eager vendor-firebase chunk on first paint.
 
 const firebaseConfig = {
@@ -38,7 +38,7 @@ if (isConfigured) {
   }
 } else {
   console.info(
-    '[Firebase] Not configured — running in offline mode. Add VITE_FIREBASE_* to .env.local',
+    '[Firebase] Not configured. Running in offline mode. Add VITE_FIREBASE_* to .env.local',
   );
 }
 
@@ -47,7 +47,7 @@ export const db = _db;
 export const storage = _storage;
 export const isFirebaseReady = isConfigured && !!app;
 
-// Analytics intentionally NOT initialized at module load — gated behind
+// Analytics intentionally NOT initialized at module load: gated behind
 // LOI 25 consent. The firebase/analytics module itself is dynamically
 // imported only when consent is granted, so the eager firebase chunk
 // stays small. Call enableAnalytics() from the consent banner.

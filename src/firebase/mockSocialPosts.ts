@@ -12,7 +12,7 @@ const store = new Map<string, SocialPost>();
 const seed: SocialPost[] = [
   {
     id: 'mock-social-1',
-    title: 'Annonce — Programmation musicale',
+    title: 'Annonce : Programmation musicale',
     message: 'On dévoile demain les six groupes qui animeront le FMM 2026 !\nL’Harfang, Skarazula, Mystic Projekt, Arrünn, Trifolys et Canteraine.',
     platforms: ['facebook', 'instagram'],
     hashtags: '#FMM2026 #medieval #musique #folk',
@@ -26,7 +26,7 @@ const seed: SocialPost[] = [
   },
   {
     id: 'mock-social-2',
-    title: 'Demande — Article bénévoles',
+    title: 'Demande : Article bénévoles',
     message: 'Léna, peux-tu publier un appel à bénévoles avec la photo de groupe de l’an dernier ? Lien vers /benevole.',
     platforms: ['instagram', 'facebook'],
     link: 'https://festivalmedievaldemontpellier.org/benevole',
@@ -38,7 +38,7 @@ const seed: SocialPost[] = [
   },
   {
     id: 'mock-social-3',
-    title: 'Publié — Teaser orb',
+    title: 'Publié : Teaser orb',
     message: 'Une nouvelle ère commence pour le FMM 🛡️',
     platforms: ['instagram'],
     imageUrl: '/wix/home/fire-night.jpg',

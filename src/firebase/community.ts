@@ -1,4 +1,4 @@
-// Bénévole community wall — shared space for the volunteer team + admins.
+// Bénévole community wall: shared space for the volunteer team + admins.
 // Channels:
 //   • 'open'        → visible to every accepted bénévole + admins
 //   • 'team-{id}'   → only members of that team + admins
@@ -168,5 +168,5 @@ export function subscribeRideshareSubs(postId: string, cb: (subs: { uid: string;
   );
 }
 
-// Compute the channel id for a team — keeps the convention in one place.
+// Compute the channel id for a team: keeps the convention in one place.
 export const teamChannelId = (teamId: string): ChannelId => `team-${teamId}`;

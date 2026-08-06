@@ -13,7 +13,7 @@ const STORAGE_KEY = 'fmm.siteFlags.v1';
 interface SiteFlagsCtx {
   flags: SiteFlags;
   // True once the first Firestore snapshot (or its error fallback) has
-  // arrived — before that, `flags` may still be the all-off defaults on a
+  // arrived. Before that, `flags` may still be the all-off defaults on a
   // first-ever visit, so gates must not take a "not published" decision yet.
   ready: boolean;
   setFlag: <K extends keyof SiteFlags>(k: K, v: SiteFlags[K]) => Promise<void>;

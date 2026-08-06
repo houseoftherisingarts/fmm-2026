@@ -5,7 +5,7 @@ import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
 
-// ─── 404 — Salle vide ────────────────────────────────────────────────
+// ─── 404: Salle vide ────────────────────────────────────────────────
 // Visual recipe lifted from the HALT page (admin access-refused) but
 // re-tuned to a "lost adventurer" register: copper/amber spotlights
 // instead of oxblood, faint forest atmosphere, an empty suit of
@@ -26,7 +26,7 @@ const COPY = {
     eyebrow:  '✦ Lost path ✦',
     headline: '404',
     quote:    '"There is no one here. Only an abandoned suit of armour and the silence of the woods."',
-    line1:    'This page does not exist — or no longer does.',
+    line1:    'This page does not exist, or no longer does.',
     line2:    'Retrace your steps. The festival awaits.',
     cta:      'Back to the festival',
   },
@@ -50,7 +50,7 @@ const NotFoundPage: React.FC = () => {
           // Faint deep-forest spotlights on a charcoal stage. Matches
           // the JW Green Label door tone (Super Bénévoles) so the 404
           // sits in the same atmospheric register as the rest of the
-          // admin chrome — green is barely a tint, not the focus.
+          // admin chrome: green is barely a tint, not the focus.
           `radial-gradient(900px 700px at 50% 55%, rgba(26, 68, 41, 0.09), transparent 65%),` +
           `radial-gradient(700px 500px at 50% 25%, rgba(61, 122, 79, 0.05), transparent 70%),` +
           `linear-gradient(180deg, #0c0e0b 0%, #060805 60%, #030403 100%)`,

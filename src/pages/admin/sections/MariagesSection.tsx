@@ -195,7 +195,7 @@ const MariagesSection: React.FC<Props> = ({ devBypass }) => {
                 </div>
               </div>
 
-              {/* Quick status setter — only on hover */}
+              {/* Quick status setter: only on hover */}
               <div className="hidden group-hover:flex flex-wrap items-center gap-1 mt-2.5">
                 {(Object.keys(STATUS_LABEL) as MariageStatus[]).filter((s) => s !== b.status).map((s) => (
                   <button key={s} onClick={(e) => { e.stopPropagation(); onSetStatus(b, s); }}

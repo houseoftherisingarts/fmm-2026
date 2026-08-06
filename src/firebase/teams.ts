@@ -1,9 +1,9 @@
-// Bénévole teams — admin forms small crews around stations and assigns
+// Bénévole teams: admin forms small crews around stations and assigns
 // each bénévole a leader/member role. Stored at /teams/{teamId}.
 //
 // Each team is year-bound so previous editions stay readable. The link
-// between team ↔ bénévole lives on the bénévole doc (teamId, teamRole)
-// — see firebase/applications.ts.
+// between team ↔ bénévole lives on the bénévole doc (teamId, teamRole).
+// See firebase/applications.ts.
 
 import {
   collection, doc, getDocs, query, where, addDoc, updateDoc, deleteDoc,
@@ -16,7 +16,7 @@ export interface Team {
   id: string;
   name:        string;     // e.g. "Bar principal", "Accueil"
   description?: string;
-  /** Hex colour ("#c9a05a") or token name — used for the kanban column header. */
+  /** Hex colour ("#c9a05a") or token name: used for the kanban column header. */
   color?: string;
   /** Optional emoji / lucide-name to mark the team visually. */
   icon?: string;

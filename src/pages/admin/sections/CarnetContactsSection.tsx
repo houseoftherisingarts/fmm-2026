@@ -12,14 +12,14 @@ import {
 
 // ─── Carnet de contacts ──────────────────────────────────────────────
 // Façon fiches de PNJ du Quest Book (Witcher) : liste + fiche détaillée.
-// Toutes les personnes qui comptent pour l'organisation du festival —
-// organisateurs, élus, partenaires, fournisseurs — avec leur rôle et
+// Toutes les personnes qui comptent pour l'organisation du festival
+// (organisateurs, élus, partenaires, fournisseurs) avec leur rôle et
 // leur allégeance.
 //
 // ⚠️ L'allégeance et les notes sont des données SENSIBLES sur des
 // personnes réelles (ex. « le maire est un adversaire »). Cette section
 // est admin only (super/CA/organisateurs, voir adminPermissions.ts) et
-// n'a AUCUNE lecture publique côté Firestore/Storage — ne jamais
+// n'a AUCUNE lecture publique côté Firestore/Storage : ne jamais
 // ajouter de chemin public à ces données.
 
 const ALLEGIANCE_META: Record<Allegiance, { icon: React.ComponentType<{ size?: number; className?: string }>; color: string }> = {

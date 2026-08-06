@@ -1,4 +1,4 @@
-// Users collection — Firestore read-only for the admin CRM.
+// Users collection: Firestore read-only for the admin CRM.
 // Collection: `users/{uid}`. Documents are created/updated by the
 // applications flow (upsertUserProfile in applications.ts) whenever
 // a user signs in or submits a form.
@@ -43,7 +43,7 @@ export async function listUsers(pageSize = 500): Promise<AppUser[]> {
       displayName:    String(data.displayName ?? ''),
       phone:          data.phone ? String(data.phone) : undefined,
       lang:           data.lang  ? String(data.lang)  : undefined,
-      // flags array written by addUserFlag — derive booleans from it
+      // flags array written by addUserFlag: derive booleans from it
       hasBenevoleApp: Array.isArray(data.flags) ? (data.flags as string[]).includes('benevole') : false,
       hasVendorApp:   Array.isArray(data.flags) ? (data.flags as string[]).includes('vendor')   : false,
       createdAt:      data.createdAt ?? null,

@@ -15,7 +15,7 @@ import BugReportModal from './BugReportModal';
 // Local dev previews every pillar; production shows only published ones.
 const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
 
-// ─── Footer — Caravan Edition ────────────────────────────────────────
+// ─── Footer · Caravan Edition ────────────────────────────────────────
 // Hex-cut blocks on a velvet-deep base. Top edge fades up from the
 // page so the footer emerges instead of cutting in. Three vertical
 // blocks: BILLETS (HexPanel CTA card), 4-column nav, newsletter
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
     <footer className="relative caravan-stage text-[var(--color-bone)]">
       <BubbleCanvas className="opacity-30" count={10} />
 
-      {/* Free-standing forged ornament marking the footer entry — a
+      {/* Free-standing forged ornament marking the footer entry: a
           bounded object, not a full-width rail, so it can never read
           as a cropped edge. */}
       <div aria-hidden className="relative z-10 pt-12 md:pt-16">
@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* ── BILLETS — primary CTA card ─────────────────────────── */}
+      {/* ── BILLETS · primary CTA card ─────────────────────────── */}
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 pt-10 md:pt-16 pb-10 md:pb-14">
         <HexPanel size="lg" className="fmm-shimmer">
           <div className="caravan-glass fmm-beam relative overflow-hidden px-6 md:px-10 lg:px-14 py-10 md:py-14 grid md:grid-cols-12 gap-x-10 gap-y-6 items-center">
@@ -109,7 +109,7 @@ const Footer: React.FC = () => {
               </p>
             </div>
             <div className="md:col-span-5 md:justify-self-end flex flex-col items-start md:items-end gap-5">
-              {/* Countdown — D · H · M · S */}
+              {/* Countdown: D · H · M · S */}
               {!cd.isPast && (
                 <div className="flex items-baseline gap-3 md:gap-4">
                   <CountUnit n={cd.days}    label={lang === 'FR' ? 'jours' : 'days'} />
@@ -343,7 +343,7 @@ const Footer: React.FC = () => {
 };
 
 // ─── CountUnit ────────────────────────────────────────────────────
-// Single countdown segment — big serif number stacked over a tiny
+// Single countdown segment: big serif number stacked over a tiny
 // brass caps label. Pattern lifted from OrbHomePage so the footer's
 // countdown reads identically to the orb's.
 const CountUnit: React.FC<{ n: number; label: string; small?: boolean }> = ({ n, label, small }) => (

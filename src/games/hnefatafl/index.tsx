@@ -1,4 +1,4 @@
-// ─── Hnefatafl — plateau 3D jouable, entrée de route ────────────────
+// ─── Hnefatafl: plateau 3D jouable, entrée de route ────────────────
 // Refondue le 2026-08-03 : c'était un jeu plein écran en noir absolu,
 // avec sa propre palette (jaune #FFD700), sa propre bande de titre et
 // aucun lien visuel avec le reste du site. C'est maintenant une PAGE
@@ -271,7 +271,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
 
     // `alive` flips false in cleanup. All deferred callbacks (gsap
     // onComplete, setTimeout, animation chain) check this before touching
-    // React state or scene objects — protects against StrictMode double-
+    // React state or scene objects: protects against StrictMode double-
     // mount and HMR remount races during piece animations.
     let alive = true;
 
@@ -353,7 +353,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
       animating: false,
     };
 
-    // ── CPU scheduling — single in-flight timeout, cancellable ─────
+    // ── CPU scheduling: single in-flight timeout, cancellable ─────
     let cpuTimer: ReturnType<typeof setTimeout> | null = null;
     const cancelCpu = () => {
       if (cpuTimer !== null) {

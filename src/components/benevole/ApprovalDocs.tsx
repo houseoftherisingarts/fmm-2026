@@ -7,8 +7,8 @@ import { upsertBenevoleApp, type BenevoleApp } from '../../firebase/applications
 
 // Post-acceptance signing flow.
 // Two documents unlock once Maïté flips the application to 'accepted':
-//   1. Décharge parentale — required only if the bénévole is under 18.
-//   2. Contrat bénévole   — required for everyone accepted.
+//   1. Décharge parentale: required only if the bénévole is under 18.
+//   2. Contrat bénévole: required for everyone accepted.
 //
 // Both are signed inline (typed signature) and timestamped on the
 // BenevoleApp record. The contracts themselves are stored as inline
@@ -261,7 +261,7 @@ const SignModal: React.FC<SignModalProps> = ({
   );
 };
 
-const COPY_DECHARGE = `Décharge parentale — Festival Médiéval de Montpellier 2026
+const COPY_DECHARGE = `Décharge parentale : Festival Médiéval de Montpellier 2026
 
 Je soussigné·e, parent ou tuteur·rice légal·e du·de la mineur·e participant·e au programme de bénévolat du Festival Médiéval de Montpellier (édition 2026, du 25 au 27 septembre 2026), autorise par la présente sa participation aux activités bénévoles encadrées par l'organisation, dans le respect des consignes de sécurité fournies.
 
@@ -275,7 +275,7 @@ J'autorise les responsables sur place à prodiguer ou à faire prodiguer les pre
 
 En signant, je confirme l'exactitude des renseignements fournis et donne mon consentement à la participation du·de la mineur·e.`;
 
-const COPY_CONTRAT = `Contrat bénévole — Festival Médiéval de Montpellier 2026
+const COPY_CONTRAT = `Contrat bénévole : Festival Médiéval de Montpellier 2026
 
 Je m'engage, à titre de bénévole, à participer au Festival Médiéval de Montpellier (FMM) 2026, édition tenue à Montpellier (Québec) du 25 au 27 septembre 2026.
 
@@ -310,7 +310,7 @@ function fmt(ts: any): string {
 
 const FR = {
   title:    'Documents à signer',
-  lead:     'Votre candidature est acceptée — merci ! Avant le festival, deux documents doivent être signés :',
+  lead:     'Votre candidature est acceptée, merci ! Avant le festival, deux documents doivent être signés :',
   dechargeTitle: 'Décharge parentale',
   dechargeSub:   'Requise pour les moins de 18 ans',
   contratTitle:  'Contrat bénévole',
@@ -320,7 +320,7 @@ const FR = {
 };
 const EN: typeof FR = {
   title:    'Documents to sign',
-  lead:     'Your application is accepted — thank you! Two documents must be signed before the festival:',
+  lead:     'Your application is accepted, thank you! Two documents must be signed before the festival:',
   dechargeTitle: 'Parental release',
   dechargeSub:   'Required for under-18 volunteers',
   contratTitle:  'Volunteer agreement',

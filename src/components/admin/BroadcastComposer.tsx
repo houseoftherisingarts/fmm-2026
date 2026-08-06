@@ -12,7 +12,7 @@ import { sendInvitations } from '../../firebase/messages';
 import { CURRENT_YEAR, type VendorApp } from '../../firebase/applications';
 
 interface Props {
-  /** All vendor applications — we filter to accepted-this-year. */
+  /** All vendor applications: we filter to accepted-this-year. */
   vendors: VendorApp[];
   /** Admin doing the sending (Jesse). */
   adminUid: string;
@@ -379,7 +379,7 @@ const TemplateEditor: React.FC<{
 
         <div className="mt-7 pt-5 border-t border-ivory-soft/10 flex flex-wrap items-center justify-between gap-3">
           <p className="font-editorial italic text-xs text-ivory-soft max-w-md">
-            Les modifications sont enregistrées au serveur — toute l’équipe verra la version mise à jour.
+            Les modifications sont enregistrées au serveur : toute l’équipe verra la version mise à jour.
           </p>
           <div className="flex items-center gap-3">
             <button

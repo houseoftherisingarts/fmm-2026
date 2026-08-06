@@ -9,7 +9,7 @@ interface Props {
   labels: string[];         // 5 labels (chapter I..V)
 }
 
-// 5 cards from the FMM deck — one per chapter.
+// 5 cards from the FMM deck: one per chapter.
 const GLYPHS: TarotGlyph[] = ['wanderer', 'flame', 'wheel', 'mask', 'helm'];
 const ACCENTS = [
   'var(--color-ruby)',

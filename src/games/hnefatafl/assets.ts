@@ -1,4 +1,4 @@
-// ─── Hnefatafl — jeux d'assets (plateaux et pièces) ─────────────────
+// ─── Hnefatafl : jeux d'assets (plateaux et pièces) ─────────────────
 // Le plateau et les pièces se choisissent SÉPARÉMENT : un plateau de
 // noyer peut porter des guerriers vikings, et inversement. Chaque jeu
 // est décrit ici et nulle part ailleurs; ajouter une variante, c'est

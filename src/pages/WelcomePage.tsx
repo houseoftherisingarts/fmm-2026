@@ -24,7 +24,7 @@ const WelcomePage: React.FC = () => {
   const cd = useCountdown(`${SITE.dates.start}T10:00:00-04:00`);
   const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
 
-  // Days-until vs days-from-launch progress bar — shows festival's
+  // Days-until vs days-from-launch progress bar: shows festival's
   // approach. Anchor is "today" minus 365 (one year out) → 0%, festival
   // start → 100%.
   const [progress, setProgress] = useState(0);
@@ -39,7 +39,7 @@ const WelcomePage: React.FC = () => {
     <>
       <SEO title={t.title} />
 
-      {/* SCOPED ANIMATIONS — fade-in stagger + horizontal marquee. */}
+      {/* SCOPED ANIMATIONS: fade-in stagger + horizontal marquee. */}
       <style>{`
         @keyframes fmm-fade-in {
           from { opacity: 0; transform: translateY(20px); }
@@ -60,7 +60,7 @@ const WelcomePage: React.FC = () => {
 
       <main className="relative w-full bg-midnight-deep text-ivory overflow-hidden font-sans isolate">
 
-        {/* Brand mark — top-left, replaces the global NavBar logo */}
+        {/* Brand mark, top-left: replaces the global NavBar logo */}
         <Link to={addLocale('/accueil', lang)} className="absolute top-6 left-6 md:top-8 md:left-8 z-30 flex items-center gap-3 group" aria-label="FMM Accueil">
           <img decoding="async" src={SITE.logoWhite} alt="FMM" className="h-10 md:h-12 w-auto transition-opacity group-hover:opacity-80" />
           <span className="hidden sm:inline-flex flex-col leading-tight">
@@ -69,7 +69,7 @@ const WelcomePage: React.FC = () => {
           </span>
         </Link>
 
-        {/* ── Background — cinematic viking helmet with gradient mask ── */}
+        {/* ── Background: cinematic viking helmet with gradient mask ── */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center opacity-55"
           style={{
@@ -85,7 +85,7 @@ const WelcomePage: React.FC = () => {
         <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 pb-16 sm:px-6 md:pt-32 md:pb-24 lg:px-8 min-h-[100svh] flex items-center">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10 items-start w-full">
 
-            {/* ── LEFT COLUMN — pitch + CTAs ── */}
+            {/* ── LEFT COLUMN: pitch + CTAs ── */}
             <div className="lg:col-span-7 flex flex-col justify-center space-y-8 pt-6">
 
               {/* Edition badge */}
@@ -98,7 +98,7 @@ const WelcomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Headline — capped at 2 lines, font sized so each phrase fits on one line */}
+              {/* Headline, capped at 2 lines: font sized so each phrase fits on one line */}
               <h1 className="fmm-fade fmm-d200 font-display title-medieval text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tight leading-[0.95]">
                 <span className="block whitespace-nowrap">{t.h1Line1}</span>
                 <span className="block whitespace-nowrap bg-gradient-to-br from-ivory via-ivory to-brass bg-clip-text text-transparent">
@@ -116,7 +116,7 @@ const WelcomePage: React.FC = () => {
                 {t.subtitle}
               </p>
 
-              {/* Primary CTAs — Tickets + Enter the festival */}
+              {/* Primary CTAs: Tickets + Enter the festival */}
               <div className="fmm-fade fmm-d400 flex flex-col sm:flex-row gap-3">
                 <a
                   href={ticketUrl} target="_blank" rel="noopener noreferrer"
@@ -134,7 +134,7 @@ const WelcomePage: React.FC = () => {
                 </Link>
               </div>
 
-              {/* Tertiary CTAs — Exposer comme artisan + Joindre l'équipe */}
+              {/* Tertiary CTAs: Exposer comme artisan + Joindre l'équipe */}
               <div className="fmm-fade fmm-d500 flex flex-col sm:flex-row gap-3 -mt-3">
                 <Link
                   to={addLocale('/marche/inscription', lang)}
@@ -153,7 +153,7 @@ const WelcomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* ── RIGHT COLUMN — countdown card + activities marquee ── */}
+            {/* ── RIGHT COLUMN: countdown card + activities marquee ── */}
             <div className="lg:col-span-5 space-y-5 lg:mt-12">
 
               {/* Countdown / festival card */}
@@ -162,7 +162,7 @@ const WelcomePage: React.FC = () => {
                 <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-brass/10 blur-3xl pointer-events-none" />
 
                 <div className="relative z-10">
-                  {/* Header — icon + headline countdown */}
+                  {/* Header: icon + headline countdown */}
                   <div className="flex items-center gap-4 mb-7">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brass/15 ring-1 ring-brass/40">
                       <Flame className="h-6 w-6 text-brass" />
@@ -175,7 +175,7 @@ const WelcomePage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Live countdown — 4 tiles */}
+                  {/* Live countdown: 4 tiles */}
                   {!cd.isPast && (
                     <div className="grid grid-cols-4 gap-2 mb-7">
                       {[
@@ -233,7 +233,7 @@ const WelcomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Activities marquee — restored to right column under countdown */}
+              {/* Activities marquee, restored to right column under countdown */}
               <div className="fmm-fade fmm-d500 relative overflow-hidden rounded-3xl border border-ivory-soft/15 bg-midnight-deep/55 py-7 backdrop-blur-xl">
                 <h3 className="mb-5 px-7 text-sm font-editorial italic text-ivory-soft">{t.marqueeTitle}</h3>
                 <div
@@ -267,7 +267,7 @@ const WelcomePage: React.FC = () => {
         </a>
       </main>
 
-      {/* ── Pillar showcase — GSAP scroll-pinned five-act sequence ── */}
+      {/* ── Pillar showcase: GSAP scroll-pinned five-act sequence ── */}
       <div id="showcase">
         <FullScreenScrollFX
           sections={getShowcaseSections(lang, addLocale)}
@@ -293,9 +293,9 @@ const WelcomePage: React.FC = () => {
   );
 };
 
-// ─── Showcase section data — all 13 festival sections ──────────────
+// ─── Showcase section data: all 13 festival sections ──────────────
 // Order is curated to flow narratively: program first, then cuisine,
-// music, market — through to weddings and groups at the end.
+// music, market, through to weddings and groups at the end.
 type ShowcaseKey =
   | 'activites' | 'musique' | 'nourriture' | 'marche' | 'apprendre'
   | 'chevaux' | 'jeunesse' | 'hebergement' | 'benevole' | 'histoire'
@@ -334,8 +334,8 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     key: 'nourriture', slug: '/nourriture', image: '/wix/home/bonfire-warm.jpg',
     titleFR: 'Banquet', titleEN: 'Banquet',
-    bodyFR: 'Cinq tentes du village gustatif et le Banquet de l’Équinoxe — 5 services, 50 places, dimanche à 13h.',
-    bodyEN: 'Five tents in the food village and the Equinox Banquet — 5 courses, 50 seats, Sunday 1 PM.',
+    bodyFR: 'Cinq tentes du village gustatif et le Banquet de l’Équinoxe : 5 services, 50 places, dimanche à 13h.',
+    bodyEN: 'Five tents in the food village and the Equinox Banquet: 5 courses, 50 seats, Sunday 1 PM.',
     ctaFR: 'Voir le menu', ctaEN: 'See the menu',
     leftFR: '03 · À la table',       leftEN: '03 · At the table',
     rightFR: '5 tentes · 1 banquet', rightEN: '5 tents · 1 banquet',
@@ -361,8 +361,8 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     key: 'chevaux', slug: '/chevaux', image: '/wix/chevaux/845ff568.jpg',
     titleFR: 'Chevaux', titleEN: 'Horses',
-    bodyFR: 'La clinique équestre de l’AMQ — joutes, jeux d’adresse, démonstrations. Sept places pour cavaliers et cavalières.',
-    bodyEN: 'The AMQ equestrian clinic — jousting, skill games, demonstrations. Seven seats for riders.',
+    bodyFR: 'La clinique équestre de l’AMQ : joutes, jeux d’adresse, démonstrations. Sept places pour cavaliers et cavalières.',
+    bodyEN: 'The AMQ equestrian clinic: jousting, skill games, demonstrations. Seven seats for riders.',
     ctaFR: 'S’inscrire',             ctaEN: 'Sign up',
     leftFR: '06 · Clinique équestre', leftEN: '06 · Equestrian clinic',
     rightFR: '7 places · samedi',    rightEN: '7 seats · Saturday',
@@ -388,8 +388,8 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     key: 'benevole', slug: '/benevole', image: '/wix/home/shields-blue.jpg',
     titleFR: 'Bénévole', titleEN: 'Volunteer',
-    bodyFR: 'Le FMM est opéré par une équipe de bénévoles. Joignez-vous au cœur du festival — montage, accueil, animation, démontage.',
-    bodyEN: 'FMM runs on volunteer power. Join the heart of the festival — setup, welcome, programming, teardown.',
+    bodyFR: 'Le FMM est opéré par une équipe de bénévoles. Joignez-vous au cœur du festival : montage, accueil, animation, démontage.',
+    bodyEN: 'FMM runs on volunteer power. Join the heart of the festival: setup, welcome, programming, teardown.',
     ctaFR: 'Joindre l’équipe',        ctaEN: 'Join the team',
     leftFR: '09 · Joindre l’équipe',  leftEN: '09 · Join the team',
     rightFR: 'Tous profils bienvenus', rightEN: 'All profiles welcome',
@@ -415,8 +415,8 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     key: 'mariages', slug: '/mariages', image: '/wix/mariages/70dcaeae.jpg',
     titleFR: 'Mariages', titleEN: 'Weddings',
-    bodyFR: 'Médiéval, païen, viking, celte ou laïc — célébrez votre union au cœur du festival. Demande pour 2026 ouverte.',
-    bodyEN: 'Medieval, pagan, viking, Celtic or secular — celebrate your union at the heart of the festival. 2026 inquiries open.',
+    bodyFR: 'Médiéval, païen, viking, celte ou laïc : célébrez votre union au cœur du festival. Demande pour 2026 ouverte.',
+    bodyEN: 'Medieval, pagan, viking, Celtic or secular: celebrate your union at the heart of the festival. 2026 inquiries open.',
     ctaFR: 'Faire une demande',      ctaEN: 'Make an inquiry',
     leftFR: '12 · Cérémonie d’époque', leftEN: '12 · Period ceremony',
     rightFR: 'Sur réservation',      rightEN: 'By reservation',
@@ -462,7 +462,7 @@ const Stat: React.FC<{ value: string; label: string }> = ({ value, label }) => (
   </div>
 );
 
-// ── Activities for the scrolling marquee — drawn from the FMM pillars ──
+// ── Activities for the scrolling marquee, drawn from the FMM pillars ──
 const ACTIVITIES = [
   { icon: UtensilsCrossed, label: { FR: 'Banquet de l’Équinoxe', EN: 'Equinox Banquet' } },
   { icon: Music2,          label: { FR: 'Musique Nordique',       EN: 'Nordic Music' } },
@@ -474,17 +474,17 @@ const ACTIVITIES = [
   { icon: Sparkles,        label: { FR: 'Tarot & Divination',     EN: 'Tarot & Divination' } },
 ];
 
-// Pull pillar count from PILLARS — informs scaling labels but keeps
+// Pull pillar count from PILLARS: informs scaling labels but keeps
 // the value strings hand-curated so they read well typographically.
 void PILLARS;
 
 const FR = {
-  title: 'FMM 2026 — Caravanes & Saltimbanques',
+  title: 'FMM 2026 · Caravanes & Saltimbanques',
   badge: 'Édition 2026 · Caravanes & Saltimbanques',
   h1Line1: 'Trois jours',
   h1Line2: 'hors du temps',
   h1Line3: '',
-  dates: '25 — 26 — 27 SEPTEMBRE 2026 · MONTPELLIER, QC',
+  dates: '25 · 26 · 27 SEPTEMBRE 2026 · MONTPELLIER, QC',
   subtitle: 'Caravanes nomades, vikings, chevaliers, zone jeunesse, village nourriture, tarot, tambours et troupes nordiques. Une cinquième édition tissée de feu et de mystère, au cœur du Québec.',
   primaryCta: 'Acheter mes billets',
   secondaryCta: 'Entrer dans le festival',
@@ -506,12 +506,12 @@ const FR = {
 };
 
 const EN = {
-  title: 'FMM 2026 — Caravans & Players',
+  title: 'FMM 2026 · Caravans & Players',
   badge: '2026 Edition · Caravans & Players',
   h1Line1: 'Three days',
   h1Line2: 'out of time',
   h1Line3: '',
-  dates: 'SEPTEMBER 25 — 26 — 27, 2026 · MONTPELLIER, QC',
+  dates: 'SEPTEMBER 25 · 26 · 27, 2026 · MONTPELLIER, QC',
   subtitle: 'Nomadic caravans, vikings, knights, youth village, food village, tarot, drums and Nordic troupes. A fifth edition woven of fire and mystery, in the heart of Quebec.',
   primaryCta: 'Get my tickets',
   secondaryCta: 'Enter the festival',

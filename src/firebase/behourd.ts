@@ -1,6 +1,6 @@
-// Tournoi de Behourd 2027 — early-registration applications.
+// Tournoi de Behourd 2027: early-registration applications.
 // Path: behourd/{autoId}. Single doc per submission; tally in admin
-// happens later. Keep this lean — the form is one screen and the
+// happens later. Keep this lean: the form is one screen and the
 // Zeffy hand-off is the payment of record.
 
 import { addDoc, collection, getDocs, query, orderBy, serverTimestamp, type Timestamp } from 'firebase/firestore';

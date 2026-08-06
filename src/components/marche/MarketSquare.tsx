@@ -30,7 +30,7 @@ export interface MarketCopy {
 // 2024 n'a pas été saisie et le marché 2026 sera dévoilé sous peu.
 const YEARS = [2024, 2025, 2026] as const;
 
-// ─── MarketSquare — Item-shop grid ──────────────────────────────────
+// ─── MarketSquare: Item-shop grid ──────────────────────────────────
 // Caravan item-shop aesthetic for the 15 on-site kiosks. Each stall is
 // a photo tile with a copper-edged frame. Hover: tile lifts, photo
 // scales, gold rim glows, caption slides up. Click: opens a full-bleed
@@ -264,7 +264,7 @@ const StallTile: React.FC<{
         onMouseMove={spot.onMove}
         onMouseLeave={spot.onLeave}
         aria-expanded={isOpen}
-        aria-label={`${kiosk.name} — ${kiosk.category}`}
+        aria-label={`${kiosk.name}: ${kiosk.category}`}
         className="group/btn relative block w-full aspect-[4/5] overflow-hidden text-left transition-transform duration-500 hover:-translate-y-1"
         style={{
           background: 'rgba(26, 5, 11, 0.7)',
@@ -294,7 +294,7 @@ const StallTile: React.FC<{
           className="absolute inset-0 pointer-events-none"
           style={{ background: spot.background, mixBlendMode: 'screen' }}
         />
-        {/* Number plate — chevron-clipped */}
+        {/* Number plate: chevron-clipped */}
         <span
           className="absolute top-3 left-3 z-10 inline-block px-2.5 py-1 font-sans text-[9px] tracking-[0.5em] chev-cta"
           style={{

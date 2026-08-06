@@ -1,4 +1,4 @@
-// Bar inventory — Firestore-backed CRUD
+// Bar inventory: Firestore-backed CRUD
 // Collection: bar/{id}  (flat, one doc per SKU)
 // Re-exports types and pure helpers from mockBar so existing imports keep working.
 
@@ -80,7 +80,7 @@ export async function deleteBarItem(id: string): Promise<void> {
 }
 
 // Concurrent-safe stock adjustment via Firestore transaction.
-// Delta is clamped at 0 — stock never goes negative.
+// Delta is clamped at 0: stock never goes negative.
 export async function adjustStock(id: string, delta: number): Promise<void> {
   if (!db) throw new Error('Firebase not configured');
   const ref = doc(db, COL, id);

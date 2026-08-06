@@ -158,7 +158,7 @@ const BarSection: React.FC<Props> = ({ devBypass }) => {
             <AlertTriangle size={16} className="text-blush mt-0.5 shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="font-display title-medieval text-xs text-blush uppercase tracking-widest">
-                Stock bas — {totals.lowStock.length} produit{totals.lowStock.length > 1 ? 's' : ''}
+                Stock bas : {totals.lowStock.length} produit{totals.lowStock.length > 1 ? 's' : ''}
               </p>
               <p className="font-sans text-xs text-ivory-soft mt-1 leading-relaxed">
                 {totals.lowStock.map((it) => (
@@ -173,7 +173,7 @@ const BarSection: React.FC<Props> = ({ devBypass }) => {
         </Card>
       )}
 
-      {/* Header — filters + actions */}
+      {/* Header: filters + actions */}
       <div className="flex items-end justify-between gap-3 flex-wrap">
         <div>
           <p className="font-editorial italic text-sm text-ivory-soft">
@@ -463,7 +463,7 @@ const Field: React.FC<{ label: string; children: React.ReactNode; full?: boolean
 );
 
 // Re-export icon so AdminShell nav can pull it without bringing the
-// entire section in. (Kept local for now — AdminShell uses its own
+// entire section in. (Kept local for now: AdminShell uses its own
 // import directly.)
 export const BarSectionIcon = Beer;
 

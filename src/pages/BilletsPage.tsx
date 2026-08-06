@@ -97,7 +97,7 @@ const Section: React.FC<{
   </section>
 );
 
-// ─── Deck — la main de cartes ───────────────────────────────────────
+// ─── Deck · la main de cartes ───────────────────────────────────────
 const Deck: React.FC<{
   billets: Billet[]; lang: 'FR' | 'EN'; t: typeof FR; href: string;
 }> = ({ billets, lang, t, href }) => (
@@ -139,7 +139,7 @@ const Carte: React.FC<{
         role="button"
         tabIndex={0}
         aria-expanded={flipped}
-        aria-label={`${nom} — ${flipped ? t.retourner : t.devoiler}`}
+        aria-label={`${nom}, ${flipped ? t.retourner : t.devoiler}`}
         onClick={() => setFlipped((v) => !v)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped((v) => !v); }

@@ -1,11 +1,11 @@
-// Discord account linking — Firestore layer.
+// Discord account linking: Firestore layer.
 // Extends the `users/{uid}` document with Discord identity fields.
-// OAuth flow lives in DiscordConnect.tsx — this file is pure data.
+// OAuth flow lives in DiscordConnect.tsx: this file is pure data.
 //
 // Firestore shape (merged into the user doc):
-//   discordId:       string          — Discord snowflake ID
-//   discordUsername: string          — e.g. "floki_fmm" (modern format)
-//   discordAvatar:   string | null   — CDN hash; null = default avatar
+//   discordId:       string          · Discord snowflake ID
+//   discordUsername: string          · e.g. "floki_fmm" (modern format)
+//   discordAvatar:   string | null   · CDN hash; null = default avatar
 //   discordLinkedAt: Timestamp
 
 import {
@@ -42,12 +42,12 @@ export function discordAvatarUrl(discordId: string, hash: string | null, size = 
     const ext = hash.startsWith('a_') ? 'gif' : 'png';
     return `https://cdn.discordapp.com/avatars/${discordId}/${hash}.${ext}?size=${size}`;
   }
-  // Default avatar — cycles through 5 colours based on user ID.
+  // Default avatar: cycles through 5 colours based on user ID.
   const index = (Number(BigInt(discordId) >> 22n)) % 6;
   return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
 }
 
-/** Display name — prefers global_name, falls back to username. */
+/** Display name: prefers global_name, falls back to username. */
 export function discordDisplayName(user: DiscordAPIUser): string {
   return user.global_name ?? user.username;
 }
@@ -69,7 +69,7 @@ export function buildDiscordOAuthUrl(clientId: string, redirectUri: string): str
   return `https://discord.com/oauth2/authorize?${params.toString()}`;
 }
 
-/** Parse the OAuth callback fragment — returns the access token or null. */
+/** Parse the OAuth callback fragment: returns the access token or null. */
 export function parseOAuthFragment(hash: string): string | null {
   const params = new URLSearchParams(hash.replace(/^#/, ''));
   return params.get('access_token') ?? null;

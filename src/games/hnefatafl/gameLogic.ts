@@ -1,4 +1,4 @@
-// ─── Hnefatafl — pure game logic ────────────────────────────────────
+// ─── Hnefatafl: pure game logic ────────────────────────────────────
 // No Three.js, no React. Deterministic functions over an 11×11 board.
 // Cell values: 0 empty · 1 attacker (raider) · 2 defender · 3 king.
 

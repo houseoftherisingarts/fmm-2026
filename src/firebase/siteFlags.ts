@@ -13,7 +13,7 @@ export interface SiteFlags {
   vendorApplicationsOpen:  boolean;
   showCountdown:           boolean;
   // Reveals the on-page knight placement editor on the orb home. Off by
-  // default — admins flip it on from Paramètres to fine-tune the orb
+  // default: admins flip it on from Paramètres to fine-tune the orb
   // overlay, then flip it back off. Editor is also gated by isAdmin
   // so a leaked flag flip doesn't expose dev controls to the public.
   knightPlacementEditor:   boolean;

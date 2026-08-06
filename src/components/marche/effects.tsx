@@ -15,7 +15,7 @@ import {
 // section composes from a shared palette of effects.
 
 // ─── useMagnet ──────────────────────────────────────────────────────
-// Magnetic hover for CTAs. Returns { ref, x, y } — apply x/y as the
+// Magnetic hover for CTAs. Returns { ref, x, y }: apply x/y as the
 // element's translate via motion.div / motion.button. Pull strength
 // defaults to 0.35 of the cursor's offset from card centre. The ref is
 // generic so callers can attach it to any HTMLElement subtype.
@@ -110,7 +110,7 @@ export const FireVideo: React.FC<{
   className?: string;
   /** Soften the top with a vertical gradient mask. */
   mask?: 'top' | 'top-bottom' | 'none';
-  /** Filter rolled onto the video — color-grade. */
+  /** Filter rolled onto the video: color-grade. */
   filter?: string;
   poster?: string;
   src?: string;
@@ -167,7 +167,7 @@ export const FireVideo: React.FC<{
 };
 
 // ─── BubbleCanvas ───────────────────────────────────────────────────
-// Animated rising bubbles — soft copper glass spheres drifting up from
+// Animated rising bubbles: soft copper glass spheres drifting up from
 // below the frame. Lifted-and-simplified from le-salon-des-inconnus's
 // liquid-glass effect: 14–22 active bubbles, each with its own size,
 // drift, and wobble. Canvas-based so it's GPU-cheap.
@@ -291,7 +291,7 @@ export const BubbleCanvas: React.FC<{
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
         ctx.fill();
 
-        // Specular highlight — top-left dot
+        // Specular highlight: top-left dot
         ctx.fillStyle = `hsla(40, 100%, 96%, ${0.7 * alpha})`;
         ctx.beginPath();
         ctx.arc(b.x - b.r * 0.45, b.y - b.r * 0.5, b.r * 0.18, 0, Math.PI * 2);
@@ -318,7 +318,7 @@ export const BubbleCanvas: React.FC<{
 
 // ─── Motes ──────────────────────────────────────────────────────────
 // Slow gold dust drifting upward/inward around focal subjects. Lighter
-// than BubbleCanvas — these are just small luminous points with halo,
+// than BubbleCanvas: these are just small luminous points with halo,
 // no glass body. Pattern lifted from Wild Rift champion-select where
 // motes orbit and drift around the splash art.
 interface Mote {
@@ -410,7 +410,7 @@ export const Motes: React.FC<{
 
         const t = m.life / m.maxLife;
         const lifeAlpha = t < 0.18 ? t / 0.18 : t > 0.78 ? (1 - t) / 0.22 : 1;
-        // Edge fade — motes within PAD of any canvas edge fade
+        // Edge fade: motes within PAD of any canvas edge fade
         // proportionally to their distance. Stacks with life alpha so
         // boundary-clipping is invisible even if a mote slips through.
         const edgeDist = Math.min(m.x, w - m.x, m.y, h - m.y);
@@ -483,7 +483,7 @@ export const KenBurnsLayer: React.FC<{
 };
 
 // ─── useSfx ─────────────────────────────────────────────────────────
-// One-shot audio helper — pre-fetches the asset, spawns a fresh Audio
+// One-shot audio helper: pre-fetches the asset, spawns a fresh Audio
 // node on each trigger so overlapping clicks don't restart playback.
 export function useSfx(url: string, volume = 0.55) {
   const primed = useRef(false);

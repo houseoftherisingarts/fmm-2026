@@ -84,7 +84,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
   const previewRef = useRef<HTMLDivElement>(null);
   const t = (key: string) => TRANSLATIONS[key][lang];
 
-  // Keep the signer name in sync with the lock — if the user is locked,
+  // Keep the signer name in sync with the lock: if the user is locked,
   // any external state change can't drift away from their own name.
   useEffect(() => {
     if (!canSignAnyName && lockedSignerName) {
@@ -114,7 +114,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
   const handleStateChange = useCallback((updates: Partial<DocumentState>) => {
     setDocState((prev) => {
       // Enforce the signer-name lock even if the EditorPanel tries to
-      // change it (defence-in-depth — the UI hides the dropdown but a
+      // change it (defence-in-depth: the UI hides the dropdown but a
       // mutated prop or replayed event shouldn't sneak through).
       const next = { ...prev, ...updates };
       if (!canSignAnyName && lockedSignerName) next.signerName = lockedSignerName;
@@ -380,7 +380,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
             state={docState}
             lang={lang}
             onSignatureChange={handleSignatureChange}
-            /* Note: `onPay` intentionally NOT passed — the Square checkout
+            /* Note: `onPay` intentionally NOT passed. The Square checkout
                button only renders when onPay is supplied. */
           />
         </section>

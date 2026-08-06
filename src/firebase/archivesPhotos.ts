@@ -1,4 +1,4 @@
-// Archives photos de la page Histoire — collection Firestore pilotable
+// Archives photos de la page Histoire: collection Firestore pilotable
 // depuis l'admin (section Photos) : activer/désactiver, réordonner,
 // téléverser. La page publique lit la collection et retombe sur les
 // manifestes statiques (src/content/histoireArchives.ts) si elle est

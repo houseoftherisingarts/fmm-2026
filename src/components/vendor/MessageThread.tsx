@@ -8,7 +8,7 @@ import {
 
 // Real-time messaging panel. Same component is mounted on both sides
 // (admin row inside the CRM, and the person's own client space).
-// Used for both vendor and bénévole threads — pass `threadKind`.
+// Used for both vendor and bénévole threads: pass `threadKind`.
 
 interface Props {
   /** UID of the person whose thread we're viewing (vendor or bénévole). */

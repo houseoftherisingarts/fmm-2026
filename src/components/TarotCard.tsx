@@ -5,11 +5,11 @@ import React from 'react';
 // deck (1909, Pamela Colman Smith). Source: Wikimedia Commons.
 // Mapping is narrative, fitting the 2026 "Caravanes & Saltimbanques"
 // theme:
-//   wanderer → The Fool          — the traveller setting out
-//   flame    → The Magician      — the saltimbanque, master of craft
-//   wheel    → The Wheel         — the wagon, fortune in motion
-//   mask     → The Hermit        — solitary wanderer with the lantern
-//   helm     → The Star          — guidance, hope, the sealed pact
+//   wanderer → The Fool          : the traveller setting out
+//   flame    → The Magician      : the saltimbanque, master of craft
+//   wheel    → The Wheel         : the wagon, fortune in motion
+//   mask     → The Hermit        : solitary wanderer with the lantern
+//   helm     → The Star          : guidance, hope, the sealed pact
 
 export type TarotGlyph = 'wanderer' | 'flame' | 'wheel' | 'mask' | 'helm';
 
@@ -22,11 +22,11 @@ const Image: Record<TarotGlyph, string> = {
 };
 
 const Alt: Record<TarotGlyph, string> = {
-  wanderer: 'The Fool — public-domain Rider-Waite-Smith tarot',
-  flame:    'The Magician — public-domain Rider-Waite-Smith tarot',
-  wheel:    'The Wheel of Fortune — public-domain Rider-Waite-Smith tarot',
-  mask:     'The Hermit — public-domain Rider-Waite-Smith tarot',
-  helm:     'The Star — public-domain Rider-Waite-Smith tarot',
+  wanderer: 'The Fool: public-domain Rider-Waite-Smith tarot',
+  flame:    'The Magician: public-domain Rider-Waite-Smith tarot',
+  wheel:    'The Wheel of Fortune: public-domain Rider-Waite-Smith tarot',
+  mask:     'The Hermit: public-domain Rider-Waite-Smith tarot',
+  helm:     'The Star: public-domain Rider-Waite-Smith tarot',
 };
 
 const TarotCard: React.FC<{ glyph: TarotGlyph; className?: string }> = ({ glyph, className = '' }) => (
@@ -40,7 +40,7 @@ const TarotCard: React.FC<{ glyph: TarotGlyph; className?: string }> = ({ glyph,
       className="absolute inset-0 w-full h-full object-cover"
     />
 
-    {/* Brass border + inner double-line — preserved from the original
+    {/* Brass border + inner double-line: preserved from the original
         design so the card sits on the velvet stage as a framed object. */}
     <div className="absolute inset-0 rounded-card border border-brass/60 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.6),0_0_0_1px_rgba(176,141,58,0.15)_inset]" />
     <div className="absolute inset-1 rounded-[10px] border border-brass/25" />

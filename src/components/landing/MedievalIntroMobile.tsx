@@ -4,17 +4,17 @@ import { usePerfTier } from '../../lib/usePerfTier';
 import IntroChant from './IntroChant';
 
 /**
- * MedievalIntroMobile — portrait sibling of MedievalIntro.
+ * MedievalIntroMobile: portrait sibling of MedievalIntro.
  *
  * The source scene (veilleur + crystal ball) is horizontal, so we never crop it
  * to fill a vertical frame (that always looks squished). Instead we COMPOSE the
  * portrait screen in three stacked zones:
- *   • top    — warm-black card: crest + "Festival Médiéval de Montpellier" +
+ *   • top    : warm-black card: crest + "Festival Médiéval de Montpellier" +
  *              the dates. Present from the first frame, rises and dissolves on
  *              scroll to reveal the scene.
- *   • middle — a full-width 16:9 cinematic BAND holding the scrubbed knight/orb
+ *   • middle : a full-width 16:9 cinematic BAND holding the scrubbed knight/orb
  *              clip at its true ratio (no crop). Fades in as the title leaves.
- *   • bottom — warm-black + mist: the "Défiler" scroll cue.
+ *   • bottom : warm-black + mist: the "Défiler" scroll cue.
  * The orb rises, the fire bursts, and the sequence hands off to the (horizontal,
  * letterboxed) festival film exactly like the desktop intro. Shares all assets.
  */
@@ -47,7 +47,7 @@ const MI_CSS = `
 .mim-stage{height:100vh;height:100svh}
 `;
 
-// Scroll cue — explicit "Défiler" label + a cascading triple chevron.
+// Scroll cue: explicit "Défiler" label + a cascading triple chevron.
 function ScrollCue() {
   return (
     <div className="flex flex-col items-center gap-2.5">
@@ -81,7 +81,7 @@ function ScrollCue() {
 }
 
 // Canvas frame-scrubber. The canvas fills a 16:9 band, and the source frames
-// are 16:9, so "cover" is an exact fit here — no crop, no squish.
+// are 16:9, so "cover" is an exact fit here: no crop, no squish.
 function BandScrubber({ progress, active, superSample = 1 }: { progress: MotionValue<number>; active: boolean; superSample?: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const imgs = useRef<HTMLImageElement[]>([]);
@@ -313,7 +313,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
   const bandScale = useTransform(progress, [0.16, 0.55], [1, fillScale]);
   // Scroll cue fades the instant scrolling begins.
   const cueOp = useTransform(progress, [0, 0.06], [1, 0]);
-  // Fire burst — the finale over the band.
+  // Fire burst: the finale over the band.
   const burst = useTransform(progress, [0.82, 0.95, 1], [0, 1, 1]);
   // Ambient torch fire under the band, fades out during the scrub.
   const fireOp = useTransform(progress, [0, 0.05], [0.7, 0]);
@@ -457,7 +457,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
                     </button>
                   </motion.div>
 
-                  {/* full-stage tap target — plays the whole sequence */}
+                  {/* full-stage tap target: plays the whole sequence */}
                   <button
                     type="button"
                     onClick={playSequence}
@@ -470,7 +470,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
             </div>
           )}
 
-          {/* Festival film — horizontal, letterboxed at centre. Stays 16:9. */}
+          {/* Festival film: horizontal, letterboxed at centre. Stays 16:9. */}
           {(bufferFilm || phase === 'video') && (
             <motion.div
               className="absolute inset-0 bg-black"

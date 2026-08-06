@@ -1,13 +1,13 @@
-// Finances — Firestore CRUD (catégories, comptes, répartition) +
+// Finances: Firestore CRUD (catégories, comptes, répartition) +
 // Firebase Storage (documents financiers). Admin only (voir
 // firestore.rules / storage.rules).
 //
 // Collections :
-//   financeCategories/{id}   — budget par catégorie
-//   financeAccounts/{id}     — soldes des comptes (Desjardins, Square, Zeffy, dette…)
-//   financeAllocation/settings — doc unique, répartition en 3 enveloppes (investir/épargner/essentiel)
-//   financeDocuments/{id}    — métadonnées des documents téléversés dans Storage
-//   financeReceivables/{id}  — argent promis mais pas encore en banque (subventions, commandites, factures)
+//   financeCategories/{id}   : budget par catégorie
+//   financeAccounts/{id}     : soldes des comptes (Desjardins, Square, Zeffy, dette…)
+//   financeAllocation/settings : doc unique, répartition en 3 enveloppes (investir/épargner/essentiel)
+//   financeDocuments/{id}    : métadonnées des documents téléversés dans Storage
+//   financeReceivables/{id}  : argent promis mais pas encore en banque (subventions, commandites, factures)
 
 import {
   collection, doc, addDoc, getDocs, updateDoc, deleteDoc, setDoc, getDoc, serverTimestamp,
@@ -56,7 +56,7 @@ export interface FinanceDocument {
   year: number;
   uploadedAt: unknown; // Firestore Timestamp
   url: string;
-  path: string; // Storage path — nécessaire pour la suppression
+  path: string; // Storage path: nécessaire pour la suppression
   sizeKb: number;
 }
 

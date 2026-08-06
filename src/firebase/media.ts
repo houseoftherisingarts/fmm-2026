@@ -1,4 +1,4 @@
-// Media library — Firebase Storage list + upload.
+// Media library: Firebase Storage list + upload.
 // Admin MediasSection reads the `media/` prefix for the gallery grid
 // and uploads new files from the Téléverser button.
 

@@ -73,7 +73,7 @@ const STORE: MailMessage[] = [
     fromAdminUid: 'mock-super-uid',
     transferredFrom: { adminUid: 'mock-super-uid', adminEmail: 'dev@local' },
     subject: 'Disponibilités samedi soir',
-    body: 'Tristan, je te passe ça — tu es plus au courant des créneaux scène.',
+    body: 'Tristan, je te passe ça, tu es plus au courant des créneaux scène.',
     read: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString(),
   },

@@ -64,12 +64,12 @@ const CinematicHero: React.FC<Props> = ({
         />
       </motion.div>
 
-      {/* Atmospheric overlays — vignette + warm gradients */}
+      {/* Atmospheric overlays: vignette + warm gradients */}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-night/70 via-night/55 to-night/95" />
       <div className="absolute inset-0 z-10 bg-gradient-to-tr from-oxblood-deep/45 via-transparent to-transparent" />
       <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_30%_20%,rgba(176,141,58,0.18),transparent_55%)]" />
 
-      {/* Twin pulsing torchlights — opposite phases, subtly different periods */}
+      {/* Twin pulsing torchlights: opposite phases, subtly different periods */}
       <motion.div
         className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_12%_78%,rgba(232,184,106,0.28),transparent_45%)]"
         animate={{ opacity: [0.55, 1, 0.7, 0.95, 0.55] }}

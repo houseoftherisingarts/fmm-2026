@@ -308,7 +308,7 @@ const BenevolePage: React.FC = () => {
                   </motion.div>
                 )}
 
-                {/* Submission error banner — top-of-form, hard to miss */}
+                {/* Submission error banner: top-of-form, hard to miss */}
                 {status === 'error' && (
                   <motion.div
                     initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
@@ -348,7 +348,7 @@ const BenevolePage: React.FC = () => {
                         transition={{ duration: 0.25 }}
                         className="space-y-7"
                       >
-                        {/* Q1 — days */}
+                        {/* Q1: days */}
                         <Question label={t.q1Label} sub={t.q1Sub} required>
                           <div className="grid sm:grid-cols-2 gap-2">
                             {DAYS.map((d) => {
@@ -372,7 +372,7 @@ const BenevolePage: React.FC = () => {
                           </div>
                         </Question>
 
-                        {/* Q2 — station preferences (1/2/3/learn-more) */}
+                        {/* Q2: station preferences (1/2/3/learn-more) */}
                         <Question label={t.q2Label} sub={t.q2Sub} required>
                           <div className="space-y-2">
                             {STATIONS.map((s) => {
@@ -410,7 +410,7 @@ const BenevolePage: React.FC = () => {
                           </div>
                         </Question>
 
-                        {/* Q3 — heard from */}
+                        {/* Q3: heard from */}
                         <Question label={t.q3Label} required>
                           <div className="grid sm:grid-cols-2 gap-2">
                             {HEARD_FROM.map((h) => {
@@ -434,7 +434,7 @@ const BenevolePage: React.FC = () => {
                           )}
                         </Question>
 
-                        {/* Q4 — why volunteer */}
+                        {/* Q4: why volunteer */}
                         <Question label={t.q4Label} required>
                           <textarea rows={4} value={form.message} onChange={(e) => set('message', e.target.value)}
                             placeholder={t.q4Placeholder}

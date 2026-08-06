@@ -31,7 +31,7 @@ import AdminShell, { type AdminSectionId, ADMIN_SECTION_IDS } from './admin/Admi
 import GateScreen from './admin/GateScreen';
 import type { AdminRole } from '../lib/adminPermissions';
 
-// Lazy-loaded sections — keeps the AdminPage entry bundle tight. Most
+// Lazy-loaded sections: keeps the AdminPage entry bundle tight. Most
 // admins only open 2–3 sections per session, and Pupitre alone drags in
 // html2canvas + jspdf + dompurify (~500 kB combined) which previously
 // shipped to every admin on login.
@@ -68,7 +68,7 @@ const SectionFallback: React.FC = () => (
   </div>
 );
 
-// DEV-ONLY auth bypass — toggled by VITE_ADMIN_DEV_BYPASS=true.
+// DEV-ONLY auth bypass: toggled by VITE_ADMIN_DEV_BYPASS=true.
 const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.meta.env.DEV;
 
 // Wire CRUD to live Firestore vs in-memory mocks based on bypass flag.
@@ -110,7 +110,7 @@ const updateVendor = (uid: string, year: number, s: VendorStatus, n?: string) =>
   return setVendorStatus(uid, year, s, n);
 };
 
-// Musicians — same DEV_BYPASS pattern as vendors. Mock store is also
+// Musicians: same DEV_BYPASS pattern as vendors. Mock store is also
 // spliced in dev so Pitch can see demo applications without Firestore.
 const fetchMusicians = async (): Promise<MusicianApp[]> => {
   if (DEV_BYPASS) return mockListMusicians();
@@ -144,14 +144,14 @@ const AdminPage: React.FC = () => {
 
   // The URL is the source of truth for which section is open. `/admin`
   // alone means dashboard; `/admin/<id>` opens that section when it's a
-  // real, known id — an unknown segment (typo, dead link) also falls
+  // real, known id: an unknown segment (typo, dead link) also falls
   // back to dashboard rather than rendering nothing.
   const section: AdminSectionId =
     sectionParam && (ADMIN_SECTION_IDS as string[]).includes(sectionParam)
       ? (sectionParam as AdminSectionId)
       : 'dashboard';
 
-  // Changing section navigates — keeps the address bar and the open
+  // Changing section navigates: keeps the address bar and the open
   // section in sync in both directions (click a nav item → URL updates;
   // reload a deep link → the right section opens).
   const setSection = (id: AdminSectionId) => {
@@ -163,13 +163,13 @@ const AdminPage: React.FC = () => {
   // own. Null = still standing in front of the gate.
   const [selectedRole, setSelectedRole] = useState<AdminRole | null>(null);
 
-  // Effective role used by every permission check inside the shell —
+  // Effective role used by every permission check inside the shell:
   // the role the visitor entered as, not necessarily their real one.
   // Super-admins picking the CA door, for instance, see the CA scope.
   const effectiveRole: AdminRole | null = selectedRole;
 
   // Guard: if the URL (a deep link, or a role picked at the gate) points
-  // at a section this role can't open, bounce back to the dashboard —
+  // at a section this role can't open, bounce back to the dashboard:
   // never render a forbidden section. Also runs when the effective role
   // changes (e.g., super-admin switched gates mid-session).
   useEffect(() => {
@@ -208,7 +208,7 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  // ── DEV BYPASS — skip auth but still walk through the gate so the
+  // ── DEV BYPASS: skip auth but still walk through the gate so the
   //    role-preview behaviour can be exercised offline.
   if (DEV_BYPASS) {
     if (!selectedRole) {
@@ -226,7 +226,7 @@ const AdminPage: React.FC = () => {
         </>
       );
     }
-    // The dev-bypass user's actual clearance is always super — walking
+    // The dev-bypass user's actual clearance is always super: walking
     // through a different door here is just picking which scope to
     // preview, never an access downgrade. A super-admin's own clearance
     // never needs the "preview mode" banner (confusing, no signal for
@@ -280,7 +280,7 @@ const AdminPage: React.FC = () => {
   // Anonymous + signed-in visitors both land on the gate. Anonymous
   // visitors see all doors locked; knocking on any door opens the
   // sign-in modal instead of the HALT page. Signed-in visitors with
-  // no role see locked doors too — clicking triggers HALT. Whoever
+  // no role see locked doors too: clicking triggers HALT. Whoever
   // walks in legitimately can pick their door from there. The `!user`
   // guard also ensures we never reach the shell render below without
   // an authenticated user.
@@ -301,10 +301,10 @@ const AdminPage: React.FC = () => {
     );
   }
 
-  // Through the gate — render the shell scoped to the chosen role.
+  // Through the gate: render the shell scoped to the chosen role.
   // Preview banner fires whenever the role they're VIEWING AS differs
   // from their actual clearance (any admin who hit the "View as" toggle
-  // in the sidebar) — except for super-admins, whose own clearance is
+  // in the sidebar), except for super-admins, whose own clearance is
   // always full access, so the "preview mode" framing would only
   // confuse them about which door they walked through.
   const actualRoleForShell = isSuperAdmin ? 'super' : adminRole;

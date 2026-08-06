@@ -4,8 +4,8 @@
 // `mail/` docs so each thread is a flat list of messages with the
 // same `threadId`.
 //
-// Recipients are either a SHARED department mailbox (e.g. "kiosques")
-// — visible to every admin who can access the Mail tab — or a SPECIFIC
+// Recipients are either a SHARED department mailbox (e.g. "kiosques"),
+// visible to every admin who can access the Mail tab, or a SPECIFIC
 // admin's PERSONAL mailbox (referenced by email, the same key the
 // adminRoles collection uses). Transfers move a message into another
 // admin's personal box without losing the original audit trail.
@@ -110,7 +110,7 @@ export async function sendMessage(args: SendArgs): Promise<string> {
   if (!db) throw new Error('Firebase not configured');
   const { recipientType, recipientId } = recipientMatchesQueryFields(args.recipient);
   const ref = await addDoc(collection(db, COL), {
-    threadId:      '',   // patched below — see updateDoc
+    threadId:      '',   // patched below: see updateDoc
     kind:          'incoming' as MailKind,
     recipient:     args.recipient,
     recipientType,

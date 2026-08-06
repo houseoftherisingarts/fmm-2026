@@ -1,12 +1,12 @@
-# Hnefatafl — GLB asset notes
+# Hnefatafl: GLB asset notes
 
-The actual `.glb` files do **not** live in this folder — large 3D assets
+The actual `.glb` files do **not** live in this folder: large 3D assets
 go under `public/games/hnefatafl/models/` so vite serves them directly
 without bundling them into a JS chunk.
 
 ```
 public/games/hnefatafl/models/
-├── board.glb            ← installed (33 MB — needs compression)
+├── board.glb            ← installed (33 MB, needs compression)
 ├── piece_raider.glb     ← TODO (Meshy)
 ├── piece_defender.glb   ← TODO (Meshy)
 └── piece_king.glb       ← TODO (Meshy)
@@ -14,7 +14,7 @@ public/games/hnefatafl/models/
 
 ## Currently wired
 
-- `board.glb` — loaded by `loadBoardModel()` in `../../boardMesh.ts`.
+- `board.glb`: loaded by `loadBoardModel()` in `../../boardMesh.ts`.
   When it resolves, the procedural board decorations (base, trims, grid
   lines, corner + throne markers) are hidden and the 121 procedural
   squares become invisible-but-raycastable so cell clicks still work.
@@ -26,7 +26,7 @@ public/games/hnefatafl/models/
 Web GLBs should be 1–10 MB. Compression options:
 
 ```bash
-# Draco geometry compression — 10–50× smaller for high-poly meshes
+# Draco geometry compression: 10–50× smaller for high-poly meshes
 npx gltf-pipeline -i public/games/hnefatafl/models/board.glb \
                   -o public/games/hnefatafl/models/board.draco.glb \
                   --draco.compressionLevel 7

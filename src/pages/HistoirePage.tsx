@@ -162,7 +162,7 @@ const PhotoLightbox: React.FC<{ src: string; alt: string; onClose: () => void }>
 };
 
 // ─── Shared two-column section header band ───────────────────────────
-// Layout law (Alex, 2026-07-28): nothing sits alone centered — every
+// Layout law (Alex, 2026-07-28): nothing sits alone centered: every
 // section opens on a two-column band (title left, lead right) and the
 // content below runs full width.
 export const SectionBand: React.FC<{
@@ -247,7 +247,7 @@ export const NiGnSection: React.FC = () => {
 
 // ─── Archives photos (masonry per photographer + credits) ────────────
 // Source de vérité : la collection Firestore `archivesPhotos` (gérée par
-// la section Photos de l'admin — activer/désactiver, ordre, uploads).
+// la section Photos de l'admin : activer/désactiver, ordre, uploads).
 // Si la collection est vide ou inaccessible, on retombe sur les
 // manifestes statiques pour que la galerie ne casse jamais.
 const staticGroups = (): { photographer: string; photos: GalleryItem[] }[] =>

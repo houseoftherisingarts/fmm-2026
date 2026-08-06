@@ -1,4 +1,4 @@
-// ─── Hnefatafl — scene, renderer, camera, lights, fog, resize ────────
+// Hnefatafl: scene, renderer, camera, lights, fog, resize
 import * as THREE from 'three';
 import gsap from 'gsap';
 

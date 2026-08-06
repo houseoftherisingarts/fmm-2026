@@ -65,7 +65,7 @@ const MediasSection: React.FC<Props> = ({ devBypass }) => {
     }
   };
 
-  // "Déjà publié" — live-streamed from socialPosts where status='posted'.
+  // "Déjà publié": live-streamed from socialPosts where status='posted'.
   // Falls back to the mock store in dev so the section reads cleanly
   // even without Firestore.
   const [posted, setPosted] = useState<SocialPost[]>([]);
@@ -76,7 +76,7 @@ const MediasSection: React.FC<Props> = ({ devBypass }) => {
     }
     const unsub = subscribePostedSocialPosts((rows) => setPosted(rows));
     // Mock fallback alongside if the live query errors out (subscribe
-    // already logs + cb([]) — splice in mocks so the section isn't empty).
+    // already logs + cb([]), splice in mocks so the section isn't empty).
     mockListSocialPosts().then((rows) => {
       const mockPosted = rows.filter((p) => p.status === 'posted');
       setPosted((cur) => cur.length === 0 ? mockPosted : cur);
@@ -167,7 +167,7 @@ const MediasSection: React.FC<Props> = ({ devBypass }) => {
         </div>
       )}
 
-      {/* ── Déjà publié — fed by socialPosts where status='posted' ── */}
+      {/* ── Déjà publié: fed by socialPosts where status='posted' ── */}
       <div className="pt-8 border-t border-ivory-soft/15">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest flex items-center gap-2">

@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 // extrait ici le 2026-08-03 parce que les avis de l'espace client s'y
 // épinglent maintenant eux aussi. Un seul panneau, deux usages.
 //
-//   • public/board/notice-frame.webp     — cadre servi en border-image
+//   • public/board/notice-frame.webp     : cadre servi en border-image
 //     (tranches de 170 px) pour que les coins ferrés restent nets quelle
 //     que soit la hauteur du tableau
-//   • public/board/notice-wood.webp      — intérieur en tuile miroir 2x2,
+//   • public/board/notice-wood.webp      : intérieur en tuile miroir 2x2,
 //     répétable sans couture, jamais étiré
-//   • public/board/notice-parchment.webp — vraie feuille déchirée détourée,
+//   • public/board/notice-parchment.webp : vraie feuille déchirée détourée,
 //     une par avis, notre texte par-dessus
 
 // Ce qui plante l'avis dans le bois. La cire rouge est le défaut
@@ -63,7 +63,7 @@ export const NoticeBoard: React.FC<{
   </div>
 );
 
-// ─── Parchment — un avis épinglé sur le panneau ──────────────────
+// ─── Parchment: un avis épinglé sur le panneau ──────────────────
 export const Parchment: React.FC<{
   tilt?: number;
   pin?: PinTone;

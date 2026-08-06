@@ -246,7 +246,7 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
           });
         }
 
-        // Backgrounds — fade or wipe
+        // Backgrounds: fade or wipe
         const prevBg = bgRefs.current[from];
         const newBg = bgRefs.current[to];
         if (bgTransition === 'fade') {
@@ -375,7 +375,7 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [total, initialIndex, motionOff, bgTransition, parallaxAmount]);
 
-    // Mount entrance — soft list stagger
+    // Mount entrance: soft list stagger
     useEffect(() => {
       inCtx(() => {
         leftItemRefs.current.forEach((el, i) => {
@@ -406,10 +406,10 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
       ['--fx-row-gap' as any]: '12px',
     };
 
-    // Outer pin span = (total + 1) × 120vh — matches the .fx-fixed
+    // Outer pin span = (total + 1) × 120vh: matches the .fx-fixed
     // height bump from 100vh → 120vh so each section dwells through a
     // proportional scroll distance. NOTE: must round to an integer
-    // before composing the vh string — `${1.2 * 14}00vh` evaluates to
+    // before composing the vh string: `${1.2 * 14}00vh` evaluates to
     // "16.800vh" which is invalid CSS (the browser silently drops it
     // and the parent collapses, breaking the sticky pin).
     const fixedSectionStyle: CSSProperties = {
@@ -474,7 +474,7 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
                     </div>
                   </div>
 
-                  {/* Center — keyword + body */}
+                  {/* Center: keyword + body */}
                   <div className="fx-center">
                     {sections.map((s, sIdx) => {
                       tempWordBucket.current = [];

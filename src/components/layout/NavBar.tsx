@@ -21,7 +21,7 @@ const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
 const CHARCOAL_BG       = '#16161a';
 const CHARCOAL_BG_SOFT  = '#1f1f24';
 const CHARCOAL_DIVIDER  = 'rgba(244, 239, 227, 0.08)';
-// Copper/gold accent palette — references the project's design tokens
+// Copper/gold accent palette: references the project's design tokens
 // where possible so the drawer stays in sync with the rest of the site.
 const ACCENT_DEEP   = 'var(--color-copper)';        // copper ~ #b86a2a
 const ACCENT_MID    = 'var(--color-mustard)';       // mustard ~ #d89b3a
@@ -29,7 +29,7 @@ const ACCENT_BRIGHT = 'var(--color-amber-glow)';    // amber glow ~ #e8b14a
 const ACCENT_GLOW   = 'rgba(232, 177, 74, 0.55)';   // amber-glow with alpha
 const ACCENT_DIM    = 'rgba(184, 106, 42, 0.45)';   // copper-faded
 
-// Four lit copper L-ticks pinned to the drawer's corners — Witcher
+// Four lit copper L-ticks pinned to the drawer's corners: Witcher
 // inventory chrome on the charcoal stage.
 const DrawerCornerTicks: React.FC = () => {
   const base: React.CSSProperties = {
@@ -82,7 +82,7 @@ const ctaVariants = {
   shown:  { opacity: 1, scale: 1, y: 0, transition: { delay: 0.62, duration: 0.6, ease: [0.34, 1.56, 0.64, 1] as const } },
 };
 
-// ─── NavBar — Caravan edition ────────────────────────────────────────
+// ─── NavBar: Caravan edition ────────────────────────────────────────
 // Slim 56-60px chrome lifted in spirit from Le Salon des Inconnus
 // SiteHeader: transparent over the page at top, dense velvet-glass on
 // scroll, always-visible primary CTA on the right, segmented FR/EN
@@ -115,7 +115,7 @@ const NavBar: React.FC = () => {
 
   useEffect(() => { setMobileMenuOpen(false); }, [location.pathname, setMobileMenuOpen]);
 
-  // Lock body scroll while the drawer is open — same trick the salon
+  // Lock body scroll while the drawer is open: same trick the salon
   // SiteHeader uses to prevent background scroll bleed-through.
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
@@ -160,14 +160,14 @@ const NavBar: React.FC = () => {
             </span>
           </Link>
 
-          {/* ── Audio player — center ─────────────────────── */}
+          {/* ── Audio player: center ─────────────────────── */}
           <div className="flex-1 flex justify-center min-w-0">
             <AudioPlayer />
           </div>
 
           {/* ── Right cluster ─────────────────────────────── */}
           <div className="flex items-center gap-2 md:gap-2.5 shrink-0">
-            {/* Primary CTA — Tickets, always visible on desktop */}
+            {/* Primary CTA: Tickets, always visible on desktop */}
             <Link
               to={ticketUrl}
               className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 font-sans uppercase tracking-[0.28em] text-[10px] font-semibold transition-all hover:scale-[1.03]"
@@ -183,7 +183,7 @@ const NavBar: React.FC = () => {
               {lang === 'FR' ? 'Billets' : 'Tickets'}
             </Link>
 
-            {/* Segmented FR/EN toggle — lifted from SiteHeader */}
+            {/* Segmented FR/EN toggle, lifted from SiteHeader */}
             <div
               className="hidden sm:inline-flex items-center p-0.5 backdrop-blur-md transition-colors"
               style={{
@@ -271,7 +271,7 @@ const NavBar: React.FC = () => {
               <ShoppingBag size={15} />
             </button>
 
-            {/* Menu — diamond hover marker */}
+            {/* Menu: diamond hover marker */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -294,7 +294,7 @@ const NavBar: React.FC = () => {
           </div>
         </nav>
 
-        {/* Bottom hairline — visible only when scrolled */}
+        {/* Bottom hairline, visible only when scrolled */}
         <div
           aria-hidden
           className={`absolute inset-x-0 bottom-0 h-px transition-opacity ${scrolled ? 'opacity-100' : 'opacity-0'}`}
@@ -303,7 +303,7 @@ const NavBar: React.FC = () => {
       </header>
 
       {/* ── Full-screen drawer ─────────────────────────────────────
-          Witcher-inventory chrome on a fully-opaque charcoal stage —
+          Witcher-inventory chrome on a fully-opaque charcoal stage:
           no transparency, so menu text always reads. Charcoal carries
           ~80% of the surface; copper/gold lives in the eyebrow, the
           item pip, the active hairline + the CTA fill (~20%). */}
@@ -324,10 +324,10 @@ const NavBar: React.FC = () => {
                 `linear-gradient(180deg, ${CHARCOAL_BG_SOFT} 0%, ${CHARCOAL_BG} 55%, #0e0e12 100%)`,
             }}
           >
-            {/* Corner ornaments — drawer-wide L-ticks in copper */}
+            {/* Corner ornaments: drawer-wide L-ticks in copper */}
             <DrawerCornerTicks />
 
-            {/* Top strip — copper hairline beneath */}
+            {/* Top strip: copper hairline beneath */}
             <motion.div
               variants={stripVariants}
               className="relative h-[60px] px-4 md:px-7 flex items-center justify-between"
@@ -370,7 +370,7 @@ const NavBar: React.FC = () => {
             </motion.div>
 
             <nav className="relative px-6 md:px-10 py-10 max-w-5xl mx-auto overflow-y-auto h-[calc(100vh-60px)]">
-              {/* Eyebrow — slides in from the left, copper hex + label */}
+              {/* Eyebrow: slides in from the left, copper hex + label */}
               <motion.div variants={eyebrowVariants} className="mb-8">
                 <p
                   className="font-display title-medieval italic uppercase tracking-[0.45em] text-[10px] inline-flex items-center gap-2.5"
@@ -392,7 +392,7 @@ const NavBar: React.FC = () => {
                 />
               </motion.div>
 
-              {/* Pillar list — staggered cascade in from the left, laid
+              {/* Pillar list, staggered cascade in from the left, laid
                   out in 2 columns on md+. Each row: Roman-numeral index
                   + diamond pip + label + arrow. Hover paints the label
                   copper, slides the pip, and draws a copper hairline
@@ -424,7 +424,7 @@ const NavBar: React.FC = () => {
                           {ROMAN[idx]}
                         </span>
 
-                        {/* Diamond pip — slides 4px right on hover */}
+                        {/* Diamond pip: slides 4px right on hover */}
                         <span
                           aria-hidden
                           className="w-1.5 h-1.5 rotate-45 shrink-0 transition-all duration-300 group-hover:translate-x-1 group-hover:scale-125"
@@ -434,7 +434,7 @@ const NavBar: React.FC = () => {
                           }}
                         />
 
-                        {/* Label — paints copper on hover */}
+                        {/* Label: paints copper on hover */}
                         <span
                           className="flex-1 font-display title-medieval text-xl md:text-2xl lg:text-[1.7rem] tracking-[0.04em] uppercase transition-colors duration-200 leading-tight"
                           style={{ color: isActive ? ACCENT_BRIGHT : 'var(--color-bone)' }}
@@ -444,7 +444,7 @@ const NavBar: React.FC = () => {
                           {p.label[lang]}
                         </span>
 
-                        {/* Chevron-style line — appears on hover */}
+                        {/* Chevron-style line: appears on hover */}
                         <span
                           aria-hidden
                           className="hidden md:inline-block w-0 h-px opacity-0 group-hover:w-6 lg:group-hover:w-8 group-hover:opacity-100 transition-all duration-300"
@@ -471,7 +471,7 @@ const NavBar: React.FC = () => {
                 })}
               </motion.ul>
 
-              {/* CTA — copper/gold gradient fill (the 20% accent moment).
+              {/* CTA: copper/gold gradient fill (the 20% accent moment).
                   Pops in last with a back-ease overshoot. */}
               <MotionLink
                 variants={ctaVariants}

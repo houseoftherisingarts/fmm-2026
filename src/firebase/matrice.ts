@@ -1,4 +1,4 @@
-// ─── Matrice des rôles — Firestore-backed CRUD ──────────────────────
+// ─── Matrice des rôles: Firestore-backed CRUD ──────────────────────
 // Collections: matriceRoles/{id}, matriceTasks/{id} (flat, no subcollection).
 // Pure helpers and types are re-exported from mockMatrice so callers
 // can import everything from one place.

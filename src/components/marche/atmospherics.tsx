@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 // rail shows the section's index/name on the left and an optional
 // meta readout on the right; the bottom rail mirrors the structure
 // with a diamond pip + hint. Borders + colors match the existing
-// MerchantPact rule exactly so nothing visual changes — sections just
+// MerchantPact rule exactly so nothing visual changes: sections just
 // bleed into a unified chapter-by-chapter flow.
 export const SectionTopRail: React.FC<{
   index: string;
@@ -97,13 +97,13 @@ export const SectionBottomRail: React.FC<{
 
 // ─── SectionFog ──────────────────────────────────────────────────────
 // Pure-CSS atmospheric overlay at section edges. No video, no canvas,
-// no SVG noise — three layered radial-gradient blobs of warm copper
+// no SVG noise: three layered radial-gradient blobs of warm copper
 // fog that drift slowly via background-position animation. Cheap on
 // GPU, no playback desync, no clip artifacts, and the dense centre
 // always lands at the seam regardless of section height.
 //
 // Default: both edges. Pass `edges="bottom"` (or `"top"`) when a
-// section's other edge shouldn't carry fog — e.g. a hero where the
+// section's other edge shouldn't carry fog: e.g. a hero where the
 // top fog would cover the orb.
 export const SectionFog: React.FC<{ edges?: 'top' | 'bottom' | 'both' }> = ({
   edges = 'both',
@@ -184,7 +184,7 @@ export const BracketFrame: React.FC<{
 
 // ─── GildedFrame ─────────────────────────────────────────────────
 // LoL champion-select-style ornate corner frame. Renders four SVG
-// corner ornaments inside the wrapper — flourished gold filigree,
+// corner ornaments inside the wrapper: flourished gold filigree,
 // not bracket ticks. Pair with a dark/photo background. Set `active`
 // to lock the corners lit (e.g. selected card).
 export const GildedFrame: React.FC<{
@@ -205,7 +205,7 @@ export const GildedFrame: React.FC<{
       {(['tl', 'tr', 'bl', 'br'] as const).map((pos) => (
         <CornerOrnament key={pos} pos={pos} inset={inset} color={color} active={active} filter={litShadow} />
       ))}
-      {/* Energy edge — top + bottom hairlines that brighten on hover */}
+      {/* Energy edge: top + bottom hairlines that brighten on hover */}
       <span
         aria-hidden
         className={`pointer-events-none absolute left-12 right-12 top-0 h-px transition-opacity duration-500 ${
@@ -329,7 +329,7 @@ export const HexPanel: React.FC<{
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   active?: boolean;
-  /** Inner padding — defaults to 0 (caller controls). */
+  /** Inner padding: defaults to 0 (caller controls). */
   padded?: boolean;
 }> = ({ children, className = '', size = 'md', active = false, padded = false }) => {
   const sizeClass = size === 'sm' ? 'hex-cut-sm' : size === 'lg' ? 'hex-cut-lg' : '';
@@ -344,16 +344,16 @@ export const HexPanel: React.FC<{
 };
 
 // ─── ChevronButton ────────────────────────────────────────────────
-// Wild-Rift primary action — slanted parallelogram-ish edge, amber
+// Wild-Rift primary action: slanted parallelogram-ish edge, amber
 // gradient fill, diagonal accent stripes, internal hover sheen. Used
 // as the page-wide primary CTA pattern (apply, pre-order, etc).
 interface ChevronButtonProps {
   children: React.ReactNode;
-  /** External URL — renders an <a>. */
+  /** External URL: renders an <a>. */
   href?: string;
-  /** Internal route — renders a react-router <Link>. */
+  /** Internal route: renders a react-router <Link>. */
   to?: string;
-  /** Form submit / native action — renders a <button>. */
+  /** Form submit / native action: renders a <button>. */
   type?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
   target?: string;

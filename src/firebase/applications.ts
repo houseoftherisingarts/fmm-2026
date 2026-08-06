@@ -1,5 +1,5 @@
 // Typed Firestore CRUD for user-bound application records.
-// One bénévole doc per uid; one vendor doc per (uid, year) — vendors
+// One bénévole doc per uid; one vendor doc per (uid, year): vendors
 // live at vendors/{uid}/years/{year} so a merchant can have history.
 
 import {
@@ -17,7 +17,7 @@ export const CURRENT_YEAR = 2026;
 // Firestore rejects setDoc payloads containing `undefined` values. Optional
 // fields on our app/profile shapes are routinely undefined for fresh records,
 // so we drop those keys before writing. (Set { merge: true } means dropping
-// the key is a no-op on the doc — it doesn't clear existing values.)
+// the key is a no-op on the doc: it doesn't clear existing values.)
 //
 // Recursively strips so nested objects (e.g. stationPreferences) don't sneak
 // undefined values into the payload. Plain arrays + Firestore Timestamps
@@ -48,7 +48,7 @@ const withTimeout = <T,>(p: Promise<T>, ms: number, label: string): Promise<T> =
   ]);
 
 // Roles a person can hold simultaneously in their FMM client space.
-// Multiple flags are normal — a vendor may also be a benevole and a
+// Multiple flags are normal: a vendor may also be a benevole and a
 // performer. Flags are tagged automatically by the relevant flow
 // (vendor form sets 'vendor', benevole form sets 'benevole', etc.)
 // and admins can also toggle them in the CRM.
@@ -139,7 +139,7 @@ export interface BenevoleApp {
   // ── Optional showcase / admin-curated fields ────────────────────
   city?: string;
   languages?: ('FR' | 'EN' | 'ES' | 'AR' | 'DE' | 'IT')[];
-  skills?: string[];                    // libre — "soudure", "premiers soins", "service bar"
+  skills?: string[];                    // libre : "soudure", "premiers soins", "service bar"
   certifications?: string[];            // "RCR", "Permis classe 5"
   preferredStations?: string[];         // legacy free-text; new flow uses stationPreferences
   availability?: Partial<Record<'jeudi' | 'vendredi' | 'samedi' | 'dimanche' | 'lundi', string>>;
@@ -162,7 +162,7 @@ export type VendorElectricityNeed = 'oui' | 'non' | 'phone';
 // three bands. `premium` is the gold-rim pavilion (internally "VIP"
 // but never shown that way to the public), `marche` is the regular
 // kiosk grid, `digital` is the online-only boutique. Only Jesse + admins
-// see the tier label — vendors don't pick their own tier.
+// see the tier label. Vendors don't pick their own tier.
 export type VendorTier = 'premium' | 'marche' | 'digital';
 
 export interface VendorRefusalReasons {
@@ -217,7 +217,7 @@ export interface VendorApp {
 
   // ── Admin-curated display fields (drive the public /marche page) ──
   // `tier` decides which band the vendor shows up in. Admins (Jesse)
-  // change this from the CRM Marchands tab — it has no client-facing
+  // change this from the CRM Marchands tab: it has no client-facing
   // form. Defaults to 'marche' when unset.
   tier?:        VendorTier;
   featured?:    boolean;                     // pin to top of its band
@@ -280,14 +280,14 @@ export async function getBenevoleApp(uid: string): Promise<BenevoleApp | null> {
 }
 
 export async function upsertBenevoleApp(app: BenevoleApp): Promise<void> {
-  if (!db) throw new Error('Firestore not configured — vérifiez .env.local');
+  if (!db) throw new Error('Firestore not configured: vérifiez .env.local');
   const payload = {
     ...stripUndefined(app as unknown as Record<string, unknown>),
     updatedAt: serverTimestamp(),
     createdAt: app.createdAt || serverTimestamp(),
   };
   // 20s timeout: if the write doesn't resolve by then it's stuck (offline,
-  // permission denied silently, or Firestore SDK hung) — surface it as an
+  // permission denied silently, or Firestore SDK hung): surface it as an
   // error instead of hanging the UI. The local cache may still settle later.
   try {
     await withTimeout(
@@ -301,7 +301,7 @@ export async function upsertBenevoleApp(app: BenevoleApp): Promise<void> {
   }
 }
 
-// Capped read — passes through `pageSize` so callers can shrink the
+// Capped read: passes through `pageSize` so callers can shrink the
 // window. We don't yet expose cursor-based pagination because the admin
 // list view still renders everything client-side, but the limit alone
 // kills the unbounded-read bill as the collection grows.
@@ -329,7 +329,7 @@ export async function setBenevoleStatus(uid: string, status: AppStatus, adminNot
 
 // ── Admin-only notes ───────────────────────────────────────────────
 // Stored at benevoles/{uid}/private/notes (admin-only in firestore.rules)
-// so the applicant — who can read their own main doc — never sees them.
+// so the applicant (who can read their own main doc) never sees them.
 const benevoleNotesDoc = (uid: string) =>
   doc(db!, 'benevoles', uid, 'private', 'notes');
 
@@ -401,7 +401,7 @@ export async function setVendorStatus(uid: string, year: number, status: VendorS
 
 // Re-invite a known merchant for a new year by copying last year's answers
 // and resetting status/year-specific fields. Pre-fills the form for them
-// when they sign in — they review and resubmit.
+// when they sign in: they review and resubmit.
 export async function reinviteVendor(uid: string, fromYear: number, toYear: number): Promise<void> {
   if (!db) throw new Error('Firestore not configured');
   const prev = await getVendorApp(uid, fromYear);

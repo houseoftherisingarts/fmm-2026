@@ -71,7 +71,7 @@ const MatriceRolesSection: React.FC<Props> = ({ devBypass }) => {
           const [mr, mt] = await Promise.all([listMatriceRolesMock(), listMatriceTasksMock()]);
           rolesRef.current = mr;
           setRoles(mr); setTasks(mt);
-          setError('Firebase indisponible — données mock utilisées.');
+          setError('Firebase indisponible : données mock utilisées.');
         } catch {
           setError('Impossible de charger la matrice.');
         }
@@ -167,7 +167,7 @@ const MatriceRolesSection: React.FC<Props> = ({ devBypass }) => {
         </Card>
       )}
 
-      {/* Header — counts, view toggle, actions */}
+      {/* Header: counts, view toggle, actions */}
       <div className="flex items-end justify-between gap-3 flex-wrap">
         <div>
           <p className="font-editorial italic text-sm text-ivory-soft">
@@ -300,7 +300,7 @@ const OverviewBoard: React.FC<BoardProps> = ({
       const tr = toEl.getBoundingClientRect();
       const tx = tr.left + tr.width / 2 - cRect.left;
       const ty = tr.top  + tr.height / 2 - cRect.top;
-      // Cubic bezier — control points biased toward the midpoint with a
+      // Cubic bezier: control points biased toward the midpoint with a
       // soft outward arc so lines don't all pile up on direct lines.
       const mx = (fx + tx) / 2;
       const my = (fy + ty) / 2;
@@ -400,7 +400,7 @@ const OverviewBoard: React.FC<BoardProps> = ({
         })}
       </div>
 
-      {/* SVG dependency overlay — drawn ABOVE the grid (z-10) but with
+      {/* SVG dependency overlay: drawn ABOVE the grid (z-10) but with
           pointer-events:none so the tiles stay interactive. */}
       <svg
         className="pointer-events-none absolute inset-0 z-10"
@@ -434,7 +434,7 @@ const OverviewBoard: React.FC<BoardProps> = ({
   );
 };
 
-// Role detail drawer — appears under a tile, full-row span.
+// Role detail drawer: appears under a tile, full-row span.
 const RoleDetailDrawer: React.FC<{
   role: MatriceRole;
   tasks: MatriceTask[];
@@ -634,7 +634,7 @@ const KanbanBoard: React.FC<BoardProps> = ({ roles, tasksByRole, onAddTask, onRe
 };
 
 // ─── KANBAN COLUMN ──────────────────────────────────────────────────
-// Drop targets only — task drag-start lives inside DrawerTaskRow.
+// Drop targets only: task drag-start lives inside DrawerTaskRow.
 interface ColumnProps {
   role: MatriceRole;
   tasks: MatriceTask[];

@@ -1,4 +1,4 @@
-// Per-vendor image override map — lets Jesse swap a kiosk's photo
+// Per-vendor image override map: lets Jesse swap a kiosk's photo
 // from the CRM without redeploying. Public /marche reads the override
 // on top of the hardcoded `image` field in src/content/marche.ts.
 //
@@ -9,7 +9,7 @@
 //     updatedBy
 //
 // AVAILABLE_VENDOR_IMAGES is the manifest of every photo Jesse can
-// pick from — manually maintained to match the contents of
+// pick from: manually maintained to match the contents of
 // public/wix/marche/. Add new files to this list when they're added
 // to /public.
 
@@ -100,7 +100,7 @@ export async function saveVendorImageOverride(
 }
 
 /**
- * Remove a vendor's override — reverts to the hardcoded `image` in
+ * Remove a vendor's override: reverts to the hardcoded `image` in
  * src/content/marche.ts.
  */
 export async function clearVendorImageOverride(

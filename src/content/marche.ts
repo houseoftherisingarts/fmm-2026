@@ -1,4 +1,4 @@
-// Marché kiosks — single source of truth.
+// Marché kiosks: single source of truth.
 // Consumed by:
 //   • src/pages/MarchePage.tsx          (public 3-tier showcase)
 //   • src/firebase/mockApplications.ts  (CRM dashboard mock seed)
@@ -17,9 +17,9 @@ export interface MarcheKiosk {
   name: string;
   /** Where this kiosk shows up on the public page. */
   tier: KioskTier;
-  /** Real contact name — used by the CRM "Contact" column. */
+  /** Real contact name, used by the CRM "Contact" column. */
   contact: string;
-  /** Real or placeholder email — only used by the CRM. */
+  /** Real or placeholder email, only used by the CRM. */
   email: string;
   /** Free-text category badge (Cuir, Bijoux, Forge…). */
   category: string;
@@ -45,7 +45,7 @@ export interface MarcheKiosk {
 }
 
 /* ─── Premium pavilion ───────────────────────────────────────────────
-   Featured artisans — gold-rim showcase cards at the top of /marche.
+   Featured artisans: gold-rim showcase cards at the top of /marche.
    These are the four flagship merchants that anchor the page. */
 export const PREMIUM_VENDORS: MarcheKiosk[] = [
   {
@@ -60,7 +60,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioFR:
       'Fleuron de la confection québécoise, les produits Artisans d’Azure sont conçus par des GNistes, pour des GNistes. Une attention particulière à la durabilité et à la praticité : armures et accessoires de cuir, vêtements haut de gamme ou personnalisés, armures composites de métal et de cuir.',
     bioEN:
-      'A jewel of Quebec craftsmanship, Artisans d’Azure products are designed by LARPers, for LARPers. Special attention to durability and practicality — leather armour and accessories, premium and custom garments, composite metal-and-leather armour.',
+      'A jewel of Quebec craftsmanship, Artisans d’Azure products are designed by LARPers, for LARPers. Special attention to durability and practicality: leather armour and accessories, premium and custom garments, composite metal-and-leather armour.',
     image: '/wix/marche/2c7e6c33.jpg',
     href: 'https://artisansdazure.com/',
   },
@@ -76,7 +76,7 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioFR:
       'Au fond des bois, au nord, loin de l’électricité et de la technologie, se trouve une Ger (yourte) avec une forge et un atelier de tisserande. Tendez bien l’oreille : si vous entendez « héhéhé comment ça va poto ! », c’est que vous avez trouvé le clan Viking Autonome d’Ariane et Aslak.',
     bioEN:
-      'Deep in the northern woods, far from electricity and tech, sits a yurt housing a forge and a weaving workshop. Listen for the friendly call — that’s how you’ll know you’ve found Ariane and Aslak’s Autonomous Viking Clan.',
+      'Deep in the northern woods, far from electricity and tech, sits a yurt housing a forge and a weaving workshop. Listen for the friendly call: that’s how you’ll know you’ve found Ariane and Aslak’s Autonomous Viking Clan.',
     image: '/wix/marche/0b4c7ac8.jpg',
     // Recherche 2026-08-02 : aucun site/FB/IG trouvé pour le clan d'Ariane
     // et Aslak. Demander leur lien via le CRM avant l'édition 2026.
@@ -109,14 +109,14 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
     bioFR:
       'Le bonheur est bien meilleur quand il est partagé. Forêts & Papilles, c’est une histoire de partage et de passion : transmettre l’amour de la nature et perpétuer les savoirs ancestraux de la cueillette sauvage.',
     bioEN:
-      'Happiness is better when shared. Forêts & Papilles is a story of sharing and passion — passing on a love of nature and the ancestral knowledge of wild foraging.',
+      'Happiness is better when shared. Forêts & Papilles is a story of sharing and passion: passing on a love of nature and the ancestral knowledge of wild foraging.',
     image: '/wix/marche/a2d1dca3.jpg',
     // Recherche 2026-08-02 : aucun site trouvé pour Forêts et Papilles.
     // Demander leur lien via le CRM avant l'édition 2026.
   },
 ];
 
-/* ─── Marché — interactive kiosk grid ──────────────────────────────── */
+/* ─── Marché: interactive kiosk grid ──────────────────────────────── */
 export const MARCHE_VENDORS: MarcheKiosk[] = [
   { id: 'cuir-arcana',       name: 'Cuir Arcana',           tier: 'marche', contact: 'Anouk Beaufort',   email: 'arcana@cuir.example.ca',   category: 'Cuir',         tagFR: 'Accessoires de cuir',                   tagEN: 'Leather accessories',                bioFR: 'Bourses, ceintures et accessoires de cuir, finition artisanale.', bioEN: 'Pouches, belts and leather accessories, handcrafted finish.', image: '/wix/marche/b4c19724.webp' , years: [2025] },
   { id: 'rose-dragon',       name: 'La Rose et le Dragon',  tier: 'marche', contact: 'Iseult Marquis',   email: 'contact@roseetdragon.example.ca', category: 'Vêtements',    tagFR: 'Vêtements et créations',                tagEN: 'Clothing and creations',             bioFR: 'Vêtements d’inspiration médiévale et créations textiles uniques.', bioEN: 'Medieval-inspired garments and one-of-a-kind textile creations.', href: 'https://www.etsy.com/shop/LaRoseetleDragon', image: '/wix/marche/1ad4a4cb.jpg' , years: [2025] },
@@ -157,7 +157,7 @@ export const DIGITAL_VENDORS: MarcheKiosk[] = [
   },
 ];
 
-/** All kiosks flattened — handy for CRM seed + counts. */
+/** All kiosks flattened, handy for CRM seed + counts. */
 export const ALL_VENDORS: MarcheKiosk[] = [
   ...PREMIUM_VENDORS,
   ...MARCHE_VENDORS,

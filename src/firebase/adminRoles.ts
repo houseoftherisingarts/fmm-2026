@@ -1,13 +1,13 @@
 // ─── Firestore CRUD for admin role assignments ──────────────────────
 // One doc per admin keyed by lowercased email. Keying by email (not uid)
 // means the super admin can pre-provision roles before someone has ever
-// signed in — the role takes effect the moment they auth with that
+// signed in: the role takes effect the moment they auth with that
 // email. On first sign-in we backfill the user's uid into the doc.
 //
 // Collection layout: adminRoles/{email}
 //   { email, role, displayName, uid?, assignedBy, assignedByEmail, assignedAt }
 //
-// Auth is enforced by Firestore security rules (NOT by this client) —
+// Auth is enforced by Firestore security rules (NOT by this client):
 // only super-admin uids should be allowed to write to this collection.
 // Rules sketch:
 //   match /adminRoles/{email} {
@@ -57,7 +57,7 @@ export async function getAdminRole(email: string): Promise<AdminRole | null> {
   return d?.role ?? null;
 }
 
-// Live listener for the current user's role — used by AuthContext so the
+// Live listener for the current user's role: used by AuthContext so the
 // shell re-renders the instant a super-admin assigns or revokes a role.
 // IMPORTANT: an explicit error handler is required so that a denied read
 // (no doc + restrictive Firestore rules) still resolves the loading
@@ -72,7 +72,7 @@ export function watchAdminRole(email: string, cb: (role: AdminRole | null) => vo
       cb(d?.role ?? null);
     },
     (err) => {
-      // Permission-denied / unavailable / etc. — log and resolve as null
+      // Permission-denied / unavailable / etc.: log and resolve as null
       // so AuthContext can fall through to the "access refused" gate.
       console.warn('[adminRoles] watchAdminRole snapshot error:', err);
       cb(null);
@@ -106,7 +106,7 @@ export async function setAdminRole(
 }
 
 // Backfill the uid on the role doc the first time a user signs in with
-// the matching email. Safe to call on every sign-in — merges only the
+// the matching email. Safe to call on every sign-in: merges only the
 // uid field if the doc exists.
 export async function backfillUid(email: string, uid: string): Promise<void> {
   if (!db) return;

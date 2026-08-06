@@ -82,7 +82,7 @@ const NAV: NavItem[] = [
 const ALL_SECTION_IDS: AdminSectionId[] = NAV.map((n) => n.id);
 
 // Exported so AdminPage / App.tsx can validate a URL's `:section` segment
-// against the real list of sections — the id IS the URL segment (already
+// against the real list of sections: the id IS the URL segment (already
 // lowercase French, no accents), so no separate mapping table is needed.
 export const ADMIN_SECTION_IDS: AdminSectionId[] = ALL_SECTION_IDS;
 
@@ -92,7 +92,7 @@ interface Props {
   onSectionChange: (s: AdminSectionId) => void;
   onSignOut: () => void;
   devBanner?: boolean;
-  /** Effective role being viewed — drives NAV filter + accent theme. */
+  /** Effective role being viewed: drives NAV filter + accent theme. */
   adminRole?: AdminRole | null;
   /** The user's actual clearance (true role on file). Used to decide
    *  which roles they're allowed to preview-as in the toggle below. */
@@ -102,7 +102,7 @@ interface Props {
   /** When a super-admin is previewing a role, render a banner with the
    *  role being previewed + a "back to gates" callback. */
   previewBanner?: { role: AdminRole; onBack: () => void } | null;
-  /** Callback to return to the gate screen — wires the "Changer de
+  /** Callback to return to the gate screen: wires the "Changer de
    *  porte" affordance in the sidebar footer. */
   onBackToGates?: () => void;
   children: React.ReactNode;
@@ -115,14 +115,14 @@ const AdminShell: React.FC<Props> = ({
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   // Filter the rail to only the sections this role can open. Falls back
-  // to an empty list if no role is set — at which point AdminPage should
+  // to an empty list if no role is set, at which point AdminPage should
   // already be rendering the "access refused" gate, so we never actually
   // render an empty shell.
   const allowed = new Set(allowedSections(adminRole, ALL_SECTION_IDS));
   const visibleNav = NAV.filter((n) => allowed.has(n.id));
   const current = visibleNav.find((n) => n.id === section) ?? NAV.find((n) => n.id === section);
 
-  // Sidebar avatar initial — used when no photoURL is on the user.
+  // Sidebar avatar initial: used when no photoURL is on the user.
   const initial = (user.displayName || user.email || '?')[0].toUpperCase();
   const displayName = user.displayName || user.email?.split('@')[0] || '';
 
@@ -132,7 +132,7 @@ const AdminShell: React.FC<Props> = ({
       // Override the admin CSS tokens with the active role's accent so
       // every `var(--admin-accent)` reference downstream paints in CA
       // blue / Super Bénévoles green / Bénévoles steel / Cuisine red /
-      // Organisateurs+Super gold — without touching the stylesheet.
+      // Organisateurs+Super gold, without touching the stylesheet.
       style={(() => {
         const tone = ROLE_ACCENT[adminRole ?? 'super'];
         return {
@@ -156,7 +156,7 @@ const AdminShell: React.FC<Props> = ({
           </p>
         </div>
 
-        {/* Nav — filtered to sections this role can open */}
+        {/* Nav: filtered to sections this role can open */}
         <nav className="flex-1 overflow-y-auto py-3">
           {visibleNav.map(({ id, label, icon: Icon }) => {
             const active = section === id;
@@ -221,7 +221,7 @@ const AdminShell: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* View-as toggle — only shown when the admin's actual
+          {/* View-as toggle: only shown when the admin's actual
               clearance lets them preview more than one role (i.e. the
               CA can view as Organisateur / Super Bénévole / etc.). The
               dropdown picks the EFFECTIVE role; the shell re-themes
@@ -247,7 +247,7 @@ const AdminShell: React.FC<Props> = ({
                   {opts.map((r) => (
                     <option key={r} value={r}>
                       {ROLE_LABELS[r].FR}
-                      {r === actualAdminRole ? ' — vous' : ''}
+                      {r === actualAdminRole ? ' (vous)' : ''}
                     </option>
                   ))}
                 </select>
@@ -315,7 +315,7 @@ const AdminShell: React.FC<Props> = ({
           >
             <span className="inline-flex items-center gap-2">
               <Eye size={11} />
-              Mode aperçu — vue {ROLE_LABELS[previewBanner.role].FR}
+              Mode aperçu : vue {ROLE_LABELS[previewBanner.role].FR}
             </span>
             <button
               type="button"
@@ -367,7 +367,7 @@ const AdminShell: React.FC<Props> = ({
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
           {children}
 
-          {/* Bottom HUD — Witcher controller-prompt rail at the foot
+          {/* Bottom HUD: Witcher controller-prompt rail at the foot
               of every admin section so the global actions sit where
               the eye expects them. */}
           <div className="admin-hud">

@@ -90,7 +90,7 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
         />
       )}
 
-      {/* Jeux — playable medieval games */}
+      {/* Jeux: playable medieval games */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <ChapterIntro eyebrow={t.jeuxEyebrow} title={t.jeuxTitle} align="center" className="mb-8 md:mb-10" />
@@ -303,7 +303,7 @@ const FR = {
   home: 'Accueil',
   eyebrow: 'Pour les cœurs d’enfants',
   title: 'Village Jeunesse & Jeux',
-  intro: 'Le FMM tient à offrir un espace aussi adapté que possible pour les cœurs d’enfants qui sont encore dans des corps d’enfants. Cette année — en plus d’avoir adapté les prix aux familles — nous avons agrandi le site, ajouté du confort et bonifié les ateliers et activités pour les jeunes.',
+  intro: 'Le FMM tient à offrir un espace aussi adapté que possible pour les cœurs d’enfants qui sont encore dans des corps d’enfants. Cette année (en plus d’avoir adapté les prix aux familles), nous avons agrandi le site, ajouté du confort et bonifié les ateliers et activités pour les jeunes.',
   clanEyebrow: 'Pédagogie nature',
   clanTitle: 'Clan Renard',
   clanBody: 'L’art de la vie en forêt, ensemble ! Espace de connexion avec la nature, inspiré du mode de vie de nos ancêtres, de la pédagogie coyote et du modèle des 8 Shields. Venez apprendre les bases de la survie à travers les jeux, la musique et la joie de vivre.',
@@ -340,14 +340,14 @@ const FR = {
   hnefataflCta: 'Jouer maintenant',
   jeuxComingSoon: 'Bientôt',
   jeuxMoreTitle: 'D’autres jeux à venir',
-  jeuxMoreBody: 'On prépare d’autres jeux d’époque pour l’édition 2026. Reviens nous voir — la table se remplit.',
+  jeuxMoreBody: 'On prépare d’autres jeux d’époque pour l’édition 2026. Reviens nous voir : la table se remplit.',
 };
 
 const EN = {
   home: 'Home',
   eyebrow: 'For young hearts',
   title: 'Youth & Games Village',
-  intro: 'FMM strives to offer the most kid-friendly space possible for the young-hearted still living in young bodies. This year — beyond family-adjusted prices — we expanded the site, added comfort, and enriched the workshops and activities for kids.',
+  intro: 'FMM strives to offer the most kid-friendly space possible for the young-hearted still living in young bodies. This year (beyond family-adjusted prices), we expanded the site, added comfort, and enriched the workshops and activities for kids.',
   clanEyebrow: 'Nature pedagogy',
   clanTitle: 'Clan Renard',
   clanBody: 'The art of living in the forest, together. A space to reconnect with nature, inspired by our ancestors’ ways of life, coyote pedagogy, and the 8 Shields model. Come learn survival basics through play, music and joy.',
@@ -367,7 +367,7 @@ const EN = {
   send: 'Sign up',
   submitting: 'Sending…',
   error: 'Something went wrong.',
-  thanksTitle: 'Thanks — noted!',
+  thanksTitle: 'Thanks, noted!',
   thanksBody: 'We received your registration. See you at the Clan Renard tent.',
   campsEyebrow: 'Partner camp',
   campsTitle: 'Les Camps Légendaires',
@@ -384,7 +384,7 @@ const EN = {
   hnefataflCta: 'Play now',
   jeuxComingSoon: 'Coming soon',
   jeuxMoreTitle: 'More games on the way',
-  jeuxMoreBody: 'We\'re preparing more period games for the 2026 edition. Check back — the table is filling up.',
+  jeuxMoreBody: 'We\'re preparing more period games for the 2026 edition. Check back: the table is filling up.',
 };
 
 export default JeunessePage;

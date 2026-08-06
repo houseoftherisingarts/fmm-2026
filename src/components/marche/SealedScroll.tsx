@@ -23,7 +23,7 @@ export interface SealedCopy {
   emptyState: string;
 }
 
-// ─── SealedScroll — Tilted loot cards ────────────────────────────────
+// ─── SealedScroll: Tilted loot cards ────────────────────────────────
 // Digital boutique tier as 3D-tilt cards. Front face: full-bleed
 // partner photo with a copper rarity frame. Click "Reveal" → card
 // flips on Y to show the promo code on the velvet back. Tilt follows
@@ -161,7 +161,7 @@ const FlipCard: React.FC<{
             rotateY: flipped ? 180 : tilt.ry,
             transformStyle: 'preserve-3d',
             position: 'relative',
-            // Was a fixed 460 — at 320px portrait the card filled most
+            // Was a fixed 460: at 320px portrait the card filled most
             // of the viewport with empty padding. Tighter on mobile,
             // restore full height on sm+ where there's room.
             minHeight: large ? 'clamp(380px, 42vw, 560px)' : 'clamp(320px, 70vw, 460px)',

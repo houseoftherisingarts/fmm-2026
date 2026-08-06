@@ -9,7 +9,7 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import MusicianForm from '../components/musician/MusicianForm';
 
-// DEV-only bypass — when on, we skip the sign-in gate so devs can fill
+// DEV-only bypass: when on, we skip the sign-in gate so devs can fill
 // the form against the mock store without authenticating.
 const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.meta.env.DEV;
 

@@ -53,7 +53,7 @@ const NewsletterSection: React.FC<Props> = ({ devBypass }) => {
     } catch (e) {
       console.warn('[newsletter] delete failed', e);
       setSubs(prevList);
-      setError('Échec de la suppression — réessayez.');
+      setError('Échec de la suppression. Réessayez.');
     }
   };
 

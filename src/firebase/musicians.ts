@@ -1,5 +1,5 @@
 // Typed Firestore CRUD for musician/band applications. Mirrors the
-// vendor pattern in applications.ts — one doc per (uid, year) so a
+// vendor pattern in applications.ts: one doc per (uid, year) so a
 // band can have multi-year history. Owned by Pitch / Eric Pichette
 // in the admin CRM (Musique tab).
 //
@@ -36,7 +36,7 @@ export interface MusicianApp {
   // ── Contact / band identity ──────────────────────────────────────
   bandName:        string;
   contactName:     string;          // primary contact (booker)
-  contactRole?:    string;          // "manager", "leader", "agent" — free text
+  contactRole?:    string;          // "manager", "leader", "agent": free text
   phone:           string;
   altEmail?:       string;
   website?:        string;          // any URL (band site, Bandcamp, Linktree)
@@ -81,7 +81,7 @@ export interface MusicianApp {
   accessibilityNeeds?: string;      // mobility, hearing, etc.
 
   // ── Money / contracts ────────────────────────────────────────────
-  feeExpectation?: string;          // free text — let Pitch read context
+  feeExpectation?: string;          // free text: let Pitch read context
   hasContract?:    boolean;
   contractNotes?:  string;
   invoiceEntity?:  string;          // company / sole prop name on invoice

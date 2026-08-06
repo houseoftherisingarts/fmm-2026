@@ -30,7 +30,7 @@ const Lantern: React.FC<{ delay: number; size?: number }> = ({ delay, size = 44 
         <rect x="20" y="12" width="20" height="3" fill="#3A2A18" />
         {/* Globe glow */}
         <ellipse cx="30" cy="40" rx="22" ry="26" fill={`url(#lglow-${delay})`} />
-        {/* Glass body — segmented */}
+        {/* Glass body, segmented */}
         <path
           d="M14 22 Q30 16 46 22 L48 56 Q30 68 12 56 Z"
           fill="rgba(255, 200, 110, 0.14)"

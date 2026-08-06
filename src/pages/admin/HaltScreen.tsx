@@ -62,7 +62,7 @@ const HaltScreen: React.FC<Props> = ({
         // Stacked top → bottom: oxblood spotlights, then a charcoal
         // wash dimmed enough that the Petite-Nation forest photo
         // (back-most layer) still reads through as a faint, moody
-        // texture — not invisible, not competing with the knight.
+        // texture: not invisible, not competing with the knight.
         `radial-gradient(900px 700px at 50% 55%, rgba(140, 30, 30, 0.32), transparent 65%),` +
         `radial-gradient(700px 500px at 50% 25%, rgba(180, 40, 40, 0.18), transparent 70%),` +
         `linear-gradient(180deg, rgba(26, 20, 24, 0.72) 0%, rgba(18, 12, 14, 0.82) 60%, rgba(10, 5, 6, 0.92) 100%),` +
@@ -76,7 +76,7 @@ const HaltScreen: React.FC<Props> = ({
     {/* Red corner L-ticks pinned to the viewport */}
     <DeniedCorners />
 
-    {/* Stage — stops the click-to-close from bubbling so the user can
+    {/* Stage: stops the click-to-close from bubbling so the user can
         read the page without it dismissing under them. */}
     <div
       onClick={(e) => e.stopPropagation()}
@@ -109,7 +109,7 @@ const HaltScreen: React.FC<Props> = ({
 
       {/* Gatekeeper knight rises from below. The mask is a soft radial
           ellipse instead of a linear gradient so every edge of the
-          bounding box fades out smoothly — no visible seam at the
+          bounding box fades out smoothly: no visible seam at the
           bottom or along the sides. Image sized smaller so the whole
           page comfortably fits the viewport. */}
       <motion.div
@@ -134,7 +134,7 @@ const HaltScreen: React.FC<Props> = ({
           style={{
             filter:
               'drop-shadow(0 16px 24px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 28px rgba(200, 60, 60, 0.45))',
-            // Aggressive radial mask — the fully-opaque core is small
+            // Aggressive radial mask: the fully-opaque core is small
             // (40%), the fade reaches well within the bounding box so
             // every corner of the rectangle is fully transparent.
             // Kills the "square cutoff" tell on PNGs with semi-opaque
@@ -147,7 +147,7 @@ const HaltScreen: React.FC<Props> = ({
         />
       </motion.div>
 
-      {/* Flavour copy — fades up beneath the knight */}
+      {/* Flavour copy: fades up beneath the knight */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -192,7 +192,7 @@ const HaltScreen: React.FC<Props> = ({
               href={secondaryCta.href}
               className="inline-flex items-center gap-2 px-7 py-3 font-sans uppercase tracking-[0.32em] text-[11px] transition-all hover:scale-[1.03]"
               style={{
-                // Amber-gold ghost CTA — visually distinct from the
+                // Amber-gold ghost CTA: visually distinct from the
                 // primary oxblood without competing with the headline.
                 color: 'var(--color-amber-glow)',
                 background: 'rgba(232, 177, 74, 0.06)',

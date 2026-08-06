@@ -18,7 +18,7 @@ export interface PactCopy {
   reviewNote: string;
 }
 
-// ─── MerchantPact — Glossary register ────────────────────────────────
+// ─── MerchantPact: Glossary register ────────────────────────────────
 // Pattern lifted from the Witcher 4 Glossary mockup: NO contained
 // panel. Content floats on the page; tabs and HUD live as hairline
 // rules at the top and bottom of the section. An atmospheric image
@@ -46,12 +46,12 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
     <section
       className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden py-16 md:py-24"
     >
-      {/* Backdrop image removed — section now sits cleanly on the
+      {/* Backdrop image removed: section now sits cleanly on the
           continuous page bg with just grain + fog atmosphere. */}
       <SectionFog />
 
       <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8">
-        {/* ─── TOP HAIRLINE — state registers, read-only ──────── */}
+        {/* ─── TOP HAIRLINE: state registers, read-only ──────── */}
         <div className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
           <div className="flex items-center gap-6 md:gap-9 flex-wrap">
             <span className="flex items-baseline gap-3">
@@ -70,7 +70,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
           </div>
         </div>
 
-        {/* ─── MAIN BODY — text column, breathes on the left ─── */}
+        {/* ─── MAIN BODY: text column, breathes on the left ─── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -96,7 +96,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
             {copy.title}
           </h2>
 
-          {/* Italic lore-quote — sits like the Sea Siren intro */}
+          {/* Italic lore-quote: sits like the Sea Siren intro */}
           <blockquote className="mb-8 pl-4" style={{ borderLeft: '1px solid rgba(216, 176, 90, 0.45)' }}>
             <p
               className="font-editorial italic text-base md:text-lg leading-snug"
@@ -125,7 +125,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
             {copy.reviewNote}
           </p>
 
-          {/* Perks row — diamond tiles floating, not in a container */}
+          {/* Perks row: diamond tiles floating, not in a container */}
           <div className="mb-12">
             <p className="witcher-stat-label mb-5">{lang === 'FR' ? 'Inclus' : 'Included'}</p>
             <ul className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-7">
@@ -178,7 +178,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
 };
 
 // ─── PerkCell ────────────────────────────────────────────────────────
-// Vertical perk cell — small diamond tile on top, label + detail below.
+// Vertical perk cell: small diamond tile on top, label + detail below.
 // Used in a 4-column grid that flows under the body copy.
 interface PerkTile {
   label:  string;

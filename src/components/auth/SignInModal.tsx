@@ -16,7 +16,7 @@ const SignInModal: React.FC = () => {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   // Inside sign-in mode, the user picks password or magic-link.
   const [tab, setTab]   = useState<'password' | 'magic'>('password');
-  // Form fields — shared between modes where it makes sense.
+  // Form fields, shared between modes where it makes sense.
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +27,7 @@ const SignInModal: React.FC = () => {
   const [busy, setBusy] = useState(false);
   // Error state holds both the user-facing message AND the raw Firebase
   // code, so the modal can branch on specific scenarios (e.g. show a
-  // "this account uses Google — sign in with Google or reset password"
+  // "this account uses Google, sign in with Google or reset password"
   // helper when the signup hits email-already-in-use or sign-in hits
   // invalid-credential).
   const [err, setErr] = useState<{ message: string; code: string } | null>(null);
@@ -86,8 +86,8 @@ const SignInModal: React.FC = () => {
     setBusy(false);
   };
 
-  // Codes where the right move is "use Google or reset your password"
-  // — typically these mean the account exists but doesn't have a
+  // Codes where the right move is "use Google or reset your password":
+  // typically these mean the account exists but doesn't have a
   // password set (or the password is wrong).
   const ACCOUNT_RECOVERY_CODES = new Set([
     'auth/email-already-in-use',
@@ -168,7 +168,7 @@ const SignInModal: React.FC = () => {
                     : 'Connectez-vous pour postuler comme bénévole, marchand, ou consulter votre dossier.'}
                 </p>
 
-                {/* Google — shared between both modes */}
+                {/* Google: shared between both modes */}
                 <button
                   onClick={onGoogle}
                   disabled={busy}
@@ -337,7 +337,7 @@ const SignInModal: React.FC = () => {
                   </div>
                 )}
 
-                {/* Bottom switch — quick "already have an account?" affordance */}
+                {/* Bottom switch: quick "already have an account?" affordance */}
                 <p className="mt-5 text-center font-editorial italic text-xs text-ivory-soft">
                   {mode === 'signup' ? (
                     <>Déjà un compte ?{' '}
@@ -366,12 +366,12 @@ const SignInModal: React.FC = () => {
 function humanError(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e);
   if (msg.includes('auth/invalid-credential') || msg.includes('auth/wrong-password') || msg.includes('auth/invalid-login-credentials'))
-    return 'Identifiants incorrects — votre compte a peut-être été créé avec Google.';
+    return 'Identifiants incorrects : votre compte a peut-être été créé avec Google.';
   if (msg.includes('auth/user-not-found'))         return 'Aucun compte trouvé pour ce courriel.';
   if (msg.includes('auth/email-already-in-use'))   return 'Un compte existe déjà pour ce courriel.';
-  if (msg.includes('auth/weak-password'))          return 'Mot de passe trop faible — minimum 8 caractères.';
+  if (msg.includes('auth/weak-password'))          return 'Mot de passe trop faible : minimum 8 caractères.';
   if (msg.includes('auth/invalid-email'))          return 'Courriel invalide.';
-  if (msg.includes('auth/too-many-requests'))      return 'Trop de tentatives — réessayez plus tard.';
+  if (msg.includes('auth/too-many-requests'))      return 'Trop de tentatives. Réessayez plus tard.';
   if (msg.includes('auth/network-request-failed')) return 'Problème de réseau.';
   if (msg.includes('auth/popup-closed-by-user'))   return 'Connexion Google annulée.';
   if (msg.includes('auth/operation-not-allowed'))  return 'Méthode non activée dans Firebase Console.';

@@ -83,7 +83,7 @@ const TENTS = [
     icon: 'ᛞ',
     dishes: [
       { name: 'Au miel noir',               note: 'Morceaux nobles de chapon rôtis et laqués de miel noir.' },
-      { name: 'Tako Tamago',                note: 'Œuf de caille sur poulpe mariné — douceur des mers.' },
+      { name: 'Tako Tamago',                note: 'Œuf de caille sur poulpe mariné, douceur des mers.' },
       { name: 'Kawaps d’agneau sur verdure',note: 'Tendres morceaux d’agneau grillés à la braise, marinés aux épices anciennes.' },
       { name: 'Côte de pourceau du fumoir', note: 'Saisie sur flamme vive, sauce moutarde rustique et bière brune.' },
       { name: 'Brochette de feuillage',     note: 'Tofu grillé, légumes verts et herbes sauvages, vinaigre de cidre.' },
@@ -102,17 +102,17 @@ const TENTS = [
     icon: 'ᚹ',
     dishes: [
       { name: 'Fruits confits',  note: 'Assortiment de fruits confits, sucré et parfumé.' },
-      { name: 'Fruits frais',    note: 'Sélection de fruits mûrs, juteux — collation saine.' },
+      { name: 'Fruits frais',    note: 'Sélection de fruits mûrs, juteux, collation saine.' },
     ],
   },
   {
     name: { FR: 'Les Élixirs de l’Alchimiste', EN: 'The Alchemist’s Elixirs' },
     icon: '⚱',
     dishes: [
-      { name: 'Hypocras',       note: 'Vin rouge épicé et sucré inspiré des traditions médiévales — cannelle, gingembre.' },
-      { name: 'Vin chaud',      note: 'Cannelle, clou de girofle, agrumes — pour les premiers frissons d’automne.' },
+      { name: 'Hypocras',       note: 'Vin rouge épicé et sucré inspiré des traditions médiévales : cannelle, gingembre.' },
+      { name: 'Vin chaud',      note: 'Cannelle, clou de girofle, agrumes, pour les premiers frissons d’automne.' },
       { name: 'Limonade',       note: 'Élixir rafraîchissant, sucré et citronné, pour nobles et chevaliers.' },
-      { name: 'Bière au beurre',note: 'Caramel, épices, vanille — servie chaude et onctueuse.' },
+      { name: 'Bière au beurre',note: 'Caramel, épices, vanille, servie chaude et onctueuse.' },
     ],
   },
 ];
@@ -252,7 +252,7 @@ const FR = {
   home: 'Accueil',
   eyebrow: 'À la table du seigneur',
   title: 'Village Nourriture',
-  intro: 'Cette année, nous avons plusieurs tentes avec une nourriture décorum d’inspiration médiévale autour du monde. En plus de ces tentes, il vous est possible de vous inscrire d’avance à la tablée du Valhalla — le banquet du dimanche.',
+  intro: 'Cette année, nous avons plusieurs tentes avec une nourriture décorum d’inspiration médiévale autour du monde. En plus de ces tentes, il vous est possible de vous inscrire d’avance à la tablée du Valhalla, le banquet du dimanche.',
   intro2: 'Si vous êtes un fournisseur local et souhaitez commanditer une des tentes, n’hésitez pas à nous contacter ! Les commanditaires ont leurs liens sur ce site et une pancarte en face de leur tente respective.',
   banquetEyebrow: 'Réservation requise',
   banquetTitle: 'Banquet de l’Équinoxe',
@@ -270,15 +270,15 @@ const FR = {
   menuTitle: 'Cinq services à la torche',
   tentsEyebrow: 'Le village gustatif',
   tentsTitle: 'Cinq tentes, cinq seigneurs',
-  tentsLead: 'Chaque tente a son propre seigneur des fourneaux. Du bouillon de l’aubergiste à la halle des douceurs — voici ce qu’on y sert.',
+  tentsLead: 'Chaque tente a son propre seigneur des fourneaux. Du bouillon de l’aubergiste à la halle des douceurs : voici ce qu’on y sert.',
 };
 
 const EN = {
   home: 'Home',
   eyebrow: 'At the lord’s table',
   title: 'Food Village',
-  intro: 'This year we host several tents serving medieval-inspired food from around the world. Beyond the tents, you can also reserve a seat at the Valhalla table — the Sunday banquet.',
-  intro2: 'Local suppliers wishing to sponsor a tent — please reach out. Sponsors get their link on the site and a sign in front of their tent.',
+  intro: 'This year we host several tents serving medieval-inspired food from around the world. Beyond the tents, you can also reserve a seat at the Valhalla table, the Sunday banquet.',
+  intro2: 'Local suppliers wishing to sponsor a tent, please reach out. Sponsors get their link on the site and a sign in front of their tent.',
   banquetEyebrow: 'Reservation required',
   banquetTitle: 'Equinox Banquet',
   banquetSub: 'A teeming 5-course table by reservation, with bard musicians at table.',
@@ -295,7 +295,7 @@ const EN = {
   menuTitle: 'Five torchlit services',
   tentsEyebrow: 'The food village',
   tentsTitle: 'Five tents, five masters',
-  tentsLead: 'Each tent has its own master of the fires. From the innkeeper’s broth to the hall of sweets — here is what they serve.',
+  tentsLead: 'Each tent has its own master of the fires. From the innkeeper’s broth to the hall of sweets: here is what they serve.',
 };
 
 export default NourriturePage;

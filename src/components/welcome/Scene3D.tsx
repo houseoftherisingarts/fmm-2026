@@ -30,7 +30,7 @@ const Scene3D: React.FC<SceneProps> = ({ coinTextureUrl }) => (
   </Canvas>
 );
 
-// ── Camera parallax — gentle tilt following mouse ──
+// ── Camera parallax · gentle tilt following mouse ──
 const CameraParallax: React.FC = () => {
   const { camera } = useThree();
   const mouse = useRef({ x: 0, y: 0 });
@@ -80,7 +80,7 @@ const CoinFan: React.FC<{ textureUrl: string }> = ({ textureUrl }) => {
     });
   });
 
-  // Fan layout — wide arc dropped into the LOWER half of the viewport
+  // Fan layout: wide arc dropped into the LOWER half of the viewport
   // so the title + countdown + CTAs read clearly above. Each card tilts
   // outward (rotation Y based on signed x) so light catches the front
   // facets and the inward edges fall into shadow → real depth.
@@ -88,7 +88,7 @@ const CoinFan: React.FC<{ textureUrl: string }> = ({ textureUrl }) => {
     <group ref={group} position={[0, -1.6, 0]}>
       {Array.from({ length: COUNT }).map((_, i) => {
         const t = COUNT === 1 ? 0.5 : i / (COUNT - 1);
-        const x = (-1 + t * 2) * 3.4;             // wider — clears the center
+        const x = (-1 + t * 2) * 3.4;             // wider, clears the center
         const y = Math.abs(t - 0.5) * 0.5;        // slight arc upward at edges
         const z = -Math.abs(t - 0.5) * 1.6;       // edges recede
         const baseRot = (-1 + t * 2) * -0.55;     // outer cards face inward

@@ -1,16 +1,16 @@
-// Discord section — admin dashboard panel.
+// Discord section: admin dashboard panel.
 //
 // Three areas:
-//   1. My connection — DiscordConnect card for the signed-in organizer.
-//   2. Server widget — official Discord embeddable widget (read-only,
+//   1. My connection: DiscordConnect card for the signed-in organizer.
+//   2. Server widget: official Discord embeddable widget (read-only,
 //      shows who's online in the FMM server). Requires the guild widget
 //      to be enabled in Server Settings → Widget.
-//   3. Linked members — list of all organizers who've linked their
+//   3. Linked members: list of all organizers who've linked their
 //      Discord account, pulled from Firestore.
 //
-// Env vars used (all optional — section degrades gracefully):
-//   VITE_DISCORD_CLIENT_ID   — enables OAuth connect button
-//   VITE_DISCORD_GUILD_ID    — shows the server widget + join invite
+// Env vars used (all optional, section degrades gracefully):
+//   VITE_DISCORD_CLIENT_ID: enables OAuth connect button
+//   VITE_DISCORD_GUILD_ID: shows the server widget + join invite
 
 import React, { useEffect, useState } from 'react';
 import { MessageSquare, Users, ExternalLink, RefreshCw, Loader2 } from 'lucide-react';
@@ -84,7 +84,7 @@ const LinkedMembersList: React.FC<{ devBypass: boolean }> = ({ devBypass }) => {
     setLoading(true);
     setError(null);
 
-    // Dev bypass — show a placeholder row so the UI is visible without Firebase.
+    // Dev bypass: show a placeholder row so the UI is visible without Firebase.
     if (devBypass) {
       setMembers([
         {
@@ -210,7 +210,7 @@ const DiscordSection: React.FC<Props> = ({ devBypass }) => {
 
       {/* Two-column layout */}
       <div className="grid lg:grid-cols-12 gap-6">
-        {/* Left — my profile + widget */}
+        {/* Left: my profile + widget */}
         <div className="lg:col-span-5 space-y-5">
           {/* My Discord connection */}
           <Card className="p-5 md:p-6">
@@ -223,13 +223,13 @@ const DiscordSection: React.FC<Props> = ({ devBypass }) => {
           {/* Server widget */}
           <Card className="p-5 md:p-6">
             <h3 className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Users size={11} /> Serveur FMM — En ligne
+              <Users size={11} /> Serveur FMM · En ligne
             </h3>
             <DiscordWidget />
           </Card>
         </div>
 
-        {/* Right — linked members */}
+        {/* Right: linked members */}
         <div className="lg:col-span-7">
           <Card className="p-5 md:p-6">
             <h3 className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest mb-4 flex items-center gap-2">

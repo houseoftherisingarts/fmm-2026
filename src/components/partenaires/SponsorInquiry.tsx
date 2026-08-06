@@ -46,7 +46,7 @@ const SponsorInquiry: React.FC = () => {
         recipient: { type: 'admin' as const, adminEmail: RECIPIENT_EMAIL },
         fromEmail: form.email.trim().toLowerCase(),
         fromName:  form.name.trim() || (lang === 'FR' ? 'Anonyme' : 'Anonymous'),
-        subject:   `${t.mailSubject} — ${who}`,
+        subject:   `${t.mailSubject}: ${who}`,
         body:      form.org.trim()
           ? `${t.mailOrgLine} ${form.org.trim()}\n\n${form.body.trim()}`
           : form.body.trim(),

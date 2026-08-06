@@ -51,7 +51,7 @@ const DocumentsShelf: React.FC<Props> = ({ lang = 'FR' }) => {
         download
       />
 
-      {/* Contacts — expandable */}
+      {/* Contacts: expandable */}
       <ExpandableDoc
         icon="📇"
         title={t.contactsTitle}
@@ -87,7 +87,7 @@ const DocumentsShelf: React.FC<Props> = ({ lang = 'FR' }) => {
         </ul>
       </ExpandableDoc>
 
-      {/* Rôles & description de tâches — expandable */}
+      {/* Rôles & description de tâches: expandable */}
       <ExpandableDoc
         icon="⚔️"
         title={t.rolesTitle}
@@ -208,10 +208,10 @@ const SubBlock: React.FC<{
 const FR = {
   title:          'Documents importants',
   programTitle:   'La programmation',
-  programSub:     'Horaire des spectacles, banquets, ateliers — fin de semaine complète',
+  programSub:     'Horaire des spectacles, banquets, ateliers, fin de semaine complète',
   mapTitle:       'La carte du site',
   mapSub:         'Plan des stations, scènes, camping et stationnement',
-  contactsTitle:  'Aide-mémoire — contacts',
+  contactsTitle:  'Aide-mémoire : contacts',
   contactsSub:    "Numéros et courriels des organisateur·ices et de l'urgence",
   rolesTitle:     'Rôles & description de tâches',
   rolesSub:       '6 postes bénévoles · tâches, compétences, horaire',
@@ -219,10 +219,10 @@ const FR = {
 const EN: typeof FR = {
   title:          'Important documents',
   programTitle:   'Festival schedule',
-  programSub:     'Shows, banquets, workshops — full weekend',
+  programSub:     'Shows, banquets, workshops, full weekend',
   mapTitle:       'Site map',
   mapSub:         'Stations, stages, camping and parking layout',
-  contactsTitle:  'Cheat sheet — contacts',
+  contactsTitle:  'Cheat sheet: contacts',
   contactsSub:    'Phones and emails of organizers + emergency',
   rolesTitle:     'Roles & task descriptions',
   rolesSub:       '6 volunteer roles · tasks, skills, schedule',

@@ -1,11 +1,11 @@
-// In-memory mock for adminRoles — used in DEV_BYPASS mode so the role
+// In-memory mock for adminRoles, used in DEV_BYPASS mode so the role
 // gate and the Rôles management section can be exercised without a
 // live Firestore. Mirrors src/firebase/adminRoles.ts's surface.
 
 import type { AdminRole } from '../lib/adminPermissions';
 import type { AdminRoleDoc } from './adminRoles';
 
-// Seed with a few illustrative entries — the dev-bypass user logs in
+// Seed with a few illustrative entries: the dev-bypass user logs in
 // as `dev@local` which is auto-promoted to 'super' by AuthContext.
 const STORE = new Map<string, AdminRoleDoc>([
   ['krystine@inspiratanature.com', {
@@ -61,7 +61,7 @@ export async function mockSetAdminRole(
   });
 }
 
-// Simple in-memory listeners — fire on every mutation so the Rôles
+// Simple in-memory listeners, fire on every mutation so the Rôles
 // section UI can rely on a watch pattern even in mock mode.
 const LISTENERS = new Set<(email: string) => void>();
 

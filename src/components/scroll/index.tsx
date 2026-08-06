@@ -17,9 +17,9 @@ import {
 //
 // Every primitive collapses to a static, fully-visible state when the
 // visitor has `prefers-reduced-motion: reduce`. Nothing here hides
-// content behind an animation — the SSR/initial DOM stays readable.
+// content behind an animation. The SSR/initial DOM stays readable.
 
-// Smooth exponential-out — the house entrance curve. Matches the easing
+// Smooth exponential-out: the house entrance curve. Matches the easing
 // used across the home + activities pages.
 export const EASE_SMOOTH: [number, number, number, number] = [0.16, 1, 0.3, 1];
 export const EASE_SHARP:  [number, number, number, number] = [0.76, 0, 0.24, 1];

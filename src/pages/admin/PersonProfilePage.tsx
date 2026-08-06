@@ -224,7 +224,7 @@ const Body: React.FC<{
       {/* Two-column body */}
       <div className="px-4 md:px-8 mt-8 md:mt-10 pb-12">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-6">
-          {/* Left — roles + tasks */}
+          {/* Left: roles + tasks */}
           <div className="lg:col-span-8 space-y-5">
             {person.roles.map((r) => {
               const Icon = CAT_ICON[r.category];
@@ -281,7 +281,7 @@ const Body: React.FC<{
             })}
           </div>
 
-          {/* Right — dependencies + meta */}
+          {/* Right: dependencies + meta */}
           <aside className="lg:col-span-4 space-y-5">
             <Card className="p-5">
               <div className="flex items-center gap-2 mb-3">

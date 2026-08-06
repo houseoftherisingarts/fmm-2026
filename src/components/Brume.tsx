@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Drifting fog overlay — used between sections to ease the transition
+// Drifting fog overlay: used between sections to ease the transition
 // from one photo band to the next. Pure decoration; aria-hidden.
 // `tone` flips blend mode: dark sections use `screen`, light sections
 // use `multiply`.

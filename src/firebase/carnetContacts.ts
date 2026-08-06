@@ -1,10 +1,10 @@
-// Carnet de contacts — Firestore CRUD + Firebase Storage (portraits).
+// Carnet de contacts : Firestore CRUD + Firebase Storage (portraits).
 // Admin only (voir firestore.rules / storage.rules).
 //
 // ⚠️ Données sensibles : l'allégeance (allié / neutre / adversaire) et
 // les notes portent un jugement sur des personnes réelles (élus,
 // partenaires, fournisseurs…). Ne jamais les exposer hors de l'admin
-// authentifiée — aucune lecture publique n'existe ni ne doit exister
+// authentifiée : aucune lecture publique n'existe ni ne doit exister
 // pour la collection `carnetContacts` ou le chemin Storage
 // `carnet-contacts/`.
 //
@@ -35,7 +35,7 @@ export const ROLE_ORDER: ContactRole[] = [
   'organisateur', 'elu', 'partenaire', 'fournisseur', 'media', 'artiste', 'benevole', 'autre',
 ];
 
-// Allégeance — donnée sensible (voir avertissement en tête de fichier).
+// Allégeance : donnée sensible (voir avertissement en tête de fichier).
 export type Allegiance = 'allie' | 'neutre' | 'adversaire';
 
 export const ALLEGIANCE_LABEL: Record<Allegiance, string> = {
@@ -58,7 +58,7 @@ export interface Contact {
   notes: string;
   lastContactAt: string;  // date ISO (yyyy-mm-dd), vide si jamais renseignée
   photoUrl: string;
-  photoPath: string;      // chemin Storage — vide si aucun portrait
+  photoPath: string;      // chemin Storage : vide si aucun portrait
   archived: boolean;
   order: number;
 }
@@ -92,7 +92,7 @@ export async function updateContact(id: string, patch: Partial<Omit<Contact, 'id
   await updateDoc(doc(db, COL, id), { ...stripUndefined(patch), updatedAt: serverTimestamp() });
 }
 
-// Archivage seulement — jamais de suppression franche (décision Alex :
+// Archivage seulement : jamais de suppression franche (décision Alex :
 // on garde la trace même d'un contact devenu inactif ou d'un
 // adversaire qui ne l'est plus).
 export async function setContactArchived(id: string, archived: boolean): Promise<void> {
@@ -100,7 +100,7 @@ export async function setContactArchived(id: string, archived: boolean): Promise
   await updateDoc(doc(db, COL, id), { archived, updatedAt: serverTimestamp() });
 }
 
-// Recadre en carré et encode en webp, comme AvatarUpload — évite
+// Recadre en carré et encode en webp, comme AvatarUpload. Évite
 // d'envoyer une photo de téléphone de plusieurs Mo pour une vignette.
 const SIDE = 512;
 async function toSquareWebp(file: File): Promise<Blob> {
@@ -119,7 +119,7 @@ async function toSquareWebp(file: File): Promise<Blob> {
   });
 }
 
-// Téléverse le portrait sous un chemin admin-only (jamais public — voir
+// Téléverse le portrait sous un chemin admin-only (jamais public, voir
 // storage.rules). Retourne l'URL + le chemin à ranger sur le contact.
 export async function uploadContactPhoto(file: File): Promise<{ url: string; path: string }> {
   if (!storage) throw new Error('Firebase Storage non configuré');

@@ -14,7 +14,7 @@ import { SectionFog } from '../components/marche/atmospherics';
 
 // ─── Band data ───────────────────────────────────────────────────────
 // 2026 lineup (cloned from the Wix /musique page). When the artist has
-// a transparent-PNG portrait it goes here too — the component will
+// a transparent-PNG portrait it goes here too: the component will
 // render with the bestiary frame ornaments unobstructed.
 
 interface Band {
@@ -26,7 +26,7 @@ interface Band {
   bioFR:       string;
   bioEN:       string;
   jour?:       'vendredi' | 'samedi' | 'dimanche'; // groupes « à l'affiche » seulement
-  annee?:      number;          // groupes « archives » seulement — petite étiquette sur la vignette
+  annee?:      number;          // groupes « archives » seulement : petite étiquette sur la vignette
 }
 
 const JOUR_LABELS: Record<NonNullable<Band['jour']>, { FR: string; EN: string }> = {
@@ -51,8 +51,8 @@ const BANDS_ARCHIVES: Band[] = [
     name:    'Skarazula',
     image:   '/wix/musique/2c6a22e9.jpg',
     website: 'https://www.skarazula.com',
-    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans le monde riche et fascinant de la musique médiévale. Plus d’un instrument dans leur sac — beaucoup confectionnés par le groupe lui-même.',
-    bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag — many handmade by the group itself.',
+    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans le monde riche et fascinant de la musique médiévale. Plus d’un instrument dans leur sac, beaucoup confectionnés par le groupe lui-même.',
+    bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
   },
   {
     name:    'Mystic Projekt',
@@ -66,8 +66,8 @@ const BANDS_ARCHIVES: Band[] = [
     // Plan du vidéoclip « Sleipnir » : les cavaliers dans les hautes
     // herbes. C'est LA photo du groupe, dixit Alex (2026-08-03).
     image: '/wix/musique/715b30c7.png',
-    bioFR: 'Groupe de musique néo-trad’ folk viking du clan Managarm. « Laissez-vous emmener par le talent, la magie et l’ivresse de ce merveilleux groupe. Un travail soigné tant par le son que par l’image. La passion, la culture et les voyages se ressentent par des lyrics portés par des voix envoûtantes. » — Tristan Reille',
-    bioEN: 'Neo-trad Viking folk band from clan Managarm. "Let yourself be carried away by the talent, magic and intoxication of Arrünn. Careful work on stage and behind the camera. Passion, culture and travel come through in lyrics carried by spellbinding voices." — Tristan Reille',
+    bioFR: 'Groupe de musique néo-trad’ folk viking du clan Managarm. « Laissez-vous emmener par le talent, la magie et l’ivresse de ce merveilleux groupe. Un travail soigné tant par le son que par l’image. La passion, la culture et les voyages se ressentent par des lyrics portés par des voix envoûtantes. » (Tristan Reille)',
+    bioEN: 'Neo-trad Viking folk band from clan Managarm. "Let yourself be carried away by the talent, magic and intoxication of Arrünn. Careful work on stage and behind the camera. Passion, culture and travel come through in lyrics carried by spellbinding voices." (Tristan Reille)',
   },
   {
     name:  'Trifolys',
@@ -78,8 +78,8 @@ const BANDS_ARCHIVES: Band[] = [
   {
     name:  'Canteraine',
     image: '/wix/musique/1c22d439.jpg',
-    bioFR: 'Canteraine — de l’occitan : « lieu où chantent les grenouilles ». Trio féminin alliant tradition française, instruments anciens et écriture contemporaine.',
-    bioEN: 'Canteraine — from Occitan: "place where the frogs sing." Female trio bringing together French tradition, early instruments and contemporary writing.',
+    bioFR: 'Canteraine (de l’occitan : « lieu où chantent les grenouilles »). Trio féminin alliant tradition française, instruments anciens et écriture contemporaine.',
+    bioEN: 'Canteraine (from Occitan: "place where the frogs sing"). Female trio bringing together French tradition, early instruments and contemporary writing.',
   },
 ];
 
@@ -201,7 +201,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
     return () => root.removeEventListener('keydown', onKey);
   }, [goPrev, goNext]);
 
-  // Variant tokens — past edition reads as muted sepia archive.
+  // Variant tokens: past edition reads as muted sepia archive.
   const isPast = variant === 'past';
   const frameClass = isPast
     ? 'border-stone/30 bg-midnight-deep/40'
@@ -218,7 +218,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
       aria-label={band.name}
       className="relative outline-none focus-visible:ring-2 focus-visible:ring-brass/40 rounded-card"
     >
-      {/* ── left arrow — prev ── */}
+      {/* ── left arrow: prev ── */}
       <button
         type="button"
         onClick={goPrev}
@@ -229,7 +229,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
         <ChevronLeft size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
       </button>
 
-      {/* ── right arrow — next ── */}
+      {/* ── right arrow: next ── */}
       <button
         type="button"
         onClick={goNext}
@@ -240,9 +240,9 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
         <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">→</span>
       </button>
 
-      {/* ── Bestiary frame — corners + brass divider ── */}
+      {/* ── Bestiary frame: corners + brass divider ── */}
       <div className={`relative mx-8 md:mx-16 border rounded-card overflow-hidden ${frameClass}`}>
-        {/* Corner ornaments — small filigree marks at each corner */}
+        {/* Corner ornaments: small filigree marks at each corner */}
         <CornerOrnament className="absolute top-2 left-2"     variant={variant} />
         <CornerOrnament className="absolute top-2 right-2"    variant={variant} flipX />
         <CornerOrnament className="absolute bottom-2 left-2"  variant={variant} flipY />
@@ -332,7 +332,7 @@ const BandsCarousel: React.FC<BandsCarouselProps> = ({
         </AnimatePresence>
       </div>
 
-      {/* ── Page indicator — dots + counter ── */}
+      {/* ── Page indicator: dots + counter ── */}
       <div className="mt-5 flex items-center justify-center gap-6">
         <div className="flex items-center gap-2">
           {bands.map((b, i) => (
@@ -386,7 +386,7 @@ const CornerOrnament: React.FC<{
 };
 
 // Panneau orné remplaçant la photo quand aucun portrait n'a encore été
-// fourni (plusieurs groupes de l'affiche 2026) — même format 16/9, jamais
+// fourni (plusieurs groupes de l'affiche 2026) : même format 16/9, jamais
 // d'image cassée.
 const PortraitPlaceholder: React.FC<{ variant: BandsCarouselVariant; label: string }> = ({ variant, label }) => {
   const isPast = variant === 'past';
@@ -424,7 +424,7 @@ const SpotifyIcon: React.FC = () => (
   </svg>
 );
 
-// ─── Archives — grille compacte ─────────────────────────────────────
+// ─── Archives: grille compacte ─────────────────────────────────────
 // Simple consultation, pas de carrousel : petites cartes, teinte estompée.
 const ArchiveCard: React.FC<{ band: Band; lang: 'FR' | 'EN' }> = ({ band, lang }) => (
   <div className="rounded-card border border-stone/25 bg-midnight-deep/35 overflow-hidden transition-colors hover:border-stone/45">
@@ -564,7 +564,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
         </div>
       </section>
 
-      {/* ── Bands des Ans Passés — archive compacte, pas de carrousel ── */}
+      {/* ── Bands des Ans Passés: archive compacte, pas de carrousel ── */}
       <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-transparent via-black/20 to-transparent">
         <Motes className="opacity-30" count={10} />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -626,7 +626,7 @@ const FR = {
   home: 'Accueil',
   eyebrow: 'Programmation musicale 2026',
   title: 'Musique',
-  intro1: 'Derrière le théâtre, le cinéma, derrière les histoires, autour des ronds de feu, derrière les révolutions ou simplement pour mettre de l’ambiance dans ton salon — la musique est là, pour te tenir compagnie. Ici, nous rendons hommage aux bardes qui animeront ce weekend grandiose.',
+  intro1: 'Derrière le théâtre, le cinéma, derrière les histoires, autour des ronds de feu, derrière les révolutions ou simplement pour mettre de l’ambiance dans ton salon : la musique est là, pour te tenir compagnie. Ici, nous rendons hommage aux bardes qui animeront ce weekend grandiose.',
   section2026Eyebrow: 'Programmation 2026',
   section2026Title:   'À l’affiche cette année',
   section2026Lead:    'Les premiers noms de l’édition 2026, journée par journée. La programmation se complète encore : d’autres bardes s’ajouteront.',
@@ -649,7 +649,7 @@ const EN = {
   home: 'Home',
   eyebrow: '2026 music programming',
   title: 'Music',
-  intro1: 'Behind theater, cinema, behind stories, around fire circles, behind revolutions or just to set the mood in your living room — music is there to keep you company. Here we honour the bards who will animate this grand weekend.',
+  intro1: 'Behind theater, cinema, behind stories, around fire circles, behind revolutions or just to set the mood in your living room: music is there to keep you company. Here we honour the bards who will animate this grand weekend.',
   section2026Eyebrow: '2026 programming',
   section2026Title:   'On this year’s bill',
   section2026Lead:    'The first names of the 2026 edition, day by day. The lineup is still growing: more bards will join.',

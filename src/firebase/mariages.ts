@@ -1,4 +1,4 @@
-// Mariages médiévaux — Firestore-backed CRUD
+// Mariages médiévaux: Firestore-backed CRUD
 // Collection layout: mariages/{id}  (flat collection, addDoc-generated ids)
 // Falls back gracefully when db is null (no Firebase config).
 
@@ -82,7 +82,7 @@ export async function updateMariage(
 ): Promise<void> {
   if (!db) throw new Error('Firebase not configured');
   // Cast through `any` to satisfy the overly-strict Firestore UpdateData
-  // generic — our patch values are all plain scalars/strings/numbers.
+  // generic: our patch values are all plain scalars/strings/numbers.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await updateDoc(doc(db, COL, id), patch as any);
 }

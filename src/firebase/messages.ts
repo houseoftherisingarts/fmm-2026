@@ -1,5 +1,5 @@
 // Person ↔ admin messaging.
-// Single thread per person — not year-bound, since the conversation
+// Single thread per person, not year-bound, since the conversation
 // outlives the application cycle. Threads are namespaced by `kind`:
 //   • vendor   → vendors/{uid}/messages/{autoId}
 //   • benevole → benevoles/{uid}/messages/{autoId}
@@ -13,7 +13,7 @@ import { db } from '../firebase';
 export type ThreadKind  = 'vendor' | 'benevole';
 export type MessageRole = 'vendor' | 'benevole' | 'admin';
 
-/** Message variant — `chat` is the default conversational message;
+/** Message variant: `chat` is the default conversational message;
     `invitation` is a branded, structured invitation rendered as a card
     in the recipient's client space (sent yearly by Jesse). */
 export type MessageKind = 'chat' | 'invitation';
@@ -27,11 +27,11 @@ export interface InvitationMeta {
   title:     string;
   /** Optional eyebrow text shown above the title. */
   eyebrow?:  string;
-  /** Optional CTA label — pairs with `ctaHref`. */
+  /** Optional CTA label: pairs with `ctaHref`. */
   ctaLabel?: string;
   /** Optional CTA target URL (typically the apply form for that year). */
   ctaHref?:  string;
-  /** Optional signature line — defaults to the sender's name. */
+  /** Optional signature line: defaults to the sender's name. */
   signedBy?: string;
 }
 
@@ -81,7 +81,7 @@ export async function sendMessage(
   kind: ThreadKind = 'vendor',
 ): Promise<void> {
   if (uid.startsWith('mock-')) {
-    console.info('[messages] mock uid — write skipped');
+    console.info('[messages] mock uid: write skipped');
     return;
   }
   const col = threadCol(kind, uid);

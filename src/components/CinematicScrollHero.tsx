@@ -8,10 +8,10 @@ import TarotCard, { type TarotGlyph } from './TarotCard';
 // Outer container = 320vh tall; inner sticky stays viewport-pinned at
 // top while scrollY 0→1 drives every transform.
 //
-// ACT 1 (progress 0.00 – 0.33) — viking helmet center stage, title fades in
-// ACT 2 (progress 0.33 – 0.66) — helmet drifts left + shrinks; tarot fan
+// ACT 1 (progress 0.00 – 0.33): viking helmet center stage, title fades in
+// ACT 2 (progress 0.33 – 0.66): helmet drifts left + shrinks; tarot fan
 //                                materialises from the right; fire ignites
-// ACT 3 (progress 0.66 – 1.00) — full mystical scene; CTA + countdown
+// ACT 3 (progress 0.66 – 1.00): full mystical scene; CTA + countdown
 //                                overlay sticks; scroll-down hint fades
 
 interface Cta { label: string; href: string }
@@ -23,7 +23,7 @@ interface Props {
   eyebrow: string;                   // "Édition 2026 · Caravanes & Saltimbanques"
   title: string;                     // "FMM 2026"
   subtitle: string;                  // tagline
-  dates: string;                     // "25 — 26 — 27 septembre 2026"
+  dates: string;                     // "25, 26 et 27 septembre 2026"
   primaryCta: Cta;                   // tickets
   secondaryCta?: Cta;                // optional discover link
   countdown: Countdown;
@@ -50,9 +50,9 @@ const CinematicScrollHero: React.FC<Props> = ({
   // ── Master progress curves ──
   // Act 1 visibility (1 → 0)
   const act1Visibility = useTransform(scrollYProgress, [0, 0.18, 0.32], [1, 1, 0]);
-  // Act 2 ignition (0 → 1) — tarot + fire reveal
+  // Act 2 ignition (0 → 1): tarot + fire reveal
   const act2Visibility = useTransform(scrollYProgress, [0.20, 0.45, 1], [0, 1, 1]);
-  // Act 3 finale (0 → 1) — CTA + countdown anchor
+  // Act 3 finale (0 → 1): CTA + countdown anchor
   const act3Visibility = useTransform(scrollYProgress, [0.55, 0.75], [0, 1]);
 
   // Helmet motion: starts dead center, drifts left + shrinks across 0.30→0.85
@@ -77,7 +77,7 @@ const CinematicScrollHero: React.FC<Props> = ({
       {/* Sticky cinematic pane */}
       <div className="sticky top-0 h-screen w-full overflow-hidden text-ivory">
 
-        {/* ── Layer 0 — optional bg image with deep parallax ── */}
+        {/* Layer 0: optional bg image with deep parallax */}
         {backgroundImageUrl && (
           <motion.img
             src={backgroundImageUrl} alt="" aria-hidden
@@ -86,11 +86,11 @@ const CinematicScrollHero: React.FC<Props> = ({
           />
         )}
 
-        {/* ── Layer 1 — base atmosphere ── */}
+        {/* Layer 1: base atmosphere */}
         <div className="absolute inset-0 bg-gradient-to-b from-midnight-deep via-midnight to-midnight-deep" />
         <motion.div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_0%,rgba(176,141,58,0.10),transparent_70%)]" />
 
-        {/* ── Layer 2 — fire bed (act 2 onward) ── */}
+        {/* Layer 2: fire bed (act 2 onward) */}
         <motion.div
           style={{ opacity: act2Visibility }}
           className="absolute inset-x-0 bottom-0 h-[70%] pointer-events-none"
@@ -99,7 +99,7 @@ const CinematicScrollHero: React.FC<Props> = ({
           <div className="embers" />
         </motion.div>
 
-        {/* ── Layer 3 — viking helmet, the protagonist ── */}
+        {/* Layer 3: viking helmet, the protagonist */}
         <motion.div
           style={{ x: helmetX, y: helmetY, scale: helmetScale, opacity: helmetOpacity }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -115,14 +115,14 @@ const CinematicScrollHero: React.FC<Props> = ({
           </div>
         </motion.div>
 
-        {/* ── Layer 4 — tarot fan (act 2 onward) ── */}
+        {/* Layer 4: tarot fan (act 2 onward) */}
         <TarotFan progress={scrollYProgress} act2Visibility={act2Visibility} cardsLabel={cardsLabel} />
 
-        {/* ── Layer 5 — vignette + grain ── */}
+        {/* Layer 5: vignette + grain */}
         <motion.div style={{ opacity: vignetteOpacity }} className="vignette-radial" />
         <div className="grain absolute inset-0 opacity-25" aria-hidden />
 
-        {/* ── Layer 6 — Act 1 title block ── */}
+        {/* Layer 6: Act 1 title block */}
         <motion.div
           style={{ y: titleY, opacity: titleOpacity }}
           className="absolute inset-x-0 bottom-[12vh] md:bottom-[18vh] text-center px-4 md:px-8 pointer-events-none"
@@ -141,7 +141,7 @@ const CinematicScrollHero: React.FC<Props> = ({
           </p>
         </motion.div>
 
-        {/* ── Layer 7 — Act 1 scroll hint ── */}
+        {/* Layer 7: Act 1 scroll hint */}
         <motion.div
           style={{ opacity: act1Visibility }}
           className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-ivory-soft pointer-events-none"
@@ -152,7 +152,7 @@ const CinematicScrollHero: React.FC<Props> = ({
           </motion.div>
         </motion.div>
 
-        {/* ── Layer 8 — Act 3 floating CTA + countdown ── */}
+        {/* Layer 8: Act 3 floating CTA + countdown */}
         <motion.aside
           style={{ opacity: act3Visibility }}
           className="absolute bottom-6 right-4 md:bottom-10 md:right-10 max-w-sm w-[calc(100%-2rem)] md:w-[380px]"
@@ -201,7 +201,7 @@ const CinematicScrollHero: React.FC<Props> = ({
   );
 };
 
-// ─── Tarot fan — 5 cards arc out from the right side ──────────────
+// Tarot fan: 5 cards arc out from the right side
 // Each card has a base angle in the fan; scroll progress drives a
 // shared opacity + a per-card stagger of x/rotate.
 interface FanProps { progress: MotionValue<number>; act2Visibility: MotionValue<number>; cardsLabel: string }
@@ -237,7 +237,7 @@ const FanCard: React.FC<CardProps> = ({ index, total, glyph, progress }) => {
   const t        = total === 1 ? 0.5 : index / (total - 1);
   const baseRot  = -25 + t * 50;        // -25° ... +25°
   const baseX    = -120 + t * 240;      // -120 ... +120 px from anchor
-  const baseY    = Math.abs(t - 0.5) * 60;  // arc curve — center up, edges down
+  const baseY    = Math.abs(t - 0.5) * 60;  // arc curve: center up, edges down
   const enter    = 0.30 + index * 0.05;     // staggered entrance
   const settle   = enter + 0.18;
 

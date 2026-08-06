@@ -65,7 +65,7 @@ export default function TitleLab() {
       <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(125% 105% at 50% 46%, transparent 52%, rgba(3,5,10,0.5) 88%, rgba(2,3,7,0.8) 100%)' }} />
 
       <div key={`${concept}-${run}`} className="absolute inset-0">
-        {/* CONCEPT 1 — orb projection: centered floating lockup with a soft veil */}
+        {/* CONCEPT 1: orb projection, centered floating lockup with a soft veil */}
         {concept === 1 && (
           <>
             <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(46% 38% at 50% 40%, rgba(3,5,11,0.78) 0%, rgba(3,5,11,0.45) 45%, transparent 72%)' }} />
@@ -76,7 +76,7 @@ export default function TitleLab() {
           </>
         )}
 
-        {/* CONCEPT 2 — lower-third title card carved by a vignette well */}
+        {/* CONCEPT 2: lower-third title card carved by a vignette well */}
         {concept === 2 && (
           <>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%]" style={{ background: 'linear-gradient(to top, rgba(3,4,9,0.94) 0%, rgba(3,4,9,0.72) 26%, rgba(3,4,9,0.2) 62%, transparent 100%)' }} />
@@ -86,7 +86,7 @@ export default function TitleLab() {
           </>
         )}
 
-        {/* CONCEPT 3 — editorial left column, scene pushed center-right */}
+        {/* CONCEPT 3: editorial left column, scene pushed center-right */}
         {concept === 3 && (
           <>
             <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(3,4,9,0.92) 0%, rgba(3,4,9,0.6) 32%, transparent 58%)' }} />

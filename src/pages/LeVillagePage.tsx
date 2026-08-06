@@ -37,7 +37,7 @@ const LeVillagePage: React.FC = () => {
   );
 };
 
-// ─── MenuComingSoon — teaser du Village Nourriture ───────────────────
+// ─── MenuComingSoon · teaser du Village Nourriture ───────────────────
 // Même grammaire Witcher que les sections du marché : rail indexé,
 // panneau hex, photo pleine carte, une seule phrase. Pas de menu, pas
 // de promesse détaillée : le chaudron parle.

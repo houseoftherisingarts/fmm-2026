@@ -1,4 +1,4 @@
-// Mariages médiévaux — gestion des cérémonies à thème sur le site
+// Mariages médiévaux : gestion des cérémonies à thème sur le site
 // FMM 2026. Couples réservent une cérémonie médiévale (officiant·e,
 // décor, témoins, programme) durant la fin de semaine du festival.
 // Wire to Firestore later.
@@ -104,7 +104,7 @@ let _bookings: MariageBooking[] = [
     packagePrice: 1800, depositPaid: 0,
     status: 'demande',
     createdAt: '2026-04-18',
-    notes: 'Couple en évaluation — souhaite cérémonie courte avant le banquet. Officiant à proposer.',
+    notes: 'Couple en évaluation, souhaite cérémonie courte avant le banquet. Officiant à proposer.',
   },
   {
     id: 'm-4',

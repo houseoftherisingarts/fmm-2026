@@ -21,7 +21,7 @@ const VendorApplicationPage: React.FC = () => {
   const reduceMotion = useReducedMotion();
 
   // ?year= drives which festival year this application lands under.
-  // Accepted: CURRENT_YEAR (2026) or CURRENT_YEAR+1 (2027 — early reservation).
+  // Accepted: CURRENT_YEAR (2026) or CURRENT_YEAR+1 (2027, early reservation).
   // Anything else falls back to CURRENT_YEAR so a typo doesn't strand
   // the form against a year that has no admin tooling yet.
   // La cohorte 2026 est complète : tout ce qui arrive ici vise 2027.

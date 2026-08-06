@@ -1,9 +1,9 @@
-// Newsletter subscribers — Firestore CRUD. Owned by the admin
+// Newsletter subscribers: Firestore CRUD. Owned by the admin
 // Infolettre tab. The public site appends new addresses from the
 // home + footer signup forms; this module is the read/write API
 // for the admin list.
 //
-// Collection: `newsletter/{id}` — flat. Soft-delete via `unsubscribed`
+// Collection: `newsletter/{id}`, flat. Soft-delete via `unsubscribed`
 // for compliance, plus a hard `deleteSub` for cleanup.
 
 import {
@@ -37,7 +37,7 @@ function fromSnap(snap: QueryDocumentSnapshot<DocumentData>): NewsletterSub {
 }
 
 // Reads the full list with a sensible cap. The admin filters client-side
-// for now — when subscriber counts get unwieldy we can paginate.
+// for now: when subscriber counts get unwieldy we can paginate.
 export async function listSubs(max = 1000): Promise<NewsletterSub[]> {
   if (!db) return [];
   const snaps = await getDocs(query(
@@ -48,7 +48,7 @@ export async function listSubs(max = 1000): Promise<NewsletterSub[]> {
   return snaps.docs.map(fromSnap);
 }
 
-// Count for stat tiles — runs the same listSubs read currently;
+// Count for stat tiles: runs the same listSubs read currently;
 // when the collection grows we'll swap for an aggregate count().
 export async function countActive(): Promise<number> {
   if (!db) return 0;
@@ -91,7 +91,7 @@ export async function unsubscribeSub(id: string): Promise<void> {
 }
 
 // Hard-delete: admin "Supprimer cet abonné" action. Use this when the
-// row is bogus (spam, typo) — not for normal unsubscribes.
+// row is bogus (spam, typo), not for normal unsubscribes.
 export async function deleteSub(id: string): Promise<void> {
   if (!db) throw new Error('Firebase not configured');
   await deleteDoc(doc(db, COL, id));

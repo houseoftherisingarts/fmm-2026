@@ -49,7 +49,7 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
     return () => { cancelled = true; };
   }, [devBypass]);
 
-  // 14-day visitor series — still mock until a GA4 Data API integration
+  // 14-day visitor series: still mock until a GA4 Data API integration
   // (via a Cloud Function / service account) is wired. The site already
   // logs page views through firebase/analytics; this section only lacks
   // the read-side aggregation.

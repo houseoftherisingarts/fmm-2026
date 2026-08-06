@@ -19,8 +19,8 @@ import { type Team } from '../../firebase/teams';
 // upsertBenevoleApp on every change. This keeps Firestore reads cheap
 // and avoids a parallel /shifts collection.
 //
-// Days: vendredi (17h–22h), samedi (10h–22h), dimanche (10h–17h) —
-// matches the 2025 spreadsheet but configurable via DAY_SLOTS below.
+// Days: vendredi (17h–22h), samedi (10h–22h), dimanche (10h–17h),
+// matching the 2025 spreadsheet but configurable via DAY_SLOTS below.
 
 interface ShiftBlock {
   day:      'Vendredi' | 'Samedi' | 'Dimanche';
@@ -36,7 +36,7 @@ const DAY_SLOTS: { day: ShiftBlock['day']; hours: string[] }[] = [
 ];
 
 interface Props {
-  benevoles:  BenevoleApp[];   // accepted bénévoles only — pre-filtered upstream
+  benevoles:  BenevoleApp[];   // accepted bénévoles only: pre-filtered upstream
   teams:      Team[];
   /** When true, mocks the upsert (useful for DEV bypass / showcase). */
   isDemo?: boolean;
@@ -164,7 +164,7 @@ const HoraireEditor: React.FC<Props> = ({ benevoles, teams, isDemo = false, onCh
                   {collapsed ? <ChevronRight size={13} className="text-ivory-soft" /> : <ChevronDown size={13} className="text-brass" />}
                   <span className="text-base">{s.icon || '🏛️'}</span>
                   <span className="font-display title-medieval text-sm text-ivory">{s.name}</span>
-                  <span className="font-editorial italic text-[11px] text-ivory-soft/60 ml-1">— {roster.length} bénévole{roster.length > 1 ? 's' : ''}</span>
+                  <span className="font-editorial italic text-[11px] text-ivory-soft/60 ml-1">· {roster.length} bénévole{roster.length > 1 ? 's' : ''}</span>
                 </button>
                 {!collapsed && (
                   <div className="overflow-x-auto">
@@ -214,7 +214,7 @@ const HoraireEditor: React.FC<Props> = ({ benevoles, teams, isDemo = false, onCh
                                           ? 'bg-brass/40 hover:bg-brass/60 text-midnight-deep font-bold'
                                           : 'hover:bg-ivory-soft/10 text-ivory-soft/30'
                                       }`}
-                                      title={`${b.prenom} — ${day} ${h}`}
+                                      title={`${b.prenom} · ${day} ${h}`}
                                     >
                                       {on ? '●' : ''}
                                     </button>

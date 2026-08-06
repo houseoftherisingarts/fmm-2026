@@ -1,4 +1,4 @@
-// ─── Festival Médiéval de Montpellier — content map ──────────────
+// ─── Festival Médiéval de Montpellier: content map ──────────────
 // Single source of truth for FR/EN copy, nav structure, contact info,
 // and pillar metadata. Mirrors the live Wix site at
 // festivalmedievaldemontpellier.org.
@@ -11,7 +11,7 @@ export const SITE = {
   edition2026: 'Caravanes & Saltimbanques',
   year: 2026,
   dates: { start: '2026-09-25', end: '2026-09-27' },
-  datesLabel: { FR: '25 — 26 — 27 septembre 2026', EN: 'September 25 — 26 — 27, 2026' },
+  datesLabel: { FR: '25 · 26 · 27 septembre 2026', EN: 'September 25 · 26 · 27, 2026' },
   contact: {
     email: 'admin@festivalmedievaldemontpellier.org',
     phone: '514-418-3450',
@@ -40,7 +40,7 @@ export interface Pillar {
   short: { FR: string; EN: string };
 }
 
-// Édition 2026 "Caravanes & Saltimbanques" — top-level pillars consolidated
+// Édition 2026 "Caravanes & Saltimbanques": top-level pillars consolidated
 // into merged pages. Programmation (= activités + musique + jeunesse), Le
 // Village (= marché + nourriture), Histoire & Apprendre (= histoire +
 // apprendre), Mariages & Groupes (= mariages + groupes). Chevaux removed.
@@ -89,8 +89,8 @@ export const HOME = {
     hero: {
       eyebrow: 'Caravanes & Saltimbanques · Édition 2026',
       title: 'FMM 2026',
-      dates: '25 — 26 — 27 septembre 2026',
-      subtitle: 'Trois jours sur les routes du temps. Caravanes, fauves de scène, tarot, tambours, troupes nordiques — au cœur de Montpellier, Québec.',
+      dates: '25 · 26 · 27 septembre 2026',
+      subtitle: 'Trois jours sur les routes du temps. Caravanes, fauves de scène, tarot, tambours, troupes nordiques, au cœur de Montpellier, Québec.',
       primaryCta: 'Acheter mes billets',
       secondaryCta: 'Découvrir le festival',
     },
@@ -113,7 +113,7 @@ export const HOME = {
     map: {
       eyebrow: 'Plan du site',
       title: 'Le village s\'étend dans le bois',
-      lead: 'Marché, banquet, scène musicale, manège équestre et village jeunesse — tous reliés par les sentiers de Montpellier.',
+      lead: 'Marché, banquet, scène musicale, manège équestre et village jeunesse, tous reliés par les sentiers de Montpellier.',
     },
     pillarFeatures: [
       { key: 'marche'      as const, image: '/site/feature-marche.jpg' },
@@ -128,8 +128,8 @@ export const HOME = {
     hero: {
       eyebrow: 'Caravans & Players · 2026 Edition',
       title: 'FMM 2026',
-      dates: 'September 25 — 26 — 27, 2026',
-      subtitle: 'Three days on the roads of time. Caravans, troupe-fire, tarot, drums and Nordic clans — in the heart of Montpellier, Quebec.',
+      dates: 'September 25 · 26 · 27, 2026',
+      subtitle: 'Three days on the roads of time. Caravans, troupe-fire, tarot, drums and Nordic clans, in the heart of Montpellier, Quebec.',
       primaryCta: 'Get my tickets',
       secondaryCta: 'Discover the festival',
     },
@@ -148,7 +148,7 @@ export const HOME = {
     map: {
       eyebrow: 'Site plan',
       title: 'The village stretches through the woods',
-      lead: 'Market, banquet, music stage, equestrian ring and youth village — all linked by the Montpellier trails.',
+      lead: 'Market, banquet, music stage, equestrian ring and youth village, all linked by the Montpellier trails.',
     },
     pillarFeatures: [
       { key: 'marche'      as const, image: '/site/feature-marche.jpg' },
@@ -232,7 +232,7 @@ export const UI = {
     learnMore: 'En savoir plus',
     backHome: 'Retour à l\'accueil',
     notFoundTitle: 'Page introuvable',
-    notFoundLead: 'Cette page n\'existe pas — ou plus.',
+    notFoundLead: 'Cette page n\'existe pas, ou plus.',
     signIn: 'Se connecter',
     cart: 'Panier',
     play: 'Lire',
@@ -247,7 +247,7 @@ export const UI = {
     learnMore: 'Learn more',
     backHome: 'Back to home',
     notFoundTitle: 'Page not found',
-    notFoundLead: 'This page does not exist — or no longer does.',
+    notFoundLead: 'This page does not exist, or no longer does.',
     signIn: 'Sign in',
     cart: 'Cart',
     play: 'Play',

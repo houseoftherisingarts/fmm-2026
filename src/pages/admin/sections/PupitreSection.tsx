@@ -29,7 +29,7 @@ function tokenize(s: string): string[] {
 
 // Pick the PRESET_NAME whose tokens best overlap with the user's
 // displayName tokens. Returns null if no preset matches at least
-// 2 shared tokens (rule of thumb — first + last name).
+// 2 shared tokens (rule of thumb, first + last name).
 function resolveLockedName(displayName: string | null | undefined): string | null {
   if (!displayName) return null;
   const userTokens = new Set(tokenize(displayName));
@@ -57,7 +57,7 @@ const PupitreSection: React.FC = () => {
   // free dropdown. Organisateurs + CA are locked to their own name.
   const canSignAnyName = isSuperAdmin || adminRole === 'super';
 
-  // Sanity prompt — if a non-super admin's displayName doesn't match
+  // Sanity prompt: if a non-super admin's displayName doesn't match
   // any PRESET_NAME, they can't sign anything. Surface the rule so
   // they know who to ping to get their name added.
   if (!canSignAnyName && !lockedSignerName) {
@@ -95,12 +95,12 @@ const PupitreSection: React.FC = () => {
               Le Pupitre Médiéval de Montpellier
             </p>
             <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-1">
-              {canSignAnyName ? 'Bureau de scribe — accès complet' : 'Bureau de scribe'}
+              {canSignAnyName ? 'Bureau de scribe : accès complet' : 'Bureau de scribe'}
             </h2>
             <p className="font-editorial italic text-sm text-ivory-soft">
               {canSignAnyName
                 ? 'Vous pouvez choisir n’importe quel nom de signataire. Réservé aux super-admins (Tristan, Alex).'
-                : <>Vous signerez sous le nom <strong className="text-ivory">{lockedSignerName}</strong> — seul Tristan ou Alex peuvent signer au nom d’autrui.</>}
+                : <>Vous signerez sous le nom <strong className="text-ivory">{lockedSignerName}</strong>. Seul Tristan ou Alex peuvent signer au nom d’autrui.</>}
             </p>
           </div>
         </div>

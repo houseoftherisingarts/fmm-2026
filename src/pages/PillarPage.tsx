@@ -10,7 +10,7 @@ import Brume from '../components/Brume';
 
 interface Props { pillarKey: PillarKey }
 
-// Shared shell for the 13 pillar pages — temporary placeholder until
+// Shared shell for the 13 pillar pages: temporary placeholder until
 // each page gets its own faithful clone in the build-order rollout
 // (home → activites → nourriture → musique → benevole → marche →
 // jeunesse → histoire → partenaires → mariages → chevaux → apprendre

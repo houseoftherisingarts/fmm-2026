@@ -1,4 +1,4 @@
-// ─── Hnefatafl — square highlighting via overlay planes ─────────────
+// ─── Hnefatafl: square highlighting via overlay planes ─────────────
 // The selected cell and its valid-move cells get translucent glowing
 // disks placed slightly above the board surface. Overlay-based (rather
 // than mutating square materials) so highlights remain visible whether

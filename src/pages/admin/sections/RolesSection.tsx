@@ -16,8 +16,8 @@ import { Card, Input, Label, PrimaryButton, GhostButton, EmptyState } from '../p
 // Super-admin-only section. Lists every assigned admin (Firestore docs
 // in `adminRoles/{email}`), lets the super-admin add a new admin by
 // email, change someone's role, or revoke. The section itself is
-// access-gated by AdminShell's NAV filter — only role === 'super' sees
-// it — but we double-check `isSuperAdmin` here as defense-in-depth.
+// access-gated by AdminShell's NAV filter (only role === 'super' sees
+// it), but we double-check `isSuperAdmin` here as defense-in-depth.
 
 interface Props {
   devBypass?: boolean;
@@ -127,7 +127,7 @@ const RolesSection: React.FC<Props> = ({ devBypass = false }) => {
   if (!allowed) {
     return (
       <EmptyState icon={ShieldOff}>
-        Accès refusé — seul un super-administrateur peut gérer les rôles.
+        Accès refusé: seul un super-administrateur peut gérer les rôles.
       </EmptyState>
     );
   }
@@ -225,7 +225,7 @@ const RolesSection: React.FC<Props> = ({ devBypass = false }) => {
           <div className="p-6 text-center font-editorial italic text-ivory-soft/70">Chargement…</div>
         ) : rows.length === 0 ? (
           <EmptyState icon={ShieldOff}>
-            Aucun administrateur — attribuez un premier rôle à un courriel pour démarrer.
+            Aucun administrateur: attribuez un premier rôle à un courriel pour démarrer.
           </EmptyState>
         ) : (
           <ul className="divide-y divide-ivory-soft/10">

@@ -21,7 +21,7 @@ import {
 // ─── Finances ────────────────────────────────────────────────────────
 // Un tableau de bord (budget par catégories + comptes + répartition,
 // lisibles d'un coup d'œil) et un onglet Documents à part. Admin
-// seulement (super/CA/organisateurs) — voir adminPermissions.ts et
+// seulement (super/CA/organisateurs): voir adminPermissions.ts et
 // firestore.rules.
 
 const fmtCAD = (n: number) =>
@@ -197,10 +197,10 @@ const DashboardTab: React.FC = () => {
   }), [categories]);
   const totalEcart = totals.budgeted - totals.actual;
   const soldeNet = accounts.reduce((s, a) => s + a.balance, 0);
-  // Trésorerie = comptes de liquidité seulement (banque, paiement, autre) —
-  // la dette n'est jamais de l'argent qu'on a.
+  // Trésorerie = comptes de liquidité seulement (banque, paiement, autre).
+  // La dette n'est jamais de l'argent qu'on a.
   const tresorerie = accounts.filter((a) => a.type !== 'dette').reduce((s, a) => s + a.balance, 0);
-  // À recevoir : promis ou facturé seulement — une fois « reçu », l'argent
+  // À recevoir : promis ou facturé seulement. Une fois « reçu », l'argent
   // vit déjà dans un compte plus haut ; « perdu » ne compte plus.
   const totalARecevoir = receivables
     .filter((r) => r.status === 'promis' || r.status === 'facture')
@@ -222,7 +222,7 @@ const DashboardTab: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      {/* Trésorerie — le chiffre le plus important de l'écran, répartie
+      {/* Trésorerie: le chiffre le plus important de l'écran, répartie
           automatiquement selon la Répartition ci-dessous. À recevoir vit
           juste à côté, jamais additionné dedans : ce n'est pas en banque. */}
       <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
@@ -230,7 +230,7 @@ const DashboardTab: React.FC = () => {
         <ARecevoirStat total={totalARecevoir} count={receivables.filter((r) => r.status === 'promis' || r.status === 'facture').length} />
       </div>
 
-      {/* Vue d'ensemble — budget + comptes, un coup d'œil */}
+      {/* Vue d'ensemble: budget + comptes, un coup d'œil */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Stat label="Budgété"           value={fmtCAD(totals.budgeted)} />
         <Stat label="Dépensé"           value={fmtCAD(totals.actual)} />
@@ -238,7 +238,7 @@ const DashboardTab: React.FC = () => {
         <Stat label="Solde net comptes" value={fmtCAD(soldeNet)} tone={soldeNet < 0 ? 'blush' : 'emerald'} />
       </div>
 
-      {/* Répartition — bande compacte, sous les stats */}
+      {/* Répartition: bande compacte, sous les stats */}
       <RepartitionBand
         allocation={allocation}
         onChange={setAllocationState}
@@ -260,7 +260,7 @@ const DashboardTab: React.FC = () => {
         />
       </div>
 
-      {/* À recevoir — argent promis, pas encore en banque */}
+      {/* À recevoir: argent promis, pas encore en banque */}
       <ReceivablesColumn
         items={receivables} error={recError} onClearError={() => setRecError(null)}
         reload={reloadReceivables}
@@ -269,10 +269,10 @@ const DashboardTab: React.FC = () => {
   );
 };
 
-// ─── Trésorerie — grand écran du total ────────────────────────────────
+// ─── Trésorerie: grand écran du total ────────────────────────────────
 // Desjardins + Square + Zeffy (tous les comptes de liquidité), dette
 // exclue. Répartie automatiquement selon la Répartition configurée
-// plus bas — chaque part normalisée pour toujours sommer au total,
+// plus bas : chaque part normalisée pour toujours sommer au total,
 // même si la Répartition ne fait pas exactement 100%.
 
 const TresorerieHero: React.FC<{ total: number; allocation: FinanceAllocation }> = ({ total, allocation }) => {
@@ -286,7 +286,7 @@ const TresorerieHero: React.FC<{ total: number; allocation: FinanceAllocation }>
         {fmtCAD(total)}
       </p>
       <p className="font-editorial italic text-xs text-ivory-soft/60 mt-2">
-        Desjardins + Square + Zeffy — dette exclue
+        Desjardins + Square + Zeffy (dette exclue)
       </p>
 
       <div className="grid sm:grid-cols-3 gap-3 mt-6">
@@ -313,7 +313,7 @@ const TresorerieHero: React.FC<{ total: number; allocation: FinanceAllocation }>
   );
 };
 
-// ─── À recevoir — carte de total, à côté de la trésorerie ─────────────
+// ─── À recevoir: carte de total, à côté de la trésorerie ─────────────
 // Volontairement une carte séparée : jamais additionnée à la
 // trésorerie ci-dessus, pour que la distinction saute aux yeux.
 
@@ -326,7 +326,7 @@ const ARecevoirStat: React.FC<{ total: number; count: number }> = ({ total, coun
       {fmtCAD(total)}
     </p>
     <p className="font-editorial italic text-xs text-ivory-soft/50 mt-2">
-      {count > 0 ? `${count} montant${count > 1 ? 's' : ''} promis, pas encore en banque` : 'Pas encore en banque — pas dans la trésorerie'}
+      {count > 0 ? `${count} montant${count > 1 ? 's' : ''} promis, pas encore en banque` : 'Pas encore en banque, pas dans la trésorerie'}
     </p>
   </Card>
 );
@@ -622,7 +622,7 @@ const AccountForm: React.FC<{
 };
 
 // ─── Colonne À recevoir ────────────────────────────────────────────
-// Argent promis mais pas encore encaissé — subventions, commandites,
+// Argent promis mais pas encore encaissé: subventions, commandites,
 // factures clients. Total tenu à part de la trésorerie (voir hero
 // plus haut), pour qu'on ne confonde jamais promis et en banque.
 

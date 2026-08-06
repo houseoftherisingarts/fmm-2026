@@ -103,7 +103,7 @@ const HebergementPage: React.FC = () => {
             </p>
           </Reveal>
 
-          {/* Site map — last year's full festival map, camping emphasised.
+          {/* Site map: last year's full festival map, camping emphasised.
               Interactive spot-picking is removed for now; campers pick a
               spot type below and reserve on Zeffy. */}
           <Reveal>
@@ -183,7 +183,7 @@ const HebergementPage: React.FC = () => {
   );
 };
 
-// ─── Lodging carousel — same bestiary pattern as Musique ──────────────
+// ─── Lodging carousel: same bestiary pattern as Musique ──────────────
 interface LodgingCarouselProps {
   lodgings: Lodging[];
   lang:     'FR' | 'EN';

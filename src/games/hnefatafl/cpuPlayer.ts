@@ -1,11 +1,11 @@
-// ─── Hnefatafl — CPU player (3 difficulty levels) ───────────────────
+// ─── Hnefatafl: CPU player (3 difficulty levels) ───────────────────
 // Pure module: no Three.js, no React. Three tiers:
 //
-//   easy    — weighted-random legal moves (captures boosted)
-//   medium  — 1-ply lookahead with material + king-corner heuristic
-//   hard    — depth-2 minimax with α-β pruning, capture-first ordering
+//   easy    : weighted-random legal moves (captures boosted)
+//   medium  : 1-ply lookahead with material + king-corner heuristic
+//   hard    : depth-2 minimax with α-β pruning, capture-first ordering
 //
-// Calls applyMove from gameLogic on temporary boards — applyMove already
+// Calls applyMove from gameLogic on temporary boards: applyMove already
 // builds a fresh board copy, so callers never see the AI's scratch state.
 
 import {

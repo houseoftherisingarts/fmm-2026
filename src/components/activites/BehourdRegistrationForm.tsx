@@ -259,7 +259,7 @@ const Check: React.FC<{ label: string; on: boolean; onChange: (v: boolean) => vo
 // ─── i18n ──────────────────────────────────────────────────────────────
 const FR = {
   openCta:    'S’inscrire au Tournoi de Behourd 2027',
-  openHint:   'Place limitée — l’inscription est à 1 an d’avance.',
+  openHint:   'Place limitée. L’inscription est à 1 an d’avance.',
   cancel:     'Annuler',
   submit:     'Enregistrer puis payer via Zeffy',
   submitting: 'Envoi…',
@@ -285,20 +285,20 @@ const FR = {
   skill: { beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', experienced: 'Expérimenté (compétition)' } as Record<string, string>,
   yearsTraining: 'Années d’entraînement',
   pastCompetitions: 'Compétitions passées',
-  pastCompetitionsPh: 'Liste libre — événement, année, résultat',
+  pastCompetitionsPh: 'Liste libre : événement, année, résultat',
   ownsHelm:     'Je possède un casque conforme',
   ownsGambeson: 'Je possède un gambison',
   ownsArmor:    'Je possède une armure complète (au moins partielle conforme)',
   equipmentNotes: 'Notes équipement',
   equipmentNotesPh: 'Ce que vous apportez vs ce qu’il faut prêter',
   medicalNotes:   'Conditions médicales / allergies pertinentes',
-  medicalNotesPh: 'Confidentiel — partagé uniquement avec l’équipe sécurité',
+  medicalNotesPh: 'Confidentiel : partagé uniquement avec l’équipe sécurité',
   questions:      'Questions / commentaires',
 };
 
 const EN: typeof FR = {
   openCta:    'Register for the 2027 Behourd Tournament',
-  openHint:   'Limited slots — registration is one year in advance.',
+  openHint:   'Limited slots. Registration is one year in advance.',
   cancel:     'Cancel',
   submit:     'Save and pay via Zeffy',
   submitting: 'Sending…',
@@ -324,14 +324,14 @@ const EN: typeof FR = {
   skill: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced', experienced: 'Experienced (competitions)' } as Record<string, string>,
   yearsTraining: 'Years of training',
   pastCompetitions: 'Past competitions',
-  pastCompetitionsPh: 'Free list — event, year, result',
+  pastCompetitionsPh: 'Free list: event, year, result',
   ownsHelm:     'I have a regulation helm',
   ownsGambeson: 'I have a gambeson',
   ownsArmor:    'I own (at least partial) regulation armor',
   equipmentNotes: 'Equipment notes',
   equipmentNotesPh: 'What you bring vs what you need to borrow',
   medicalNotes:   'Relevant medical conditions / allergies',
-  medicalNotesPh: 'Confidential — shared only with the safety team',
+  medicalNotesPh: 'Confidential: shared only with the safety team',
   questions:      'Questions / notes',
 };
 

@@ -107,7 +107,7 @@ export const Badge: React.FC<{ tone?: 'pending' | 'accepted' | 'rejected' | 'wai
   );
 };
 
-// CSV export — handy for bénévole/marchand exports.
+// CSV export: handy for bénévole/marchand exports.
 export function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
   if (!rows.length) return;
   const headers = Object.keys(rows[0]);
@@ -124,14 +124,14 @@ export function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
   URL.revokeObjectURL(url);
 }
 
-// fmtDate — handles Firestore Timestamp + plain Date.
+// fmtDate: handles Firestore Timestamp + plain Date.
 export function fmtDate(ts: any, opts?: Intl.DateTimeFormatOptions): string {
   if (!ts) return '—';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleDateString('fr-CA', opts || { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-// useFileUpload — staged for when /admin Médiathèque wires Firebase
+// useFileUpload: staged for when /admin Médiathèque wires Firebase
 // Storage. For now it's a placeholder that returns a data: URL.
 export const ImageUpload: React.FC<{ value?: string; onChange: (url: string) => void }> = ({ value, onChange }) => {
   const fileRef = useRef<HTMLInputElement>(null);

@@ -10,18 +10,18 @@ import { addSub } from '../firebase/newsletter';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 
-// Real homepage — clones the live Wix `/festival-medieval-de-montpellier`
+// Real homepage: clones the live Wix `/festival-medieval-de-montpellier`
 // flow, captured 2026-04-25. Section order matches the source page:
-//   1. Hero — viking helmet bg + glass info card right
-//   2. Le Festival — guitarist glass card (À nos découvrir)
+//   1. Hero: viking helmet bg + glass info card right
+//   2. Le Festival: guitarist glass card (À nos découvrir)
 //   3. Two-up explorer cards (Activités + Histoire)
-//   4. Nouveautés — 3 cards w/ vertical sword divider
-//   5. Editorial body (light section) — "le Moyen Âge"
+//   4. Nouveautés: 3 cards w/ vertical sword divider
+//   5. Editorial body (light section): "le Moyen Âge"
 //   6. Wood-plank Billetterie callout
 //   7. Banquet glass card
 //   8. Full-bleed Carte du site
 //   9. Marché split + 3-up cross-promo
-//  10. Shields band — Devenir Bénévole overlay
+//  10. Shields band: Devenir Bénévole overlay
 //  11. Juste l'infolettre over fire scene
 const AccueilPage: React.FC = () => {
   const { lang } = useUI();
@@ -33,8 +33,8 @@ const AccueilPage: React.FC = () => {
     <>
       <SEO />
 
-      {/* ── 1. Hero — Viking helmet + glass info card (restored after the
-              dedicated /welcome page took the cinematic role) ── */}
+      {/* 1. Hero: Viking helmet + glass info card (restored after the
+              dedicated /welcome page took the cinematic role) */}
       <section className="relative min-h-[100svh] text-ivory overflow-hidden">
         <img decoding="async" fetchPriority="low" src="/wix/home/viking-helmet.jpg" alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover object-left" />
@@ -93,7 +93,7 @@ const AccueilPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 2. Le Festival / À nos découvrir — guitarist photo card ── */}
+      {/* 2. Le Festival / À nos découvrir: guitarist photo card */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -140,7 +140,7 @@ const AccueilPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 3. Two-up explorer cards — Activités + Histoire ── */}
+      {/* 3. Two-up explorer cards: Activités + Histoire */}
       <section className="relative py-20 md:py-24 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-6 md:gap-8">
@@ -180,7 +180,7 @@ const AccueilPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 4. Nouveautés 2026 — 3 cards with vertical sword divider ── */}
+      {/* 4. Nouveautés 2026: 3 cards with vertical sword divider */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -188,7 +188,7 @@ const AccueilPage: React.FC = () => {
           <div className="divider-brass w-20 mx-auto mb-12 md:mb-16" />
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8 relative">
-            {/* Vertical sword divider — decorative, hidden on small */}
+            {/* Vertical sword divider: decorative, hidden on small */}
             <div aria-hidden className="hidden md:block absolute left-1/3 top-0 bottom-0 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-brass/40 to-transparent" />
             <div aria-hidden className="hidden md:block absolute left-2/3 top-0 bottom-0 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-brass/40 to-transparent" />
 
@@ -219,7 +219,7 @@ const AccueilPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 5. Editorial body — light "Le Moyen Âge" section ── */}
+      {/* 5. Editorial body: light "Le Moyen Âge" section */}
       <section className="relative py-20 md:py-32 overflow-hidden" style={{ backgroundColor: 'var(--color-mist)' }}>
         <Brume tone="light" />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid md:grid-cols-12 gap-8 md:gap-12">
@@ -311,7 +311,7 @@ const AccueilPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 8. Carte du site — full-bleed ── */}
+      {/* 8. Carte du site: full-bleed */}
       <section className="relative py-12 md:py-16">
         <div className="text-center mb-8 md:mb-12 px-4">
           <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-2">{t.map.eyebrow}</p>
@@ -363,7 +363,7 @@ const AccueilPage: React.FC = () => {
                   </Link>
                 );
               })}
-              {/* Photographies cross-promo — non-clickable until a real
+              {/* Photographies cross-promo, non-clickable until a real
                   destination exists. Keeps the visual + copy in place. */}
               <div className="sm:col-span-2 relative min-h-[140px] rounded-lg-card overflow-hidden flex items-center justify-center">
                 <img decoding="async" src="/wix/home/scene-cinematic.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
@@ -378,7 +378,7 @@ const AccueilPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 10. Shields band — Devenir Bénévole overlay ── */}
+      {/* 10. Shields band: Devenir Bénévole overlay */}
       <section className="relative">
         <Link to={addLocale('/benevole', lang)} className="block relative overflow-hidden group">
           <img decoding="async" fetchPriority="low" src="/wix/home/shields-blue.jpg" alt="" aria-hidden
@@ -495,8 +495,8 @@ const FR = {
   hero: {
     eyebrow: 'Édition 2026 · Caravanes & Saltimbanques',
     title: 'FMM 2026',
-    dates: '25 — 26 — 27 septembre 2026',
-    subtitle: 'Trois jours sur les routes du temps. Caravanes, fauves de scène, tarot, tambours et troupes nordiques — au cœur de Montpellier, Québec.',
+    dates: '25, 26 et 27 septembre 2026',
+    subtitle: 'Trois jours sur les routes du temps. Caravanes, fauves de scène, tarot, tambours et troupes nordiques, au cœur de Montpellier, Québec.',
     primaryCta: 'Acheter mes billets',
     secondaryCta: 'Découvrir le festival',
   },
@@ -523,7 +523,7 @@ const FR = {
   editorial: {
     eyebrow: 'Le Moyen Âge',
     title: 'Apprendre, c’est traverser les siècles',
-    body1: 'Le « médiéval » ou le « Moyen Âge », bien que souvent associé à l’Europe, est aussi une ère vaste qui s’étend sur des siècles et des territoires variés. Avant l’époque des grandes colonisations, comment vivaient les différentes sociétés du monde ? Une plongée loin des clichés de chevaliers — une ouverture sur les multiples facettes de cette période à travers le monde.',
+    body1: 'Le « médiéval » ou le « Moyen Âge », bien que souvent associé à l’Europe, est aussi une ère vaste qui s’étend sur des siècles et des territoires variés. Avant l’époque des grandes colonisations, comment vivaient les différentes sociétés du monde ? Une plongée loin des clichés de chevaliers : une ouverture sur les multiples facettes de cette période à travers le monde.',
     body2: 'Au-delà de cette cacophonie dissonante, qu’est-ce qu’il y avait de beau dans les notes subtiles de la symphonie qui a marqué l’histoire de traits plus fins ? Desquelles de ces idéologies, pratiques et savoirs naturels, essentiels et primaires, peut-on encore s’inspirer aujourd’hui ?',
     cta: 'Apprendre',
   },
@@ -545,7 +545,7 @@ const FR = {
   crosspromo: {
     hebergement:    'Le FMM est accessible aux options d’hébergement variées dans la Petite-Nation.',
     hebergementCta: 'Loger',
-    partenaires:    'Vos partenaires rendent le festival possible — découvrez qui ils sont et soutenez-les.',
+    partenaires:    'Vos partenaires rendent le festival possible. Découvrez qui ils sont et soutenez-les.',
     partenairesCta: 'Voir et acheter',
     photos:         'Photographies',
     photosBody:     'Téléchargez les photos officielles de l’édition.',
@@ -573,8 +573,8 @@ const EN = {
   hero: {
     eyebrow: '2026 Edition · Caravans & Players',
     title: 'FMM 2026',
-    dates: 'September 25 — 26 — 27, 2026',
-    subtitle: 'Three days on the roads of time. Caravans, troupe-fire, tarot, drums and Nordic clans — in the heart of Montpellier, Quebec.',
+    dates: 'September 25, 26 and 27, 2026',
+    subtitle: 'Three days on the roads of time. Caravans, troupe-fire, tarot, drums and Nordic clans, in the heart of Montpellier, Quebec.',
     primaryCta: 'Get my tickets',
     secondaryCta: 'Discover the festival',
   },
@@ -583,10 +583,10 @@ const EN = {
     title: 'The festival',
     cardEyebrow: 'Discover',
     cardTitle: 'Four years of feasting',
-    cardBody: 'For over 4 years FMM has offered a unique immersion — a space where resilience, history and the spirit of the times come together.',
+    cardBody: 'For over 4 years FMM has offered a unique immersion: a space where resilience, history and the spirit of the times come together.',
     cardCta: 'Read on',
   },
-  explorerActivites: 'Slip on your tunic — or your curiosity — and let yourself be carried away by the magic of FMM. Welcome to the world of the Vikings, where sea, earth and stars tell immortal stories.',
+  explorerActivites: 'Slip on your tunic (or your curiosity) and let yourself be carried away by the magic of FMM. Welcome to the world of the Vikings, where sea, earth and stars tell immortal stories.',
   explorerActivitesCta: 'See activities',
   explorerHistoire: 'Four years, dozens of troupes, thousands of visitors and a site that grows edition by edition. Step into our archives.',
   explorerHistoireCta: 'See the history',
@@ -595,13 +595,13 @@ const EN = {
     cards: [
       { title: 'Food Village',      eyebrow: 'New Valhalla banquet',   body: 'An expanded, renewed culinary experience to delight in eating and drinking.',                                          image: '/wix/home/bonfire-warm.jpg', href: '/en/food',    cta: 'See the menus' },
       { title: 'Youth Space',       eyebrow: 'Park and activities',    body: 'A park, a cool space, a teen corner, plus all the workshops for the young lords.',                                       image: '/wix/jeunesse/2b1f82d0.jpg', href: '/en/youth',   cta: 'Details & sign-up' },
-      { title: 'New Programming',   eyebrow: 'New shows and more',     body: 'This year we add bites of animation, troupes, attractions and music — with multiple choreographies and ceremonies.',     image: '/wix/home/fire-night.jpg',  href: '/en/activities', cta: 'Details' },
+      { title: 'New Programming',   eyebrow: 'New shows and more',     body: 'This year we add bites of animation, troupes, attractions and music, with multiple choreographies and ceremonies.',     image: '/wix/home/fire-night.jpg',  href: '/en/activities', cta: 'Details' },
     ],
   },
   editorial: {
     eyebrow: 'The Middle Ages',
     title: 'Learning across centuries',
-    body1: '"Medieval" or "Middle Ages" — though often tied to Europe — is also a vast era stretching across centuries and territories. Before the great colonisations, how did the world’s societies live? A dive far from knight-clichés, an opening onto the many facets of the period worldwide.',
+    body1: '"Medieval" or "Middle Ages" (though often tied to Europe) is also a vast era stretching across centuries and territories. Before the great colonisations, how did the world’s societies live? A dive far from knight-clichés, an opening onto the many facets of the period worldwide.',
     body2: 'Beyond the dissonant cacophony, what was beautiful in the subtler notes of the symphony that shaped history with finer strokes? Which of those ideologies, practices and natural, essential, primary knowings can still inspire us today?',
     cta: 'Learn',
   },
@@ -611,11 +611,11 @@ const EN = {
   marche: { title: 'Market', cta: 'Shop' },
   crosspromo: {
     hebergement: 'FMM is accessible from a range of lodging options in the Petite-Nation.', hebergementCta: 'Stay over',
-    partenaires: 'Our partners make the festival possible — meet them and support them.',  partenairesCta: 'See and shop',
+    partenaires: 'Our partners make the festival possible: meet them and support them.',  partenairesCta: 'See and shop',
     photos: 'Photos', photosBody: 'Download the official photos of the edition.',          photosCta: 'Gallery',
   },
-  shields: { eyebrow: 'The heart of the festival', title: 'Become a Volunteer', body: 'FMM is run by a volunteer team. Join us — setup, welcome, programming, teardown. All profiles welcome.', cta: 'Join the team' },
-  newsletter: { eyebrow: 'Stay at court', title: 'Just the newsletter', body: 'If you don’t want the other member perks but still want to be in the know.', emailLabel: 'Email', consent: 'Yes — I’ll take the time to read a short letter now and then.', cta: 'Send', thanks: 'Thank you! We’ll be in touch.' },
+  shields: { eyebrow: 'The heart of the festival', title: 'Become a Volunteer', body: 'FMM is run by a volunteer team. Join us: setup, welcome, programming, teardown. All profiles welcome.', cta: 'Join the team' },
+  newsletter: { eyebrow: 'Stay at court', title: 'Just the newsletter', body: 'If you don’t want the other member perks but still want to be in the know.', emailLabel: 'Email', consent: 'Yes, I’ll take the time to read a short letter now and then.', cta: 'Send', thanks: 'Thank you! We’ll be in touch.' },
   sponsors: 'They talk about us',
 };
 

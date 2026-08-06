@@ -1,4 +1,4 @@
-// In-memory mock store for musician applications — used when DEV_BYPASS
+// In-memory mock store for musician applications: used when DEV_BYPASS
 // is on or when Firestore is unavailable, so the admin Musique tab and
 // the form work end-to-end offline.
 
@@ -21,7 +21,7 @@ const seed: MusicianApp[] = [
     contactRole:   'leader',
     phone:         '+1 514 555 0102',
     website:       'https://example.com/harfang',
-    shortBio:      'Duo médiéval/balfolk — vielle à roue et musette 16 pouces.',
+    shortBio:      'Duo médiéval/balfolk: vielle à roue et musette 16 pouces.',
     genres:        ['folk', 'medieval', 'balfolk'],
     performerCount:'duo',
     daysAvailable: ['vendredi', 'samedi', 'dimanche'],
@@ -67,7 +67,7 @@ const seed: MusicianApp[] = [
     needsLodging:  true,
     needsMeals:    true,
     vehicleCount:  2,
-    feeExpectation:'À discuter — couvre frais + cachet symbolique',
+    feeExpectation:'À discuter: couvre frais + cachet symbolique',
     whyFMM:        'On a entendu parler du festival par Skarazula, on veut découvrir le public québécois.',
     createdAt:     ts(7),
     updatedAt:     ts(7),

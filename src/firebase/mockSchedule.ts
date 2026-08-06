@@ -1,4 +1,4 @@
-// In-memory mock for the schedule — used in DEV_BYPASS so the admin
+// In-memory mock for the schedule: used in DEV_BYPASS so the admin
 // editor and the public page work without a live Firestore.
 
 import type { ScheduleDay, ScheduleDoc } from './schedule';
@@ -14,7 +14,7 @@ const SEED: ScheduleDay[] = [
     dateEN: 'Friday September 25',
     items: [
       { time: '17h00', label: 'Ouverture des portes',                          where: 'Site' },
-      { time: '17h00', label: 'Ouverture de la Boustifaille — Village Bouffe', where: 'Village gustatif' },
+      { time: '17h00', label: 'Ouverture de la Boustifaille : Village Bouffe', where: 'Village gustatif' },
       { time: '18h00', label: 'Spectacle d’Arrünn',                             where: 'Scène' },
       { time: '19h00', label: 'Danse des Völvas',                               where: 'Autour du feu' },
       { time: '19h15', label: 'Spectacle de Trifolys',                          where: 'Scène' },
@@ -37,7 +37,7 @@ const SEED: ScheduleDay[] = [
       { time: '14h45–15h45', label: 'Joute',                                      where: 'Arène' },
       { time: '15h45–16h15', label: 'Parcours d’herboristerie',                    where: 'Village paysan' },
       { time: '15h45–16h15', label: 'Démonstration de planage de bois ancestral', where: 'Village paysan' },
-      { time: '16h00–16h30', label: 'Conférence — Construction du Drakkar',       where: 'Village viking' },
+      { time: '16h00–16h30', label: 'Conférence : Construction du Drakkar',       where: 'Village viking' },
       { time: '16h30–17h00', label: 'Concours culinaire',                         where: 'Campement viking' },
       { time: '18h00–18h30', label: 'Démonstration de fonderie de fer',           where: 'Village paysan' },
       { time: '18h30–19h30', label: 'Spectacle de Harfang',                       where: 'Scène' },
@@ -56,7 +56,7 @@ const SEED: ScheduleDay[] = [
       { time: '11h00–12h00', label: 'Jeu équestre',                               where: 'Arène' },
       { time: '11h45–12h15', label: 'Parcours d’herboristerie',                   where: 'Village paysan' },
       { time: '11h45–12h15', label: 'Démonstration de forge',                    where: 'Village paysan' },
-      { time: '12h00–13h00', label: 'Cérémonie de Freya — Célébration de l’équinoxe', where: 'Camp viking' },
+      { time: '12h00–13h00', label: 'Cérémonie de Freya : Célébration de l’équinoxe', where: 'Camp viking' },
       { time: '13h00–14h00', label: 'Spectacle de Canteraine',                    where: 'Scène' },
       { time: '13h00–15h00', label: 'Banquet de l’Équinoxe',                       where: 'Scène' },
       { time: '13h30–15h00', label: 'Tournoi de bridge fight',                    where: 'Arène' },

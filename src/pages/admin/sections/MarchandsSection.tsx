@@ -43,7 +43,7 @@ const APPEARANCE_LABEL: Record<string, string> = {
   incertain: 'Incertain',
 };
 const ELECTRICITY_LABEL: Record<string, string> = {
-  oui:   'Oui — 100 % requis',
+  oui:   'Oui : 100 % requis',
   non:   'Non',
   phone: 'Charge téléphone',
 };
@@ -62,7 +62,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
   const inscriptionsOpen = flags.vendorApplicationsOpen;
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
-  // Catalogue used by the image picker — every kiosk on every tier in
+  // Catalogue used by the image picker: every kiosk on every tier in
   // a flat list so Jesse can swap any photo. Sourced from the same
   // content module the public /marche reads.
   const allKiosksForPicker = useMemo(
@@ -74,7 +74,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
     [],
   );
 
-  // Personalised greeting — when the logged-in admin is Jesse (matched by
+  // Personalised greeting: when the logged-in admin is Jesse (matched by
   // display name or email local-part), the section opens with a dedicated
   // welcome. Falls back to a neutral greeting for any other admin so the
   // header stays warm without misnaming visitors.
@@ -83,7 +83,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
     const local = adminUser?.email?.split('@')[0] || '';
     const looksLikeJesse =
       /jesse/i.test(dn || '') || /jesse/i.test(local) ||
-      // Dev bypass — still greet Jesse so she can see the experience
+      // Dev bypass: still greet Jesse so she can see the experience
       adminUser?.email === 'dev@local';
     if (looksLikeJesse) return 'Jesse';
     if (dn) return dn.split(' ')[0];
@@ -103,7 +103,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
     [items],
   );
 
-  // Stable accessor for the tier — older docs may not have it set yet.
+  // Stable accessor for the tier: older docs may not have it set yet.
   const tierOf = (v: VendorApp): VendorTier => v.tier || 'marche';
 
   const filtered = items.filter((v) =>
@@ -173,7 +173,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
 
   return (
     <div className="space-y-5">
-      {/* ── Personalised greeting — Hello Jesse / Hello {name} ──── */}
+      {/* ── Personalised greeting: Hello Jesse / Hello {name} ──── */}
       <motion.div
         initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
         className="relative overflow-hidden rounded-card border border-brass/30 bg-gradient-to-br from-brass/10 via-midnight-deep to-midnight-deep px-5 md:px-7 py-5 md:py-6"
@@ -210,14 +210,14 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
         </div>
       </motion.div>
 
-      {/* ── Broadcast composer — branded instruction messages ──── */}
+      {/* ── Broadcast composer: branded instruction messages ──── */}
       <BroadcastComposer
         vendors={items}
         adminUid={adminUser?.uid || 'admin'}
-        adminName={greetingName === 'Jesse' ? 'Jesse — FMM' : (adminUser?.displayName || 'FMM')}
+        adminName={greetingName === 'Jesse' ? 'Jesse, FMM' : (adminUser?.displayName || 'FMM')}
       />
 
-      {/* ── Image library access — opens picker over every kiosk ── */}
+      {/* ── Image library access: opens picker over every kiosk ── */}
       <div className="flex items-center justify-between gap-3 px-5 py-3 rounded-card border border-brass/25 bg-midnight-deep/60">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-card bg-brass/15 border border-brass/45 flex items-center justify-center text-brass shrink-0">
@@ -228,7 +228,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
               Bibliothèque d’images
             </p>
             <p className="font-editorial italic text-xs text-ivory-soft">
-              Choisir la photo de chaque kiosque — visible aussitôt sur <code className="font-sans text-[10px] text-brass">/marche</code>
+              Choisir la photo de chaque kiosque : visible aussitôt sur <code className="font-sans text-[10px] text-brass">/marche</code>
             </p>
           </div>
         </div>
@@ -345,7 +345,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
                     {year}
                     {year === CURRENT_YEAR && <span className="ml-2 text-xs text-brass uppercase tracking-widest">(en cours)</span>}
                   </h3>
-                  <span className="font-editorial italic text-xs text-stone ml-1">— {rows.length} inscription{rows.length > 1 ? 's' : ''}</span>
+                  <span className="font-editorial italic text-xs text-stone ml-1">· {rows.length} inscription{rows.length > 1 ? 's' : ''}</span>
                   <span className="flex-1 ml-3 h-px bg-gradient-to-r from-brass/40 to-transparent" />
                 </button>
                 {!collapsed && (
@@ -459,7 +459,7 @@ const Row: React.FC<{
                 <div>
                   <p className="font-display title-medieval text-xs text-brass mb-1.5">Description / produits</p>
                   <p className="font-editorial text-sm text-ivory-soft whitespace-pre-line min-h-[80px]">
-                    {v.description || v.products || <em className="text-stone">— aucun —</em>}
+                    {v.description || v.products || <em className="text-stone">(aucun)</em>}
                   </p>
                 </div>
                 {v.familyVolunteerInterest && (

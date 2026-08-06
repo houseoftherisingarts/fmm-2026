@@ -38,7 +38,7 @@ const SCHEDULE = [
     dateEN: 'Friday',
     items: [
       { time: '17h00', label: 'Ouverture des portes',                                 where: 'Site' },
-      { time: '17h00', label: 'Ouverture de la Boustifaille — Village Bouffe',        where: 'Village gustatif' },
+      { time: '17h00', label: 'Ouverture de la Boustifaille : Village Bouffe',        where: 'Village gustatif' },
       { time: '18h00', label: 'Spectacle d’Arrünn',                                    where: 'Scène' },
       { time: '19h00', label: 'Danse des Völvas',                                      where: 'Autour du feu' },
       { time: '19h15', label: 'Spectacle de Trifolys',                                 where: 'Scène' },
@@ -60,7 +60,7 @@ const SCHEDULE = [
       { time: '14h45–15h45', label: 'Joute',                                           where: 'Arène' },
       { time: '15h45–16h15', label: 'Parcours d’herboristerie',                        where: 'Village paysan' },
       { time: '15h45–16h15', label: 'Démonstration de planage de bois ancestral',      where: 'Village paysan' },
-      { time: '16h00–16h30', label: 'Conférence — Construction du Drakkar',            where: 'Village viking' },
+      { time: '16h00–16h30', label: 'Conférence : Construction du Drakkar',            where: 'Village viking' },
       { time: '16h30–17h00', label: 'Concours culinaire',                              where: 'Campement viking' },
       { time: '18h00–18h30', label: 'Démonstration de fonderie de fer',                where: 'Village paysan' },
       { time: '18h30–19h30', label: 'Spectacle de Harfang',                            where: 'Scène' },
@@ -78,7 +78,7 @@ const SCHEDULE = [
       { time: '11h00–12h00', label: 'Jeu équestre',                                    where: 'Arène' },
       { time: '11h45–12h15', label: 'Parcours d’herboristerie',                        where: 'Village paysan' },
       { time: '11h45–12h15', label: 'Démonstration de forge',                          where: 'Village paysan' },
-      { time: '12h00–13h00', label: 'Cérémonie de Freya — Célébration de l’équinoxe',  where: 'Camp viking' },
+      { time: '12h00–13h00', label: 'Cérémonie de Freya : Célébration de l’équinoxe',  where: 'Camp viking' },
       { time: '13h00–14h00', label: 'Spectacle de Canteraine',                         where: 'Scène' },
       { time: '13h00–15h00', label: 'Banquet de l’Équinoxe',                            where: 'Scène' },
       { time: '13h30–15h00', label: 'Tournoi de bridge fight',                         where: 'Arène' },
@@ -89,7 +89,7 @@ const SCHEDULE = [
 
 type Category = 'combat' | 'crafts' | 'shows' | 'ripaille' | 'family';
 
-// ── Activity feature cards. Images sourced from public/wix/* — hashed
+// ── Activity feature cards. Images sourced from public/wix/*: hashed
 // Wix filenames mapped to the closest thematic match. Category drives
 // the filter chips / arrow navigation. `descFR/descEN` are the long
 // descriptions revealed when a tile is clicked (flip-expand modal).
@@ -106,48 +106,48 @@ const ACTIVITIES: Array<{
   retiree?: boolean;
 }> = [
   { titleFR: 'Escrime',          titleEN: 'Fencing',           bodyFR: 'et autres combats',                                       bodyEN: 'and other combat arts',
-    descFR: 'L’escrime artistique et le combat médiéval — sous l’œil du Chevalier Vert, des duels en armure complète, l’épée longue, le combat libre. Toute la gamme de la guerre courtoise et de la guerre brute, présentée par les fines lames du festival.',
-    descEN: 'Artistic fencing and medieval combat under the Green Knight’s watch — full-armour duels, longsword fencing, free combat. The full range of courtly war and raw war, performed by the festival’s finest blades.',
+    descFR: 'L’escrime artistique et le combat médiéval : sous l’œil du Chevalier Vert, des duels en armure complète, l’épée longue, le combat libre. Toute la gamme de la guerre courtoise et de la guerre brute, présentée par les fines lames du festival.',
+    descEN: 'Artistic fencing and medieval combat under the Green Knight’s watch: full-armour duels, longsword fencing, free combat. The full range of courtly war and raw war, performed by the festival’s finest blades.',
     image: '/activites/webp/25880822.webp', category: 'combat' },
   { titleFR: 'Sorcières',        titleEN: 'Witches',           bodyFR: 'Herboristerie, tissage, artisanat',                       bodyEN: 'Herbalism, weaving, crafts',
-    descFR: 'Herboristerie, tissage, cuisine ancestrale, sortilèges domestiques. Les sorcières du festival ouvrent leurs grimoires et partagent les savoirs qu’on a presque oubliés — entre racines, fils et chaudron.',
-    descEN: 'Herbalism, weaving, ancestral cooking, household spellwork. The festival’s witches open their grimoires and share knowledge that’s almost forgotten — between roots, threads and cauldron.',
+    descFR: 'Herboristerie, tissage, cuisine ancestrale, sortilèges domestiques. Les sorcières du festival ouvrent leurs grimoires et partagent les savoirs qu’on a presque oubliés : entre racines, fils et chaudron.',
+    descEN: 'Herbalism, weaving, ancestral cooking, household spellwork. The festival’s witches open their grimoires and share knowledge that’s almost forgotten: between roots, threads and cauldron.',
     image: '/activites/webp/1f021070.webp', category: 'crafts' },
   { titleFR: 'Démonstrations',   titleEN: 'Demonstrations',    bodyFR: 'Forge, savoirs ancestraux',                               bodyEN: 'Forge, ancestral knowledge',
     descFR: 'Forge, fonderie, gravure sur os, planage de bois ancestral, tissage. Les artisans-démonstrateurs travaillent devant vous, expliquant chaque geste hérité d’une époque où la matière était travaillée à la main.',
     descEN: 'Forge, foundry, bone engraving, ancestral wood planing, weaving. The demonstrator-artisans work in front of you, explaining each gesture handed down from an age when matter was shaped by hand.',
     image: '/histoire/archives/lievre/thumb/2022-DSC00451.webp', category: 'crafts' },
   { titleFR: 'Joutes',           titleEN: 'Jousts',            bodyFR: 'Équestres',                                                bodyEN: 'On horseback',
-    descFR: 'Joutes équestres à la lance et à l’épée. Chevaliers et destriers s’affrontent dans l’arène — une tradition millénaire remise au goût du jour.',
-    descEN: 'Mounted joust with lance and sword. Knights and chargers face off in the arena — a thousand-year-old tradition brought up to date.',
+    descFR: 'Joutes équestres à la lance et à l’épée. Chevaliers et destriers s’affrontent dans l’arène : une tradition millénaire remise au goût du jour.',
+    descEN: 'Mounted joust with lance and sword. Knights and chargers face off in the arena: a thousand-year-old tradition brought up to date.',
     image: '/activites/webp/04ba7d92.webp', category: 'combat' },
   { titleFR: 'Spectacles',       titleEN: 'Shows',             bodyFR: 'Et musique',                                               bodyEN: 'And music',
-    descFR: 'Compagnies de scène, musiciens, conteurs, troupes itinérantes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys et plus — du tambour viking aux ballades médiévales.',
-    descEN: 'Stage companies, musicians, storytellers, travelling troupes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys and more — from Viking drums to medieval ballads.',
+    descFR: 'Compagnies de scène, musiciens, conteurs, troupes itinérantes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys et plus : du tambour viking aux ballades médiévales.',
+    descEN: 'Stage companies, musicians, storytellers, travelling troupes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys and more: from Viking drums to medieval ballads.',
     image: '/activites/webp/145157f8.webp', category: 'shows' },
   { titleFR: 'Marché',           titleEN: 'Market',            bodyFR: 'Artisans et foire locale',                                 bodyEN: 'Artisans and local fair',
     descFR: 'Une cinquantaine d’artisans et marchands d’époque. Forgerons, costumiers, bijoutiers, brasseurs, herboristes. Achetez local, en armure ou en bourgeois.',
-    descEN: 'Some fifty period artisans and merchants. Smiths, costumers, jewellers, brewers, herbalists. Buy local — in armour or in burgher’s garb.',
+    descEN: 'Some fifty period artisans and merchants. Smiths, costumers, jewellers, brewers, herbalists. Buy local, in armour or in burgher’s garb.',
     image: '/wix/home/marchand.jpg', category: 'crafts' },
   { titleFR: 'Danses et Rituels',titleEN: 'Dances & Rituals',  bodyFR: 'Völvas',                                                   bodyEN: 'Völvas',
-    descFR: 'Les völvas du clan Hullsborg dansent autour du grand feu. Rituels nordiques, cérémonie de Freya, allumage solennel — un héritage spirituel partagé sous les étoiles.',
-    descEN: 'The Hullsborg clan’s völvas dance around the great fire. Nordic rituals, Freya ceremony, solemn lighting — a shared spiritual heritage under the stars.',
+    descFR: 'Les völvas du clan Hullsborg dansent autour du grand feu. Rituels nordiques, cérémonie de Freya, allumage solennel : un héritage spirituel partagé sous les étoiles.',
+    descEN: 'The Hullsborg clan’s völvas dance around the great fire. Nordic rituals, Freya ceremony, solemn lighting: a shared spiritual heritage under the stars.',
     image: '/histoire/archives/lena/thumb/2025-IMG_3550.webp', category: 'shows' },
   { titleFR: 'Espace Jeunesse',  titleEN: 'Youth Space',       bodyFR: 'Parc, jeux, animations, gardiennage',                     bodyEN: 'Park, games, activities, supervision',
     descFR: 'Un campement réservé aux jeunes seigneurs : ateliers d’écuyer, jeux d’adresse, contes, gardiennage encadré. L’enfance médiévale, mais sans la peste.',
-    descEN: 'A camp reserved for young lords: squire workshops, skill games, tales, supervised babysitting. Medieval childhood — without the plague.',
+    descEN: 'A camp reserved for young lords: squire workshops, skill games, tales, supervised babysitting. Medieval childhood, but without the plague.',
     image: '/wix/jeunesse/2b1f82d0.jpg', category: 'family' },
   { titleFR: 'À Boire !',        titleEN: 'Drink!',            bodyFR: 'Bières des Brasseurs Philosophales et autres rinces-gosier', bodyEN: 'Beers from Brasseurs Philosophales and other tipples',
     descFR: 'Bières des Brasseurs Philosophales, hydromels, vins épicés, infusions sans alcool. Plusieurs estaminets répartis sur le site pour étancher la soif des aventuriers.',
     descEN: 'Beers from Brasseurs Philosophales, meads, spiced wines, alcohol-free infusions. Several taverns across the site to quench adventurers’ thirst.',
     image: '/activites/webp/1f021070.webp', category: 'ripaille' },
   { titleFR: 'Soirée Dansante',  titleEN: 'Dance Party',       bodyFR: 'Ateliers éducatifs',                                       bodyEN: 'Educational workshops',
-    descFR: 'La nuit venue, le feu prend, les tambours s’animent et le festival devient un grand bal médiéval. Ouvert à tous — gigue ou bourrée, on y danse autour des flammes jusqu’au matin.',
-    descEN: 'Once night falls, the fire kindles, the drums come alive and the festival becomes a great medieval ball. Open to all — jig or bourrée, danced around the flames till morning.',
+    descFR: 'La nuit venue, le feu prend, les tambours s’animent et le festival devient un grand bal médiéval. Ouvert à tous : gigue ou bourrée, on y danse autour des flammes jusqu’au matin.',
+    descEN: 'Once night falls, the fire kindles, the drums come alive and the festival becomes a great medieval ball. Open to all: jig or bourrée, danced around the flames till morning.',
     image: '/activites/webp/2c6a22e9.webp', category: 'shows' },
   { titleFR: 'Boustifaille',     titleEN: 'Feast',             bodyFR: 'La becquetance et la ripaille avec le nouveau village gustatif', bodyEN: 'Eating and feasting at the new food village',
-    descFR: 'Le nouveau village gustatif — cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille comme on aime.',
-    descEN: 'The new food village — clan kitchens, table d’hôte, equinox banquet. Suckling pig, flatbread, stews, period pastries. Feasting and merrymaking as we love it.',
+    descFR: 'Le nouveau village gustatif : cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille comme on aime.',
+    descEN: 'The new food village: clan kitchens, table d’hôte, equinox banquet. Suckling pig, flatbread, stews, period pastries. Feasting and merrymaking as we love it.',
     image: '/activites/webp/1f021070.webp', category: 'ripaille' },
   { titleFR: 'Clinique Équestre',titleEN: 'Equestrian Clinic', bodyFR: 'Prochaine édition',                                        bodyEN: 'Next edition',
     descFR: 'La clinique équestre fait relâche cette année : elle reviendra à la prochaine édition. Pour les cavaliers expérimentés : cours intensifs sous les conseils des maîtres écuyers du festival.',
@@ -158,8 +158,8 @@ const ACTIVITIES: Array<{
     descEN: 'The camp of trades: forge, weaving, squaring, bronze casting, bone engraving. The artisans live there all weekend and work before your eyes, among stumps and canvas tents.',
     image: '/histoire/archives/lena/thumb/2025-IMG_8011.webp', category: 'crafts' },
   { titleFR: 'Tournois',         titleEN: 'Tournaments',       bodyFR: 'Et jeux d’adresse',                                        bodyEN: 'And skill games',
-    descFR: 'Tournoi de bridge fight, combats vikings, jeux d’adresse à l’arc et au lancer de hache. Les meilleurs guerriers du festival s’affrontent pour la gloire — et un peu de bière.',
-    descEN: 'Bridge-fight tournament, Viking combat, archery and axe-throwing competitions. The festival’s best warriors face off for glory — and a bit of beer.',
+    descFR: 'Tournoi de bridge fight, combats vikings, jeux d’adresse à l’arc et au lancer de hache. Les meilleurs guerriers du festival s’affrontent pour la gloire, et un peu de bière.',
+    descEN: 'Bridge-fight tournament, Viking combat, archery and axe-throwing competitions. The festival’s best warriors face off for glory, and a bit of beer.',
     image: '/activites/webp/4027b51a.webp', category: 'combat' },
 ];
 
@@ -168,7 +168,7 @@ type FilterKey = typeof CATEGORIES[number];
 
 const ROMAN = ['I', 'II', 'III'] as const;
 
-// Four lit gold L-ticks pinned to a parent's corners — marks the
+// Four lit gold L-ticks pinned to a parent's corners: marks the
 // active inventory cell. Pure CSS, no SVG, no hex clipping conflict.
 const CornerTicks: React.FC = () => {
   const base: React.CSSProperties = {
@@ -189,7 +189,7 @@ const CornerTicks: React.FC = () => {
   );
 };
 
-// ─── HUD primitives — inventory header/footer chrome ──────────────────
+// ─── HUD primitives: inventory header/footer chrome ──────────────────
 // Round arrow button used on either side of the filter chip rail. Drives
 // the prev/next filter cycle so the menu is navigable without touching
 // a chip directly.
@@ -264,7 +264,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
   const playSelect = useSfx('/orb/sfx/loot.mp3', 0.45);
   const playHover  = useHoverSfx('/orb/sfx/hover.mp3', 0.28);
 
-  // Live schedule — subscribes to Firestore so a save in the admin
+  // Live schedule: subscribes to Firestore so a save in the admin
   // Horaire section shows up here immediately. Falls back to the
   // SCHEDULE constant baked in below when Firestore is empty (e.g.
   // first deploy before any admin save) or unconfigured (offline mode).
@@ -285,12 +285,12 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
   // Horaire card, repliée par défaut : cliquer déplie l'horaire 2025
   const [horaireOpen, setHoraireOpen] = useState(false);
 
-  // Schedule day-tab state — index into liveSchedule. Default to
+  // Schedule day-tab state: index into liveSchedule. Default to
   // Saturday (idx 1), the marquee day with the densest line-up.
   const [activeDay, setActiveDay] = useState(1);
   const day = liveSchedule[activeDay] ?? liveSchedule[0];
 
-  // Inventory filter state — drives both the chip rail and the arrow
+  // Inventory filter state: drives both the chip rail and the arrow
   // controls. `all` shows every card; any other value filters by
   // category. Arrows cycle through CATEGORIES with wrap-around.
   const [filter, setFilter] = useState<FilterKey>('all');
@@ -342,7 +342,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
     const ctx = gsap.context(() => {
       // ── Section header reveals (eyebrow + title block at the top of
       //    every section). Stagger the inner nodes so the eyebrow lands
-      //    before the title — feels like the section is "introducing"
+      //    before the title: feels like the section is "introducing"
       //    itself rather than dropping all at once.
       gsap.utils.toArray<HTMLElement>('.sec-head').forEach((head) => {
         const kids = head.querySelectorAll(':scope > *');
@@ -357,7 +357,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         });
       });
 
-      // ── SectionTopRail strips — slide in from the side as the section
+      // ── SectionTopRail strips: slide in from the side as the section
       //    enters view. SectionBottomRail mirrors it.
       gsap.utils.toArray<HTMLElement>('.sec-rail').forEach((rail) => {
         gsap.set(rail, { autoAlpha: 0, x: -40 });
@@ -370,7 +370,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         });
       });
 
-      // ── HUD top bar — slides down + glints. Filter chips ride a wave
+      // ── HUD top bar: slides down + glints. Filter chips ride a wave
       //    so the menu "lights up" left-to-right.
       gsap.set('.acti-hud-top', { autoAlpha: 0, y: -28, scale: 0.98 });
       gsap.to('.acti-hud-top', {
@@ -394,7 +394,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         clearProps: 'transform',
       });
 
-      // ── Green Knight — soft fade-and-up, scrub-tied so the rise
+      // ── Green Knight: soft fade-and-up, scrub-tied so the rise
       //    is physically driven by scroll. Slightly bigger numbers than
       //    before so the entrance reads, but still calm enough that he
       //    doesn't compete with the tiles erupting around him.
@@ -424,9 +424,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         },
       });
 
-      // ── Activity tiles — 3D flip-reveal entrance. Each tile starts
+      // ── Activity tiles: 3D flip-reveal entrance. Each tile starts
       //    edge-on (rotationY: 90deg) so it's effectively invisible,
-      //    then flips down to 0deg as the section scrolls into view —
+      //    then flips down to 0deg as the section scrolls into view:
       //    the card face swings into the viewer like a playing card
       //    being turned over. transformPerspective gives the flip its
       //    depth; stagger from DOM start cascades the reveal top-left
@@ -452,7 +452,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         }
       );
 
-      // ── HUD bottom bar — slides up + meters "load" with scroll
+      // ── HUD bottom bar: slides up + meters "load" with scroll
       gsap.set('.acti-hud-bottom', { autoAlpha: 0, y: 28 });
       gsap.to('.acti-hud-bottom', {
         autoAlpha: 1,
@@ -461,7 +461,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         ease: 'power3.out',
         scrollTrigger: { trigger: '.acti-hud-bottom', start: 'top 92%', once: true },
       });
-      // Meter inner fills — width 0→target scrubbed to scroll position
+      // Meter inner fills: width 0→target scrubbed to scroll position
       gsap.utils.toArray<HTMLElement>('.acti-meter-fill').forEach((el) => {
         const target = el.style.width || '0%';
         gsap.fromTo(el, { width: '0%' }, {
@@ -475,7 +475,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           },
         });
       });
-      // Controller-prompt row at the very bottom — glyph-by-glyph stagger
+      // Controller-prompt row at the very bottom: glyph-by-glyph stagger
       gsap.utils.toArray<HTMLElement>('.acti-prompt-row > *').forEach((node) => {
         gsap.set(node, { autoAlpha: 0, y: 18, scale: 0.85 });
       });
@@ -490,7 +490,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         clearProps: 'transform',
       });
 
-      // ── Day plates — one-shot back-ease pop. Three plates rise +
+      // ── Day plates: one-shot back-ease pop. Three plates rise +
       //    scale-up into view as the schedule section enters.
       gsap.fromTo('.sched-day-plate',
         { autoAlpha: 0, y: 28, scale: 0.94 },
@@ -503,7 +503,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         }
       );
 
-      // ── Vikings — panel flips up from the bottom, then chips inscribe
+      // ── Vikings: panel flips up from the bottom, then chips inscribe
       //    as glowing runes (scale + blur + tiny rotate for character).
       gsap.set('.vikings-panel', {
         autoAlpha: 0,
@@ -535,7 +535,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         scrollTrigger: { trigger: '.vikings-section', start: 'top 72%', once: true },
       });
 
-      // ── Cross-promo cards — slide in from opposite sides. Left
+      // ── Cross-promo cards: slide in from opposite sides. Left
       //    card kicks in from the left, right card from the right,
       //    each with a small delay between them.
       gsap.fromTo('.cross-card-left',
@@ -561,7 +561,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
 
     // Refresh after the first paint so ScrollTrigger uses real layout
     // measurements (PageHeader image + tile images shift the page as
-    // they load — without this, the cached start/end can be off-screen
+    // they load: without this, the cached start/end can be off-screen
     // and scrub triggers appear "dead").
     const refresh = () => ScrollTrigger.refresh();
     requestAnimationFrame(refresh);
@@ -573,7 +573,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
     };
   }, []);
 
-  // ─── Schedule rows — scrub-tied reveal of the timeline. Lives in its
+  // ─── Schedule rows: scrub-tied reveal of the timeline. Lives in its
   // own context that re-runs on day change so the new <li> set is the
   // one being animated (the .sched-panel wrapper remounts via key=day).
   useLayoutEffect(() => {
@@ -633,7 +633,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
         />
       )}
 
-      {/* ── Activity grid — Bestiary register ── */}
+      {/* ── Activity grid: Bestiary register ── */}
       {progFlags.bestiaire && (
       <section id="bestiaire" className="py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
@@ -657,7 +657,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             </p>
           </div>
 
-          {/* ── HUD top bar — inventory header. Two rows: title + stats,
+          {/* ── HUD top bar: inventory header. Two rows: title + stats,
               then arrow nav flanking the filter chips. Chips + arrows
               both drive the same `filter` state. */}
           <div
@@ -716,9 +716,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             </div>
           </div>
 
-          {/* Inventory-style grid — Witcher redesign register (Martin
+          {/* Inventory-style grid: Witcher redesign register (Martin
               Coates inspo). The Green Knight occupies the centerpiece cell as the
-              focal figure (transparent PNG, no frame, no slab — just the
+              focal figure (transparent PNG, no frame, no slab, just the
               character standing inside the grid). Activity tiles pack
               around him via grid-flow-dense. */}
           <div className="acti-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 [grid-auto-flow:dense]">
@@ -727,7 +727,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               aria-hidden
               className="relative col-span-2 row-span-1 md:col-start-2 md:col-span-1 md:row-span-2 lg:col-start-2 lg:col-span-3 lg:row-span-2 min-h-[260px] md:min-h-[420px] lg:min-h-[520px] flex items-end justify-center"
             >
-              {/* Copper backdrop glow — places him in warm light. Sits
+              {/* Copper backdrop glow: places him in warm light. Sits
                   behind the figure, masked elliptically so it never
                   reads as a rectangle. */}
               <span
@@ -754,7 +754,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                   maskImage:       'linear-gradient(to bottom, #000 70%, transparent 100%)',
                 }}
               />
-              {/* Floor shadow — anchors him to the page so he doesn't
+              {/* Floor shadow: anchors him to the page so he doesn't
                   float in the void. */}
               <span
                 aria-hidden
@@ -766,7 +766,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               />
             </div>
 
-            {/* ── Activity inventory tiles — full-bleed image with the
+            {/* ── Activity inventory tiles: full-bleed image with the
                 label overlaid at the bottom. Plain rectangular cells
                 with 15px rounding. Active tile (first of the visible
                 set) gets four lit corner ticks. */}
@@ -790,7 +790,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                         : '0 12px 30px -18px rgba(0, 0, 0, 0.7)',
                     }}
                   >
-                    {/* Full-bleed photo — caravan-graded so all photos
+                    {/* Full-bleed photo: caravan-graded so all photos
                         (different photographers, lighting, era) read
                         as a homogeneous set. */}
                     <img
@@ -817,12 +817,12 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       </span>
                     )}
 
-                    {/* Warm tint overlay — pushes residual hue cast
+                    {/* Warm tint overlay: pushes residual hue cast
                         toward amber-copper, unifying photos that were
                         originally shot under cool / mixed light. */}
                     <span aria-hidden className="fmm-grade-caravan-tint absolute inset-0 pointer-events-none" />
 
-                    {/* Glistening sweep — re-uses the orb's diagonal
+                    {/* Glistening sweep: re-uses the orb's diagonal
                         shine. Staggered delay per card so the row
                         twinkles asynchronously instead of in unison. */}
                     <span
@@ -841,11 +841,11 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       }}
                     />
 
-                    {/* Active-state corner brackets — overlaid above
+                    {/* Active-state corner brackets: overlaid above
                         the image so they're not clipped by it. */}
                     {active && <CornerTicks />}
 
-                    {/* N° chip — top-left */}
+                    {/* N° chip: top-left */}
                     <span
                       className="absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2 py-1 font-display title-medieval text-[10px] tracking-[0.3em]"
                       style={{
@@ -858,7 +858,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       N° {String(absoluteIdx + 1).padStart(2, '0')}
                     </span>
 
-                    {/* Title + body — pinned to the bottom of the card */}
+                    {/* Title + body: pinned to the bottom of the card */}
                     <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
                       <h3
                         className="font-display title-medieval text-base md:text-lg mb-1 transition leading-tight"
@@ -916,7 +916,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </section>
       )}
 
-      {/* ── Schedule — Quest Log (3 day plates) ── */}
+      {/* ── Schedule: Quest Log (3 day plates) ── */}
       {progFlags.horaire && (
       <section id="horaire" className="py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
@@ -985,7 +985,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                         style={{ overflow: 'hidden' }}
                       >
                         <div className="px-6 md:px-8 pb-6 md:pb-8">
-          {/* Day tabs — three illuminated day plates. Click to switch.
+          {/* Day tabs: three illuminated day plates. Click to switch.
               The active plate gets amber-lit border + corner ticks. */}
           <div className="sched-day-tabs grid grid-cols-3 gap-3 md:gap-5 mb-6 md:mb-8">
             {liveSchedule.map((d, idx) => {
@@ -1055,7 +1055,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             })}
           </div>
 
-          {/* Active day's timeline — single rich panel. Three-column
+          {/* Active day's timeline: single rich panel. Three-column
               layout: time anchor on the left, vertical hairline + pip
               in the middle, event title + location chip on the right.
               Events are grouped by hour so the time only paints once
@@ -1063,7 +1063,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           <div key={`day-${activeDay}`} className="sched-panel">
             <GildedFrame inset={12} tone="amber" className="relative">
               <div className="caravan-glass relative p-5 md:p-8 lg:p-10">
-                {/* Header strip — day title + meta */}
+                {/* Header strip: day title + meta */}
                 <div className="flex items-baseline justify-between gap-4 flex-wrap pb-4 mb-6"
                      style={{ borderBottom: '1px solid rgba(216, 155, 58, 0.22)' }}>
                   <div className="flex items-baseline gap-3">
@@ -1192,7 +1192,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </section>
       )}
 
-      {/* ── Vikings — Compendium entry ── */}
+      {/* ── Vikings: Compendium entry ── */}
       {progFlags.clans && (
       <section id="clans" className="vikings-section relative py-16 md:py-24 overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
@@ -1284,7 +1284,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </section>
       )}
 
-      {/* ── Banquet + Youth — Champion-select cross-promo ── */}
+      {/* ── Banquet + Youth: Champion-select cross-promo ── */}
       {progFlags.banquet && (
       <section id="banquet" className="cross-section py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
@@ -1342,7 +1342,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </section>
       )}
 
-      {/* ── Tournoi de Behourd 2027 — early registration ──────────────
+      {/* ── Tournoi de Behourd 2027: early registration ──────────────
           Inscription anticipée (1 an d'avance). Form saves to Firestore
           (behourd/{autoId}) and then opens the Zeffy payment link. */}
       {progFlags.behourd && (
@@ -1432,7 +1432,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       'linear-gradient(180deg, rgba(10,2,7,0) 30%, rgba(10,2,7,0.55) 70%, rgba(10,2,7,0.95) 100%)',
                   }}
                 />
-                {/* N° chip — top-left */}
+                {/* N° chip: top-left */}
                 <span
                   className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2 py-1 font-display title-medieval text-[10px] tracking-[0.3em]"
                   style={{
@@ -1444,7 +1444,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 >
                   N° {String(activeIdx! + 1).padStart(2, '0')}
                 </span>
-                {/* Category chip — top-right */}
+                {/* Category chip: top-right */}
                 <span
                   className="absolute top-3 right-12 inline-flex items-center gap-1.5 px-2 py-1 font-sans uppercase tracking-[0.25em] text-[9px]"
                   style={{
@@ -1500,7 +1500,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 </button>
               </div>
 
-              {/* Close × — top-right */}
+              {/* Close ×: top-right */}
               <button
                 type="button"
                 onClick={closeActivity}
@@ -1569,14 +1569,14 @@ const FR = {
   behourdMeta: 'Édition',
   behourdEyebrow: 'Inscription anticipée',
   behourdTitle: 'Tournoi de Behourd · 2027',
-  behourdBody: 'Le Behourd revient au FMM en 2027 — combat médiéval à équipes, en armure complète, dans l’esprit des grands tournois historiques. Les places sont limitées et l’inscription se fait un an à l’avance afin de bien préparer les équipes, l’arène et la sécurité. Remplissez le formulaire ci-dessous puis finalisez votre inscription via Zeffy.',
+  behourdBody: 'Le Behourd revient au FMM en 2027 : combat médiéval à équipes, en armure complète, dans l’esprit des grands tournois historiques. Les places sont limitées et l’inscription se fait un an à l’avance afin de bien préparer les équipes, l’arène et la sécurité. Remplissez le formulaire ci-dessous puis finalisez votre inscription via Zeffy.',
   championRailName: 'Figure du clan',
   championMeta: 'Rang',
   championRank: 'Jarl',
   championEyebrow: 'Personnage en vedette',
   championName: 'Le Chevalier Vert',
   championEpithet: '« héhéhé comment ça va poto ! »',
-  championBody: 'Co-chef du clan Viking Autonome avec Ariane Sigurdsdottir. Au fond des bois, loin de l’électricité, il tient forge et atelier — l’un des piliers vivants du festival. Retrouvez-le au marché ou autour du feu pour entendre les sagas.',
+  championBody: 'Co-chef du clan Viking Autonome avec Ariane Sigurdsdottir. Au fond des bois, loin de l’électricité, il tient forge et atelier : l’un des piliers vivants du festival. Retrouvez-le au marché ou autour du feu pour entendre les sagas.',
   championCta: 'Visiter son kiosque',
   statClan: 'Clan',
   statClanValue: 'Viking Autonome',
@@ -1610,7 +1610,7 @@ const EN: typeof FR = {
   activitiesEyebrow: 'The grand program',
   activitiesMeta: 'Activities',
   activitiesTitle: 'Our Activities',
-  activitiesLead: 'FMM is proud to present a wide variety of activities for kids and adults — equally enjoyable for medieval enthusiasts and casual visitors alike.',
+  activitiesLead: 'FMM is proud to present a wide variety of activities for kids and adults: equally enjoyable for medieval enthusiasts and casual visitors alike.',
   activitiesHint: 'Tap a tile to open the entry (soon)',
   activitiesFootMeta: 'Bestiary · 2026',
   filterLabel: 'Filter',
@@ -1636,14 +1636,14 @@ const EN: typeof FR = {
   behourdMeta: 'Edition',
   behourdEyebrow: 'Early registration',
   behourdTitle: 'Behourd Tournament · 2027',
-  behourdBody: 'Behourd returns to FMM in 2027 — team-vs-team medieval combat in full armour, in the spirit of historical tournaments. Slots are limited and registration opens one year in advance to properly prepare teams, the arena and safety. Fill in the form below, then finalize your registration via Zeffy.',
+  behourdBody: 'Behourd returns to FMM in 2027: team-vs-team medieval combat in full armour, in the spirit of historical tournaments. Slots are limited and registration opens one year in advance to properly prepare teams, the arena and safety. Fill in the form below, then finalize your registration via Zeffy.',
   championRailName: 'Clan figure',
   championMeta: 'Rank',
   championRank: 'Jarl',
   championEyebrow: 'Featured character',
   championName: 'The Green Knight',
   championEpithet: '"Hey-hey, how’s it going buddy!"',
-  championBody: 'Co-chief of the Autonomous Viking Clan with Ariane Sigurdsdottir. Deep in the northern woods, far from electricity, he tends a forge and a workshop — one of the living pillars of the festival. Find him at the market or around the fire for the sagas.',
+  championBody: 'Co-chief of the Autonomous Viking Clan with Ariane Sigurdsdottir. Deep in the northern woods, far from electricity, he tends a forge and a workshop: one of the living pillars of the festival. Find him at the market or around the fire for the sagas.',
   championCta: 'Visit his kiosk',
   statClan: 'Clan',
   statClanValue: 'Autonomous Viking',

@@ -29,7 +29,7 @@ const RESOURCES: ResourceItem[] = [
   {
     id:       'support-border',
     kind:     'image',
-    titleFR:  'Bordure de support — « J’y serai ! »',
+    titleFR:  'Bordure de support : « J’y serai ! »',
     titleEN:  '"I’ll be there!" supporter border',
     blurbFR:  'Cadre photo médiéval à appliquer sur votre photo de profil ou publication pour annoncer votre présence au festival. PNG transparent, prêt à coller sur Facebook, Instagram ou en story.',
     blurbEN:  'Medieval frame to overlay on your profile photo or post to announce you’re coming to the festival. Transparent PNG, ready for Facebook, Instagram or stories.',
@@ -40,7 +40,7 @@ const RESOURCES: ResourceItem[] = [
   {
     id:       'press-kit',
     kind:     'archive',
-    titleFR:  'Trousse de presse — FMM 2026',
+    titleFR:  'Trousse de presse : FMM 2026',
     titleEN:  '2026 Press Kit',
     blurbFR:  'Communiqué de presse, fiche d’identité, logos haute résolution (noir, blanc, argent, or), photographies des éditions passées et historique des partenariats. ZIP prêt à transmettre aux médias.',
     blurbEN:  'Press release, identity sheet, hi-res logos (black, white, silver, gold), photos from past editions and partnership history. ZIP ready to send to media.',
@@ -173,7 +173,7 @@ const RessourcesPage: React.FC = () => {
           <div className="divider-brass w-16 mx-auto mb-5" />
           <p className="font-editorial text-base text-ivory-soft mb-6">{t.pressBody}</p>
           <a
-            href="mailto:admin@festivalmedievaldemontpellier.org?subject=Demande%20presse%20—%20FMM%202026"
+            href="mailto:admin@festivalmedievaldemontpellier.org?subject=Demande%20presse%20:%20FMM%202026"
             className="inline-flex items-center gap-2 px-6 py-3 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
           >
             {t.pressCta} <ArrowUpRight size={14} />
@@ -187,7 +187,7 @@ const RessourcesPage: React.FC = () => {
 const FR = {
   eyebrow:        'Pour les supporters, la presse et les partenaires',
   title:          'Ressources',
-  intro:          'Tout le nécessaire pour porter les couleurs du Festival Médiéval de Montpellier — bordures pour vos publications, trousse de presse, et plus à venir.',
+  intro:          'Tout le nécessaire pour porter les couleurs du Festival Médiéval de Montpellier : bordures pour vos publications, trousse de presse, et plus à venir.',
   libraryEyebrow: 'Téléchargements',
   libraryTitle:   'Bibliothèque',
   libraryLead:    'Téléchargez librement les ressources ci-dessous. Pour toute demande spécifique (format, langue, droits d’usage), écrivez-nous.',
@@ -204,7 +204,7 @@ const FR = {
 const EN: typeof FR = {
   eyebrow:        'For supporters, press and partners',
   title:          'Resources',
-  intro:          'Everything you need to fly the Festival Médiéval de Montpellier colours — borders for your posts, press kit, and more to come.',
+  intro:          'Everything you need to fly the Festival Médiéval de Montpellier colours: borders for your posts, press kit, and more to come.',
   libraryEyebrow: 'Downloads',
   libraryTitle:   'Library',
   libraryLead:    'Download the resources below freely. For specific requests (format, language, usage rights), reach out.',

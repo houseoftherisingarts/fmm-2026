@@ -27,7 +27,7 @@ interface Props {
 }
 
 const PASTE_HINT_FR =
-  'Format : UNE LIGNE PAR ACTIVITÉ — heure | description | lieu\n' +
+  'Format (une ligne par activité) : heure | description | lieu\n' +
   'Séparateurs acceptés : « | », « — », « – », « - » (espace-tiret-espace).\n' +
   'Exemple :\n' +
   '17h00 | Ouverture des portes | Site\n' +
@@ -44,7 +44,7 @@ const HoraireSection: React.FC<Props> = ({ devBypass = false }) => {
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
 
-  // Initial load — pulls the schedule doc and seeds the per-day
+  // Initial load: pulls the schedule doc and seeds the per-day
   // textareas with the formatted block view.
   useEffect(() => {
     let cancelled = false;
@@ -165,12 +165,12 @@ const HoraireSection: React.FC<Props> = ({ devBypass = false }) => {
         </div>
       </Card>
 
-      {/* Day metadata — date labels */}
+      {/* Day metadata: date labels */}
       <Card className="p-5">
         <div className="flex items-center gap-2 mb-3">
           <CalendarClock size={13} className="text-brass" />
           <p className="font-display title-medieval text-[10px] text-brass uppercase tracking-widest">
-            Étiquettes — {day.id}
+            Étiquettes : {day.id}
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
@@ -274,7 +274,7 @@ const HoraireSection: React.FC<Props> = ({ devBypass = false }) => {
       <div className="flex items-center justify-between flex-wrap gap-3 px-1">
         <div className="font-editorial italic text-[12px]" style={{ color: 'var(--admin-text-mute)' }}>
           {savedAt && <>Dernière sauvegarde : {savedAt.toLocaleTimeString('fr-CA')}</>}
-          {error && <span style={{ color: '#FCA5B0' }}>Erreur — {error}</span>}
+          {error && <span style={{ color: '#FCA5B0' }}>Erreur : {error}</span>}
         </div>
         <PrimaryButton type="button" onClick={onSave} disabled={saving}>
           <Save size={12} /> {saving ? 'Sauvegarde…' : 'Sauvegarder tous les jours'}

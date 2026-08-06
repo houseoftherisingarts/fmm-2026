@@ -13,7 +13,7 @@ import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 
-// Pattern adapted from le-salon-des-inconnus apps/hub/src/HubOrb.tsx —
+// Pattern adapted from le-salon-des-inconnus apps/hub/src/HubOrb.tsx:
 // vertical list of choices on the left, glass orb on the right with
 // cross-fade Ken Burns + brass/flame rim. Festival edition palette uses
 // FMM tokens (midnight-deep, brass, oxblood, copper, amber-glow).
@@ -29,7 +29,7 @@ type OrbChoice = {
   copy?:  { FR: string; EN: string };
 };
 
-// Landing/idle state — Viking helmet hero with an inside-the-orb countdown
+// Landing/idle state: Viking helmet hero with an inside-the-orb countdown
 // and a tickets CTA in the blurb panel below. Index -1 represents this in
 // the selectedIdx state machine; clicking any pillar moves us to 0..n.
 const LANDING_IMAGE = '/wix/home/viking-helmet.jpg';
@@ -37,7 +37,7 @@ const LANDING_KEY = '__landing__';
 
 // Curated hero image for each pillar (sampled from /public/wix/<pillar>/).
 // Édition 2026: menu consolidated to the seven top-level pillars. Chevaux is
-// retired; the festival film is no longer a menu item — it now plays as the
+// retired; the festival film is no longer a menu item. It now plays as the
 // featured video at the centre of the orb (see FILM_YT_ID below).
 const ORB_CHOICES: OrbChoice[] = [
   { key: 'activites',   image: '/wix/home/fire-night.jpg',     imagePosition: 'center 35%' },
@@ -57,14 +57,14 @@ const ORB_CHOICES: OrbChoice[] = [
 const SITE_MODE = (import.meta.env.VITE_SITE_MODE || 'live') as 'live' | 'placeholder';
 const PREVIEW_ALL = SITE_MODE === 'live';
 
-// New 2026 festival film — featured at the centre of the orb (replaces last
+// New 2026 festival film: featured at the centre of the orb (replaces last
 // year's local "vikings" mp4, which now lives on the Histoire & Apprendre page).
 const FILM_YT_ID = 'mex-Tc350mI';
 
 // One-shot SFX. Pre-fetches the asset on mount, then on each trigger spawns
 // a fresh HTMLAudio so overlapping clicks don't restart a playing instance.
 // Browser caches the file, so spawning new Audio nodes is cheap. `play()`
-// rejects when the user hasn't interacted yet — first click always satisfies
+// rejects when the user hasn't interacted yet: first click always satisfies
 // the gesture requirement, so we can safely swallow that error.
 function useSfx(url: string, volume = 0.7) {
   const primedRef = useRef(false);
@@ -79,7 +79,7 @@ function useSfx(url: string, volume = 0.7) {
   return useCallback(() => {
     const a = new Audio(url);
     a.volume = volume;
-    a.play().catch(() => { /* autoplay blocked — first click unblocks it */ });
+    a.play().catch(() => { /* autoplay blocked: first click unblocks it */ });
   }, [url, volume]);
 }
 
@@ -116,7 +116,7 @@ const resolveLayer = (idx: number): { key: string; image?: string; video?: strin
 };
 
 // Sizes are 80% of the original spec (numbers were clamp(1.5/2.6vw/2.2)
-// and clamp(2.4/4.5vw/3.6)) — request: shrink the in-orb countdown to
+// and clamp(2.4/4.5vw/3.6)). Request: shrink the in-orb countdown to
 // give the festival photo + dates plate more breathing room around it.
 const CountUnit: React.FC<{ n: number; label: string; small?: boolean }> = ({ n, label, small }) => (
   <span className="flex flex-col items-center leading-none">
@@ -134,7 +134,7 @@ const CountUnit: React.FC<{ n: number; label: string; small?: boolean }> = ({ n,
 
 // ── Live countdown ───────────────────────────────────────────────────────
 // Memoized so its 1-second ticks (setInterval inside useCountdown) only
-// invalidate this small block — not the entire OrbHomePage tree. This
+// invalidate this small block, not the entire OrbHomePage tree. This
 // was the single biggest hidden render cost on the landing.
 interface LiveCountdownProps {
   targetISO: string;
@@ -172,7 +172,7 @@ LiveCountdown.displayName = 'LiveCountdown';
 // top edge. Kept under the same `.orb-flame-canvas` class so the existing
 // `flameKindle` 3 s fade-in and reduced-motion suppression still apply.
 // preload="metadata" so the initial paint isn't blocked by downloading
-// the full MP4 — the flame fades in only after 3 s, so there's plenty
+// the full MP4. The flame fades in only after 3 s, so there's plenty
 // of time for the actual frames to stream in.
 const FireCanvas: React.FC = memo(() => {
   const { lite } = usePerfTier();
@@ -206,7 +206,7 @@ FireCanvas.displayName = 'FireCanvas';
 // ─── Dev placement editor row ─────────────────────────────────────────
 // Drag the value text horizontally to scrub (1 px = `step`, shift = `fine`).
 // Click −/+ to step (shift = fine). Used only inside the knight overlay
-// editor — kept module-local so it doesn't leak into the public bundle.
+// editor: kept module-local so it doesn't leak into the public bundle.
 type PropRowProps = {
   label:    string;
   value:    number;
@@ -278,7 +278,7 @@ const OrbHomePage: React.FC = () => {
   // prefers-reduced-motion or the perf tier: Alex keeps "reduce motion" on for
   // GPU stability but still wants this signature clip (and the film) to play,
   // and the off-centre static logo must never be seen (Alex, 2026-07-13).
-  // Dev placement editor — only mounts when an admin has flipped on the
+  // Dev placement editor: only mounts when an admin has flipped on the
   // `knightPlacementEditor` site flag from Paramètres. Off by default.
   const knightEditorAvailable = isAdmin && siteFlags.knightPlacementEditor;
   const navigate = useNavigate();
@@ -286,13 +286,13 @@ const OrbHomePage: React.FC = () => {
   // (`nourriture` pillar). Both are short MP3s in /public/orb/sfx/.
   const playLoot = useSfx('/orb/sfx/loot.mp3', 0.7);
   const playFood = useSfx('/orb/sfx/food.mp3', 0.7);
-  // Hover — subtle plate-armor rustle, throttled.
+  // Hover: subtle plate-armor rustle, throttled.
   const playHover = useHoverSfx('/orb/sfx/hover.mp3', 0.32);
 
   // -1 = landing (Viking helmet + countdown + tickets CTA).
   const [selectedIdx, setSelectedIdx] = useState(-1);
   const [confirming, setConfirming] = useState(false);
-  // Featured 2026 film — opens in a centred lightbox over the orb.
+  // Featured 2026 film: opens in a centred lightbox over the orb.
   const [showFilm, setShowFilm] = useState(false);
   const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
   // NOTE: countdown lives inside <LiveCountdown> below, isolated so
@@ -301,18 +301,18 @@ const OrbHomePage: React.FC = () => {
   const isLanding = selectedIdx < 0;
 
 
-  // Cross-fade state — two stacked layers swap which one is "current"; the
+  // Cross-fade state: two stacked layers swap which one is "current"; the
   // other fades out underneath. Each layer stores a choice index (-1 for
   // landing) so it carries its own framing.
   const [layerA, setLayerA] = useState(-1);
   const [layerB, setLayerB] = useState<number | null>(null);
   const [activeLayer, setActiveLayer] = useState<'A' | 'B'>('A');
 
-  // Orb landing media — the burning-logo intro video plays once, then hands
+  // Orb landing media: the burning-logo intro video plays once, then hands
   // straight to the festival film. Starts false on every device so the fire
   // video always plays first (no held logo, no countdown in between).
   const [introDone, setIntroDone] = useState(false);
-  // Countdown reveal — appears once the burning-logo intro video has actually
+  // Countdown reveal: appears once the burning-logo intro video has actually
   // finished (introDone, fired by the <video> onEnded), so it always lands
   // right AFTER the logo clip rather than on top of it. Stays visible across
   // landing returns. Safety net: if onEnded never fires (autoplay blocked,
@@ -330,7 +330,7 @@ const OrbHomePage: React.FC = () => {
     return () => clearTimeout(t);
   }, [introDone]);
 
-  // Idle film — the orb hands off to the 2026 festival film the moment the
+  // Idle film: the orb hands off to the 2026 festival film the moment the
   // burning-logo intro ends (Alex, 2026-07-13: straight fire→film, no countdown
   // or held logo in between). Looped, muted. Skipped only for genuinely
   // constrained devices used to skip it; now it plays on every device so the
@@ -381,7 +381,7 @@ const OrbHomePage: React.FC = () => {
   // Click the pencil (top-right) to toggle. While on: drag to move,
   // wheel to resize. Values persist in localStorage and the read-out
   // shows what to paste back into the JSX defaults.
-  // Manual placement values — fine-tuned in the on-page editor and
+  // Manual placement values: fine-tuned in the on-page editor and
   // pasted in. Hole now sits a hair higher and slightly squashed
   // vertically to seat the orb cleanly inside the PNG's not-perfectly-
   // circular hole.
@@ -420,7 +420,7 @@ const OrbHomePage: React.FC = () => {
       }));
     } catch { /* ignore */ }
   }, [knightTx, knightTy, knightW, knightSX, knightSY, knightRot]);
-  // Pointer drag — converts px delta into translate-% delta using the
+  // Pointer drag: converts px delta into translate-% delta using the
   // knight image's current rendered size (so 1 px screen-move = the
   // right amount of % shift regardless of zoom or width setting).
   const knightDragRef = useRef<{
@@ -479,18 +479,18 @@ const OrbHomePage: React.FC = () => {
     setKnightSY(KNIGHT_SY_DEFAULT);
     setKnightRot(KNIGHT_ROT_DEFAULT);
   }, []);
-  // Drive the orb video imperatively — React's `autoPlay` prop only fires
+  // Drive the orb video imperatively: React's `autoPlay` prop only fires
   // on mount, so toggling it later doesn't restart playback. Play when the
   // "video" choice goes active; pause + reset when it goes away.
   const isVideoChoice = ORB_CHOICES[selectedIdx]?.key === 'video';
 
-  // Idle attractor — after 15 s with no input, auto-select the festival
+  // Idle attractor: after 15 s with no input, auto-select the festival
   // video so the orb starts playing on its own (kiosk-style attract loop).
   // Re-arms whenever the user interacts or moves away from the video.
   const videoChoiceIdx = ORB_CHOICES.findIndex((c) => c.key === 'video');
   useEffect(() => {
     if (videoChoiceIdx < 0) return;
-    if (isVideoChoice) return; // already on video — no need to attract
+    if (isVideoChoice) return; // already on video: no need to attract
     let timer: ReturnType<typeof setTimeout> | null = null;
     const arm = () => {
       if (timer) clearTimeout(timer);
@@ -520,7 +520,7 @@ const OrbHomePage: React.FC = () => {
   const requestOrbFullscreen = useCallback(() => {
     const v = orbVideoRef.current;
     if (!v) return;
-    // Play WITH sound — the click is a real user gesture, so unmuting is
+    // Play WITH sound: the click is a real user gesture, so unmuting is
     // allowed (Alex, 2026-07-13: clicking the orb film opens it fullscreen with
     // music). Re-mute on exit so the looping orb film stays silent afterwards.
     v.muted = false;
@@ -594,7 +594,7 @@ const OrbHomePage: React.FC = () => {
     return PILLARS.find((p) => p.key === k)!.short[lang];
   };
 
-  // Active choice metadata — null when on landing. Special items (e.g. the
+  // Active choice metadata: null when on landing. Special items (e.g. the
   // video) carry their own copy because they're not in PILLAR_COPY.
   const activeChoice = isLanding ? null : ORB_CHOICES[selectedIdx];
   const activeCopy: string | null = activeChoice
@@ -605,14 +605,14 @@ const OrbHomePage: React.FC = () => {
   const activeLabel = activeChoice ? labelOf(activeChoice.key) : null;
 
   const seoTitle = lang === 'FR'
-    ? `${SITE.shortName} ${SITE.year} — Caravanes & Saltimbanques`
-    : `${SITE.shortName} ${SITE.year} — Caravans & Players`;
+    ? `${SITE.shortName} ${SITE.year}: Caravanes & Saltimbanques`
+    : `${SITE.shortName} ${SITE.year}: Caravans & Players`;
 
   return (
     <>
       <SEO title={seoTitle} />
 
-      {/* ── Knight placement editor — pencil + readout, fixed top-right.
+      {/* ── Knight placement editor: pencil + readout, fixed top-right.
             Drag the knight to move, click −/+ or drag values to scrub.
             Only mounts for admins when the `knightPlacementEditor` site
             flag is on (Admin → Paramètres). Off by default in production. */}
@@ -663,7 +663,7 @@ const OrbHomePage: React.FC = () => {
 
         {/* ── Atmospheric background ───────────────────────────────────── */}
         <div className="absolute inset-0 pointer-events-none z-0">
-          {/* Brass + oxblood radial wash — flame warmth */}
+          {/* Brass + oxblood radial wash: flame warmth */}
           <div
             className="absolute inset-0 opacity-70"
             style={{
@@ -672,7 +672,7 @@ const OrbHomePage: React.FC = () => {
             }}
           />
 
-          {/* Caravan set-piece — zoomed onto the wagon BODY only. The
+          {/* Caravan set-piece: zoomed onto the wagon BODY only. The
               negative `bottom` pushes the image down so the wheels exit
               below the viewport entirely. Wider than 100vw so the barrel
               on the right of the source crops off-canvas, and so the
@@ -702,11 +702,11 @@ const OrbHomePage: React.FC = () => {
             />
           </picture>
 
-          {/* Readability scrim — left-edge darken so the choice list / CTAs
+          {/* Readability scrim: left-edge darken so the choice list / CTAs
               read cleanly over the caravan, plus a soft round vignette.
               After 3 s the scrim dims to 50 % so the flame overlay below
               can warm the scene. Two stacked layers crossfade slowly
-              between a forest-green tint and a cool-blue tint — like
+              between a forest-green tint and a cool-blue tint, like
               torchlight + dusk light alternating, with a brief teal
               moment as they cross. Outer wrapper keeps the dim-after-
               kindle behaviour; only the inner colour swaps. */}
@@ -736,7 +736,7 @@ const OrbHomePage: React.FC = () => {
           />
           {/* Soft brass top vignette */}
           <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-brass/[0.06] to-transparent" />
-          {/* Particle fire — back in the z-0 atmospheric layer so the
+          {/* Particle fire: back in the z-0 atmospheric layer so the
               orb (and the knight + text + buttons above it) all paint
               ON TOP of the firelight, not the other way around. The
               video's own `mix-blend-mode: screen` works correctly
@@ -755,7 +755,7 @@ const OrbHomePage: React.FC = () => {
             }}
           />
 
-          {/* Bottom ember — kisses the caravan's wheels, ties it to the page */}
+          {/* Bottom ember: kisses the caravan's wheels, ties it to the page */}
           <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[rgba(107,31,31,0.22)] via-[rgba(184,106,42,0.05)] to-transparent" />
         </div>
 
@@ -765,9 +765,9 @@ const OrbHomePage: React.FC = () => {
             clears the scroll cue. Desktop keeps the locked full-height grid. */}
         <div className="orb-fit relative z-10 max-w-[1500px] h-full mx-auto px-8 md:px-20 lg:px-24 pt-12 pb-24 md:py-10 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 items-stretch overflow-y-auto overflow-x-hidden overscroll-contain md:overflow-visible">
 
-          {/* ── LEFT — eyebrow, list of choices, confirm CTA ───────────── */}
+          {/* ── LEFT: eyebrow, list of choices, confirm CTA ───────────── */}
           {/* 2-row grid: title+list float centered in the 1fr row, CTA sits
-              in the auto row pinned to the column bottom — mirrors the
+              in the auto row pinned to the column bottom, mirroring the
               right column so the CTA shares a baseline with the blurb.
               relative + z-40 lifts every text/button above the knight
               image (z-30 in its sibling column) so the 6.54 × wide
@@ -775,10 +775,10 @@ const OrbHomePage: React.FC = () => {
           <div className="orb-left grid grid-rows-[1fr_auto] gap-4 md:gap-5 min-h-0 relative z-40">
             <div className="self-center flex flex-col gap-4 md:gap-5 min-h-0 -translate-y-3">
 
-            {/* TITLE PAGE — édition eyebrow, brass rule, scratch-revealed
+            {/* TITLE PAGE: édition eyebrow, brass rule, scratch-revealed
                 hero title, dates subtitle. */}
             <header className="orb-title pt-10 md:pt-12 -translate-y-3">
-              {/* Édition eyebrow — single italic word, ~2.5× the previous
+              {/* Édition eyebrow: single italic word, ~2.5× the previous
                   small line, sitting above the brass rule like a playbill. */}
               <p
                 className="orb-title-eyebrow font-editorial italic text-[var(--color-brass-soft)] mb-3 md:mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
@@ -787,12 +787,12 @@ const OrbHomePage: React.FC = () => {
                 {lang === 'FR' ? 'Édition' : 'Edition'}
               </p>
 
-              {/* Brass rule — frames the title. */}
+              {/* Brass rule: frames the title. */}
               <div className="mb-4 md:mb-5">
                 <span className="block h-px bg-gradient-to-r from-brass/70 via-brass/25 to-transparent w-full max-w-[18rem]" />
               </div>
 
-              {/* Hero title — scratch-revealed. Wrapped in .orb-title-hero so
+              {/* Hero title: scratch-revealed. Wrapped in .orb-title-hero so
                   the clip-path sweep + brass-glow streak target one element. */}
               <h1 className="orb-title-hero relative font-display title-medieval uppercase leading-[0.92] tracking-[0.01em] drop-shadow-[0_3px_22px_rgba(0,0,0,0.95)]">
                 <span
@@ -816,7 +816,7 @@ const OrbHomePage: React.FC = () => {
                 </span>
               </h1>
 
-              {/* Dates subtitle — bottom rule + medieval caps. On the pre-sale
+              {/* Dates subtitle: bottom rule + medieval caps. On the pre-sale
                   teaser the date is the key info, so it's blown up much larger. */}
               <div className="mt-4 md:mt-5 flex items-baseline">
                 <p
@@ -831,7 +831,7 @@ const OrbHomePage: React.FC = () => {
               </div>
             </header>
 
-            {/* Pre-sale teaser — the pillar menu isn't public yet, so the
+            {/* Pre-sale teaser: the pillar menu isn't public yet, so the
                 left column just announces the festival is coming and the
                 CTA below carries the only live action (buy pre-sale tickets). */}
             {presale ? (
@@ -929,7 +929,7 @@ const OrbHomePage: React.FC = () => {
             )}
             </div>
 
-            {/* CTAs — auto-row of the parent grid, pinned to the column
+            {/* CTAs: auto-row of the parent grid, pinned to the column
                 bottom so it shares a baseline with the right column's
                 blurb panel (also pinned bottom via grid-rows-[1fr_auto]). */}
             <div className={`orb-cta flex flex-col sm:flex-row gap-3 sm:items-center pt-2 ${presale ? 'pb-6 md:pb-14' : ''}`}>
@@ -959,12 +959,12 @@ const OrbHomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* ── RIGHT — glass orb + blurb ───────────────────────────────── */}
+          {/* ── RIGHT: glass orb + blurb ───────────────────────────────── */}
           {/* Mirrors the left column: orb floats centered in 1fr row,
               blurb sits in the auto row pinned to column bottom. */}
           <div className="orb-wrap relative grid grid-rows-[1fr_auto] gap-5 md:gap-6 justify-items-center">
             <div className="relative w-full max-w-[440px] md:max-w-[480px] aspect-square self-center translate-y-4">
-              {/* Outer glow ring — flame warmth (soft, far).
+              {/* Outer glow ring: flame warmth (soft, far).
                   Previously had `filter: blur(55px)`, which forces an
                   offscreen rasterization pass every frame because of the
                   layers animating on top. Replaced by a wider, softer
@@ -1030,7 +1030,7 @@ const OrbHomePage: React.FC = () => {
                   style={{ transform: 'scale(1.4)' }}
                 />
 
-                {/* Glistening sweep — re-keys on every selection change so a
+                {/* Glistening sweep: re-keys on every selection change so a
                     diagonal light lance plays across the orb during each
                     transition. Pattern adapted from the Salon des Inconnus
                     Creator Studio viewer-sweep. */}
@@ -1056,7 +1056,7 @@ const OrbHomePage: React.FC = () => {
                   />
                 </div>
 
-                {/* Landing media — animated FMM logo intro fades into the
+                {/* Landing media: animated FMM logo intro fades into the
                     embossed-silver placeholder logo. Whole stack fades out
                     when a pillar is selected, fades back in on click-away. */}
                 <div
@@ -1068,7 +1068,7 @@ const OrbHomePage: React.FC = () => {
                   {/* Off-centre embossed-silver logo removed (Alex, 2026-07-13):
                       it must never be seen. The orb goes fire video → film over a
                       plain black bed during the brief crossfade. */}
-                  {/* Burning-logo intro video — plays on every device, then
+                  {/* Burning-logo intro video: plays on every device, then
                       crossfades to 0 once it ends, handing the orb to the film. */}
                   <video
                     autoPlay
@@ -1096,7 +1096,7 @@ const OrbHomePage: React.FC = () => {
                   }}
                 />
 
-                {/* Glass highlight — single broad radial glow with an early
+                {/* Glass highlight: single broad radial glow with an early
                     falloff so the edge of visibility extends past the rim
                     (no visible internal seam). Replaces the previous two
                     overlays (off-centre circle + top pill) whose hard edges
@@ -1120,7 +1120,7 @@ const OrbHomePage: React.FC = () => {
                   }}
                 />
 
-                {/* Landing — countdown sits below the embossed logo. Fades
+                {/* Landing: countdown sits below the embossed logo. Fades
                     in once the burning-logo intro video has finished. */}
                 {isLanding && (
                   <div
@@ -1138,7 +1138,7 @@ const OrbHomePage: React.FC = () => {
 
               </div>
 
-              {/* Kneeling knight — overlays the orb. Geometry measured
+              {/* Kneeling knight: overlays the orb. Geometry measured
                   by flood-filling the alpha=0 hole in the PNG:
                   • hole bounding box  304 × 304 px  (perfect circle)
                   • bbox centre at (50.78 %, 42.77 %) of the PNG
@@ -1151,12 +1151,12 @@ const OrbHomePage: React.FC = () => {
                                                     the hole and the
                                                     knight's silhouette
                                                     closes that ring
-                                                    cleanly — no
+                                                    cleanly: no
                                                     background sliver.
                     translate(-50.78 %, -42.77 %)  → ball centre lands
                                                     on the orb centre.
                   Mask: ball-centred circle, fully opaque AT the orb's
-                  edge (9.7 %), fades to fully transparent at 26 % —
+                  edge (9.7 %), fades to fully transparent at 26 %:
                   the rendered radius where the "i" of Saltimbanques
                   sits, measured live in the DOM. That's a tight, fast
                   feather rather than the soft drift we had before. */}
@@ -1174,7 +1174,7 @@ const OrbHomePage: React.FC = () => {
                 style={{
                   // Width / translate are driven by the placement editor state
                   // (pencil toggle, top-right). Defaults: w=665 %, tx=-50.7813,
-                  // ty=-42.7734 — hole 456 px vs 462 px orb, 3 px buffer per side.
+                  // ty=-42.7734: hole 456 px vs 462 px orb, 3 px buffer per side.
                   width: `${knightW}%`,
                   maxWidth: 'none', // beat Tailwind's `img { max-width: 100% }`
                   height: 'auto',
@@ -1183,7 +1183,7 @@ const OrbHomePage: React.FC = () => {
                   // Order: translate → rotate → scale. translate uses the
                   // image's own (pre-scale) layout box so it stays consistent
                   // across scale changes. scale(sx, sy) lets each axis be
-                  // stretched independently — useful when the PNG hole
+                  // stretched independently: useful when the PNG hole
                   // isn't a perfect circle on screen and needs warping
                   // into a slight ellipse to seat the orb cleanly.
                   transform: `translate(${knightTx}%, ${knightTy}%) rotate(${knightRot}deg) scale(${knightSX}, ${knightSY})`,
@@ -1202,7 +1202,7 @@ const OrbHomePage: React.FC = () => {
                   //   the right shoulder/arm stays visible past the feather.
                   // ④ Radial (base): knight body stays fully opaque to
                   //   13 % (a fat opaque ring covering the orb's outer rim
-                  //   and 70+ px past it — kills any visible hole around
+                  //   and 70+ px past it, killing any visible hole around
                   //   the orb), feathers to transparent at 26 % (where
                   //   the "i" of Saltimbanques sits).
                   WebkitMaskImage:
@@ -1216,7 +1216,7 @@ const OrbHomePage: React.FC = () => {
                     'linear-gradient(to right, transparent 55%, rgba(0,0,0,0.6) 70%), ' +
                     'radial-gradient(circle at 50.7813% 42.7734%, #000 13%, transparent 26%)',
                   maskComposite: 'intersect, add, add, add',
-                  // Single drop-shadow pass — chained filters each force
+                  // Single drop-shadow pass: chained filters each force
                   // a separate rasterization. The previous (0 0 28px brass)
                   // contributed a faint warm glow that's already covered
                   // by the orb's box-shadow glow ring, so we drop it.
@@ -1227,7 +1227,7 @@ const OrbHomePage: React.FC = () => {
               />
             </div>
 
-            {/* Blurb glass panel — landing shows tickets CTA, pillar shows
+            {/* Blurb glass panel: landing shows tickets CTA, pillar shows
                 lead, video shows fullscreen button. */}
             <div
               key={isLanding ? LANDING_KEY : activeChoice!.key}
@@ -1292,12 +1292,12 @@ const OrbHomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Masthead scrim — on scrolling mobile/short viewports the content
+        {/* Masthead scrim: on scrolling mobile/short viewports the content
             slides under the fixed wordmark; this top fade keeps the wordmark
             legible and dissolves the incoming text instead of colliding. */}
         <div className="orb-topscrim" aria-hidden="true" />
 
-        {/* Top-left wordmark — logo only (the title page below carries the
+        {/* Top-left wordmark: logo only (the title page below carries the
             "Caravanes & Saltimbanques" edition name in full). */}
         {presale ? (
           <div className="orb-wordmark absolute top-5 left-5 md:top-7 md:left-10 z-20 flex items-center gap-3">
@@ -1330,12 +1330,12 @@ const OrbHomePage: React.FC = () => {
         </button>
         )}
 
-        {/* Top-right corner — account access + lang toggle. This is
+        {/* Top-right corner: account access + lang toggle. This is
             the ONLY place outside the global NavBar (which is hidden on
             this immersive landing) where Mon compte / Se connecter
             lives. */}
         <div className="absolute top-6 right-5 md:top-8 md:right-12 z-20 flex items-center gap-4 sm:gap-6 md:gap-8">
-          {/* Pre-sale teaser hides account access entirely — the only action
+          {/* Pre-sale teaser hides account access entirely: the only action
               on the page is the big pre-sale tickets button. */}
           {presale ? null : user ? (
             <Link
@@ -1363,7 +1363,7 @@ const OrbHomePage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Featured 2026 film — centred lightbox over the orb. */}
+        {/* Featured 2026 film: centred lightbox over the orb. */}
         {showFilm && (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-midnight-deep/90 backdrop-blur-sm p-4 md:p-10"
@@ -1408,7 +1408,7 @@ const OrbHomePage: React.FC = () => {
             fill="none" stroke="var(--color-amber-glow)" strokeWidth="2.6"
             strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
           >
-            {/* cascading double chevron — clearly reads "scroll down" */}
+            {/* cascading double chevron: clearly reads "scroll down" */}
             <path className="orb-chevron orb-chevron-1" d="M6 9l11 10 11-10" />
             <path className="orb-chevron orb-chevron-2" d="M6 21l11 10 11-10" />
           </svg>
@@ -1436,7 +1436,7 @@ const OrbHomePage: React.FC = () => {
             0%   { opacity: 0; transform: translateY(6px); }
             100% { opacity: 1; transform: translateY(0); }
           }
-          /* Glistening sweep — diagonal light lance + tinted secondary lance
+          /* Glistening sweep: diagonal light lance + tinted secondary lance
              that play once per transition (re-keyed on selection change). */
           .orb-sweep {
             animation: orbSweep 1100ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
@@ -1462,7 +1462,7 @@ const OrbHomePage: React.FC = () => {
             100% { opacity: 1; transform: translateY(0)    scale(1);    }
           }
           .orb-countdown { animation: orbFadeText 900ms ease-out; }
-          /* Title page entry — eyebrow + rule rise first, then the hero
+          /* Title page entry: eyebrow + rule rise first, then the hero
              title is scratched open by a brass-glow streak, then the dates
              rise after the reveal lands. */
           .orb-title-eyebrow,
@@ -1475,7 +1475,7 @@ const OrbHomePage: React.FC = () => {
           .orb-title > div:nth-of-type(1)      { animation-delay: 360ms; }
           .orb-title > div:nth-of-type(2)      { animation-delay: 1900ms; }
 
-          /* Scratch reveal — sweep clip-path open from left to right,
+          /* Scratch reveal: sweep clip-path open from left to right,
              accompanied by a glowing brass streak that races along the
              reveal edge. */
           .orb-title-hero {
@@ -1528,7 +1528,7 @@ const OrbHomePage: React.FC = () => {
           /* Slow crossfade between forest-green and cool-blue inner
              layers. 18 s full cycle, counter-phase opacity so when one
              is at peak the other is invisible. Brief teal blend at the
-             4-5 s and 13-14 s crossings — atmospheric, not glitchy. */
+             4-5 s and 13-14 s crossings: atmospheric, not glitchy. */
           .orb-scrim-green {
             animation: orbScrimGreen 18s ease-in-out infinite;
           }
@@ -1544,7 +1544,7 @@ const OrbHomePage: React.FC = () => {
             50%      { opacity: 1; }
           }
 
-          /* Particle fire — kindles after 3 s. The actual flames are drawn
+          /* Particle fire: kindles after 3 s. The actual flames are drawn
              on a canvas (FireCanvas component); this just fades the canvas
              + the supporting low broad ember-glow into view. */
           .orb-flame-canvas,
@@ -1559,7 +1559,7 @@ const OrbHomePage: React.FC = () => {
           /* Caravan fades in + glides slightly leftward, as if advancing
              into frame from the right. Final state matches the inline
              transform so the element rests cleanly after animation ends. */
-          /* caravanArrive runs once on mount then rests — no need to
+          /* caravanArrive runs once on mount then rests: no need to
              pin a compositor layer for the lifetime of the page. */
           .orb-caravan {
             animation: caravanArrive 2000ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
@@ -1580,7 +1580,7 @@ const OrbHomePage: React.FC = () => {
              Rather than collapse to a cramped scrolling single column, keep
              the desktop-style two columns and condense everything so the whole
              hero (title, dates, orb, countdown, CTA) fits with no scroll.
-             Portrait phones never reach this — they get the rotate overlay. */
+             Portrait phones never reach this. They get the rotate overlay. */
           @media (max-height: 600px) and (min-width: 680px) {
             .orb-fit {
               grid-template-columns: 1.05fr 1fr !important;
@@ -1597,7 +1597,7 @@ const OrbHomePage: React.FC = () => {
             .orb-title-hero > span { font-size: clamp(1.3rem, 3.3vw, 1.9rem) !important; }
             .orb-dates { font-size: 1.3rem !important; }
             /* Everything fits this condensed layout, so there is nothing below
-               the fold to scroll to — the scroll cue would mislead. Hide it. */
+               the fold to scroll to: the scroll cue would mislead. Hide it. */
             .orb-scroll-cue { display: none !important; }
             /* "Bientôt disponible" block: shrink, drop the secondary sub-line. */
             .orb-list > p:first-child { font-size: 1.25rem !important; margin: 0 !important; }
@@ -1651,7 +1651,7 @@ const OrbHomePage: React.FC = () => {
           }
 
           /* ── Mobile scroll cue ──────────────────────────────────────
-             Shown on small OR short viewports (portrait phones excepted —
+             Shown on small OR short viewports (portrait phones excepted,
              the rotate prompt owns that state). */
           .orb-scroll-cue { display: none; }
           @media (max-width: 767px), (max-height: 600px) {

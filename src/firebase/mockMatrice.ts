@@ -1,4 +1,4 @@
-// Matrice des rôles & responsabilités 2026 — Caravanes & Saltimbanques
+// Matrice des rôles & responsabilités 2026 : Caravanes & Saltimbanques
 // Reforged v2.0. Each ROLE has a primary holder + tasks. Tasks move
 // between roles via drag/drop. New roles + tasks can be added.
 // Mutations stay in-memory; wire to Firestore later.
@@ -31,7 +31,7 @@ let _roles: MatriceRole[] = [
 
   { id: 'r-mn',   code: 'MN',   title: 'Master Nourriture',         holder: 'Alex',    category: 'master',
     mission: "Offre alimentaire complète, rentable, conforme.",
-    note: "Double-chapeau Alex (MN+MW) — désigner suppléant en pic d'arrivée fournisseurs." },
+    note: "Double-chapeau Alex (MN+MW). Désigner suppléant en pic d'arrivée fournisseurs." },
 
   { id: 'r-mb',   code: 'MB',   title: 'Master Bar',                holder: 'Arno Geoffroy', category: 'master',
     mission: "Offre de boisson, rentabilité, conformité licence d'alcool (RACJ)." },
@@ -47,7 +47,7 @@ let _roles: MatriceRole[] = [
 
   { id: 'r-mw',   code: 'MW',   title: 'Master Web',                holder: 'Alex',    category: 'master',
     mission: "Numérique, communication externe, production graphique. Rôle large : 8 sous-fonctions.",
-    note: "Charge équivalente à 3-4 fonctions normales — déléguer la sous-fonction médias sociaux à un Lead dédié." },
+    note: "Charge équivalente à 3-4 fonctions normales. Déléguer la sous-fonction médias sociaux à un Lead dédié." },
 
   { id: 'r-mss',  code: 'MSS',  title: 'Master Scène et Son',       holder: 'Pitch',   category: 'master',
     mission: "Programmation artistique, ingénierie de scène, son live." },
@@ -67,7 +67,7 @@ let _roles: MatriceRole[] = [
     mission: "Roulement rapide des entrées, gestion des contingences." },
   { id: 'r-chev', code: 'Lead', title: 'Lead Chevaux',              holder: 'TBD',        category: 'lead',
     mission: "Sécurité et bien-être équin; séparation des flux humains/équins.",
-    note: "À pourvoir en priorité — risque opérationnel élevé." },
+    note: "À pourvoir en priorité : risque opérationnel élevé." },
   { id: 'r-anim', code: 'Lead', title: 'Animateur',                 holder: 'Sara',       category: 'lead',
     mission: "Voix publique du festival; rythme de la programmation." },
   { id: 'r-camp', code: 'Lead', title: 'Lead Camping',              holder: 'TBD',        category: 'lead',
@@ -76,7 +76,7 @@ let _roles: MatriceRole[] = [
     mission: "Propreté du site, vide sanitaire, gestion des matières." },
   { id: 'r-secu', code: 'Lead', title: 'Lead Sécurité',             holder: 'TBD',        category: 'lead',
     mission: "Sécurité des personnes; prévention; intervention de premier niveau.",
-    note: "PRIORITÉ ABSOLUE — ne doit pas rester à pourvoir au-delà de mai (P1)." },
+    note: "PRIORITÉ ABSOLUE : ne doit pas rester à pourvoir au-delà de mai (P1)." },
   { id: 'r-tour', code: 'Lead', title: 'Lead Tournoi',              holder: 'Patrice',    category: 'lead',
     mission: "Conception, règles et déroulement du tournoi." },
 ];
@@ -146,15 +146,15 @@ let _tasks: MatriceTask[] = [
   { id: 't-mk-6', roleId: 'r-mk', label: 'Coordination du camping artisans', order: 5 },
   { id: 't-mk-7', roleId: 'r-mk', label: 'Tenue à jour de la liste des exposants (pour MW promo et Régisseur)', order: 6 },
 
-  // ── Master Web (Alex) — 8 sous-fonctions + transversales ─────────
+  // ── Master Web (Alex) : 8 sous-fonctions + transversales ─────────
   { id: 't-mw-1',  roleId: 'r-mw', label: 'Communications numériques entrantes (courriels, redirection, FAQ)', order: 0 },
-  { id: 't-mw-2',  roleId: 'r-mw', label: 'Site web — contenu, mises à jour, intégration billetterie, SEO', order: 1 },
-  { id: 't-mw-3',  roleId: 'r-mw', label: 'Plateformes de paiement — billetterie en ligne, paiements partenaires', order: 2 },
-  { id: 't-mw-4',  roleId: 'r-mw', label: "Identité graphique — design du matériel signalétique et impression", order: 3 },
-  { id: 't-mw-5',  roleId: 'r-mw', label: 'Médias sociaux (sous-fonction la plus volumineuse — voir détail)', order: 4 },
-  { id: 't-mw-6',  roleId: 'r-mw', label: 'Promotion — campagnes, partenariats promo, mise en valeur des partenaires', order: 5 },
-  { id: 't-mw-7',  roleId: 'r-mw', label: 'Relations médias — entrevues, communiqués, présence média', order: 6 },
-  { id: 't-mw-8',  roleId: 'r-mw', label: 'Documentation visuelle — gestion des photographes/vidéastes pendant le festival', order: 7 },
+  { id: 't-mw-2',  roleId: 'r-mw', label: 'Site web : contenu, mises à jour, intégration billetterie, SEO', order: 1 },
+  { id: 't-mw-3',  roleId: 'r-mw', label: 'Plateformes de paiement : billetterie en ligne, paiements partenaires', order: 2 },
+  { id: 't-mw-4',  roleId: 'r-mw', label: "Identité graphique : design du matériel signalétique et impression", order: 3 },
+  { id: 't-mw-5',  roleId: 'r-mw', label: 'Médias sociaux (sous-fonction la plus volumineuse : voir détail)', order: 4 },
+  { id: 't-mw-6',  roleId: 'r-mw', label: 'Promotion : campagnes, partenariats promo, mise en valeur des partenaires', order: 5 },
+  { id: 't-mw-7',  roleId: 'r-mw', label: 'Relations médias : entrevues, communiqués, présence média', order: 6 },
+  { id: 't-mw-8',  roleId: 'r-mw', label: 'Documentation visuelle : gestion des photographes/vidéastes pendant le festival', order: 7 },
   { id: 't-mw-9',  roleId: 'r-mw', label: "Garantir l'exactitude de toute information publiée", order: 8 },
   { id: 't-mw-10', roleId: 'r-mw', label: 'Maintenir un kit de communication partenaires (logos, dates, hashtags, gabarits)', order: 9 },
   { id: 't-mw-11', roleId: 'r-mw', label: 'Bibliothèque structurée des actifs visuels', order: 10 },
@@ -170,7 +170,7 @@ let _tasks: MatriceTask[] = [
   { id: 't-mss-7', roleId: 'r-mss', label: 'Soundchecks', order: 6 },
   { id: 't-mss-8', roleId: 'r-mss', label: 'Encadrement de la Sound woman et du Lead Tech', order: 7 },
 
-  // ── Master Care et Cérémonies (Océane) — refondu ─────────────────
+  // ── Master Care et Cérémonies (Océane) : refondu ─────────────────
   { id: 't-mcc-1', roleId: 'r-mcc', label: 'Conception du programme cérémoniel (ouverture, clôture, rituels intermédiaires)', order: 0 },
   { id: 't-mcc-2', roleId: 'r-mcc', label: 'Coordination avec les facilitatrices·eurs et personnes concernées', order: 1 },
   { id: 't-mcc-3', roleId: 'r-mcc', label: 'Synchronisation des cérémonies avec MSS (scène, son) et Régisseur', order: 2 },
@@ -221,7 +221,7 @@ let _tasks: MatriceTask[] = [
   { id: 't-entr-2', roleId: 'r-entr', label: 'Gestion déchets et recyclage', order: 1 },
   { id: 't-entr-3', roleId: 'r-entr', label: 'Coordination avec MN (organique) et MB (canettes/contenants)', order: 2 },
 
-  // ── Lead Sécurité (TBD) — explicité ──────────────────────────────
+  // ── Lead Sécurité (TBD) : explicité ──────────────────────────────
   { id: 't-secu-1', roleId: 'r-secu', label: 'Plan de sécurité du site (points de rassemblement, accès urgences, communication radio)', order: 0 },
   { id: 't-secu-2', roleId: 'r-secu', label: "Coordination avec services d'urgence externes (911, ambulance, pompiers)", order: 1 },
   { id: 't-secu-3', roleId: 'r-secu', label: 'Premiers soins et trousse(s) de secours', order: 2 },
@@ -299,7 +299,7 @@ export function deleteRole(roleId: string): Promise<void> {
 }
 
 // ─── RACI-derived dependency graph ───────────────────────────────
-// Source: matrice_reforgee_2026 v2.0 — sections "Matrice RACI maître"
+// Source: matrice_reforgee_2026 v2.0, sections "Matrice RACI maître"
 // (Masters + Leads). Each row is a tâche/domaine; cells are R/A/C/I.
 // Co-involvement per row contributes a weighted edge between the two
 // roles. Higher weight = stronger interdependence.
@@ -381,7 +381,7 @@ export interface DepEdge {
   shared: string[];   // task areas they both touch
 }
 
-// Returns symmetric edge list — each undirected pair listed once with a < b.
+// Returns symmetric edge list: each undirected pair listed once with a < b.
 export function computeDependencies(): DepEdge[] {
   const map = new Map<string, DepEdge>();
   for (const row of RACI_MATRIX) {

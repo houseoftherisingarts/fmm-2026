@@ -1,4 +1,4 @@
-// Extended seed data for VITE_ADMIN_DEV_BYPASS — covers all admin
+// Extended seed data for VITE_ADMIN_DEV_BYPASS: covers all admin
 // sections so the dashboard can be iterated on before Firebase is wired.
 
 import type { UserProfile } from './applications';
@@ -48,7 +48,7 @@ export interface MockMessage { id: string; from: string; email: string; subject:
 export const mockMessages: MockMessage[] = [
   {
     id: 'm1', from: 'Marie-Claude Pichette', email: 'mc.pichette@example.ca',
-    subject: 'Question sur le banquet — allergies',
+    subject: 'Question sur le banquet : allergies',
     body: 'Bonjour, j’aimerais savoir si le banquet du dimanche peut accommoder une allergie aux noix. Nous sommes 4 à vouloir réserver. Merci !',
     sentAt: now(-1) as any, read: false,
   },
@@ -61,7 +61,7 @@ export const mockMessages: MockMessage[] = [
   {
     id: 'm3', from: 'Jean Lavigne', email: 'jean.lavigne@example.ca',
     subject: 'Disponibilité hébergement',
-    body: 'Bonjour, je cherche à réserver pour les 3 nuits — mon yourte est elle disponible chez Le Salon des Inconnus ? Je voudrais idéalement régler dès maintenant.',
+    body: 'Bonjour, je cherche à réserver pour les 3 nuits. Mon yourte est elle disponible chez Le Salon des Inconnus ? Je voudrais idéalement régler dès maintenant.',
     sentAt: now(-6) as any, read: true,
   },
 ];

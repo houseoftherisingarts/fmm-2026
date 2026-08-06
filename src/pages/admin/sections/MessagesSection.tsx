@@ -14,11 +14,11 @@ import {
   mockWatchInbox, mockReplyToMessage, mockTransferMessage, mockMarkRead,
 } from '../../../firebase/mockMail';
 
-// ─── Mail tab — medieval Gmail clone ─────────────────────────────────
+// ─── Mail tab: medieval Gmail clone ─────────────────────────────────
 // Two-pane mailbox UI: left rail lists every department box + the
 // admin's personal box; right pane shows the selected mailbox's
 // messages and the active reading view. Admin Mail is shared (every
-// admin can read every department box) — that's by design, the inbox
+// admin can read every department box). That's by design, the inbox
 // is the team's, not any one person's. The personal box receives
 // transfers.
 //
@@ -39,7 +39,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
   const myName  = user?.displayName ?? 'Admin';
   const myUid   = user?.uid ?? 'dev';
 
-  // Default selection — first department box. Switching to "personnel"
+  // Default selection: first department box. Switching to "personnel"
   // is one click away in the rail.
   const [box, setBox] = useState<SelectedBox>({ type: 'department', departmentId: DEPARTMENTS[0].id });
   const [items, setItems] = useState<MailMessage[]>([]);
@@ -93,7 +93,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
       try { await (devBypass ? mockMarkRead : markRead)(m.id, true); }
       catch (e) {
         console.warn('[mail] markRead failed', e);
-        setError('Échec du marquage comme lu — le serveur n’a pas répondu.');
+        setError('Échec du marquage comme lu. Le serveur n’a pas répondu.');
       }
     }
   };
@@ -118,7 +118,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
         </Card>
       )}
       <div className="grid lg:grid-cols-[260px_1fr] gap-4">
-      {/* Sidebar — mailboxes */}
+      {/* Sidebar: mailboxes */}
       <aside>
         <Card className="p-0 overflow-hidden">
           <header className="px-4 py-3" style={{ borderBottom: '1px solid var(--admin-line)' }}>
@@ -152,7 +152,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
         </Card>
       </aside>
 
-      {/* Right pane — list + reader */}
+      {/* Right pane: list + reader */}
       <main className="space-y-4">
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -212,7 +212,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
                   try { await (devBypass ? mockReplyToMessage : replyToMessage)(reply); }
                   catch (e) {
                     console.warn('[mail] reply failed', e);
-                    setError('Échec de l’envoi de la réponse — réessayez.');
+                    setError('Échec de l’envoi de la réponse. Réessayez.');
                   }
                 }}
                 onTransfer={async (recipient, note) => {
@@ -229,7 +229,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
                   try { await (devBypass ? mockTransferMessage : transferMessage)(payload); }
                   catch (e) {
                     console.warn('[mail] transfer failed', e);
-                    setError('Échec du transfert — réessayez.');
+                    setError('Échec du transfert. Réessayez.');
                   }
                 }}
               />
@@ -490,7 +490,7 @@ const MessageRow: React.FC<{
                     </select>
                     <p className="mt-1.5 font-editorial italic text-[11px]"
                        style={{ color: 'var(--admin-text-mute)' }}>
-                      Transférer vers une boîte personnelle viendra ensuite — lié à la collection adminRoles.
+                      Transférer vers une boîte personnelle viendra ensuite, lié à la collection adminRoles.
                     </p>
                   </div>
                   <textarea

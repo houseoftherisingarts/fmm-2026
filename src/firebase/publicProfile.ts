@@ -1,7 +1,7 @@
 // Public-facing profile shape. Built by joining a user's /users/{uid}
 // doc with their /benevoles/{uid} doc, then dropping anything the
 // person hasn't opted to share publicly. Email, phone, address,
-// emergency contact, dietary notes, allergies — all stay private.
+// emergency contact, dietary notes, allergies: all stay private.
 //
 // Used by the community wall (clickable name → public profile page)
 // and by the DM "who am I writing to" header.

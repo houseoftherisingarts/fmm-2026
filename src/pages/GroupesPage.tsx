@@ -26,8 +26,8 @@ const TYPES = [
   {
     icon: Users, key: 'communautaire',
     titleFR: 'Groupes communautaires', titleEN: 'Community groups',
-    bodyFR: 'Organismes, scouts, cercles, clubs de loisirs — un terrain de jeu en nature pour vivre le festival ensemble.',
-    bodyEN: 'Non-profits, scouts, circles, leisure clubs — an outdoor playground to live the festival together.',
+    bodyFR: 'Organismes, scouts, cercles, clubs de loisirs: un terrain de jeu en nature pour vivre le festival ensemble.',
+    bodyEN: 'Non-profits, scouts, circles, leisure clubs: an outdoor playground to live the festival together.',
     perksFR: ['Tarif de groupe', 'Tablée commune sur demande', 'Aide à la planification du transport'],
     perksEN: ['Group pricing', 'Shared table on request', 'Transport planning support'],
   },
@@ -208,7 +208,7 @@ const GroupesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
 
 const FR = {
   home: 'Accueil', eyebrow: 'Sortie de groupe', title: 'Groupes',
-  intro: 'Tarifs spéciaux et accompagnement sur mesure pour les sorties de groupe : écoles, organismes communautaires, équipes corporatives. Une journée — ou un weekend — au cœur du Moyen Âge québécois.',
+  intro: 'Tarifs spéciaux et accompagnement sur mesure pour les sorties de groupe : écoles, organismes communautaires, équipes corporatives. Une journée, ou un weekend, au cœur du Moyen Âge québécois.',
   pricingNote: 'Tarifs et formules détaillées sur demande. Contactez-nous via le formulaire ci-dessous et nous reviendrons vers vous avec une proposition adaptée à votre groupe.',
   formEyebrow: 'Demande de groupe', formTitle: 'Parlez-nous de votre groupe',
   org: 'Nom de l’organisation', contact: 'Personne contact',
@@ -225,7 +225,7 @@ const FR = {
 };
 const EN = {
   home: 'Home', eyebrow: 'Group outing', title: 'Groups',
-  intro: 'Special pricing and tailored support for group outings: schools, community non-profits, corporate teams. A day — or a weekend — in the heart of Quebec’s Middle Ages.',
+  intro: 'Special pricing and tailored support for group outings: schools, community non-profits, corporate teams. A day, or a weekend, in the heart of Quebec’s Middle Ages.',
   pricingNote: 'Detailed pricing and packages on request. Contact us via the form below and we’ll come back with a tailored proposal for your group.',
   formEyebrow: 'Group request', formTitle: 'Tell us about your group',
   org: 'Organisation name', contact: 'Contact person',

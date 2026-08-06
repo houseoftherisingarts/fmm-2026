@@ -42,14 +42,14 @@ const MusiquesSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
         console.warn('[musique-admin] fetch failed', e);
         if (alive) {
           setItems([]);
-          setError('Impossible de charger les candidatures — vérifiez la connexion Firestore.');
+          setError('Impossible de charger les candidatures : vérifiez la connexion Firestore.');
         }
       })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [fetchAll]);
 
-  // Personalised greeting — Pitch (Éric Pichette) gets a dedicated nod.
+  // Personalised greeting: Pitch (Éric Pichette) gets a dedicated nod.
   const adminEmail = (adminUser?.email || '').toLowerCase();
   const adminName  = adminUser?.displayName || '';
   const isPitch =
@@ -123,7 +123,7 @@ const MusiquesSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
             </h2>
             <p className="font-editorial italic text-sm text-ivory-soft">
               {isPitch
-                ? 'Toutes les candidatures de groupes pour le FMM atterrissent ici. Filtre, exporte, accepte ou refuse — Pitch a le dernier mot.'
+                ? 'Toutes les candidatures de groupes pour le FMM atterrissent ici. Filtre, exporte, accepte ou refuse : Pitch a le dernier mot.'
                 : 'Cette section regroupe les candidatures des groupes. Le pilotage opérationnel appartient à Éric Pichette (Pitch).'}
             </p>
           </div>
@@ -270,7 +270,7 @@ const MusiquesSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
                         defaultValue={m.adminNotes || ''}
                         onChange={(e) => setNotesDraft((d) => ({ ...d, [m.uid]: e.target.value }))}
                         className="w-full bg-midnight-deep/60 border border-ivory-soft/20 rounded-card px-3 py-2 text-sm text-ivory placeholder:text-ivory-soft/40 focus:outline-none focus:border-brass/60"
-                        placeholder="Pitch — réservé à l’équipe"
+                        placeholder="Pitch, réservé à l’équipe"
                       />
                     </Section>
 

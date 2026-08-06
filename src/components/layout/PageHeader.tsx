@@ -18,7 +18,7 @@ import { SectionFog } from '../marche/atmospherics';
 //
 // Account access lives in the global NavBar (which renders above every
 // page that uses PageHeader). The floating top-right account pill was
-// removed to avoid two CTAs competing — only OrbHomePage (immersive,
+// removed to avoid two CTAs competing: only OrbHomePage (immersive,
 // no NavBar) keeps its own account button.
 
 export interface PageHeaderCta {
@@ -40,7 +40,7 @@ interface Props {
   orbImage:     string;
   /** Optional object-position hint (e.g. "center 35%"). */
   orbImagePosition?: string;
-  /** Optional video as orb media — overrides image when set. */
+  /** Optional video as orb media: overrides image when set. */
   orbVideo?:    string;
   /** Up to two CTAs displayed below the intro. */
   ctas?:        PageHeaderCta[];
@@ -74,14 +74,14 @@ const PageHeader: React.FC<Props> = ({
     <header className="relative text-ivory overflow-hidden isolate">
       {/* Atmosphere is now painted by .fmm-caravan-page on <body> as
           a single continuous gradient covering the whole document.
-          Hero is transparent — the orb is the visual focus. */}
+          Hero is transparent: the orb is the visual focus. */}
 
-      {/* Bottom-only fog — covers the hero→first-tier seam. Top edge
+      {/* Bottom-only fog: covers the hero→first-tier seam. Top edge
           stays clear so the orb has uncluttered surrounding space. */}
       <SectionFog edges="bottom" />
 
       <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-28 md:pt-36 pb-12 md:pb-16 grid lg:grid-cols-[1.05fr_1fr] gap-x-12 gap-y-12 items-center">
-        {/* LEFT — text column */}
+        {/* LEFT: text column */}
         <div className="lg:pr-6">
           <p className="font-editorial italic uppercase tracking-[0.45em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-7 inline-flex items-center gap-3">
             <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
@@ -135,7 +135,7 @@ const PageHeader: React.FC<Props> = ({
           )}
         </div>
 
-        {/* RIGHT — orb */}
+        {/* RIGHT: orb */}
         <div className="relative w-full max-w-[300px] sm:max-w-[380px] md:max-w-[480px] lg:max-w-[520px] aspect-square justify-self-center lg:justify-self-end">
           {/* Outer warm glow ring */}
           <div
@@ -176,7 +176,7 @@ const PageHeader: React.FC<Props> = ({
               />
             )}
 
-            {/* Glistening sweep — runs once on mount */}
+            {/* Glistening sweep: runs once on mount */}
             <div
               key={`sweep-${sweepKey}`}
               aria-hidden
@@ -199,7 +199,7 @@ const PageHeader: React.FC<Props> = ({
               />
             </div>
 
-            {/* Inner vignette — softens image into the rim */}
+            {/* Inner vignette: softens image into the rim */}
             <div
               aria-hidden
               className="absolute inset-0 rounded-full pointer-events-none"
@@ -209,7 +209,7 @@ const PageHeader: React.FC<Props> = ({
               }}
             />
 
-            {/* Glass shine — broad top radial */}
+            {/* Glass shine: broad top radial */}
             <div
               aria-hidden
               className="absolute inset-0 rounded-full pointer-events-none fmm-orb-shine"
@@ -220,7 +220,7 @@ const PageHeader: React.FC<Props> = ({
               }}
             />
 
-            {/* Brass + flame ornate rim — the orb's signature */}
+            {/* Brass + flame ornate rim: the orb's signature */}
             <div
               aria-hidden
               className="absolute inset-0 rounded-full pointer-events-none"

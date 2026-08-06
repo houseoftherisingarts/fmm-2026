@@ -152,7 +152,7 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
   );
 };
 
-// ─── Profile card — Witcher inventory plaque ────────────────────────
+// ─── Profile card: Witcher inventory plaque ────────────────────────
 // Hex-cut clipped chrome (top-right + bottom-left notches), copper
 // corner L-ticks, divider-brass hairlines top + above footer, a
 // diamond-shaped avatar medallion holding the initials. Status badge
@@ -180,7 +180,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
           'polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)',
       }}
     >
-      {/* Top metallic hairline — divider-brass aesthetic */}
+      {/* Top metallic hairline: divider-brass aesthetic */}
       <span
         aria-hidden
         className="pointer-events-none"
@@ -191,10 +191,10 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
         }}
       />
 
-      {/* Corner L-ticks — pick up the role's accent */}
+      {/* Corner L-ticks: pick up the role's accent */}
       <CardCorners />
 
-      {/* Demo chip — top-right */}
+      {/* Demo chip: top-right */}
       {isDemo && (
         <span
           className="absolute top-2.5 right-2.5 z-10 px-1.5 py-0.5 font-sans uppercase tracking-[0.25em] text-[9px]"
@@ -208,7 +208,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
         </span>
       )}
 
-      {/* Avatar — hex medallion with metallic gradient */}
+      {/* Avatar: hex medallion with metallic gradient */}
       <div className="pt-7 flex justify-center">
         <span
           className="relative inline-flex items-center justify-center w-16 h-16 font-display title-medieval text-lg tracking-[0.04em]"
@@ -226,7 +226,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
         </span>
       </div>
 
-      {/* Status badge — sits just under the medallion */}
+      {/* Status badge: sits just under the medallion */}
       <div className="mt-2.5 flex justify-center">
         <Badge tone={b.status}>{STATUS_LABEL[b.status]}</Badge>
       </div>
@@ -256,7 +256,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
         </p>
       </div>
 
-      {/* Footer — hairline above + date + profile chevron */}
+      {/* Footer: hairline above + date + profile chevron */}
       <div
         className="relative px-4 py-2.5"
         style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.025), transparent)' }}
@@ -287,7 +287,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
         </div>
       </div>
 
-      {/* Hover glow — soft accent halo around the card */}
+      {/* Hover glow: soft accent halo around the card */}
       <span
         aria-hidden
         className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -303,7 +303,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
   );
 };
 
-// Four amber L-ticks pinned to the card's corners — Witcher inventory
+// Four amber L-ticks pinned to the card's corners: Witcher inventory
 // chrome. Color inherits the role's `--admin-accent` token.
 const CardCorners: React.FC = () => {
   const base: React.CSSProperties = {

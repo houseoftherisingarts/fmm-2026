@@ -7,7 +7,7 @@ import {
   type ArchivePhoto, type PhotographerKey,
 } from '../../../firebase/archivesPhotos';
 
-// Section Photos — la galerie « Archives » de la page Histoire, pilotée
+// Section Photos : la galerie « Archives » de la page Histoire, pilotée
 // par photographe : activer/désactiver, réordonner (glisser-déposer),
 // téléverser. Pensée pour Léna : ce qu'elle voit ici est exactement ce
 // que la page publique montre (les photos désactivées restent en
@@ -27,7 +27,7 @@ const PhotosSection: React.FC<Props> = ({ devBypass: _devBypass }) => {
 
   useEffect(() => {
     fetchArchivePhotos()
-      .then((rows) => { setPhotos(rows); setErr(rows.length ? null : 'Collection vide — lancer le seed.'); })
+      .then((rows) => { setPhotos(rows); setErr(rows.length ? null : 'Collection vide : lancer le seed.'); })
       .catch((e) => { console.warn('[PhotosSection]', e); setErr('Impossible de charger les photos.'); })
       .finally(() => setLoading(false));
   }, []);
@@ -98,7 +98,7 @@ const PhotosSection: React.FC<Props> = ({ devBypass: _devBypass }) => {
       <Card>
         <div className="flex flex-wrap items-center gap-3">
           <Camera size={16} className="text-brass" />
-          <h2 className="font-display text-lg text-ivory">Archives photos — page Histoire</h2>
+          <h2 className="font-display text-lg text-ivory">Archives photos : page Histoire</h2>
           <span className="text-xs text-stone">
             Ce que la page publique affiche, groupe par groupe. Désactiver met en réserve, rien n'est supprimé.
           </span>

@@ -52,7 +52,7 @@ const EquipesSection: React.FC<Props> = () => {
       }
       const mockT = (DEV_BYPASS || SHOWCASE_IN_DEV) ? await mockListTeams(year) : [];
       const mockB = (DEV_BYPASS || SHOWCASE_IN_DEV) ? await mockListBenevoles() : [];
-      // Merge — live wins on id collisions.
+      // Merge: live wins on id collisions.
       const tIds = new Set(liveTeams.map((t) => t.id));
       const bIds = new Set(liveBenevoles.map((b) => b.uid));
       setTeams([...mockT.filter((t) => !tIds.has(t.id)), ...liveTeams]);
@@ -141,7 +141,7 @@ const EquipesSection: React.FC<Props> = () => {
       ) : (
         <div className="overflow-x-auto -mx-4 md:-mx-8 px-4 md:px-8 pb-6">
           <div className="flex gap-4 min-w-max items-start">
-            {/* Unassigned column — always first */}
+            {/* Unassigned column: always first */}
             <Column
               tone="amber"
               title="Non assigné·es"
@@ -163,7 +163,7 @@ const EquipesSection: React.FC<Props> = () => {
               <div className="min-w-[18rem]">
                 <Card className="p-6">
                   <EmptyState icon={Users}>
-                    Aucune équipe pour {year}. Créez la première — par ex. « Bar », « Accueil ».
+                    Aucune équipe pour {year}. Créez la première : par ex. « Bar », « Accueil ».
                   </EmptyState>
                 </Card>
               </div>
@@ -310,7 +310,7 @@ const BenevoleCard: React.FC<{
           ? 'bg-brass/10 border-brass/40 hover:bg-brass/15'
           : 'bg-ivory-soft/5 border-ivory-soft/15 hover:bg-ivory-soft/10'
       }`}
-      title={`${fullName} — glisser pour réassigner`}
+      title={`${fullName} : glisser pour réassigner`}
     >
       <GripVertical size={11} className="text-ivory-soft/30 shrink-0 group-hover:text-ivory-soft/60 transition" />
       <div

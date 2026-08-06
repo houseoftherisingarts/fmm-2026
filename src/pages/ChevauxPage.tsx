@@ -152,10 +152,10 @@ const FR = {
   home: 'Accueil',
   eyebrow: 'Au manège',
   title: 'Clinique Équestre',
-  intro: 'Venez découvrir la Clinique Équestre organisée par l’Association Médiévale du Québec (AMQ). Initiez-vous aux jeux médiévaux à cheval — joutes, jeux d’adresse — dans une ambiance conviviale et sécuritaire. Pour participer en tant que cavalier(e) : apportez votre cheval, une preuve d’assurance valide avec Cheval Québec, ainsi que des documents attestant que votre compagnon est à jour dans ses vaccins et possède un test de Coggins négatif. Une occasion parfaite de vivre l’aventure médiévale tout en partageant votre passion équestre.',
+  intro: 'Venez découvrir la Clinique Équestre organisée par l’Association Médiévale du Québec (AMQ). Initiez-vous aux jeux médiévaux à cheval (joutes, jeux d’adresse) dans une ambiance conviviale et sécuritaire. Pour participer en tant que cavalier(e) : apportez votre cheval, une preuve d’assurance valide avec Cheval Québec, ainsi que des documents attestant que votre compagnon est à jour dans ses vaccins et possède un test de Coggins négatif. Une occasion parfaite de vivre l’aventure médiévale tout en partageant votre passion équestre.',
   formEyebrow: 'Inscription cavalier(e)',
   formTitle: 'Formulaire d’inscription à la clinique',
-  formNote: '7 places disponibles — le samedi seulement.',
+  formNote: '7 places disponibles, le samedi seulement.',
   prenom: 'Prénom', nom: 'Nom', email: 'Courriel', telephone: 'Téléphone',
   horseName: 'Nom du cheval', horseBreed: 'Race du cheval',
   insuranceLabel: 'Document d’assurances',
@@ -169,8 +169,8 @@ const FR = {
 };
 const EN = {
   home: 'Home', eyebrow: 'In the ring', title: 'Equestrian Clinic',
-  intro: 'Come discover the equestrian clinic organised by the Quebec Medieval Association (AMQ). Try medieval mounted games — jousting, skill games — in a friendly, safe atmosphere. To participate as a rider: bring your horse, a valid Cheval Québec insurance proof, plus documents showing your horse is up-to-date on vaccines and has a negative Coggins test. A perfect chance to live the medieval adventure while sharing your equestrian passion.',
-  formEyebrow: 'Rider sign-up', formTitle: 'Clinic registration form', formNote: '7 spots available — Saturday only.',
+  intro: 'Come discover the equestrian clinic organised by the Quebec Medieval Association (AMQ). Try medieval mounted games (jousting, skill games) in a friendly, safe atmosphere. To participate as a rider: bring your horse, a valid Cheval Québec insurance proof, plus documents showing your horse is up-to-date on vaccines and has a negative Coggins test. A perfect chance to live the medieval adventure while sharing your equestrian passion.',
+  formEyebrow: 'Rider sign-up', formTitle: 'Clinic registration form', formNote: '7 spots available, Saturday only.',
   prenom: 'First name', nom: 'Last name', email: 'Email', telephone: 'Phone',
   horseName: 'Horse name', horseBreed: 'Horse breed',
   insuranceLabel: 'Insurance document', cogginsLabel: 'Coggins test',

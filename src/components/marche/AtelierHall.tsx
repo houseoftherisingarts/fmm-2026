@@ -20,7 +20,7 @@ export interface AtelierCopy {
   locked:     string;   // "Locked in"
 }
 
-// ─── AtelierHall — Champion-select pavilion ──────────────────────────
+// ─── AtelierHall: Champion-select pavilion ──────────────────────────
 // LoL-style champion-select layout for the four flagship artisans:
 //   Left  → focused artisan card (large photo, name, lore, CTA)
 //   Right → vertical list of all four artisans (clickable rows)
@@ -180,7 +180,7 @@ const FocusCard: React.FC<{
             <EnergyPulse tone="copper" />
 
             <div className="grid md:grid-cols-12">
-              {/* PHOTO column — splash-art treatment */}
+              {/* PHOTO column: splash-art treatment */}
               <div className="relative md:col-span-6 min-w-0 min-h-[46vh] md:min-h-[62vh] overflow-hidden fmm-beam">
                 <img
                   src={kiosk.image || '/wix/marche/04065e6d.jpg'}
@@ -189,7 +189,7 @@ const FocusCard: React.FC<{
                   className="absolute inset-0 w-full h-full object-cover fmm-kenburns"
                   style={{ objectPosition: kiosk.imagePosition || 'center' }}
                 />
-                {/* Tinted scrim — copper top, velvet bottom + right blend */}
+                {/* Tinted scrim: copper top, velvet bottom + right blend */}
                 <div
                   aria-hidden
                   className="absolute inset-0"
@@ -207,7 +207,7 @@ const FocusCard: React.FC<{
                 />
                 {/* Drifting motes around splash art */}
                 <Motes count={24} />
-                {/* Champion plate — top-left */}
+                {/* Champion plate: top-left */}
                 <div className="absolute top-5 left-5 z-10 flex items-center gap-3">
                   <span
                     className="font-sans text-[10px] tracking-[0.5em] px-3 py-1 caravan-glass"
@@ -223,7 +223,7 @@ const FocusCard: React.FC<{
                     {copy.plateLabel}
                   </span>
                 </div>
-                {/* Bottom-edge nameplate — splash-art signature */}
+                {/* Bottom-edge nameplate: splash-art signature */}
                 <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 z-10">
                   <p
                     className="font-editorial italic uppercase tracking-[0.4em] text-[10px] md:text-[11px] mb-2"

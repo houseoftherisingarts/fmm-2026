@@ -18,7 +18,7 @@ import OrnateFrame from './OrnateFrame';
 import TiltShell from './TiltShell';
 import PhotoUpload from './PhotoUpload';
 
-// Per-chapter accent — drives OrnateFrame stroke + card glow.
+// Per-chapter accent: drives OrnateFrame stroke + card glow.
 const CHAPTER_ACCENT: Record<1 | 2 | 3 | 4 | 5, string> = {
   1: 'var(--color-ruby)',
   2: 'var(--color-emerald-deep)',
@@ -29,11 +29,11 @@ const CHAPTER_ACCENT: Record<1 | 2 | 3 | 4 | 5, string> = {
 
 // ─── Types ────────────────────────────────────────────────────────
 interface FormState {
-  // I — La Caravane
+  // I: La Caravane
   contact: string;
   companyName: string;
   hasParticipatedBefore: '' | 'yes' | 'no';
-  // II — Votre Métier
+  // II: Votre Métier
   description: string;
   socials: string;
   phone: string;
@@ -41,12 +41,12 @@ interface FormState {
   familyVolunteerInterest: boolean;       // checkbox; deep-links to /benevole on Next
   logoUrl: string;                        // transparent PNG, used on online kiosk
   mainPhotoUrl: string;                   // hero photo for online kiosk
-  // III — La Tente
+  // III: La Tente
   kioskAppearance: VendorKioskAppearance | '';
   kioskDimensions: string;
   electricityNeed: VendorElectricityNeed | '';
   wantsCampingSpot: '' | 'yes' | 'no';
-  // IV — Le Voyage
+  // IV: Le Voyage
   regionOfOrigin: string;
   firstTimeSource: string;
   otherQuestions: string;
@@ -283,7 +283,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
         createdAt: existing?.createdAt,
       };
       await upsertVendorApp(app);
-      // Best-effort tag — failure here shouldn't block the success state.
+      // Best-effort tag: failure here shouldn't block the success state.
       addUserFlag(user.uid, 'vendor').catch((e) => console.warn('[vendor] flag write failed', e));
       setExisting({ ...app });
       if (draftKey) try { localStorage.removeItem(draftKey); } catch { /* noop */ }
@@ -308,7 +308,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
 
   if (!user) return null;
 
-  // ── Sent state — wax seal stamps over the velvet card ──
+  // ── Sent state: wax seal stamps over the velvet card ──
   if (submitState === 'sent') {
     return (
       <div className="relative">
@@ -763,7 +763,7 @@ const ChipRadio: React.FC<{
   </div>
 );
 
-// Same affordance as ChipRadio but stacked vertically — used when option
+// Same affordance as ChipRadio but stacked vertically: used when option
 // labels are long enough that two columns would wrap awkwardly.
 const ChipColumn: React.FC<{
   name: string; value: string; onChange: (v: string) => void;
@@ -945,7 +945,7 @@ const SummaryScroll: React.FC<{
 // Live price summary shown on the final chapter. Reads the picked
 // kiosk size + camping flag, computes the total, lets the user flip
 // the dimension display between imperial (the canonical unit) and
-// metric (information only — price is unaffected).
+// metric (information only: price is unaffected).
 const KIOSK_PRICE: Record<string, number> = {
   '10x10': 110,
   '10x15': 165,
@@ -993,7 +993,7 @@ const InvoicePanel: React.FC<{
         </div>
 
         <dl className="space-y-2.5 font-sans text-sm pt-3">
-          <Line label={`${t.kioskFee} — ${sizeLabel}`} amount={kioskAmount} disabled={!size} />
+          <Line label={`${t.kioskFee} (${sizeLabel})`} amount={kioskAmount} disabled={!size} />
           {camping && <Line label={t.campingFee} amount={campingAmount} />}
           <div className="border-t border-amber-300/30 pt-3 mt-3 flex items-center justify-between">
             <span className="font-display title-medieval text-base text-ivory uppercase tracking-widest">{t.total}</span>
@@ -1050,10 +1050,10 @@ const FR = {
   error: 'Une erreur est survenue.',
   errRequired: 'Champ requis.',
 
-  // chapter labels (journey path) — 5 entries, last is the seal step
+  // chapter labels (journey path): 5 entries, last is the seal step
   chapterLabels: ['La Caravane', 'Votre Métier', 'La Tente', 'Le Voyage', 'Le Sceau'],
 
-  // I — La Caravane
+  // I: La Caravane
   ch1Eyebrow: 'Présentez-vous, voyageur',
   ch1Title:   'La Caravane',
   ch1Lead:    'Quelques mots sur vous et votre maison.',
@@ -1062,7 +1062,7 @@ const FR = {
   companyName:           'Nom de votre compagnie / entreprise',
   hasParticipatedBefore: 'Avez-vous déjà tenu kiosque chez nous ?',
 
-  // II — Votre Métier
+  // II: Votre Métier
   ch2Eyebrow: 'Quel est votre art ?',
   ch2Title:   'Votre Métier',
   ch2Lead:    'Décrivez ce que vous offrez et qui compose votre équipe.',
@@ -1072,7 +1072,7 @@ const FR = {
   socialsHint:                'Pour que nous puissions vous inclure dans la section artisans de notre site web.',
   phone:                      'Numéro de téléphone',
   teamSize:                   'Combien serez-vous dans votre équipe ?',
-  teamSizeHint:               'Artisans, famille, assistants — nous fournissons jusqu’à 4 bracelets d’entrée par espace de 10x10.',
+  teamSizeHint:               'Artisans, famille, assistants : nous fournissons jusqu’à 4 bracelets d’entrée par espace de 10x10.',
   teamSizePlaceholder:        'ex. 2 personnes',
   mediaEyebrow:                'Identité visuelle',
   mediaLead:                   'Ces images servent à monter votre kiosque sur notre site. Téléversez la meilleure qualité possible.',
@@ -1084,7 +1084,7 @@ const FR = {
   familyVolunteerInterest:     'Quelqu’un de votre équipe voudrait être bénévole.',
   familyVolunteerInterestHint: 'Cochez : nous ouvrirons la page bénévole en cliquant « Suivant ».',
 
-  // III — La Tente
+  // III: La Tente
   ch3Eyebrow: 'Décrivez votre kiosque',
   ch3Title:   'La Tente',
   ch3Lead:    'Quelques détails sur votre installation.',
@@ -1093,16 +1093,16 @@ const FR = {
   appearanceModerne:   'Moderne',
   appearanceMedievale: 'Médiévale / historique / reconstitution',
   appearanceDecore:    'Pas reconstitution, mais super beau et bien décoré',
-  appearanceIncertain: 'Première fois en événement médiéval — je ne sais pas !',
+  appearanceIncertain: 'Première fois en événement médiéval, je ne sais pas !',
   kioskDimensions:     'Dimensions de votre kiosque',
   electricityNeed:     'Avez-vous 100 % besoin d’électricité pour vendre ?',
   electricityNeedHint: 'L’accès à l’électricité est limité sur notre terrain.',
-  electricityYes:      'Oui — j’en ai vraiment besoin',
+  electricityYes:      'Oui, j’en ai vraiment besoin',
   electricityNo:       'Non',
   electricityPhone:    'Non, mais j’aimerais charger ma téléphone des fois',
   wantsCampingSpot:    'Voulez-vous une place pour camper sur place ?',
 
-  // IV — Le Voyage
+  // IV: Le Voyage
   ch4Eyebrow: 'D’où venez-vous ?',
   ch4Title:   'Le Voyage',
   ch4Lead:    'Quelques mots sur vos racines et vos questions.',
@@ -1112,7 +1112,7 @@ const FR = {
   consent:         'J’ai lu et j’accepte la',
   privacy:         'politique de confidentialité',
 
-  // V — Le Sceau
+  // V: Le Sceau
   ch5Eyebrow: 'Le pacte est prêt',
   ch5Title:   'Sceller votre engagement',
   ch5Lead:    'Relisez vos réponses, puis apposez le sceau.',
@@ -1131,7 +1131,7 @@ const FR = {
   statusPrefix: 'Statut',
   status: { pending: 'En attente', accepted: 'Acceptée', rejected: 'Refusée', waitlist: 'Liste d’attente' } as Record<'pending' | 'accepted' | 'rejected' | 'waitlist', string>,
   editLead: 'Vous pouvez mettre à jour votre inscription tant qu’elle est en attente.',
-  waitlistTitle: 'Inscriptions fermées — liste d’attente',
+  waitlistTitle: 'Inscriptions fermées : liste d’attente',
   waitlistBody:  'Les inscriptions principales sont closes. Vous pouvez tout de même soumettre votre candidature : elle sera ajoutée à la liste d’attente.',
 
   // sealed
@@ -1169,7 +1169,7 @@ const EN: typeof FR = {
   socialsHint:                'So we can include you in the artisans section of our website.',
   phone:                      'Phone number',
   teamSize:                   'How many on your team?',
-  teamSizeHint:               'Artisans, family, assistants — we provide up to 4 entry wristbands per 10x10 space.',
+  teamSizeHint:               'Artisans, family, assistants: we provide up to 4 entry wristbands per 10x10 space.',
   teamSizePlaceholder:        'e.g. 2 people',
   mediaEyebrow:                'Visual identity',
   mediaLead:                   'These images are used to build your kiosk page on our site. Upload the best quality you have.',
@@ -1189,11 +1189,11 @@ const EN: typeof FR = {
   appearanceModerne:   'Modern',
   appearanceMedievale: 'Medieval / historical / reenactment',
   appearanceDecore:    'Not reenactment, but beautifully themed',
-  appearanceIncertain: 'First time at a medieval event — not sure!',
+  appearanceIncertain: 'First time at a medieval event, not sure!',
   kioskDimensions:     'Kiosk dimensions',
   electricityNeed:     'Do you 100% need electricity to sell?',
   electricityNeedHint: 'Electricity access on site is limited.',
-  electricityYes:      'Yes — I really need it',
+  electricityYes:      'Yes, I really need it',
   electricityNo:       'No',
   electricityPhone:    'No, but I would like to charge my phone occasionally',
   wantsCampingSpot:    'Would you like a camping spot on site?',
@@ -1224,7 +1224,7 @@ const EN: typeof FR = {
   statusPrefix: 'Status',
   status: { pending: 'Pending', accepted: 'Accepted', rejected: 'Declined', waitlist: 'Wait list' },
   editLead: 'You can update your registration while it is pending.',
-  waitlistTitle: 'Registrations closed — wait list',
+  waitlistTitle: 'Registrations closed: wait list',
   waitlistBody:  'Main registrations are closed. You can still submit your application: it will be added to the wait list.',
 
   sealedTitle: 'Pact sealed!',

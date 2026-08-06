@@ -1,4 +1,4 @@
-// Vendor media uploads — logo + main photo to Firebase Storage.
+// Vendor media uploads: logo + main photo to Firebase Storage.
 // Files land at vendors/{uid}/{kind}.{ext} so Jesse and the public
 // kiosk page can reference a stable URL even after re-uploads.
 

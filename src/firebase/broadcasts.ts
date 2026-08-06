@@ -1,4 +1,4 @@
-// Vendor broadcast templates — the library Jesse uses to fan a single
+// Vendor broadcast templates: the library Jesse uses to fan a single
 // instruction message out to every accepted kiosk in one click.
 //
 // Storage shape:
@@ -25,7 +25,7 @@ export type BroadcastTemplateId =
   | 'schedule';
 
 export interface BroadcastTemplate {
-  /** Stable ID — also used as the URL slug for edits. */
+  /** Stable ID: also used as the URL slug for edits. */
   id:        BroadcastTemplateId;
   /** Title shown in the invitation card (e.g. "Arrival instructions"). */
   title:     string;
@@ -50,7 +50,7 @@ export const DEFAULT_TEMPLATES: Record<BroadcastTemplateId, BroadcastTemplate> =
     body:
 `Votre dossier a été accepté pour le marché médiéval du FMM. Bienvenue parmi les marchands de la caravane.
 
-Cette boîte de réception sera notre canal principal pour les consignes pratiques d’ici l’ouverture. Tu peux y répondre à tout moment — Jesse et l’équipe lisent chaque message.
+Cette boîte de réception sera notre canal principal pour les consignes pratiques d’ici l’ouverture. Tu peux y répondre à tout moment. Jesse et l’équipe lisent chaque message.
 
 Au plaisir de te recevoir sur le site.`,
     ctaLabel: 'Ouvrir mon espace',
@@ -61,7 +61,7 @@ Au plaisir de te recevoir sur le site.`,
     title:   'L’arrivée sur le site',
     eyebrow: 'Avant le festival',
     body:
-`Le montage des kiosques commence le jeudi à 13 h. Arrivée des marchands à partir de cette heure-là — pas avant, le terrain est encore en aménagement.
+`Le montage des kiosques commence le jeudi à 13 h. Arrivée des marchands à partir de cette heure-là, pas avant : le terrain est encore en aménagement.
 
 À l’entrée, présente-toi à l’accueil marchand : tu recevras ta carte d’emplacement et un plan détaillé. Le déchargement se fait au pas de marche du kiosque assigné ; les véhicules quittent ensuite le site avant l’ouverture publique du vendredi 10 h.
 
@@ -86,9 +86,9 @@ Le campement reste ouvert jusqu’au lundi midi pour le démontage.`,
 `Le FMM est une fête de reconstitution médiévale-fantastique. Nous demandons que chaque kiosque soit habillé en cohérence avec cet univers : tissus naturels, bois apparent, métal patiné, peu ou pas de plastique visible.
 
 Évite :
-— Les bannières imprimées en grand format (bannières manuscrites bienvenues)
-— Les enseignes néon ou rétro-éclairées
-— Les emballages plastique apparents (boîtes en carton ou en bois OK)
+• Les bannières imprimées en grand format (bannières manuscrites bienvenues)
+• Les enseignes néon ou rétro-éclairées
+• Les emballages plastique apparents (boîtes en carton ou en bois OK)
 
 Si tu as un doute sur un élément, envoie-nous une photo ici, on te répondra.`,
   },
@@ -110,9 +110,9 @@ Si tu as coché « charge de téléphone seulement » : une zone commune sera di
     body:
 `Quelques rappels essentiels avant le festival :
 
-— Assurance responsabilité civile : obligatoire pour tout kiosque qui vend ou fait manipuler des produits. Si tu n’en as pas, contacte-nous, on a des options collectives.
-— Manipulation alimentaire : permis MAPAQ pour la vente de nourriture préparée. Communique tes documents à l’avance.
-— Trousse de premiers soins : un poste médical est installé sur le site. Pour toute urgence, signale-le à un bénévole en t-shirt mauve.
+• Assurance responsabilité civile : obligatoire pour tout kiosque qui vend ou fait manipuler des produits. Si tu n’en as pas, contacte-nous, on a des options collectives.
+• Manipulation alimentaire : permis MAPAQ pour la vente de nourriture préparée. Communique tes documents à l’avance.
+• Trousse de premiers soins : un poste médical est installé sur le site. Pour toute urgence, signale-le à un bénévole en t-shirt mauve.
 
 Numéro d’urgence pendant le festival : (à venir).`,
   },
@@ -123,11 +123,11 @@ Numéro d’urgence pendant le festival : (à venir).`,
     body:
 `Voici l’horaire officiel des allées marchandes pour l’édition 2026 :
 
-— Vendredi 25 septembre : 10 h — 22 h
-— Samedi 26 septembre : 9 h — 23 h (cérémonie d’ouverture à 11 h, défilé à 19 h)
-— Dimanche 27 septembre : 10 h — 17 h (fermeture officielle à 17 h, démontage 17 h–22 h)
+• Vendredi 25 septembre : 10 h–22 h
+• Samedi 26 septembre : 9 h–23 h (cérémonie d’ouverture à 11 h, défilé à 19 h)
+• Dimanche 27 septembre : 10 h–17 h (fermeture officielle à 17 h, démontage 17 h–22 h)
 
-Présence obligatoire pendant les heures d’ouverture. Pauses entre marchands voisins encouragées — entends-toi avec ton ou ta voisine.`,
+Présence obligatoire pendant les heures d’ouverture. Pauses entre marchands voisins encouragées : entends-toi avec ton ou ta voisine.`,
   },
 };
 
