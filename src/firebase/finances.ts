@@ -7,6 +7,7 @@
 //   financeAccounts/{id}     — soldes des comptes (Desjardins, Square, Zeffy, dette…)
 //   financeAllocation/settings — doc unique, répartition en 3 enveloppes (investir/épargner/essentiel)
 //   financeDocuments/{id}    — métadonnées des documents téléversés dans Storage
+//   financeReceivables/{id}  — argent promis mais pas encore en banque (subventions, commandites, factures)
 
 import {
   collection, doc, addDoc, getDocs, updateDoc, deleteDoc, setDoc, getDoc, serverTimestamp,
