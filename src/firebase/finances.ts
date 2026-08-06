@@ -260,3 +260,32 @@ export async function deleteDocument(d: FinanceDocument): Promise<void> {
     }
   }
 }
+
+// ── À recevoir (subventions promises, commandites, factures clients) ──
+// Argent promis mais pas encore encaissé. Volontairement séparé des
+// comptes de trésorerie : ce n'est pas de l'argent en banque.
+
+const RECEIVABLES_COL = 'financeReceivables';
+
+export async function listReceivables(): Promise<FinanceReceivable[]> {
+  if (!db) return [];
+  const snap = await getDocs(collection(db, RECEIVABLES_COL));
+  const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<FinanceReceivable, 'id'>) }));
+  return rows.sort((a, b) => a.order - b.order);
+}
+
+export async function addReceivable(r: Omit<FinanceReceivable, 'id'>): Promise<FinanceReceivable> {
+  if (!db) throw new Error('Firebase non configuré');
+  const ref2 = await addDoc(collection(db, RECEIVABLES_COL), { ...r, updatedAt: serverTimestamp() });
+  return { ...r, id: ref2.id };
+}
+
+export async function updateReceivable(id: string, patch: Partial<Omit<FinanceReceivable, 'id'>>): Promise<void> {
+  if (!db) throw new Error('Firebase non configuré');
+  await updateDoc(doc(db, RECEIVABLES_COL, id), { ...stripUndefined(patch), updatedAt: serverTimestamp() });
+}
+
+export async function deleteReceivable(id: string): Promise<void> {
+  if (!db) throw new Error('Firebase non configuré');
+  await deleteDoc(doc(db, RECEIVABLES_COL, id));
+}
