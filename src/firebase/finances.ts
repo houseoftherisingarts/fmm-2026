@@ -60,6 +60,35 @@ export interface FinanceDocument {
   sizeKb: number;
 }
 
+export type ReceivableType = 'subvention' | 'commandite' | 'facture' | 'autre';
+
+export const RECEIVABLE_TYPE_LABEL: Record<ReceivableType, string> = {
+  subvention: 'Subvention promise',
+  commandite: 'Commandite',
+  facture: 'Facture client',
+  autre: 'Autre',
+};
+
+export type ReceivableStatus = 'promis' | 'facture' | 'recu' | 'perdu';
+
+export const RECEIVABLE_STATUS_LABEL: Record<ReceivableStatus, string> = {
+  promis: 'Promis',
+  facture: 'Facturé',
+  recu: 'Reçu',
+  perdu: 'Perdu',
+};
+
+export interface FinanceReceivable {
+  id: string;
+  source: string;      // qui doit l'argent
+  amount: number;
+  type: ReceivableType;
+  expectedDate: string; // YYYY-MM-DD
+  status: ReceivableStatus;
+  notes: string;
+  order: number;
+}
+
 const stripUndefined = (obj: Record<string, unknown>): Record<string, unknown> => {
   const out: Record<string, unknown> = {};
   for (const k of Object.keys(obj)) {
