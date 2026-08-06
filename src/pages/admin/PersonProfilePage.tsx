@@ -243,8 +243,8 @@ const Body: React.FC<{
                         </p>
                       )}
                     </div>
-                    <Link to="/admin"
-                      state={{ section: 'matrice', focusRole: r.id }}
+                    <Link to="/admin/matrice"
+                      state={{ focusRole: r.id }}
                       className="shrink-0 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-ivory-soft hover:text-brass transition font-sans">
                       Voir la fiche <ChevronRight size={11} />
                     </Link>
