@@ -660,12 +660,14 @@ const RepartitionBand: React.FC<{
           {(Object.keys(PART_META) as (keyof FinanceAllocation)[]).map((k) => {
             const { label, icon: Icon, color } = PART_META[k];
             return (
-              <div key={k} className="flex items-center gap-2">
-                <span className="w-7 h-7 shrink-0 rounded-card flex items-center justify-center" style={{ background: `${color}22`, color }}>
-                  <Icon size={14} />
-                </span>
-                <label className="sr-only" htmlFor={`alloc-${k}`}>{label}</label>
-                <div className="flex-1 flex items-center gap-2">
+              <div key={k} className="space-y-1.5">
+                <label htmlFor={`alloc-${k}`} className="flex items-center gap-2">
+                  <span className="w-7 h-7 shrink-0 rounded-card flex items-center justify-center" style={{ background: `${color}22`, color }}>
+                    <Icon size={14} />
+                  </span>
+                  <span className="font-sans text-sm text-ivory">{label}</span>
+                </label>
+                <div className="flex items-center gap-2">
                   <input
                     id={`alloc-${k}`}
                     type="number" min={0} max={100} value={allocation[k]}
