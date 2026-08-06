@@ -27,7 +27,7 @@ import {
 const SHOWCASE_IN_DEV = import.meta.env.DEV;
 import SEO from '../components/SEO';
 
-import AdminShell, { type AdminSectionId } from './admin/AdminShell';
+import AdminShell, { type AdminSectionId, ADMIN_SECTION_IDS } from './admin/AdminShell';
 import GateScreen from './admin/GateScreen';
 import type { AdminRole } from '../lib/adminPermissions';
 
