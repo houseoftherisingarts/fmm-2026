@@ -350,6 +350,7 @@ const EN: typeof FR = {
   mapAria:        'Festival Médiéval de Montpellier site map',
   mapCampingTag:  'Camping zone',
   mapCaption:     'Last year’s site map. The camping zone is on the festival grounds.',
+  mapDownload:    'Download the map',
   optRvTitle:     'Caravan / RV area',
   optRvBody:      'For campers, caravans and recreational vehicles. Park on site and enjoy the festival from the moment you wake up.',
   optTentTitle:   'Tent / small vehicle area',
