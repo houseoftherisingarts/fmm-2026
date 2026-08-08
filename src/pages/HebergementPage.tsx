@@ -117,6 +117,14 @@ const HebergementPage: React.FC = () => {
               <figcaption className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-card bg-midnight-deep/85 border border-brass/40 font-sans text-[10px] uppercase tracking-widest text-brass">
                 <Tent size={12} /> {t.mapCampingTag}
               </figcaption>
+              <a
+                href="/site/carte-fmm-2025.jpg"
+                download="Carte-FMM.jpg"
+                className="group absolute bottom-3 right-3 inline-flex items-center gap-2 px-4 py-2 rounded-card bg-midnight-deep/85 backdrop-blur-sm border border-brass/40 font-sans text-[10px] uppercase tracking-widest font-semibold text-brass hover:bg-brass hover:text-midnight-deep hover:border-brass transition-colors"
+              >
+                <Download size={12} className="transition-transform group-hover:translate-y-0.5" />
+                {t.mapDownload}
+              </a>
             </figure>
             <p className="font-editorial italic text-sm text-ivory-soft/70 text-center mt-3">{t.mapCaption}</p>
           </Reveal>
