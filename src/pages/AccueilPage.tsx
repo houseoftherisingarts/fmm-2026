@@ -615,7 +615,7 @@ const EN = {
   },
   billetterie: { eyebrow: 'Ticketing', title: 'Tickets', lead: 'Head to our Zeffy payment portal to purchase your tickets. Family-adjusted pricing, day, weekend or banquet packages.', cta: 'Buy on Zeffy' },
   banquet:     { eyebrow: 'Reservation required', title: 'Equinox Banquet (50 seats)', body: 'A teeming 5-course table by reservation with bard musicians at table.', note: 'Limited seats · Tip not included · Menu subject to change based on local availability. Sunday · 1:00 PM · $100. Registration deadline: September 7, 2026.', cta: 'See the menu' },
-  map: { eyebrow: 'Site plan', title: 'The village stretches through the woods' },
+  map: { eyebrow: 'Site plan', title: 'The village stretches through the woods', download: 'Download the map' },
   marche: { title: 'Market', cta: 'Shop' },
   crosspromo: {
     hebergement: 'FMM is accessible from a range of lodging options in the Petite-Nation.', hebergementCta: 'Stay over',
