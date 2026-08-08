@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Tent, Home, ChevronLeft, ChevronRight, MapPin, Caravan } from 'lucide-react';
+import { ArrowUpRight, Tent, Home, ChevronLeft, ChevronRight, MapPin, Caravan, Download } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
