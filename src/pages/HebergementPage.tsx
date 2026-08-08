@@ -324,6 +324,7 @@ const FR = {
   mapAria:        'Plan du site du Festival Médiéval de Montpellier',
   mapCampingTag:  'Zone camping',
   mapCaption:     'Plan du site de l’an dernier. La zone de camping est sur le terrain du festival.',
+  mapDownload:    'Télécharger la carte',
   optRvTitle:     'Espace caravane / VR',
   optRvBody:      'Pour les roulottes, caravanes et véhicules récréatifs. Stationnez sur place et profitez du festival dès le réveil.',
   optTentTitle:   'Espace tente / petit véhicule',
