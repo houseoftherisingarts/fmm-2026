@@ -114,6 +114,7 @@ export const HOME = {
       eyebrow: 'Plan du site',
       title: 'Le village s\'étend dans le bois',
       lead: 'Marché, banquet, scène musicale, manège équestre et village jeunesse, tous reliés par les sentiers de Montpellier.',
+      download: 'Télécharger la carte',
     },
     pillarFeatures: [
       { key: 'marche'      as const, image: '/site/feature-marche.jpg' },
