@@ -323,6 +323,14 @@ const AccueilPage: React.FC = () => {
           className="relative w-full overflow-hidden fade-y"
         >
           <img decoding="async" src="/site/carte-fmm-2025.jpg" alt={t.map.title} className="w-full h-auto" loading="lazy" />
+          <a
+            href="/site/carte-fmm-2025.jpg"
+            download="Carte-FMM.jpg"
+            className="group absolute bottom-3 right-3 md:bottom-6 md:right-6 inline-flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-card bg-midnight-deep/85 backdrop-blur-sm border border-brass/40 font-sans uppercase tracking-widest text-[10px] md:text-xs font-semibold text-brass hover:bg-brass hover:text-midnight-deep hover:border-brass transition-colors"
+          >
+            <Download size={14} className="transition-transform group-hover:translate-y-0.5" />
+            {t.map.download}
+          </a>
         </motion.div>
       </section>
 
