@@ -150,6 +150,7 @@ export const HOME = {
       eyebrow: 'Site plan',
       title: 'The village stretches through the woods',
       lead: 'Market, banquet, music stage, equestrian ring and youth village, all linked by the Montpellier trails.',
+      download: 'Download the map',
     },
     pillarFeatures: [
       { key: 'marche'      as const, image: '/site/feature-marche.jpg' },
