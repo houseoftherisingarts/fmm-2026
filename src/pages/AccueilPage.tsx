@@ -548,7 +548,7 @@ const FR = {
     note: 'Places limitées · Pourboire non inclus · Menu sujet à changement selon la disponibilité locale des produits. Dimanche · 13h00 · 100$. Date limite d’inscription : 7 septembre 2026.',
     cta: 'Voir le menu',
   },
-  map: { eyebrow: 'Plan du site', title: 'Le village s’étend dans le bois' },
+  map: { eyebrow: 'Plan du site', title: 'Le village s’étend dans le bois', download: 'Télécharger la carte' },
   marche: { title: 'Marché', cta: 'Magasiner' },
   crosspromo: {
     hebergement:    'Le FMM est accessible aux options d’hébergement variées dans la Petite-Nation.',
