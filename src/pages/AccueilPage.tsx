@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Download } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { PILLAR_BY_KEY, SITE, SPONSORS } from '../content';
 import { useCountdown } from '../lib/useCountdown';
