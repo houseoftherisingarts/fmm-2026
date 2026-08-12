@@ -32,7 +32,7 @@ const LeVillagePage: React.FC = () => {
         orbImagePosition="center 45%"
       />
       <MarchePage embedded />
-      <MenuComingSoon fr={fr} />
+      <NourriturePage embedded />
     </>
   );
 };
