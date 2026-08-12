@@ -34,10 +34,92 @@ const PLANS: Plan[] = [
   { key: 'comte', icon: <Castle size={26} />, price: '4 000 $' },
 ];
 
+// ── Formulaire de demande ────────────────────────────────────────
+// Petit modal par plan : la soumission écrit dans la collection
+// Firestore `commanditaires`, relue par la section admin du même nom.
+const RequestModal: React.FC<{
+  plan: SponsorPlan;
+  t: typeof FR;
+  lang: 'FR' | 'EN';
+  onClose: () => void;
+}> = ({ plan, t, lang, onClose }) => {
+  const [form, setForm] = useState({ company: '', contactName: '', email: '', phone: '', message: '' });
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const f = t.form;
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((prev) => ({ ...prev, [k]: e.target.value }));
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (state === 'sending') return;
+    setState('sending');
+    try {
+      await addSponsorRequest({ plan, ...form, lang });
+      setState('sent');
+    } catch (err) {
+      console.warn('[Commanditaires] submit failed:', err);
+      setState('error');
+    }
+  };
+  const inputCls = 'w-full bg-black/30 border border-white/15 rounded-card px-4 py-2.5 font-editorial text-[15px] text-ivory placeholder:text-stone focus:outline-none focus:border-brass transition';
+  return (
+    <motion.div
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <motion.div
+        className="relative w-full max-w-lg glass-light border border-brass/40 rounded-card p-6 md:p-8 max-h-[90vh] overflow-y-auto"
+        initial={{ opacity: 0, y: 28, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <button type="button" onClick={onClose} aria-label={f.close}
+          className="absolute top-4 right-4 text-stone hover:text-ivory transition">
+          <X size={18} />
+        </button>
+        {state === 'sent' ? (
+          <div className="text-center py-8">
+            <Crown size={30} className="text-brass mx-auto mb-4" />
+            <h3 className="font-display title-medieval text-2xl text-ivory mb-3">{f.sentTitle}</h3>
+            <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-6">{f.sentBody}</p>
+            <button type="button" onClick={onClose}
+              className="px-6 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
+              {f.close}
+            </button>
+          </div>
+        ) : (
+          <>
+            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-1.5">{f.eyebrow}</p>
+            <h3 className="font-display title-medieval text-2xl text-ivory mb-1">{t.plans[plan].name}</h3>
+            <p className="font-editorial italic text-sm text-ivory-soft mb-5">{f.sub}</p>
+            <form onSubmit={submit} className="space-y-3">
+              <input required maxLength={120} className={inputCls} placeholder={f.company}     value={form.company}     onChange={set('company')} />
+              <input required maxLength={120} className={inputCls} placeholder={f.contactName} value={form.contactName} onChange={set('contactName')} />
+              <div className="grid sm:grid-cols-2 gap-3">
+                <input required type="email" maxLength={200} className={inputCls} placeholder={f.email} value={form.email} onChange={set('email')} />
+                <input maxLength={40} className={inputCls} placeholder={f.phone} value={form.phone} onChange={set('phone')} />
+              </div>
+              <textarea rows={4} maxLength={2000} className={inputCls} placeholder={f.message} value={form.message} onChange={set('message')} />
+              {state === 'error' && (
+                <p className="font-editorial text-sm text-red-300">{f.error}</p>
+              )}
+              <button type="submit" disabled={state === 'sending'}
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-60">
+                {state === 'sending' ? f.sending : f.submit} <Send size={14} />
+              </button>
+            </form>
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const CommanditairesPage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
+  const [openPlan, setOpenPlan] = useState<SponsorPlan | null>(null);
   return (
     <>
       <SEO title={t.title} description={t.intro} />
