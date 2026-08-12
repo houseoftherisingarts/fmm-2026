@@ -124,7 +124,7 @@ const PartenairesPage: React.FC = () => {
                 <Reveal from={reverse ? 'right' : 'left'} className={`lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
                   <div className="relative aspect-square md:aspect-[4/3] rounded-lg-card overflow-hidden border">
                     <RevealImage
-                      src={['/wix/partenaires/89f9a2db.jpg','/wix/partenaires/58f7a1f9.jpg','/wix/partenaires/9487bac5.jpg','/wix/partenaires/473bdc18.jpg','/wix/partenaires/7a32a3a6.png'][i % 5]}
+                      src={p.image}
                       className="absolute inset-0 w-full h-full"
                       from={reverse ? 'right' : 'left'}
                       onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
