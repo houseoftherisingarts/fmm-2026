@@ -25,6 +25,7 @@ const FEATURED = [
   },
   {
     name: 'Groupe Gagnon',
+    image: '/wix/partenaires/05fe445b.png',
     bioFR: 'Depuis la première itération, Le Groupe Gagnon est un de nos partenaires les plus fidèles et les plus généreux. Nous sommes fiers d’acheter local, et ils sont fiers de commanditer local.',
     bioEN: 'Since the very first edition, Groupe Gagnon has been one of our most loyal and generous partners. We are proud to buy local, and they are proud to sponsor local.',
     href: '#TODO_groupe-gagnon',
