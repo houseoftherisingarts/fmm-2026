@@ -243,8 +243,10 @@ const FR = {
   becomeMail: 'Devenir partenaire : FMM 2026',
 };
 const EN = {
-  home: 'Home', eyebrow: 'With us', title: 'Our Partners',
-  intro: 'Without the gifts of time and resources, without the financial, structural and relational support our partners bring, FMM would only be a distant dream in the head of a northern farmer whose cellular memory recalls battles of old.',
+  home: 'Home', eyebrow: 'The festival court', title: 'Sponsors',
+  intro: 'Your business can take rank at the court of the Festival Médiéval de Montpellier. Three sponsorship plans, three ranks of nobility: the more your house commits, the higher its banner flies.',
+  chapterPartenairesEyebrow: 'With us', chapterPartenairesTitle: 'Our Partners',
+  chapterPartenairesIntro: 'Without the gifts of time and resources, without the financial, structural and relational support our partners bring, FMM would only be a distant dream in the head of a northern farmer whose cellular memory recalls battles of old.',
   pressEyebrow: 'They talk about us',
   partner: 'Partner',
   partnersEyebrow: 'More partners', partnersTitle: 'Supporters and collaborators',
