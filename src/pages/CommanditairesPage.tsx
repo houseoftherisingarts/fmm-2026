@@ -299,7 +299,7 @@ const FR = {
         'Allocution à la cérémonie d’ouverture et au banquet',
         'Capsule vidéo ou série photo de votre présence, livrée pour vos propres réseaux',
         'Droit d’utiliser le nom et l’image du festival dans votre publicité pendant 12 mois',
-        '10 laissez-passer week-end et 4 places au banquet',
+        '50 laissez-passer week-end et 4 places au banquet',
         'Premier droit de renouvellement pour l’édition suivante',
       ],
       cta: 'Prendre le titre de Duc', mail: 'Plan Duc du Festival : commandite FMM',
