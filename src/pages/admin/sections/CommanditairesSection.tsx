@@ -101,11 +101,9 @@ const CommanditairesSection: React.FC<Props> = ({ devBypass }) => {
       {loading ? (
         <Card className="p-8 text-center"><p className="font-sans text-sm text-stone">Chargement…</p></Card>
       ) : visible.length === 0 ? (
-        <EmptyState
-          icon={Crown}
-          title="Aucune demande"
-          body="Les demandes soumises depuis la page publique des commanditaires apparaîtront ici."
-        />
+        <EmptyState icon={Crown}>
+          Aucune demande pour l'instant. Les demandes soumises depuis la page publique des commanditaires apparaîtront ici.
+        </EmptyState>
       ) : (
         <div className="space-y-3">
           {visible.map((r) => (
