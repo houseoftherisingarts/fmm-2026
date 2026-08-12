@@ -7,13 +7,13 @@ import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { Eyebrow, DisplayTitle, HexPanel, SectionFog, SectionTopRail } from '../components/marche/atmospherics';
 import MarchePage from './MarchePage';
+import NourriturePage from './NourriturePage';
 
 // ─── Le Village (édition 2026) ──────────────────────────────────────
 // Merged pillar. One unified hero + scroll-progress, then the Marché
-// renders embedded. Le Village Nourriture est masqué le temps que le
-// menu 2026 soit arrêté : un teaser « Menu à venir » le remplace
-// (décision d'Alex, 2026-08-02). Pour le ramener : restaurer
-// <NourriturePage embedded /> à la place de <MenuComingSoon />.
+// renders embedded. Le Village Nourriture est de retour depuis le
+// 2026-08-12 : le menu de Marc-Alexis est arrêté et intégré, le teaser
+// MenuComingSoon (gardé plus bas) a été remplacé par la vraie section.
 const LeVillagePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
