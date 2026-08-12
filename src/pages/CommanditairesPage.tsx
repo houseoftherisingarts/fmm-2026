@@ -314,6 +314,18 @@ const FR = {
   ctaTitle: 'Votre bannière au festival',
   ctaBody: 'Le nombre de rangs est limité : un seul Duc, un Comte par secteur d’activité. Écrivez-nous et nous préparons une entente à la mesure de votre maison.',
   ctaCta: 'Nous écrire', ctaMail: 'Devenir commanditaire : FMM',
+  form: {
+    eyebrow: 'Demande de commandite',
+    sub: 'Laissez-nous vos coordonnées et nous vous rappelons pour préparer l’entente.',
+    company: 'Nom de votre entreprise', contactName: 'Votre nom',
+    email: 'Courriel', phone: 'Téléphone (facultatif)',
+    message: 'Un mot sur votre maison, vos envies, vos questions (facultatif)',
+    submit: 'Envoyer la demande', sending: 'Envoi en cours',
+    sentTitle: 'Demande reçue',
+    sentBody: 'Votre demande est arrivée à la cour. Nous vous écrivons sous peu pour la suite.',
+    error: 'L’envoi a échoué. Réessayez, ou écrivez-nous à admin@festivalmedievaldemontpellier.org.',
+    close: 'Fermer',
+  },
 };
 
 const EN = {
