@@ -25,10 +25,13 @@ type Plan = {
   featured?: boolean;
 };
 
+// Le Duc, commanditaire présentateur, trône AU CENTRE de la grille
+// (demande d'Alex 2026-08-12); les prix ne sont donc pas en ordre
+// croissant de gauche à droite, c'est voulu.
 const PLANS: Plan[] = [
   { key: 'baron', icon: <Shield size={26} />, price: '1 500 $' },
-  { key: 'comte', icon: <Castle size={26} />, price: '4 000 $' },
   { key: 'duc',   icon: <Crown size={26} />,  price: '10 000 $', featured: true },
+  { key: 'comte', icon: <Castle size={26} />, price: '4 000 $' },
 ];
 
 const CommanditairesPage: React.FC = () => {
