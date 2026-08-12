@@ -57,6 +57,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   showCountdown:           true,
   knightPlacementEditor:   false,
   showCommanditaire:       false,
+  showPlansCommandite:     false,
   showHistoireFrise:       false,
   // All pages start unpublished → the public sees the teaser until each is
   // flipped on one by one.
