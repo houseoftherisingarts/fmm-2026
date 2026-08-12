@@ -64,55 +64,77 @@ const MENU = [
   },
 ];
 
-// 4 food-village tents, cloned from the Wix /nourriture page. Each tent
-// gets its own card on the page; copy is the user's own from the live site.
+// Menu officiel du village nourriture, tel que préparé par Marc-Alexis
+// (courriel « fmm 2025 menu », 2025-05-12, pièce jointe final menu 2025.rtf,
+// intégré le 2026-08-12 à la demande d'Alex). Prix publics seulement :
+// les coûts et marges du document restent dans la cuisine.
 const TENTS = [
   {
-    name: { FR: 'La Tente des Marmites', EN: 'The Cauldron Tent' },
+    name: { FR: 'Les Marmites du Campement', EN: 'The Camp Cauldrons' },
     icon: 'ᛟ',
     dishes: [
-      { name: 'Bouillon de l’aubergiste',   note: 'Servi avec pain viking. Potage clair aux racines et herbes du jardin.' },
-      { name: 'Ragoût du Seigneur',         note: 'Chair de bœuf longuement cuite avec légumes, herbes et bouillon riche.' },
-      { name: 'Pain viking au beurre',      note: 'Pain de blé cuit à la braise, beurre frais aux herbes sauvages.' },
-      { name: 'Pain viking au sang (Víkingr Blóðbrauð)', note: 'Pain sombre et riche, façonné avec du sang cuit et des farines rustiques.' },
-      { name: 'Laridum',                    note: 'Morceaux de lard salé fondants, huile d’olive et aneth.' },
+      { name: 'Bouillon de l’aubergiste', price: '12 $', note: 'Servi avec pain viking. Potage clair aux racines et herbes du jardin, recette des tables modestes telle qu’on la servait aux voyageurs et aux soldats.' },
+      { name: 'Ragoût du Seigneur',       price: '16 $', note: 'Servi avec pain viking. Chair de bœuf longuement cuite avec légumes, herbes et bouillon riche.' },
+      { name: 'Pain viking au beurre aux herbes', price: '6 $', note: 'Pain de blé cuit à la braise, beurre frais aux herbes sauvages.' },
+      { name: 'Pain viking au sang (Víkingr Blóðbrauð)', price: '8 $', note: 'Pain sombre et riche, façonné avec du sang cuit et des farines rustiques.' },
+      { name: 'Bouillon de bataille',     price: '12 $', note: 'Mélange de légumes et d’herbes séchés, le réconfort du campement.' },
+      { name: 'Laridum',                  price: '5 $',  note: 'Morceaux de lard salé fondants, huile d’olive et aneth.' },
     ],
   },
   {
-    name: { FR: 'Les Braises du Jarl', EN: 'The Jarl’s Embers' },
+    name: { FR: 'Les Grillades du Vieux Namur', EN: 'The Old Namur Grill' },
     icon: 'ᛞ',
     dishes: [
-      { name: 'Au miel noir',               note: 'Morceaux nobles de chapon rôtis et laqués de miel noir.' },
-      { name: 'Tako Tamago',                note: 'Œuf de caille sur poulpe mariné, douceur des mers.' },
-      { name: 'Kawaps d’agneau sur verdure',note: 'Tendres morceaux d’agneau grillés à la braise, marinés aux épices anciennes.' },
-      { name: 'Côte de pourceau du fumoir', note: 'Saisie sur flamme vive, sauce moutarde rustique et bière brune.' },
-      { name: 'Brochette de feuillage',     note: 'Tofu grillé, légumes verts et herbes sauvages, vinaigre de cidre.' },
-      { name: 'Patate chaude en quart',     note: 'Pommes de terre tendres, miel doré, cannelle, paprika et touche de piment.' },
+      { name: 'Manchettes de chapon au miel noir', price: '12 $', note: 'Pilons rôtis et laqués de miel noir.' },
+      { name: 'Poulet des vergers',       price: '16 $', note: 'Poulet mariné au cidre, grillé sur feu de bois.' },
+      { name: 'Tako Tamago',              price: '8 $',  note: 'Œuf de caille sur poulpe mariné, douceur des mers.' },
+      { name: 'Bâton du festin',          price: '12 $', note: 'Saucisse artisanale à griller soi-même sur la braise.' },
+      { name: 'Kawaps d’agnel sur verdure', price: '22 $', note: 'Brochettes d’agneau grillé, marinées aux épices anciennes.' },
+      { name: 'Côte de pourceau du fumoir', price: '14 $', note: 'Saisie sur flamme vive, sauce moutarde rustique et bière brune.' },
+      { name: 'Brochette de feuillage',   price: '9 $',  note: 'Tofu grillé, légumes verts et herbes sauvages, vinaigre de cidre.' },
+      { name: 'Patate chaude',            price: '6 $',  note: 'Miel doré, cannelle, paprika et touche de piment.' },
     ],
   },
   {
     name: { FR: 'Les Forgerons du Pain', EN: 'The Bread Smiths' },
     icon: 'ᚻ',
     dishes: [
-      { name: 'Sandwich forgé sur mesure', note: 'Viandes fines, légumes frais, fromages exquis, dans un pain doré et croustillant. Choix de pain, viande (jambon de campagne, saucisses aux herbes, terrine), légumes, fromages (cheddar, suisse), marinades (jalapeños, cornichons), sauces (ranch, mayo épicé, mayo) et salades.' },
+      { name: 'Panini forgé sur mesure', price: '18 $ · 22 $ avec salade', note: 'Choix de pain (blanc, grain entier), de viande (jambon de campagne, saucisses aux herbes, tempeh, terrine), de légumes, de fromage (cheddar, suisse), de marinades (jalapeños, cornichons) et de sauces (ranch, mayo épicée, mayo). Salades du jour : mesclun vinaigrette maison ou salade de pâtes. Extras : viande +4 $, fromage +2,50 $, marinade ou sauce +1 $, salade +5 $.' },
     ],
   },
   {
-    name: { FR: 'La Halle des Douceurs', EN: 'The Hall of Sweets' },
+    name: { FR: 'L’Échoppe des Douceurs', EN: 'The Hall of Sweets' },
     icon: 'ᚹ',
     dishes: [
-      { name: 'Fruits confits',  note: 'Assortiment de fruits confits, sucré et parfumé.' },
-      { name: 'Fruits frais',    note: 'Sélection de fruits mûrs, juteux, collation saine.' },
+      { name: 'Natas du royaume',    price: '5 $', note: 'Pâtisseries à pâte feuilletée, crème vanillée.' },
+      { name: 'Le gâteau des moines', price: '7 $', note: 'Pain d’épices moelleux des abbayes.' },
+      { name: 'La levée du roi',     price: '8 $', note: 'Brioche aux fruits confits, façon panettone.' },
+      { name: 'Globi',               price: '7 $', note: 'Cinq petites boules sucrées et épicées, héritées des tables romaines.' },
+      { name: 'Les joyaux confits',  price: '7 $', note: 'Assortiment de fruits confits, sucré et parfumé.' },
+      { name: 'Fruits frais',        price: '3 $', note: 'Sélection de fruits mûrs et juteux, collation saine.' },
     ],
   },
   {
-    name: { FR: 'Les Élixirs de l’Alchimiste', EN: 'The Alchemist’s Elixirs' },
+    name: { FR: 'Le Comptoir des Grignotes', EN: 'The Snack Counter' },
+    icon: 'ᛒ',
+    dishes: [
+      { name: 'Les cuirs du seigneur',    price: '12 $', note: 'Bœuf séché du fumoir, à mâcher en arpentant le village.' },
+      { name: 'Les pépites d’olivier',    price: '8 $',  note: 'Mélange d’olives choisies.' },
+      { name: 'Les offrandes de l’oasis', price: '9 $',  note: 'Cinq dattes farcies, douceur du désert.' },
+    ],
+  },
+  {
+    name: { FR: 'La Taverne des Élixirs', EN: 'The Elixir Tavern' },
     icon: '⚱',
     dishes: [
-      { name: 'Hypocras',       note: 'Vin rouge épicé et sucré inspiré des traditions médiévales : cannelle, gingembre.' },
-      { name: 'Vin chaud',      note: 'Cannelle, clou de girofle, agrumes, pour les premiers frissons d’automne.' },
-      { name: 'Limonade',       note: 'Élixir rafraîchissant, sucré et citronné, pour nobles et chevaliers.' },
-      { name: 'Bière au beurre',note: 'Caramel, épices, vanille, servie chaude et onctueuse.' },
+      { name: 'Hypocras',           price: '28 $',   note: 'Vin rouge épicé et sucré des traditions médiévales : cannelle, gingembre.' },
+      { name: 'Vin chaud',          price: '8 $',    note: 'Cannelle, clou de girofle, agrumes, pour les premiers frissons d’automne.' },
+      { name: 'Conditum paradoxum', price: '8 $',    note: 'Vin épicé au miel, cannelle, poivre et gingembre, à la romaine.' },
+      { name: 'Bochet',             price: '7 $',    note: 'Hydromel médiéval au miel caramélisé.' },
+      { name: 'Bière sumérienne',   price: '6 $',    note: 'Orge et dattes fermentées, la doyenne des bières.' },
+      { name: 'Bière au beurre',    price: '7 $',    note: 'Caramel, épices, vanille, servie chaude et onctueuse.' },
+      { name: 'Posca',              price: '4,50 $', note: 'Vin aigre allongé de vinaigre, d’herbes et de miel, la gourde du légionnaire.' },
+      { name: 'Limonade',           price: '4 $',    note: 'Élixir rafraîchissant, sucré et citronné, pour nobles et chevaliers.' },
     ],
   },
 ];
