@@ -11,9 +11,13 @@ import { SectionFog } from '../components/marche/atmospherics';
 import { SponsorOffer } from './CommanditairesPage';
 
 // Featured partners: long-form cards, cloned from the live Wix copy.
+// Chaque partenaire porte SA propre image (demande d'Alex 2026-08-12 :
+// fini la rotation générique où la Municipalité affichait le Marché
+// Faubert). Les fichiers viennent de la banque /wix/partenaires.
 const FEATURED = [
   {
     name: 'Municipalité de Montpellier',
+    image: '/wix/partenaires/473bdc18.jpg',
     bioFR: 'En accueillant le festival sur leurs terres, la municipalité permet un événement à grand déploiement, riche, et impossible à recréer dans les grands centres urbains.',
     bioEN: 'By hosting the festival on their land, the municipality enables a sweeping, rich event impossible to recreate in major urban centres.',
     href: '#TODO_municipalite-montpellier',
