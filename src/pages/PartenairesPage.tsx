@@ -5,7 +5,7 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { SPONSORS } from '../content';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
-import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
+import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 import { SponsorOffer } from './CommanditairesPage';
