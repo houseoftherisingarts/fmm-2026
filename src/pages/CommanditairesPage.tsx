@@ -332,7 +332,7 @@ const EN = {
         'Logo on the collective partner banner at the festival entrance',
         'Thank-you post on our social networks',
         'Mention in the festival recap newsletter',
-        '2 weekend passes',
+        '10 weekend passes',
         'Sponsorship invoice for your books',
       ],
       cta: 'Become a Baron', mail: 'Baron plan: FMM sponsorship',
