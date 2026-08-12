@@ -361,7 +361,7 @@ const EN = {
         'Address at the opening ceremony and the banquet',
         'Video capsule or photo series of your presence, delivered for your own networks',
         'Right to use the festival name and image in your advertising for 12 months',
-        '10 weekend passes and 4 banquet seats',
+        '50 weekend passes and 4 banquet seats',
         'First right of renewal for the next edition',
       ],
       cta: 'Take the title of Duke', mail: 'Duke of the Festival plan: FMM sponsorship',
