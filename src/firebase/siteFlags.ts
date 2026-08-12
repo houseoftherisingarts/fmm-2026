@@ -74,7 +74,7 @@ export const PILLAR_PUBLISH_FLAGS: { key: PillarKey; flag: keyof SiteFlags; labe
   { key: 'histoire',    flag: 'pubHistoire',    label: 'Histoire & Apprendre' },
   { key: 'mariages',    flag: 'pubMariages',    label: 'Mariages & Groupes' },
   { key: 'hebergement', flag: 'pubHebergement', label: 'Camping & Hébergement' },
-  { key: 'partenaires', flag: 'pubPartenaires', label: 'Nos Partenaires' },
+  { key: 'partenaires', flag: 'pubPartenaires', label: 'Commanditaires & Partenaires' },
   { key: 'benevole',    flag: 'pubBenevole',    label: 'Devenir Bénévole' },
   { key: 'petite-monnaie', flag: 'pubPetiteMonnaie', label: 'Petite Monnaie' },
 ];
