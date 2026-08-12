@@ -1232,10 +1232,10 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     ce que les runes du second (BIRSIRYRS) confirment. */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 items-start mt-8">
                   {[
-                    { src: '/clans/bouclier-1.webp', nom: 'Hullsborg' },
-                    { src: '/clans/bouclier-4.webp', nom: 'Managarm' },
-                    { src: '/clans/bouclier-2.webp', nom: 'Berserkirs' },
-                    { src: '/clans/bouclier-3.webp', nom: 'Berserkirs' },
+                    { src: '/clans/bouclier-1-plein.webp', nom: 'Hullsborg' },
+                    { src: '/clans/bouclier-4-plein.webp', nom: 'Managarm' },
+                    { src: '/clans/bouclier-2-plein.webp', nom: 'Berserkirs' },
+                    { src: '/clans/bouclier-3-plein.webp', nom: 'Berserkirs' },
                   ].map(({ src, nom }, i) => (
                     <div
                       key={src}
