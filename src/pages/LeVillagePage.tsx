@@ -37,11 +37,11 @@ const LeVillagePage: React.FC = () => {
   );
 };
 
-// ─── MenuComingSoon · teaser du Village Nourriture ───────────────────
+// ─── MenuComingSoon · teaser du Village Nourriture (retiré 2026-08-12) ─
 // Même grammaire Witcher que les sections du marché : rail indexé,
-// panneau hex, photo pleine carte, une seule phrase. Pas de menu, pas
-// de promesse détaillée : le chaudron parle.
-const MenuComingSoon: React.FC<{ fr: boolean }> = ({ fr }) => (
+// panneau hex, photo pleine carte, une seule phrase. Gardé en réserve
+// au cas où le menu devrait redisparaître; exporté pour calmer TS6133.
+export const MenuComingSoon: React.FC<{ fr: boolean }> = ({ fr }) => (
   <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
     <SectionFog />
     <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-24 md:pt-32 pb-24 md:pb-32">
