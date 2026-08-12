@@ -208,9 +208,15 @@ const PartenairesPage: React.FC = () => {
             </div>
 
             {SHORT.map((s) => (
-              <StaggerItem key={s.name} as="article" className="glass-light rounded-card p-5 md:p-6 text-center transition-transform duration-300 hover:-translate-y-1">
-                <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5">{s.name}</h3>
-                <p className="font-editorial italic text-sm text-ivory-soft">{s.tag[lang]}</p>
+              <StaggerItem key={s.name} as="article" className="glass-light rounded-card overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
+                <div className="relative h-24 md:h-28 overflow-hidden">
+                  <img src={s.image} alt="" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-midnight-deep/80 to-transparent" />
+                </div>
+                <div className="p-4 md:p-5">
+                  <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5">{s.name}</h3>
+                  <p className="font-editorial italic text-sm text-ivory-soft">{s.tag[lang]}</p>
+                </div>
               </StaggerItem>
             ))}
           </Stagger>
