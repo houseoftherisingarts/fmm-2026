@@ -22,6 +22,11 @@ export interface SiteFlags {
   // is announced for the NEXT edition, so publishing the partners page
   // for the current one must not reveal them ahead of time.
   showCommanditaire:       boolean;
+  // Révèle la page /commanditaires (les trois plans de commandite
+  // Baron / Comte / Duc du Festival). Drapeau séparé de `pubPartenaires`
+  // et de `showCommanditaire` : publier la page des partenaires actuels
+  // n'expose pas la grille de vente, et vice versa.
+  showPlansCommandite:     boolean;
   // Révèle la frise animée de l'histoire du festival (section Histoire &
   // Apprendre). En préparation, éteinte par défaut le temps qu'Alex la
   // valide; se comporte comme les autres drapeaux `show*` (toujours visible
