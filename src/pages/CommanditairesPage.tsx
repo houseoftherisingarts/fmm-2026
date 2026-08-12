@@ -115,22 +115,16 @@ const RequestModal: React.FC<{
   );
 };
 
-const CommanditairesPage: React.FC = () => {
-  useCaravanPage();
+// ── Bloc réutilisable ────────────────────────────────────────────
+// Toute l'offre de commandite (récit, 3 plans, Compagnons, fiscal,
+// Magiciens) SANS en-tête de page : la page fusionnée /partenaires le
+// monte en premier chapitre, au-dessus de la section des partenaires.
+export const SponsorOffer: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const [openPlan, setOpenPlan] = useState<SponsorPlan | null>(null);
   return (
     <>
-      <SEO title={t.title} description={t.intro} />
-      <ScrollProgress />
-      <PageHeader
-        eyebrow={t.eyebrow}
-        titleA={t.title}
-        intro={t.intro}
-        orbImage="/tournage/commanditaires-hero.jpg"
-        orbImagePosition="center"
-      />
 
       {/* Où va l'argent : la promesse concrète */}
       <section className="relative py-14 md:py-20 overflow-hidden">
