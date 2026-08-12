@@ -255,6 +255,22 @@ service cloud.firestore {
     // Collection name matches the JeunessePage form write (was `jeunesse`).
     match /jeunesseAteliers/{docId} { allow create: if true; allow read, update, delete: if isAdmin(); }
     match /contacts/{docId}    { allow create: if true; allow read, update, delete: if isAdmin(); }
+    // Demandes de commandite (formulaire public /commanditaires, plans
+    // Baron / Comte / Duc). Création publique verrouillée sur la forme
+    // exacte du formulaire pour bloquer les docs-spam arbitraires.
+    match /commanditaires/{docId} {
+      allow create: if request.resource.data.keys().hasOnly(
+          ['plan', 'company', 'contactName', 'email', 'phone', 'message', 'lang', 'year', 'status', 'createdAt'])
+        && request.resource.data.plan in ['baron', 'comte', 'duc']
+        && request.resource.data.company is string && request.resource.data.company.size() > 0 && request.resource.data.company.size() < 200
+        && request.resource.data.contactName is string && request.resource.data.contactName.size() < 200
+        && request.resource.data.email is string && request.resource.data.email.matches('.+@.+\\..+') && request.resource.data.email.size() < 200
+        && request.resource.data.phone is string && request.resource.data.phone.size() < 60
+        && request.resource.data.message is string && request.resource.data.message.size() < 4000
+        && request.resource.data.lang in ['FR', 'EN']
+        && request.resource.data.status == 'new';
+      allow read, update, delete: if isAdmin();
+    }
 
     // ── Admin CRM internals ──────────────────────────────────────
     // RACI matrix (MatriceRolesSection + PersonProfilePage, admin only).
