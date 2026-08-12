@@ -319,8 +319,8 @@ const EN = {
   menuEyebrow: 'On the menu',
   menuTitle: 'Five torchlit services',
   tentsEyebrow: 'The food village',
-  tentsTitle: 'Five tents, five masters',
-  tentsLead: 'Each tent has its own master of the fires. From the innkeeper’s broth to the hall of sweets: here is what they serve.',
+  tentsTitle: 'Six tents, six masters',
+  tentsLead: 'Each tent has its own master of the fires. From the innkeeper’s broth to the elixir tavern: here is the festival menu.',
 };
 
 export default NourriturePage;
