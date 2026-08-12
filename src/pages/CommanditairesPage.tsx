@@ -388,6 +388,18 @@ const EN = {
   ctaTitle: 'Your banner at the festival',
   ctaBody: 'Ranks are limited: a single Duke, one Count per business sector. Write to us and we will prepare an agreement worthy of your house.',
   ctaCta: 'Write to us', ctaMail: 'Become a sponsor: FMM',
+  form: {
+    eyebrow: 'Sponsorship request',
+    sub: 'Leave us your details and we will call you back to prepare the agreement.',
+    company: 'Your company name', contactName: 'Your name',
+    email: 'Email', phone: 'Phone (optional)',
+    message: 'A word about your house, your wishes, your questions (optional)',
+    submit: 'Send the request', sending: 'Sending',
+    sentTitle: 'Request received',
+    sentBody: 'Your request has reached the court. We will write to you shortly.',
+    error: 'Sending failed. Try again, or write to admin@festivalmedievaldemontpellier.org.',
+    close: 'Close',
+  },
 };
 
 export default CommanditairesPage;
