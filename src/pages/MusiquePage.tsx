@@ -84,15 +84,22 @@ const BANDS_ARCHIVES: Band[] = [
 ];
 
 // ── L'affiche 2026, par journée ─────────────────────────────────────
-// Liste d'Éric Pichette, confirmée et orthographes vérifiées le
-// 2026-08-04 : Fuego Bohemio (spectacle de la Troupe Caravane), Svarica
-// (pas Svarika). Encore en construction : d'autres noms s'ajouteront.
+// Liste d'Éric Pichette. Orthographes et portraits vérifiés une seconde
+// fois le 2026-08-12 à partir des sources officielles de chaque groupe
+// (chaîne YouTube @BicOasis, nigoune.com, Bandcamp de Svarica,
+// troupecaravane.com) : « Troupe Caravane » porte le spectacle Fuego
+// Bohemio, « BicOasis » s'écrit en un mot, « Sainte-Nigoune » au long,
+// « Svarica » et non Svarika, « Las Noches Bohemias » au féminin.
+// Encore en construction : d'autres noms s'ajouteront.
 const AFFICHE_2026_BANDS: Band[] = [
   {
-    name:  'Fuego Bohemio',
-    jour:  'vendredi',
-    bioFR: 'Spectacle festif de musique et de danse gitane porté par la troupe CARAVANE : rumba flamenca, chants romani et danses improvisées.',
-    bioEN: 'A festive show of music and gypsy dance carried by the CARAVANE troupe: rumba flamenca, Romani songs and improvised dances.',
+    name:    'Troupe Caravane',
+    jour:    'vendredi',
+    image:   '/wix/musique/troupe-caravane.webp',
+    imageAlt:'Sarah Barbieux et Sylvain Chiasson en spectacle · Fuego Bohemio',
+    website: 'http://www.troupecaravane.com',
+    bioFR: 'Fondée à Montréal en 1980 par Sarah Barbieux, d’origine rom, la troupe CARAVANE porte le spectacle festif et participatif Fuego Bohemio : rumba flamenca, musique tzigane, chants et danses romanichelles. Sarah Barbieux (voix, danse, tambour) et Sylvain Chiasson (guitare, voix, flûte de pan, percussions).',
+    bioEN: 'Founded in Montreal in 1980 by Sarah Barbieux, of Roma descent, the CARAVANE troupe brings its festive, participatory show Fuego Bohemio: rumba flamenca, Romani music, songs and gypsy dance. Sarah Barbieux (voice, dance, drum) and Sylvain Chiasson (guitar, voice, pan flute, percussion).',
   },
   {
     name:    'Skarazula',
@@ -103,16 +110,22 @@ const AFFICHE_2026_BANDS: Band[] = [
     bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
   },
   {
-    name:  'St-Nigoune',
-    jour:  'vendredi',
-    bioFR: 'Portrait et description à venir.',
-    bioEN: 'Portrait and description to come.',
+    name:    'L’Ensemble Klezmer de Sainte-Nigoune',
+    jour:    'vendredi',
+    image:   '/wix/musique/sainte-nigoune.webp',
+    imageAlt:'L’Ensemble Klezmer de Sainte-Nigoune, illustration de la formation',
+    website: 'https://nigoune.com',
+    bioFR: 'Depuis 2016, l’Ensemble Klezmer de Sainte-Nigoune fait la navette entre son village et la ville de Québec. Un répertoire fait pour la danse : hora, freylekhs, sher, khosidl, kolomeyka et bulgar, portés par violons, clarinette, accordéon, guitare et tambour.',
+    bioEN: 'Since 2016, the Ensemble Klezmer de Sainte-Nigoune has travelled back and forth between its village and Quebec City. A repertoire built for dancing: hora, freylekhs, sher, khosidl, kolomeyka and bulgar, carried by fiddles, clarinet, accordion, guitar and drum.',
   },
   {
-    name:  'Bic Oasis',
-    jour:  'samedi',
-    bioFR: 'Portrait et description à venir.',
-    bioEN: 'Portrait and description to come.',
+    name:    'BicOasis',
+    jour:    'samedi',
+    image:   '/wix/musique/bicoasis.webp',
+    imageAlt:'BicOasis · Mathieu Lavoie au bouzouki et William Provost aux percussions',
+    website: 'https://www.youtube.com/@BicOasis',
+    bioFR: 'Rencontre de deux multi-instrumentistes : Mathieu Lavoie (bouzouki, morache, saz, vielle à roue) et William Provost (tambours, darbouka, tambour à lamelles, flûte à bourdon, cornemuse). Les traditions du monde entier passent au looper, aux synthés et aux pédales d’effets : une musique hybride, ancienne et moderne à la fois, organique et hypnotique.',
+    bioEN: 'Two multi-instrumentalists meeting: Mathieu Lavoie (bouzouki, morache, saz, hurdy-gurdy) and William Provost (drums, darbuka, tongue drum, drone flute, bagpipe). Folk traditions from around the world run through loopers, synths and effect pedals: hybrid music, ancient and modern at once, organic and hypnotic.',
   },
   {
     name:  'L’Harfang',
