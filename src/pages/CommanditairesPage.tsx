@@ -244,6 +244,12 @@ const CommanditairesPage: React.FC = () => {
           </a>
         </Reveal>
       </section>
+
+      <AnimatePresence>
+        {openPlan && (
+          <RequestModal plan={openPlan} t={t} lang={lang} onClose={() => setOpenPlan(null)} />
+        )}
+      </AnimatePresence>
     </>
   );
 };
