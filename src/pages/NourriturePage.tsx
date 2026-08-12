@@ -256,7 +256,10 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                 <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                   {tent.dishes.map((d) => (
                     <li key={d.name}>
-                      <p className="font-display title-medieval text-sm text-brass mb-1">{d.name}</p>
+                      <p className="font-display title-medieval text-sm text-brass mb-1">
+                        {d.name}
+                        {d.price && <span className="text-ivory-soft font-editorial text-xs tracking-wide ml-2 whitespace-nowrap">{d.price}</span>}
+                      </p>
                       <p className="font-editorial text-sm text-ivory-soft leading-snug">{d.note}</p>
                     </li>
                   ))}
