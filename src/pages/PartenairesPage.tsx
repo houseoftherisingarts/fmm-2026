@@ -230,8 +230,10 @@ const PartenairesPage: React.FC = () => {
 };
 
 const FR = {
-  home: 'Accueil', eyebrow: 'Avec nous', title: 'Nos Partenaires',
-  intro: 'Sans les dons en temps et en ressources, sans le soutien financier, structurel et relationnel qu’apportent nos partenaires, le FMM ne serait qu’un rêve lointain dans la tête d’un fermier du nord dont la mémoire cellulaire se rappelle des combats d’antan.',
+  home: 'Accueil', eyebrow: 'La cour du festival', title: 'Commanditaires',
+  intro: 'Votre entreprise peut prendre rang à la cour du Festival Médiéval de Montpellier. Trois plans de commandite, trois rangs de noblesse : plus votre maison s’engage, plus haut flotte sa bannière.',
+  chapterPartenairesEyebrow: 'Avec nous', chapterPartenairesTitle: 'Nos Partenaires',
+  chapterPartenairesIntro: 'Sans les dons en temps et en ressources, sans le soutien financier, structurel et relationnel qu’apportent nos partenaires, le FMM ne serait qu’un rêve lointain dans la tête d’un fermier du nord dont la mémoire cellulaire se rappelle des combats d’antan.',
   pressEyebrow: 'Ils en parlent',
   partner: 'Partenaire',
   partnersEyebrow: 'Plus de partenaires', partnersTitle: 'Soutiens et collaborations',
