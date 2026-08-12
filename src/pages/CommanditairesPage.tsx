@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send } from 'lucide-react';
+import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
