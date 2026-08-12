@@ -47,6 +47,7 @@ const HoraireSection      = lazy(() => import('./admin/sections/HoraireSection')
 const BarSection          = lazy(() => import('./admin/sections/BarSection'));
 const DisposSection       = lazy(() => import('./admin/sections/DisposSection'));
 const MariagesSection     = lazy(() => import('./admin/sections/MariagesSection'));
+const CommanditairesSection = lazy(() => import('./admin/sections/CommanditairesSection'));
 const FinancesSection     = lazy(() => import('./admin/sections/FinancesSection'));
 const CarnetContactsSection = lazy(() => import('./admin/sections/CarnetContactsSection'));
 const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection'));
