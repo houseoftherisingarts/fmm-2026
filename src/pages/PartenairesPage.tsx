@@ -8,6 +8,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
+import { SponsorOffer } from './CommanditairesPage';
 
 // Featured partners: long-form cards, cloned from the live Wix copy.
 const FEATURED = [
