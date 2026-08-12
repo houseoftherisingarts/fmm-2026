@@ -190,6 +190,7 @@ const AdminPage: React.FC = () => {
       case 'bar':        return <BarSection         devBypass={DEV_BYPASS} />;
       case 'dispos':     return <DisposSection />;
       case 'mariages':   return <MariagesSection    devBypass={DEV_BYPASS} />;
+      case 'commanditaires': return <CommanditairesSection devBypass={DEV_BYPASS} />;
       case 'finances':   return <FinancesSection />;
       case 'carnet':     return <CarnetContactsSection />;
       case 'comptes':    return <ComptesSection    devBypass={DEV_BYPASS} />;
