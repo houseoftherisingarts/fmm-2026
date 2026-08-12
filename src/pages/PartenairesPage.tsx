@@ -65,13 +65,30 @@ const PartenairesPage: React.FC = () => {
     <>
       <SEO title={t.title} description={t.intro} />
       <ScrollProgress />
+      {/* Page fusionnée (Alex, 2026-08-12) : l'offre de commandite
+          (plans Baron / Comte / Duc + Magiciens) ouvre la page, la
+          section des partenaires actuels suit en deuxième chapitre. */}
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/partenaires/2a2a4608.jpg"
+        orbImage="/tournage/commanditaires-hero.jpg"
         orbImagePosition="center"
       />
+
+      <SponsorOffer />
+
+      {/* ── Chapitre 2 : les partenaires actuels ── */}
+      <section className="pt-16 md:pt-24">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro eyebrow={t.chapterPartenairesEyebrow} title={t.chapterPartenairesTitle} />
+          <Reveal>
+            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed max-w-3xl mt-6">
+              {t.chapterPartenairesIntro}
+            </p>
+          </Reveal>
+        </div>
+      </section>
 
       {/* Press / sponsor logo wall */}
       <section className="py-12 md:py-16">
