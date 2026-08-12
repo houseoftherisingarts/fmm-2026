@@ -41,6 +41,7 @@ const FEATURED = [
   },
   {
     name: 'Ferme Coopérative Agricola',
+    image: '/wix/partenaires/9487bac5.jpg',
     bioFR: 'Agricola est une coopérative de travailleur·euse·s : elle appartient aux personnes qui cultivent votre nourriture. Nous croyons que la nourriture devrait construire la communauté, être écologiquement durable, et être un plaisir à grandir et à manger.',
     bioEN: 'Agricola is a worker cooperative: owned by the people who grow your food. We believe food should build community, be ecologically sustainable, and be a joy to grow and eat.',
     href: '#TODO_agricola',
