@@ -349,6 +349,13 @@ const FR = {
   ctaTitle: 'Votre bannière au festival',
   ctaBody: 'Le nombre de rangs est limité : un seul Duc, un Comte par secteur d’activité. Écrivez-nous et nous préparons une entente à la mesure de votre maison.',
   ctaCta: 'Nous écrire', ctaMail: 'Devenir commanditaire : FMM',
+  magiciens: {
+    eyebrow: 'La connexion astrale',
+    title: 'Les Magiciens du festival',
+    body1: 'Comme tout village dans les montagnes, Montpellier est coupé des ondes du monde extérieur. Pour que la billetterie, les terminaux et la Petite Monnaie respirent pendant le festival, nos magiciens doivent établir la connexion astrale : une antenne massive tournée vers le ciel, qui capte le signal des étoiles et l’apporte jusqu’au village.',
+    body2: 'Chaque don nourrit le sortilège. En portant la lumière, vous permettez non seulement au Festival Médiéval de Montpellier, mais à d’autres festivals de la Petite-Nation, de voir le jour et de survivre en territoire montagneux. Votre nom rejoint le cercle des Magiciens du festival.',
+    cta: 'Porter la lumière',
+  },
   form: {
     eyebrow: 'Demande de commandite',
     sub: 'Laissez-nous vos coordonnées et nous vous rappelons pour préparer l’entente.',
