@@ -57,12 +57,12 @@ const FEATURED = [
   },
 ];
 
-// Smaller partners + sponsors (text-only cards)
+// Smaller partners + sponsors, chacun avec sa propre photo.
 const SHORT = [
-  { name: 'Municipalité de Duhamel',     tag: { FR: 'Municipalité naturelle',                       EN: 'Natural municipality' } },
-  { name: 'Académie Scrimicie',          tag: { FR: 'École d’escrime AMHE',                          EN: 'AMHE fencing school' } },
-  { name: 'Le Salon des Inconnus',       tag: { FR: 'Auberge d’artistes · sites web',               EN: 'Artists’ inn · web design' } },
-  { name: 'SABCO',                       tag: { FR: 'Nettoyage au jet de sable',                     EN: 'Sandblasting services' } },
+  { name: 'Municipalité de Duhamel',     image: '/wix/partenaires/55e8ec7c.jpg', tag: { FR: 'Municipalité naturelle',                       EN: 'Natural municipality' } },
+  { name: 'Académie Scrimicie',          image: '/wix/partenaires/2a2a4608.jpg', tag: { FR: 'École d’escrime AMHE',                          EN: 'AMHE fencing school' } },
+  { name: 'Le Salon des Inconnus',       image: '/wix/partenaires/e06a7eba.jpg', tag: { FR: 'Auberge d’artistes · sites web',               EN: 'Artists’ inn · web design' } },
+  { name: 'SABCO',                       image: '/wix/partenaires/cf4050ca.jpg', tag: { FR: 'Nettoyage au jet de sable',                     EN: 'Sandblasting services' } },
 ];
 
 const PartenairesPage: React.FC = () => {
