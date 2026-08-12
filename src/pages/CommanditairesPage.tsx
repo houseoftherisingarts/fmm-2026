@@ -184,8 +184,9 @@ const CommanditairesPage: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  <a
-                    href={`mailto:admin@festivalmedievaldemontpellier.org?subject=${encodeURIComponent(p.mail)}`}
+                  <button
+                    type="button"
+                    onClick={() => setOpenPlan(plan.key)}
                     className={
                       plan.featured
                         ? 'mt-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card'
@@ -193,7 +194,7 @@ const CommanditairesPage: React.FC = () => {
                     }
                   >
                     {p.cta} <ArrowUpRight size={14} />
-                  </a>
+                  </button>
                 </StaggerItem>
               );
             })}
