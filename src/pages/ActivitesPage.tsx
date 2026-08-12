@@ -1245,12 +1245,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       }}
                     >
                       {/* Médaillon rond. Les fichiers /clans/bouclier-N.webp
-                          sont les ORIGINAUX Wix complets (retrouvés le
-                          2026-08-04 via leur hachage média : les copies du
-                          dépôt étaient des recadrages de galerie amputés du
-                          haut et du bas). Chaque disque est déjà rond et
-                          plein cadre : il remplit le cercle bord à bord,
-                          sans padding et sans crop. */}
+                          sont recomposés (2026-08-12) depuis les originaux
+                          Wix entiers (hachage complet, sans /v1/fill) : les
+                          512×512 précédents restaient rognés haut et bas.
+                          Chaque blason est centré sur un canvas carré
+                          transparent 1000×1000, son pixel opaque le plus
+                          éloigné posé à 96 % du rayon : cercle complet,
+                          les quatre au même gabarit, aucun crop possible. */}
                       <div className="flex flex-col items-center gap-4">
                         <div
                           className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
