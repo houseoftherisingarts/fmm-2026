@@ -72,3 +72,18 @@ public/hero/knight/
 
 # Impeccable audit artifacts (local only)
 .impeccable/
+
+dev-debug.log
+# Dependency directories
+node_modules/
+# Environment variables
+# Editor directories and files
+.vscode
+# OS specific
+
+# Task files
+# tasks.json
+# tasks/ 
+
+# Graphe de connaissance local (graphify), reconstruit à la demande
+graphify-out/

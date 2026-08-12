@@ -123,10 +123,16 @@ const PartenairesPage: React.FC = () => {
               <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-8 md:gap-12 items-center">
                 <Reveal from={reverse ? 'right' : 'left'} className={`lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
                   <div className="relative aspect-square md:aspect-[4/3] rounded-lg-card overflow-hidden border">
-                    <RevealImage
+                    {/* Image simple, pas de RevealImage : sur cette page
+                        fusionnée (très longue), le rideau clip-path restait
+                        fermé sur certaines cartes et les partenaires
+                        semblaient sans photo (constat d'Alex 2026-08-12). */}
+                    <img
                       src={p.image}
-                      className="absolute inset-0 w-full h-full"
-                      from={reverse ? 'right' : 'left'}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover"
                       onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-midnight-deep via-midnight-deep/70 to-midnight-deep/30" />
