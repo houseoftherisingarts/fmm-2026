@@ -430,6 +430,13 @@ const EN = {
   ctaTitle: 'Your banner at the festival',
   ctaBody: 'Ranks are limited: a single Duke, one Count per business sector. Write to us and we will prepare an agreement worthy of your house.',
   ctaCta: 'Write to us', ctaMail: 'Become a sponsor: FMM',
+  magiciens: {
+    eyebrow: 'The astral connection',
+    title: 'Magicians of the festival',
+    body1: 'Like every village in the mountains, Montpellier is cut off from the airwaves of the outside world. For ticketing, card terminals and the Petite Monnaie to breathe during the festival, our magicians must establish the astral connection: one massive antenna turned to the sky, catching the signal of the stars and carrying it down to the village.',
+    body2: 'Every gift feeds the spell. By carrying the light, you allow not only the Festival Médiéval de Montpellier but other festivals of the Petite-Nation to come to life and survive in mountainous country. Your name joins the circle of the Magicians of the festival.',
+    cta: 'Carry the light',
+  },
   form: {
     eyebrow: 'Sponsorship request',
     sub: 'Leave us your details and we will call you back to prepare the agreement.',
