@@ -128,15 +128,30 @@ const PartenairesPage: React.FC = () => {
                     {/* Image simple, pas de RevealImage : sur cette page
                         fusionnée (très longue), le rideau clip-path restait
                         fermé sur certaines cartes et les partenaires
-                        semblaient sans photo (constat d'Alex 2026-08-12). */}
-                    <img
-                      src={p.image}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
-                    />
+                        semblaient sans photo (constat d'Alex 2026-08-12).
+                        Les logos à fond transparent (Montpellier, MRC) se
+                        posent sur un panneau ivoire en object-contain,
+                        sinon ils disparaissent dans la nuit du site. */}
+                    {'logo' in p && p.logo ? (
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#f3e9d4] to-[#e2d3b4] flex items-center justify-center p-8 md:p-12">
+                        <img
+                          src={p.image}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          className="fmm-no-grade max-w-full max-h-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={p.image}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-midnight-deep via-midnight-deep/70 to-midnight-deep/30" />
                     <div className="absolute inset-0 flex items-end p-7 md:p-9">
                       <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight">
