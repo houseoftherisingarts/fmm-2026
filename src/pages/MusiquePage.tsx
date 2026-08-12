@@ -142,18 +142,27 @@ const AFFICHE_2026_BANDS: Band[] = [
     bioEN: 'Explorers of music’s deepest roots in a different yet adjacent historical context.',
   },
   {
-    name:  'Svarica',
-    jour:  'samedi',
-    bioFR: 'Né autour du feu du campement des Cordelian à Bicolline, Svarica marie rythmes tziganes, klezmer et ska festif : guitares, hautbois, accordéon, trombone et batterie, avec un seul objectif, faire danser.',
-    bioEN: 'Born around the fire of the Cordelian camp at Bicolline, Svarica weds Romani rhythms, klezmer and festive ska: guitars, oboe, accordion, trombone and drums, with one goal, to make you dance.',
+    name:    'Svarica',
+    jour:    'samedi',
+    image:   '/wix/musique/svarica.webp',
+    imageAlt:'Svarica · visuel officiel du groupe',
+    website: 'https://svaricacordelian.bandcamp.com',
+    bioFR: 'Né autour du feu du campement des Cordelian à Bicolline, Svarica marie rythmes tziganes, klezmer et ska festif : guitares, basse, hautbois, accordéon, trombone, batterie et percussions, avec un seul objectif, faire danser.',
+    bioEN: 'Born around the fire of the Cordelian camp at Bicolline, Svarica weds Romani rhythms, klezmer and festive ska: guitars, bass, oboe, accordion, trombone, drums and percussion, with one goal, to make you dance.',
   },
   {
-    name:  'Las Noches Bohemios',
+    // Groupe résident des soirées gitanes du Café Gitana, à Montréal.
+    // 🚧 Portrait officiel pas encore fourni : Alex doit le demander au
+    // groupe (ou à Éric Pichette) avant la mise en ligne finale.
+    name:  'Las Noches Bohemias',
     jour:  'dimanche',
-    bioFR: 'Portrait et description à venir.',
-    bioEN: 'Portrait and description to come.',
+    bioFR: 'Musique gitane et bohème de Montréal. Portrait à venir.',
+    bioEN: 'Gypsy and bohemian music from Montreal. Portrait to come.',
   },
   {
+    // 🚧 Même chose : plusieurs formations portent ce nom (Alhambra Band,
+    // Alhambra Quartet). Nom exact et portrait à confirmer avec Éric
+    // avant de poser une photo.
     name:  'Alhambra',
     jour:  'dimanche',
     bioFR: 'Portrait et description à venir.',
