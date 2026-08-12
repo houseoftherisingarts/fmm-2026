@@ -27,6 +27,7 @@ export type AdminSectionId =
   | 'bar'
   | 'dispos'
   | 'mariages'
+  | 'commanditaires'
   | 'finances'
   | 'carnet'
   | 'comptes'
