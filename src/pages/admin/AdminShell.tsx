@@ -62,6 +62,7 @@ const NAV: NavItem[] = [
   { id: 'bar',        label: 'Bar',             icon: Beer },
   { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2 },
   { id: 'mariages',   label: 'Mariages',        icon: Heart },
+  { id: 'commanditaires', label: 'Commanditaires', icon: Landmark },
   { id: 'finances',   label: 'Finances',        icon: Wallet },
   { id: 'carnet',     label: 'Carnet de contacts', icon: BookUser },
   { id: 'comptes',    label: 'Comptes',         icon: Users },
