@@ -270,7 +270,7 @@ const FR = {
         'Logo sur la banderole collective des partenaires à l’entrée du site',
         'Publication de remerciement sur nos réseaux sociaux',
         'Mention dans l’infolettre bilan du festival',
-        '2 laissez-passer week-end',
+        '10 laissez-passer week-end',
         'Facture de commandite pour vos livres',
       ],
       cta: 'Devenir Baron', mail: 'Plan Baron : commandite FMM',
