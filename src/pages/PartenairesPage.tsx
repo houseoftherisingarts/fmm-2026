@@ -35,6 +35,7 @@ const FEATURED = [
   {
     name: 'MRC Papineau',
     image: '/wix/partenaires/7a32a3a6.png',
+    logo: true,
     bioFR: 'La MRC de Papineau soutient le FMM et bien d’autres initiatives locales. L’an dernier, ils ont financé le festival à hauteur de 15 000 $, ce qui permet de garder nos prix bas. Visitez leur site pour voir l’étendue de leur portée.',
     bioEN: 'MRC Papineau supports FMM and many other local initiatives. Last year they funded the festival to the tune of $15,000, helping us keep prices low. Visit their site to see the breadth of their reach.',
     href: '#TODO_mrc-papineau',
