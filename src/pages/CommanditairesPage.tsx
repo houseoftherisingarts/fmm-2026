@@ -347,7 +347,7 @@ const EN = {
         'Daily mentions by the stage hosts',
         'Dedicated post on our networks, with our professional photos',
         'Booth or brand presence on the festival grounds',
-        '4 weekend passes and 2 seats at the Equinox banquet',
+        '30 weekend passes and 2 seats at the Equinox banquet',
         'A visibility report with numbers after the festival',
       ],
       cta: 'Become a Count', mail: 'Count plan: FMM sponsorship',
