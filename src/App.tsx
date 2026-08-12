@@ -337,6 +337,11 @@ const App: React.FC = () => (
                     drapeau : publier /partenaires n'ouvre pas celle-ci. */}
                 <Route path="/partenaires-2027" element={<FlagGate flag="showCommanditaire"><Partenaires2027Page /></FlagGate>} />
                 <Route path="/en/partners-2027" element={<FlagGate flag="showCommanditaire"><Partenaires2027Page /></FlagGate>} />
+                {/* Grille des plans de commandite (Baron / Comte / Duc),
+                    derrière son propre drapeau : la vente ne s'ouvre que
+                    quand Alex la publie. */}
+                <Route path="/commanditaires" element={<FlagGate flag="showPlansCommandite"><CommanditairesPage /></FlagGate>} />
+                <Route path="/en/sponsors"    element={<FlagGate flag="showPlansCommandite"><CommanditairesPage /></FlagGate>} />
                 <Route path="/admin"  element={<AdminPage />} />
                 <Route path="/admin/personne/:slug" element={<PersonProfilePage />} />
                 <Route path="/admin/benevole/:uid"  element={<BenevoleProfilePage />} />
