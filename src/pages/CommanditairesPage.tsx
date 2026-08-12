@@ -41,7 +41,7 @@ const CommanditairesPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/partenaires/89f9a2db.jpg"
+        orbImage="/wix/home/scene-cinematic.jpg"
         orbImagePosition="center"
       />
 
