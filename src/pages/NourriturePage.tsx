@@ -294,8 +294,8 @@ const FR = {
   menuEyebrow: 'Au menu',
   menuTitle: 'Cinq services à la torche',
   tentsEyebrow: 'Le village gustatif',
-  tentsTitle: 'Cinq tentes, cinq seigneurs',
-  tentsLead: 'Chaque tente a son propre seigneur des fourneaux. Du bouillon de l’aubergiste à la halle des douceurs : voici ce qu’on y sert.',
+  tentsTitle: 'Six tentes, six seigneurs',
+  tentsLead: 'Chaque tente a son propre seigneur des fourneaux. Du bouillon de l’aubergiste à la taverne des élixirs : voici le menu du festival.',
 };
 
 const EN = {
