@@ -1,7 +1,9 @@
-import React from 'react';
-import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { addSponsorRequest, type SponsorPlan } from '../firebase/commanditaires';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress } from '../components/scroll';
