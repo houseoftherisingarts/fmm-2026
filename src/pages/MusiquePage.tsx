@@ -152,21 +152,24 @@ const AFFICHE_2026_BANDS: Band[] = [
   },
   {
     // Groupe résident des soirées gitanes du Café Gitana, à Montréal.
-    // 🚧 Portrait officiel pas encore fourni : Alex doit le demander au
-    // groupe (ou à Éric Pichette) avant la mise en ligne finale.
-    name:  'Las Noches Bohemias',
-    jour:  'dimanche',
-    bioFR: 'Musique gitane et bohème de Montréal. Portrait à venir.',
-    bioEN: 'Gypsy and bohemian music from Montreal. Portrait to come.',
+    // Écusson maison en attendant la photo officielle (à demander à Éric
+    // Pichette ou au groupe) : on ne pose jamais la photo d'un autre groupe.
+    name:    'Las Noches Bohemias',
+    jour:    'dimanche',
+    image:   '/wix/musique/las-noches-bohemias.webp',
+    imageAlt:'Las Noches Bohemias · écusson du festival en attendant le portrait officiel',
+    bioFR: 'Musique gitane et bohème venue de Montréal, où le groupe anime les soirées du Café Gitana. Guitares, voix et rythmes de feu pour le dimanche des caravanes, à l’image du thème de cette édition.',
+    bioEN: 'Gypsy and bohemian music from Montreal, where the band lights up the Café Gitana evenings. Guitars, voices and fiery rhythms for caravan Sunday, true to this edition’s theme.',
   },
   {
-    // 🚧 Même chose : plusieurs formations portent ce nom (Alhambra Band,
-    // Alhambra Quartet). Nom exact et portrait à confirmer avec Éric
-    // avant de poser une photo.
-    name:  'Alhambra',
-    jour:  'dimanche',
-    bioFR: 'Portrait et description à venir.',
-    bioEN: 'Portrait and description to come.',
+    // Plusieurs formations portent ce nom : identité exacte à confirmer
+    // avec Éric Pichette. Écusson maison et bio prudente d'ici là.
+    name:    'Alhambra',
+    jour:    'dimanche',
+    image:   '/wix/musique/alhambra.webp',
+    imageAlt:'Alhambra · écusson du festival en attendant le portrait officiel',
+    bioFR: 'Un nom qui promet l’Andalousie et les routes du Sud. Alhambra clôt le dimanche sous le signe des Caravanes et Saltimbanques. Portrait officiel à venir.',
+    bioEN: 'A name that promises Andalusia and the southern roads. Alhambra closes Sunday under the sign of Caravans and Mountebanks. Official portrait to come.',
   },
 ];
 
