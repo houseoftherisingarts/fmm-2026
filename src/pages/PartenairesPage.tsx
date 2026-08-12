@@ -49,6 +49,7 @@ const FEATURED = [
   },
   {
     name: 'Les Autobus du Village & Escalade Petite-Nation',
+    image: '/wix/partenaires/f033a4f4.jpg',
     bioFR: 'En transportant nos Vikings d’Europe et nos enfants, Les Autobus du Village nous permettent d’améliorer grandement notre programmation. Nous vous invitons à découvrir « Escalade Petite-Nation », un affilié, qui offre de magnifiques expériences locales.',
     bioEN: 'By transporting our Vikings from Europe and our children, Les Autobus du Village let us greatly improve our programming. We invite you to discover "Escalade Petite-Nation", an affiliate offering wonderful local experiences.',
     href: '#TODO_autobus',
