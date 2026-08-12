@@ -53,7 +53,7 @@ export const PILLARS: Pillar[] = [
   { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: 'Histoire & Apprendre',        EN: 'History & Learning' },      short: { FR: 'Histoire',     EN: 'History' } },
   { key: 'mariages',    slug: { FR: '/mariages',     EN: '/en/weddings' },   label: { FR: 'Mariages & Groupes',          EN: 'Weddings & Groups' },       short: { FR: 'Mariages & Groupes', EN: 'Weddings & Groups' } },
   { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping & Hébergement', EN: 'Camping & Lodging' } },
-  { key: 'partenaires', slug: { FR: '/partenaires',  EN: '/en/partners' },   label: { FR: 'Nos Partenaires',             EN: 'Our Partners' },            short: { FR: 'Partenaires',  EN: 'Partners' } },
+  { key: 'partenaires', slug: { FR: '/partenaires',  EN: '/en/partners' },   label: { FR: 'Commanditaires & Partenaires', EN: 'Sponsors & Partners' },    short: { FR: 'Commanditaires', EN: 'Sponsors' } },
   { key: 'benevole',    slug: { FR: '/benevole',     EN: '/en/volunteer' },  label: { FR: 'Devenir Bénévole',            EN: 'Become a Volunteer' },      short: { FR: 'Devenir bénévole', EN: 'Become a volunteer' } },
   // Slug identique FR/EN : « Petite Monnaie » est un nom de marque.
   { key: 'petite-monnaie', slug: { FR: '/petite-monnaie', EN: '/en/petite-monnaie' }, label: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' }, short: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' } },
