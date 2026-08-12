@@ -220,23 +220,42 @@ export const SponsorOffer: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA final */}
+      {/* Les Magiciens du festival : levée Zeffy pour la connexion
+          astrale (l'antenne internet du site). Le formulaire de don
+          Zeffy est embarqué tel quel, chargé paresseusement. */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-50" count={16} />
-        <Reveal className="relative z-10 max-w-2xl mx-auto px-4 md:px-8 text-center">
-          <Crown size={28} className="text-brass mx-auto mb-4" />
-          <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.ctaEyebrow}</p>
-          <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.ctaTitle}</h2>
-          <div className="divider-brass w-16 mx-auto mb-6" />
-          <p className="font-editorial text-base md:text-lg text-ivory-soft mb-8 leading-relaxed">{t.ctaBody}</p>
-          <a
-            href={`mailto:admin@festivalmedievaldemontpellier.org?subject=${encodeURIComponent(t.ctaMail)}`}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
-          >
-            {t.ctaCta} <ArrowUpRight size={14} />
-          </a>
-        </Reveal>
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+            <Reveal from="left">
+              <Sparkles size={28} className="text-brass mb-4" />
+              <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.magiciens.eyebrow}</p>
+              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.magiciens.title}</h2>
+              <div className="divider-brass w-16 mb-6" />
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-4">{t.magiciens.body1}</p>
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-8">{t.magiciens.body2}</p>
+              <a
+                href="https://www.zeffy.com/fr-CA/donation-form/apportez-le-reseau-a-montpellier"
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+              >
+                {t.magiciens.cta} <ArrowUpRight size={14} />
+              </a>
+            </Reveal>
+            <Reveal from="right" delay={0.1}>
+              <div className="glass-light border border-brass/30 rounded-card overflow-hidden">
+                <iframe
+                  title={t.magiciens.title}
+                  src="https://www.zeffy.com/embed/donation-form/apportez-le-reseau-a-montpellier"
+                  loading="lazy"
+                  className="w-full h-[560px] md:h-[620px] border-0"
+                  allow="payment"
+                />
+              </div>
+            </Reveal>
+          </div>
+        </div>
       </section>
 
       <AnimatePresence>
@@ -244,6 +263,28 @@ export const SponsorOffer: React.FC = () => {
           <RequestModal plan={openPlan} t={t} lang={lang} onClose={() => setOpenPlan(null)} />
         )}
       </AnimatePresence>
+    </>
+  );
+};
+
+// Page autonome conservée pour référence : la route /commanditaires
+// redirige maintenant vers la page fusionnée /partenaires (App.tsx).
+const CommanditairesPage: React.FC = () => {
+  useCaravanPage();
+  const { lang } = useUI();
+  const t = lang === 'FR' ? FR : EN;
+  return (
+    <>
+      <SEO title={t.title} description={t.intro} />
+      <ScrollProgress />
+      <PageHeader
+        eyebrow={t.eyebrow}
+        titleA={t.title}
+        intro={t.intro}
+        orbImage="/tournage/commanditaires-hero.jpg"
+        orbImagePosition="center"
+      />
+      <SponsorOffer />
     </>
   );
 };
