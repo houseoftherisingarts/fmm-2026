@@ -240,7 +240,7 @@ const PartenairesPage: React.FC = () => {
 
             {SHORT.map((s) => (
               <StaggerItem key={s.name} as="article" className="glass-light rounded-card overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
-                <div className="relative h-24 md:h-28 overflow-hidden">
+                <div className="relative aspect-[8/5] overflow-hidden">
                   <img src={s.image} alt="" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-midnight-deep/80 to-transparent" />
                 </div>
