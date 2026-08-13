@@ -135,31 +135,19 @@ const PartenairesPage: React.FC = () => {
                   <div className="relative aspect-[8/5] rounded-lg-card overflow-hidden border">
                     {/* Image simple, pas de RevealImage : sur cette page
                         fusionnée (très longue), le rideau clip-path restait
-                        fermé sur certaines cartes et les partenaires
-                        semblaient sans photo (constat d'Alex 2026-08-12).
-                        Les logos à fond transparent (Montpellier, MRC) se
-                        posent sur un panneau ivoire en object-contain,
-                        sinon ils disparaissent dans la nuit du site. */}
-                    {'logo' in p && p.logo ? (
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#f3e9d4] to-[#e2d3b4] flex items-center justify-center px-10 md:px-14 pt-8 md:pt-10 pb-20 md:pb-24">
-                        <img
-                          src={p.image}
-                          alt=""
-                          loading="lazy"
-                          decoding="async"
-                          className="fmm-no-grade min-w-0 min-h-0 w-full h-full object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <img
-                        src={p.image}
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
-                      />
-                    )}
+                        fermé et les partenaires semblaient sans photo
+                        (constat d'Alex 2026-08-12). Les logos vivent dans
+                        des panneaux parchemin composés en dur (fichiers
+                        panel-*.jpg, ratio 8:5 exact), donc aucun visuel
+                        n'est recadré. Panneaux clairs = fmm-no-grade. */}
+                    <img
+                      src={p.image}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className={`absolute inset-0 w-full h-full object-cover${p.image.includes('panel-') ? ' fmm-no-grade' : ''}`}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/home/scene-cinematic.jpg'; }}
+                    />
                     {/* Voile sombre pour asseoir le titre; allégé sur les
                         panneaux de logo pour ne pas les éteindre. */}
                     <div className={('logo' in p && p.logo) || ('band' in p && p.band)
