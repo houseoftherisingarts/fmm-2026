@@ -160,7 +160,7 @@ const PartenairesPage: React.FC = () => {
                         panneaux de logo pour ne pas les éteindre. */}
                     <div className={'logo' in p && p.logo
                       ? 'absolute inset-0 bg-gradient-to-t from-midnight-deep/85 via-transparent to-transparent'
-                      : 'absolute inset-0 bg-gradient-to-t from-midnight-deep via-midnight-deep/70 to-midnight-deep/30'} />
+                      : 'absolute inset-0 bg-gradient-to-t from-midnight-deep/90 via-midnight-deep/20 to-transparent'} />
                     <div className="absolute inset-0 flex items-end p-7 md:p-9">
                       <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight">
                         {p.name}
