@@ -160,8 +160,8 @@ const PartenairesPage: React.FC = () => {
                     )}
                     {/* Voile sombre pour asseoir le titre; allégé sur les
                         panneaux de logo pour ne pas les éteindre. */}
-                    <div className={'logo' in p && p.logo
-                      ? 'absolute inset-x-0 bottom-0 h-24 md:h-28 bg-gradient-to-t from-midnight-deep via-midnight-deep/70 to-transparent'
+                    <div className={('logo' in p && p.logo) || ('band' in p && p.band)
+                      ? 'absolute inset-x-0 bottom-0 h-24 md:h-28 bg-gradient-to-t from-midnight-deep via-midnight-deep/80 to-transparent'
                       : 'absolute inset-0 bg-gradient-to-t from-midnight-deep/90 via-midnight-deep/20 to-transparent'} />
                     <div className="absolute inset-0 flex items-end p-7 md:p-9">
                       <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight">
