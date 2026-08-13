@@ -136,7 +136,7 @@ const PartenairesPage: React.FC = () => {
                         posent sur un panneau ivoire en object-contain,
                         sinon ils disparaissent dans la nuit du site. */}
                     {'logo' in p && p.logo ? (
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#f3e9d4] to-[#e2d3b4] flex items-center justify-center p-8 md:p-12">
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#f3e9d4] to-[#e2d3b4] flex items-center justify-center px-10 md:px-14 pt-8 md:pt-10 pb-20 md:pb-24">
                         <img
                           src={p.image}
                           alt=""
