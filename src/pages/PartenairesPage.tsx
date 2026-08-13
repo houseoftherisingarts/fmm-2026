@@ -17,7 +17,7 @@ import { SponsorOffer } from './CommanditairesPage';
 const FEATURED = [
   {
     name: 'Municipalité de Montpellier',
-    image: '/wix/partenaires/80000153.png',
+    image: '/wix/partenaires/logo-montpellier-trim.png',
     logo: true,
     bioFR: 'En accueillant le festival sur leurs terres, la municipalité permet un événement à grand déploiement, riche, et impossible à recréer dans les grands centres urbains.',
     bioEN: 'By hosting the festival on their land, the municipality enables a sweeping, rich event impossible to recreate in major urban centres.',
