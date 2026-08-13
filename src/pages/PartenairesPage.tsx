@@ -142,7 +142,7 @@ const PartenairesPage: React.FC = () => {
                           alt=""
                           loading="lazy"
                           decoding="async"
-                          className="fmm-no-grade max-w-full max-h-full object-contain"
+                          className="fmm-no-grade w-full h-full object-contain"
                         />
                       </div>
                     ) : (
