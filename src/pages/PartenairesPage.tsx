@@ -125,7 +125,10 @@ const PartenairesPage: React.FC = () => {
             <article key={p.name} className="relative py-16 md:py-24 overflow-hidden">
               <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-8 md:gap-12 items-center">
                 <Reveal from={reverse ? 'right' : 'left'} className={`lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
-                  <div className="relative aspect-square md:aspect-[4/3] rounded-lg-card overflow-hidden border">
+                  {/* Ratio 8:5 = le ratio exact des visuels partenaires
+                      (1600x1000) : aucune photo ni logo n'est recadré
+                      (demande d'Alex 2026-08-13). */}
+                  <div className="relative aspect-[8/5] rounded-lg-card overflow-hidden border">
                     {/* Image simple, pas de RevealImage : sur cette page
                         fusionnée (très longue), le rideau clip-path restait
                         fermé sur certaines cartes et les partenaires
