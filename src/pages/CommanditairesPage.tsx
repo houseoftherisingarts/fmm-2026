@@ -345,7 +345,6 @@ const FR = {
         'Bannière de votre maison dans votre zone',
         'Mentions par les animateurs de scène, chaque jour',
         'Publication dédiée sur nos réseaux, avec nos photos professionnelles',
-        'Kiosque ou présence de marque sur le site du festival',
         '30 laissez-passer week-end et 2 places au banquet de l’Équinoxe',
         'Rapport de visibilité chiffré après le festival',
       ],
