@@ -294,7 +294,7 @@ const FR = {
   cost: 'Coût',
   banquetWhen: 'Dimanche · 13h00. Date limite d’inscription : 17 septembre 2026.',
   banquetSeats: '50 places limitées',
-  banquetCost: '100 $ par personne',
+  banquetCost: '85 $ par personne, plus taxes',
   menuEyebrow: 'Au menu',
   menuTitle: 'Cinq services à la torche',
   tentsEyebrow: 'Le village gustatif',
