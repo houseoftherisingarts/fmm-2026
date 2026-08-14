@@ -319,7 +319,7 @@ const EN = {
   cost: 'Cost',
   banquetWhen: 'Sunday · 1:00 PM. Registration deadline: September 17, 2026.',
   banquetSeats: '50 seats limit',
-  banquetCost: '$100 per person',
+  banquetCost: '$85 per person, plus tax',
   menuEyebrow: 'On the menu',
   menuTitle: 'Five torchlit services',
   tentsEyebrow: 'The food village',
