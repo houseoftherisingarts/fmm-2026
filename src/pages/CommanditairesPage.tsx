@@ -165,7 +165,12 @@ export const SponsorOffer: React.FC = () => {
           est chiffré. 2026 se termine sur la place du commanditaire. */}
       <section className="relative py-12 md:py-16 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <ChapterIntro eyebrow={t.growthEyebrow} title={t.growthTitle} className="mb-10" />
+          <ChapterIntro eyebrow={t.growthEyebrow} title={t.growthTitle} className="mb-6" />
+          <Reveal>
+            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed max-w-3xl mb-10">
+              {t.growthSub}
+            </p>
+          </Reveal>
           <Stagger className="grid grid-cols-1 sm:grid-cols-5 gap-3 md:gap-4 items-end" stagger={0.1}>
             {t.growth.map((g, i) => (
               <StaggerItem

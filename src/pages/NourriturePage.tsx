@@ -280,8 +280,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
               largeur, encadrée d'or : la seule rupture. */}
           <div className="columns-1 md:columns-2 gap-14">
             {GUILDES.slice(0, 5).map((g) => (
-              <Reveal key={g.name.FR}>
-                <article className="break-inside-avoid mb-12 md:mb-14">
+                <article key={g.name.FR} className="break-inside-avoid mb-12 md:mb-14">
                   <header className="flex items-baseline gap-3 mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
                     <span aria-hidden className="text-xl md:text-2xl leading-none">{g.icon}</span>
                     <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
@@ -293,7 +292,6 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                     {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
                   </ul>
                 </article>
-              </Reveal>
             ))}
           </div>
 
@@ -304,7 +302,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                 <header className="flex items-baseline gap-3 mb-6">
                   <span aria-hidden className="text-2xl leading-none">{GUILDES[5].icon}</span>
                   <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{GUILDES[5].name[lang]}</h3>
-                  <span className="ml-auto font-editorial italic text-xs md:text-sm" style={{ color: 'var(--color-amber-glow)' }}>
+                  <span className="ml-auto font-sans uppercase tracking-[0.3em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
                     {t.tavernTag}
                   </span>
                 </header>
@@ -336,7 +334,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
             className="mb-10 md:mb-14"
           />
 
-          <Reveal>
+          <Reveal amount={0.1}>
             <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-14 md:mb-20">
               <div className="lg:col-span-7 min-w-0">
                 <Eyebrow tone="amber" className="mb-5 inline-flex items-center gap-3">
