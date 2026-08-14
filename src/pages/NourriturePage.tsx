@@ -177,7 +177,11 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
               <p className="font-editorial italic text-base md:text-lg text-ivory-soft mb-5">{t.banquetSub}</p>
               <p className="font-editorial text-sm md:text-base text-ivory-soft mb-6 leading-relaxed">{t.banquetNote}</p>
               <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-6">{t.banquetBody}</p>
-              <a href={import.meta.env.VITE_ZEFFY_TICKET_URL || '#'} target="_blank" rel="noopener noreferrer"
+              {/* Le banquet est un repas vendu, pas un billet d'entrée : il se
+                  paie par Square (85 $ plus taxes), pas par la billetterie
+                  Zeffy du festival. Zeffy reste le repli tant que le lien
+                  Square n'est pas posé dans .env.local. */}
+              <a href={import.meta.env.VITE_SQUARE_BANQUET_URL || import.meta.env.VITE_ZEFFY_TICKET_URL || '#'} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
                 {t.reserve}
                 <ArrowUpRight size={14} />
