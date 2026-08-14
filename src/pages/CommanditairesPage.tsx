@@ -139,6 +139,26 @@ export const SponsorOffer: React.FC = () => {
         </div>
       </section>
 
+      {/* La preuve en chiffres : achalandage 2025 tiré du rapport
+          global financier (3 100 participants). Le revenu n'est
+          jamais publié, seulement l'affluence et la portée. */}
+      <section className="relative py-8 md:py-12 overflow-hidden">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" stagger={0.08}>
+            {t.stats.map((s) => (
+              <StaggerItem
+                key={s.label}
+                as="article"
+                className="glass-light rounded-card px-5 py-6 text-center border border-white/10"
+              >
+                <p className="font-display text-3xl md:text-4xl text-brass leading-none mb-2">{s.value}</p>
+                <p className="font-sans uppercase tracking-wider text-[10px] text-stone">{s.label}</p>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
       {/* Les trois rangs */}
       <section className="relative py-10 md:py-16 overflow-hidden">
         <SectionFog edges="top" />
