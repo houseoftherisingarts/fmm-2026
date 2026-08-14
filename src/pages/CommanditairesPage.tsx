@@ -316,6 +316,12 @@ const FR = {
   whyTitle: 'Du son, des spectacles, un festival plus grand',
   whyBody: 'Chaque commandite finance directement la qualité de ce que vivent les visiteurs : une sonorisation professionnelle sur la scène principale, des troupes et des cavaliers de calibre supérieur, des tournois, des combats et des artisans du feu. Vous n’achetez pas une banderole : vous rendez le festival plus grand, aux côtés de la MRC Papineau, du Groupe Gagnon et de la municipalité de Montpellier qui portent déjà l’événement avec nous.',
   only: 'Un seul, par édition',
+  stats: [
+    { value: '3 100', label: 'Festivaliers en 2025' },
+    { value: '3 jours', label: 'Dernier week-end de septembre' },
+    { value: 'Depuis 2022', label: 'Quatre éditions derrière nous' },
+    { value: '15 000 $', label: 'Appui annuel de la MRC Papineau' },
+  ],
   plans: {
     baron: {
       rank: 'Premier rang', name: 'Baron', tagline: 'La baronnie des commerces d’ici',
