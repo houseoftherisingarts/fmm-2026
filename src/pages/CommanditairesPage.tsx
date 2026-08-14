@@ -355,8 +355,9 @@ const FR = {
     { value: 'Depuis 2022', label: 'Quatre éditions derrière nous' },
     { value: '15 000 $', label: 'Appui annuel de la MRC Papineau' },
   ],
-  growthEyebrow: 'Un festival en pleine ascension',
-  growthTitle: 'Chaque édition plus grande que la précédente',
+  growthEyebrow: 'La plus forte croissance des festivals médiévaux du Québec',
+  growthTitle: 'De la première tente à 3 100 festivaliers, en quatre éditions',
+  growthSub: 'Aucun festival médiéval québécois n’a grandi aussi vite. Parti de zéro en 2022, le FMM rejoint déjà des festivals établis depuis des décennies, et chaque édition a été plus grande que la précédente. Le nom qui s’attache à cette ascension maintenant grandit avec elle.',
   growth: [
     { year: '2022', note: 'Première édition. Le village se dresse pour la première fois.' },
     { year: '2023', note: 'L’offre artistique s’élargit : troupes, musique, spectacles.' },
