@@ -159,6 +159,34 @@ export const SponsorOffer: React.FC = () => {
         </div>
       </section>
 
+      {/* L'ascension : une frise de jalons par édition, hauteur croissante.
+          Jalons qualitatifs documentés (01-identite.md du vault) : pas de
+          chiffres inventés pour 2022-2024; seul le 3 100 (rapport 2025)
+          est chiffré. 2026 se termine sur la place du commanditaire. */}
+      <section className="relative py-12 md:py-16 overflow-hidden">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <ChapterIntro eyebrow={t.growthEyebrow} title={t.growthTitle} className="mb-10" />
+          <Stagger className="grid grid-cols-1 sm:grid-cols-5 gap-3 md:gap-4 items-end" stagger={0.1}>
+            {t.growth.map((g, i) => (
+              <StaggerItem
+                key={g.year}
+                as="article"
+                className={
+                  i === 4
+                    ? 'relative rounded-card p-5 border-2 border-brass bg-brass/10 flex flex-col justify-end'
+                    : 'relative rounded-card p-5 glass-light border border-white/10 flex flex-col justify-end'
+                }
+                style={{ minHeight: `${9 + i * 2.5}rem` }}
+              >
+                <p className={i === 4 ? 'font-display text-2xl text-brass mb-2' : 'font-display text-2xl text-ivory mb-2'}>{g.year}</p>
+                {g.big && <p className="font-display text-3xl md:text-4xl text-brass leading-none mb-2">{g.big}</p>}
+                <p className="font-editorial text-sm text-ivory-soft leading-snug">{g.note}</p>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
       {/* Les trois rangs */}
       <section className="relative py-10 md:py-16 overflow-hidden">
         <SectionFog edges="top" />
