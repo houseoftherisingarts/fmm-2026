@@ -465,7 +465,7 @@ const EN: typeof FR = {
   kioskAside: 'No reservation · At the village’s pace',
   dishesWord: 'dishes',
   tavernTag: 'To raise your cup',
-  kioskFootnote: 'Prices in Canadian dollars, taxes included. Menu subject to change without notice based on local availability. Meat-free options at every stall.',
+  kioskFootnote: 'Prices in Canadian dollars. Menu subject to change without notice based on local availability.',
 
   banquetRail: 'The Banquet',
   banquetMeta: 'Seats',
