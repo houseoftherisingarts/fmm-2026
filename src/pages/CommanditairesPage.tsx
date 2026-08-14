@@ -431,7 +431,6 @@ const EN = {
         'Your house banner in your zone',
         'Daily mentions by the stage hosts',
         'Dedicated post on our networks, with our professional photos',
-        'Booth or brand presence on the festival grounds',
         '30 weekend passes and 2 seats at the Equinox banquet',
         'A visibility report with numbers after the festival',
       ],
