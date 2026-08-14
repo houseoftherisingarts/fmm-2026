@@ -274,42 +274,46 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
             </p>
           </div>
 
-          {/* Le tableau : deux colonnes de guildes, la taverne en pleine
-              largeur à la fin, encadrée d'or : la seule rupture. */}
-          <Stagger className="grid md:grid-cols-2 gap-x-14 gap-y-12 md:gap-y-14" stagger={0.08} amount={0.08}>
+          {/* Le tableau : colonnes de journal, comme un menu papier qui se
+              lit de haut en bas puis colonne suivante. break-inside-avoid
+              garde chaque guilde entière. La taverne suit en pleine
+              largeur, encadrée d'or : la seule rupture. */}
+          <div className="columns-1 md:columns-2 gap-14">
             {GUILDES.slice(0, 5).map((g) => (
-              <StaggerItem key={g.name.FR} as="article" className="min-w-0">
-                <header className="flex items-baseline gap-3 mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
-                  <span aria-hidden className="text-xl md:text-2xl leading-none">{g.icon}</span>
-                  <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
-                  <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--color-copper)' }}>
-                    {g.dishes.length} {t.dishesWord}
-                  </span>
-                </header>
-                <ul className="space-y-4">
-                  {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
-                </ul>
-              </StaggerItem>
-            ))}
-
-            {/* La taverne des élixirs : pleine largeur, corners dorés. */}
-            <StaggerItem as="article" className="md:col-span-2 mt-2">
-              <GildedFrame tone="amber" active className="block">
-                <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
-                  <header className="flex items-baseline gap-3 mb-6">
-                    <span aria-hidden className="text-2xl leading-none">{GUILDES[5].icon}</span>
-                    <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{GUILDES[5].name[lang]}</h3>
-                    <span className="ml-auto font-editorial italic text-xs md:text-sm" style={{ color: 'var(--color-amber-glow)' }}>
-                      {t.tavernTag}
+              <Reveal key={g.name.FR}>
+                <article className="break-inside-avoid mb-12 md:mb-14">
+                  <header className="flex items-baseline gap-3 mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
+                    <span aria-hidden className="text-xl md:text-2xl leading-none">{g.icon}</span>
+                    <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
+                    <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--color-copper)' }}>
+                      {g.dishes.length} {t.dishesWord}
                     </span>
                   </header>
-                  <ul className="grid md:grid-cols-2 gap-x-14 gap-y-4">
-                    {GUILDES[5].dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
+                  <ul className="space-y-4">
+                    {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
                   </ul>
-                </div>
-              </GildedFrame>
-            </StaggerItem>
-          </Stagger>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* La taverne des élixirs : pleine largeur, corners dorés. */}
+          <Reveal className="mt-2">
+            <GildedFrame tone="amber" active className="block">
+              <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
+                <header className="flex items-baseline gap-3 mb-6">
+                  <span aria-hidden className="text-2xl leading-none">{GUILDES[5].icon}</span>
+                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{GUILDES[5].name[lang]}</h3>
+                  <span className="ml-auto font-editorial italic text-xs md:text-sm" style={{ color: 'var(--color-amber-glow)' }}>
+                    {t.tavernTag}
+                  </span>
+                </header>
+                <ul className="grid md:grid-cols-2 gap-x-14 gap-y-4">
+                  {GUILDES[5].dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
+                </ul>
+              </div>
+            </GildedFrame>
+          </Reveal>
 
           <p className="font-editorial text-xs md:text-sm text-ivory-soft/70 mt-10 md:mt-12 max-w-2xl">
             {t.kioskFootnote}
