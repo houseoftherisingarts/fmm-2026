@@ -430,7 +430,7 @@ const FR = {
   kioskAside: 'Sans réservation · Au gré du village',
   dishesWord: 'plats',
   tavernTag: 'Pour lever sa coupe',
-  kioskFootnote: 'Prix en dollars canadiens, taxes incluses. Le menu peut changer sans préavis selon la disponibilité locale des produits. Options sans viande à chaque étal.',
+  kioskFootnote: 'Prix en dollars canadiens. Le menu peut changer sans préavis selon la disponibilité locale des produits.',
 
   banquetRail: 'Le Banquet',
   banquetMeta: 'Places',
