@@ -403,6 +403,12 @@ const EN = {
   whyTitle: 'Sound, shows, a greater festival',
   whyBody: 'Every sponsorship directly funds what visitors experience: professional sound on the main stage, higher-calibre troupes and riders, tournaments, combat and fire artisans. You are not buying a banner: you are making the festival greater, alongside MRC Papineau, Groupe Gagnon and the municipality of Montpellier who already carry the event with us.',
   only: 'One per edition',
+  stats: [
+    { value: '3,100', label: 'Festival-goers in 2025' },
+    { value: '3 days', label: 'Last weekend of September' },
+    { value: 'Since 2022', label: 'Four editions behind us' },
+    { value: '$15,000', label: 'Yearly support from MRC Papineau' },
+  ],
   plans: {
     baron: {
       rank: 'First rank', name: 'Baron', tagline: 'The barony of local businesses',
