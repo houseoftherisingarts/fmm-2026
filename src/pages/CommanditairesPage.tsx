@@ -445,6 +445,15 @@ const EN = {
     { value: 'Since 2022', label: 'Four editions behind us' },
     { value: '$15,000', label: 'Yearly support from MRC Papineau' },
   ],
+  growthEyebrow: 'A festival on the rise',
+  growthTitle: 'Every edition larger than the last',
+  growth: [
+    { year: '2022', note: 'First edition. The village rises for the first time.' },
+    { year: '2023', note: 'The artistic offering grows: troupes, music, shows.' },
+    { year: '2024', note: 'Equestrian and artisan expansion. The riders enter the lists.' },
+    { year: '2025', big: '3,100', note: 'festival-goers over three days. A milestone.' },
+    { year: '2026', note: 'The fifth edition. The main stage awaits the name that will make it larger.' },
+  ],
   plans: {
     baron: {
       rank: 'First rank', name: 'Baron', tagline: 'The barony of local businesses',
