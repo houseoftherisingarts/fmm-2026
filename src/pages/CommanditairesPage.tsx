@@ -350,6 +350,15 @@ const FR = {
     { value: 'Depuis 2022', label: 'Quatre éditions derrière nous' },
     { value: '15 000 $', label: 'Appui annuel de la MRC Papineau' },
   ],
+  growthEyebrow: 'Un festival en pleine ascension',
+  growthTitle: 'Chaque édition plus grande que la précédente',
+  growth: [
+    { year: '2022', note: 'Première édition. Le village se dresse pour la première fois.' },
+    { year: '2023', note: 'L’offre artistique s’élargit : troupes, musique, spectacles.' },
+    { year: '2024', note: 'Expansion équestre et artisanale. Les cavaliers entrent en lice.' },
+    { year: '2025', big: '3 100', note: 'festivaliers sur trois jours. Le cap est franchi.' },
+    { year: '2026', note: 'La cinquième édition. La scène principale attend le nom qui la fera plus grande.' },
+  ],
   plans: {
     baron: {
       rank: 'Premier rang', name: 'Baron', tagline: 'La baronnie des commerces d’ici',
