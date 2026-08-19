@@ -269,9 +269,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
   // SCHEDULE constant baked in below when Firestore is empty (e.g.
   // first deploy before any admin save) or unconfigured (offline mode).
   const [liveSchedule, setLiveSchedule] = useState<ScheduleDay[]>(SCHEDULE as unknown as ScheduleDay[]);
+  // true dès que le doc schedule/2026 existe dans Firestore : la section
+  // passe alors du souvenir 2025 à l'horaire officiel 2026 (titres,
+  // textes, carte verrouillée retirée).
+  const [live2026, setLive2026] = useState(false);
   useEffect(() => {
     const unsub = watchSchedule(CURRENT_SCHEDULE_YEAR, (doc) => {
-      if (doc?.days && doc.days.length > 0) setLiveSchedule(doc.days);
+      if (doc?.days && doc.days.length > 0) { setLiveSchedule(doc.days); setLive2026(true); }
     });
     return () => unsub();
   }, []);
