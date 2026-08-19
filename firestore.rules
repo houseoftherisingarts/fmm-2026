@@ -218,7 +218,9 @@ service cloud.firestore {
     // bar inventory, volunteer schedule, social-media planner, mail
     // tab (internal — different from inquiry-form `contacts`).
     match /bar/{docId}         { allow read, write: if isAdmin(); }
-    match /schedule/{docId}    { allow read, write: if isAdmin(); }
+    // Horaire du festival : public en lecture (la page Programmation
+    // s'y abonne), écriture réservée aux admins (section Horaire).
+    match /schedule/{docId}    { allow read: if true; allow write: if isAdmin(); }
     // Finances (section admin Finances) : budget, comptes, répartition,
     // métadonnées des documents téléversés. Données sensibles, jamais
     // publiques.
