@@ -128,7 +128,10 @@ const ACTIVITIES: Array<{
   { titleFR: 'Marché',           titleEN: 'Market',            bodyFR: 'Artisans et foire locale',                                 bodyEN: 'Artisans and local fair',
     descFR: 'Une cinquantaine d’artisans et marchands d’époque. Forgerons, costumiers, bijoutiers, brasseurs, herboristes. Achetez local, en armure ou en bourgeois.',
     descEN: 'Some fifty period artisans and merchants. Smiths, costumers, jewellers, brewers, herbalists. Buy local, in armour or in burgher’s garb.',
-    image: '/wix/home/marchand.jpg', category: 'crafts' },
+    // marchand.jpg était une bande 1100×300 : recadrée en tuile, il ne
+    // restait que la bouche du marchand. Remplacée par la marchande à
+    // son étal (wix/marche/17069f62), convertie au format des tuiles.
+    image: '/activites/webp/marche-etal.webp', category: 'crafts' },
   { titleFR: 'Danses et Rituels',titleEN: 'Dances & Rituals',  bodyFR: 'Völvas',                                                   bodyEN: 'Völvas',
     descFR: 'Les völvas du clan Hullsborg dansent autour du grand feu. Rituels nordiques, cérémonie de Freya, allumage solennel : un héritage spirituel partagé sous les étoiles.',
     descEN: 'The Hullsborg clan’s völvas dance around the great fire. Nordic rituals, Freya ceremony, solemn lighting: a shared spiritual heritage under the stars.',
