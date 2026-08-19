@@ -940,14 +940,18 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               <HexMark />
             </Eyebrow>
             <DisplayTitle size="lg" glow className="mb-2">{t.scheduleTitle}</DisplayTitle>
-            <p className="font-editorial italic text-base md:text-lg mt-3"
-               style={{ color: 'var(--color-amber-glow)' }}>
-              {t.schedule2026Soon}
-            </p>
-            <p className="font-editorial italic text-sm md:text-base mt-2 max-w-2xl mx-auto"
-               style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
-              {t.scheduleSouvenir}
-            </p>
+            {!live2026 && (
+              <>
+                <p className="font-editorial italic text-base md:text-lg mt-3"
+                   style={{ color: 'var(--color-amber-glow)' }}>
+                  {t.schedule2026Soon}
+                </p>
+                <p className="font-editorial italic text-sm md:text-base mt-2 max-w-2xl mx-auto"
+                   style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
+                  {t.scheduleSouvenir}
+                </p>
+              </>
+            )}
           </div>
 
           {/* ── Horaire replié en deux cartes ────────────────────
