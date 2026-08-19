@@ -971,8 +971,8 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     className="w-full flex items-center justify-between gap-4 p-6 md:p-8 text-left cursor-pointer"
                   >
                     <div>
-                      <Eyebrow tone="amber" className="mb-2">{t.scheduleVersion}</Eyebrow>
-                      <DisplayTitle size="lg" className="text-2xl md:text-3xl">{t.horaireCard2025Title}</DisplayTitle>
+                      <Eyebrow tone="amber" className="mb-2">{live2026 ? t.scheduleVersion2026 : t.scheduleVersion}</Eyebrow>
+                      <DisplayTitle size="lg" className="text-2xl md:text-3xl">{live2026 ? t.horaireCard2026LiveTitle : t.horaireCard2025Title}</DisplayTitle>
                     </div>
                     <ChevronDown
                       size={22}
