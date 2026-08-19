@@ -288,6 +288,8 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
 
   // Horaire card, repliée par défaut : cliquer déplie l'horaire 2025
   const [horaireOpen, setHoraireOpen] = useState(false);
+  // Horaire 2026 officiel en ligne : la carte s'ouvre d'elle-même.
+  useEffect(() => { if (live2026) setHoraireOpen(true); }, [live2026]);
 
   // Schedule day-tab state: index into liveSchedule. Default to
   // Saturday (idx 1), the marquee day with the densest line-up.
