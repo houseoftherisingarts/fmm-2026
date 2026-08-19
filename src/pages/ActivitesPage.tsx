@@ -1176,26 +1176,28 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               </GildedFrame>
             </HexPanel>
 
-            <HexPanel size="md" className="mt-4">
-              <GildedFrame inset={12} tone="copper">
-                <div
-                  className="caravan-glass p-6 md:p-8 flex items-center justify-between gap-4"
-                  style={{ cursor: 'default' }}
-                  aria-disabled
-                >
-                  <div>
-                    <Eyebrow tone="copper" className="mb-2">{t.scheduleEyebrow}</Eyebrow>
-                    <DisplayTitle size="lg" className="text-2xl md:text-3xl">{t.horaireCard2026Title}</DisplayTitle>
+            {!live2026 && (
+              <HexPanel size="md" className="mt-4">
+                <GildedFrame inset={12} tone="copper">
+                  <div
+                    className="caravan-glass p-6 md:p-8 flex items-center justify-between gap-4"
+                    style={{ cursor: 'default' }}
+                    aria-disabled
+                  >
+                    <div>
+                      <Eyebrow tone="copper" className="mb-2">{t.scheduleEyebrow}</Eyebrow>
+                      <DisplayTitle size="lg" className="text-2xl md:text-3xl">{t.horaireCard2026Title}</DisplayTitle>
+                    </div>
+                    <LockIcon size={22} className="shrink-0" style={{ color: 'var(--color-copper)' }} />
                   </div>
-                  <LockIcon size={22} className="shrink-0" style={{ color: 'var(--color-copper)' }} />
-                </div>
-              </GildedFrame>
-            </HexPanel>
+                </GildedFrame>
+              </HexPanel>
+            )}
           </div>
 
           <SectionBottomRail
-            hint={t.scheduleNote}
-            meta={t.scheduleVersion}
+            hint={live2026 ? t.scheduleNote2026 : t.scheduleNote}
+            meta={live2026 ? t.scheduleVersion2026 : t.scheduleVersion}
             className="sec-rail mt-10"
           />
         </div>
