@@ -125,10 +125,29 @@ const HoraireSection: React.FC<Props> = ({ devBypass = false }) => {
   }
 
   if (days.length === 0) {
+    // Premier passage : le doc schedule/2026 n'existe pas encore. On
+    // crée les trois jours vides localement; le premier « Sauvegarder »
+    // écrit le doc dans Firestore.
+    const initDays = () => {
+      const skel: ScheduleDay[] = [
+        { id: 'vendredi', dateFR: 'Vendredi 25 septembre',  dateEN: 'Friday September 25',   items: [] },
+        { id: 'samedi',   dateFR: 'Samedi 26 septembre',    dateEN: 'Saturday September 26', items: [] },
+        { id: 'dimanche', dateFR: 'Dimanche 27 septembre',  dateEN: 'Sunday September 27',   items: [] },
+      ];
+      setDays(skel);
+      setDayBlocks(['', '', '']);
+    };
     return (
-      <EmptyState icon={CalendarClock}>
-        Aucun horaire enregistré. Initialisez-le côté Firestore ou via le mode démo.
-      </EmptyState>
+      <div className="space-y-4">
+        <EmptyState icon={CalendarClock}>
+          Aucun horaire enregistré pour {CURRENT_SCHEDULE_YEAR}.
+        </EmptyState>
+        <div className="flex justify-center">
+          <PrimaryButton type="button" onClick={initDays}>
+            <CalendarClock size={12} /> Créer les 3 jours (25, 26, 27 septembre)
+          </PrimaryButton>
+        </div>
+      </div>
     );
   }
 
