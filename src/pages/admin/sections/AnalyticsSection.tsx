@@ -131,21 +131,13 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
       {/* Top pages (mock) */}
       <Card className="p-6">
         <h3 className="font-display title-medieval text-sm text-brass uppercase tracking-widest mb-5">Pages les plus visitées</h3>
-        {devBypass ? (
+        {topPages.length > 0 ? (
           <ul className="space-y-2">
-            {[
-              { page: '/',           pct: 38 },
-              { page: '/activites',  pct: 22 },
-              { page: '/nourriture', pct: 14 },
-              { page: '/musique',    pct: 11 },
-              { page: '/marche',     pct: 8 },
-              { page: '/benevole',   pct: 5 },
-              { page: '/histoire',   pct: 2 },
-            ].map((p) => (
+            {topPages.map((p) => (
               <li key={p.page}>
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="font-sans text-ivory">{p.page}</span>
-                  <span className="font-display title-medieval text-brass tabular-nums text-xs">{p.pct}%</span>
+                  <span className="font-display title-medieval text-brass tabular-nums text-xs">{p.n.toLocaleString('fr-CA')} · {p.pct}%</span>
                 </div>
                 <div className="h-1.5 bg-ivory-soft/10 rounded-full overflow-hidden">
                   <div className="h-full bg-brass" style={{ width: `${p.pct}%` }} />
@@ -154,7 +146,7 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
             ))}
           </ul>
         ) : (
-          <p className="font-editorial italic text-sm text-ivory-soft/60">À venir une fois Firebase Analytics configuré.</p>
+          <p className="font-editorial italic text-sm text-ivory-soft/60">Les premières visites rempliront ce palmarès d'ici quelques heures.</p>
         )}
       </Card>
     </div>
