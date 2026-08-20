@@ -95,12 +95,6 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="p-5 border border-blue-300/30 bg-blue-300/5">
-        <p className="font-editorial italic text-sm text-ivory-soft">
-          Les compteurs Comptes, Candidatures et Infolettre sont câblés sur Firestore. Le graphique 14 jours « Visiteurs » et le palmarès « Pages les plus visitées » attendent une Cloud Function qui interroge la GA4 Data API (le tracking côté site, lui, est déjà actif via <code className="text-brass">AnalyticsPageViews</code>).
-        </p>
-      </Card>
-
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {stats.map(({ label, value, icon: Icon }) => (
