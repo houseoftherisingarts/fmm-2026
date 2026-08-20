@@ -85,7 +85,7 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
     }));
 
   const stats = [
-    { label: 'Visiteurs (14 j)',     value: visitors14d.reduce((a, b) => a + b, 0).toLocaleString('fr-CA'), icon: Eye },
+    { label: 'Pages vues (14 j)',    value: visitors14d.reduce((a, b) => a + b, 0).toLocaleString('fr-CA'), icon: Eye },
     { label: 'Comptes',              value: usersCount,            icon: Users },
     { label: 'Candidatures',         value: bCount + vCount,       icon: MousePointerClick },
     { label: 'Inscrits infolettre',  value: subsCount,             icon: BarChart3 },
