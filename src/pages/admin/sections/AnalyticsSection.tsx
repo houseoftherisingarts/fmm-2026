@@ -118,11 +118,14 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
         <div className="flex items-end gap-1.5 h-32">
           {visitors14d.map((v, i) => (
             <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1.5">
-              <div className="w-full bg-brass/30 hover:bg-brass transition rounded-t" style={{ height: `${(v / max) * 100}%` }} title={`Jour J-${13 - i} : ${v} visiteurs`} />
-              <span className="font-sans text-[9px] text-ivory-soft/50">{i % 2 === 0 ? `J-${13 - i}` : ''}</span>
+              <div className="w-full bg-brass/30 hover:bg-brass transition rounded-t" style={{ height: `${(v / max) * 100}%` }} title={`${daily[i]?.day ?? `J-${13 - i}`} : ${v} pages vues`} />
+              <span className="font-sans text-[9px] text-ivory-soft/50">{i % 2 === 0 ? (daily[i]?.day.slice(5).replace('-', '/') ?? `J-${13 - i}`) : ''}</span>
             </div>
           ))}
         </div>
+        <p className="font-editorial italic text-[11px] text-ivory-soft/50 mt-3">
+          Pages vues par jour, compteur maison anonyme (Firestore). Les journées d'avant l'installation restent à zéro.
+        </p>
       </Card>
 
       {/* Top pages (mock) */}
