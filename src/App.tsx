@@ -181,6 +181,7 @@ const AnalyticsPageViews: React.FC = () => {
     const path = location.pathname + location.search;
     logPageView(path);
     trackPixelPageView();
+    bumpPageView(location.pathname);
   }, [location.pathname, location.search]);
   return null;
 };
