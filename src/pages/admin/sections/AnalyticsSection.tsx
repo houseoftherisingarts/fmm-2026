@@ -16,6 +16,15 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
   const [vCount, setVCount]       = useState(0);
   const [usersCount, setUsersCount] = useState(0);
   const [subsCount, setSubsCount]   = useState(0);
+  const [daily, setDaily]           = useState<DayStats[]>([]);
+
+  // Compteurs de visites first-party (siteStats/AAAA-MM-JJ), alimentés
+  // par bumpPageView() sur chaque changement de route du site public.
+  useEffect(() => {
+    let cancelled = false;
+    getDailyStats(14).then((d) => { if (!cancelled) setDaily(d); });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
