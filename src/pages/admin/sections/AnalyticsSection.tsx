@@ -6,6 +6,7 @@ import { mockListBenevoles, mockListVendors } from '../../../firebase/mockApplic
 import { listBenevoles, listVendors } from '../../../firebase/applications';
 import { listSubs } from '../../../firebase/newsletter';
 import { listUsers } from '../../../firebase/users';
+import { getDailyStats, slugToPath, type DayStats } from '../../../lib/siteStats';
 import { useEffect, useState } from 'react';
 
 interface Props { devBypass: boolean }
