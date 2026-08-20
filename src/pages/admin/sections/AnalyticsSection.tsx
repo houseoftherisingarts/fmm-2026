@@ -59,13 +59,30 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
     return () => { cancelled = true; };
   }, [devBypass]);
 
-  // 14-day visitor series: still mock until a GA4 Data API integration
-  // (via a Cloud Function / service account) is wired. The site already
-  // logs page views through firebase/analytics; this section only lacks
-  // the read-side aggregation.
-  const visitors14d = devBypass
-    ? [120, 145, 180, 165, 210, 235, 190, 220, 280, 305, 340, 360, 395, 420]
-    : Array(14).fill(0);
+  // Série 14 jours réelle, lue des compteurs Firestore siteStats.
+  // En dev sans données, on garde la série de démonstration.
+  const visitors14d = daily.length > 0 && !devBypass
+    ? daily.map((d) => d.total)
+    : devBypass
+      ? [120, 145, 180, 165, 210, 235, 190, 220, 280, 305, 340, 360, 395, 420]
+      : Array(14).fill(0);
+
+  // Palmarès des pages, agrégé sur les 14 jours.
+  const pageTotals: Record<string, number> = {};
+  for (const d of daily) {
+    for (const [slug, n] of Object.entries(d.pages)) {
+      pageTotals[slug] = (pageTotals[slug] || 0) + n;
+    }
+  }
+  const grandTotal = Object.values(pageTotals).reduce((a, b) => a + b, 0);
+  const topPages = Object.entries(pageTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([slug, n]) => ({
+      page: slugToPath(slug),
+      n,
+      pct: grandTotal ? Math.round((n / grandTotal) * 100) : 0,
+    }));
 
   const stats = [
     { label: 'Visiteurs (14 j)',     value: visitors14d.reduce((a, b) => a + b, 0).toLocaleString('fr-CA'), icon: Eye },
