@@ -23,10 +23,10 @@ const JeuxEnLignePage: React.FC = () => {
       <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
-        titleA={t.title}
+        titleA={lang === 'FR' ? 'Jeux\u00a0en\u00a0ligne' : 'Online\u00a0Games'}
         intro={t.intro}
-        orbImage="/wix/jeunesse/2b1f82d0.jpg"
-        orbImagePosition="center"
+        orbImage="/photos/hnefatafl-hero.webp"
+        orbImagePosition="center 45%"
       />
 
       <section className="relative py-16 md:py-24 overflow-hidden">

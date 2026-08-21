@@ -368,7 +368,7 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
     rightFR: '7 places · samedi',    rightEN: '7 seats · Saturday',
   },
   {
-    key: 'jeunesse', slug: '/jeunesse', image: '/wix/jeunesse/2b1f82d0.jpg',
+    key: 'jeunesse', slug: '/jeunesse', image: '/wix/jeunesse/3893a56a.jpg',
     titleFR: 'Jeunesse', titleEN: 'Youth',
     bodyFR: 'Un parc, des quêtes, des ateliers et Les Camps Légendaires. Un espace dédié aux cœurs d’enfants encore dans des corps d’enfants.',
     bodyEN: 'A park, quests, workshops and the Fox Clan. A dedicated space for young hearts still in young bodies.',

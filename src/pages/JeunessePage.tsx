@@ -84,7 +84,7 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
           eyebrow={t.eyebrow}
           titleA={t.title}
           intro={t.intro}
-          orbImage="/wix/jeunesse/2b1f82d0.jpg"
+          orbImage="/wix/jeunesse/3893a56a.jpg"
           orbImagePosition="right center"
         />
       )}

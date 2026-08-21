@@ -353,7 +353,7 @@ const AccueilPage: React.FC = () => {
             </Link>
             <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
               {[
-                { key: 'hebergement' as const, body: t.crosspromo.hebergement, cta: t.crosspromo.hebergementCta, image: '/wix/jeunesse/2b1f82d0.jpg' },
+                { key: 'hebergement' as const, body: t.crosspromo.hebergement, cta: t.crosspromo.hebergementCta, image: '/wix/jeunesse/3893a56a.jpg' },
                 { key: 'partenaires' as const, body: t.crosspromo.partenaires, cta: t.crosspromo.partenairesCta, image: '/wix/home/viking-band.jpg' },
               ].map((c) => {
                 const p = PILLAR_BY_KEY[c.key];
@@ -524,7 +524,7 @@ const FR = {
     title: 'Nouveautés 2026',
     cards: [
       { title: 'Village Nourriture',   eyebrow: 'Nouveau Banquet du Valhalla', body: 'Une expérience culinaire élargie et renouvelée qui saura vous émerveiller à boire et à manger.', image: '/wix/home/bonfire-warm.jpg', href: '/nourriture', cta: 'Voir les menus' },
-      { title: 'Espace Jeunesse',      eyebrow: 'Parc et activités',           body: 'Un parc, un espace frais, un coin pour les ados et tous les ateliers pour les jeunes seigneurs.',  image: '/wix/jeunesse/2b1f82d0.jpg', href: '/jeunesse',  cta: 'Détails et inscriptions' },
+      { title: 'Espace Jeunesse',      eyebrow: 'Parc et activités',           body: 'Un parc, un espace frais, un coin pour les ados et tous les ateliers pour les jeunes seigneurs.',  image: '/wix/jeunesse/3893a56a.jpg', href: '/jeunesse',  cta: 'Détails et inscriptions' },
       { title: 'Nouvelles Animations', eyebrow: 'De nouveaux spectacles et +', body: 'Cette année, nous ajoutons des bouchées d’animation, des troupes des attractions et de la musique aux multiples chorégraphies et cérémonies.', image: '/wix/home/fire-night.jpg', href: '/activites', cta: 'Détails' },
     ],
   },
@@ -602,7 +602,7 @@ const EN = {
     title: 'New for 2026',
     cards: [
       { title: 'Food Village',      eyebrow: 'New Valhalla banquet',   body: 'An expanded, renewed culinary experience to delight in eating and drinking.',                                          image: '/wix/home/bonfire-warm.jpg', href: '/en/food',    cta: 'See the menus' },
-      { title: 'Youth Space',       eyebrow: 'Park and activities',    body: 'A park, a cool space, a teen corner, plus all the workshops for the young lords.',                                       image: '/wix/jeunesse/2b1f82d0.jpg', href: '/en/youth',   cta: 'Details & sign-up' },
+      { title: 'Youth Space',       eyebrow: 'Park and activities',    body: 'A park, a cool space, a teen corner, plus all the workshops for the young lords.',                                       image: '/wix/jeunesse/3893a56a.jpg', href: '/en/youth',   cta: 'Details & sign-up' },
       { title: 'New Programming',   eyebrow: 'New shows and more',     body: 'This year we add bites of animation, troupes, attractions and music, with multiple choreographies and ceremonies.',     image: '/wix/home/fire-night.jpg',  href: '/en/activities', cta: 'Details' },
     ],
   },

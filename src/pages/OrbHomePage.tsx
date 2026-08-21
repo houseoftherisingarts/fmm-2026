@@ -48,7 +48,7 @@ const ORB_CHOICES: OrbChoice[] = [
   { key: 'partenaires', image: '/wix/partenaires/2a2a4608.jpg' },
   { key: 'benevole',    image: '/wix/benevole/4fc431fd.jpg',   imagePosition: 'left center' },
   { key: 'petite-monnaie', image: '/wix/home/marchand.jpg',    imagePosition: 'center 30%' },
-  { key: 'jeux',        image: '/wix/jeunesse/2b1f82d0.jpg' },
+  { key: 'jeux',        image: '/photos/hnefatafl-hero.webp' },
 ];
 
 // Site mode: `live` (local dev) previews every page regardless of flags so an

@@ -239,7 +239,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Espace Jeunesse',  titleEN: 'Youth Space',       bodyFR: 'Parc, jeux, animations, gardiennage',                     bodyEN: 'Park, games, activities, supervision',
     descFR: 'Un campement réservé aux jeunes seigneurs : ateliers d’écuyer, jeux d’adresse, contes, gardiennage encadré. L’enfance médiévale, mais sans la peste.',
     descEN: 'A camp reserved for young lords: squire workshops, skill games, tales, supervised babysitting. Medieval childhood, but without the plague.',
-    image: '/wix/jeunesse/2b1f82d0.jpg', category: 'family' },
+    image: '/wix/jeunesse/3893a56a.jpg', category: 'family' },
   { titleFR: 'À Boire !',        titleEN: 'Drink!',            bodyFR: 'Bières des Brasseurs Philosophales et autres rinces-gosier', bodyEN: 'Beers from Brasseurs Philosophales and other tipples',
     descFR: 'Bières des Brasseurs Philosophales, hydromels, vins épicés, infusions sans alcool. Plusieurs estaminets répartis sur le site pour étancher la soif des aventuriers.',
     descEN: 'Beers from Brasseurs Philosophales, meads, spiced wines, alcohol-free infusions. Several taverns across the site to quench adventurers’ thirst.',
