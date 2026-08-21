@@ -7,7 +7,7 @@ import { watchProgFlags, setProgFlag, PROG_FLAGS_DEFAULTS, type ProgFlags } from
 // Libellés FR des sections de la page publique Programmation, dans l'ordre
 // d'affichage souhaité par Tristan.
 const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
-  { flag: 'bestiaire',        label: 'Bestiaire des activités' },
+  { flag: 'bestiaire',        label: 'Grille des activités' },
   { flag: 'horaire',          label: 'Horaire (souvenir 2025)' },
   { flag: 'banquet',          label: "Banquet de l'Équinoxe" },
   { flag: 'behourd',          label: 'Tournoi de Béhourd' },

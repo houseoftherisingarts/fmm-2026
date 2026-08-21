@@ -42,17 +42,17 @@ const JOUR_ORDRE: Record<GroupeJour, number> = { vendredi: 0, samedi: 1, dimanch
 // les corrections d'Alex (chaque portrait montre le bon groupe).
 const BANDS_ARCHIVES: Band[] = [
   {
-    name:  'L’Harfang',
-    image: '/wix/musique/407628b7.jpg',
-    bioFR: 'Jouant pour le festival depuis le tout début, L’Harfang est un duo de musique folklorique, médiévale, baroque et balfolk moderne. Vielle à roue (Alison Gowan) et musette 16 pouces (Éric Pichette).',
-    bioEN: 'Playing the festival since the very beginning, L’Harfang is a folk/medieval/baroque/balfolk duo led by hurdy-gurdy (Alison Gowan) and 16-inch musette bagpipe (Éric Pichette).',
-  },
-  {
     name:    'Skarazula',
     image:   '/wix/musique/2c6a22e9.jpg',
     website: 'https://www.skarazula.com',
     bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans l’univers foisonnant de la musique médiévale. Plus d’un instrument dans leur sac, beaucoup confectionnés par le groupe lui-même.',
     bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
+  },
+  {
+    name:  'L’Harfang',
+    image: '/wix/musique/407628b7.jpg',
+    bioFR: 'Jouant pour le festival depuis le tout début, L’Harfang est un duo de musique folklorique, médiévale, baroque et balfolk moderne. Vielle à roue (Alison Gowan) et musette 16 pouces (Éric Pichette).',
+    bioEN: 'Playing the festival since the very beginning, L’Harfang is a folk/medieval/baroque/balfolk duo led by hurdy-gurdy (Alison Gowan) and 16-inch musette bagpipe (Éric Pichette).',
   },
   {
     name:    'Mystic Projekt',
@@ -93,6 +93,21 @@ const BANDS_ARCHIVES: Band[] = [
 // Encore en construction : d'autres noms s'ajouteront.
 const AFFICHE_2026_BANDS: Band[] = [
   {
+    name:    'Skarazula',
+    jour:    'vendredi',
+    image:   '/wix/musique/2c6a22e9.jpg',
+    website: 'https://www.skarazula.com',
+    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans l’univers foisonnant de la musique médiévale. Plus d’un instrument dans leur sac, plusieurs confectionnés par le groupe lui-même.',
+    bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
+  },
+  {
+    name:  'L’Harfang',
+    jour:  'samedi',
+    image: '/wix/musique/407628b7.jpg',
+    bioFR: 'Jouant pour le festival depuis le tout début, L’Harfang est un duo de musique folklorique, médiévale, baroque et balfolk moderne. Vielle à roue (Alison Gowan) et musette 16 pouces (Éric Pichette).',
+    bioEN: 'Playing the festival since the very beginning, L’Harfang is a folk/medieval/baroque/balfolk duo led by hurdy-gurdy (Alison Gowan) and 16-inch musette bagpipe (Éric Pichette).',
+  },
+  {
     name:    'Troupe Caravane',
     jour:    'vendredi',
     image:   '/wix/musique/troupe-caravane.webp',
@@ -100,14 +115,6 @@ const AFFICHE_2026_BANDS: Band[] = [
     website: 'http://www.troupecaravane.com',
     bioFR: 'Fondée à Montréal en 1980 par Sarah Barbieux, d’origine rom, la troupe CARAVANE porte le spectacle festif et participatif Fuego Bohemio : rumba flamenca, musique tzigane, chants et danses romanichelles. Sarah Barbieux (voix, danse, tambour) et Sylvain Chiasson (guitare, voix, flûte de pan, percussions).',
     bioEN: 'Founded in Montreal in 1980 by Sarah Barbieux, of Roma descent, the CARAVANE troupe brings its festive, participatory show Fuego Bohemio: rumba flamenca, Romani music, songs and bohemian dance. Sarah Barbieux (voice, dance, drum) and Sylvain Chiasson (guitar, voice, pan flute, percussion).',
-  },
-  {
-    name:    'Skarazula',
-    jour:    'vendredi',
-    image:   '/wix/musique/2c6a22e9.jpg',
-    website: 'https://www.skarazula.com',
-    bioFR: 'Les musiciens de Skarazula cultivent depuis des années un intérêt pour la musique ancienne et poursuivent leurs recherches dans l’univers foisonnant de la musique médiévale. Plus d’un instrument dans leur sac, plusieurs confectionnés par le groupe lui-même.',
-    bioEN: 'Skarazula’s musicians have cultivated for many years an interest in early music and continue their research into the rich, fascinating world of medieval music. More than one instrument in their bag, many handmade by the group itself.',
   },
   {
     name:    'L’Ensemble Klezmer de Sainte-Nigoune',
@@ -126,13 +133,6 @@ const AFFICHE_2026_BANDS: Band[] = [
     website: 'https://www.youtube.com/@BicOasis',
     bioFR: 'Rencontre de deux multi-instrumentistes : Mathieu Lavoie (bouzouki, morache, saz, vielle à roue) et William Provost (tambours, darbouka, tambour à lamelles, flûte à bourdon, cornemuse). Les traditions du monde entier passent au looper, aux synthés et aux pédales d’effets : une musique hybride, ancienne et moderne à la fois, organique et hypnotique.',
     bioEN: 'Two multi-instrumentalists meeting: Mathieu Lavoie (bouzouki, morache, saz, hurdy-gurdy) and William Provost (drums, darbuka, tongue drum, drone flute, bagpipe). Folk traditions from around the world run through loopers, synths and effect pedals: hybrid music, ancient and modern at once, organic and hypnotic.',
-  },
-  {
-    name:  'L’Harfang',
-    jour:  'samedi',
-    image: '/wix/musique/407628b7.jpg',
-    bioFR: 'Jouant pour le festival depuis le tout début, L’Harfang est un duo de musique folklorique, médiévale, baroque et balfolk moderne. Vielle à roue (Alison Gowan) et musette 16 pouces (Éric Pichette).',
-    bioEN: 'Playing the festival since the very beginning, L’Harfang is a folk/medieval/baroque/balfolk duo led by hurdy-gurdy (Alison Gowan) and 16-inch musette bagpipe (Éric Pichette).',
   },
   {
     name:  'Trifolys',
@@ -658,7 +658,7 @@ const FR = {
   section2026Note:    'Programmation en cours. Les horaires de passage seront annoncés sous peu.',
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Groupes des ans passés',
-  sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Utilisez les chevrons (ou ← →) pour parcourir le bestiaire musical.',
+  sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Utilisez les chevrons (ou ← →) pour parcourir les groupes.',
   artist:  'Artiste',
   spotify: 'Écouter sur Spotify',
   website: 'Site web',
@@ -681,7 +681,7 @@ const EN = {
   section2026Note:    'Lineup in progress. Set times will be announced shortly.',
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Bands from past years',
-  sectionPastLead:    'The bards who animated previous editions of the festival. Use the chevrons (or ← →) to browse the musical bestiary.',
+  sectionPastLead:    'The bards who animated previous editions of the festival. Use the chevrons (or ← →) to browse the bands.',
   artist:  'Artist',
   spotify: 'Listen on Spotify',
   website: 'Website',
