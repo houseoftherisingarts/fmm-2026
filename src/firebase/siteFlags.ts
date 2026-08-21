@@ -42,6 +42,9 @@ export interface SiteFlags {
   pubPartenaires:          boolean;
   pubBenevole:             boolean;
   pubPetiteMonnaie:        boolean;
+  // Jeux en ligne : publié par défaut (les jeux existent déjà, sortis de
+  // la section Jeunesse le 2026-08-20 à la demande d'Alex).
+  pubJeux:                 boolean;
 }
 
 export const SITE_FLAGS_DEFAULTS: SiteFlags = {
@@ -63,6 +66,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   pubPartenaires:          false,
   pubBenevole:             false,
   pubPetiteMonnaie:        false,
+  pubJeux:                 true,
 };
 
 // Maps each top-level pillar to its publication flag + a human label for the
@@ -77,6 +81,7 @@ export const PILLAR_PUBLISH_FLAGS: { key: PillarKey; flag: keyof SiteFlags; labe
   { key: 'partenaires', flag: 'pubPartenaires', label: 'Commanditaires & Partenaires' },
   { key: 'benevole',    flag: 'pubBenevole',    label: 'Devenir Bénévole' },
   { key: 'petite-monnaie', flag: 'pubPetiteMonnaie', label: 'Petite Monnaie' },
+  { key: 'jeux',        flag: 'pubJeux',        label: 'Jeux en ligne' },
 ];
 
 const PUBLISH_FLAG_BY_KEY = Object.fromEntries(
