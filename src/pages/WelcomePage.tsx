@@ -370,7 +370,7 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     key: 'jeunesse', slug: '/jeunesse', image: '/wix/jeunesse/2b1f82d0.jpg',
     titleFR: 'Jeunesse', titleEN: 'Youth',
-    bodyFR: 'Un parc, des quêtes, des ateliers et le Clan Renard. Un espace dédié aux cœurs d’enfants encore dans des corps d’enfants.',
+    bodyFR: 'Un parc, des quêtes, des ateliers et Les Camps Légendaires. Un espace dédié aux cœurs d’enfants encore dans des corps d’enfants.',
     bodyEN: 'A park, quests, workshops and the Fox Clan. A dedicated space for young hearts still in young bodies.',
     ctaFR: 'Voir le village',         ctaEN: 'See the village',
     leftFR: '07 · Village jeunesse', leftEN: '07 · Youth village',

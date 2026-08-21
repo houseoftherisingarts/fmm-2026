@@ -85,6 +85,108 @@ const SCHEDULE = [
   },
 ];
 
+// ── Petit glossaire de l'horaire ────────────────────────────────────
+// Cliquer un événement de l'horaire ouvre une petite fiche qui explique
+// ce que c'est (demande d'Alex, 2026-08-20). Le premier libellé dont un
+// mot-clé apparaît dans le nom de l'événement gagne; les événements sans
+// fiche (spectacles d'artistes, ouverture des portes déjà claire) ne
+// sont simplement pas cliquables. Textes = premier jet, à raffiner.
+const strip = (x: string) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const EVENT_INFO: Array<{ keys: string[]; FR: string; EN: string }> = [
+  { keys: ['finale de joute', 'joute'],
+    FR: 'La joute équestre : deux cavaliers en armure s’élancent l’un vers l’autre au galop, lance au poing, pour rompre leur bois sur l’écu de l’adversaire. Présentée par l’Association Médiévale du Québec (AMQ).',
+    EN: 'The mounted joust: two armoured riders charge each other at full gallop, lance in hand, to break their lance on the opponent’s shield. Presented by the Association Médiévale du Québec (AMQ).' },
+  { keys: ['jeu du peuple'],
+    FR: 'Les chevaliers de l’AMQ invitent le public dans l’arène : jeux d’adresse et d’audace où petits et grands se mesurent aux cavaliers.',
+    EN: 'The AMQ knights invite the public into the arena: games of skill and daring where young and old measure up to the riders.' },
+  { keys: ['chevaliers'],
+    FR: 'Les chevaliers de l’AMQ et leurs destriers : démonstrations de jeux équestres médiévaux, d’adresse à cheval et de maniement d’armes.',
+    EN: 'The AMQ knights and their chargers: demonstrations of medieval mounted games, horseback skill and weapons handling.' },
+  { keys: ['clinique equestre', 'jeu equestre'],
+    FR: 'Jeux médiévaux à cheval, encadrés par l’AMQ : joutes légères, anneaux, adresse à la lance, dans une ambiance conviviale et sécuritaire.',
+    EN: 'Medieval mounted games, hosted by the AMQ: light jousting, rings, lance skill, in a friendly and safe setting.' },
+  { keys: ['combat viking', 'combats vikings'],
+    FR: 'Les clans s’affrontent en mêlée, boucliers levés et acier émoussé : du combat viking mené par des combattants entraînés.',
+    EN: 'The clans clash in melee, shields raised and blunted steel: Viking combat performed by trained fighters.' },
+  { keys: ['demonstration de forge', 'forge'],
+    FR: 'Le forgeron travaille le fer au feu et à l’enclume, sous vos yeux : chauffe, martelage, trempe, comme il y a mille ans.',
+    EN: 'The blacksmith works iron at fire and anvil before your eyes: heating, hammering, quenching, as a thousand years ago.' },
+  { keys: ['herboristerie'],
+    FR: 'Un parcours guidé parmi les plantes : reconnaître, cueillir et préparer les remèdes et infusions d’autrefois.',
+    EN: 'A guided walk among the plants: recognizing, gathering and preparing the remedies and infusions of old.' },
+  { keys: ['tissage'],
+    FR: 'Du fil à l’étoffe : démonstration de tissage et de filage sur les métiers d’époque du village paysan.',
+    EN: 'From thread to cloth: weaving and spinning demonstrated on the peasant village’s period looms.' },
+  { keys: ['cotte de mailles'],
+    FR: 'Anneau par anneau, l’artisan assemble la cotte de mailles : l’armure souple qui a protégé les guerriers pendant des siècles.',
+    EN: 'Ring by ring, the artisan assembles chainmail: the flexible armour that protected warriors for centuries.' },
+  { keys: ['equarrissage'],
+    FR: 'À la hache et au fil, la bille de bois devient poutre : l’équarrissage, geste fondateur de la charpente ancestrale.',
+    EN: 'By axe and line, the log becomes a beam: squaring, the founding gesture of ancestral carpentry.' },
+  { keys: ['gravure sur os'],
+    FR: 'Motifs et runes gravés dans l’os, comme sur les artefacts retrouvés dans les campements nordiques.',
+    EN: 'Patterns and runes engraved in bone, as on artifacts found in Norse camps.' },
+  { keys: ['planage'],
+    FR: 'Le planage de bois ancestral : lisser la planche au rabot et à la plane, sans machine, à la seule force du geste.',
+    EN: 'Ancestral wood planing: smoothing the board with plane and drawknife, no machines, by strength of hand alone.' },
+  { keys: ['fonderie'],
+    FR: 'Le métal en fusion coulé au moule, sous vos yeux : la fonderie comme la pratiquaient les artisans d’autrefois.',
+    EN: 'Molten metal poured into the mould before your eyes: foundry work as artisans practised it long ago.' },
+  { keys: ['drakkar'],
+    FR: 'Conférence sur la construction du drakkar : comment les charpentiers nordiques bâtissaient les navires qui ont traversé les mers.',
+    EN: 'A talk on drakkar construction: how Norse shipwrights built the vessels that crossed the seas.' },
+  { keys: ['concours culinaire'],
+    FR: 'Les cuisiniers du campement s’affrontent au feu de bois : plats d’inspiration d’époque, jugés et goûtés au camp viking.',
+    EN: 'The camp cooks face off over the wood fire: period-inspired dishes, judged and tasted at the Viking camp.' },
+  { keys: ['ceremonie de freya'],
+    FR: 'Cérémonie nordique de l’équinoxe : chants, feu et offrandes pour saluer le passage de la saison, dans la tradition de Freya.',
+    EN: 'Norse equinox ceremony: songs, fire and offerings to greet the turning season, in the tradition of Freya.' },
+  { keys: ['banquet'],
+    FR: 'Le grand repas du festival : tablées, service d’époque et spectacles pendant que l’on festoie. Places limitées.',
+    EN: 'The festival’s great feast: long tables, period service and shows while everyone feasts. Limited seats.' },
+  { keys: ['bridge fight', 'boat fight'],
+    FR: 'Deux équipes s’affrontent sur une passerelle étroite : le premier qui tombe a perdu. Simple, spectaculaire, et personne n’en sort sec.',
+    EN: 'Two teams battle on a narrow walkway: first one down loses. Simple, spectacular, and nobody leaves dry.' },
+  { keys: ['parade'],
+    FR: 'Troupes, clans et artisans défilent à travers le village : la grande parade du festival.',
+    EN: 'Troupes, clans and artisans march through the village: the festival’s great parade.' },
+  { keys: ['allumage du feu'],
+    FR: 'L’allumage solennel du grand feu, cœur des soirées du festival.',
+    EN: 'The solemn lighting of the great fire, heart of the festival’s evenings.' },
+  { keys: ['spectacle de feu'],
+    FR: 'Cracheurs et jongleurs de feu embrasent la nuit : un spectacle incandescent à voir une fois le soleil couché.',
+    EN: 'Fire breathers and jugglers set the night ablaze: an incandescent show once the sun is down.' },
+  { keys: ['danse aerienne'],
+    FR: 'Acrobaties aériennes sur tissus et agrès : la grâce du cirque suspendue au-dessus du festival.',
+    EN: 'Aerial acrobatics on silks and rigging: circus grace suspended above the festival.' },
+  { keys: ['marionnette geante'],
+    FR: 'Une marionnette géante déambule parmi la foule, animée par ses marionnettistes : levez les yeux.',
+    EN: 'A giant puppet roams the crowd, brought to life by its puppeteers: look up.' },
+  { keys: ['cerfs-volants'],
+    FR: 'Concours de cerfs-volants dans l’arène : fabriqués ou apportés, les plus beaux vols sont salués.',
+    EN: 'Kite contest in the arena: built or brought, the finest flights take the honours.' },
+  { keys: ['hobby horse'],
+    FR: 'Le tournoi à cheval… de bois : parcours et épreuves à dos de hobby horse, aussi sérieux que désopilant.',
+    EN: 'The tournament on… hobby horses: courses and trials astride wooden steeds, as serious as it is hilarious.' },
+  { keys: ['conference boheme', 'conference gypsy'],
+    FR: 'Conférence sur la culture bohème et la vie en caravane : l’histoire des peuples voyageurs qui inspire l’édition Caravanes et Saltimbanques.',
+    EN: 'A talk on bohemian culture and caravan life: the history of travelling peoples that inspires the Caravans and Entertainers edition.' },
+  { keys: ['vente aux encheres'],
+    FR: 'Les pièces forgées pendant la fin de semaine passent aux enchères : repartez avec un objet né sous vos yeux.',
+    EN: 'The pieces forged over the weekend go to auction: leave with an object born before your eyes.' },
+  { keys: ['burlesque'],
+    FR: 'Cabaret burlesque à la taverne, une fois la nuit tombée. Pour public averti.',
+    EN: 'Burlesque cabaret at the tavern once night falls. Mature audiences.' },
+  { keys: ['boustifaille', 'village bouffe'],
+    FR: 'Le village gustatif ouvre ses cuisines : plats d’inspiration médiévale, becquetance et ripaille pour toute la fin de semaine.',
+    EN: 'The food village opens its kitchens: medieval-inspired dishes, feasting and merrymaking all weekend long.' },
+];
+function infoFor(label: string, lang: 'FR' | 'EN'): string | null {
+  const l = strip(label);
+  const hit = EVENT_INFO.find((e) => e.keys.some((k) => l.includes(k)));
+  return hit ? hit[lang] : null;
+}
+
 type Category = 'combat' | 'crafts' | 'shows' | 'ripaille' | 'family';
 
 // ── Activity feature cards. Images sourced from public/wix/*: hashed
@@ -289,6 +391,8 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
 
   // Horaire card, repliée par défaut : cliquer déplie l'horaire 2025
   const [horaireOpen, setHoraireOpen] = useState(false);
+  // Fiche-éclair d'un événement de l'horaire (glossaire cliquable).
+  const [infoItem, setInfoItem] = useState<{ label: string; time: string; where: string; body: string } | null>(null);
   // Horaire 2026 officiel en ligne : la carte s'ouvre d'elle-même.
   useEffect(() => { if (live2026) setHoraireOpen(true); }, [live2026]);
 
@@ -1111,12 +1215,38 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                                 }} />
                         </span>
 
-                        {/* Event content */}
+                        {/* Event content. Si l'événement a une fiche au
+                            glossaire, le nom devient cliquable et ouvre la
+                            fiche-éclair (pop-up « c'est quoi, une joute ? »). */}
                         <div className="sched-content flex items-start justify-between gap-3 md:gap-5 flex-wrap pt-0.5 pb-1">
-                          <p className="font-display title-medieval text-sm md:text-base leading-snug flex-1 transition"
-                             style={{ color: 'var(--color-bone)' }}>
-                            {item.label}
-                          </p>
+                          {(() => {
+                            const body = infoFor(item.label, lang === 'FR' ? 'FR' : 'EN');
+                            if (!body) {
+                              return (
+                                <p className="font-display title-medieval text-sm md:text-base leading-snug flex-1 transition"
+                                   style={{ color: 'var(--color-bone)' }}>
+                                  {item.label}
+                                </p>
+                              );
+                            }
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => { playSelect(); setInfoItem({ label: item.label, time: item.time, where: item.where, body }); }}
+                                onPointerEnter={(e) => { if (e.pointerType === 'mouse') playHover(); }}
+                                className="font-display title-medieval text-sm md:text-base leading-snug flex-1 text-left transition cursor-pointer group/info"
+                                style={{ color: 'var(--color-bone)' }}
+                                aria-haspopup="dialog"
+                              >
+                                <span className="border-b border-dotted transition group-hover/info:text-[var(--color-amber-glow)]"
+                                      style={{ borderColor: 'rgba(216, 155, 58, 0.45)' }}>
+                                  {item.label}
+                                </span>
+                                <span aria-hidden className="ml-1.5 font-sans text-[10px] align-top"
+                                      style={{ color: 'var(--color-copper)' }}>?</span>
+                              </button>
+                            );
+                          })()}
                           <span
                             className="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 font-sans uppercase tracking-[0.2em] text-[9px] md:text-[10px]"
                             style={{
@@ -1271,6 +1401,56 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           0deg + scale + opacity). The "back" of the card carries the
           long description, the hero image, the category chip and a
           dismiss button. Backdrop click or X closes. */}
+      {/* ── Fiche-éclair de l'horaire (glossaire) ── */}
+      <AnimatePresence>
+        {infoItem && (
+          <motion.div
+            className="fixed inset-0 z-[95] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            role="dialog" aria-modal="true" aria-label={infoItem.label}
+            onClick={() => { playSelect(); setInfoItem(null); }}
+            style={{ background: 'rgba(10, 4, 6, 0.72)', backdropFilter: 'blur(6px)' }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 22, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 14, scale: 0.97 }}
+              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GildedFrame inset={10} tone="amber">
+                <div className="caravan-glass p-6 md:p-8 rounded-[15px]">
+                  <button
+                    type="button"
+                    onClick={() => { playSelect(); setInfoItem(null); }}
+                    aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
+                    className="absolute top-3 right-3 p-2 transition hover:scale-110"
+                    style={{ color: 'var(--color-amber-glow)' }}
+                  >
+                    <X size={18} />
+                  </button>
+                  <div className="flex items-center gap-2.5 font-sans uppercase tracking-[0.25em] text-[10px] mb-3"
+                       style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
+                    <span style={{ color: 'var(--color-amber-glow)' }}>{infoItem.time}</span>
+                    <span className="opacity-50">·</span>
+                    <span className="inline-flex items-center gap-1"><MapPin size={9} style={{ color: 'var(--color-copper)' }} />{infoItem.where}</span>
+                  </div>
+                  <h3 className="font-display title-medieval text-xl md:text-2xl mb-3"
+                      style={{ color: 'var(--color-bone)' }}>
+                    {infoItem.label}
+                  </h3>
+                  <p className="font-editorial text-base leading-relaxed"
+                     style={{ color: 'rgba(244, 239, 227, 0.8)' }}>
+                    {infoItem.body}
+                  </p>
+                </div>
+              </GildedFrame>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {activeActivity && (
           <motion.div

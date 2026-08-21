@@ -30,7 +30,6 @@ const SEED: ScheduleDay[] = [
       { time: '11h15–12h15', label: 'Clinique équestre',                          where: 'Arène' },
       { time: '11h30–12h00', label: 'Démonstration cotte de mailles',             where: 'Village paysan' },
       { time: '12h00–12h30', label: 'Démonstration d’équarrissage',                where: 'Village paysan' },
-      { time: '12h30–13h00', label: 'Démonstration de coulage du bronze',          where: 'Village paysan' },
       { time: '13h00–14h00', label: 'Combat viking',                              where: 'Arène' },
       { time: '14h00–14h30', label: 'Démonstration de forge',                     where: 'Village paysan' },
       { time: '14h45–15h00', label: 'Démonstration de gravure sur os',            where: 'Village paysan' },

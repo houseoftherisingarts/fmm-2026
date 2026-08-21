@@ -9,7 +9,6 @@ import { watchProgFlags, setProgFlag, PROG_FLAGS_DEFAULTS, type ProgFlags } from
 const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
   { flag: 'bestiaire',        label: 'Bestiaire des activités' },
   { flag: 'horaire',          label: 'Horaire (souvenir 2025)' },
-  { flag: 'clans',            label: 'Les Clans restants' },
   { flag: 'banquet',          label: "Banquet de l'Équinoxe" },
   { flag: 'behourd',          label: 'Tournoi de Béhourd' },
   { flag: 'ateliersJeunesse', label: 'Ateliers Jeunesse (inscriptions)' },

@@ -10,7 +10,6 @@ import { db } from '../firebase';
 export interface ProgFlags {
   bestiaire:        boolean;
   horaire:           boolean;
-  clans:             boolean;
   banquet:           boolean;
   // Incidents à gérer côté organisation avant de rouvrir la section au
   // public (décision d'Alex, 2026-08-04).
@@ -22,7 +21,6 @@ export interface ProgFlags {
 export const PROG_FLAGS_DEFAULTS: ProgFlags = {
   bestiaire:         true,
   horaire:           true,
-  clans:             true,
   banquet:           true,
   behourd:           false,
   ateliersJeunesse:  false,

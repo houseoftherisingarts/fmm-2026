@@ -9,8 +9,7 @@ import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 import { SectionBand } from './HistoirePage';
 import {
-  IconForge, IconTissage, IconMailles, IconCuisine, IconCharpente,
-  IconSculpture, IconJoaillerie, IconFonderie, IconOpenBook, IconWagon,
+  IconForge, IconTissage, IconFonderie, IconOpenBook, IconWagon,
   IconJester, IconWorld, type GameIconProps,
 } from '../components/icons/GameIcons';
 
@@ -20,15 +19,14 @@ const CinematicOpening = lazy(() => import('../components/apprendre/CinematicOpe
 
 // Workshop / formation cards, cloned from Wix /apprendre. Each craft gets
 // its own engraved icon (game-icons.net) instead of a generic hammer.
+// Contenu aligné sur l'horaire principal 2026 (demande d'Alex,
+// 2026-08-20) : seules les démonstrations réellement programmées sont
+// listées, rien n'est promis qui ne soit pas à l'horaire.
 const FORMATIONS: { name: { FR: string; EN: string }; Icon: React.FC<GameIconProps> }[] = [
-  { name: { FR: 'Démonstration de forge',  EN: 'Forge demonstration' },       Icon: IconForge },
-  { name: { FR: 'Tissage et filage',        EN: 'Weaving and spinning' },      Icon: IconTissage },
-  { name: { FR: 'Fabrication de cotte de mailles', EN: 'Chainmail making' },   Icon: IconMailles },
-  { name: { FR: 'Cuisine historique',       EN: 'Historical cooking' },        Icon: IconCuisine },
-  { name: { FR: 'Charpente traditionnelle', EN: 'Traditional carpentry' },     Icon: IconCharpente },
-  { name: { FR: 'Sculpture',                EN: 'Sculpture' },                 Icon: IconSculpture },
-  { name: { FR: 'Joaillerie',               EN: 'Jewellery' },                 Icon: IconJoaillerie },
-  { name: { FR: 'Fonderie',                 EN: 'Foundry' },                   Icon: IconFonderie },
+  { name: { FR: 'Démonstration de forge',      EN: 'Forge demonstration' },     Icon: IconForge },
+  { name: { FR: 'Parcours d’herboristerie',    EN: 'Herbalism trail' },         Icon: IconTissage },
+  { name: { FR: 'Conférence bohème',           EN: 'Bohemian talk' },           Icon: IconOpenBook },
+  { name: { FR: 'Vente aux enchères · Forge',  EN: 'Auction · Forge' },         Icon: IconFonderie },
 ];
 
 // Cultural example bullets, themed groups extracted from the Wix copy.

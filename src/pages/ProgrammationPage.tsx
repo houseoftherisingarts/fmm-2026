@@ -1,5 +1,5 @@
 import React from 'react';
-import { Swords, CalendarClock, Shield, UtensilsCrossed, Music, Baby } from 'lucide-react';
+import { Swords, CalendarClock, UtensilsCrossed, Music, Baby } from 'lucide-react';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
@@ -27,7 +27,6 @@ const ANCRES: Array<{
 }> = [
   { id: 'bestiaire', icon: Swords,          fr: 'Activités', en: 'Activities' },
   { id: 'horaire',   icon: CalendarClock,   fr: 'Horaire',   en: 'Schedule' },
-  { id: 'clans',     icon: Shield,          fr: 'Clans',     en: 'Clans' },
   { id: 'banquet',   icon: UtensilsCrossed, fr: 'Banquet',   en: 'Banquet' },
   { id: 'musique',   icon: Music,           fr: 'Musique',   en: 'Music' },
   { id: 'jeunesse',  icon: Baby,            fr: 'Jeunesse',  en: 'Youth' },
