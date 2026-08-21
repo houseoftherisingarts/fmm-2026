@@ -31,7 +31,8 @@ export const SITE = {
 export type PillarKey =
   | 'marche' | 'activites' | 'nourriture' | 'jeunesse' | 'musique'
   | 'chevaux' | 'apprendre' | 'hebergement' | 'partenaires'
-  | 'benevole' | 'histoire' | 'mariages' | 'groupes' | 'petite-monnaie';
+  | 'benevole' | 'histoire' | 'mariages' | 'groupes' | 'petite-monnaie'
+  | 'jeux';
 
 export interface Pillar {
   key: PillarKey;
