@@ -121,7 +121,7 @@ const PAIRS = [
   }],
   ['/petite-monnaie', '/en/petite-monnaie', {
     fr: { title: 'Petite Monnaie — la monnaie du Festival Médiéval de Montpellier',
-      desc: 'La monnaie du festival : achetez votre Petite Monnaie au kiosque à l'entrée et payez partout sur le site.',
+      desc: "La monnaie du festival : achetez votre Petite Monnaie au kiosque à l'entrée et payez partout sur le site.",
       h1: 'Petite Monnaie',
       body: `${FAITS_FR}<p>Le réseau cellulaire est capricieux sur le site : passez au kiosque à l'entrée, repartez avec votre Petite Monnaie et payez partout au festival.</p>` },
     en: { title: 'Petite Monnaie — the Festival Currency',
@@ -131,7 +131,7 @@ const PAIRS = [
   }],
   ['/jeux-en-ligne', '/en/online-games', {
     fr: { title: 'Jeux en ligne — Festival Médiéval de Montpellier',
-      desc: 'Les jeux médiévaux du festival jouables en ligne toute l'année : Hnefatafl (échecs vikings) en 3D, sur mobile et bureau.',
+      desc: "Les jeux médiévaux du festival jouables en ligne toute l'année : Hnefatafl (échecs vikings) en 3D, sur mobile et bureau.",
       h1: 'Jeux en ligne',
       body: `${FAITS_FR}<p>Les jeux médiévaux du festival se jouent en ligne toute l'année. Premier de la table : le Hnefatafl, le jeu d'échecs viking, en 3D, plateau 11×11, règles complètes, jouable sur mobile et au bureau.</p>` },
     en: { title: 'Online Games — Montpellier Medieval Festival',
@@ -175,8 +175,8 @@ const PAIRS = [
       desc: 'The festival community: teams and internal spaces.', h1: 'Community', body: FAITS_EN },
   }],
   ['/jeunesse/hnefatafl', '/en/youth/hnefatafl', {
-    fr: { title: 'Hnefatafl en 3D — le jeu d'échecs viking du FMM',
-      desc: 'Jouez au Hnefatafl, le jeu d'échecs viking, en 3D et gratuitement : plateau 11×11, règles complètes, mobile et bureau.',
+    fr: { title: "Hnefatafl en 3D — le jeu d'échecs viking du FMM",
+      desc: "Jouez au Hnefatafl, le jeu d'échecs viking, en 3D et gratuitement : plateau 11×11, règles complètes, mobile et bureau.",
       h1: 'Hnefatafl',
       body: `${FAITS_FR}<p>Le Hnefatafl est le jeu de stratégie des Vikings : les Raiders encerclent, les Défenseurs protègent le Roi qui doit s'échapper vers un coin. Version 3D gratuite du festival, plateau 11×11, règles complètes.</p>` },
     en: { title: '3D Hnefatafl — the FMM Viking chess game',
