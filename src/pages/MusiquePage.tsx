@@ -99,7 +99,7 @@ const AFFICHE_2026_BANDS: Band[] = [
     imageAlt:'Sarah Barbieux et Sylvain Chiasson en spectacle · Fuego Bohemio',
     website: 'http://www.troupecaravane.com',
     bioFR: 'Fondée à Montréal en 1980 par Sarah Barbieux, d’origine rom, la troupe CARAVANE porte le spectacle festif et participatif Fuego Bohemio : rumba flamenca, musique tzigane, chants et danses romanichelles. Sarah Barbieux (voix, danse, tambour) et Sylvain Chiasson (guitare, voix, flûte de pan, percussions).',
-    bioEN: 'Founded in Montreal in 1980 by Sarah Barbieux, of Roma descent, the CARAVANE troupe brings its festive, participatory show Fuego Bohemio: rumba flamenca, Romani music, songs and gypsy dance. Sarah Barbieux (voice, dance, drum) and Sylvain Chiasson (guitar, voice, pan flute, percussion).',
+    bioEN: 'Founded in Montreal in 1980 by Sarah Barbieux, of Roma descent, the CARAVANE troupe brings its festive, participatory show Fuego Bohemio: rumba flamenca, Romani music, songs and bohemian dance. Sarah Barbieux (voice, dance, drum) and Sylvain Chiasson (guitar, voice, pan flute, percussion).',
   },
   {
     name:    'Skarazula',
@@ -159,7 +159,7 @@ const AFFICHE_2026_BANDS: Band[] = [
     image:   '/wix/musique/las-noches-bohemias.webp',
     imageAlt:'Las Noches Bohemias · écusson du festival en attendant le portrait officiel',
     bioFR: 'Musique gitane et bohème venue de Montréal, où le groupe anime les soirées du Café Gitana. Guitares, voix et rythmes de feu pour le dimanche des caravanes, à l’image du thème de cette édition.',
-    bioEN: 'Gypsy and bohemian music from Montreal, where the band lights up the Café Gitana evenings. Guitars, voices and fiery rhythms for caravan Sunday, true to this edition’s theme.',
+    bioEN: 'Bohemian music from Montreal, where the band lights up the Café Gitana evenings. Guitars, voices and fiery rhythms for caravan Sunday, true to this edition’s theme.',
   },
   {
     // Plusieurs formations portent ce nom : identité exacte à confirmer

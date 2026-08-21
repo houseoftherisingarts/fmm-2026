@@ -52,15 +52,15 @@ const FEATURED = [
     cta: { FR: 'Site et paniers', EN: 'Site and baskets' },
   },
   {
-    name: 'Les Autobus du Village & Escalade Petite-Nation',
-    image: '/wix/partenaires/f033a4f4.jpg',
-    // Bannière avec son propre lettrage au centre-bas : bande-titre
-    // opaque pour que les deux textes ne se marchent pas dessus.
+    name: 'PROSON',
+    // Panneau parchemin composé (logo sombre incrusté, marges garanties),
+    // même famille que les panneaux Montpellier et MRC.
+    image: '/wix/partenaires/panel-proson.jpg',
     band: true,
-    bioFR: 'En transportant nos Vikings d’Europe et nos enfants, Les Autobus du Village nous permettent d’améliorer grandement notre programmation. Nous vous invitons à découvrir « Escalade Petite-Nation », un affilié, qui offre de magnifiques expériences locales.',
-    bioEN: 'By transporting our Vikings from Europe and our children, Les Autobus du Village let us greatly improve our programming. We invite you to discover "Escalade Petite-Nation", an affiliate offering wonderful local experiences.',
-    href: '#TODO_autobus',
-    cta: { FR: 'Escalade & Autobus', EN: 'Climbing & Coaches' },
+    bioFR: 'Sonorisation, éclairage et vidéo : PROSON, de Saint-André-Avellin, fait sonner les scènes de la Petite-Nation depuis plus de 25 ans. C’est leur expertise qui porte la voix du festival, du premier accord au dernier feu.',
+    bioEN: 'Sound, lighting and video: PROSON, from Saint-André-Avellin, has powered Petite-Nation stages for over 25 years. Their expertise carries the festival’s voice, from the first chord to the last fire.',
+    href: 'https://proson.ca/',
+    cta: { FR: 'Site de PROSON', EN: 'PROSON website' },
   },
 ];
 
