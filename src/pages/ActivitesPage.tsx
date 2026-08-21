@@ -19,7 +19,6 @@ import {
   GildedFrame,
   SectionTopRail,
   SectionBottomRail,
-  EnergyPulse,
 } from '../components/marche/atmospherics';
 
 if (typeof window !== 'undefined') {
@@ -53,7 +52,6 @@ const SCHEDULE = [
       { time: '11h15–12h15', label: 'Clinique équestre',                               where: 'Arène' },
       { time: '11h30–12h00', label: 'Démonstration cotte de mailles',                  where: 'Village paysan' },
       { time: '12h00–12h30', label: 'Démonstration d’équarrissage',                    where: 'Village paysan' },
-      { time: '12h30–13h00', label: 'Démonstration de coulage du bronze',              where: 'Village paysan' },
       { time: '13h00–14h00', label: 'Combat viking',                                   where: 'Arène' },
       { time: '14h00–14h30', label: 'Démonstration de forge',                          where: 'Village paysan' },
       { time: '14h45–15h00', label: 'Démonstration de gravure sur os',                 where: 'Village paysan' },
@@ -132,10 +130,10 @@ const ACTIVITIES: Array<{
     // restait que la bouche du marchand. Remplacée par la marchande à
     // son étal (wix/marche/17069f62), convertie au format des tuiles.
     image: '/activites/webp/marche-etal.webp', category: 'crafts' },
-  { titleFR: 'Danses et Rituels',titleEN: 'Dances & Rituals',  bodyFR: 'Völvas',                                                   bodyEN: 'Völvas',
-    descFR: 'Les völvas du clan Hullsborg dansent autour du grand feu. Rituels nordiques, cérémonie de Freya, allumage solennel : un héritage spirituel partagé sous les étoiles.',
-    descEN: 'The Hullsborg clan’s völvas dance around the great fire. Nordic rituals, Freya ceremony, solemn lighting: a shared spiritual heritage under the stars.',
-    image: '/histoire/archives/lena/thumb/2025-IMG_3550.webp', category: 'shows' },
+  { titleFR: 'Vikings',          titleEN: 'Vikings',           bodyFR: 'Campement et combats',                                     bodyEN: 'Camp and combat',
+    descFR: 'Le campement viking dresse ses tentes au cœur du festival. Combats vikings dans l’arène, concours culinaire au camp, parcours d’herboristerie : la vie nordique, grandeur nature.',
+    descEN: 'The Viking camp pitches its tents at the heart of the festival. Viking combat in the arena, cooking contest at the camp, herbalism trail: Norse life, full scale.',
+    image: '/histoire/archives/lena/thumb/2025-IMG_3550.webp', category: 'combat' },
   { titleFR: 'Espace Jeunesse',  titleEN: 'Youth Space',       bodyFR: 'Parc, jeux, animations, gardiennage',                     bodyEN: 'Park, games, activities, supervision',
     descFR: 'Un campement réservé aux jeunes seigneurs : ateliers d’écuyer, jeux d’adresse, contes, gardiennage encadré. L’enfance médiévale, mais sans la peste.',
     descEN: 'A camp reserved for young lords: squire workshops, skill games, tales, supervised babysitting. Medieval childhood, but without the plague.',
@@ -157,12 +155,12 @@ const ACTIVITIES: Array<{
     descEN: 'The equestrian clinic is on hiatus this year: it returns next edition. For experienced riders: intensive courses under the festival’s master squires.',
     image: '/activites/webp/1c869c8b.webp', category: 'family', retiree: true },
   { titleFR: 'Village Paysan',   titleEN: 'Peasant Village',   bodyFR: 'Artisans au travail',                                      bodyEN: 'Artisans at work',
-    descFR: 'Le campement des métiers : forge, tissage, équarrissage, coulage du bronze, gravure sur os. Les artisans y vivent la fin de semaine entière et travaillent sous vos yeux, entre les souches et les tentes de toile.',
-    descEN: 'The camp of trades: forge, weaving, squaring, bronze casting, bone engraving. The artisans live there all weekend and work before your eyes, among stumps and canvas tents.',
+    descFR: 'Le campement des métiers : forge, tissage, équarrissage, gravure sur os. Les artisans y vivent la fin de semaine entière et travaillent sous vos yeux, entre les souches et les tentes de toile.',
+    descEN: 'The camp of trades: forge, weaving, squaring, bone engraving. The artisans live there all weekend and work before your eyes, among stumps and canvas tents.',
     image: '/histoire/archives/lena/thumb/2025-IMG_8011.webp', category: 'crafts' },
-  { titleFR: 'Tournois',         titleEN: 'Tournaments',       bodyFR: 'Et jeux d’adresse',                                        bodyEN: 'And skill games',
-    descFR: 'Tournoi de bridge fight, combats vikings, jeux d’adresse à l’arc et au lancer de hache. Les meilleurs guerriers du festival s’affrontent pour la gloire, et un peu de bière.',
-    descEN: 'Bridge-fight tournament, Viking combat, archery and axe-throwing competitions. The festival’s best warriors face off for glory, and a bit of beer.',
+  { titleFR: 'Tournois',         titleEN: 'Tournaments',       bodyFR: 'Avec l’AMQ',                                               bodyEN: 'With the AMQ',
+    descFR: 'Les activités de l’Association Médiévale du Québec (AMQ), à l’horaire dans l’arène : les Chevaliers, la Joute AMQ, le Jeu du peuple et la Finale de joute du dimanche.',
+    descEN: 'The activities of the Association Médiévale du Québec (AMQ), scheduled in the arena: the Knights, the AMQ Joust, the People’s Game and Sunday’s Joust Final.',
     image: '/activites/webp/4027b51a.webp', category: 'combat' },
 ];
 
@@ -511,38 +509,6 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           scrollTrigger: { trigger: '.sched-day-tabs', start: 'top 85%', once: true },
         }
       );
-
-      // ── Vikings: panel flips up from the bottom, then chips inscribe
-      //    as glowing runes (scale + blur + tiny rotate for character).
-      gsap.set('.vikings-panel', {
-        autoAlpha: 0,
-        y: 80,
-        rotationX: 28,
-        scale: 0.95,
-        transformPerspective: 1000,
-        transformOrigin: 'center bottom',
-      });
-      gsap.to('.vikings-panel', {
-        autoAlpha: 1,
-        y: 0,
-        rotationX: 0,
-        scale: 1,
-        duration: 1.2,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: '.vikings-section', start: 'top 82%', once: true },
-        clearProps: 'transform',
-      });
-      gsap.set('.vikings-chip', { autoAlpha: 0, scale: 0.4, rotation: -18, filter: 'blur(10px)' });
-      gsap.to('.vikings-chip', {
-        autoAlpha: 1,
-        scale: 1,
-        rotation: 0,
-        filter: 'blur(0px)',
-        duration: 0.85,
-        stagger: 0.14,
-        ease: 'back.out(2)',
-        scrollTrigger: { trigger: '.vikings-section', start: 'top 72%', once: true },
-      });
 
       // ── Cross-promo cards: slide in from opposite sides. Left
       //    card kicks in from the left, right card from the right,
@@ -1207,99 +1173,6 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </section>
       )}
 
-      {/* ── Vikings: Compendium entry ── */}
-      {progFlags.clans && (
-      <section id="clans" className="vikings-section relative py-16 md:py-24 overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <SectionTopRail
-            index="03"
-            name={t.vikingsRailName}
-            meta={t.vikingsMeta}
-            metaValue={t.vikingsMetaValue}
-            className="sec-rail mb-10 md:mb-14"
-          />
-          {/* Pleine largeur avec les VRAIS boucliers peints du festival
-              (les PNG détourés venaient du site Wix; les fichiers
-              /clans/shield-*.png n'ont jamais existé, la section
-              n'affichait que des pastilles de repli). 🚨 Les blasons ne
-              portent PAS de nom de clan : l'association bouclier-clan
-              n'est écrite nulle part et un mauvais appariement serait
-              pire que pas de nom. À câbler quand Alex la confirme. */}
-          <div className="vikings-panel relative">
-            <EnergyPulse className="absolute inset-0 -z-0 opacity-40" />
-            <GildedFrame inset={14} tone="amber" className="relative">
-              <div className="caravan-glass p-8 md:p-14 text-center">
-                <Eyebrow tone="amber" className="mb-3 inline-flex items-center gap-3 justify-center">
-                  <HexMark />
-                  {t.vikingsEyebrow}
-                  <HexMark />
-                </Eyebrow>
-                <DisplayTitle size="lg" glow className="mb-4">{t.vikingsTitle}</DisplayTitle>
-                <p className="font-editorial text-base md:text-xl leading-relaxed mb-3"
-                   style={{ color: 'rgba(244, 239, 227, 0.85)' }}>
-                  {t.vikingsBody}
-                </p>
-
-                {/* Appariement blason-clan tiré des attributs alt du site
-                    Wix d'origine (03-activites.html) : cecafbd2 est
-                    « hullsborg coin », 90620f5a est « Managarm », et
-                    bea10ace + 4b9fc50f sont deux faces « bersrkr coin »,
-                    ce que les runes du second (BIRSIRYRS) confirment. */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 items-start mt-8">
-                  {[
-                    { src: '/clans/bouclier-1-plein.webp', nom: 'Hullsborg' },
-                    { src: '/clans/bouclier-4-plein.webp', nom: 'Managarm' },
-                    { src: '/clans/bouclier-2-plein.webp', nom: 'Berserkirs' },
-                    { src: '/clans/bouclier-3-plein.webp', nom: 'Berserkirs' },
-                  ].map(({ src, nom }, i) => (
-                    <div
-                      key={src}
-                      className="vikings-chip group relative flex items-center justify-center"
-                      style={{
-                        filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.6)) drop-shadow(0 0 26px rgba(232,177,74,0.14))',
-                      }}
-                    >
-                      {/* Médaillon rond. Les fichiers /clans/bouclier-N.webp
-                          sont recomposés (2026-08-12) depuis les originaux
-                          Wix entiers (hachage complet, sans /v1/fill) : les
-                          512×512 précédents restaient rognés haut et bas.
-                          Chaque blason est centré sur un canvas carré
-                          transparent 1000×1000, son pixel opaque le plus
-                          éloigné posé à 96 % du rayon : cercle complet,
-                          les quatre au même gabarit, aucun crop possible. */}
-                      <div className="flex flex-col items-center gap-4">
-                        <div
-                          className="w-full max-w-[220px] aspect-square rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-[2deg]"
-                          style={{
-                            border: '1px solid rgba(216, 155, 58, 0.35)',
-                            boxShadow: 'inset 0 0 24px rgba(0,0,0,0.55)',
-                            animationDelay: `${i * 0.4}s`,
-                          }}
-                        >
-                          <img
-                            src={src}
-                            alt={nom}
-                            loading="lazy"
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <p
-                          className="font-display title-medieval uppercase tracking-[0.35em] text-[11px] md:text-xs"
-                          style={{ color: 'var(--color-amber-glow)' }}
-                        >
-                          {nom}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </GildedFrame>
-          </div>
-        </div>
-      </section>
-      )}
-
       {/* ── Banquet + Youth: Champion-select cross-promo ── */}
       {progFlags.banquet && (
       <section id="banquet" className="cross-section py-16 md:py-24">
@@ -1578,12 +1451,6 @@ const FR = {
   nextCategory: 'Catégorie suivante',
   meterCountdown: (j: number) => `Le festival ouvre dans ${j} jours`,
   meterToday:     'Le festival est commencé',
-  vikingsRailName: 'Les Clans restants',
-  vikingsMeta: 'Présents',
-  vikingsMetaValue: 'III',
-  vikingsEyebrow: 'Vous avez aimé l’édition Viking de 2025 ?',
-  vikingsTitle: 'Les Clans restants',
-  vikingsBody: 'Ces clans sont encore des nôtres cette année.',
   behourdRailName: 'Tournoi de Behourd',
   behourdMeta: 'Édition',
   behourdEyebrow: 'Inscription anticipée',
@@ -1648,12 +1515,6 @@ const EN: typeof FR = {
   nextCategory: 'Next category',
   meterCountdown: (j: number) => `The festival opens in ${j} days`,
   meterToday:     'The festival has begun',
-  vikingsRailName: 'The remaining clans',
-  vikingsMeta: 'Present',
-  vikingsMetaValue: 'III',
-  vikingsEyebrow: 'Loved the 2025 Viking edition?',
-  vikingsTitle: 'The remaining clans',
-  vikingsBody: 'These clans are still with us this year.',
   behourdRailName: 'Behourd Tournament',
   behourdMeta: 'Edition',
   behourdEyebrow: 'Early registration',

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {ArrowUpRight, Check, Tent, TreePine, Compass, Swords} from 'lucide-react';
+import {ArrowUpRight, Check, Tent, TreePine, Compass} from 'lucide-react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -9,7 +8,7 @@ import { db, isFirebaseReady } from '../firebase';
 import { watchProgFlags, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../firebase/programmationFlags';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
-import { Reveal, Stagger, StaggerItem, RevealImage, ChapterIntro, ScrollProgress } from '../components/scroll';
+import { Reveal, Stagger, StaggerItem, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 
@@ -90,66 +89,8 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
         />
       )}
 
-      {/* Jeux: playable medieval games */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <ChapterIntro eyebrow={t.jeuxEyebrow} title={t.jeuxTitle} align="center" className="mb-8 md:mb-10" />
-          <Stagger className="grid md:grid-cols-2 gap-5 md:gap-6" stagger={0.1}>
-            <StaggerItem
-              as="article"
-              className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col"
-            >
-              <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mb-5">
-                <Swords size={24} className="text-brass" />
-              </div>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">Hnefatafl</h3>
-              <div className="divider-brass w-16 mb-4" />
-              <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.hnefataflBody}</p>
-              <Link
-                to={lang === 'EN' ? '/en/youth/hnefatafl' : '/jeunesse/hnefatafl'}
-                className="self-start inline-flex items-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
-              >
-                {t.hnefataflCta}
-                <ArrowUpRight size={14} />
-              </Link>
-            </StaggerItem>
-            <StaggerItem
-              as="article"
-              className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col items-start opacity-70"
-            >
-              <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.jeuxComingSoon}</p>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.jeuxMoreTitle}</h3>
-              <div className="divider-brass w-16 mb-4" />
-              <p className="font-editorial text-base text-ivory-soft flex-1">{t.jeuxMoreBody}</p>
-            </StaggerItem>
-          </Stagger>
-        </div>
-      </section>
-
-      {/* Clan Renard feature */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <Motes className="opacity-40" count={14} />
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-          <Reveal from="left">
-            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.clanEyebrow}</p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.clanTitle}</h2>
-            <div className="divider-brass w-20 mb-5" />
-            <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-6">{t.clanBody}</p>
-            {/* Clan Renard CTA dropped until a real sub-page or external
-                URL exists for the clan. Body copy still explains who they are. */}
-          </Reveal>
-          <Reveal from="right" delay={0.1}>
-            <RevealImage
-              src="/wix/jeunesse/2b1f82d0.jpg"
-              alt={t.clanTitle}
-              from="right"
-              className="aspect-[4/3] rounded-card border"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/jeunesse/2b1f82d0.jpg'; }}
-            />
-          </Reveal>
-        </div>
-      </section>
-
+      {/* La section jeunesse est présentée par Les Camps Légendaires
+          (demande d'Alex, 2026-08-20) : Clan Renard et Zaryzad retirés. */}
       {/* Saturday workshop signup */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <Motes className="opacity-40" count={14} />
@@ -222,25 +163,16 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
         </div>
       </section>
 
-      {/* Camps + Zaryzad partner cards */}
+      {/* Camps Légendaires : présentateur de la section jeunesse */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <Stagger className="grid md:grid-cols-2 gap-5 md:gap-6" stagger={0.1}>
-            <StaggerItem as="article" className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col">
+          <Stagger className="grid gap-5 md:gap-6" stagger={0.1}>
+            <StaggerItem as="article" className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col max-w-3xl mx-auto w-full">
               <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.campsEyebrow}</p>
               <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.campsTitle}</h3>
               <div className="divider-brass w-16 mb-4" />
               <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.campsBody}</p>
               {/* Camps Légendaires CTA dropped until a real signup URL exists. */}
-            </StaggerItem>
-            <StaggerItem as="article" className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col">
-              <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.zaryzadEyebrow}</p>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">Zaryzad</h3>
-              <div className="divider-brass w-16 mb-4" />
-              <p className="font-editorial text-base text-ivory-soft mb-2 flex-1">{t.zaryzadBody}</p>
-              <p className="font-editorial italic text-sm text-brass mb-5">438 888 2800</p>
-              {/* Zaryzad CTA dropped until the partner URL is provided.
-                  The phone number above stays as the live contact path. */}
             </StaggerItem>
           </Stagger>
           <Reveal className="max-w-2xl mx-auto mt-10 md:mt-12 text-center">
@@ -301,13 +233,9 @@ const Field: React.FC<FieldProps> = ({ label, required, children }) => (
 
 const FR = {
   home: 'Accueil',
-  eyebrow: 'Pour les cœurs d’enfants',
+  eyebrow: 'Présenté par Les Camps Légendaires',
   title: 'Village Jeunesse & Jeux',
   intro: 'Le FMM tient à offrir un espace aussi adapté que possible pour les cœurs d’enfants qui sont encore dans des corps d’enfants. Cette année (en plus d’avoir adapté les prix aux familles), nous avons agrandi le site, ajouté du confort et bonifié les ateliers et activités pour les jeunes.',
-  clanEyebrow: 'Pédagogie nature',
-  clanTitle: 'Clan Renard',
-  clanBody: 'L’art de la vie en forêt, ensemble ! Espace de connexion avec la nature, inspiré du mode de vie de nos ancêtres, de la pédagogie coyote et du modèle des 8 Shields. Venez apprendre les bases de la survie à travers les jeux, la musique et la joie de vivre.',
-  clanCta: 'Voir le clan',
   formEyebrow: 'Inscriptions',
   formTitle: 'Ateliers du samedi & dimanche',
   ateliersSoon: 'Les inscriptions aux ateliers ouvriront sous peu.',
@@ -319,39 +247,25 @@ const FR = {
   dimanche: 'Dimanche 27 septembre',
   telephone: 'Téléphone', email: 'Courriel',
   details: 'Détails pertinents à savoir',
-  cashReminder: 'Je me souviens d’apporter 10 $ comptant par atelier à la tente du Clan Renard.',
+  cashReminder: 'Je me souviens d’apporter 10 $ comptant par atelier à la tente jeunesse.',
   send: 'S’inscrire',
   submitting: 'Envoi…',
   error: 'Une erreur est survenue.',
   thanksTitle: 'Merci, c’est noté !',
-  thanksBody: 'Nous avons reçu votre inscription. À bientôt à la tente du Clan Renard.',
-  campsEyebrow: 'Camp partenaire',
+  thanksBody: 'Nous avons reçu votre inscription. À bientôt à la tente jeunesse.',
+  campsEyebrow: 'Présentateur officiel de la section jeunesse',
   campsTitle: 'Les Camps Légendaires',
   campsBody: 'Maniement de l’épée, tir à l’arc, grands jeux en équipe, quêtes immersives et plus. Depuis 2005, leur mission éducative est au cœur du camp. Par leurs activités, ils contribuent au développement positif des enfants et des ados.',
   campsCta: 'Voir le camp',
-  zaryzadEyebrow: 'Grandeur nature',
-  zaryzadBody: 'Zaryzad est un grandeur nature fantastique. Leurs histoires et quêtes sauront enchanter les plus jeunes. Inscriptions ou questions :',
-  zaryzadCta: 'Site de Zaryzad',
   youthYourEyebrow: 'Partenariats jeunesse',
   youthYourBody: 'Cet espace est réservé à un futur partenaire jeunesse souhaitant contribuer à faire évoluer le projet et animer les cœurs d’enfants.',
-  jeuxEyebrow: 'Jeux médiévaux',
-  jeuxTitle: 'Jeux médiévaux en ligne',
-  hnefataflBody: 'Le jeu d’échecs viking, en 3D. Les Raiders encerclent, les Défenseurs protègent le Roi qui doit s’échapper vers un coin. Plateau 11×11, règles complètes, jouable sur mobile et au bureau.',
-  hnefataflCta: 'Jouer maintenant',
-  jeuxComingSoon: 'Bientôt',
-  jeuxMoreTitle: 'D’autres jeux à venir',
-  jeuxMoreBody: 'On prépare d’autres jeux d’époque pour l’édition 2026. Reviens nous voir : la table se remplit.',
 };
 
 const EN = {
   home: 'Home',
-  eyebrow: 'For young hearts',
+  eyebrow: 'Presented by Les Camps Légendaires',
   title: 'Youth & Games Village',
   intro: 'FMM strives to offer the most kid-friendly space possible for the young-hearted still living in young bodies. This year (beyond family-adjusted prices), we expanded the site, added comfort, and enriched the workshops and activities for kids.',
-  clanEyebrow: 'Nature pedagogy',
-  clanTitle: 'Clan Renard',
-  clanBody: 'The art of living in the forest, together. A space to reconnect with nature, inspired by our ancestors’ ways of life, coyote pedagogy, and the 8 Shields model. Come learn survival basics through play, music and joy.',
-  clanCta: 'See the clan',
   formEyebrow: 'Sign-ups',
   formTitle: 'Saturday & Sunday workshops',
   ateliersSoon: 'Workshop sign-ups will open shortly.',
@@ -363,28 +277,18 @@ const EN = {
   dimanche: 'Sunday September 27',
   telephone: 'Phone', email: 'Email',
   details: 'Anything relevant we should know',
-  cashReminder: 'I’ll remember to bring $10 cash per workshop to the Clan Renard tent.',
+  cashReminder: 'I’ll remember to bring $10 cash per workshop to the youth tent.',
   send: 'Sign up',
   submitting: 'Sending…',
   error: 'Something went wrong.',
   thanksTitle: 'Thanks, noted!',
-  thanksBody: 'We received your registration. See you at the Clan Renard tent.',
-  campsEyebrow: 'Partner camp',
+  thanksBody: 'We received your registration. See you at the youth tent.',
+  campsEyebrow: 'Official presenter of the youth section',
   campsTitle: 'Les Camps Légendaires',
   campsBody: 'Swordsmanship, archery, large team games, immersive quests and more. Since 2005, their educational mission has been at the camp’s heart. Through their activities they contribute to the positive development of kids and teens.',
   campsCta: 'See the camp',
-  zaryzadEyebrow: 'Live-action role-play',
-  zaryzadBody: 'Zaryzad is a fantasy LARP. Their stories and quests enchant young guests. Registrations or questions:',
-  zaryzadCta: 'Visit Zaryzad',
   youthYourEyebrow: 'Youth partners',
   youthYourBody: 'This space is reserved for a future youth partner wishing to contribute to the project and animate young hearts.',
-  jeuxEyebrow: 'Medieval games',
-  jeuxTitle: 'Medieval games online',
-  hnefataflBody: 'The Viking chess game, in 3D. Raiders surround, Defenders protect the King who must escape to a corner. 11×11 board, full rules, playable on mobile and desktop.',
-  hnefataflCta: 'Play now',
-  jeuxComingSoon: 'Coming soon',
-  jeuxMoreTitle: 'More games on the way',
-  jeuxMoreBody: 'We\'re preparing more period games for the 2026 edition. Check back: the table is filling up.',
 };
 
 export default JeunessePage;
