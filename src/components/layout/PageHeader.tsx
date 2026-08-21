@@ -82,7 +82,7 @@ const PageHeader: React.FC<Props> = ({
 
       <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-28 md:pt-36 pb-12 md:pb-16 grid lg:grid-cols-[1.05fr_1fr] gap-x-12 gap-y-12 items-center">
         {/* LEFT: text column */}
-        <div className="lg:pr-6">
+        <div className="min-w-0 lg:pr-6">
           <p className="font-editorial italic uppercase tracking-[0.45em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-7 inline-flex items-center gap-3">
             <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
             {eyebrow}
@@ -90,7 +90,7 @@ const PageHeader: React.FC<Props> = ({
 
           <h1
             className="font-display uppercase leading-[0.95] tracking-[0.02em] mb-2"
-            style={{ fontSize: 'clamp(2.6rem, 6.8vw, 5.6rem)' }}
+            style={{ fontSize: 'clamp(1.8rem, 8.2vw, 5.6rem)' }}
           >
             <span
               className="block bg-gradient-to-br from-ivory via-ivory to-[var(--color-amber-glow)] bg-clip-text text-transparent"

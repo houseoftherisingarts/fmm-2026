@@ -48,9 +48,9 @@ const ConsentBanner: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', damping: 24, stiffness: 200 }}
-          className="fixed inset-x-3 bottom-3 md:inset-x-auto md:bottom-6 md:right-6 md:max-w-md z-50"
+          className="fixed inset-x-3 bottom-3 md:inset-x-auto md:bottom-6 md:right-6 md:max-w-md z-[100]"
         >
-          <div className="glass-dark text-parchment p-5 md:p-6 rounded-card">
+          <div className="text-parchment p-5 md:p-6 rounded-card border border-[rgba(216,155,58,0.35)] bg-[rgba(14,7,10,0.96)] backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
             <p className="font-editorial text-sm leading-relaxed mb-4">{t.body}</p>
             <div className="flex gap-3">
               <button

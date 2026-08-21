@@ -132,7 +132,7 @@ const CinematicHero: React.FC<Props> = ({
               { label: countdownLabels.minutes, value: countdown.minutes },
               { label: countdownLabels.seconds, value: countdown.seconds },
             ].map((b) => (
-              <div key={b.label} className="glass-dark text-center py-3 md:py-4 rounded-card">
+              <div key={b.label} className="text-center py-3 md:py-4 rounded-card border border-white/10 bg-black/45 backdrop-blur-md">
                 <div className="font-display text-2xl md:text-4xl text-brass tabular-nums">
                   {String(b.value).padStart(2, '0')}
                 </div>

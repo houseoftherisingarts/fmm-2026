@@ -536,7 +536,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
 
                 {/* scroll cue: quiet invitation; click it to auto-play the
                     prologue at a cinematic pace */}
-                <motion.div className="mi-cue pointer-events-none absolute inset-x-0 bottom-[5vh] flex justify-center" style={{ opacity: cue }}>
+                <motion.div className="mi-cue pointer-events-none absolute inset-x-0 bottom-[12vh] sm:bottom-[5vh] flex justify-center" style={{ opacity: cue }}>
                   <button
                     type="button"
                     onClick={playSequence}

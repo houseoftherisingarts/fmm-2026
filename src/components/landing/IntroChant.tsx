@@ -100,7 +100,7 @@ const IntroChant: React.FC<{
             <circle cx="18" cy="16" r="3" />
           </svg>
         )}
-        {chante ? 'Chant en cours' : 'Ajouter le chant'}
+        <span className="hidden sm:inline">{chante ? 'Chant en cours' : 'Ajouter le chant'}</span>
       </button>
     </>
   );
