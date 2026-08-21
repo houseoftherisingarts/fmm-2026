@@ -21,23 +21,50 @@ const extraPublic = [
   '/ressources',         '/en/resources',
   '/contact',            '/en/contact',
   '/jeunesse/hnefatafl', '/en/youth/hnefatafl',
+  '/billets',            '/en/tickets',
 ];
-const urls = ['/', '/en', ...slugs, ...extraPublic, '/politique-de-confidentialite', '/en/privacy'];
+// Paires FR/EN pour les hreflang. Les slugs de PILLARS arrivent déjà en
+// paires (FR, EN); on y ajoute les paires manuelles.
+const pairs = [['/', '/en']];
+for (let i = 0; i < slugs.length; i += 2) pairs.push([slugs[i], slugs[i + 1]]);
+for (let i = 0; i < extraPublic.length; i += 2) pairs.push([extraPublic[i], extraPublic[i + 1]]);
+pairs.push(['/politique-de-confidentialite', '/en/privacy']);
+
+const urls = pairs.flat();
+const altOf = Object.fromEntries(pairs.flatMap(([fr, en]) => [[fr, [fr, en]], [en, [fr, en]]]));
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.map((u) => {
+  const [fr, en] = altOf[u];
+  return `  <url>
     <loc>${ROOT}${u}</loc>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="${ROOT}${fr}" />
+    <xhtml:link rel="alternate" hreflang="en-CA" href="${ROOT}${en}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${ROOT}${fr}" />
     <lastmod>${today}</lastmod>
     <changefreq>${u === '/' || u === '/en' ? 'weekly' : 'monthly'}</changefreq>
     <priority>${u === '/' || u === '/en' ? '1.0' : '0.7'}</priority>
-  </url>`).join('\n')}
+  </url>`;
+}).join('\n')}
 </urlset>
 `;
 
+// Les robots IA (GPTBot, ClaudeBot, PerplexityBot...) restent les bienvenus :
+// être cité par les moteurs génératifs est voulu (stratégie GEO).
 const robots = `User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /compte
+Disallow: /en/account
+Disallow: /messages
+Disallow: /en/messages
+Disallow: /espace-benevole
+Disallow: /en/volunteer-space
+Disallow: /profil/
+Disallow: /en/profile/
+Disallow: /communaute
+Disallow: /en/community
 
 Sitemap: ${ROOT}/sitemap.xml
 `;

@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "deploy": "VITE_SITE_MODE=placeholder npm run build && firebase deploy --only hosting:festivalmedieval"
+    "deploy": "VITE_SITE_MODE=placeholder npm run build && firebase deploy --only hosting:festivalmedieval && node scripts/indexnow-ping.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.0",
