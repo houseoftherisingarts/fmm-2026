@@ -58,6 +58,9 @@ export const PILLARS: Pillar[] = [
   { key: 'benevole',    slug: { FR: '/benevole',     EN: '/en/volunteer' },  label: { FR: 'Devenir Bénévole',            EN: 'Become a Volunteer' },      short: { FR: 'Devenir bénévole', EN: 'Become a volunteer' } },
   // Slug identique FR/EN : « Petite Monnaie » est un nom de marque.
   { key: 'petite-monnaie', slug: { FR: '/petite-monnaie', EN: '/en/petite-monnaie' }, label: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' }, short: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' } },
+  // Jeux médiévaux jouables en ligne, sortis de la section Jeunesse
+  // (demande d'Alex, 2026-08-20) pour vivre dans leur propre onglet.
+  { key: 'jeux', slug: { FR: '/jeux-en-ligne', EN: '/en/online-games' }, label: { FR: 'Jeux en ligne', EN: 'Online Games' }, short: { FR: 'Jeux en ligne', EN: 'Online games' } },
 ];
 
 export const PILLAR_BY_KEY: Record<PillarKey, Pillar> = Object.fromEntries(
