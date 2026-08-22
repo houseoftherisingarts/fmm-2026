@@ -18,6 +18,7 @@ const FORM_ACTION =
   'https://docs.google.com/forms/d/e/1FAIpQLSftFlYqrqYZwVAZyLuC23juIWAguAYVmj6r6uaMEi8AWYa7kg/formResponse';
 
 const E = {
+  courriel:   'emailAddress',
   nom:        'entry.822777972',
   compagnie:  'entry.484520493',
   metier:     'entry.901312965',
@@ -49,9 +50,49 @@ const ELECTRICITE = ['oui', 'non', "non, mais j'aimerais charger ma telephone de
 const OUI_NON = ['Oui', 'Non'];
 
 const REQUIRED: Key[] = [
-  'nom', 'compagnie', 'metier', 'liens', 'deja', 'tel', 'nombre',
+  'courriel', 'nom', 'compagnie', 'metier', 'liens', 'deja', 'tel', 'nombre',
   'apparence', 'dimensions', 'electricite', 'camping', 'region',
 ];
+
+const Field: React.FC<{ k: Key; label: string; hint?: string; err: boolean; reqMsg: string; children: React.ReactNode }> = ({ k, label, hint, err, reqMsg, children }) => (
+  <div data-missing={err ? 'true' : undefined}>
+    <span className="block font-display text-xs mb-2 tracking-[0.18em]" style={{ color: '#D8B05A' }}>
+      {label}{REQUIRED.includes(k) && <span className="ml-1" style={{ color: '#E07A7A' }}>*</span>}
+    </span>
+    {children}
+    {err
+      ? <p className="font-sans text-xs mt-1.5" style={{ color: '#E07A7A' }}>{reqMsg}</p>
+      : hint && <p className="font-sans text-xs mt-1.5" style={{ color: 'rgba(244,239,227,0.45)' }}>{hint}</p>}
+  </div>
+);
+
+const Chips: React.FC<{ k: Key; value: string; onChange: (v: string) => void; options: string[]; labels?: string[] }> = ({ k, value, onChange, options, labels }) => (
+  <div className="flex flex-col gap-2.5">
+    {options.map((o, i) => {
+      const active = value === o;
+      return (
+        <motion.label
+          key={o}
+          whileTap={{ scale: 0.985 }}
+          className="relative cursor-pointer text-left px-4 py-3 border font-sans text-sm transition-all flex items-center gap-3"
+          style={{
+            background: active ? 'rgba(216,176,90,0.15)' : 'rgba(26,5,11,0.4)',
+            borderColor: active ? '#D8B05A' : 'rgba(244,239,227,0.15)',
+            color: active ? '#D8B05A' : 'rgba(244,239,227,0.85)',
+            boxShadow: active ? '0 0 20px rgba(196,164,90,0.18)' : 'none',
+          }}
+        >
+          <input type="radio" name={k} value={o} checked={active} onChange={() => onChange(o)} className="sr-only" />
+          <span className="shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center"
+            style={{ borderColor: active ? '#D8B05A' : 'rgba(244,239,227,0.35)', background: active ? '#D8B05A' : 'transparent' }}>
+            {active && <Check size={10} color="#1a050b" />}
+          </span>
+          <span>{labels ? labels[i] : o}</span>
+        </motion.label>
+      );
+    })}
+  </div>
+);
 
 const FaubourgPage: React.FC = () => {
   useCaravanPage();
@@ -93,46 +134,6 @@ const FaubourgPage: React.FC = () => {
 
   const fieldCls = 'witcher-input font-sans';
   const err = (k: Key) => touched && REQUIRED.includes(k) && !v[k].trim();
-
-  const Field: React.FC<{ k: Key; label: string; hint?: string; children: React.ReactNode }> = ({ k, label, hint, children }) => (
-    <div data-missing={err(k) ? 'true' : undefined}>
-      <span className="block font-display text-xs mb-2 tracking-[0.18em]" style={{ color: '#D8B05A' }}>
-        {label}{REQUIRED.includes(k) && <span className="ml-1" style={{ color: '#E07A7A' }}>*</span>}
-      </span>
-      {children}
-      {err(k)
-        ? <p className="font-sans text-xs mt-1.5" style={{ color: '#E07A7A' }}>{t.required}</p>
-        : hint && <p className="font-sans text-xs mt-1.5" style={{ color: 'rgba(244,239,227,0.45)' }}>{hint}</p>}
-    </div>
-  );
-
-  const Chips: React.FC<{ k: Key; options: string[]; labels?: string[] }> = ({ k, options, labels }) => (
-    <div className="flex flex-col gap-2.5">
-      {options.map((o, i) => {
-        const active = v[k] === o;
-        return (
-          <motion.label
-            key={o}
-            whileTap={{ scale: 0.985 }}
-            className="relative cursor-pointer text-left px-4 py-3 border font-sans text-sm transition-all flex items-center gap-3"
-            style={{
-              background: active ? 'rgba(216,176,90,0.15)' : 'rgba(26,5,11,0.4)',
-              borderColor: active ? '#D8B05A' : 'rgba(244,239,227,0.15)',
-              color: active ? '#D8B05A' : 'rgba(244,239,227,0.85)',
-              boxShadow: active ? '0 0 20px rgba(196,164,90,0.18)' : 'none',
-            }}
-          >
-            <input type="radio" name={k} value={o} checked={active} onChange={() => set(k)(o)} className="sr-only" />
-            <span className="shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center"
-              style={{ borderColor: active ? '#D8B05A' : 'rgba(244,239,227,0.35)', background: active ? '#D8B05A' : 'transparent' }}>
-              {active && <Check size={10} color="#1a050b" />}
-            </span>
-            <span>{labels ? labels[i] : o}</span>
-          </motion.label>
-        );
-      })}
-    </div>
-  );
 
   return (
     <>
@@ -176,26 +177,27 @@ const FaubourgPage: React.FC = () => {
             <form onSubmit={submit} noValidate className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
               <div className="grid gap-8 max-w-2xl">
                 <div className="grid gap-8 sm:grid-cols-2">
-                  <Field k="nom" label={t.f.nom}><input className={fieldCls} value={v.nom} onChange={(e) => set('nom')(e.target.value)} autoComplete="name" /></Field>
-                  <Field k="compagnie" label={t.f.compagnie}><input className={fieldCls} value={v.compagnie} onChange={(e) => set('compagnie')(e.target.value)} autoComplete="organization" /></Field>
+                  <Field k="nom" err={err('nom')} reqMsg={t.required} label={t.f.nom}><input className={fieldCls} value={v.nom} onChange={(e) => set('nom')(e.target.value)} autoComplete="name" /></Field>
+                  <Field k="compagnie" err={err('compagnie')} reqMsg={t.required} label={t.f.compagnie}><input className={fieldCls} value={v.compagnie} onChange={(e) => set('compagnie')(e.target.value)} autoComplete="organization" /></Field>
                 </div>
-                <Field k="metier" label={t.f.metier}><textarea rows={4} className={`${fieldCls} resize-y min-h-[80px]`} value={v.metier} onChange={(e) => set('metier')(e.target.value)} /></Field>
-                <Field k="liens" label={t.f.liens} hint={t.f.liensHint}><textarea rows={2} className={`${fieldCls} resize-y`} value={v.liens} onChange={(e) => set('liens')(e.target.value)} /></Field>
+                <Field k="courriel" err={err('courriel')} reqMsg={t.required} label={t.f.courriel}><input className={fieldCls} type="email" value={v.courriel} onChange={(e) => set('courriel')(e.target.value)} autoComplete="email" /></Field>
+                <Field k="metier" err={err('metier')} reqMsg={t.required} label={t.f.metier}><textarea rows={4} className={`${fieldCls} resize-y min-h-[80px]`} value={v.metier} onChange={(e) => set('metier')(e.target.value)} /></Field>
+                <Field k="liens" err={err('liens')} reqMsg={t.required} label={t.f.liens} hint={t.f.liensHint}><textarea rows={2} className={`${fieldCls} resize-y`} value={v.liens} onChange={(e) => set('liens')(e.target.value)} /></Field>
                 <div className="grid gap-8 sm:grid-cols-2">
-                  <Field k="tel" label={t.f.tel}><input className={fieldCls} type="tel" value={v.tel} onChange={(e) => set('tel')(e.target.value)} autoComplete="tel" /></Field>
-                  <Field k="region" label={t.f.region}><input className={fieldCls} value={v.region} onChange={(e) => set('region')(e.target.value)} /></Field>
+                  <Field k="tel" err={err('tel')} reqMsg={t.required} label={t.f.tel}><input className={fieldCls} type="tel" value={v.tel} onChange={(e) => set('tel')(e.target.value)} autoComplete="tel" /></Field>
+                  <Field k="region" err={err('region')} reqMsg={t.required} label={t.f.region}><input className={fieldCls} value={v.region} onChange={(e) => set('region')(e.target.value)} /></Field>
                 </div>
-                <Field k="deja" label={t.f.deja}><Chips k="deja" options={OUI_NON} labels={t.ouiNon} /></Field>
+                <Field k="deja" err={err('deja')} reqMsg={t.required} label={t.f.deja}><Chips k="deja" value={v.deja} onChange={set('deja')} options={OUI_NON} labels={t.ouiNon} /></Field>
                 <div className="grid gap-8 sm:grid-cols-2">
-                  <Field k="nombre" label={t.f.nombre} hint={t.f.nombreHint}><input className={fieldCls} inputMode="numeric" value={v.nombre} onChange={(e) => set('nombre')(e.target.value)} /></Field>
-                  <Field k="dimensions" label={t.f.dimensions} hint={t.f.dimensionsHint}><input className={fieldCls} placeholder="10x10" value={v.dimensions} onChange={(e) => set('dimensions')(e.target.value)} /></Field>
+                  <Field k="nombre" err={err('nombre')} reqMsg={t.required} label={t.f.nombre} hint={t.f.nombreHint}><input className={fieldCls} inputMode="numeric" value={v.nombre} onChange={(e) => set('nombre')(e.target.value)} /></Field>
+                  <Field k="dimensions" err={err('dimensions')} reqMsg={t.required} label={t.f.dimensions} hint={t.f.dimensionsHint}><input className={fieldCls} placeholder="10x10" value={v.dimensions} onChange={(e) => set('dimensions')(e.target.value)} /></Field>
                 </div>
-                <Field k="apparence" label={t.f.apparence}><Chips k="apparence" options={APPARENCE} labels={t.apparence} /></Field>
-                <Field k="electricite" label={t.f.electricite}><Chips k="electricite" options={ELECTRICITE} labels={t.electricite} /></Field>
-                <Field k="camping" label={t.f.camping} hint={t.f.campingHint}><Chips k="camping" options={OUI_NON} labels={t.ouiNon} /></Field>
-                <Field k="benevoles" label={t.f.benevoles} hint={t.f.benevolesHint}><textarea rows={2} className={`${fieldCls} resize-y`} value={v.benevoles} onChange={(e) => set('benevoles')(e.target.value)} /></Field>
-                <Field k="entendu" label={t.f.entendu}><input className={fieldCls} value={v.entendu} onChange={(e) => set('entendu')(e.target.value)} /></Field>
-                <Field k="autres" label={t.f.autres}><textarea rows={3} className={`${fieldCls} resize-y`} value={v.autres} onChange={(e) => set('autres')(e.target.value)} /></Field>
+                <Field k="apparence" err={err('apparence')} reqMsg={t.required} label={t.f.apparence}><Chips k="apparence" value={v.apparence} onChange={set('apparence')} options={APPARENCE} labels={t.apparence} /></Field>
+                <Field k="electricite" err={err('electricite')} reqMsg={t.required} label={t.f.electricite}><Chips k="electricite" value={v.electricite} onChange={set('electricite')} options={ELECTRICITE} labels={t.electricite} /></Field>
+                <Field k="camping" err={err('camping')} reqMsg={t.required} label={t.f.camping} hint={t.f.campingHint}><Chips k="camping" value={v.camping} onChange={set('camping')} options={OUI_NON} labels={t.ouiNon} /></Field>
+                <Field k="benevoles" err={err('benevoles')} reqMsg={t.required} label={t.f.benevoles} hint={t.f.benevolesHint}><textarea rows={2} className={`${fieldCls} resize-y`} value={v.benevoles} onChange={(e) => set('benevoles')(e.target.value)} /></Field>
+                <Field k="entendu" err={err('entendu')} reqMsg={t.required} label={t.f.entendu}><input className={fieldCls} value={v.entendu} onChange={(e) => set('entendu')(e.target.value)} /></Field>
+                <Field k="autres" err={err('autres')} reqMsg={t.required} label={t.f.autres}><textarea rows={3} className={`${fieldCls} resize-y`} value={v.autres} onChange={(e) => set('autres')(e.target.value)} /></Field>
 
                 <div className="pt-8 flex flex-col items-start gap-4" style={{ borderTop: '1px solid rgba(244,239,227,0.10)' }}>
                   <motion.button
@@ -262,6 +264,7 @@ const FR = {
   ],
   electricite: ['Oui, c’est essentiel', 'Non', 'Non, mais j’aimerais recharger un téléphone à l’occasion'],
   f: {
+    courriel: 'Courriel',
     nom: 'Votre nom',
     compagnie: 'Compagnie ou entreprise',
     metier: 'Votre métier, artisanat ou produit',
@@ -316,6 +319,7 @@ const EN: typeof FR = {
   ],
   electricite: ['Yes, essential', 'No', 'No, but I would like to charge a phone now and then'],
   f: {
+    courriel: 'Email',
     nom: 'Your name',
     compagnie: 'Company or business',
     metier: 'Your craft, trade or product',

@@ -170,6 +170,19 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
           >
             {lang === 'FR' ? 'Réponse via votre espace marchand' : 'Reply via your merchant space'}
           </p>
+
+          {/* Le Faubourg 2026 : la rue marchande hors les murs a encore
+              des places. Formulaire habillé FMM, réponses chez Jessee
+              (Google Form). Posé 2026-08-22. */}
+          <button
+            type="button"
+            onClick={() => { playLoot(); navigate(addLocale('/marche/faubourg', lang)); }}
+            className="witcher-prompt mt-10"
+            data-primary="true"
+          >
+            <span className="witcher-prompt-glyph"><span>→</span></span>
+            {lang === 'FR' ? 'Le Faubourg 2026 : places encore disponibles' : 'The Faubourg 2026: spots still available'}
+          </button>
         </div>
         <div className="mt-12 md:mt-16" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }} />
       </div>

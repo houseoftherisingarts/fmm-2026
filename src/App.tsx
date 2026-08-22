@@ -57,6 +57,7 @@ const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const MessagesPage     = lazy(() => import('./pages/MessagesPage'));
 const VendorApplicationPage = lazy(() => import('./pages/VendorApplicationPage'));
+const FaubourgPage = lazy(() => import('./pages/FaubourgPage'));
 const MusicianApplicationPage = lazy(() => import('./pages/MusicianApplicationPage'));
 const RessourcesPage          = lazy(() => import('./pages/RessourcesPage'));
 const HnefataflGame           = lazy(() => import('./games/hnefatafl'));
@@ -375,6 +376,8 @@ const App: React.FC = () => (
                 <Route path="/en/account" element={<ComptePage />} />
                 <Route path="/marche/inscription"   element={<VendorApplicationPage />} />
                 <Route path="/en/market/registration" element={<VendorApplicationPage />} />
+                <Route path="/marche/faubourg"      element={<FaubourgPage />} />
+                <Route path="/en/market/faubourg"   element={<FaubourgPage />} />
                 <Route path="/musique/inscription"  element={<MusicianApplicationPage />} />
                 <Route path="/en/music/registration" element={<MusicianApplicationPage />} />
                 <Route path="/ressources"           element={<RessourcesPage />} />
