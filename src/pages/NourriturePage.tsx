@@ -274,15 +274,21 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
                     {t.grimoireBody}
                   </p>
+                  {/* Sans lien Square propre au grimoire, on n'affiche PAS
+                      de bouton d'achat : le repli sur le lien du banquet
+                      ferait payer 97,73 $ un livre à 9 $. L'aperçu reste
+                      accessible. Le lien vit dans VITE_SQUARE_GRIMOIRE_URL. */}
                   <div className="flex flex-wrap items-center gap-5">
+                    {import.meta.env.VITE_SQUARE_GRIMOIRE_URL && (
                     <a
-                      href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL || 'https://square.link/u/fdkw4hH3'}
+                      href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL}
                       target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
                     >
                       {t.grimoireCta}
                       <ArrowUpRight size={14} />
                     </a>
+                    )}
                     <a
                       href="/grimoire/grimoire-fmm-2026-apercu.pdf"
                       target="_blank" rel="noopener noreferrer"
