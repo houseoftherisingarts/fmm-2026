@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight, Clock, Users, Wine } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Clock, Users, Wine } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -7,213 +7,40 @@ import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ScrollProgress } from '../components/scroll';
 import { BubbleCanvas, Motes } from '../components/marche/effects';
 import { SectionFog, SectionTopRail, Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
+import { MENU, ABREUVOIR, BANQUET_MENU, type Plat } from '../content/menu2026';
 
 // ─── Village Nourriture · édition 2026 ───────────────────────────────
-// Deux menus, deux choses différentes (Alex, 2026-08-14) :
-//   1. Le menu du BANQUET : cinq services servis à table le dimanche,
-//      payés par Square. Contenu hérité de la page Wix /nourriture.
-//   2. Le menu des KIOSQUES : ce qui se commande au village pendant les
-//      trois jours. Source de vérité : la feuille vivante « Fiches
-//      Cuisine FMM » de Marc-Alexis (onglet par plat, colonne Prix de
-//      Vente), relevée le 2026-08-14. Prix publics seulement : les
-//      coûts et marges de la feuille restent dans la cuisine.
+// Trois choses sur cette page (Alex, 2026-08-22) :
+//   1. Le MENU DU VILLAGE : ce qui se commande aux étals les trois
+//      jours. Sans prix, décision d'Alex. Source : menu 1.3 de
+//      Marc-Alexis. Le menu 1.2 est retiré.
+//   2. Le BANQUET : trois services servis à table, 50 places,
+//      65 $ plus taxes, payé par Square. L'ancien banquet à cinq
+//      services (85 $) est retiré : il est passé.
+//   3. LE GRIMOIRE : le livre de recettes du festival, 9 $ plus
+//      taxes, payé par Square lui aussi.
+// Les données de menu vivent dans src/content/menu2026.ts.
 
-// ── Menu du banquet · cinq services ──────────────────────────────────
-const BANQUET_MENU = [
-  {
-    name: { FR: 'Table d’accueil et mise en bouche', EN: 'Welcome table & amuse-bouche' },
-    items: [
-      'Pain viking et beurre aux herbes & miel sauvage',
-      'Fromages rustiques',
-      'Pommes séchées',
-      'Noix grillées',
-      'Lactofermentations (choucroute, cornichons et autres)',
-      'Bière blonde légère (+6 $)',
-    ],
-  },
-  {
-    name: { FR: 'Potages', EN: 'Soups & stews' },
-    items: [
-      'Ragoût de légumes du jardin',
-      'Ragoût de bœuf à la bière',
-      'Porridge d’orge concassée',
-      'Chou braisé au vinaigre et gras',
-      'Oignons caramélisés',
-      'Blóðbrauð, le pain au sang',
-    ],
-  },
-  {
-    name: { FR: 'Rôtis et plats de viande', EN: 'Roasts & meats' },
-    items: [
-      'Agneau à la broche aux herbes',
-      'Manchons au miel noir',
-      'Poisson entier grillé, aneth et oignons',
-      'Saucisses rustiques',
-      'Légumes et racines du jardin au gras',
-      'Cochon de lait, asado, côtes levées, porchetta',
-    ],
-  },
-  {
-    name: { FR: 'Douceurs et confiseries', EN: 'Sweets & confections' },
-    items: [
-      'Dattes farcies aux noix',
-      'Pommes rôties au miel et à la cannelle',
-      'Babeurre sucré au miel et noisettes',
-      'Noix caramélisées',
-      'Pâte de fruits au miel',
-    ],
-  },
-  {
-    name: { FR: 'Digestifs et fin de table', EN: 'Digestifs' },
-    items: [
-      'Hydromel fort (+6 $)',
-      'Infusion chaude d’ortie',
-      'Noisettes grillées au feu',
-      'Poires pochées aux herbes douces',
-    ],
-  },
-];
+const ROMANS = ['I', 'II', 'III'];
 
-// ── Menu des kiosques · 2026 ─────────────────────────────────────────
-// Prix relevés dans la feuille « Fiches Cuisine FMM » le 2026-08-14.
-interface Plat { name: string; price: string; note: { FR: string; EN: string } }
-interface Guilde { name: { FR: string; EN: string }; icon: string; dishes: Plat[] }
-
-const GUILDES: Guilde[] = [
-  {
-    name: { FR: 'Le four et la marmite', EN: 'Hearth & cauldron' },
-    icon: '🍲',
-    dishes: [
-      { name: 'Bouillon de l’aubergiste', price: '14 $', note: {
-        FR: 'Servi avec pain viking. Potage clair aux racines et herbes du jardin, recette des tables modestes telle qu’on la servait aux voyageurs et aux soldats.',
-        EN: 'Served with viking bread. A clear broth of roots and garden herbs, the way modest tables fed travellers and soldiers.' } },
-      { name: 'Ragoût du Seigneur', price: '17 $', note: {
-        FR: 'Servi avec pain viking. Chair de bœuf longuement cuite avec légumes, herbes et bouillon riche.',
-        EN: 'Served with viking bread. Beef slow-cooked with vegetables, herbs and a rich broth.' } },
-      { name: 'Pain viking au beurre aux herbes', price: '6 $', note: {
-        FR: 'Pain de blé cuit à la braise, beurre frais aux herbes sauvages.',
-        EN: 'Wheat bread baked over embers, fresh butter with wild herbs.' } },
-      { name: 'Víkingr Blóðbrauð, pain au sang', price: '8 $', note: {
-        FR: 'Pain sombre et riche, façonné avec du sang cuit et des farines rustiques.',
-        EN: 'A dark, rich bread shaped with cooked blood and rustic flours.' } },
-      { name: 'Laridum', price: '7 $', note: {
-        FR: 'Morceaux de lard salé fondants, huile d’olive et aneth.',
-        EN: 'Melting salted lard, olive oil and dill.' } },
-    ],
-  },
-  {
-    name: { FR: 'Les grillades', EN: 'The grills' },
-    icon: '🔥',
-    dishes: [
-      { name: 'Manchettes de chapon au miel noir', price: '16 $', note: {
-        FR: 'Pilons rôtis et laqués de miel noir.',
-        EN: 'Roasted drumsticks lacquered with dark honey.' } },
-      { name: 'Kawaps d’agnel sur verdure', price: '22 $', note: {
-        FR: 'Brochettes d’agneau grillé, marinées aux épices anciennes.',
-        EN: 'Grilled lamb skewers marinated in ancient spices.' } },
-      { name: 'Côte de pourceau du fumoir', price: '15 $', note: {
-        FR: 'Saisie sur flamme vive, sauce moutarde rustique et bière brune.',
-        EN: 'Seared over open flame, rustic mustard and brown ale sauce.' } },
-      { name: 'Tako Tamago', price: '11 $', note: {
-        FR: 'Œuf de caille sur poulpe mariné, douceur des mers.',
-        EN: 'Quail egg over marinated octopus, a sweetness from the sea.' } },
-      { name: 'Brochette de feuillage', price: '14 $', note: {
-        FR: 'Tofu grillé, légumes verts et herbes sauvages, vinaigre de cidre.',
-        EN: 'Grilled tofu, greens and wild herbs, cider vinegar.' } },
-      { name: 'Patate chaude', price: '7 $', note: {
-        FR: 'Miel doré, cannelle, paprika et touche de piment.',
-        EN: 'Golden honey, cinnamon, paprika and a touch of chili.' } },
-    ],
-  },
-  {
-    name: { FR: 'Les sandwichs de la route', EN: 'Sandwiches of the road' },
-    icon: '🥖',
-    dishes: [
-      { name: 'Saumon boucané', price: '22 $', note: {
-        FR: 'Gravlax de saumon passé au fumoir, crème fraîche maison, sur pain frais.',
-        EN: 'Smokehouse salmon gravlax, house crème fraîche, on fresh bread.' } },
-      { name: 'Porchetta', price: '20 $', note: {
-        FR: 'Porc roulé aux herbes, rôti lentement, tranché sur le pain du jour.',
-        EN: 'Herb-rolled pork, slow roasted, carved onto the day’s bread.' } },
-      { name: 'Maraîcher', price: '18 $', note: {
-        FR: 'Légumes du jardin, marinades et fromage, l’offrande du potager.',
-        EN: 'Garden vegetables, pickles and cheese, the market garden’s offering.' } },
-    ],
-  },
-  {
-    name: { FR: 'Les douceurs', EN: 'Sweet things' },
-    icon: '🍯',
-    dishes: [
-      { name: 'Le gâteau des moines', price: '9 $', note: {
-        FR: 'Pain d’épices moelleux des abbayes.',
-        EN: 'Soft abbey gingerbread.' } },
-      { name: 'La levée du roi', price: '11 $', note: {
-        FR: 'Brioche aux fruits confits, façon panettone.',
-        EN: 'Candied-fruit brioche, panettone style.' } },
-      { name: 'Globi', price: '9 $', note: {
-        FR: 'Cinq petites boules sucrées et épicées, héritées des tables romaines.',
-        EN: 'Five small sweet and spiced fritters from Roman tables.' } },
-      { name: 'Les joyaux confits', price: '8 $', note: {
-        FR: 'Assortiment de fruits confits, sucré et parfumé.',
-        EN: 'An assortment of candied fruit, sweet and fragrant.' } },
-    ],
-  },
-  {
-    name: { FR: 'Les grignotines du chemin', EN: 'Snacks for the road' },
-    icon: '🎒',
-    dishes: [
-      { name: 'Les cuirs du seigneur', price: '12 $', note: {
-        FR: 'Bœuf séché du fumoir, à mâcher en arpentant le village.',
-        EN: 'Smokehouse beef jerky, to chew while roaming the village.' } },
-      { name: 'Les pépites d’olivier', price: '8 $', note: {
-        FR: 'Mélange d’olives choisies.',
-        EN: 'A mix of chosen olives.' } },
-      { name: 'Les offrandes de l’oasis', price: '9 $', note: {
-        FR: 'Trois dattes farcies, douceur du désert.',
-        EN: 'Three stuffed dates, sweetness of the desert.' } },
-    ],
-  },
-  {
-    name: { FR: 'La taverne des élixirs', EN: 'The elixir tavern' },
-    icon: '🍷',
-    dishes: [
-      { name: 'Hypocras', price: '28 $', note: {
-        FR: 'Vin rouge épicé et sucré des traditions médiévales : cannelle, gingembre. La bouteille.',
-        EN: 'Spiced, sweetened red wine of medieval tradition: cinnamon, ginger. The bottle.' } },
-      { name: 'Vin chaud', price: '11 $', note: {
-        FR: 'Cannelle, clou de girofle, agrumes, pour les premiers frissons d’automne.',
-        EN: 'Cinnamon, clove, citrus, for the first shivers of autumn.' } },
-      { name: 'Bière au beurre', price: '12 $', note: {
-        FR: 'Caramel, épices, vanille, servie chaude et onctueuse.',
-        EN: 'Caramel, spices, vanilla, served warm and creamy.' } },
-      { name: 'Limonade', price: '4 $', note: {
-        FR: 'Élixir rafraîchissant, sucré et citronné, pour nobles et chevaliers.',
-        EN: 'A refreshing elixir, sweet and lemony, for nobles and knights.' } },
-    ],
-  },
-];
-
-const ROMANS = ['I', 'II', 'III', 'IV', 'V'];
-
-// ── Rangée de plat : nom · meneur pointillé · prix ───────────────────
+// ── Rangée de plat : losange de laiton, nom, une ligne d'histoire ────
 const PlatRow: React.FC<{ plat: Plat; lang: 'FR' | 'EN' }> = ({ plat, lang }) => (
-  <li className="group/plat">
-    <div className="flex items-baseline gap-3">
+  <li className="group/plat flex gap-3.5">
+    <span
+      aria-hidden
+      className="mt-[0.6rem] shrink-0 w-[7px] h-[7px] rotate-45 transition-colors duration-300"
+      style={{ border: '1px solid var(--color-copper)' }}
+    />
+    <div className="min-w-0">
       <span className="font-display title-medieval text-base md:text-lg text-ivory leading-snug transition-colors duration-300 group-hover/plat:text-[var(--color-amber-glow)]">
         {plat.name}
       </span>
-      <span
-        aria-hidden
-        className="flex-1 translate-y-[-3px]"
-        style={{ borderBottom: '1px dotted rgba(232, 177, 74, 0.28)' }}
-      />
-      <span className="font-sans text-sm md:text-base tracking-[0.1em] whitespace-nowrap" style={{ color: 'var(--color-amber-glow)', fontWeight: 300 }}>
-        {plat.price}
-      </span>
+      {plat.note && (
+        <p className="font-editorial text-sm text-ivory-soft leading-snug mt-1 max-w-prose">
+          {plat.note[lang]}
+        </p>
+      )}
     </div>
-    <p className="font-editorial text-sm text-ivory-soft leading-snug mt-1 pr-10 max-w-prose">
-      {plat.note[lang]}
-    </p>
   </li>
 );
 
@@ -279,16 +106,20 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
               garde chaque guilde entière. La taverne suit en pleine
               largeur, encadrée d'or : la seule rupture. */}
           <div className="columns-1 md:columns-2 gap-14">
-            {GUILDES.slice(0, 5).map((g) => (
+            {MENU.map((g) => (
                 <article key={g.name.FR} className="break-inside-avoid mb-12 md:mb-14">
-                  <header className="flex items-baseline gap-3 mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
-                    <span aria-hidden className="text-xl md:text-2xl leading-none">{g.icon}</span>
-                    <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
-                    <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--color-copper)' }}>
-                      {g.dishes.length} {t.dishesWord}
-                    </span>
+                  <header className="mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
+                    <div className="flex items-baseline gap-3">
+                      <span aria-hidden className="text-xl md:text-2xl leading-none">{g.icon}</span>
+                      <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
+                    </div>
+                    {g.sub && (
+                      <p className="font-editorial italic text-sm mt-1.5 pl-9" style={{ color: 'var(--color-copper)' }}>
+                        {g.sub[lang]}
+                      </p>
+                    )}
                   </header>
-                  <ul className="space-y-4">
+                  <ul className="space-y-3.5">
                     {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
                   </ul>
                 </article>
@@ -300,14 +131,14 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
             <GildedFrame tone="amber" active className="block">
               <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
                 <header className="flex items-baseline gap-3 mb-6">
-                  <span aria-hidden className="text-2xl leading-none">{GUILDES[5].icon}</span>
-                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{GUILDES[5].name[lang]}</h3>
+                  <span aria-hidden className="text-2xl leading-none">{ABREUVOIR.icon}</span>
+                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{ABREUVOIR.name[lang]}</h3>
                   <span className="ml-auto font-sans uppercase tracking-[0.3em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
                     {t.tavernTag}
                   </span>
                 </header>
                 <ul className="grid md:grid-cols-2 gap-x-14 gap-y-4">
-                  {GUILDES[5].dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
+                  {ABREUVOIR.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
                 </ul>
               </div>
             </GildedFrame>
@@ -344,9 +175,11 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                 <DisplayTitle size="xl" glow className="mb-4">{t.banquetTitle}</DisplayTitle>
                 <p className="font-editorial italic text-base md:text-lg text-ivory-soft mb-5">{t.banquetSub}</p>
                 <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">{t.banquetBody}</p>
-                {/* Le paiement du banquet passe par Square (85 $ + TPS/TVQ =
-                    97,73 $), commande FMM2026-BANQUET sur le compte du
-                    traiteur Le Salon des Inconnus. Jamais par Zeffy. */}
+                {/* Le paiement du banquet passe par Square (65 $ + taxes),
+                    compte du traiteur Le Salon des Inconnus. Jamais par
+                    Zeffy. Le lien vit dans VITE_SQUARE_BANQUET_URL :
+                    l'ancien lien plus bas visait le banquet à 85 $, il
+                    doit être remplacé par celui du banquet à 65 $. */}
                 <a
                   href={import.meta.env.VITE_SQUARE_BANQUET_URL || 'https://square.link/u/fdkw4hH3'}
                   target="_blank" rel="noopener noreferrer"
@@ -414,6 +247,67 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
           </Stagger>
         </div>
       </section>
+
+      {/* ══ 07 · Le Grimoire du festival ═══════════════════════════════
+          Le livre de recettes de Marc-Alexis, 9 $ plus taxes, payé par
+          Square. Deux pages se lisent en ligne, le reste s'achète. */}
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-30" count={12} />
+        <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14">
+          <SectionTopRail
+            index="07"
+            name={t.grimoireRail}
+            meta={t.grimoireMeta}
+            metaValue={t.grimoireMetaValue}
+            className="mb-10 md:mb-14"
+          />
+          <Reveal amount={0.1}>
+            <GildedFrame tone="amber" active className="block">
+              <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center px-6 py-10 md:px-12 md:py-14" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
+                <div className="lg:col-span-7 min-w-0">
+                  <Eyebrow tone="amber" className="mb-5 inline-flex items-center gap-3">
+                    <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
+                    {t.grimoireEyebrow}
+                  </Eyebrow>
+                  <DisplayTitle size="lg" glow className="mb-5">{t.grimoireTitle}</DisplayTitle>
+                  <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
+                    {t.grimoireBody}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-5">
+                    <a
+                      href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL || 'https://square.link/u/fdkw4hH3'}
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
+                    >
+                      {t.grimoireCta}
+                      <ArrowUpRight size={14} />
+                    </a>
+                    <a
+                      href="/grimoire/grimoire-fmm-2026-apercu.pdf"
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft hover:text-[var(--color-amber-glow)] transition"
+                    >
+                      <BookOpen size={14} />
+                      {t.grimoirePreview}
+                    </a>
+                  </div>
+                  <p className="font-editorial text-xs text-ivory-soft/70 mt-5">{t.grimoireNote}</p>
+                </div>
+                <div className="lg:col-span-5">
+                  <img
+                    src="/grimoire/grimoire-couverture.jpg"
+                    alt={t.grimoireAlt}
+                    loading="lazy"
+                    className="w-full max-w-sm mx-auto rounded-card"
+                    style={{ boxShadow: '0 30px 70px -20px rgba(0,0,0,0.85)' }}
+                  />
+                </div>
+              </div>
+            </GildedFrame>
+          </Reveal>
+        </div>
+      </section>
     </>
   );
 };
@@ -421,25 +315,25 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
 const FR = {
   title: 'Village Nourriture',
   eyebrow: 'Le ventre du festival',
-  intro: 'Les kiosques du village pour les trois jours, et le grand banquet du dimanche : deux menus, une même cuisine sur les braises.',
+  intro: 'Le menu du village pour les trois jours, le grand banquet à la table du seigneur, et le grimoire de recettes à rapporter chez soi.',
 
   kioskRail: 'Village Nourriture',
   kioskMeta: 'Service',
   kioskMetaValue: 'Ven · Sam · Dim',
-  kioskEyebrow: 'Le menu des kiosques',
+  kioskEyebrow: 'Le menu du village',
   kioskTitle: 'La table des trois jours',
   kioskLead: 'Ce qui se commande aux étals du village, du premier feu du vendredi au dernier tison du dimanche. Cuisine sur la braise, recettes des routes anciennes, édition 2026.',
   kioskAside: 'Sans réservation · Au gré du village',
   dishesWord: 'plats',
   tavernTag: 'Pour lever sa coupe',
-  kioskFootnote: 'Prix en dollars canadiens. Le menu peut changer sans préavis selon la disponibilité locale des produits.',
+  kioskFootnote: 'Les prix sont affichés aux étals. Le menu peut changer sans préavis selon la disponibilité locale des produits.',
 
   banquetRail: 'Le Banquet',
   banquetMeta: 'Places',
   banquetMetaValue: '50',
   banquetEyebrow: 'Dimanche, à la table du seigneur',
   banquetTitle: 'Banquet de l’Équinoxe',
-  banquetSub: 'Une tablée foisonnante à cinq services sur réservation, avec un spectacle musical de bardes à la table.',
+  banquetSub: 'Une tablée foisonnante à trois services sur réservation, avec un spectacle musical de bardes à la table.',
   banquetBody: 'Historiquement réservé aux chefs de clans, ce banquet est maintenant ouvert à tous les voyageurs, guerriers, marchands et skjaldmös qui veulent profiter d’un repas de fin de festival bien mérité.',
   banquetNote: 'Pourboire non inclus · Menu sujet à changement sans préavis selon la disponibilité locale des produits.',
   reserve: 'Réserver ma place',
@@ -448,33 +342,44 @@ const FR = {
   cost: 'Coût',
   banquetWhen: 'Dimanche · 13h00. Date limite d’inscription : 17 septembre 2026.',
   banquetSeats: '50 places limitées',
-  banquetCost: '85 $ par personne, plus taxes',
+  banquetCost: '65 $ par personne, plus taxes',
   banquetMenuEyebrow: 'Le menu du banquet',
-  banquetMenuTitle: 'Cinq services',
+  banquetMenuTitle: 'Trois services',
+
+  grimoireRail: 'Le Grimoire',
+  grimoireMeta: 'Recettes',
+  grimoireMetaValue: '33',
+  grimoireEyebrow: 'À rapporter chez soi',
+  grimoireTitle: 'Le Grimoire du festival',
+  grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et une trentaine d’autres, écrites de la main du chef Marc-Alexis Pepin. Un livre à feuilleter l’hiver venu, quand l’envie de refaire le feu vous prend.',
+  grimoireCta: 'Acheter le grimoire',
+  grimoirePreview: 'Feuilleter les deux premières pages',
+  grimoireNote: '9 $ plus taxes · Livre numérique en format PDF, envoyé par courriel après l’achat.',
+  grimoireAlt: 'La couverture du Grimoire du festival',
 };
 
 const EN: typeof FR = {
   title: 'Food Village',
   eyebrow: 'The belly of the festival',
-  intro: 'The village kiosks for all three days, and the great Sunday banquet: two menus, one kitchen over the embers.',
+  intro: 'The village menu for all three days, the great banquet at the lord’s table, and the recipe grimoire to take home.',
 
   kioskRail: 'Food Village',
   kioskMeta: 'Serving',
   kioskMetaValue: 'Fri · Sat · Sun',
-  kioskEyebrow: 'The kiosk menu',
+  kioskEyebrow: 'The village menu',
   kioskTitle: 'The three-day table',
   kioskLead: 'What you order at the village stalls, from Friday’s first fire to Sunday’s last ember. Cooking over coals, recipes of the old roads, 2026 edition.',
   kioskAside: 'No reservation · At the village’s pace',
   dishesWord: 'dishes',
   tavernTag: 'To raise your cup',
-  kioskFootnote: 'Prices in Canadian dollars. Menu subject to change without notice based on local availability.',
+  kioskFootnote: 'Prices are posted at the stalls. Menu subject to change without notice based on local availability.',
 
   banquetRail: 'The Banquet',
   banquetMeta: 'Seats',
   banquetMetaValue: '50',
   banquetEyebrow: 'Sunday, at the lord’s table',
   banquetTitle: 'Equinox Banquet',
-  banquetSub: 'A teeming five-course table by reservation, with bard musicians at the table.',
+  banquetSub: 'A teeming three-course table by reservation, with bard musicians at the table.',
   banquetBody: 'Historically reserved for clan chiefs, this banquet is now open to all travellers, warriors, merchants and shieldmaidens who want a well-earned end-of-festival feast.',
   banquetNote: 'Tip not included · Menu subject to change without notice based on local availability.',
   reserve: 'Reserve my seat',
@@ -483,9 +388,20 @@ const EN: typeof FR = {
   cost: 'Cost',
   banquetWhen: 'Sunday · 1:00 PM. Registration deadline: September 17, 2026.',
   banquetSeats: '50 seats, limited',
-  banquetCost: '$85 per person, plus tax',
+  banquetCost: '$65 per person, plus tax',
   banquetMenuEyebrow: 'The banquet menu',
-  banquetMenuTitle: 'Five courses',
+  banquetMenuTitle: 'Three courses',
+
+  grimoireRail: 'The Grimoire',
+  grimoireMeta: 'Recipes',
+  grimoireMetaValue: '33',
+  grimoireEyebrow: 'To take home',
+  grimoireTitle: 'The Festival Grimoire',
+  grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and some thirty more, written in the hand of chef Marc-Alexis Pepin. A book to leaf through once winter comes and the urge to light the fire returns.',
+  grimoireCta: 'Buy the grimoire',
+  grimoirePreview: 'Read the first two pages',
+  grimoireNote: '$9 plus tax · Digital book in PDF, emailed after purchase.',
+  grimoireAlt: 'The cover of the Festival Grimoire',
 };
 
 export default NourriturePage;
