@@ -9,6 +9,11 @@ import { BubbleCanvas, Motes } from '../components/marche/effects';
 import { SectionFog, SectionTopRail, Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
 import { MENU, ABREUVOIR, BANQUET_MENU, type Plat } from '../content/menu2026';
 
+// Liens de paiement Square (compte Le Salon des Inconnus), créés par
+// l'API le 2026-08-22. Ce sont des URL publiques, pas des secrets.
+const SQUARE_BANQUET  = 'https://square.link/u/g0UOU5L3';  // 65 $ + taxes = 74,73 $
+const SQUARE_GRIMOIRE = 'https://square.link/u/OLtFu9jY';  //  9 $ + taxes = 10,35 $
+
 // ─── Village Nourriture · édition 2026 ───────────────────────────────
 // Trois choses sur cette page (Alex, 2026-08-22) :
 //   1. Le MENU DU VILLAGE : ce qui se commande aux étals les trois
@@ -175,13 +180,14 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                 <DisplayTitle size="xl" glow className="mb-4">{t.banquetTitle}</DisplayTitle>
                 <p className="font-editorial italic text-base md:text-lg text-ivory-soft mb-5">{t.banquetSub}</p>
                 <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">{t.banquetBody}</p>
-                {/* Le paiement du banquet passe par Square (65 $ + taxes),
-                    compte du traiteur Le Salon des Inconnus. Jamais par
-                    Zeffy. Le lien vit dans VITE_SQUARE_BANQUET_URL :
-                    l'ancien lien plus bas visait le banquet à 85 $, il
-                    doit être remplacé par celui du banquet à 65 $. */}
+                {/* Paiement par Square, compte du traiteur Le Salon des
+                    Inconnus, jamais par Zeffy. Lien créé par l'API le
+                    2026-08-22 : 65 $ + TPS + TVQ = 74,73 $. L'ancien lien
+                    fdkw4hH3 vendait le banquet à 85 $ (97,73 $) : il ne
+                    doit plus servir. Une URL square.link est publique,
+                    d'où la valeur en clair; la variable reste prioritaire. */}
                 <a
-                  href={import.meta.env.VITE_SQUARE_BANQUET_URL || 'https://square.link/u/fdkw4hH3'}
+                  href={import.meta.env.VITE_SQUARE_BANQUET_URL || SQUARE_BANQUET}
                   target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
                 >
@@ -274,21 +280,16 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
                     {t.grimoireBody}
                   </p>
-                  {/* Sans lien Square propre au grimoire, on n'affiche PAS
-                      de bouton d'achat : le repli sur le lien du banquet
-                      ferait payer 97,73 $ un livre à 9 $. L'aperçu reste
-                      accessible. Le lien vit dans VITE_SQUARE_GRIMOIRE_URL. */}
+                  {/* Lien Square du grimoire : 9 $ + TPS + TVQ = 10,35 $. */}
                   <div className="flex flex-wrap items-center gap-5">
-                    {import.meta.env.VITE_SQUARE_GRIMOIRE_URL && (
                     <a
-                      href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL}
+                      href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL || SQUARE_GRIMOIRE}
                       target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
                     >
                       {t.grimoireCta}
                       <ArrowUpRight size={14} />
                     </a>
-                    )}
                     <a
                       href="/grimoire/grimoire-fmm-2026-apercu.pdf"
                       target="_blank" rel="noopener noreferrer"
