@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { watchGroupes, type GroupeMusical, type GroupeJour } from '../firebase/groupesMusicaux';
 import SEO from '../components/SEO';
+import BestiaryBoard, { type BestiaryBand } from '../components/musique/BestiaryBoard';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
@@ -29,11 +29,6 @@ interface Band {
   annee?:      number;          // groupes « archives » seulement : petite étiquette sur la vignette
 }
 
-const JOUR_LABELS: Record<NonNullable<Band['jour']>, { FR: string; EN: string }> = {
-  vendredi: { FR: 'Vendredi', EN: 'Friday' },
-  samedi:   { FR: 'Samedi',   EN: 'Saturday' },
-  dimanche: { FR: 'Dimanche', EN: 'Sunday' },
-};
 const JOUR_ORDRE: Record<GroupeJour, number> = { vendredi: 0, samedi: 1, dimanche: 2 };
 
 // 🚨 Ces six groupes sont ceux des ÉDITIONS PASSÉES. La section les
@@ -91,6 +86,28 @@ const BANDS_ARCHIVES: Band[] = [
 // Bohemio, « BicOasis » s'écrit en un mot, « Sainte-Nigoune » au long,
 // « Svarica » et non Svarika, « Las Noches Bohemias » au féminin.
 // Encore en construction : d'autres noms s'ajouteront.
+// ── Détourages du bestiaire ─────────────────────────────────────────
+// Portraits sans fond, produits localement avec rembg le 2026-08-22, puis
+// posés dans la taverne de /public/scenes. Un groupe absent de la table
+// retombe sur sa photo d'origine, jamais sur celle d'un autre groupe.
+const DETOURAGES: Record<string, string> = {
+  'Skarazula':                            'skarazula',
+  'L’Harfang':                            'harfang',
+  'Troupe Caravane':                      'troupe-caravane',
+  'L’Ensemble Klezmer de Sainte-Nigoune': 'sainte-nigoune',
+  'BicOasis':                             'bicoasis',
+  'Trifolys':                             'trifolys',
+  'Svarica':                              'svarica',
+};
+const bestiaire = (bands: Band[]): BestiaryBand[] => bands.map((b) => {
+  const slug = DETOURAGES[b.name];
+  return {
+    ...b,
+    cutout: slug ? `/musique/bestiaire/${slug}.webp` : b.image,
+    thumb:  slug ? `/musique/bestiaire/${slug}-vignette.webp` : b.image,
+  };
+});
+
 const AFFICHE_2026_BANDS: Band[] = [
   {
     name:    'Skarazula',
@@ -173,284 +190,6 @@ const AFFICHE_2026_BANDS: Band[] = [
   },
 ];
 
-// ─── Bestiary carousel ───────────────────────────────────────────────
-// Witcher-inspired single-entry-at-a-time view. LB/RB chevrons + ← →
-// keyboard nav + page counter. Variant changes the frame palette so
-// the past-bands section reads as faded archive vs the live 2026 grid.
-
-type BandsCarouselVariant = 'present' | 'past';
-
-interface BandsCarouselProps {
-  bands:   Band[];
-  variant: BandsCarouselVariant;
-  lang:    'FR' | 'EN';
-  // i18n strings injected from the parent (avoids duplicating FR/EN
-  // dictionaries inside this component).
-  artistLabel: string;
-  spotifyLabel: string;
-  websiteLabel: string;
-  prevLabel: string;
-  nextLabel: string;
-}
-
-const BandsCarousel: React.FC<BandsCarouselProps> = ({
-  bands, variant, lang, artistLabel, spotifyLabel, websiteLabel, prevLabel, nextLabel,
-}) => {
-  const [idx, setIdx] = useState(0);
-  // Direction tracked so the framer-motion variants can slide either way
-  // depending on whether we navigated forward or backward.
-  const [dir, setDir] = useState<1 | -1>(1);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const total = bands.length;
-  const band  = bands[idx];
-
-  const goPrev = useCallback(() => {
-    setDir(-1);
-    setIdx((i) => (i - 1 + total) % total);
-  }, [total]);
-  const goNext = useCallback(() => {
-    setDir(1);
-    setIdx((i) => (i + 1) % total);
-  }, [total]);
-
-  // Keyboard ← / → when the carousel is focused / in viewport.
-  useEffect(() => {
-    const root = wrapperRef.current;
-    if (!root) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); goPrev(); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
-    };
-    root.addEventListener('keydown', onKey);
-    return () => root.removeEventListener('keydown', onKey);
-  }, [goPrev, goNext]);
-
-  // Variant tokens: past edition reads as muted sepia archive.
-  const isPast = variant === 'past';
-  const frameClass = isPast
-    ? 'border-stone/30 bg-midnight-deep/40'
-    : 'border-brass/40 bg-midnight-deep/55';
-  const imgFilter = isPast ? 'sepia(0.45) saturate(0.7) brightness(0.92) contrast(1.05)' : 'none';
-  const counterClass = isPast ? 'text-stone/70' : 'text-brass';
-
-  return (
-    <div
-      ref={wrapperRef}
-      tabIndex={0}
-      role="group"
-      aria-roledescription={lang === 'FR' ? 'Carrousel de groupes' : 'Bands carousel'}
-      aria-label={band.name}
-      className="relative outline-none focus-visible:ring-2 focus-visible:ring-brass/40 rounded-card"
-    >
-      {/* ── left arrow: prev ── */}
-      <button
-        type="button"
-        onClick={goPrev}
-        aria-label={prevLabel}
-        className={`absolute left-0 md:-left-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 px-2 md:px-3 py-3 md:py-4 group ${isPast ? 'text-stone/70 hover:text-ivory' : 'text-brass hover:text-brass-soft'} transition-colors`}
-      >
-        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">←</span>
-        <ChevronLeft size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
-      </button>
-
-      {/* ── right arrow: next ── */}
-      <button
-        type="button"
-        onClick={goNext}
-        aria-label={nextLabel}
-        className={`absolute right-0 md:-right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 px-2 md:px-3 py-3 md:py-4 group ${isPast ? 'text-stone/70 hover:text-ivory' : 'text-brass hover:text-brass-soft'} transition-colors`}
-      >
-        <ChevronRight size={32} strokeWidth={1.5} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
-        <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-md border border-current/40 bg-black/35 font-display title-medieval text-[10px] tracking-widest uppercase shadow-inner group-hover:bg-black/55 transition-colors">→</span>
-      </button>
-
-      {/* ── Bestiary frame: corners + brass divider ── */}
-      <div className={`relative mx-8 md:mx-16 border rounded-card overflow-hidden ${frameClass}`}>
-        {/* Corner ornaments: small filigree marks at each corner */}
-        <CornerOrnament className="absolute top-2 left-2"     variant={variant} />
-        <CornerOrnament className="absolute top-2 right-2"    variant={variant} flipX />
-        <CornerOrnament className="absolute bottom-2 left-2"  variant={variant} flipY />
-        <CornerOrnament className="absolute bottom-2 right-2" variant={variant} flipX flipY />
-
-        <AnimatePresence mode="wait" custom={dir}>
-          <motion.div
-            key={`${variant}-${idx}`}
-            custom={dir}
-            initial={{ opacity: 0, x: dir * 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -dir * 30 }}
-            transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-            className="flex flex-col"
-          >
-            {/* Photo pleine largeur : les portraits de groupes sont des
-                paysages; la colonne 4/5 les coupait (correction d'Alex,
-                2026-08-03). Bandeau 16/9 sur toute la largeur du cadre.
-                Sans portrait fourni, un panneau orné tient la place
-                (jamais d'image cassée). */}
-            <div className={`relative w-full aspect-video overflow-hidden border-b ${isPast ? 'border-stone/30' : 'border-brass/30'}`}>
-              {band.image ? (
-                <>
-                  <img
-                    src={band.image}
-                    alt={band.imageAlt || band.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    style={{ filter: imgFilter }}
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
-                  />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-midnight-deep/85 to-transparent" />
-                </>
-              ) : (
-                <PortraitPlaceholder variant={variant} label={lang === 'FR' ? 'Portrait à venir' : 'Portrait coming soon'} />
-              )}
-            </div>
-
-            {/* Fiche du bestiaire, sous la photo */}
-            <div className="p-6 md:p-10">
-              <p className={`font-editorial italic uppercase tracking-[0.3em] text-[10px] md:text-xs mb-3 ${isPast ? 'text-stone' : 'text-brass'}`}>
-                {String(idx + 1).padStart(2, '0')} · {artistLabel}
-              </p>
-              {band.jour && (
-                <span
-                  className={`inline-block mb-3 px-3 py-1 rounded-full border font-sans text-[10px] md:text-xs uppercase tracking-widest font-semibold ${
-                    isPast ? 'border-stone/40 text-stone' : 'border-brass/50 bg-brass/10 text-brass'
-                  }`}
-                >
-                  {lang === 'FR' ? JOUR_LABELS[band.jour].FR : JOUR_LABELS[band.jour].EN}
-                </span>
-              )}
-              <h3 className={`font-display title-medieval text-3xl md:text-5xl mb-3 ${isPast ? 'text-ivory-soft' : 'text-ivory'}`}>
-                {band.name}
-              </h3>
-              <div className={`divider-brass w-24 mb-5 ${isPast ? 'opacity-50' : ''}`} />
-              <p className={`font-editorial text-base md:text-lg leading-relaxed mb-6 ${isPast ? 'text-ivory-soft/80' : 'text-ivory-soft'}`}>
-                {lang === 'FR' ? band.bioFR : band.bioEN}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3">
-                {band.spotify && (
-                  <a
-                    href={band.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-card bg-[#1DB954]/15 border border-[#1DB954]/60 text-[#1DB954] hover:bg-[#1DB954]/25 transition font-sans uppercase tracking-wider text-xs font-semibold"
-                  >
-                    <SpotifyIcon />
-                    {spotifyLabel}
-                  </a>
-                )}
-                {band.website && (
-                  <a
-                    href={band.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-sans text-xs uppercase tracking-widest text-brass hover:text-brass-soft transition group"
-                  >
-                    {websiteLabel}
-                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
-                  </a>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* ── Page indicator: dots + counter ── */}
-      <div className="mt-5 flex items-center justify-center gap-6">
-        <div className="flex items-center gap-2">
-          {bands.map((b, i) => (
-            <button
-              key={b.name}
-              type="button"
-              onClick={() => { setDir(i > idx ? 1 : -1); setIdx(i); }}
-              aria-label={b.name}
-              className={`h-1.5 rounded-full transition-all ${
-                i === idx
-                  ? (isPast ? 'w-8 bg-stone' : 'w-8 bg-brass')
-                  : 'w-1.5 bg-ivory-soft/30 hover:bg-ivory-soft/60'
-              }`}
-            />
-          ))}
-        </div>
-        <span className={`font-display title-medieval text-xs tracking-widest ${counterClass}`}>
-          {String(idx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-// ─── Decorations ─────────────────────────────────────────────────────
-const CornerOrnament: React.FC<{
-  className?: string;
-  variant:    BandsCarouselVariant;
-  flipX?:     boolean;
-  flipY?:     boolean;
-}> = ({ className = '', variant, flipX, flipY }) => {
-  const color = variant === 'past' ? '#7a7569' : 'rgb(var(--brass-rgb, 184 141 74))';
-  const transform = `${flipX ? 'scaleX(-1) ' : ''}${flipY ? 'scaleY(-1)' : ''}`.trim();
-  return (
-    <svg
-      viewBox="0 0 32 32"
-      width="22"
-      height="22"
-      aria-hidden
-      className={`pointer-events-none ${className}`}
-      style={{ transform, opacity: 0.55 }}
-      fill="none"
-      stroke={color}
-      strokeWidth="1.25"
-    >
-      <path d="M2 14 L2 2 L14 2" />
-      <path d="M6 10 L6 6 L10 6" strokeOpacity="0.6" />
-      <circle cx="2" cy="2" r="1.2" fill={color} stroke="none" />
-    </svg>
-  );
-};
-
-// Panneau orné remplaçant la photo quand aucun portrait n'a encore été
-// fourni (plusieurs groupes de l'affiche 2026) : même format 16/9, jamais
-// d'image cassée.
-const PortraitPlaceholder: React.FC<{ variant: BandsCarouselVariant; label: string }> = ({ variant, label }) => {
-  const isPast = variant === 'past';
-  return (
-    <div
-      className={`w-full h-full flex flex-col items-center justify-center gap-4 bg-gradient-to-br ${
-        isPast ? 'from-stone/10 via-midnight-deep to-black' : 'from-brass/10 via-midnight-deep to-black'
-      }`}
-    >
-      <LyreMark className={isPast ? 'text-stone/40' : 'text-brass/50'} />
-      <span className={`font-editorial italic text-xs md:text-sm tracking-[0.25em] uppercase ${isPast ? 'text-stone/50' : 'text-brass/60'}`}>
-        {label}
-      </span>
-    </div>
-  );
-};
-
-const LyreMark: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M18 50 C10 40 10 20 20 10" />
-    <path d="M46 50 C54 40 54 20 44 10" />
-    <path d="M20 10 C24 16 24 22 20 28" />
-    <path d="M44 10 C40 16 40 22 44 28" />
-    <line x1="24" y1="14" x2="24" y2="48" strokeWidth="1" opacity="0.7" />
-    <line x1="30" y1="12" x2="30" y2="50" strokeWidth="1" opacity="0.7" />
-    <line x1="36" y1="12" x2="36" y2="50" strokeWidth="1" opacity="0.7" />
-    <line x1="42" y1="14" x2="42" y2="48" strokeWidth="1" opacity="0.7" />
-    <path d="M14 52 L50 52 L46 58 L18 58 Z" />
-  </svg>
-);
-
-const SpotifyIcon: React.FC = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
-  </svg>
-);
-
-// ─── Archives: grille compacte ─────────────────────────────────────
-// Simple consultation, pas de carrousel : petites cartes, teinte estompée.
 const ArchiveCard: React.FC<{ band: Band; lang: 'FR' | 'EN' }> = ({ band, lang }) => (
   <div className="rounded-card border border-stone/25 bg-midnight-deep/35 overflow-hidden transition-colors hover:border-stone/45">
     <div className="relative w-full aspect-video overflow-hidden">
@@ -572,16 +311,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             className="mb-10 md:mb-14"
           />
           <Reveal from="up" delay={0.1}>
-            <BandsCarousel
-              bands={affiche}
-              variant="present"
-              lang={lang}
-              artistLabel={t.artist}
-              spotifyLabel={t.spotify}
-              websiteLabel={t.website}
-              prevLabel={t.prev}
-              nextLabel={t.next}
-            />
+            <BestiaryBoard bands={bestiaire(affiche)} lang={lang} registre={t.registre} />
           </Reveal>
           <p className="mt-6 text-center font-editorial italic text-sm md:text-base text-ivory-soft/70">
             {t.section2026Note}
@@ -659,6 +389,7 @@ const FR = {
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Groupes des ans passés',
   sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Utilisez les chevrons (ou ← →) pour parcourir les groupes.',
+  registre: 'Le registre des troupes',
   artist:  'Artiste',
   spotify: 'Écouter sur Spotify',
   website: 'Site web',
@@ -682,6 +413,7 @@ const EN = {
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Bands from past years',
   sectionPastLead:    'The bards who animated previous editions of the festival. Use the chevrons (or ← →) to browse the bands.',
+  registre: 'The register of troupes',
   artist:  'Artist',
   spotify: 'Listen on Spotify',
   website: 'Website',

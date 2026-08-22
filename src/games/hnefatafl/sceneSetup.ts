@@ -126,7 +126,40 @@ export function setupScene(el: HTMLElement): SceneHandle {
   torchCool.position.set(0, 8, 0);
   scene.add(torchCool);
 
+  // ── La salle autour du plateau ────────────────────────────────────
+  // Le plateau flottait dans une couleur unie : rien autour, aucune
+  // profondeur (constat d'Alex, 2026-08-22). Une taverne enroulée sur un
+  // cylindre ouvert vers l'intérieur donne un décor qui défile quand on
+  // fait tourner la caméra, pour le prix d'une texture. La même image
+  // sert de scène au bestiaire des groupes : un seul décor, deux usages.
+  // Le brouillard mange sa base, le plateau reste le sujet.
+  const salleTex = new THREE.TextureLoader().load('/scenes/taverne-salle.jpg', (t) => {
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = THREE.RepeatWrapping;
+    t.repeat.x = 3;          // trois travées : la salle fait le tour sans étirement
+    renderer.render(scene, camera);
+  });
+  const salleGeo = new THREE.CylinderGeometry(34, 34, 26, 48, 1, true);
+  const salleMat = new THREE.MeshBasicMaterial({
+    map: salleTex,
+    side: THREE.BackSide,
+    fog: true,
+    depthWrite: false,
+    color: 0x6a5a4a,        // assombri : le décor reste en retrait du plateau
+  });
+  const salle = new THREE.Mesh(salleGeo, salleMat);
+  salle.position.y = 5;
+  salle.renderOrder = -1;
+  scene.add(salle);
+
+  // Le brouillard doit laisser voir la salle : il se referme plus loin
+  // que le rayon du cylindre, sinon le décor disparaît dans le noir.
+  scene.fog = new THREE.Fog(0x0d0906, 26, 62);
+
   const dispose = () => {
+    salleGeo.dispose();
+    salleMat.dispose();
+    salleTex.dispose();
     renderer.dispose();
     if (el.contains(renderer.domElement)) {
       el.removeChild(renderer.domElement);

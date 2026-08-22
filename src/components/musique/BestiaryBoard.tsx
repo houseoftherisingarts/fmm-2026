@@ -140,9 +140,9 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
       </aside>
 
       {/* ── La scène ────────────────────────────────────────────── */}
-      <div ref={stage} className="relative lg:px-8">
+      <div ref={stage} className="relative lg:px-8 lg:sticky lg:top-24 lg:self-start">
         <div
-          className="relative overflow-hidden aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:h-[30rem]"
+          className="relative overflow-hidden aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:h-[34rem]"
           style={{ background: '#0d0906' }}
         >
           <img
@@ -172,7 +172,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduce ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.99 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute left-1/2 bottom-[7%] -translate-x-1/2 max-h-[80%] max-w-[86%] w-auto object-contain"
+              className="absolute left-1/2 bottom-[7%] -translate-x-1/2 max-h-[86%] max-w-[90%] w-auto object-contain"
               style={{ filter: 'drop-shadow(0 26px 40px rgba(0,0,0,0.85))' }}
             />
           </AnimatePresence>
