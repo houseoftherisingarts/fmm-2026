@@ -45,6 +45,30 @@ TITRES = {
     'hummus': 'Hummus',
 }
 
+# ── Le filigrane : un ingrédient dessiné, en demi-transparence ──────
+# Alex, 2026-08-23 : chaque page de recette porte, en fond, le dessin
+# d'un de ses ingrédients, comme les livres de cuisine d'autrefois. Le
+# choix se fait sur les mots de la recette; à défaut, les herbes.
+FILIGRANES = [
+    (('boeuf', 'bœuf', 'kawaps', 'cuirs', 'saucisse', 'hotdog', 'poulet', 'goulash', 'porc'), 'ing-viande-a.png'),
+    (('pain', 'brauð', 'bloodbraud', 'lembas', 'insectes', 'farine'), 'ing-racines-a.png'),
+    (('miel', 'gateau', 'gâteau', 'dattes', 'offrandes', 'douceur'), 'ing-miel-a.png'),
+    (('betterave', 'verdure', 'salade', 'herboristerie', 'hummus', 'baba'), 'ing-racines-a.png'),
+    (('ail', 'aïoli', 'sauce'), 'ing-ail-a.png'),
+    (('oignon', 'olla', 'marmite', 'ragout', 'ragoût'), 'ing-oignon-a.png'),
+    (('pomme', 'cidre', 'verger', 'fruit'), 'ing-pomme-a.png'),
+    (('vin', 'hypocras', 'cervoise', 'biere', 'bière', 'limonade', 'cafe', 'café', 'abreuvoir'), 'ing-vin-a.png'),
+    (('sel', 'beurre', 'patate', 'pomme de terre'), 'ing-sel-a.png'),
+]
+
+def filigrane(*textes):
+    t = ' '.join(textes).lower()
+    for mots, fichier in FILIGRANES:
+        if any(m in t for m in mots):
+            return fichier
+    return 'ing-herbes-a.png'
+
+
 # ── La planche gravée qui ouvre chaque chapitre ─────────────────────
 # Gravures à l'encre commandées le 2026-08-22 (Alex) : un livre de
 # recettes de festival s'ouvre sur une planche d'encyclopédie ancienne,
@@ -113,39 +137,45 @@ body { font-family:'Cormorant Garamond',Georgia,serif; color:#3a2a18; }
 h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weight:400; }
 .gold { color:#a97c2a; }
 
-/* ── Couverture ────────────────────────────────────────────────
-   Une couverture de livre, pas un titre posé sur un aplat : la photo
-   de la marmite monte du bas et se fond dans le noir, le blason tient
-   le haut, un filet d'or encadre la page. */
-.cover { background:#0c0704; color:#efe3c8; }
-.cover::before { background:none; }
-.cover .photo { position:absolute; left:0; right:0; bottom:0; width:100%; height:63%;
-  object-fit:cover; object-position:50% 42%; filter:saturate(.86) contrast(1.06) brightness(.86); }
-.cover .veil { position:absolute; inset:0;
-  background:
-    linear-gradient(180deg, #0c0704 0%, #0c0704 30%, rgba(12,7,4,.9) 42%,
-                    rgba(12,7,4,.5) 56%, rgba(12,7,4,.42) 72%, rgba(12,7,4,.88) 92%, #0c0704 100%),
-    radial-gradient(ellipse at 50% 78%, rgba(198,120,38,.2), transparent 62%); }
-.cover .frame { position:absolute; inset:.3in; border:1px solid rgba(169,124,42,.45); }
-.cover .frame::after { content:''; position:absolute; inset:.055in; border:1px solid rgba(169,124,42,.22); }
-/* Les couches de fond restent dessous : sans ça le voile mange le titre. */
-.cover .photo, .cover .veil { z-index:0; }
-.cover .frame { z-index:3; }
-.cover .crest, .cover .kicker, .cover h1, .cover .orn, .cover .sub { position:relative; z-index:4; }
-.cover .pad { position:relative; z-index:2; align-items:center; text-align:center;
-  justify-content:flex-start; padding:.92in .72in .62in; }
-.cover .crest { width:1.28in; opacity:.96; filter:drop-shadow(0 10px 26px rgba(0,0,0,.75)); }
-.cover h1 { font-size:33pt; line-height:1.06; color:#e8c87a; letter-spacing:.015em; margin-top:.3in; }
-.cover .kicker { font-family:'Cinzel',serif; letter-spacing:.4em; font-size:7.6pt;
-  text-transform:uppercase; color:rgba(232,200,122,.66); }
-.cover .sub { font-family:'Cormorant Garamond',serif; font-size:12pt; line-height:1.5;
-  color:rgba(239,227,200,.74); margin-top:.16in; }
-.cover .credits { position:absolute; left:0; right:0; bottom:.66in; z-index:2; text-align:center; }
-.cover .credits .name { font-family:'Cinzel',serif; font-size:9pt; letter-spacing:.26em;
-  text-transform:uppercase; color:rgba(239,227,200,.86); }
-.cover .credits .ed { font-family:'Cinzel',serif; font-size:7pt; letter-spacing:.3em;
-  text-transform:uppercase; color:rgba(232,200,122,.5); margin-top:.09in; }
+/* ── Couverture et quatrième : le livre lui-même ───────────────
+   Alex, 2026-08-23 : la couverture EST le livre. Cuir rouge, ferrures
+   et cadre d'argent, et le titre GRAVÉ dans le cartouche ovale, comme
+   sur un plat de reliure. Rien n'est posé sur un aplat. */
+.cover, .colo { background:#140a0a; }
+.cover::before, .colo::before { background:none; }
+.cover .cuir, .colo .cuir { position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:0; }
+.cover .pad, .colo .pad { padding:0; }
+
+/* Le cartouche : mesuré sur la photo du plat (ovale d'argent). */
+.cartouche { position:absolute; left:50%; top:2.98in; transform:translateX(-50%);
+  width:1.52in; height:2.02in; z-index:3;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:.1in .06in; }
+.cartouche img { width:.5in; opacity:.9; margin-bottom:.05in;
+  filter: grayscale(1) brightness(.35) contrast(1.4); }
+.cartouche .grave { font-family:'Cinzel',serif; font-weight:600;
+  font-size:9pt; line-height:1.3; letter-spacing:.05em; text-transform:uppercase;
+  color:#4a4a50; text-shadow:0 1px 0 rgba(255,255,255,.55); }
+.cartouche .grave .fin { display:block; font-size:5.6pt; letter-spacing:.24em;
+  margin-top:.06in; color:#5c5c63; }
+
+/* Sous le cartouche, sur le cuir : la ligne d'argent. */
+.cover .sous-cartouche { position:absolute; left:0; right:0; top:5.34in; z-index:3;
+  text-align:center; padding:0 .95in; }
+.cover .sous-cartouche p { font-family:'Cormorant Garamond',serif; font-size:10.5pt;
+  line-height:1.45; color:rgba(242,236,226,.96);
+  text-shadow:0 1px 3px rgba(0,0,0,.85), 0 0 12px rgba(0,0,0,.6); }
+.cover .credits, .colo .credits { position:absolute; left:0; right:0; bottom:.78in; z-index:3;
+  text-align:center; }
+.cover .credits .name { font-family:'Cinzel',serif; font-size:8pt; letter-spacing:.24em;
+  text-transform:uppercase; color:rgba(240,236,228,.9); text-shadow:0 1px 3px rgba(0,0,0,.9); }
+.cover .credits .ed, .colo .credits .ed { font-family:'Cinzel',serif; font-size:6.2pt;
+  letter-spacing:.28em; text-transform:uppercase; color:rgba(238,232,220,.62);
+  text-shadow:0 1px 3px rgba(0,0,0,.9); margin-top:.07in; }
 .rule-gold { width:2.1in; height:1px; background:linear-gradient(90deg,transparent,#a97c2a,transparent); }
+.rule-argent { width:1.9in; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,226,232,.8),transparent); }
 .diamond { width:9px; height:9px; transform:rotate(45deg); border:1px solid #a97c2a; }
 .orn { display:flex; align-items:center; gap:.14in; justify-content:center; }
 
@@ -170,8 +200,14 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 .chap .rom { font-family:'Cinzel Decorative',serif; font-size:44pt; color:rgba(169,124,42,.34); line-height:1; }
 .chap h2 { font-size:26pt; line-height:1.08; max-width:4in; }
 /* La gravure : encre pure sur le vélin, jamais un cadre ni un aplat. */
-.chap .plate { width:3.35in; height:3.35in; object-fit:contain; mix-blend-mode:multiply;
-  opacity:.92; margin-bottom:.06in; }
+.chap .plate { width:3.2in; height:3.2in; object-fit:contain; mix-blend-mode:multiply;
+  opacity:.92; margin-top:.12in; }
+
+/* Filigrane : l'ingrédient dessiné derrière le texte de la fiche. */
+.rec .filigrane { position:absolute; left:50%; top:52%; transform:translate(-50%,-50%);
+  width:4.3in; height:4.3in; object-fit:contain; opacity:.11; mix-blend-mode:multiply;
+  pointer-events:none; z-index:0; }
+.rec .pad { position:relative; z-index:1; }
 
 /* ── Recette ── */
 .rec h2 { font-size:17.5pt; line-height:1.16; margin-bottom:.05in; }
@@ -207,13 +243,19 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 
 /* ── Colophon ── */
 .colo .pad { justify-content:space-between; align-items:center; text-align:center; }
-.colo .logos { display:flex; align-items:center; justify-content:center; gap:.42in; width:100%; }
+.colo .maisons { position:relative; z-index:3; margin-top:4.28in; width:100%; }
+.colo .logos { display:flex; align-items:flex-start; justify-content:center; gap:.72in; width:100%; }
+.colo .logos img { filter: grayscale(1) brightness(1.9) contrast(.85) drop-shadow(0 2px 5px rgba(0,0,0,.7)); }
+.colo .sub { font-family:'Cormorant Garamond',serif; font-size:9.6pt; line-height:1.5;
+  color:rgba(238,234,226,.86); text-shadow:0 1px 2px rgba(0,0,0,.7); }
 .colo .logos img { height:.72in; width:auto; object-fit:contain; }
 .colo .logos img.wide { height:.56in; }
 /* Le blason d'argent tient le centre, les deux ors l'encadrent. */
 .colo .logos img.crest-silver { height:1.05in; }
 .colo .cap { font-family:'Cinzel',serif; font-size:6.6pt; letter-spacing:.2em; text-transform:uppercase;
-  color:rgba(239,227,200,.5); margin-top:.09in; }
+  color:rgba(232,228,220,.72); margin-top:.09in; text-shadow:0 1px 0 rgba(0,0,0,.6); }
+.colo p { color:rgba(238,234,226,.9); text-shadow:0 1px 2px rgba(0,0,0,.6); }
+.colo .logos img { filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
 """
 
 
@@ -236,19 +278,21 @@ def build():
     recs = {r['tab']: r for r in json.load(open(HERE / 'recettes.json'))}
     pages = []
 
-    # 1 · Couverture
+    # 1 · Couverture : le plat de reliure, titre gravé dans l'argent
     pages.append(page(f"""
-      <img class="photo" src="data:image/jpeg;base64,{b64('cover-photo.jpg')}" alt="">
-      <span class="veil"></span>
-      <span class="frame"></span>
-      <img class="crest" src="data:image/png;base64,{b64('fmm-crest.png')}" alt="">
-      <p class="kicker" style="margin-top:.26in">Festival Médiéval de Montpellier</p>
-      <h1>Le Grimoire<br>du Festival</h1>
-      <div class="orn" style="margin:.22in 0 0"><span class="rule-gold"></span></div>
-      <p class="sub">Les recettes de la cuisine du festival,<br>telles qu\u2019elles sortent des marmites</p>
+      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-face.jpg')}" alt="">
+      <div class="cartouche">
+        <img src="data:image/png;base64,{b64('fmm-logo-silver.png')}" alt="">
+        <p class="grave">Le Grimoire<br>du Festival
+          <span class="fin">MMXXVI</span>
+        </p>
+      </div>
+      <div class="sous-cartouche">
+        <p>Les recettes de la cuisine du festival,<br>telles qu\u2019elles sortent des marmites</p>
+      </div>
       <div class="credits">
         <p class="name">Chef Marc-Alexis Pepin</p>
-        <p class="ed">Caravanes et Saltimbanques \u00b7 MMXXVI</p>
+        <p class="ed">Festival Médiéval de Montpellier \u00b7 Caravanes et Saltimbanques</p>
       </div>""", cls='cover'))
 
     # 2 · Le mot de la cuisine (la seule page d'encre du corps : la rupture)
@@ -315,11 +359,11 @@ def build():
             planche = (f'<img class="plate" src="data:image/png;base64,{b64(gravure)}" alt="">'
                        if gravure else '')
             pages.append(page(f"""
-              {planche}
               <div class="rom">{rom}</div>
               <div class="orn"><span class="rule-gold" style="width:1.5in"></span></div>
               <h2>{esc(titre)}</h2>
-              <div class="orn"><span class="diamond"></span></div>""", cls='chap'))
+              <div class="orn"><span class="diamond"></span></div>
+              {planche}""", cls='chap'))
             last = titre
         r = recs[tab]
         ing = ''.join(
@@ -332,7 +376,9 @@ def build():
         body = ''.join(f'<li>{esc(clean(s))}</li>' for s in steps)
         note = ''.join(f'<div class="note">{esc(clean(x))}</div>' for x in notes)
         wide = ' wide' if len([i for i in r['ing'] if i['n']]) > 13 else ''
+        eau = filigrane(TITRES.get(tab, tab), ' '.join(i['n'] or '' for i in r['ing']))
         pages.append(page(f"""
+          <img class="filigrane" src="data:image/png;base64,{b64(eau)}" alt="">
           <header>
             <h2>{esc(TITRES.get(tab, clean(tab)))}</h2>
             <p class="yield">{esc(r['yield'] or 'Rendement du festival')}</p>
@@ -345,30 +391,17 @@ def build():
             <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
           </div>""", cls='rec' + wide, folio=folio, runhead=titre))
 
-    # Colophon
+    # Colophon : la quatrième, gravée elle aussi
     pages.append(page(f"""
-      <div></div>
-      <div style="width:100%">
-        <p class="kicker" style="font-family:'Cinzel',serif; letter-spacing:.4em; font-size:7.4pt;
-           text-transform:uppercase; color:rgba(232,200,122,.62); margin-bottom:.26in">
-          Ce grimoire est né de trois maisons</p>
-        <div class="logos">
-          <div><img class="wide" src="data:image/png;base64,{b64('logo-marc-alexis.png')}" alt="">
-               <p class="cap">Chef Marc-Alexis<br>Pepin · MapChef</p></div>
-          <div><img class="crest-silver" src="data:image/png;base64,{b64('fmm-logo-silver.png')}" alt="">
-               <p class="cap">Festival Médiéval<br>de Montpellier</p></div>
-          <div><img src="data:image/png;base64,{b64('salon-logo.png')}" alt="">
-               <p class="cap">Le Salon<br>des Inconnus</p></div>
-        </div>
+      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-face.jpg')}" alt="">
+      <div class="cartouche">
+        <p class="grave">Trois maisons<br>pour un livre
+          <span class="fin">Marc-Alexis Pepin<br>Le Salon des Inconnus<br>Festival Médiéval</span>
+        </p>
       </div>
-      <div>
-        <div class="orn" style="margin-bottom:.16in"><span class="rule-gold" style="width:1.8in"></span></div>
-        <p style="font-size:9.6pt; color:rgba(239,227,200,.62); line-height:1.55">
-          Recettes du chef Marc-Alexis Pepin.<br>
-          Mise en livre par Le Salon des Inconnus, 2026.<br>
-          Montpellier, Petite-Nation, Québec.</p>
-        <p class="cap" style="margin-top:.18in">Tous droits réservés · Édition Caravanes et Saltimbanques</p>
-      </div>""", cls='colo ink'))
+      <div class="credits">
+        <p class="ed">Tous droits réservés \u00b7 Édition Caravanes et Saltimbanques \u00b7 2026</p>
+      </div>""", cls='colo'))
 
     doc = f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <title>Le Grimoire du Festival</title>
