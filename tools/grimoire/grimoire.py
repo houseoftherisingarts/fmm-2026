@@ -151,9 +151,10 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 .orn { display:flex; align-items:center; gap:.14in; justify-content:center; }
 
 /* ── Page d'encre (le mot de la cuisine) ── */
-.ink h2 { font-size:24pt; color:#e8c87a; line-height:1.1; }
-.ink .body { font-size:11.2pt; line-height:1.62; color:rgba(239,227,200,.9); }
-.ink .body p + p { margin-top:.16in; }
+.mot h2 { font-size:24pt; color:#8a6524; line-height:1.1; }
+.mot .body { font-size:11.2pt; line-height:1.62; color:#3a2a18; }
+.mot .body p + p { margin-top:.16in; }
+.mot .kicker { color:#a97c2a !important; }
 .dropcap::first-letter { font-family:'Cinzel Decorative',serif; float:left; font-size:40pt;
   line-height:.82; padding:.03in .07in 0 0; color:#c79a3c; }
 
@@ -267,7 +268,7 @@ def build():
           <span class="rule-gold" style="width:1.3in"></span><span class="diamond"></span>
         </div>
         <div class="body">{paras}</div>
-      </div>""", cls='ink'))
+      </div>""", cls='mot'))
 
     # 3 · Sommaire
     n = 5  # la premiere recette tombe sur la page 5
