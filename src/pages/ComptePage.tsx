@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Eye } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket, Megaphone, MessageCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
+import { useBadges } from '../contexts/BadgesContext';
 import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { avancement } from '../firebase/badges';
+import { suivreMesAmities } from '../firebase/ordre';
+import { suivreMesParties } from '../firebase/tafl';
+import { suivreMesAvis } from '../firebase/avis';
 import {
   getUserProfile, upsertUserProfile,
   getBenevoleApp, getVendorApp,
