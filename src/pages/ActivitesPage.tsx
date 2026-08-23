@@ -824,7 +824,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                         (different photographers, lighting, era) read
                         as a homogeneous set. */}
                     <img
-                      src={a.image || '/activites/webp/25880822.webp'}
+                      src={a.image || '/activites/webp/combat-epee-bouclier.webp'}
                       alt={lang === 'FR' ? a.titleFR : a.titleEN}
                       loading="lazy"
                       decoding="async"

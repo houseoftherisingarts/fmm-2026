@@ -170,14 +170,13 @@ export const HOME = {
 
 // ─── Sponsors / press logos ─────────────────────────────────────────
 // Source files captured from the live Wix CDN into /public/sponsors/.
-// Replace `name` with the actual partner name once confirmed.
 export const SPONSORS = [
-  { src: '/sponsors/sponsor-150c7c90.png', name: 'TODO Press partner 1' },
-  { src: '/sponsors/sponsor-6d903a21.png', name: 'TODO Press partner 2' },
-  { src: '/sponsors/sponsor-cb8622e8.png', name: 'TODO Press partner 3' },
-  { src: '/sponsors/sponsor-a0e208f9.png', name: 'TODO Press partner 4' },
-  { src: '/sponsors/sponsor-de2f95fa.png', name: 'TODO Press partner 5' },
-  { src: '/sponsors/sponsor-b17fdda9.png', name: 'TODO Press partner 6' },
+  { src: '/sponsors/journal-les-2-vallees.png', name: 'Journal Les 2 Vallées' },
+  { src: '/sponsors/info-petite-nation.png', name: 'L’Info Petite Nation' },
+  { src: '/sponsors/info-de-la-vallee.png', name: 'L’Info de la Vallée' },
+  { src: '/sponsors/radio-canada-ohdio.png', name: 'Radio-Canada OHdio' },
+  { src: '/sponsors/le-droit.png', name: 'Le Droit' },
+  { src: '/sponsors/radio-canada-tele.png', name: 'ICI Télé' },
 ];
 
 // ─── Footer ─────────────────────────────────────────────────────────

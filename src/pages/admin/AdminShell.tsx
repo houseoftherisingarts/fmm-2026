@@ -51,39 +51,51 @@ interface NavItem {
   id: AdminSectionId;
   label: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  /** Rail heading this item sits under. Items sharing a group must stay
+   *  adjacent in NAV: the rail renders a heading whenever the group
+   *  changes between two consecutive VISIBLE items, so permission
+   *  filtering never leaves an orphan heading behind. */
+  group: string;
 }
 
 const NAV: NavItem[] = [
-  { id: 'dashboard',  label: 'Tableau de bord', icon: LayoutDashboard },
-  { id: 'benevoles',  label: 'Bénévoles',       icon: HandHeart },
-  { id: 'equipes',    label: 'Équipes',         icon: UsersRound },
-  { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag },
-  { id: 'activites',  label: 'Activités',       icon: Swords },
-  { id: 'badges',     label: 'Babillard et badges', icon: Award },
-  { id: 'musiciens',  label: 'Musique',         icon: Music },
-  { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather },
-  { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3 },
-  { id: 'horaire',    label: 'Horaire',         icon: CalendarClock },
-  { id: 'bar',        label: 'Bar',             icon: Beer },
-  { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2 },
-  { id: 'mariages',   label: 'Mariages',        icon: Heart },
-  { id: 'commanditaires', label: 'Commanditaires', icon: Landmark },
-  { id: 'finances',   label: 'Finances',        icon: Wallet },
-  { id: 'carnet',     label: 'Carnet de contacts', icon: BookUser },
-  { id: 'comptes',    label: 'Comptes',         icon: Users },
-  { id: 'invites',    label: 'Invités',         icon: TicketCheck },
-  { id: 'messages',   label: 'Messages',        icon: MessageSquare },
-  { id: 'newsletter', label: 'Infolettre',      icon: Mail },
-  { id: 'social',     label: 'Médias sociaux',  icon: Megaphone },
-  { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon },
-  { id: 'photos',     label: 'Photos',          icon: Camera },
-  { id: 'analytics',  label: 'Analytics',       icon: BarChart3 },
-  { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles },
-  { id: 'parametres', label: 'Paramètres',      icon: Settings },
-  { id: 'discord',    label: 'Discord',          icon: Hash },
-  { id: 'bugs',       label: 'Bugs',            icon: Bug },
+  { id: 'dashboard',  label: 'Tableau de bord', icon: LayoutDashboard, group: 'Vue d’ensemble' },
+
+  { id: 'benevoles',  label: 'Bénévoles',       icon: HandHeart,       group: 'Bénévoles' },
+  { id: 'equipes',    label: 'Équipes',         icon: UsersRound,      group: 'Bénévoles' },
+  { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2,  group: 'Bénévoles' },
+  { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3,       group: 'Bénévoles' },
+  { id: 'badges',     label: 'Babillard et badges', icon: Award,       group: 'Bénévoles' },
+
+  { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag,     group: 'Participants' },
+  { id: 'activites',  label: 'Activités',       icon: Swords,          group: 'Participants' },
+  { id: 'musiciens',  label: 'Musique',         icon: Music,           group: 'Participants' },
+  { id: 'mariages',   label: 'Mariages',        icon: Heart,           group: 'Participants' },
+  { id: 'invites',    label: 'Invités',         icon: TicketCheck,     group: 'Participants' },
+
+  { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
+  { id: 'bar',        label: 'Bar',             icon: Beer,            group: 'Opérations' },
+  { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather,         group: 'Opérations' },
+
+  { id: 'commanditaires', label: 'Commanditaires', icon: Landmark,     group: 'Partenaires et deniers' },
+  { id: 'finances',   label: 'Finances',        icon: Wallet,          group: 'Partenaires et deniers' },
+
+  { id: 'messages',   label: 'Messages',        icon: MessageSquare,   group: 'Communications' },
+  { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Communications' },
+  { id: 'social',     label: 'Médias sociaux',  icon: Megaphone,       group: 'Communications' },
+  { id: 'discord',    label: 'Discord',         icon: Hash,            group: 'Communications' },
+
+  { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon,       group: 'Contenu' },
+  { id: 'photos',     label: 'Photos',          icon: Camera,          group: 'Contenu' },
+  { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles,        group: 'Contenu' },
+
+  { id: 'comptes',    label: 'Comptes',         icon: Users,           group: 'Régie' },
+  { id: 'carnet',     label: 'Carnet de contacts', icon: BookUser,     group: 'Régie' },
+  { id: 'analytics',  label: 'Analytics',       icon: BarChart3,       group: 'Régie' },
+  { id: 'parametres', label: 'Paramètres',      icon: Settings,        group: 'Régie' },
+  { id: 'bugs',       label: 'Bugs',            icon: Bug,             group: 'Régie' },
   // Super-admin-only section: assign/revoke admin roles for everyone else.
-  { id: 'roles',      label: 'Rôles admin',     icon: ShieldCheck },
+  { id: 'roles',      label: 'Rôles admin',     icon: ShieldCheck,     group: 'Régie' },
 ];
 
 const ALL_SECTION_IDS: AdminSectionId[] = NAV.map((n) => n.id);
