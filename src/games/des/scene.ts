@@ -185,6 +185,189 @@ export function creerTable(): TableDes {
   scene.add(feutre);
 
   // ── Lumières de taverne ───────────────────────────────────────────
-  scene.add(new THREE.AmbientLight(0x insufficient, 0));
-  return null as unknown as TableDes;
+  scene.add(new THREE.AmbientLight(0x2a1a12, 1.1));
+  const chandelle = new THREE.PointLight(0xffb066, 2.6, 26, 2);
+  chandelle.position.set(0, 5.2, 1.2);
+  chandelle.castShadow = true;
+  scene.add(chandelle);
+  const braise = new THREE.PointLight(0xc4471f, 1.1, 18, 2);
+  braise.position.set(-4.4, 2.2, -3.2);
+  scene.add(braise);
+
+  // ── Les gobelets ──────────────────────────────────────────────────
+  const cuir = boisTexture('#2a1712', '#120a07', 256);
+  cuir.repeat.set(2, 1);
+  const gobelets: THREE.Mesh[] = [];
+  const faireGobelet = () => {
+    const g = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.62, 0.5, 1.15, 24, 1, true),
+      new THREE.MeshPhongMaterial({
+        color: 0xffffff, map: cuir, shininess: 8, side: THREE.DoubleSide,
+      }),
+    );
+    const fond = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.5, 0.5, 0.06, 24),
+      new THREE.MeshPhongMaterial({ color: 0x1a0f0a, shininess: 6 }),
+    );
+    fond.position.y = -0.56;
+    const grp = new THREE.Group();
+    grp.add(g, fond);
+    grp.castShadow = true;
+    g.castShadow = true;
+    return grp as unknown as THREE.Mesh;
+  };
+
+  // ── Les dés ───────────────────────────────────────────────────────
+  const materiaux = ORDRE_FACES.map((n) =>
+    new THREE.MeshPhongMaterial({ map: faceTexture(n), shininess: 26, specular: 0x554433 }));
+  const geoDe = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+  const faireDe = () => {
+    const d = new THREE.Mesh(geoDe, materiaux);
+    d.castShadow = true;
+    d.receiveShadow = true;
+    return d;
+  };
+
+  const mesDes: THREE.Mesh[] = [];
+  const desAdverses: THREE.Mesh[][] = [];
+  const son = fabriquerSon();
+
+  const groupe = new THREE.Group();
+  scene.add(groupe);
+
+  // Anneau de places : le joueur humain est toujours devant.
+  const places = (nb: number) => {
+    const out: Array<{ x: number; z: number; a: number }> = [];
+    for (let i = 0; i < nb; i++) {
+      const a = Math.PI / 2 + (i / nb) * Math.PI * 2;
+      out.push({ x: Math.cos(a) * 3.7, z: Math.sin(a) * 3.7, a });
+    }
+    return out;
+  };
+
+  let anim: number | null = null;
+  let vivant = true;
+  const tumbling: Array<{ de: THREE.Mesh; jusqua: number; cible: Face; depart: number }> = [];
+
+  const boucle = () => {
+    if (!vivant) return;
+    anim = requestAnimationFrame(boucle);
+    const t = performance.now();
+    // Flamme de chandelle
+    chandelle.intensity = 2.4 + Math.sin(t / 190) * 0.22 + Math.sin(t / 77) * 0.1;
+    // Dés en vol
+    for (let i = tumbling.length - 1; i >= 0; i--) {
+      const d = tumbling[i];
+      const k = (t - d.depart) / (d.jusqua - d.depart);
+      if (k >= 1) {
+        const [rx, ry, rz] = VERS_LE_CIEL[d.cible];
+        d.de.rotation.set(rx, ry + (Math.random() - 0.5) * 0.25, rz);
+        d.de.position.y = 0.2;
+        tumbling.splice(i, 1);
+        continue;
+      }
+      d.de.rotation.x += 0.34;
+      d.de.rotation.y += 0.27;
+      d.de.rotation.z += 0.19;
+      d.de.position.y = 0.2 + Math.abs(Math.sin(k * Math.PI * 2.2)) * (1 - k) * 1.5;
+    }
+    renderer.render(scene, camera);
+  };
+
+  const ajuster = (el: HTMLElement) => {
+    const w = el.clientWidth || 800;
+    const h = el.clientHeight || 480;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  };
+
+  let hote: HTMLElement | null = null;
+  const surResize = () => { if (hote) ajuster(hote); };
+
+  return {
+    monter(el) {
+      hote = el;
+      el.appendChild(renderer.domElement);
+      renderer.domElement.style.width = '100%';
+      renderer.domElement.style.height = '100%';
+      ajuster(el);
+      window.addEventListener('resize', surResize);
+      vivant = true;
+      boucle();
+    },
+    demonter() {
+      vivant = false;
+      if (anim) cancelAnimationFrame(anim);
+      window.removeEventListener('resize', surResize);
+      renderer.domElement.remove();
+      renderer.dispose();
+    },
+    disposer(nb) {
+      // On vide et on repose : c'est peu fréquent, ça reste lisible.
+      groupe.clear();
+      gobelets.length = 0;
+      mesDes.length = 0;
+      desAdverses.length = 0;
+      const pl = places(nb);
+      pl.forEach((p, i) => {
+        const g = faireGobelet();
+        g.position.set(p.x, 0.52, p.z);
+        groupe.add(g);
+        gobelets.push(g);
+        if (i === 0) {
+          for (let k = 0; k < 5; k++) {
+            const d = faireDe();
+            d.position.set(-1.0 + k * 0.5, 0.2, 2.35);
+            groupe.add(d);
+            mesDes.push(d);
+          }
+        } else {
+          const mains: THREE.Mesh[] = [];
+          for (let k = 0; k < 5; k++) {
+            const d = faireDe();
+            d.position.set(p.x - 0.9 + k * 0.45, 0.2, p.z + 0.9);
+            d.visible = false;
+            groupe.add(d);
+            mains.push(d);
+          }
+          desAdverses.push(mains);
+        }
+      });
+    },
+    lancer(faces, onFini) {
+      son.secouer();
+      const depart = performance.now() + 780;
+      mesDes.forEach((d, i) => {
+        d.visible = i < faces.length;
+        if (i >= faces.length) return;
+        d.position.set(-1.0 + i * 0.5, 1.6, 2.35);
+        tumbling.push({ de: d, depart, jusqua: depart + 900 + i * 90, cible: faces[i] });
+      });
+      window.setTimeout(() => son.tomber(), 800);
+      if (onFini) window.setTimeout(onFini, 1800);
+    },
+    devoiler(mains, montrer) {
+      desAdverses.forEach((groupeDes, idx) => {
+        const main = mains[idx] || [];
+        groupeDes.forEach((d, k) => {
+          d.visible = montrer && k < main.length;
+          if (d.visible) {
+            const [rx, ry, rz] = VERS_LE_CIEL[main[k]];
+            d.rotation.set(rx, ry, rz);
+          }
+        });
+      });
+      gobelets.forEach((g, i) => {
+        if (i === 0) return;
+        g.position.y = montrer ? 1.35 : 0.52;
+      });
+    },
+    designer(index) {
+      gobelets.forEach((g, i) => {
+        g.position.y = i === index ? 0.68 : 0.52;
+      });
+    },
+  };
 }
