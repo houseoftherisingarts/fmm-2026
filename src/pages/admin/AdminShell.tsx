@@ -415,7 +415,7 @@ const AdminShell: React.FC<Props> = ({
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex admin-ghost"
+            className="hidden md:inline-flex shrink-0 admin-ghost"
           >
             <ExternalLink size={12} /> Voir le site
           </a>
