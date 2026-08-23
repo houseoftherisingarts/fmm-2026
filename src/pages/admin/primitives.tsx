@@ -59,16 +59,23 @@ export const ToggleSwitch: React.FC<{ checked: boolean; onChange: (v: boolean) =
       onClick={() => onChange(!checked)}
       className="w-10 h-6 relative transition-colors"
       style={{
-        background: checked ? 'var(--admin-accent)' : 'rgba(228, 236, 247, 0.12)',
-        border: '1px solid var(--admin-line)',
+        borderRadius: 999,
+        background: checked
+          ? 'linear-gradient(180deg, var(--admin-brass-hi) 0%, var(--admin-accent) 48%, var(--admin-brass-lo) 100%)'
+          : 'rgba(4, 8, 12, 0.62)',
+        border: checked ? '1px solid var(--admin-accent-line)' : '1px solid var(--admin-line)',
+        boxShadow: checked
+          ? 'inset 0 1px 0 var(--admin-lit), 0 0 14px -5px color-mix(in oklab, var(--admin-accent), transparent 45%)'
+          : 'inset 0 1px 2px rgba(0,0,0,0.5)',
       }}
     >
       <span
         className="absolute top-0.5 w-5 h-5 transition-transform"
         style={{
+          borderRadius: 999,
           left: checked ? '1.1rem' : '2px',
-          background: checked ? 'var(--admin-bg-deep)' : 'var(--admin-text)',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
+          background: checked ? '#080D11' : 'var(--admin-text-soft)',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
         }}
       />
     </span>
