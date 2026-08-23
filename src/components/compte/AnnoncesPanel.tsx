@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Info, Facebook, ArrowUpRight, Stars } from 'lucide-react';
+import { AlertTriangle, Info, Facebook, ArrowUpRight, Stars, Check } from 'lucide-react';
 import { ANNONCES, type Annonce } from '../../content/annonces';
 import { NoticeBoard, Parchment, seedTilt, type PinTone } from '../board/NoticeBoard';
 import PetiteMonnaieCoin from '../PetiteMonnaieCoin';
 import { SITE } from '../../content';
+import { useAuth } from '../../contexts/AuthContext';
+import { useBadges } from '../../contexts/BadgesContext';
+import { accepterAvis, suivreMesAvis } from '../../firebase/avis';
 
 // Les annonces ouvrent l'espace client : c'est la première chose vue en
 // arrivant. Elles s'épinglent depuis le 2026-08-03 sur le même panneau de
@@ -21,6 +24,31 @@ const PIN_PAR_TON: Record<Annonce['tone'], PinTone> = {
 
 const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
+  const { user, openSignIn } = useAuth();
+  const { gagnerBadge } = useBadges();
+  // Les avis décrochés quittent le tableau : le babillard ne montre que
+  // ce qui reste à prendre (Alex, 2026-08-23).
+  const [pris, setPris] = useState<string[]>([]);
+  useEffect(() => {
+    if (!user?.uid) { setPris([]); return; }
+    return suivreMesAvis(user.uid, setPris);
+  }, [user?.uid]);
+
+  // Un avis pris vaut un badge, et les quatre valent la collection.
+  useEffect(() => {
+    if (pris.length === 0) return;
+    for (let i = 1; i <= Math.min(pris.length, 4); i += 1) gagnerBadge(`billet-${i}`);
+  }, [pris.length, gagnerBadge]);
+
+  const accepter = (id: string) => {
+    if (!user?.uid) { openSignIn(); return; }
+    void accepterAvis(
+      user.uid, id,
+      user.displayName || '', user.email || '',
+    );
+  };
+
+  const restants = ANNONCES.filter((a) => !pris.includes(a.id));
   if (ANNONCES.length === 0) return null;
 
   return (
@@ -36,15 +64,29 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           className="font-sans text-sm tracking-[0.2em]"
           style={{ color: '#D8B05A', fontWeight: 300 }}
         >
-          {ANNONCES.length}
+          {restants.length} / {ANNONCES.length}
         </span>
       </div>
 
-      <NoticeBoard className="w-full" gridClassName="sm:grid-cols-2">
-        {ANNONCES.map((a, i) => (
-          <AnnonceNotice key={a.id} a={a} lang={lang} index={i} />
-        ))}
-      </NoticeBoard>
+      {restants.length > 0 ? (
+        <NoticeBoard className="w-full" gridClassName="sm:grid-cols-2">
+          {restants.map((a, i) => (
+            <AnnonceNotice key={a.id} a={a} lang={lang} index={i} onAccepter={() => accepter(a.id)} />
+          ))}
+        </NoticeBoard>
+      ) : (
+        <div className="rounded-lg-card border border-brass/30 px-7 py-10 text-center"
+             style={{ background: 'rgba(26, 5, 11, 0.5)' }}>
+          <p className="font-display title-medieval text-xl text-ivory mb-2">
+            {fr ? 'Le babillard est vide' : 'The board is empty'}
+          </p>
+          <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
+            {fr
+              ? 'Les quatre avis sont dans votre collection, plus bas.'
+              : 'All four notices are in your collection, further down.'}
+          </p>
+        </div>
+      )}
 
       {/* Le fil Facebook n'est pas branché : tirer les publications
           demande un jeton de page Meta côté serveur. En attendant, on
@@ -96,7 +138,9 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 // Encre sur parchemin : le titre au centre comme sur le tableau des
 // marchands, le corps aligné à gauche parce qu'un paragraphe centré de
 // cette longueur ne se lit pas.
-const AnnonceNotice: React.FC<{ a: Annonce; lang: 'FR' | 'EN'; index: number }> = ({ a, lang, index }) => {
+const AnnonceNotice: React.FC<{
+  a: Annonce; lang: 'FR' | 'EN'; index: number; onAccepter?: () => void;
+}> = ({ a, lang, index, onAccepter }) => {
   const fr = lang === 'FR';
   const Icon = a.tone === 'alerte' ? AlertTriangle : a.tone === 'appel' ? Stars : Info;
   const encre = a.tone === 'alerte' ? '#8d2f1e' : '#7a4a1a';
@@ -139,6 +183,21 @@ const AnnonceNotice: React.FC<{ a: Annonce; lang: 'FR' | 'EN'; index: number }> 
             {para}
           </p>
         ))}
+
+        {onAccepter && (
+          <div className="text-center mt-5">
+            <button
+              type="button"
+              onClick={onAccepter}
+              className="inline-flex items-center gap-2 px-5 py-2.5 font-sans uppercase tracking-[0.2em] text-[11px] transition-colors"
+              style={{ border: '1px solid rgba(122, 74, 26, 0.55)', color: '#2a1505' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(122, 74, 26, 0.12)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <Check size={13} /> {fr ? 'Accepté' : 'Accepted'}
+            </button>
+          </div>
+        )}
 
         {a.cta && (
           <div className="text-center mt-5">

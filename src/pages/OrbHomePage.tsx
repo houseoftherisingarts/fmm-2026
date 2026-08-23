@@ -1308,9 +1308,6 @@ const OrbHomePage: React.FC = () => {
               alt="FMM"
               className="fmm-no-grade h-14 md:h-20 w-auto drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]"
             />
-            <span className="hidden sm:inline-flex font-display title-medieval text-sm md:text-base text-ivory drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-              FMM <span className="text-brass ml-1">{SITE.year}</span>
-            </span>
           </div>
         ) : (
         <button
@@ -1325,44 +1322,13 @@ const OrbHomePage: React.FC = () => {
             alt="FMM"
             className="fmm-no-grade h-14 md:h-20 w-auto transition-opacity group-hover:opacity-80 drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]"
           />
-          <span className="hidden sm:inline-flex font-display title-medieval text-sm md:text-base text-ivory drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-            FMM <span className="text-brass ml-1">{SITE.year}</span>
-          </span>
         </button>
         )}
 
-        {/* Top-right corner: account access + lang toggle. This is
-            the ONLY place outside the global NavBar (which is hidden on
-            this immersive landing) where Mon compte / Se connecter
-            lives. */}
-        <div className="absolute top-6 right-5 md:top-8 md:right-12 z-20 flex items-center gap-4 sm:gap-6 md:gap-8">
-          {/* Pre-sale teaser hides account access entirely: the only action
-              on the page is the big pre-sale tickets button. */}
-          {presale ? null : user ? (
-            <Link
-              to={addLocale('/compte', lang)}
-              className="group inline-flex items-center gap-1.5 sm:gap-2 font-display title-medieval text-[10px] md:text-xs uppercase tracking-[0.25em] sm:tracking-[0.4em] text-ivory-soft hover:text-[var(--color-amber-glow)] transition-colors"
-            >
-              {lang === 'FR' ? 'Mon compte' : 'My account'}
-              <span aria-hidden className="hidden sm:inline-block h-px w-5 bg-ivory-soft/40 group-hover:bg-[var(--color-amber-glow)] group-hover:w-8 transition-all" />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              onClick={openSignIn}
-              className="group inline-flex items-center gap-1.5 sm:gap-2 font-display title-medieval text-[10px] md:text-xs uppercase tracking-[0.25em] sm:tracking-[0.4em] text-ivory-soft hover:text-[var(--color-amber-glow)] transition-colors"
-            >
-              {lang === 'FR' ? 'Se connecter' : 'Sign in'}
-              <span aria-hidden className="hidden sm:inline-block h-px w-5 bg-ivory-soft/40 group-hover:bg-[var(--color-amber-glow)] group-hover:w-8 transition-all" />
-            </button>
-          )}
-          <Link
-            to={lang === 'FR' ? '/en' : '/'}
-            className="font-display title-medieval text-[10px] md:text-xs uppercase tracking-[0.5em] text-ivory-soft hover:text-brass transition-colors"
-          >
-            {lang === 'FR' ? 'EN' : 'FR'}
-          </Link>
-        </div>
+        {/* Le coin haut-droit a été retiré le 2026-08-23 : la barre du
+            site s'affiche maintenant sur cette page, et elle porte déjà
+            les billets, la langue et « Mon espace ». Deux fois la même
+            chose à l'écran, c'était une de trop. */}
 
         {/* Featured 2026 film: centred lightbox over the orb. */}
         {showFilm && (

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, Upload, Trash2, ArrowUpRight, FileText } from 'lucide-react';
 import {
@@ -11,6 +12,7 @@ import {
 const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang }) => {
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
+  const { gagnerBadge } = useBadges();
   const [rows, setRows]       = useState<Billet[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy]       = useState(false);
@@ -21,7 +23,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
   useEffect(() => {
     let live = true;
     listBillets(uid)
-      .then((r) => { if (live) setRows(r); })
+      .then((r) => { if (live) { setRows(r); if (r.length > 0) gagnerBadge('billets'); } })
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, [uid]);
@@ -36,6 +38,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
     try {
       const added = await Promise.all(chosen.map((f) => uploadBillet(uid, f)));
       setRows((prev) => [...added, ...prev]);
+      gagnerBadge('billets');
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {

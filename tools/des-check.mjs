@@ -70,3 +70,40 @@ if (coup.action === 'annonce') {
 
 console.log(ko === 0 ? 'TOUT PASSE' : ko + ' échec(s)');
 process.exit(ko === 0 ? 0 : 1);
+
+// ── Le pari du calzar : « c'est exactement ça » ──────────────────────
+{
+  const base = R.nouvellePartie([
+    { nom: 'Moi', machine: false },
+    { nom: 'Elle', machine: true },
+  ]);
+  // Mains connues : trois 4 en tout, plus un as joker.
+  const p = {
+    ...base,
+    joueurs: [
+      { ...base.joueurs[0], des: [4, 4, 2, 3, 5] },
+      { ...base.joueurs[1], des: [4, 1, 6, 6, 2] },
+    ],
+    tour: 0,
+    mise: { quantite: 4, face: 4, parId: 'j1' },
+  };
+  // 4+4+4 = 3, plus l'as joker = 4 : la mise tombe pile.
+  const juste = R.exact(p);
+  ok(juste.devoilement.exact === true, 'l\'appel est marqué exact');
+  ok(juste.devoilement.perdantId === null, 'un exact réussi ne fait perdre personne');
+  ok(juste.joueurs[0].des.length === 5, 'le gobelet ne dépasse pas cinq dés');
+
+  const q = { ...p, joueurs: [{ ...p.joueurs[0], des: [4, 4, 2] }, p.joueurs[1]] };
+  const rate = R.exact(q);
+  ok(rate.devoilement.perdantId === 'j0', 'un exact raté coûte un dé à celui qui l\'appelle');
+  ok(rate.joueurs[0].des.length === 2, 'le dé est bien retiré');
+
+  // Un exact réussi avec un dé en moins rend le dé perdu.
+  const r = {
+    ...p,
+    joueurs: [{ ...p.joueurs[0], des: [4, 4, 2, 3] }, { ...p.joueurs[1], des: [4, 1, 6, 6, 2] }],
+    mise: { quantite: 4, face: 4, parId: 'j1' },
+  };
+  const repris = R.exact(r);
+  ok(repris.joueurs[0].des.length === 5, 'un exact juste rend le dé perdu');
+}

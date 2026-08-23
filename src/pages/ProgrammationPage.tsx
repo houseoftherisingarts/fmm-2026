@@ -5,6 +5,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { useBadgeAuBout } from '../contexts/BadgesContext';
 import ActivitesPage from './ActivitesPage';
 import MusiquePage from './MusiquePage';
 import JeunessePage from './JeunessePage';
@@ -34,6 +35,7 @@ const ANCRES: Array<{
 
 const ProgrammationPage: React.FC = () => {
   useCaravanPage();
+  useBadgeAuBout('programme');
   const { lang } = useUI();
   const fr = lang === 'FR';
 

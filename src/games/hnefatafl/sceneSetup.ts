@@ -18,9 +18,10 @@ export interface SceneHandle {
 }
 
 // ── Le bois de la table ─────────────────────────────────────────────
-// Alex, 2026-08-23 : sous le damier il n'y avait qu'un rond noir. La
-// vraie table est là : un plateau de chêne peint au canevas, sans
-// fichier à télécharger.
+// Alex, 2026-08-23 : même texture que la table du jeu de dés
+// (public/jeux/des/table-bois.webp), pour que le bois soit identique
+// dans les deux jeux. Le canevas peint plus bas reste le repli si le
+// fichier ne charge pas : le jeu ne doit jamais s'ouvrir sur du gris.
 function boisDeTable(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = 512;

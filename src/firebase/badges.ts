@@ -21,7 +21,7 @@ export interface Badge {
   id: string;
   nomFR: string; nomEN: string;
   texteFR: string; texteEN: string;
-  /** Le glyphe qui le représente dans le livre de collection. */
+  /** Le glyphe de repli, si l'image ne charge pas. */
   glyphe: string;
 }
 
@@ -113,6 +113,10 @@ export const COLLECTIONS: Collection[] = [
 ];
 
 export const TOUS_LES_BADGES: Badge[] = COLLECTIONS.flatMap((c) => c.badges);
+
+/** Le sceau gravé de chaque badge, frappé pour le festival le 23 août
+ *  2026 (bronze vieilli sur velours noir, une planche par collection). */
+export const sceauDe = (id: string) => `/badges/${id}.webp`;
 
 export const badgeParId = (id: string): Badge | undefined =>
   TOUS_LES_BADGES.find((b) => b.id === id);

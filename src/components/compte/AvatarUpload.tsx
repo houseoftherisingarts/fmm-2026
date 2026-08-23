@@ -92,7 +92,7 @@ const AvatarUpload: React.FC<{
     <div className="flex items-center gap-5">
       <div className="relative shrink-0">
         <div
-          className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden"
+          className="relative w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden"
           style={{
             border: '1px solid rgba(216, 176, 90, 0.75)',
             boxShadow: '0 0 32px -6px rgba(216,176,90,0.55), 0 10px 26px -10px rgba(0,0,0,0.85)',

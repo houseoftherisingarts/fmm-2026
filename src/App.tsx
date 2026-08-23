@@ -13,6 +13,9 @@ import { useReducedMotion } from 'framer-motion';
 import { AppProvider, useUI } from './contexts/AppContext';
 import { SiteFlagsProvider, useSiteFlags } from './contexts/SiteFlagsContext';
 import { AuthProvider } from './contexts/AuthContext';
+import PorteDuJeu from './components/auth/PorteDuJeu';
+import { BadgesProvider } from './contexts/BadgesContext';
+import AnnonceBadge from './components/badges/AnnonceBadge';
 import { usePerfTier } from './lib/usePerfTier';
 import NavBar from './components/layout/NavBar';
 import ErrorBoundary from './components/layout/ErrorBoundary';
@@ -55,6 +58,9 @@ const ComptePage       = lazy(() => import('./pages/ComptePage'));
 const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
+const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
+const AlliancePage        = lazy(() => import('./pages/AlliancePage'));
+const DefiLobbyPage       = lazy(() => import('./pages/DefiLobbyPage'));
 const MessagesPage     = lazy(() => import('./pages/MessagesPage'));
 const VendorApplicationPage = lazy(() => import('./pages/VendorApplicationPage'));
 const FaubourgPage = lazy(() => import('./pages/FaubourgPage'));
@@ -193,10 +199,11 @@ const AnalyticsPageViews: React.FC = () => {
 };
 
 // Routes treated as one-shot immersive landings: hide global chrome.
+// La barre du haut (Billets, FR/EN, Mon espace) suit le visiteur partout,
+// y compris sur la page du menu principal : Alex la veut visible dès
+// l'accueil (2026-08-23). Seuls les laboratoires restent nus.
 const isImmersive = (pathname: string) =>
-  pathname === '/'
-  || pathname === '/en'
-  || pathname === '/labo-titre'
+  pathname === '/labo-titre'
   || pathname === '/backuppage'
   || pathname === '/en/backuppage';
 // Hnefatafl a quitté cette liste le 2026-08-03 : le jeu vivait dans un
@@ -222,6 +229,14 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
+/** L'Alliance ne s'ouvre que si le drapeau est levé. Sinon, la page
+ *  n'existe pas pour le public (Alex, 2026-08-23). */
+const PorteAlliance: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { flags } = useSiteFlags();
+  if (!flags.pubAlliance && SITE_MODE !== 'live') return <NotFoundPage />;
+  return <>{children}</>;
+};
+
 const Chrome: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;
@@ -230,12 +245,14 @@ const Chrome: React.FC = () => {
   if (isImmersive(pathname)) return null;
   return <NavBar />;
 };
+const SANS_PIED = ['/', '/en', '/labo-titre', '/backuppage', '/en/backuppage'];
 const Footing: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;
-  // Immersive landings hide the footer + "Migrez vers Zeffy" banner, but
-  // keep the consent banner so the LOI 25 prompt still appears on first visit.
-  const immersive = isImmersive(pathname);
+  // Le pied de page reste absent des accueils cinématiques (la page du
+  // menu principal se termine sur l'orbe, pas sur un pied), même si la
+  // barre du haut, elle, s'y affiche maintenant.
+  const immersive = SANS_PIED.includes(pathname);
   return (
     <Suspense fallback={null}>
       {!immersive && <Footer />}
@@ -314,6 +331,7 @@ const App: React.FC = () => (
       <SiteFlagsProvider>
         <AuthProvider>
         <BrowserRouter>
+        <BadgesProvider>
           <ScrollToTop />
           <LocaleSync />
           <AnalyticsPageViews />
@@ -362,6 +380,14 @@ const App: React.FC = () => (
                 <Route path="/communaute/equipe/:teamId"        element={<CommunautePage />} />
                 <Route path="/en/community"                     element={<CommunautePage />} />
                 <Route path="/en/community/team/:teamId"        element={<CommunautePage />} />
+                <Route path="/ordre"                            element={<OrdrePage />} />
+                {/* L'Alliance dort tant qu'Alex ne l'allume pas depuis
+                    l'admin (drapeau pubAlliance). */}
+                <Route path="/alliance"                         element={<PorteAlliance><AlliancePage /></PorteAlliance>} />
+                <Route path="/en/alliance"                      element={<PorteAlliance><AlliancePage /></PorteAlliance>} />
+                <Route path="/en/order"                         element={<OrdrePage />} />
+                <Route path="/defi/:id"                         element={<DefiLobbyPage />} />
+                <Route path="/en/challenge/:id"                 element={<DefiLobbyPage />} />
                 <Route path="/profil/:uid"                      element={<PublicProfilePage />} />
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
                 <Route path="/messages"                         element={<MessagesPage />} />
@@ -384,12 +410,12 @@ const App: React.FC = () => (
                 <Route path="/en/music/registration" element={<MusicianApplicationPage />} />
                 <Route path="/ressources"           element={<RessourcesPage />} />
                 <Route path="/en/resources"         element={<RessourcesPage />} />
-                <Route path="/jeunesse/hnefatafl"   element={<HnefataflGame />} />
-                <Route path="/jeux/tarot"           element={<TarotGame />} />
-                <Route path="/jeux/des"             element={<DesGame />} />
-                <Route path="/en/games/dice"        element={<DesGame />} />
-                <Route path="/en/games/tarot"       element={<TarotGame />} />
-                <Route path="/en/youth/hnefatafl"   element={<HnefataflGame />} />
+                <Route path="/jeunesse/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />
+                <Route path="/jeux/tarot"           element={<PorteDuJeu><TarotGame /></PorteDuJeu>} />
+                <Route path="/jeux/des"             element={<PorteDuJeu><DesGame /></PorteDuJeu>} />
+                <Route path="/en/games/dice"        element={<PorteDuJeu><DesGame /></PorteDuJeu>} />
+                <Route path="/en/games/tarot"       element={<PorteDuJeu><TarotGame /></PorteDuJeu>} />
+                <Route path="/en/youth/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />
                 <Route path="/politique-de-confidentialite" element={<PrivacyPage />} />
                 <Route path="/en/privacy" element={<PrivacyPage />} />
                 <Route path="/contact"    element={<ContactPage />} />
@@ -441,6 +467,10 @@ const App: React.FC = () => (
             </Suspense>
           </ErrorBoundary>
           <Footing />
+          {/* L'annonce d'un badge se pose au centre de l'écran, par-dessus
+              tout le reste. Un seul exemplaire pour tout le site. */}
+          <AnnonceBadge />
+        </BadgesProvider>
         </BrowserRouter>
         </AuthProvider>
       </SiteFlagsProvider>

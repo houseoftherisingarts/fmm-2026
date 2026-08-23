@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {ArrowUpRight, Check, LogIn, AlertCircle, BadgeCheck, Lock, ChevronLeft, ChevronRight, } from 'lucide-react';
+import { useBadges } from '../contexts/BadgesContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
@@ -115,6 +116,7 @@ const EMPTY: FormState = {
 };
 
 const BenevolePage: React.FC = () => {
+  const { gagnerBadge } = useBadges();
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
@@ -242,6 +244,7 @@ const BenevolePage: React.FC = () => {
       console.info('[benevole-form] write OK');
       setExisting(app);
       setStatus('sent');
+      gagnerBadge('benevole');
     } catch (err) {
       const code = (err && typeof err === 'object' && 'code' in err) ? `[${(err as { code: string }).code}] ` : '';
       const msg  = err instanceof Error ? err.message : String(err);

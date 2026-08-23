@@ -44,7 +44,12 @@ export interface Partie {
     contre: string;
     mise: Mise;
     compte: number;
-    perdantId: string;
+    /** Vide quand personne ne perd de dé (un exact réussi). */
+    perdantId: string | null;
+    /** Qui récupère un dé, s'il y a lieu. */
+    gagnantDeId?: string;
+    /** L'appel était « c'est exactement ça » et non « menteur ». */
+    exact?: boolean;
   };
   gagnantId?: string;
 }
@@ -159,6 +164,54 @@ export function douter(p: Partie): Partie {
   };
 }
 
+/**
+ * « C'est exactement ça » : le pari du calzar.
+ *
+ * Au lieu de crier au menteur, on annonce que la mise tombe pile. Si
+ * le compte est exactement celui annoncé, on récupère un dé perdu (le
+ * gobelet ne dépasse jamais cinq). Sinon, on en perd un. Règle du
+ * Perudo, demandée par Alex le 2026-08-23.
+ */
+export function exact(p: Partie): Partie {
+  if (p.phase !== 'annonces' || !p.mise) return p;
+  const appelant = p.joueurs[p.tour];
+  const compte = compter(p, p.mise.face);
+  const juste = compte === p.mise.quantite;
+
+  const joueurs = p.joueurs.map((j) => {
+    if (j.id !== appelant.id) return j;
+    if (juste) {
+      return j.des.length >= DES_AU_DEPART ? j : { ...j, des: [...j.des, lancerUnDe()] };
+    }
+    return { ...j, des: j.des.slice(0, -1) };
+  });
+  const apres = joueurs.map((j) => ({ ...j, elimine: j.des.length === 0 }));
+  const restants = apres.filter((j) => !j.elimine);
+
+  return {
+    ...p,
+    joueurs: apres,
+    phase: restants.length <= 1 ? 'fini' : 'devoilement',
+    gagnantId: restants.length === 1 ? restants[0].id : undefined,
+    devoilement: {
+      doutePar: appelant.id,
+      contre: p.mise.parId,
+      mise: p.mise,
+      compte,
+      exact: true,
+      perdantId: juste ? null : appelant.id,
+      gagnantDeId: juste ? appelant.id : undefined,
+    },
+    journal: [
+      ...p.journal,
+      `${appelant.nom} annonce « c’est exactement ça ! »`,
+      juste
+        ? `Il y avait bien ${compte} × ${p.mise.face} : ${appelant.nom} reprend un dé.`
+        : `Il y avait ${compte} × ${p.mise.face} : ${appelant.nom} perd un dé.`,
+    ],
+  };
+}
+
 /** Nouvelle manche : on relance, et le perdant ouvre les annonces. */
 export function mancheSuivante(p: Partie): Partie {
   if (p.phase !== 'devoilement') return p;
@@ -166,7 +219,10 @@ export function mancheSuivante(p: Partie): Partie {
   const joueurs = p.joueurs.map((j) =>
     j.elimine ? j : { ...j, des: lancerLesDes(j.des.length) },
   );
-  let tour = joueurs.findIndex((j) => j.id === perdantId && !j.elimine);
+  // Un exact réussi ne fait perdre personne : la main revient alors à
+  // celui qui a appelé, comme au Perudo.
+  const ouvreur = perdantId || p.devoilement?.doutePar;
+  let tour = joueurs.findIndex((j) => j.id === ouvreur && !j.elimine);
   if (tour < 0) tour = joueurs.findIndex((j) => !j.elimine);
   return {
     ...p,

@@ -9,6 +9,7 @@ import {
   PlongezArchivesSection, EquipeSection,
 } from './HistoirePage';
 import FriseHistoire from '../components/histoire/FriseHistoire';
+import Bibliotheque from '../components/histoire/Bibliotheque';
 import {
   ApprendreChapterSection, ThemeCaravanesSection, OriginesCirqueSection,
   EpoqueSection, FormationsSection,
@@ -57,6 +58,11 @@ const HistoireApprendrePage: React.FC = () => {
 
       <PlongezArchivesSection />
       <EquipeSection />
+
+      {/* Tout au bout de la page : ce qu'il faut lire, un rayon par
+          année du festival (Alex, 2026-08-23). Le carnet d'apprentissage
+          médiéval prendra la suite. */}
+      <Bibliotheque lang={lang} />
     </>
   );
 };

@@ -288,6 +288,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
               bands={archives}
               lang={lang}
               mirror
+              departNom="Arrünn"
               registre={t.registre}
               sansJourTitre={t.sectionPastEyebrow}
             />

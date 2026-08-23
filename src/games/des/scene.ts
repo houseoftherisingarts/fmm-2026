@@ -5,7 +5,31 @@
 // à l'exécution.
 
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { Face } from './regles';
+
+/** Les textures gravées pour le jeu, servies depuis /public/jeux/des/. */
+const TEXTURES = {
+  table: '/jeux/des/table-bois.webp',
+  cuir: '/jeux/des/cuir-gobelet.webp',
+  de: '/jeux/des/de-rouge.webp',
+};
+
+const chargeur = new THREE.TextureLoader();
+
+/**
+ * Charge une texture peinte, et garde le repli fabriqué au canevas si
+ * le fichier manque : le jeu ne doit jamais s'ouvrir sur du gris.
+ */
+function texturePeinte(url: string, repli: THREE.CanvasTexture, repeat = 1): THREE.Texture {
+  const t = chargeur.load(url, undefined, undefined, () => { /* repli déjà en place */ });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.repeat.set(repeat, repeat);
+  t.anisotropy = 8;
+  return repli && !url ? repli : t;
+}
 
 export interface TableDes {
   monter: (el: HTMLElement) => void;
@@ -16,37 +40,97 @@ export interface TableDes {
   lancer: (faces: Face[], onFini?: () => void) => void;
   /** Montre ou cache les dés des autres au dévoilement. */
   devoiler: (mains: Face[][], montrer: boolean) => void;
-  /** Le gobelet du joueur dont c'est le tour se soulève un peu. */
+  /** Le gobelet du joueur dont c'est le tour se soulève, sous la douche
+   *  de lumière qui le suit autour de la table. */
   designer: (index: number) => void;
+  /** Un dé s'efface en fumée devant la place indiquée. */
+  perdreUnDe: (index: number) => void;
+  /** Un dé revient sur la table, pour un « exactement ça » réussi. */
+  reprendreUnDe: (index: number) => void;
+  /** Combien de dés chacun tient encore, pour la mise en place. */
+  mains: (comptes: number[]) => void;
+  /** Où poser les bulles de dialogue, en pourcentage de l'écran. */
+  ancres: () => Array<{ x: number; y: number }>;
 }
 
 // ── Le bois, peint une fois pour toutes ─────────────────────────────
-function boisTexture(teinte: string, veine: string, taille = 512): THREE.CanvasTexture {
+function boisTexture(teinte: string, veine: string, taille = 1024): THREE.CanvasTexture {
+  // Un vrai plateau de taverne : des planches assemblées, des veines
+  // qui suivent la longueur, des nœuds, et des joints sombres entre
+  // les lames (Alex, 2026-08-23 : « la table doit être en bois »,
+  // registre des tables de Thronebreaker).
   const c = document.createElement('canvas');
   c.width = c.height = taille;
   const g = c.getContext('2d')!;
   g.fillStyle = teinte;
   g.fillRect(0, 0, taille, taille);
-  g.strokeStyle = veine;
-  for (let i = 0; i < 160; i++) {
-    const x = Math.random() * taille;
-    g.globalAlpha = 0.04 + Math.random() * 0.14;
-    g.lineWidth = 0.6 + Math.random() * 2.4;
+
+  const lames = 7;
+  const h = taille / lames;
+  for (let l = 0; l < lames; l++) {
+    const y0 = l * h;
+    // Chaque lame a sa propre teinte : le bois n'est jamais uniforme.
+    const ton = 0.86 + Math.random() * 0.3;
+    g.save();
     g.beginPath();
-    g.moveTo(x, 0);
-    const amp = 4 + Math.random() * 14;
-    for (let y = 0; y <= taille; y += 16) {
-      g.lineTo(x + Math.sin((y / taille) * Math.PI * (1 + Math.random())) * amp, y);
+    g.rect(0, y0, taille, h);
+    g.clip();
+    g.globalAlpha = 0.5;
+    g.fillStyle = veine;
+    g.globalCompositeOperation = 'overlay';
+    g.fillStyle = `rgba(255,235,205,${(ton - 0.86) * 0.5})`;
+    g.fillRect(0, y0, taille, h);
+    g.globalCompositeOperation = 'source-over';
+
+    // Les veines, couchées dans le sens de la lame.
+    for (let i = 0; i < 34; i++) {
+      const y = y0 + Math.random() * h;
+      g.globalAlpha = 0.05 + Math.random() * 0.16;
+      g.strokeStyle = veine;
+      g.lineWidth = 0.5 + Math.random() * 2.6;
+      g.beginPath();
+      g.moveTo(0, y);
+      const amp = 1.5 + Math.random() * 5;
+      for (let x = 0; x <= taille; x += 18) {
+        g.lineTo(x, y + Math.sin((x / taille) * Math.PI * (1 + Math.random() * 2)) * amp);
+      }
+      g.stroke();
     }
-    g.stroke();
+
+    // Un nœud de temps en temps, avec ses cernes.
+    if (Math.random() > 0.45) {
+      const nx = Math.random() * taille;
+      const ny = y0 + h * (0.3 + Math.random() * 0.4);
+      for (let r = 2; r < 26; r += 2.4) {
+        g.globalAlpha = 0.1 + Math.random() * 0.13;
+        g.strokeStyle = veine;
+        g.lineWidth = 1.1;
+        g.beginPath();
+        g.ellipse(nx, ny, r * 1.6, r, 0, 0, Math.PI * 2);
+        g.stroke();
+      }
+    }
+    g.restore();
+
+    // Le joint entre deux lames.
+    g.globalAlpha = 0.55;
+    g.fillStyle = 'rgba(0,0,0,0.75)';
+    g.fillRect(0, y0 - 1, taille, 2.4);
+    g.globalAlpha = 0.16;
+    g.fillStyle = 'rgba(255,225,190,0.6)';
+    g.fillRect(0, y0 + 1.6, taille, 1.2);
   }
-  g.globalAlpha = 0.05;
-  for (let i = 0; i < 3000; i++) {
+
+  // Usure et poussière.
+  g.globalAlpha = 0.045;
+  for (let i = 0; i < 6000; i++) {
     g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
-    g.fillRect(Math.random() * taille, Math.random() * taille, 1, 1);
+    g.fillRect(Math.random() * taille, Math.random() * taille, 1.4, 1.4);
   }
+  g.globalAlpha = 1;
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 8;
   return t;
 }
@@ -66,32 +150,71 @@ function faceTexture(n: number): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = s;
   const g = c.getContext('2d')!;
-  // Os vieilli
-  g.fillStyle = '#e6dcc2';
+  // Rouge sang écaillé, points d'os creusés : le registre des dés de
+  // Davy Jones, référence donnée par Alex le 2026-08-23. La peinture
+  // est vieille, le corps dessous est pâle, et les creux gardent la
+  // crasse des tables.
+  g.fillStyle = '#7b2018';
   g.fillRect(0, 0, s, s);
-  g.globalAlpha = 0.06;
-  for (let i = 0; i < 1600; i++) {
-    g.fillStyle = Math.random() > 0.5 ? '#8a7a55' : '#fffaf0';
-    g.fillRect(Math.random() * s, Math.random() * s, 1.5, 1.5);
+  // Marbrures de la peinture.
+  for (let i = 0; i < 40; i++) {
+    g.globalAlpha = 0.05 + Math.random() * 0.14;
+    g.fillStyle = Math.random() > 0.5 ? '#4d1009' : '#a4392a';
+    const rx = Math.random() * s;
+    const ry = Math.random() * s;
+    g.beginPath();
+    g.ellipse(rx, ry, 12 + Math.random() * 60, 8 + Math.random() * 40, Math.random() * Math.PI, 0, Math.PI * 2);
+    g.fill();
+  }
+  // Éclats : la peinture partie laisse voir l'os.
+  for (let i = 0; i < 26; i++) {
+    g.globalAlpha = 0.14 + Math.random() * 0.3;
+    g.fillStyle = '#d8c6a4';
+    const rx = Math.random() * s;
+    const ry = Math.random() * s;
+    g.beginPath();
+    g.moveTo(rx, ry);
+    for (let k = 0; k < 6; k++) {
+      g.lineTo(rx + (Math.random() - 0.5) * 34, ry + (Math.random() - 0.5) * 30);
+    }
+    g.closePath();
+    g.fill();
+  }
+  // Griffures et crasse.
+  g.globalAlpha = 0.09;
+  for (let i = 0; i < 1800; i++) {
+    g.fillStyle = Math.random() > 0.6 ? '#1a0805' : '#e4d3b0';
+    g.fillRect(Math.random() * s, Math.random() * s, 1.6, 1.6);
   }
   g.globalAlpha = 1;
-  // Bord légèrement bruni
-  const grad = g.createRadialGradient(s / 2, s / 2, s * 0.28, s / 2, s / 2, s * 0.72);
-  grad.addColorStop(0, 'rgba(0,0,0,0)');
-  grad.addColorStop(1, 'rgba(90,60,25,0.28)');
+  const grad = g.createRadialGradient(s / 2, s / 2, s * 0.22, s / 2, s / 2, s * 0.78);
+  grad.addColorStop(0, 'rgba(255,190,150,0.10)');
+  grad.addColorStop(1, 'rgba(28,6,4,0.5)');
   g.fillStyle = grad;
   g.fillRect(0, 0, s, s);
-  // Les points, creusés
+  // Les points : des cuvettes d'os, un bord lumineux en haut à gauche
+  // et une ombre portée en bas à droite, comme sur la photo.
   for (const [x, y] of POINTS[n]) {
-    const r = n === 1 ? s * 0.11 : s * 0.075;
+    const r = n === 1 ? s * 0.108 : s * 0.076;
+    const cx = x * s;
+    const cy = y * s;
     g.beginPath();
-    g.arc(x * s, y * s, r, 0, Math.PI * 2);
-    g.fillStyle = '#2a1d10';
+    g.arc(cx + r * 0.1, cy + r * 0.12, r * 1.02, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(20,6,4,0.55)';
+    g.fill();
+    const creux = g.createRadialGradient(cx - r * 0.34, cy - r * 0.36, r * 0.1, cx, cy, r);
+    creux.addColorStop(0, '#f4ecd8');
+    creux.addColorStop(0.55, '#d3c3a2');
+    creux.addColorStop(1, '#8d7c5e');
+    g.beginPath();
+    g.arc(cx, cy, r, 0, Math.PI * 2);
+    g.fillStyle = creux;
     g.fill();
     g.beginPath();
-    g.arc(x * s - r * 0.18, y * s - r * 0.18, r * 0.72, 0, Math.PI * 2);
-    g.fillStyle = '#14100a';
-    g.fill();
+    g.arc(cx, cy, r, Math.PI * 0.95, Math.PI * 1.85);
+    g.strokeStyle = 'rgba(255,250,235,0.6)';
+    g.lineWidth = 1.6;
+    g.stroke();
   }
   const t = new THREE.CanvasTexture(c);
   t.anisotropy = 8;
@@ -120,33 +243,64 @@ function fabriquerSon() {
     if (!ctx) ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     return ctx;
   };
+  // Un dé de bois qui touche une planche ne claque pas, il TOQUE : un
+  // coup mat, une résonance basse, presque pas d'aigus (Alex,
+  // 2026-08-23 : « des sons de dés dans le bois, plus ronds »).
   const clac = (t: number, gain = 0.16) => {
     const a = ouvrir();
-    const duree = 0.06;
-    const buf = a.createBuffer(1, a.sampleRate * duree, a.sampleRate);
+    const depart = a.currentTime + t;
+
+    // Le grain du choc, coupé haut : ce qui reste est le bois.
+    const duree = 0.09;
+    const buf = a.createBuffer(1, Math.floor(a.sampleRate * duree), a.sampleRate);
     const d = buf.getChannelData(0);
     for (let i = 0; i < d.length; i++) {
-      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 5);
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3.2);
     }
     const src = a.createBufferSource();
     src.buffer = buf;
-    const filtre = a.createBiquadFilter();
-    filtre.type = 'bandpass';
-    filtre.frequency.value = 900 + Math.random() * 900;
-    filtre.Q.value = 1.4;
+    const passeBas = a.createBiquadFilter();
+    passeBas.type = 'lowpass';
+    passeBas.frequency.value = 520 + Math.random() * 260;
+    passeBas.Q.value = 0.7;
+    const corps = a.createBiquadFilter();
+    corps.type = 'peaking';
+    corps.frequency.value = 210 + Math.random() * 90;
+    corps.gain.value = 7;
+    corps.Q.value = 1.1;
     const vol = a.createGain();
-    vol.gain.value = gain;
-    src.connect(filtre).connect(vol).connect(a.destination);
-    src.start(a.currentTime + t);
+    vol.gain.setValueAtTime(gain, depart);
+    vol.gain.exponentialRampToValueAtTime(0.0001, depart + duree);
+    src.connect(passeBas).connect(corps).connect(vol).connect(a.destination);
+    src.start(depart);
+
+    // La résonance de la lame de bois, deux partiels amortis.
+    [168 + Math.random() * 60, 262 + Math.random() * 80].forEach((f, i) => {
+      const osc = a.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, depart);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.86, depart + 0.16);
+      const g2 = a.createGain();
+      g2.gain.setValueAtTime(gain * (i === 0 ? 0.7 : 0.34), depart);
+      g2.gain.exponentialRampToValueAtTime(0.0001, depart + 0.2 + i * 0.05);
+      osc.connect(g2).connect(a.destination);
+      osc.start(depart);
+      osc.stop(depart + 0.3);
+    });
   };
   return {
-    /** Le bruit des dés secoués dans le gobelet. */
+    /** Le bruit des dés secoués dans le gobelet de cuir : sourd. */
     secouer() {
-      for (let i = 0; i < 14; i++) clac(i * 0.055 + Math.random() * 0.03, 0.09 + Math.random() * 0.06);
+      for (let i = 0; i < 12; i++) clac(i * 0.062 + Math.random() * 0.035, 0.07 + Math.random() * 0.05);
     },
-    /** Les dés qui tombent sur la table. */
+    /** Les dés qui tombent sur la planche. */
     tomber() {
-      for (let i = 0; i < 6; i++) clac(0.02 * i + Math.random() * 0.05, 0.2);
+      for (let i = 0; i < 6; i++) clac(0.035 * i + Math.random() * 0.06, 0.17);
+    },
+    /** Un dé qui s'en va : un toc grave, puis plus rien. */
+    perdre() {
+      clac(0, 0.2);
+      clac(0.09, 0.1);
     },
   };
 }
@@ -160,72 +314,158 @@ export function creerTable(): TableDes {
   camera.position.set(0, 5.6, 6.4);
   camera.lookAt(0, 0, 0.4);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  // `preserveDrawingBuffer` garde l'image lisible après le rendu : ça
+  // permet de capturer la table (vérification à l'œil, et le joueur
+  // peut faire sa propre capture d'écran).
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // Éclairage physique : les matériaux réagissent à la lumière comme
+  // dans un moteur de jeu, et le rendu passe par une courbe de film
+  // plutôt que par un simple écrasement des hautes lumières.
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
 
   // ── La table ──────────────────────────────────────────────────────
-  const bois = boisTexture('#3a2412', '#1c1108');
-  bois.repeat.set(3, 3);
+  const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 2);
+  // Le plateau est en bois d'un bord à l'autre : aucun drap, aucun
+  // cercle au centre (Alex, 2026-08-23).
+  const dessus = new THREE.MeshStandardMaterial({
+    map: bois, roughness: 0.68, metalness: 0.02,
+  });
+  const tranche = new THREE.MeshStandardMaterial({
+    map: bois, roughness: 0.82, metalness: 0.02, color: 0xb08a5e,
+  });
   const table = new THREE.Mesh(
-    new THREE.CylinderGeometry(6.2, 6.4, 0.42, 48),
-    new THREE.MeshPhongMaterial({ color: 0xffffff, map: bois, shininess: 16, specular: 0x3a2712 }),
+    new THREE.CylinderGeometry(6.2, 6.35, 0.42, 64),
+    [tranche, dessus, dessus],
   );
-  table.position.y = -0.24;
+  table.position.y = -0.21;
   table.receiveShadow = true;
   scene.add(table);
 
-  // Un drap de feutre au centre, pour amortir les dés.
-  const feutre = new THREE.Mesh(
-    new THREE.CylinderGeometry(3.1, 3.1, 0.02, 48),
-    new THREE.MeshPhongMaterial({ color: 0x4a1520, shininess: 4 }),
-  );
-  feutre.position.y = -0.02;
-  feutre.receiveShadow = true;
-  scene.add(feutre);
-
   // ── Lumières de taverne ───────────────────────────────────────────
-  scene.add(new THREE.AmbientLight(0x2a1a12, 1.1));
-  const chandelle = new THREE.PointLight(0xffb066, 2.6, 26, 2);
-  chandelle.position.set(0, 5.2, 1.2);
+  // Une salle basse éclairée à la chandelle : presque pas d'ambiante,
+  // un rebond chaud du plancher, une flamme au-dessus de la table et
+  // une braise au fond. Tout porte une ombre.
+  scene.add(new THREE.AmbientLight(0xffd2a0, 0.10));
+  scene.add(new THREE.HemisphereLight(0xffc98a, 0x1a0d07, 0.35));
+
+  const chandelle = new THREE.PointLight(0xffb066, 46, 30, 2);
+  chandelle.position.set(0, 4.6, 0.8);
   chandelle.castShadow = true;
+  chandelle.shadow.mapSize.set(1024, 1024);
+  chandelle.shadow.bias = -0.0016;
+  chandelle.shadow.radius = 3;
   scene.add(chandelle);
-  const braise = new THREE.PointLight(0xc4471f, 1.1, 18, 2);
-  braise.position.set(-4.4, 2.2, -3.2);
+
+  const braise = new THREE.PointLight(0xc4471f, 22, 20, 2);
+  braise.position.set(-4.6, 1.9, -3.4);
   scene.add(braise);
 
+  // Un contre-jour froid par la fenêtre, pour détacher les silhouettes.
+  const fenetre = new THREE.DirectionalLight(0x8fa6c8, 0.35);
+  fenetre.position.set(-7, 6, -8);
+  scene.add(fenetre);
+
+  // ── La douche de lumière ──────────────────────────────────────────
+  // Elle tombe sur la place de celui dont c'est le tour, et glisse d'un
+  // siège à l'autre (Alex, 2026-08-23). Un cône translucide rend le
+  // faisceau visible dans la poussière de la salle.
+  const projecteur = new THREE.SpotLight(0xffd9a0, 0, 26, Math.PI / 7.2, 0.72, 1.6);
+  projecteur.position.set(0, 7.4, 2.6);
+  projecteur.castShadow = true;
+  projecteur.shadow.mapSize.set(2048, 2048);
+  projecteur.shadow.bias = -0.0014;
+  projecteur.shadow.radius = 4;
+  scene.add(projecteur);
+  const cible = new THREE.Object3D();
+  cible.position.set(0, 0, 2.6);
+  scene.add(cible);
+  projecteur.target = cible;
+
+  // Où la douche doit aller, et où elle est rendue.
+  const viseeVoulue = new THREE.Vector3(0, 0, 2.6);
+  const visee = viseeVoulue.clone();
+
   // ── Les gobelets ──────────────────────────────────────────────────
-  const cuir = boisTexture('#2a1712', '#120a07', 256);
-  cuir.repeat.set(2, 1);
+  const cuir = texturePeinte(TEXTURES.cuir, boisTexture('#2a1712', '#120a07', 256), 2);
   const gobelets: THREE.Mesh[] = [];
+  // Un vrai gobelet de cuir a une paroi : on le tourne au tour, profil
+  // à la main, plutôt que de plier un cylindre sur lui-même (Alex,
+  // 2026-08-23). Le profil monte à l'extérieur, passe le bourrelet, et
+  // redescend à l'intérieur jusqu'au fond.
+  const HAUT = 1.35;
+  const PAROI = 0.075;
+  const profil: THREE.Vector2[] = [
+    new THREE.Vector2(0, 0),
+    new THREE.Vector2(0.52, 0),
+    new THREE.Vector2(0.545, 0.06),
+    new THREE.Vector2(0.63, HAUT * 0.55),
+    new THREE.Vector2(0.70, HAUT - 0.06),
+    new THREE.Vector2(0.715, HAUT),                    // le bourrelet
+    new THREE.Vector2(0.715 - PAROI, HAUT - 0.015),
+    new THREE.Vector2(0.63 - PAROI, HAUT * 0.55),
+    new THREE.Vector2(0.545 - PAROI, 0.10),
+    new THREE.Vector2(0.50 - PAROI, 0.085),
+    new THREE.Vector2(0, 0.085),                       // le fond, épais
+  ];
+  const geoGobelet = new THREE.LatheGeometry(profil, 40);
+  geoGobelet.computeVertexNormals();
+  const matGobelet = new THREE.MeshStandardMaterial({
+    map: cuir, roughness: 0.74, metalness: 0.06, side: THREE.DoubleSide,
+  });
   const faireGobelet = () => {
-    const g = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.62, 0.5, 1.15, 24, 1, true),
-      new THREE.MeshPhongMaterial({
-        color: 0xffffff, map: cuir, shininess: 8, side: THREE.DoubleSide,
-      }),
-    );
-    const fond = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.5, 0.5, 0.06, 24),
-      new THREE.MeshPhongMaterial({ color: 0x1a0f0a, shininess: 6 }),
-    );
-    fond.position.y = -0.56;
-    const grp = new THREE.Group();
-    grp.add(g, fond);
-    grp.castShadow = true;
+    const g = new THREE.Mesh(geoGobelet, matGobelet);
     g.castShadow = true;
+    g.receiveShadow = true;
+    const grp = new THREE.Group();
+    grp.add(g);
     return grp as unknown as THREE.Mesh;
   };
 
   // ── Les dés ───────────────────────────────────────────────────────
   const materiaux = ORDRE_FACES.map((n) =>
-    new THREE.MeshPhongMaterial({ map: faceTexture(n), shininess: 26, specular: 0x554433 }));
-  const geoDe = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+    new THREE.MeshStandardMaterial({
+      map: faceTexture(n), roughness: 0.44, metalness: 0.03,
+      polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+    }));
+  // Les coins sont adoucis : un dé de bois tourné à la main n'a jamais
+  // d'arête vive (Alex, 2026-08-23). Le corps arrondi porte le bois,
+  // et six plaques minces portent les faces gravées.
+  const DE = 0.58;            // un dé qui se lit depuis la caméra
+  const geoCorps = new RoundedBoxGeometry(DE, DE, DE, 4, DE * 0.16);
+  const peauDe = texturePeinte(TEXTURES.de, faceTexture(1), 1);
+  const matCorps = new THREE.MeshStandardMaterial({
+    map: peauDe, roughness: 0.46, metalness: 0.04,
+  });
+  // Les faces se posent JUSTE au-dessus du corps arrondi : plus loin
+  // elles décollent, plus près elles disparaissent dans le bois.
+  const F = DE * 0.72;
+  const D = DE / 2 + 0.004;
+  const geoFace = new THREE.PlaneGeometry(F, F);
+  const POSES: Array<[THREE.Vector3, THREE.Euler]> = [
+    [new THREE.Vector3(D, 0, 0), new THREE.Euler(0, Math.PI / 2, 0)],
+    [new THREE.Vector3(-D, 0, 0), new THREE.Euler(0, -Math.PI / 2, 0)],
+    [new THREE.Vector3(0, D, 0), new THREE.Euler(-Math.PI / 2, 0, 0)],
+    [new THREE.Vector3(0, -D, 0), new THREE.Euler(Math.PI / 2, 0, 0)],
+    [new THREE.Vector3(0, 0, D), new THREE.Euler(0, 0, 0)],
+    [new THREE.Vector3(0, 0, -D), new THREE.Euler(0, Math.PI, 0)],
+  ];
   const faireDe = () => {
-    const d = new THREE.Mesh(geoDe, materiaux);
-    d.castShadow = true;
-    d.receiveShadow = true;
-    return d;
+    const grp = new THREE.Group();
+    const corps = new THREE.Mesh(geoCorps, matCorps);
+    corps.castShadow = true;
+    corps.receiveShadow = true;
+    grp.add(corps);
+    POSES.forEach(([pos, rot], i) => {
+      const f = new THREE.Mesh(geoFace, materiaux[i]);
+      f.position.copy(pos);
+      f.rotation.copy(rot);
+      grp.add(f);
+    });
+    return grp as unknown as THREE.Mesh;
   };
 
   const mesDes: THREE.Mesh[] = [];
@@ -248,13 +488,26 @@ export function creerTable(): TableDes {
   let anim: number | null = null;
   let vivant = true;
   const tumbling: Array<{ de: THREE.Mesh; jusqua: number; cible: Face; depart: number }> = [];
+  const envol: Array<{ de: THREE.Mesh; depart: number }> = [];
+  const sieges: Array<{ x: number; z: number }> = [];
+
+  // Le geste complet d'un joueur : il brasse, il retourne le gobelet
+  // sur la table, puis il le soulève (Alex, 2026-08-23).
+  type Geste = { debut: number; phase: 'secoue' | 'renverse' | 'leve' | 'pose'; base: THREE.Vector3 };
+  const gestes = new Map<number, Geste>();
+  const POSE_Y = 0.02;         // le gobelet debout, posé sur la planche
+  const RENVERSE_Y = 0.02;     // retourné, son bourrelet sur le bois
+  const LEVE_Y = 1.75;         // soulevé au-dessus des dés
+  let intensiteVoulue = 0;
 
   const boucle = () => {
     if (!vivant) return;
     anim = requestAnimationFrame(boucle);
     const t = performance.now();
     // Flamme de chandelle
-    chandelle.intensity = 2.4 + Math.sin(t / 190) * 0.22 + Math.sin(t / 77) * 0.1;
+    // La flamme respire : la salle bouge avec elle.
+    chandelle.intensity = 44 + Math.sin(t / 190) * 5 + Math.sin(t / 77) * 2.4;
+    braise.intensity = 21 + Math.sin(t / 260) * 3;
     // Dés en vol
     for (let i = tumbling.length - 1; i >= 0; i--) {
       const d = tumbling[i];
@@ -262,15 +515,84 @@ export function creerTable(): TableDes {
       if (k >= 1) {
         const [rx, ry, rz] = VERS_LE_CIEL[d.cible];
         d.de.rotation.set(rx, ry + (Math.random() - 0.5) * 0.25, rz);
-        d.de.position.y = 0.2;
+        d.de.position.y = DE / 2;
         tumbling.splice(i, 1);
         continue;
       }
       d.de.rotation.x += 0.34;
       d.de.rotation.y += 0.27;
       d.de.rotation.z += 0.19;
-      d.de.position.y = 0.2 + Math.abs(Math.sin(k * Math.PI * 2.2)) * (1 - k) * 1.5;
+      d.de.position.y = DE / 2 + Math.abs(Math.sin(k * Math.PI * 2.2)) * (1 - k) * 1.5;
     }
+    // Les gobelets : brassage, renversement, levée.
+    gestes.forEach((g, idx) => {
+      const gob = gobelets[idx];
+      if (!gob) return;
+      const k = (t - g.debut) / (g.phase === 'secoue' ? 900 : 620);
+      const doux = Math.min(1, Math.max(0, k));
+      if (g.phase === 'secoue') {
+        const amp = 0.22 * (1 - doux * 0.35);
+        gob.position.set(
+          g.base.x + Math.sin(t / 42) * amp,
+          POSE_Y + 0.42 + Math.abs(Math.sin(t / 55)) * 0.3,
+          g.base.z + Math.cos(t / 37) * amp * 0.7,
+        );
+        gob.rotation.set(Math.sin(t / 48) * 0.34, 0, Math.cos(t / 51) * 0.34);
+        if (k >= 1) { g.phase = 'renverse'; g.debut = t; }
+      } else if (g.phase === 'renverse') {
+        // Il bascule cul par-dessus tête et retombe sur la planche.
+        const e = 1 - Math.pow(1 - doux, 3);
+        gob.rotation.set(Math.PI * e, 0, 0);
+        gob.position.set(
+          g.base.x, POSE_Y + 0.9 * Math.sin(doux * Math.PI) + RENVERSE_Y, g.base.z,
+        );
+        if (k >= 1) {
+          gob.rotation.set(Math.PI, 0, 0);
+          gob.position.set(g.base.x, RENVERSE_Y + HAUT, g.base.z);
+          g.phase = 'pose';
+          g.debut = t;
+          son.tomber();
+        }
+      } else if (g.phase === 'leve') {
+        const e = 1 - Math.pow(1 - doux, 2);
+        gob.position.set(g.base.x, RENVERSE_Y + HAUT + e * LEVE_Y, g.base.z);
+        gob.rotation.set(Math.PI * (1 - e * 0.15), 0, 0);
+      }
+    });
+
+    // La douche glisse vers la place active, sans à-coup.
+    visee.lerp(viseeVoulue, 0.07);
+    cible.position.copy(visee);
+    projecteur.position.set(visee.x * 0.42, 7.4, visee.z * 0.42 + 0.5);
+    const pulse = 1 + Math.sin(t / 520) * 0.05;
+    projecteur.intensity = intensiteVoulue * pulse;
+
+    // Les dés qui s'en vont : ils montent, tournent et se dissipent.
+    for (let i = envol.length - 1; i >= 0; i--) {
+      const e = envol[i];
+      const k = (t - e.depart) / 900;
+      if (k >= 1) {
+        e.de.parent?.remove(e.de);
+        envol.splice(i, 1);
+        continue;
+      }
+      e.de.position.y = DE / 2 + k * 1.5;
+      e.de.rotation.x += 0.06;
+      e.de.rotation.z += 0.045;
+      const ech = 1 - k * 0.85;
+      e.de.scale.setScalar(Math.max(0.02, ech));
+      e.de.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+        const appliquer = (mat: THREE.Material) => {
+          mat.transparent = true;
+          (mat as THREE.MeshPhongMaterial).opacity = Math.max(0, 1 - k * 1.1);
+        };
+        if (Array.isArray(m)) m.forEach(appliquer);
+        else if (m) appliquer(m);
+      });
+    }
+
+    orbite?.update();
     renderer.render(scene, camera);
   };
 
@@ -284,6 +606,7 @@ export function creerTable(): TableDes {
   };
 
   let hote: HTMLElement | null = null;
+  let orbite: OrbitControls | null = null;
   const surResize = () => { if (hote) ajuster(hote); };
 
   return {
@@ -293,6 +616,20 @@ export function creerTable(): TableDes {
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
       ajuster(el);
+      // On tourne autour de la table à la souris, comme au tafl : le
+      // regard reste sur le plateau, la hauteur reste crédible.
+      orbite = new OrbitControls(camera, renderer.domElement);
+      orbite.target.set(0, 0, -0.2);
+      orbite.enableDamping = true;
+      orbite.dampingFactor = 0.08;
+      orbite.enablePan = false;
+      orbite.minPolarAngle = Math.PI * 0.12;
+      orbite.maxPolarAngle = Math.PI * 0.46;
+      orbite.minDistance = 9;
+      orbite.maxDistance = 22;
+      orbite.rotateSpeed = 0.55;
+      orbite.zoomSpeed = 0.6;
+      orbite.update();
       window.addEventListener('resize', surResize);
       vivant = true;
       boucle();
@@ -301,25 +638,30 @@ export function creerTable(): TableDes {
       vivant = false;
       if (anim) cancelAnimationFrame(anim);
       window.removeEventListener('resize', surResize);
+      orbite?.dispose();
+      orbite = null;
       renderer.domElement.remove();
       renderer.dispose();
     },
     disposer(nb) {
       // On vide et on repose : c'est peu fréquent, ça reste lisible.
       groupe.clear();
+      envol.length = 0;
       gobelets.length = 0;
       mesDes.length = 0;
       desAdverses.length = 0;
       const pl = places(nb);
+      sieges.length = 0;
+      pl.forEach((p) => sieges.push({ x: p.x, z: p.z }));
       pl.forEach((p, i) => {
         const g = faireGobelet();
-        g.position.set(p.x, 0.52, p.z);
+        g.position.set(p.x * 0.72, POSE_Y, p.z * 0.72);
         groupe.add(g);
         gobelets.push(g);
         if (i === 0) {
           for (let k = 0; k < 5; k++) {
             const d = faireDe();
-            d.position.set(-1.0 + k * 0.5, 0.2, 2.35);
+            d.position.set(-1.2 + k * 0.62, DE / 2, 2.35);
             groupe.add(d);
             mesDes.push(d);
           }
@@ -327,7 +669,7 @@ export function creerTable(): TableDes {
           const mains: THREE.Mesh[] = [];
           for (let k = 0; k < 5; k++) {
             const d = faireDe();
-            d.position.set(p.x - 0.9 + k * 0.45, 0.2, p.z + 0.9);
+            d.position.set(p.x - 1.1 + k * 0.56, DE / 2, p.z + 0.85);
             d.visible = false;
             groupe.add(d);
             mains.push(d);
@@ -337,16 +679,41 @@ export function creerTable(): TableDes {
       });
     },
     lancer(faces, onFini) {
+      // 1 · on brasse, 2 · on renverse, 3 · on soulève et les dés
+      // apparaissent, déjà tombés sur leurs faces.
+      const t0 = performance.now();
+      const base = sieges[0]
+        ? new THREE.Vector3(sieges[0].x * 0.72, 0, sieges[0].z * 0.72)
+        : new THREE.Vector3(0, 0, 2.5);
+      gestes.set(0, { debut: t0, phase: 'secoue', base });
       son.secouer();
-      const depart = performance.now() + 780;
-      mesDes.forEach((d, i) => {
-        d.visible = i < faces.length;
-        if (i >= faces.length) return;
-        d.position.set(-1.0 + i * 0.5, 1.6, 2.35);
-        tumbling.push({ de: d, depart, jusqua: depart + 900 + i * 90, cible: faces[i] });
-      });
-      window.setTimeout(() => son.tomber(), 800);
-      if (onFini) window.setTimeout(onFini, 1800);
+
+      mesDes.forEach((d) => { d.visible = false; });
+
+      // Les dés se posent SOUS le gobelet renversé, puis se dévoilent.
+      window.setTimeout(() => {
+        mesDes.forEach((d, i) => {
+          if (i >= faces.length) return;
+          const a = (i / Math.max(1, faces.length)) * Math.PI * 2;
+          d.position.set(
+            base.x + Math.cos(a) * 0.34 + (Math.random() - 0.5) * 0.1,
+            DE / 2,
+            base.z + Math.sin(a) * 0.34 + (Math.random() - 0.5) * 0.1,
+          );
+          const [rx, ry, rz] = VERS_LE_CIEL[faces[i]];
+          d.rotation.set(rx, ry + Math.random() * 0.5, rz);
+        });
+      }, 1560);
+
+      // 3 · la levée : le gobelet monte, les dés se voient.
+      window.setTimeout(() => {
+        const g = gestes.get(0);
+        if (g) { g.phase = 'leve'; g.debut = performance.now(); }
+        mesDes.forEach((d, i) => { d.visible = i < faces.length; });
+        son.tomber();
+      }, 1900);
+
+      if (onFini) window.setTimeout(onFini, 2700);
     },
     devoiler(mains, montrer) {
       desAdverses.forEach((groupeDes, idx) => {
@@ -361,12 +728,86 @@ export function creerTable(): TableDes {
       });
       gobelets.forEach((g, i) => {
         if (i === 0) return;
-        g.position.y = montrer ? 1.35 : 0.52;
+        const si = sieges[i];
+        const base = si ? new THREE.Vector3(si.x * 0.72, 0, si.z * 0.72) : new THREE.Vector3(0, 0, 0);
+        if (montrer) {
+          gestes.set(i, { debut: performance.now(), phase: 'leve', base });
+        } else {
+          gestes.delete(i);
+          g.rotation.set(0, 0, 0);
+          g.position.set(base.x, POSE_Y, base.z);
+        }
       });
     },
     designer(index) {
-      gobelets.forEach((g, i) => {
-        g.position.y = i === index ? 0.68 : 0.52;
+      const s2 = sieges[index];
+      if (s2) {
+        // La douche vise la place, un peu en retrait vers le centre.
+        viseeVoulue.set(s2.x * 0.72, 0, s2.z * 0.72);
+        intensiteVoulue = 90;
+      } else {
+        intensiteVoulue = 0;
+      }
+    },
+
+    perdreUnDe(index) {
+      const s2 = sieges[index];
+      const de = faireDe();
+      de.position.set(
+        (s2 ? s2.x : 0) * 0.72 + (Math.random() - 0.5) * 0.4,
+        DE / 2,
+        (s2 ? s2.z : 2.3) * 0.72 + (Math.random() - 0.5) * 0.4,
+      );
+      const [rx, ry, rz] = VERS_LE_CIEL[((1 + Math.floor(Math.random() * 6)) as Face)];
+      de.rotation.set(rx, ry, rz);
+      groupe.add(de);
+      envol.push({ de, depart: performance.now() });
+      son.perdre();
+    },
+
+    reprendreUnDe(index) {
+      // Un dé repris tombe du haut, à la place de celui qui l'a gagné.
+      const s2 = sieges[index];
+      const de = faireDe();
+      const x = (s2 ? s2.x : 0) * 0.72;
+      const z = (s2 ? s2.z : 2.3) * 0.72;
+      de.position.set(x, 2.4, z);
+      groupe.add(de);
+      const depart = performance.now();
+      tumbling.push({
+        de, depart, jusqua: depart + 700,
+        cible: ((1 + Math.floor(Math.random() * 6)) as Face),
+      });
+      window.setTimeout(() => son.tomber(), 640);
+      // Il reste posé un instant, puis la mise en place le remplace.
+      window.setTimeout(() => { de.parent?.remove(de); }, 3200);
+    },
+
+    ancres() {
+      // Chaque place est projetée sur l'écran : la bulle se pose juste
+      // au-dessus du gobelet, comme dans une bande dessinée.
+      const el = renderer.domElement;
+      const v = new THREE.Vector3();
+      return sieges.map((si) => {
+        v.set(si.x * 0.86, 1.5, si.z * 0.86);
+        v.project(camera);
+        return {
+          x: (v.x * 0.5 + 0.5) * 100,
+          y: (-v.y * 0.5 + 0.5) * 100,
+        };
+      }).map((pt) => ({
+        x: Math.max(6, Math.min(94, pt.x)),
+        y: Math.max(10, Math.min(88, pt.y)),
+      })).slice(0, sieges.length) as Array<{ x: number; y: number }>;
+      void el;
+    },
+
+    mains(comptes) {
+      // Les dés visibles du joueur suivent ce qu'il lui reste.
+      mesDes.forEach((d, i) => { d.visible = i < (comptes[0] ?? 0); });
+      desAdverses.forEach((groupeDes, idx) => {
+        const n = comptes[idx + 1] ?? 0;
+        groupeDes.forEach((d, k) => { if (k >= n) d.visible = false; });
       });
     },
   };

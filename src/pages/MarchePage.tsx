@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useBadgeAuBout } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
 import SEO from '../components/SEO';
 import {
@@ -24,6 +25,7 @@ import SealedScroll, { type SealedCopy } from '../components/marche/SealedScroll
 //   4. MerchantPact : Become-a-merchant CTA with stat plates
 //   5. SealedScroll : Digital partners, 3D-tilt flip cards
 const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+  useBadgeAuBout('marche');
   const { lang } = useUI();
   const c = lang === 'FR' ? FR : EN;
 

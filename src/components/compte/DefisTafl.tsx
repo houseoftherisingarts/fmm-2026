@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Swords, Shield, ArrowUpRight, Check, X } from 'lucide-react';
+import { Swords, Shield, ArrowUpRight, Check, X, Link2, Copy, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
 import { REGLES, REGLE_DEFAUT } from '../../games/hnefatafl/gameLogic';
 import {
   suivreMesParties, suivreLaTable, rejoindreLaTable, quitterLaTable,
-  lancerDefi, repondreAuDefi,
+  lancerDefi, repondreAuDefi, ouvrirDefiParLien,
   type PartieTafl, type JoueurTafl, type CampTafl,
 } from '../../firebase/tafl';
 
@@ -73,6 +73,29 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
   const lienPartie = (id: string) => `${addLocale('/jeunesse/hnefatafl', lang)}?partie=${id}`;
 
+  // ── Défier quelqu'un qui n'est pas encore ici ────────────────────
+  // Le lien se colle dans Messenger ou dans un courriel. L'ami tombe
+  // sur le lobby, se crée un compte, et la partie commence (Alex,
+  // 2026-08-23). C'est notre porte d'entrée.
+  const [lienDefi, setLienDefi] = useState<string | null>(null);
+  const [copie, setCopie] = useState(false);
+  const creerLeLien = async () => {
+    setEnvoi('lien');
+    try {
+      const id = await ouvrirDefiParLien({
+        moiUid: user.uid, moiNom: monNom, regleId, monCamp: camp,
+      });
+      setLienDefi(`${window.location.origin}${addLocale('/defi', lang)}/${id}`);
+      setCopie(false);
+    } finally {
+      setEnvoi(null);
+    }
+  };
+  const copierLeLien = async () => {
+    if (!lienDefi) return;
+    try { await navigator.clipboard.writeText(lienDefi); setCopie(true); } catch { /* rien */ }
+  };
+
   return (
     <section
       className="relative p-6 md:p-8 overflow-hidden"
@@ -113,6 +136,46 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         </span>
         {visible ? <Check size={18} className="text-brass shrink-0" /> : <ArrowUpRight size={18} className="text-brass shrink-0" />}
       </button>
+
+      {/* Le lien de défi : pour quelqu'un qui n'est pas encore membre */}
+      <div className="mb-5 p-5 rounded-card" style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(232,177,74,0.22)' }}>
+        <p className="witcher-stat-label mb-2 inline-flex items-center gap-2">
+          <Link2 size={11} /> {fr ? 'Défier un ami de l’extérieur' : 'Challenge a friend from outside'}
+        </p>
+        <p className="font-editorial text-sm mb-4" style={{ color: 'rgba(244,239,227,0.72)' }}>
+          {fr
+            ? 'Créez un lien, collez-le dans Messenger ou dans un courriel. Votre ami arrive dans le lobby, se crée un compte, et la partie commence.'
+            : 'Create a link, paste it into Messenger or an email. Your friend lands in the lobby, makes an account, and the game begins.'}
+        </p>
+        {lienDefi ? (
+          <div className="space-y-3">
+            <p className="font-sans text-[12px] break-all px-3 py-2.5 rounded-card"
+               style={{ background: 'rgba(0,0,0,0.4)', color: 'rgba(244,239,227,0.8)' }}>
+              {lienDefi}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={copierLeLien}
+                      className="px-4 py-2.5 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2">
+                <Copy size={12} /> {copie ? (fr ? 'Copié' : 'Copied') : (fr ? 'Copier le lien' : 'Copy the link')}
+              </button>
+              <a href={`https://www.facebook.com/dialog/send?app_id=140586622674265&link=${encodeURIComponent(lienDefi)}&redirect_uri=${encodeURIComponent(lienDefi)}`}
+                 target="_blank" rel="noopener noreferrer"
+                 className="px-4 py-2.5 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2">
+                <ArrowUpRight size={12} /> Messenger
+              </a>
+              <a href={`mailto:?subject=${encodeURIComponent(fr ? 'Je vous défie au tafl' : 'I challenge you at tafl')}&body=${encodeURIComponent(lienDefi)}`}
+                 className="px-4 py-2.5 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2">
+                <Mail size={12} /> {fr ? 'Courriel' : 'Email'}
+              </a>
+            </div>
+          </div>
+        ) : (
+          <button type="button" onClick={creerLeLien} disabled={envoi === 'lien'}
+                  className="px-5 py-3 rounded-card border border-brass/45 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2 disabled:opacity-50">
+            <Link2 size={12} /> {fr ? 'Créer un lien de défi' : 'Create a challenge link'}
+          </button>
+        )}
+      </div>
 
       {/* Réglages du défi */}
       <div className="mb-5">

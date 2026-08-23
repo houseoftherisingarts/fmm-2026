@@ -6,6 +6,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { useBadgeAuBout } from '../contexts/BadgesContext';
 import { Eyebrow, DisplayTitle, HexPanel, SectionFog, SectionTopRail } from '../components/marche/atmospherics';
 import MarchePage from './MarchePage';
 import NourriturePage from './NourriturePage';
@@ -17,6 +18,7 @@ import NourriturePage from './NourriturePage';
 // MenuComingSoon (gardé plus bas) a été remplacé par la vraie section.
 const LeVillagePage: React.FC = () => {
   useCaravanPage();
+  useBadgeAuBout('village');
   const { lang } = useUI();
   const fr = lang === 'FR';
 

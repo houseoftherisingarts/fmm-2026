@@ -6,6 +6,19 @@ import { watchProgFlags, setProgFlag, PROG_FLAGS_DEFAULTS, type ProgFlags } from
 
 // Libellés FR des sections de la page publique Programmation, dans l'ordre
 // d'affichage souhaité par Tristan.
+// Les bascules générales, écrites en français plutôt qu'en nom de
+// variable : l'équipe ne lit pas le code (2026-08-23).
+const LIBELLES: Record<string, string> = {
+  ticketingOpen: 'Billetterie ouverte',
+  banquetReservationsOpen: 'Réservations du banquet',
+  volunteerSignupOpen: 'Inscriptions bénévoles',
+  vendorApplicationsOpen: 'Candidatures de marchands',
+  showCountdown: 'Compte à rebours',
+  showCommanditaire: 'Commanditaire d’honneur',
+  showHistoireFrise: 'Frise de l’histoire',
+  pubAlliance: 'L’Alliance (page des alliés, en préparation)',
+};
+
 const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
   { flag: 'bestiaire',        label: 'Grille des activités' },
   { flag: 'horaire',          label: 'Horaire (souvenir 2025)' },
@@ -89,7 +102,7 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
             .filter((k) => k !== 'knightPlacementEditor' && !PUBLISH_FLAG_KEYS.has(k))
             .map((k) => (
               <div key={k} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
-                <span className="font-sans text-sm text-ivory">{k}</span>
+                <span className="font-sans text-sm text-ivory">{LIBELLES[k] || k}</span>
                 <ToggleSwitch checked={!!flags[k]} onChange={(v) => setFlag(k, v)} />
               </div>
             ))}

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Sparkles, RotateCcw, Shuffle } from 'lucide-react';
+import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
@@ -61,6 +62,9 @@ const TarotPage: React.FC = () => {
   const [lue, setLue] = useState<number | null>(null);
 
   const fini = tirees.length === tirage.positions.length;
+  useBadgeJeu('tarot');
+  // La croix celtique posée en entier vaut son badge.
+  useGagnerBadge('tarot', fini && tirage.id === 'croix');
 
   const recommencer = useCallback((t: Tirage = tirage) => {
     setTirage(t);

@@ -1,3 +1,4 @@
+import { useBadges } from '../contexts/BadgesContext';
 import React, { useState } from 'react';
 import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -45,6 +46,7 @@ const RequestModal: React.FC<{
 }> = ({ plan, t, lang, onClose }) => {
   const [form, setForm] = useState({ company: '', contactName: '', email: '', phone: '', message: '' });
   const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const { gagnerBadge } = useBadges();
   const f = t.form;
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [k]: e.target.value }));
@@ -55,6 +57,7 @@ const RequestModal: React.FC<{
     try {
       await addSponsorRequest({ plan, ...form, lang });
       setState('sent');
+      gagnerBadge('commanditaire');
     } catch (err) {
       console.warn('[Commanditaires] submit failed:', err);
       setState('error');

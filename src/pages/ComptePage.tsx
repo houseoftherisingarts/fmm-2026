@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
@@ -19,6 +19,8 @@ import CoffreBillets from '../components/compte/CoffreBillets';
 import SoutienPanel from '../components/compte/SoutienPanel';
 import AvatarUpload from '../components/compte/AvatarUpload';
 import SalonDesJeux from '../components/compte/SalonDesJeux';
+import MesBadges from '../components/compte/MesBadges';
+import MaFiche from '../components/compte/MaFiche';
 import DefisTafl from '../components/compte/DefisTafl';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
@@ -170,7 +172,18 @@ const ComptePage: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Le registre de l'Ordre : chercher quelqu'un, l'ajouter
+                  comme ami, le défier (Alex, 2026-08-23). */}
+              <Link to={addLocale('/ordre', lang)}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
+                <Users size={14} /> {lang === 'FR' ? 'Consulter le registre' : 'Open the roll'}
+              </Link>
+              {/* Se voir comme les autres nous voient. */}
+              <Link to={`${addLocale('/profil', lang)}/${user.uid}`}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory-soft hover:border-brass hover:text-brass font-sans text-xs uppercase tracking-wider transition rounded-card">
+                <Eye size={14} /> {lang === 'FR' ? 'Voir mon profil' : 'View my profile'}
+              </Link>
               {/* Visible seulement pour les courriels autorisés (VITE_ADMIN_EMAILS
                   ou un rôle Firestore) : useAuth() a déjà fait la vérification,
                   ce lien ne fait qu'exposer ce que isAdmin sait déjà. */}
@@ -238,6 +251,8 @@ const ComptePage: React.FC = () => {
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8 mb-6 md:mb-8 items-start">
           <div className="lg:col-span-7 space-y-6 md:space-y-8">
             <CoffreBillets uid={user.uid} lang={lang} />
+            <MesBadges lang={lang} />
+            <MaFiche lang={lang} />
             <SalonDesJeux lang={lang} />
             <DefisTafl lang={lang} />
           </div>

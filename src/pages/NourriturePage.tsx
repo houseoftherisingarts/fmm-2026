@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, BookOpen, Clock, Lock, Users, Wine } from 'lucide-react';
+import { useGagnerBadge } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -78,6 +79,12 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
   // Retour de Square après paiement : ?banquet=merci
   const merci = typeof window !== 'undefined'
     && new URLSearchParams(window.location.search).get('banquet') === 'merci';
+  // Une place réservée au banquet vaut le badge du convive, et le livre
+  // de recettes acheté vaut celui du cuisinier de route.
+  useGagnerBadge('banquet', merci);
+  const livrePris = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('livre') === 'merci';
+  useGagnerBadge('livre', livrePris);
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;

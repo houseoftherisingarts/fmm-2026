@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
@@ -38,11 +38,30 @@ interface Props {
   sansJourTitre?: string;
   /** Archives : registre à droite, notice à gauche (demande d'Alex). */
   mirror?: boolean;
+  /** Nom du groupe montré en premier. Les archives ouvrent sur Arrünn
+   *  (Alex, 2026-08-23); sans ce nom, le registre ouvre sur le premier. */
+  departNom?: string;
 }
 
-const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, mirror = false }) => {
+const sansAccents = (v: string) =>
+  v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, mirror = false, departNom }) => {
   const reduce = useReducedMotion();
-  const [active, setActive] = useState(0);
+  const depart = useMemo(() => {
+    if (!departNom) return 0;
+    const i = bands.findIndex((b) => sansAccents(b.name) === sansAccents(departNom));
+    return i >= 0 ? i : 0;
+  }, [bands, departNom]);
+  const [active, setActive] = useState(depart);
+  // Le registre des archives peut arriver de Firestore après le premier
+  // rendu : la sélection de départ suit alors la liste rechargée.
+  const dernierDepart = useRef(depart);
+  useEffect(() => {
+    if (dernierDepart.current === depart) return;
+    dernierDepart.current = depart;
+    setActive(depart);
+  }, [depart]);
   // Le cadre épouse la photo : une photo debout reste debout, une photo
   // couchée reste couchée (Alex, 2026-08-23). Mesuré au chargement,
   // borné pour qu'aucune photo extrême ne casse la mise en page.

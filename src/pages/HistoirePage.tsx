@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { useBadgeAuBout } from '../contexts/BadgesContext';
+import Bibliotheque from '../components/histoire/Bibliotheque';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ScrollProgress, Parallax } from '../components/scroll';
@@ -82,8 +84,10 @@ const thumbSrc = (base: string, file: string) =>
 type GalleryItem = { thumb: string; full: string };
 const PhotographerGroup: React.FC<{
   photographer: string; photos: GalleryItem[]; byLabel: string; moreLabel: string;
+  /** Mention posée sous le nom, entre parenthèses. */
+  mention?: string;
   onOpen: (src: string, alt: string) => void;
-}> = ({ photographer, photos, byLabel, moreLabel, onOpen }) => {
+}> = ({ photographer, photos, byLabel, moreLabel, mention, onOpen }) => {
   const [count, setCount] = React.useState(PHOTOS_FIRST_BATCH);
   if (photos.length === 0) return null;
   const visible = photos.slice(0, count);
@@ -97,6 +101,9 @@ const PhotographerGroup: React.FC<{
           <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-brass/40 to-transparent" />
           <span className="font-sans text-xs text-stone tracking-widest tabular-nums shrink-0">{photos.length}</span>
         </h3>
+        {mention && (
+          <p className="font-editorial text-sm text-ivory-soft/70 -mt-3 mb-5">({mention})</p>
+        )}
       </Reveal>
       <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [&>*]:mb-3 md:[&>*]:mb-4">
         {visible.map((item, i) => (
@@ -290,6 +297,7 @@ export const ArchivesPhotosSection: React.FC = () => {
             photographer={grp.photographer}
             photos={grp.photos}
             byLabel={t.photographerBy}
+            mention={grp.photographer === 'Alex T. St-Laurent' ? t.capturesVideo : undefined}
             moreLabel={t.morePhotos}
             onOpen={(src, alt) => setLightbox({ src, alt })}
           />
@@ -576,6 +584,7 @@ export const EquipeSection: React.FC = () => {
 // merged Histoire & Apprendre page, which assembles these sections) ───
 const HistoirePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
+  useBadgeAuBout('histoire');
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   return (
@@ -596,6 +605,10 @@ const HistoirePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
       <ArchivesPhotosSection />
       <PlongezArchivesSection />
       <EquipeSection />
+
+      {/* Tout au bout de la page : ce qu'il faut lire, rayon par année
+          (Alex, 2026-08-23). Le carnet d'apprentissage suivra. */}
+      <Bibliotheque lang={lang} />
     </>
   );
 };
@@ -609,6 +622,7 @@ const FR = {
   ni2: 'Toutes ces activités offrent une immersion dans le monde médiéval, mais avec des perspectives distinctes. Le GN regroupe des passionnés dans un scénario précis avec des éléments fantastiques. La reconstitution historique se base sur les écrits et vestiges historiques avec un respect extrême de la précision. Le salon de commerce, lui, est souvent en ville pour que les passionnés découvrent et achètent les produits d’artisans.',
   ni3: 'Le FMM tient à se démarquer des autres événements eurocentristes en invitant ses participants à apporter leur héritage. Bien que l’Europe soit sur-représentée dans l’axiome « médiéval », l’époque dite médiévale s’est déroulée partout dans le monde, tous sont bienvenus à exhiber leur culture, qu’ils viennent d’Orient, d’Afrique, d’Amérique ou de toute région dont l’époque médiévale est peu connue du grand public.',
   galleryEyebrow: 'Archives', photosTitle: 'Archives photos', galleryTitle: 'Plongez dans nos archives', photographerBy: 'Photos par',
+  capturesVideo: 'captures d’écran du vidéo',
   galleryLead: 'Cinq éditions immortalisées par nos photographes. Une sélection, classée selon qui l’a captée.',
   plongezLead: 'Cinq éditions, et une machine à remonter le temps : revisitez le site du festival tel qu’il était, année après année, puis passez à la salle de projection.',
   edition: 'Édition', viewArchive: 'Voir l’archive', morePhotos: 'Voir plus de photos',
@@ -626,6 +640,7 @@ const EN = {
   ni2: 'All these offer immersion into the medieval world, but with distinct perspectives. LARP gathers enthusiasts in a specific scenario with fantasy elements. Historical re-enactment is based on writings and historical remains with extreme precision. The trade show, in turn, is usually in the city so enthusiasts can discover and buy artisans’ products.',
   ni3: 'FMM stands apart from other Eurocentric events by inviting participants to bring their own heritage. Though Europe is over-represented in the "medieval" axiom, the medieval era unfolded all across the world, all are welcome to showcase their culture, whether they come from the East, Africa, the Americas, or any region whose medieval era is little known to the general public.',
   galleryEyebrow: 'Archives', photosTitle: 'Photo archives', galleryTitle: 'Step into the archives', photographerBy: 'Photos by',
+  capturesVideo: 'stills from the film',
   galleryLead: 'Five editions captured by our photographers. A selection, sorted by who shot it.',
   plongezLead: 'Five editions, and a time machine: revisit the festival site as it was, year after year, then step into the screening room.',
   edition: 'Edition', viewArchive: 'View the archive', morePhotos: 'Show more photos',

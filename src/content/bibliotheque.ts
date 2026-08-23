@@ -1,0 +1,208 @@
+// ─── La bibliothèque du festival ─────────────────────────────────────
+// Alex, 2026-08-23 : au bout de la page Histoire, des suggestions de
+// lecture, rangées par année du festival. Chaque année a son monde, et
+// chaque monde a ses livres. Le ton est celui d'un carnet de lecture,
+// pas d'une bibliographie universitaire : une raison de l'ouvrir, en
+// une phrase, et rien d'inventé.
+//
+// Vérifications faites le 23 août 2026 (titres, auteurs, années,
+// éditions françaises quand elles existent).
+
+export interface Livre {
+  titre:    string;
+  auteur:   string;
+  /** Année de parution, ou siècle de composition pour les œuvres anciennes. */
+  repere:   string;
+  noteFR:   string;
+  noteEN:   string;
+}
+
+export interface Rayon {
+  id:        string;
+  anneeFR:   string;  anneeEN: string;
+  chapeauFR: string;  chapeauEN: string;
+  livres:    Livre[];
+}
+
+export const RAYONS: Rayon[] = [
+  {
+    id: 'caravanes',
+    anneeFR: 'L’année des Caravanes et des Saltimbanques',
+    anneeEN: 'The Year of Caravans and Players',
+    chapeauFR: 'L’édition 2026 suit les routes : celles des familles tsiganes, celles des jongleurs et des troubadours, celles de tous ceux qui gagnaient leur pain en se déplaçant. Voici de quoi comprendre ce monde-là avant de le voir passer devant vous.',
+    chapeauEN: 'The 2026 edition follows the roads: Romani families, jugglers and troubadours, everyone who earned their bread by moving. Here is what to read before you watch that world go by.',
+    livres: [
+      { titre: 'Les Tsiganes, une destinée européenne', auteur: 'Henriette Asséo', repere: '1994',
+        noteFR: 'Le petit volume qui remet cinq siècles à l’endroit, par l’historienne qui a fondé la recherche tsigane en France. Court, dense, et il démonte les clichés un par un.',
+        noteEN: 'The small volume that sets five centuries straight, by the historian who founded Romani studies in France. Short, dense, and it takes the clichés apart one by one.' },
+      { titre: 'Roms et Tsiganes', auteur: 'Jean-Pierre Liégeois', repere: 'La Découverte',
+        noteFR: 'La synthèse la plus claire sur la plus grande minorité d’Europe. À lire si vous voulez comprendre pourquoi la route a toujours été une réponse politique.',
+        noteEN: 'The clearest synthesis on Europe’s largest minority. Read it to understand why the road has always been a political answer.' },
+      { titre: 'Enterrez-moi debout. L’odyssée des Tziganes', auteur: 'Isabel Fonseca', repere: '1995',
+        noteFR: 'Quatre années passées dans les familles, de l’Albanie à la Pologne. Ce n’est pas de l’histoire, c’est du reportage, et ça vous reste longtemps.',
+        noteEN: 'Four years living with families, from Albania to Poland. Not history, reportage, and it stays with you.' },
+      { titre: 'The Gypsies', auteur: 'Angus Fraser', repere: '1992',
+        noteFR: 'Le grand récit en anglais, de l’Inde médiévale à l’Europe contemporaine, avec les sources et les cartes.',
+        noteEN: 'The great English-language account, from medieval India to modern Europe, with the sources and the maps.' },
+      { titre: 'Les Jongleurs au Moyen Âge', auteur: 'Edmond Faral', repere: '1910',
+        noteFR: 'Le livre fondateur sur les saltimbanques : qui ils étaient, ce qu’ils gagnaient, comment l’Église les regardait. Ancien, jamais remplacé.',
+        noteEN: 'The founding book on medieval entertainers: who they were, what they earned, how the Church looked at them. Old, never replaced.' },
+      { titre: 'Le Testament', auteur: 'François Villon', repere: '1461',
+        noteFR: 'Le poète qui a vécu la route, les tavernes et la corde. Toute l’édition 2026 tient dans quelques-unes de ses strophes.',
+        noteEN: 'The poet who lived the road, the taverns and the noose. The whole 2026 edition fits inside a few of his stanzas.' },
+    ],
+  },
+  {
+    id: 'vikings',
+    anneeFR: 'L’année des Vikings',
+    anneeEN: 'The Year of the Vikings',
+    chapeauFR: 'Les sagas sont le fleuron de la littérature médiévale, et presque personne ne les lit. Elles racontent des voisins qui se tuent pour une clôture, avec un humour noir qui n’a pas vieilli d’un jour.',
+    chapeauEN: 'The sagas are the crown of medieval literature, and almost nobody reads them. They tell of neighbours killing each other over a fence, with a black humour that has not aged a day.',
+    livres: [
+      { titre: 'La Saga de Njáll le Brûlé', auteur: 'Anonyme, XIIIe siècle', repere: 'XIIIe s.',
+        noteFR: 'La plus grande des sagas. Une querelle de voisinage qui finit dans l’incendie d’une maison pleine de monde, et un procès qui tourne mal.',
+        noteEN: 'The greatest of the sagas. A neighbourly quarrel that ends with a house full of people set alight, and a trial gone wrong.' },
+      { titre: 'La Saga d’Egill', auteur: 'Attribuée à Snorri Sturluson', repere: 'XIIIe s.',
+        noteFR: 'Un guerrier-poète laid, violent et génial. Le portrait d’homme le plus moderne que le Moyen Âge nous ait laissé.',
+        noteEN: 'An ugly, violent, brilliant warrior-poet. The most modern portrait of a man the Middle Ages left us.' },
+      { titre: 'L’Edda de Snorri', auteur: 'Snorri Sturluson', repere: 'vers 1220',
+        noteFR: 'Tout ce que nous savons de la mythologie nordique passe par ce manuel d’écriture poétique. Sans Snorri, pas d’Odin, pas de Ragnarök.',
+        noteEN: 'Everything we know of Norse mythology runs through this handbook for poets. Without Snorri, no Odin, no Ragnarök.' },
+      { titre: 'L’Edda poétique', auteur: 'Anonyme', repere: 'XIIIe s.',
+        noteFR: 'Les poèmes eux-mêmes, plus vieux que Snorri. La Völuspá y raconte la fin du monde en quelques dizaines de strophes.',
+        noteEN: 'The poems themselves, older than Snorri. The Völuspá tells the end of the world in a few dozen stanzas.' },
+      { titre: 'Les Enfants du frêne et de l’orme', auteur: 'Neil Price', repere: '2020',
+        noteFR: 'L’archéologie récente, écrite comme un récit. Price rend leur monde mental aux Scandinaves au lieu de compter leurs haches.',
+        noteEN: 'Recent archaeology, written as a story. Price gives the Norse back their mental world instead of counting their axes.' },
+      { titre: 'Women in the Viking Age', auteur: 'Judith Jesch', repere: '1991',
+        noteFR: 'Ce que les pierres runiques et les sagas disent vraiment des femmes du Nord. Le contraire des séries télé, et bien plus intéressant.',
+        noteEN: 'What runestones and sagas actually say about northern women. The opposite of the television version, and far more interesting.' },
+    ],
+  },
+  {
+    id: 'poudre',
+    anneeFR: 'L’année de la Poudre',
+    anneeEN: 'The Year of the Powder',
+    chapeauFR: 'La poudre a mis fin au château fort, puis elle a traversé l’océan avec les premiers colons. Cette année-là raconte la bascule : la fin d’un monde d’un côté, la naissance de la Nouvelle-France de l’autre.',
+    chapeauEN: 'Gunpowder ended the castle, then it crossed the ocean with the first colonists. That year tells the tilt: the end of one world, the birth of New France on the other side.',
+    livres: [
+      { titre: 'Weapons and Warfare in Renaissance Europe: Gunpowder, Technology, and Tactics', auteur: 'Bert S. Hall', repere: '1997',
+        noteFR: 'Comment la poudre est passée de curiosité chinoise à raison d’être des armées. Le livre qui a démonté le mythe de la révolution soudaine.',
+        noteEN: 'How gunpowder went from Chinese curiosity to the reason armies exist. The book that dismantled the myth of a sudden revolution.' },
+      { titre: 'La Nouvelle-France par les textes', auteur: 'Marcel Trudel', repere: '2003',
+        noteFR: 'Cent quinze textes d’époque, présentés un par un. Vous entendez les gens parler au lieu de lire ce qu’un historien pense d’eux.',
+        noteEN: 'A hundred and fifteen period texts, introduced one by one. You hear people speak instead of reading what a historian thinks of them.' },
+      { titre: 'Mythes et réalités dans l’histoire du Québec', auteur: 'Marcel Trudel', repere: '2001',
+        noteFR: 'Quinze articles qui passent au tamis ce que nous croyons savoir. Trudel avait la réputation de déplaire, et il la méritait.',
+        noteEN: 'Fifteen essays sifting what we think we know. Trudel had a reputation for displeasing people, and he earned it.' },
+      { titre: 'Deux siècles d’esclavage au Québec', auteur: 'Marcel Trudel', repere: '1960, réédité 2004',
+        noteFR: 'Le livre qui a rappelé qu’il y a eu plus de quatre mille esclaves ici. On ne fête pas une époque sans savoir ça.',
+        noteEN: 'The book that reminded us there were more than four thousand slaves here. You do not celebrate an era without knowing that.' },
+      { titre: 'Les Voyages de Samuel de Champlain', auteur: 'Samuel de Champlain', repere: '1603-1632',
+        noteFR: 'Le fondateur raconte lui-même. Les rencontres, les hivers, les erreurs, dans une langue qui sent le bois mouillé.',
+        noteEN: 'The founder tells it himself. The meetings, the winters, the mistakes, in prose that smells of wet wood.' },
+      { titre: 'Relations des jésuites', auteur: 'Missionnaires de la Nouvelle-France', repere: '1632-1673',
+        noteFR: 'Quarante ans de rapports annuels envoyés en France. Une source unique, à lire en sachant qui tenait la plume et pourquoi.',
+        noteEN: 'Forty years of annual reports sent back to France. A unique source, to be read knowing who held the pen and why.' },
+    ],
+  },
+  {
+    id: 'peste',
+    anneeFR: 'L’année de la Peste',
+    anneeEN: 'The Year of the Plague',
+    chapeauFR: 'En quatre ans, l’Europe a perdu entre le tiers et la moitié de ses habitants. Ce qui est arrivé après, aux salaires, aux paysans et à la foi, explique une bonne part du monde qui a suivi.',
+    chapeauEN: 'In four years Europe lost between a third and a half of its people. What came after, to wages, to peasants and to faith, explains much of the world that followed.',
+    livres: [
+      { titre: 'Un lointain miroir. Le XIVe siècle, siècle de malheurs', auteur: 'Barbara Tuchman', repere: '1978',
+        noteFR: 'Un siècle entier raconté à travers la vie d’un seul seigneur français. Le meilleur livre d’histoire à mettre entre les mains de quelqu’un qui n’aime pas l’histoire.',
+        noteEN: 'A whole century told through the life of one French lord. The best history book to hand to someone who dislikes history.' },
+      { titre: 'La Peste noire', auteur: 'John Kelly', repere: '2005',
+        noteFR: 'Le récit ville par ville, port par port, de la marche de l’épidémie. Vous suivez la maladie comme un personnage.',
+        noteEN: 'The city-by-city, port-by-port account of the epidemic’s march. You follow the disease like a character.' },
+      { titre: 'L’Automne du Moyen Âge', auteur: 'Johan Huizinga', repere: '1919',
+        noteFR: 'Un classique de 1919 sur la fin du monde médiéval, écrit comme un tableau. Contesté depuis, jamais égalé en beauté.',
+        noteEN: 'A 1919 classic on the end of the medieval world, written like a painting. Contested since, never matched for beauty.' },
+      { titre: 'Le Décaméron', auteur: 'Giovanni Boccaccio', repere: '1353',
+        noteFR: 'Dix jeunes gens fuient Florence pestiférée et se racontent des histoires pendant dix jours. Cent contes, souvent grivois, écrits dans l’épidémie même.',
+        noteEN: 'Ten young people flee plague-struck Florence and tell stories for ten days. A hundred tales, often bawdy, written inside the epidemic itself.' },
+      { titre: 'Pour en finir avec le Moyen Âge', auteur: 'Régine Pernoud', repere: '1977',
+        noteFR: 'Cent cinquante pages contre les idées reçues : la saleté, l’obscurantisme, la place des femmes. À lire avant de dire « c’est moyenâgeux ».',
+        noteEN: 'A hundred and fifty pages against received ideas: the filth, the darkness, the place of women. Read it before you say “medieval” as an insult.' },
+    ],
+  },
+  {
+    id: 'seigneur',
+    anneeFR: 'L’année du Seigneur',
+    anneeEN: 'The Year of the Lord',
+    chapeauFR: 'Le monde féodal vu d’en haut et d’en bas : celui qui prélève la dîme, celui qui la paie, et l’immense chantier de pierre qui les occupe tous les deux.',
+    chapeauEN: 'The feudal world seen from above and below: the one who takes the tithe, the one who pays it, and the vast stone worksite that occupies them both.',
+    livres: [
+      { titre: 'La civilisation de l’Occident médiéval', auteur: 'Jacques Le Goff', repere: '1964',
+        noteFR: 'La grande synthèse française. Le Goff a passé sa vie à montrer que ces gens pensaient autrement, pas moins bien.',
+        noteEN: 'The great French synthesis. Le Goff spent his life showing these people thought differently, not less well.' },
+      { titre: 'Le Temps des cathédrales', auteur: 'Georges Duby', repere: '1976',
+        noteFR: 'L’art et la société ensemble, de l’an mil à 1420. Le livre qui fait comprendre pourquoi un village se ruinait pour une flèche de pierre.',
+        noteEN: 'Art and society together, from the year 1000 to 1420. The book that explains why a village would ruin itself for a stone spire.' },
+      { titre: 'Guillaume le Maréchal', auteur: 'Georges Duby', repere: '1984',
+        noteFR: 'La vie du meilleur chevalier du monde, reconstruite à partir d’un poème payé par son fils. Le tournoi, la fidélité, l’argent.',
+        noteEN: 'The life of the best knight in the world, rebuilt from a poem paid for by his son. Tournaments, loyalty, money.' },
+      { titre: 'The Time Traveller’s Guide to Medieval England', auteur: 'Ian Mortimer', repere: '2008',
+        noteFR: 'Un guide de voyage pour le XIVe siècle : ce qu’on mange, ce qu’on porte, combien coûte une nuit d’auberge. Redoutablement pratique.',
+        noteEN: 'A travel guide to the fourteenth century: what you eat, what you wear, what a night at an inn costs. Formidably practical.' },
+      { titre: 'Le Ménagier de Paris', auteur: 'Un bourgeois de Paris', repere: 'vers 1393',
+        noteFR: 'Un mari âgé écrit à sa jeune femme comment tenir maison. Recettes, jardin, domestiques : la vie quotidienne racontée par quelqu’un qui la vivait.',
+        noteEN: 'An elderly husband writes to his young wife on how to keep a house. Recipes, garden, servants: daily life told by someone living it.' },
+      { titre: 'Le Viandier', auteur: 'Guillaume Tirel, dit Taillevent', repere: 'XIVe s.',
+        noteFR: 'Le livre de cuisine du cuisinier des rois de France. Nos tentes lui doivent plus d’une recette.',
+        noteEN: 'The cookbook of the cook to the kings of France. Our food tents owe him more than one recipe.' },
+    ],
+  },
+  {
+    id: 'socle',
+    anneeFR: 'Les incontournables',
+    anneeEN: 'The essentials',
+    chapeauFR: 'Ceux-là ne dépendent d’aucune année. Si vous ne lisez que cinq livres médiévaux dans votre vie, prenez-les ici.',
+    chapeauEN: 'These belong to no single year. If you read only five medieval books in your life, take them from here.',
+    livres: [
+      { titre: 'Beowulf', auteur: 'Anonyme, traduit par Seamus Heaney', repere: 'VIIIe-XIe s.',
+        noteFR: 'Le plus vieux poème épique anglais, et la traduction de Heaney le rend battant comme un tambour. Un monstre, un héros vieilli, un dragon.',
+        noteEN: 'The oldest English epic, and Heaney’s translation beats like a drum. A monster, an ageing hero, a dragon.' },
+      { titre: 'La Chanson de Roland', auteur: 'Anonyme', repere: 'vers 1100',
+        noteFR: 'Le texte fondateur de la littérature française. Un cor qui sonne trop tard dans un col des Pyrénées.',
+        noteEN: 'The founding text of French literature. A horn blown too late in a Pyrenean pass.' },
+      { titre: 'Perceval ou le Conte du Graal', auteur: 'Chrétien de Troyes', repere: 'vers 1180',
+        noteFR: 'Le Graal entre en littérature ici, et l’auteur meurt avant la fin. Tout ce qui suit, pendant huit siècles, tourne autour de ce trou.',
+        noteEN: 'The Grail enters literature here, and the author dies before finishing. Eight centuries of writing circle that hole.' },
+      { titre: 'Le Livre de la Cité des dames', auteur: 'Christine de Pizan', repere: '1405',
+        noteFR: 'La première femme à vivre de sa plume en Europe bâtit une cité de papier pour y loger les femmes que l’histoire a effacées.',
+        noteEN: 'The first woman in Europe to live by her pen builds a city of paper to house the women history erased.' },
+      { titre: 'Le Devisement du monde', auteur: 'Marco Polo', repere: '1298',
+        noteFR: 'Dicté en prison à un écrivain de romans de chevalerie, ce qui explique bien des choses. Le monde vu par un marchand vénitien.',
+        noteEN: 'Dictated in prison to a writer of chivalric romances, which explains a great deal. The world seen by a Venetian merchant.' },
+      { titre: 'Voyages', auteur: 'Ibn Battûta', repere: 'XIVe s.',
+        noteFR: 'Trente ans de route, de Tanger à la Chine. Le Moyen Âge ne s’arrêtait pas aux frontières de l’Europe, et ce livre le prouve à chaque page.',
+        noteEN: 'Thirty years on the road, from Tangier to China. The Middle Ages did not stop at Europe’s borders, and this book proves it on every page.' },
+    ],
+  },
+  {
+    id: 'tresors',
+    anneeFR: 'Les livres qu’aucun d’entre nous n’achètera',
+    anneeEN: 'The books none of us will ever buy',
+    chapeauFR: 'Quatre manuscrits qui existent en un seul exemplaire. Les fac-similés se vendent des milliers de dollars, et les originaux ne se vendent pas du tout.',
+    chapeauEN: 'Four manuscripts that exist in a single copy. Facsimiles sell for thousands, and the originals do not sell at all.',
+    livres: [
+      { titre: 'Codex Gigas, la Bible du Diable', auteur: 'Un moine de Bohême', repere: 'début du XIIIe s.',
+        noteFR: 'Quatre-vingt-douze centimètres de haut, soixante-quatorze kilos, un portrait du diable en pleine page. La légende dit qu’un moine l’a écrit en une nuit pour éviter d’être emmuré. Il en existe un seul, à Stockholm.',
+        noteEN: 'Ninety-two centimetres tall, seventy-four kilos, a full-page devil. Legend says a monk wrote it in one night to avoid being walled up alive. One copy exists, in Stockholm.' },
+      { titre: 'Le Livre de Kells', auteur: 'Moines irlandais', repere: 'vers 800',
+        noteFR: 'Quatre évangiles noyés sous des entrelacs qu’on n’arrive pas à suivre à l’œil nu. Dublin le montre une page à la fois.',
+        noteEN: 'Four gospels drowned in interlace the naked eye cannot follow. Dublin shows one page at a time.' },
+      { titre: 'Les Très Riches Heures du duc de Berry', auteur: 'Les frères de Limbourg', repere: 'vers 1412-1416',
+        noteFR: 'Le plus beau calendrier du monde : douze mois de travaux des champs et de châteaux, peints pour un prince qui est mort avant la fin.',
+        noteEN: 'The most beautiful calendar in the world: twelve months of fieldwork and castles, painted for a prince who died before it was done.' },
+      { titre: 'Le manuscrit de Voynich', auteur: 'Inconnu', repere: 'XVe s.',
+        noteFR: 'Deux cent quarante pages dans une langue que personne n’a lue, avec des plantes qui n’existent pas. Un siècle de cryptographes s’y est cassé les dents.',
+        noteEN: 'Two hundred and forty pages in a language nobody has read, with plants that do not exist. A century of cryptographers has broken its teeth on it.' },
+    ],
+  },
+];

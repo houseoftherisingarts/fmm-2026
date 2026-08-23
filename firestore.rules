@@ -200,17 +200,35 @@ service cloud.firestore {
     // le lisent et l'écrivent; personne ne peut se glisser dans une
     // partie existante puisque la liste des joueurs ne bouge plus.
     match /taflParties/{partieId} {
-      allow read:   if signedIn() && request.auth.uid in resource.data.joueurs;
+      // Un défi ouvert par lien se lit par n'importe quel membre : c'est
+      // le lobby que l'ami reçoit dans Messenger (Alex, 2026-08-23).
+      allow read:   if signedIn()
+                    && (request.auth.uid in resource.data.joueurs
+                        || resource.data.statut == 'lobby');
       allow create: if signedIn()
                     && request.auth.uid in request.resource.data.joueurs
-                    && request.resource.data.joueurs.size() == 2
                     && request.auth.uid == request.resource.data.lancePar
-                    // Un défi s'ouvre vide et en attente : personne ne
-                    // peut imposer une partie déjà commencée ni gagnée.
-                    && request.resource.data.statut == 'defi'
                     && request.resource.data.coups.size() == 0
                     && request.resource.data.gagnant == null
-                    && request.resource.data.tour == 'attacker';
+                    && request.resource.data.tour == 'attacker'
+                    && (
+                      // Un défi nommé s'ouvre à deux, en attente.
+                      (request.resource.data.statut == 'defi'
+                       && request.resource.data.joueurs.size() == 2)
+                      // Un défi par lien s'ouvre seul, siège libre.
+                      || (request.resource.data.statut == 'lobby'
+                          && request.resource.data.joueurs.size() == 1)
+                    );
+      // Prendre le siège libre d'un défi ouvert : le seul cas où
+      // quelqu'un qui n'est pas encore dans la partie peut l'écrire.
+      allow update: if signedIn()
+                    && resource.data.statut == 'lobby'
+                    && !(request.auth.uid in resource.data.joueurs)
+                    && request.resource.data.statut == 'encours'
+                    && request.resource.data.joueurs.size() == 2
+                    && request.auth.uid in request.resource.data.joueurs
+                    && request.resource.data.lancePar == resource.data.lancePar
+                    && request.resource.data.coups.size() == 0;
       allow update: if signedIn()
                     && request.auth.uid in resource.data.joueurs
                     && request.resource.data.joueurs == resource.data.joueurs
@@ -221,6 +239,30 @@ service cloud.firestore {
                     && resource.data.statut != 'refuse'
                     && resource.data.statut != 'fini';
       allow delete: if isAdmin();
+    }
+
+    // ── L'Ordre : les fiches des membres ──────────────────────────
+    // Chacun publie la sienne, tous les membres connectés les lisent.
+    match /membres/{uid} {
+      allow read:  if signedIn();
+      allow write: if isOwner(uid);
+    }
+
+    // ── L'Ordre : les amitiés ─────────────────────────────────────
+    // Une ligne par paire, la clé porte les deux uid triés. Les deux
+    // membres de la paire écrivent, personne d'autre ne lit.
+    match /amities/{lien} {
+      allow read:   if signedIn() && request.auth.uid in resource.data.paire;
+      allow create: if signedIn()
+                    && request.auth.uid in request.resource.data.paire
+                    && request.resource.data.paire.size() == 2
+                    && request.resource.data.de == request.auth.uid
+                    && request.resource.data.statut == 'demande'
+                    && lien == request.resource.data.paire[0] + '__' + request.resource.data.paire[1];
+      allow update: if signedIn()
+                    && request.auth.uid in resource.data.paire
+                    && request.resource.data.paire == resource.data.paire;
+      allow delete: if signedIn() && request.auth.uid in resource.data.paire;
     }
 
     // ── Fiches d'activités (page Programmation) ──────────────────
@@ -235,6 +277,26 @@ service cloud.firestore {
     match /taflJoueurs/{uid} {
       allow read:  if signedIn();
       allow write: if isOwner(uid);
+    }
+
+    // ── Les badges du site ────────────────────────────────────────
+    // Chacun écrit les siens, personne ne lit ceux d'un autre sauf
+    // l'équipe. Le contenu n'est qu'une liste d'identifiants.
+    match /badges/{uid} {
+      allow read:  if isOwner(uid) || isAdmin();
+      allow write: if isOwner(uid);
+    }
+
+    // ── Les avis décrochés du babillard ───────────────────────────
+    // La clé porte l'uid : personne ne peut décrocher un avis au nom
+    // d'un autre. L'équipe voit qui a pris quoi.
+    match /avisAcceptes/{docId} {
+      allow read:   if isAdmin()
+                    || (signedIn() && resource.data.uid == request.auth.uid);
+      allow create, update: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && docId == request.auth.uid + '__' + request.resource.data.avisId;
+      allow delete: if isAdmin();
     }
 
     // ── Site flags (vendor open/closed, hero banner toggles) ──────

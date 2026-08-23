@@ -27,6 +27,10 @@ export interface SiteFlags {
   // valide; se comporte comme les autres drapeaux `show*` (toujours visible
   // en dev local via VITE_SITE_MODE=live, respectée en production).
   showHistoireFrise:       boolean;
+  // L'Alliance : la page des festivals, monnaies et lieux alliés du
+  // FMM. Écrite le 2026-08-23, gardée EN DORMANCE à la demande d'Alex :
+  // elle vit dans le code et s'allume d'ici quand ce sera le temps.
+  pubAlliance:             boolean;
   // ── Per-page publication ──────────────────────────────────────────
   // The public teaser (site bientôt disponible) is simply the state where
   // NO page is published. Flip a page on from the admin (Paramètres →
@@ -56,6 +60,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   knightPlacementEditor:   false,
   showCommanditaire:       false,
   showHistoireFrise:       false,
+  pubAlliance:             false,
   // All pages start unpublished → the public sees the teaser until each is
   // flipped on one by one.
   pubActivites:            false,

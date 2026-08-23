@@ -83,24 +83,69 @@ CHAPEAUX = {
 # Alex, 2026-08-23 : chaque page de recette porte, en fond, le dessin
 # d'un de ses ingrédients, comme les livres de cuisine d'autrefois. Le
 # choix se fait sur les mots de la recette; à défaut, les herbes.
-FILIGRANES = [
-    (('boeuf', 'bœuf', 'kawaps', 'cuirs', 'saucisse', 'hotdog', 'poulet', 'goulash', 'porc'), 'ing-viande-a.png'),
-    (('pain', 'brauð', 'bloodbraud', 'lembas', 'insectes', 'farine'), 'ing-racines-a.png'),
-    (('miel', 'gateau', 'gâteau', 'dattes', 'offrandes', 'douceur'), 'ing-miel-a.png'),
-    (('betterave', 'verdure', 'salade', 'herboristerie', 'hummus', 'baba'), 'ing-racines-a.png'),
-    (('ail', 'aïoli', 'sauce'), 'ing-ail-a.png'),
-    (('oignon', 'olla', 'marmite', 'ragout', 'ragoût'), 'ing-oignon-a.png'),
-    (('pomme', 'cidre', 'verger', 'fruit'), 'ing-pomme-a.png'),
-    (('vin', 'hypocras', 'cervoise', 'biere', 'bière', 'limonade', 'cafe', 'café', 'abreuvoir'), 'ing-vin-a.png'),
-    (('sel', 'beurre', 'patate', 'pomme de terre'), 'ing-sel-a.png'),
+# Un dessin par recette, jamais deux fois le même : Alex a compté.
+# Chaque fiche porte son propre ingrédient en filigrane, choisi pour ce
+# qu'elle contient vraiment (2026-08-23).
+FILIGRANE_PAR_RECETTE = {
+    'salade betteraves repas': 'ing-betterave-a.png',
+    'salade betterves side':   'ing-noix-a.png',
+    'hypocras':                'ing-vin-a.png',
+    'baba ganoush':            'ing-aubergine-a.png',
+    'brochette poulet':        'ing-poulet-a.png',
+    'pain viking':             'ing-seigle-a.png',
+    'pain insectes':           'ing-criquet-a.png',
+    'cervoise':                'ing-houblon-a.png',
+    'biere au beurre':         'ing-baratte-a.png',
+    'bloodbraud':              'ing-os-a.png',
+    'limonade':                'ing-citron-a.png',
+    'boeuf kawaps':            'ing-viande-a.png',
+    'sauce au cidre':          'ing-pomme-a.png',
+    'gateau du voyageur':      'ing-seche-a.png',
+    'lembas':                  'ing-orge-a.png',
+    'cuirs du seigneur':       'ing-sel-a.png',
+    'beurre aux herbes':       'ing-herbes-a.png',
+    'olla gitana':             'ing-racines-a.png',
+    'hotdog':                  'ing-saucisse-a.png',
+    'verdure du jardin':       'ing-laitue-a.png',
+    'goulash':                 'ing-paprika-a.png',
+    'patate chaude':           'ing-patates-a.png',
+    'sauce boeuf':             'ing-menthe-a.png',
+    'cafe turc':               'ing-cafe-a.png',
+    'offrande oasis':          'ing-dattes-a.png',
+    'hummus':                  'ing-poischiche-a.png',
+    'vin chaud':               'ing-cannelle-a.png',
+}
+
+# Repli, si une recette arrivait sans entrée : on prend un dessin qui
+# n'est pas encore servi plutôt que d'en répéter un.
+FILIGRANES_LIBRES = [
+    'ing-ail-a.png', 'ing-oignon-a.png', 'ing-miel-a.png', 'ing-orange-a.png',
+    'ing-feuille-a.png', 'ing-sesame-a.png',
 ]
 
-def filigrane(*textes):
-    t = ' '.join(textes).lower()
-    for mots, fichier in FILIGRANES:
-        if any(m in t for m in mots):
-            return fichier
-    return 'ing-herbes-a.png'
+_deja_servis = set()
+
+def filigrane(tab, *_ignore):
+    """Le dessin de CETTE recette, et d'aucune autre."""
+    cle = (tab or '').strip().lower()
+    fichier = FILIGRANE_PAR_RECETTE.get(cle)
+    if not fichier:
+        # Correspondance souple : « brochette de poulet du verger »
+        # trouve « brochette poulet ».
+        mots = set(re.findall(r'[a-zéèêàâîôûç]+', cle))
+        meilleur, score = None, 0
+        for k, v in FILIGRANE_PAR_RECETTE.items():
+            commun = len(mots & set(re.findall(r'[a-zéèêàâîôûç]+', k)))
+            if commun > score:
+                meilleur, score = v, commun
+        fichier = meilleur
+    if not fichier or fichier in _deja_servis:
+        for libre in FILIGRANES_LIBRES:
+            if libre not in _deja_servis:
+                fichier = libre
+                break
+    _deja_servis.add(fichier)
+    return fichier
 
 
 # ── La planche gravée qui ouvre chaque chapitre ─────────────────────
@@ -230,6 +275,10 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
   letter-spacing:.08em; margin-top:.012in; }
 .ing .q b { font-weight:600; }
 .ing .q i { font-style:normal; color:#a97c2a; }
+.legende { font-family:'Cinzel',serif; font-size:6.6pt; letter-spacing:.11em;
+  text-transform:uppercase; color:rgba(138,101,36,.78); margin-top:.09in; max-width:4.4in;
+  line-height:1.5; }
+.rec[data-serre="2"] .legende, .rec[data-serre="3"] .legende { font-size:6.2pt; }
 .chapeau { font-family:'Cormorant Garamond',serif; font-size:10.4pt; line-height:1.45;
   color:#4a3620; margin-top:.1in; max-width:4.6in; }
 .ing .q { text-transform:none; letter-spacing:.02em; }
@@ -241,6 +290,26 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 .ing { list-style:none; }
 .note { margin-top:.14in; padding:.1in .13in; font-size:9.2pt; font-style:italic; line-height:1.45;
   background:rgba(169,124,42,.09); border-left:2px solid rgba(169,124,42,.5); }
+
+/* Calage d'une fiche trop longue : une recette de vingt-et-un
+   ingrédients ne tient pas dans la même fonte qu'une recette de six.
+   Plutôt que de la couper au ras du papier, la page se resserre d'un
+   cran, mesure faite (Alex, 2026-08-23). */
+.rec[data-serre="1"] .steps li { font-size:9.8pt; margin-bottom:.092in; }
+.rec[data-serre="1"] .chapeau  { font-size:9.9pt; line-height:1.4; }
+.rec[data-serre="1"] .ing li   { font-size:8.5pt; padding:.03in 0; }
+.rec[data-serre="1"] .note     { font-size:8.8pt; padding:.085in .11in; }
+.rec[data-serre="2"] .steps li { font-size:9.2pt; line-height:1.44; margin-bottom:.072in; }
+.rec[data-serre="2"] .chapeau  { font-size:9.4pt; line-height:1.36; }
+.rec[data-serre="2"] .ing li   { font-size:8pt; padding:.024in 0; line-height:1.28; }
+.rec[data-serre="2"] .ing .q   { font-size:6.5pt; }
+.rec[data-serre="2"] .note     { font-size:8.4pt; padding:.07in .1in; }
+.rec[data-serre="3"] .steps li { font-size:8.7pt; line-height:1.4; margin-bottom:.058in; }
+.rec[data-serre="3"] .chapeau  { font-size:9pt; line-height:1.32; }
+.rec[data-serre="3"] .ing li   { font-size:7.6pt; padding:.019in 0; line-height:1.24; }
+.rec[data-serre="3"] .ing .q   { font-size:6.2pt; }
+.rec[data-serre="3"] .note     { font-size:8pt; padding:.06in .09in; }
+.rec[data-serre="3"] h2        { font-size:16.4pt; }
 
 .folio { position:absolute; left:0; right:0; bottom:.3in; text-align:center;
   font-family:'Cinzel',serif; font-size:7.6pt; letter-spacing:.3em; color:rgba(120,85,40,.6); z-index:2; }
@@ -273,8 +342,14 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 import unicodedata
 
 def portions_de(rendement):
-    t = (rendement or '').lower()
-    m = re.search(r'(\d+)\s*(portions?|brochettes?)', t)
+    """Combien de personnes la fiche du festival nourrit vraiment.
+
+    Rend None quand le rendement ne se compte pas en personnes (une
+    bouteille d'hypocras, un pot de beurre) : dans ce cas la colonne
+    maison n'a pas de sens et le livre ne l'affiche pas.
+    """
+    t = (rendement or '').lower().replace('\u00a0', ' ')
+    m = re.search(r'(\d+)\s*(portions?|brochettes?|tasses?)', t)
     if m:
         n = int(m.group(1))
         if 'brochette' in m.group(2):
@@ -282,7 +357,34 @@ def portions_de(rendement):
             if par:
                 n = max(1, n // int(par.group(1)))
         return n
+    # « 454g · portions : 10g » : le rendement divisé par la portion.
+    m = re.search(r'(\d+[.,]?\d*)\s*(kg|g|l|ml)\b.*?portions?\s*:?\s*(\d+[.,]?\d*)\s*(kg|g|l|ml)\b', t)
+    if m:
+        tot = _nombre(m.group(1)) * (1000 if m.group(2) in ('kg', 'l') else 1)
+        par = _nombre(m.group(3)) * (1000 if m.group(4) in ('kg', 'l') else 1)
+        if par > 0:
+            return max(1, int(round(tot / par)))
+    # Une bouteille, un pot : ça ne se divise pas par portions.
+    if re.search(r'\b(bouteille|pot|pain)\b', t):
+        return None
     return 50  # la marmite ordinaire du village
+
+# Ce qu'une cuillère à thé pèse vraiment, pour les ingrédients qui
+# descendent sous les cinq grammes une fois la recette ramenée à cinq
+# personnes. Sous cette barre, une balance de cuisine ne sert à rien :
+# on écrit la mesure que la personne peut réellement prendre.
+GRAMMES_PAR_CUILLERE = {
+    'sel': 6.0, 'sel kasher': 6.0, 'sucre': 4.2, 'cassonade': 4.5,
+    'levure seche': 3.0, 'levure sèche': 3.0, 'levure fraiche': 5.0, 'levure fraîche': 5.0,
+    'poudre a pate': 4.6, 'poudre à pâte': 4.6, 'bicarbonate de soude': 4.6,
+    'cannelle': 2.6, 'canelle': 2.6, 'cumin': 2.1, 'paprika': 2.3, 'paprika doux': 2.3,
+    'paprika fumé': 2.3, 'poivre': 2.4, 'poivre noir': 2.4, 'muscade': 2.2,
+    'coriandre moulue': 1.8, 'marjolaine séchée': 0.9, 'graines de carvi moulues': 2.2,
+    'piment d\'alep': 2.0, 'piments en poudre': 2.4, 'poudre d\'ail': 2.8,
+    'poudre d\'oignon': 2.4, 'poivre de cayenne': 1.8, 'thym': 1.0, 'romarin': 1.2,
+    'safran': 0.7, 'clou de girofle': 2.6, 'gingembre': 1.8, 'cardamone': 2.0,
+    'origan': 1.0, 'sarriette': 1.0, 'laurier': 0.6, 'massis': 2.0,
+}
 
 UNITES_MASSE = {'kg': 1000.0, 'g': 1.0}
 UNITES_VOLUME = {'l': 1000.0, 'ml': 1.0}
@@ -319,9 +421,81 @@ def _joli(x, unite):
     s2 = _virgule(f"{v:.1f}".rstrip('0').rstrip('.'))
     return f"{s2} {unite}"
 
-def pour_cinq(q, portions):
+def _mesure_de_cuisine(grammes, nom):
+    """Traduit une pesée minuscule en cuillères, ou en pincée."""
+    cle = (nom or '').strip().lower()
+    poids = None
+    for k, v in GRAMMES_PAR_CUILLERE.items():
+        if cle == k or cle.startswith(k) or k in cle:
+            poids = v
+            break
+    if poids is None:
+        return None
+    # Le safran ne se mesure jamais à la cuillère : il se compte en
+    # pincées de filaments, quel que soit le poids.
+    if 'safran' in cle:
+        return 'une pincée' if grammes < 0.35 else 'une bonne pincée'
+    cuilleres = grammes / poids
+    if cuilleres < 0.12:
+        return 'une pincée'
+    if cuilleres < 0.22:
+        return 'une bonne pincée'
+    frac = _fraction(round(cuilleres, 2))
+    if frac:
+        return f'{frac} c. à thé'
+    if cuilleres < 3:
+        v = round(cuilleres * 4) / 4
+        entier = int(v)
+        reste = _fraction(round(v - entier, 2))
+        if entier and reste:
+            return f'{entier} {reste} c. à thé'
+        if reste:
+            return f'{reste} c. à thé'
+        return f'{max(1, entier)} c. à thé'
+    soupes = cuilleres / 3
+    if soupes < 1.2:
+        return '1 c. à soupe'
+    return f'{round(soupes, 1):g}'.replace('.', ',') + ' c. à soupe'
+
+
+def _mesure_liquide(ml):
+    """Sous quinze millilitres, une cuillère vaut mieux qu'un chiffre."""
+    if ml < 1.2:
+        return 'quelques gouttes'
+    if ml < 4:
+        frac = _fraction(round(ml / 5, 2))
+        return f'{frac} c. à thé' if frac else '½ c. à thé'
+    if ml < 7.5:
+        return '1 c. à thé'
+    if ml < 12:
+        return '2 c. à thé'
+    if ml < 18:
+        return '1 c. à soupe'
+    return None
+
+
+def texte_pour_cinq(txt, portions):
+    """Ramène à cinq personnes les quantités écrites DANS une étape.
+
+    Seules les masses et les volumes sont touchés. Un temps de cuisson
+    ne se divise jamais : vingt minutes de mijotage restent vingt
+    minutes, que la marmite nourrisse cinquante personnes ou cinq
+    (Alex, 2026-08-23).
+    """
+    if not portions or portions <= 5:
+        return txt
+
+    def remplacer(m):
+        brut = f'{m.group(1)}{m.group(2)}'
+        petit = pour_cinq(brut, portions)
+        return f'{m.group(0)} (pour cinq : {petit})' if petit else m.group(0)
+
+    return re.sub(r'(\d+[.,]?\d*)\s*(kg|g|ml|l|L)\b(?!\w)', remplacer, txt)
+
+
+def pour_cinq(q, portions, nom=''):
     """Rend la quantité pour cinq personnes, ou None si ça n'a pas de sens."""
-    if not q:
+    if not q or not portions:
         return None
     brut = q.strip().lower().replace('\u00a0', ' ')
     if brut in ('qs', 'q.s', 'q.s.'):
@@ -339,9 +513,20 @@ def pour_cinq(q, portions):
     val = n * facteur
 
     if unite in UNITES_MASSE:
-        return _joli(val * UNITES_MASSE[unite], 'g')
+        grammes = val * UNITES_MASSE[unite]
+        # Sous cinq grammes, on ne pèse plus : on mesure.
+        if grammes < 8:
+            mesure = _mesure_de_cuisine(grammes, nom)
+            if mesure:
+                return mesure
+        return _joli(grammes, 'g')
     if unite in UNITES_VOLUME:
-        return _joli(val * UNITES_VOLUME[unite], 'ml')
+        ml = val * UNITES_VOLUME[unite]
+        if ml < 18:
+            mesure = _mesure_liquide(ml)
+            if mesure:
+                return mesure
+        return _joli(ml, 'ml')
     if unite in ('un', 'unite', 'unites', 'gousse', 'gousses', 'bouteille', 'bouteilles'):
         mot = 'gousse' if unite.startswith('gousse') else ('bouteille' if unite.startswith('bouteille') else 'pièce')
         n2 = max(1, int(round(val)))
@@ -365,6 +550,33 @@ def pour_cinq(q, portions):
 def joli_depart(q):
     """Écrit la quantité du festival comme un cuisinier l'écrit."""
     t = (q or '').strip()
+    # Une cuillère au centième ne se mesure pas. Sous le quart de
+    # cuillère, on écrit ce que la main fait vraiment : une pincée.
+    m = re.match(r'(?i)^([\d.,]+)\s*(cat|cas)\b\s*$', t)
+    if m:
+        v = float(m.group(1).replace(',', '.'))
+        if m.group(2).lower() == 'cas':
+            v *= 3
+        if v < 0.12:
+            return 'une pincée'
+        if v < 0.24:
+            return 'une bonne pincée'
+        # Au-delà d'une douzaine de cuillères, personne ne compte : on
+        # passe au volume (5 ml par cuillère à thé).
+        if v > 12 and m.group(2).lower() == 'cat':
+            return _joli(v * 5, 'ml')
+        if m.group(2).lower() == 'cas':
+            demi = round(v / 3 * 2) / 2
+            entier = int(demi)
+            reste = _fraction(round(demi - entier, 2))
+            if entier and reste:
+                return f'{entier} {reste} c. à soupe'
+            if reste:
+                return f'{reste} c. à soupe'
+            return f'{entier} c. à soupe'
+        frac = _fraction(round(v, 2))
+        if frac:
+            return f'{frac} c. à thé' if v < 1 else t
     t = re.sub(r'(?i)^([\d.,]+)\s*kg', lambda m: m.group(1).replace('.', ',') + ' kg', t)
     t = re.sub(r'(?i)^([\d.,]+)\s*g\b', lambda m: m.group(1).replace('.', ',') + ' g', t)
     t = re.sub(r'(?i)^([\d.,]+)\s*ml', lambda m: m.group(1).replace('.', ',') + ' ml', t)
@@ -386,10 +598,13 @@ def clean(t):
     return t[0].upper() + t[1:] if t else t
 
 
-def page(inner, cls='', folio=None, runhead=None):
+def page(inner, cls='', folio=None, runhead=None, cle=None):
     f = f'<div class="folio">· {folio} ·</div>' if folio else ''
     r = f'<div class="runhead">{esc(runhead)}</div>' if runhead else ''
-    return f'<section class="page {cls}">{r}<div class="pad">{inner}</div>{f}</section>'
+    # `data-cle` sert au calage : après le rendu, la page qui déborde
+    # se resserre d'un cran, puis on remesure (voir caler()).
+    k = f' data-cle="{cle}" data-serre="0"' if cle else ''
+    return f'<section class="page {cls}"{k}>{r}<div class="pad">{inner}</div>{f}</section>'
 
 
 def build():
@@ -478,7 +693,7 @@ def build():
         r = recs[tab]
         portions = portions_de(r.get('yield'))
         def ligne_ing(i):
-            maison = pour_cinq(i['q'], portions) if i['q'] else None
+            maison = pour_cinq(i['q'], portions, i['n']) if i['q'] else None
             nom = clean(i['n'])
             # « 450g avant cuisson » : la précision suit le produit, pas
             # le chiffre. Un cuisinier écrit « 450 g d'ail rôti (avant
@@ -490,11 +705,20 @@ def build():
                     i = {**i, 'q': m2.group(1)}
                     precision = f" ({m2.group(2)})"
             nom = nom[0].lower() + nom[1:] if nom else nom
-            liaison = "d’" if nom[:1] in "aeiouyéèêàâîôû" else "de "
+            # Le h muet compte comme une voyelle : « d'huile », pas
+            # « de huile ». La liste couvre ce qui passe en cuisine.
+            H_MUET = ('huile', 'herbe', 'houmous', 'hummus', 'huitre', 'huître')
+            voyelle = nom[:1] in "aeiouyéèêàâîôû" or nom.startswith(H_MUET)
+            liaison = "d’" if voyelle else "de "
             if i['q']:
                 depart = joli_depart(i['q'])
-                lien = '' if depart.endswith('×') else liaison
-                tete = f"<b>{esc(depart)}</b> {lien}{esc(nom)}{esc(precision)}"
+                # « au goût » se met APRÈS l'ingrédient : un cuisinier
+                # écrit « sel et poivre, au goût », jamais l'inverse.
+                if depart == 'au goût':
+                    tete = f"{esc(clean(nom))}{esc(precision)}, <b>au goût</b>"
+                else:
+                    lien = '' if depart.endswith('×') else liaison
+                    tete = f"<b>{esc(depart)}</b> {lien}{esc(nom)}{esc(precision)}"
             else:
                 tete = esc(nom[0].upper() + nom[1:])
             pied = f"<span class=q>pour cinq : {esc(maison)}</span>" if maison else ''
@@ -504,16 +728,20 @@ def build():
         steps, notes = [], []
         for s in r['steps']:
             (notes if re.match(r'^[a-zéèêà\' ]{3,24}\s*:', s.strip(), re.I) and len(steps) else steps).append(s)
-        body = ''.join(f'<li>{esc(clean(s))}</li>' for s in steps)
-        note = ''.join(f'<div class="note">{esc(clean(x))}</div>' for x in notes)
+        body = ''.join(f'<li>{esc(texte_pour_cinq(clean(s), portions))}</li>' for s in steps)
+        note = ''.join(f'<div class="note">{esc(texte_pour_cinq(clean(x), portions))}</div>' for x in notes)
         wide = ' wide' if len([i for i in r['ing'] if i['n']]) > 13 else ''
-        eau = filigrane(TITRES.get(tab, tab), ' '.join(i['n'] or '' for i in r['ing']))
+        legende = ('<p class="legende">La ligne dorée sous chaque ingrédient donne la mesure '
+                   'pour cinq personnes. Les temps de cuisson, eux, ne changent pas.</p>'
+                   if portions and portions > 5 else '')
+        eau = filigrane(tab)
         pages.append(page(f"""
           <img class="filigrane" src="data:image/png;base64,{b64(eau)}" alt="">
           <header>
             <h2>{esc(TITRES.get(tab, clean(tab)))}</h2>
             <p class="yield">{esc(r['yield'] or 'Rendement du festival')}</p>
             {f'<p class="chapeau">{esc(CHAPEAUX[tab])}</p>' if tab in CHAPEAUX else ''}
+            {legende}
             <div class="orn" style="justify-content:flex-start; margin-top:.09in">
               <span class="rule-gold" style="width:1.15in"></span><span class="diamond"></span>
             </div>
@@ -521,7 +749,7 @@ def build():
           <div class="cols">
             <div><p class="lbl">Ingrédients</p><ul class="ing">{ing}</ul></div>
             <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
-          </div>""", cls='rec' + wide, folio=folio, runhead=titre))
+          </div>""", cls='rec' + wide, folio=folio, runhead=titre, cle=tab))
 
     # Colophon : la quatrième, d'un seul tenant elle aussi
     pages.append(page(
@@ -548,6 +776,14 @@ def to_pdf(src, out, extra=()):
 if __name__ == '__main__':
     n = build()
     print(n, 'pages')
+    # Rien ne s'imprime avant que le calage ait vérifié qu'aucune page
+    # ne déborde (voir caler.py). Une fiche coupée au ras du papier ne
+    # doit plus jamais sortir d'ici (Alex, 2026-08-23).
+    try:
+        from caler import caler as _caler
+        _caler()
+    except Exception as e:  # noqa: BLE001
+        print('calage impossible :', e)
     to_pdf('grimoire.html', 'grimoire-fmm-2026.pdf')
     # Apercu : la couverture et le mot de la cuisine, rien de plus.
     doc = (HERE / 'grimoire.html').read_text(encoding='utf-8')

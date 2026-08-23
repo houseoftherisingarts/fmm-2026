@@ -157,6 +157,31 @@ export const ARCHIVES_LENA: string[] = [
 ];
 
 export const ARCHIVES_ALEX: string[] = [
+  // Photogrammes du vidéoclip des Caravanes, tiré du film de
+  // l’édition 2026 (Alex, 2026-08-23). Ils ouvrent la section.
+  "clip-caravanes-01.webp",
+  "clip-caravanes-02.webp",
+  "clip-caravanes-03.webp",
+  "clip-caravanes-04.webp",
+  "clip-caravanes-05.webp",
+  "clip-caravanes-06.webp",
+  "clip-caravanes-07.webp",
+  "clip-caravanes-08.webp",
+  "clip-caravanes-09.webp",
+  "clip-caravanes-10.webp",
+  "clip-caravanes-11.webp",
+  "clip-caravanes-12.webp",
+  "clip-caravanes-13.webp",
+  "clip-caravanes-14.webp",
+  "clip-caravanes-15.webp",
+  "clip-caravanes-16.webp",
+  "clip-caravanes-17.webp",
+  "clip-caravanes-18.webp",
+  "clip-caravanes-19.webp",
+  "clip-caravanes-20.webp",
+  "clip-caravanes-21.webp",
+  "clip-caravanes-22.webp",
+  "clip-caravanes-23.webp",
   "1_1_1_1_1_1.webp",
   "1_26_1_1_26_1.webp",
   "1_30_1_1_30_1.webp",

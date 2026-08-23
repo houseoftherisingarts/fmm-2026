@@ -42,6 +42,7 @@ import { createHighlightSystem } from './highlightSystem';
 import { pickMove, type Difficulty } from './cpuPlayer';
 import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
 import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
+import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
@@ -178,7 +179,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     builtLead: 'Le plateau, les pièces et le code viennent de l\u2019atelier du Salon des Inconnus, à Namur. Vous pouvez aussi emporter le jeu chez vous : il se télécharge dans la section outils.',
     builtCta: 'Les outils du Salon',
     loadingTitle: 'On dresse la table',
-    loadingLead: 'Le plateau est sculpté, les pièces arrivent de l\u2019atelier.',
+    loadingLead: '',
     musiqueOn: 'Couper la musique',
     musiqueOff: 'Musique',
     shopBoards: 'Plateaux',
@@ -243,7 +244,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     builtLead: 'The board, the pieces and the code all come from the Salon des Inconnus workshop in Namur. You can also take the game home: it downloads from the tools section.',
     builtCta: 'The Salon\u2019s tools',
     loadingTitle: 'Setting the table',
-    loadingLead: 'The board is carved, the pieces are on their way.',
+    loadingLead: '',
     musiqueOn: 'Mute the music',
     musiqueOff: 'Music',
     shopBoards: 'Boards',
@@ -1029,6 +1030,8 @@ const HnefataflPage: React.FC = () => {
   }, [partie, user]);
 
   const [gameStarted, setGameStarted] = useState(false);
+  useBadgeJeu('tafl');
+  const { gagnerBadge } = useBadges();
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [pleinEcran, setPleinEcran] = useState(false);
@@ -1262,6 +1265,9 @@ const HnefataflPage: React.FC = () => {
                       fige: partie?.statut !== 'encours',
                       surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant }) => {
                         appliques.current += 1;
+                        // Une partie menée jusqu'au bout vaut son badge,
+                        // gagnée ou perdue : c'est d'aller au bout qui compte.
+                        if (gagnant) gagnerBadge('tafl');
                         void jouerCoup(
                           partieId,
                           partie?.coups ?? [],

@@ -51,7 +51,7 @@ export interface Pillar {
 export const PILLARS: Pillar[] = [
   { key: 'activites',   slug: { FR: '/activites',    EN: '/en/activities' }, label: { FR: 'Programmation',               EN: 'Program' },                 short: { FR: 'Programmation', EN: 'Program' } },
   { key: 'marche',      slug: { FR: '/marche',       EN: '/en/market' },     label: { FR: 'Marché',                      EN: 'Market' },                  short: { FR: 'Marché',       EN: 'Market' } },
-  { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: 'Histoire & Apprendre',        EN: 'History & Learning' },      short: { FR: 'Histoire',     EN: 'History' } },
+  { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: 'Histoire & Apprendre',        EN: 'History & Learning' },      short: { FR: 'Histoire et apprendre', EN: 'History & Learning' } },
   { key: 'mariages',    slug: { FR: '/mariages',     EN: '/en/weddings' },   label: { FR: 'Mariages & Groupes',          EN: 'Weddings & Groups' },       short: { FR: 'Mariages & Groupes', EN: 'Weddings & Groups' } },
   { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping & Hébergement', EN: 'Camping & Lodging' } },
   { key: 'partenaires', slug: { FR: '/partenaires',  EN: '/en/partners' },   label: { FR: 'Commanditaires & Partenaires', EN: 'Sponsors & Partners' },    short: { FR: 'Commanditaires', EN: 'Sponsors' } },

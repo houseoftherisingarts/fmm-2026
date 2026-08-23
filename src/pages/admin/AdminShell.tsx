@@ -4,7 +4,7 @@ import {
   LayoutDashboard, HandHeart, ShoppingBag, Users, MessageSquare, Mail,
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
-  Hash, Bug, Camera, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark,
+  Hash, Bug, Camera, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
@@ -22,6 +22,7 @@ export type AdminSectionId =
   | 'equipes'
   | 'marchands'
   | 'activites'
+  | 'badges'
   | 'musiciens'
   | 'pupitre'
   | 'matrice'
@@ -58,6 +59,7 @@ const NAV: NavItem[] = [
   { id: 'equipes',    label: 'Équipes',         icon: UsersRound },
   { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag },
   { id: 'activites',  label: 'Activités',       icon: Swords },
+  { id: 'badges',     label: 'Babillard et badges', icon: Award },
   { id: 'musiciens',  label: 'Musique',         icon: Music },
   { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather },
   { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3 },

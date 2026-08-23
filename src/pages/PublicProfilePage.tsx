@@ -7,7 +7,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
-import { type PublicProfile, getPublicProfile } from '../firebase/publicProfile';
+import { type PublicProfile, getPublicProfile, hueFor } from '../firebase/publicProfile';
+import {
+  lireFiche, suivreMesAmities, demanderAmitie, accepterAmitie,
+  estAmi, amitieEnAttente, type Amitie, type Membre,
+} from '../firebase/ordre';
+import DeDeLaVie from '../components/ordre/DeDeLaVie';
 import { mockGetPublicProfile } from '../firebase/mockCommunity';
 import { listTeams, type Team } from '../firebase/teams';
 import { mockListTeams } from '../firebase/mockApplications';
@@ -24,6 +29,12 @@ const PublicProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fiche, setFiche] = useState<Membre | null>(null);
+  const [liens, setLiens] = useState<Amitie[]>([]);
+  useEffect(() => {
+    if (!user?.uid) return;
+    return suivreMesAmities(user.uid, setLiens);
+  }, [user?.uid]);
 
   useEffect(() => {
     setLoading(true);
@@ -34,6 +45,21 @@ const PublicProfilePage: React.FC = () => {
       } else {
         try { p = await getPublicProfile(uid); }
         catch { /* offline */ }
+        // Les documents /users sont privés : pour un AUTRE membre, la
+        // fiche publique de l'Ordre prend le relais (Alex, 2026-08-23).
+        if (!p) {
+          const m = await lireFiche(uid).catch(() => null);
+          if (m) {
+            setFiche(m);
+            p = {
+              uid, displayName: m.nom || 'Anonyme',
+              avatarHue: m.avatarHue ?? hueFor(m.nom || uid),
+              avatarUrl: m.avatarUrl, city: m.ville, bio: m.devise,
+            };
+          }
+        } else {
+          void lireFiche(uid).then((m) => { if (m) setFiche(m); }).catch(() => { /* rien */ });
+        }
         if (!p && SHOWCASE_IN_DEV) p = await mockGetPublicProfile(uid);
       }
       setProfile(p);
@@ -130,11 +156,30 @@ const PublicProfilePage: React.FC = () => {
                   ))}
                 </div>
                 {!isMe && (
-                  <div className="mt-5 flex items-center gap-2">
+                  <div className="mt-5 flex flex-wrap items-center gap-2">
                     <Link to={addLocale(`/messages/${uid}`, lang)}
                       className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
                       <MessageCircle size={12} /> {lang === 'FR' ? 'Envoyer un message' : 'Send message'}
                     </Link>
+                    {user && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const attente = amitieEnAttente(liens, user.uid, uid);
+                          if (attente && attente.de !== user.uid) void accepterAmitie(user.uid, uid);
+                          else if (!attente && !estAmi(liens, user.uid, uid)) void demanderAmitie(user.uid, uid);
+                        }}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 border border-brass/45 text-ivory font-sans uppercase tracking-wider text-xs hover:bg-brass/15 transition rounded-card"
+                      >
+                        {estAmi(liens, user.uid, uid)
+                          ? (lang === 'FR' ? 'Ami' : 'Friend')
+                          : amitieEnAttente(liens, user.uid, uid)
+                            ? (amitieEnAttente(liens, user.uid, uid)!.de === user.uid
+                                ? (lang === 'FR' ? 'Demande envoyée' : 'Request sent')
+                                : (lang === 'FR' ? 'Accepter l’amitié' : 'Accept friendship'))
+                            : (lang === 'FR' ? 'Ajouter comme ami' : 'Add as friend')}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -143,6 +188,37 @@ const PublicProfilePage: React.FC = () => {
         </section>
 
         <section className="max-w-3xl mx-auto px-4 md:px-8 py-8 md:py-12 grid md:grid-cols-3 gap-5">
+          <div className="md:col-span-3 grid md:grid-cols-2 gap-5">
+            <DeDeLaVie lang={lang} />
+            {fiche?.stats && (
+              <div className="rounded-lg-card border border-brass/25 p-6"
+                   style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+                <p className="witcher-stat-label mb-4">
+                  {lang === 'FR' ? 'Ses aptitudes, à sa façon' : 'Their own stats'}
+                </p>
+                <ul className="space-y-2.5">
+                  {([
+                    ['force', lang === 'FR' ? 'Force' : 'Strength'],
+                    ['ruse', lang === 'FR' ? 'Ruse' : 'Cunning'],
+                    ['chance', lang === 'FR' ? 'Chance' : 'Luck'],
+                    ['verve', lang === 'FR' ? 'Verve' : 'Verve'],
+                    ['endurance', lang === 'FR' ? 'Endurance' : 'Endurance'],
+                  ] as const).map(([cle, nom]) => (
+                    <li key={cle} className="flex items-center gap-3">
+                      <span className="font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/60 w-24 shrink-0">{nom}</span>
+                      <span className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(244,239,227,0.1)' }}>
+                        <span className="block h-full" style={{
+                          width: `${Math.max(0, Math.min(20, fiche.stats![cle])) * 5}%`,
+                          background: 'linear-gradient(90deg, rgba(232,177,74,0.5), var(--color-amber-glow))',
+                        }} />
+                      </span>
+                      <span className="font-display text-sm text-ivory w-6 text-right">{fiche.stats![cle]}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
           <div className="md:col-span-2 space-y-5">
             {profile.bio ? (
               <div className="glass-light rounded-card p-5 md:p-6">

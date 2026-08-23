@@ -41,6 +41,7 @@ const EquipesSection      = lazy(() => import('./admin/sections/EquipesSection')
 const MarchandsSection    = lazy(() => import('./admin/sections/MarchandsSection'));
 const MusiquesSection     = lazy(() => import('./admin/sections/MusiquesSection'));
 const ActivitesSection    = lazy(() => import('./admin/sections/ActivitesSection'));
+const BadgesSection       = lazy(() => import('./admin/sections/BadgesSection'));
 const PupitreSection      = lazy(() => import('./admin/sections/PupitreSection'));
 const SocialMediaSection  = lazy(() => import('./admin/sections/SocialMediaSection'));
 const MatriceRolesSection = lazy(() => import('./admin/sections/MatriceRolesSection'));
@@ -187,6 +188,7 @@ const AdminPage: React.FC = () => {
       case 'marchands':  return <MarchandsSection  fetchAll={fetchVendors}   updateOne={updateVendor} />;
       case 'musiciens':  return <MusiquesSection   fetchAll={fetchMusicians} updateOne={updateMusician} />;
       case 'activites':  return <ActivitesSection />;
+      case 'badges':     return <BadgesSection />;
       case 'pupitre':    return <PupitreSection />;
       case 'matrice':    return <MatriceRolesSection devBypass={DEV_BYPASS} />;
       case 'horaire':    return <HoraireSection      devBypass={DEV_BYPASS} />;

@@ -17,7 +17,7 @@ import {
 import { db } from '../firebase';
 
 export type CampTafl = 'attacker' | 'defender';
-export type StatutPartie = 'defi' | 'refuse' | 'encours' | 'fini';
+export type StatutPartie = 'defi' | 'lobby' | 'refuse' | 'encours' | 'fini';
 
 export interface PartieTafl {
   id:        string;
@@ -79,6 +79,58 @@ export async function lancerDefi(opts: {
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/**
+ * Ouvre un défi par lien, sans destinataire.
+ *
+ * C'est la porte d'entrée du site (Alex, 2026-08-23) : le lien se
+ * colle dans Messenger ou dans un courriel, l'autre tombe sur le lobby,
+ * se crée un compte, et la partie commence. Le siège reste libre tant
+ * que personne ne l'a pris.
+ */
+export async function ouvrirDefiParLien(opts: {
+  moiUid: string; moiNom: string; regleId: string; monCamp: CampTafl;
+}): Promise<string> {
+  if (!db) throw new Error('Firestore non configuré');
+  const autre: CampTafl = opts.monCamp === 'attacker' ? 'defender' : 'attacker';
+  const ref = await addDoc(collection(db, COL), {
+    joueurs: [opts.moiUid],
+    noms: { [opts.moiUid]: opts.moiNom },
+    camps: { [opts.monCamp]: opts.moiUid, [autre]: '' },
+    regleId: opts.regleId,
+    statut: 'lobby' as StatutPartie,
+    lancePar: opts.moiUid,
+    coups: [] as string[],
+    tour: 'attacker' as CampTafl,
+    gagnant: null,
+    abandon: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+/** Prend le siège libre d'un défi ouvert. La partie démarre aussitôt. */
+export async function rejoindreDefiParLien(
+  id: string, uid: string, nom: string,
+): Promise<'ok' | 'plein' | 'introuvable' | 'moi'> {
+  if (!db) return 'introuvable';
+  const ref = doc(db, COL, id);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return 'introuvable';
+  const p = snap.data() as PartieTafl;
+  if (p.joueurs.includes(uid)) return 'moi';
+  if (p.statut !== 'lobby') return 'plein';
+  const campLibre: CampTafl = p.camps.attacker ? 'defender' : 'attacker';
+  await updateDoc(ref, {
+    joueurs: [...p.joueurs, uid],
+    [`noms.${uid}`]: nom,
+    [`camps.${campLibre}`]: uid,
+    statut: 'encours' as StatutPartie,
+    updatedAt: serverTimestamp(),
+  });
+  return 'ok';
 }
 
 export async function repondreAuDefi(id: string, accepte: boolean): Promise<void> {

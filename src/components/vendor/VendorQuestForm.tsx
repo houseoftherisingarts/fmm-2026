@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   ArrowLeft, ArrowRight, Check, Hourglass, AlertCircle, Edit3, Sparkles,
 } from 'lucide-react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { useSiteFlags } from '../../contexts/SiteFlagsContext';
@@ -94,7 +95,8 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
   const [touched, setTouched]   = useState<Partial<Record<keyof FormState, boolean>>>({});
   const [existing, setExisting] = useState<VendorApp | null>(null);
   const [hydrating, setHydrating] = useState(false);
-  const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'sent' | 'error'>('idle');
+    const { gagnerBadge } = useBadges();
+const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'sent' | 'error'>('idle');
   const [errMsg, setErrMsg]     = useState<string | null>(null);
   const [unitsMetric, setUnitsMetric]   = useState(false);
 
@@ -288,6 +290,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
       setExisting({ ...app });
       if (draftKey) try { localStorage.removeItem(draftKey); } catch { /* noop */ }
       setSubmitState('sent');
+      gagnerBadge('kiosque');
     } catch (err) {
       setSubmitState('error');
       setErrMsg(err instanceof Error ? err.message : String(err));
