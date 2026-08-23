@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowUpRight, BookOpen, Clock, Users, Wine } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -65,7 +65,15 @@ const PlatRow: React.FC<{ plat: Plat; lang: 'FR' | 'EN' }> = ({ plat, lang }) =>
   </li>
 );
 
+const LIEN_BANQUET = 'https://us-central1-festivalmedieval.cloudfunctions.net/banquetLien';
+
 const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+  const [places, setPlaces] = useState(1);
+  const [enRoute, setEnRoute] = useState(false);
+  const [echec, setEchec] = useState(false);
+  // Retour de Square après paiement : ?banquet=merci
+  const merci = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('banquet') === 'merci';
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
@@ -125,14 +133,81 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                     fdkw4hH3 vendait le banquet à 85 $ (97,73 $) : il ne
                     doit plus servir. Une URL square.link est publique,
                     d'où la valeur en clair; la variable reste prioritaire. */}
-                <a
-                  href={import.meta.env.VITE_SQUARE_BANQUET_URL || SQUARE_BANQUET}
-                  target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
+                {/* Le nombre de places se choisit ICI, avant Square. Le
+                    lien fixe ne portait qu'une place et renvoyait sur le
+                    reçu de la première dès qu'on y revenait : personne
+                    ne pouvait en acheter deux (Alex, 2026-08-23). Un
+                    lien neuf se crée à chaque réservation. */}
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <div className="inline-flex items-center gap-1 rounded-card border border-brass/35 bg-black/30 p-1">
+                    <button
+                      type="button"
+                      aria-label={t.moinsUne}
+                      onClick={() => setPlaces((n: number) => Math.max(1, n - 1))}
+                      className="w-10 h-10 rounded-card text-brass hover:bg-brass/15 transition font-display text-xl leading-none"
+                    >
+                      −
+                    </button>
+                    <span className="min-w-[3.5rem] text-center font-display title-medieval text-lg text-ivory">
+                      {places}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={t.plusUne}
+                      onClick={() => setPlaces((n: number) => Math.min(12, n + 1))}
+                      className="w-10 h-10 rounded-card text-brass hover:bg-brass/15 transition font-display text-xl leading-none"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="font-sans uppercase tracking-[0.22em] text-[10px] text-ivory-soft/70">
+                    {places > 1 ? t.placesPlur(places) : t.placesSing}
+                    {' · '}
+                    {(places * 74.73).toFixed(2).replace('.', ',')} $
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  disabled={enRoute}
+                  onClick={async () => {
+                    setEnRoute(true);
+                    setEchec(false);
+                    try {
+                      const r = await fetch(LIEN_BANQUET, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ places, retour: window.location.origin + window.location.pathname }),
+                      });
+                      const d = await r.json();
+                      if (!d.url) throw new Error('sans url');
+                      window.location.href = d.url;
+                    } catch {
+                      // Filet : si la fonction tombe, on n'empêche pas
+                      // quelqu'un d'acheter une place au lien d'origine.
+                      setEchec(true);
+                      setEnRoute(false);
+                    }
+                  }}
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-60"
                 >
-                  {t.reserve}
+                  {enRoute ? t.enRoute : t.reserve}
                   <ArrowUpRight size={14} />
-                </a>
+                </button>
+                {echec && (
+                  <p className="font-editorial text-sm text-blush mt-3">
+                    {t.echecLien}{' '}
+                    <a
+                      href={import.meta.env.VITE_SQUARE_BANQUET_URL || SQUARE_BANQUET}
+                      target="_blank" rel="noopener noreferrer"
+                      className="underline text-brass"
+                    >
+                      {t.echecLienCta}
+                    </a>
+                  </p>
+                )}
+                {merci && (
+                  <p className="font-editorial text-base text-brass mt-4">{t.merci}</p>
+                )}
                 <p className="font-editorial text-xs text-ivory-soft/70 mt-4">{t.banquetNote}</p>
               </div>
               <ul className="lg:col-span-5 space-y-5 font-sans text-sm text-ivory-soft lg:pt-10">
@@ -365,7 +440,15 @@ const FR = {
   banquetSub: 'Une tablée foisonnante à trois services sur réservation, avec un spectacle musical de bardes à la table.',
   banquetBody: 'Historiquement réservé aux chefs de clans, ce banquet est maintenant ouvert à tous les voyageurs, guerriers, marchands et skjaldmös qui veulent profiter d’un repas de fin de festival bien mérité.',
   banquetNote: 'Pourboire non inclus · Menu sujet à changement sans préavis selon la disponibilité locale des produits.',
-  reserve: 'Réserver ma place',
+  reserve: 'Réserver',
+  placesSing: 'une place',
+  placesPlur: (n: number) => `${n} places`,
+  moinsUne: 'Une place de moins',
+  plusUne: 'Une place de plus',
+  enRoute: 'On prépare le paiement…',
+  echecLien: 'Le paiement n’a pas voulu s’ouvrir.',
+  echecLienCta: 'Réserver une place par l’ancien lien',
+  merci: 'Merci, votre place au banquet est réservée. Le reçu part par courriel.',
   when: 'Quand',
   seats: 'Places',
   cost: 'Coût',
@@ -411,7 +494,15 @@ const EN: typeof FR = {
   banquetSub: 'A teeming three-course table by reservation, with bard musicians at the table.',
   banquetBody: 'Historically reserved for clan chiefs, this banquet is now open to all travellers, warriors, merchants and shieldmaidens who want a well-earned end-of-festival feast.',
   banquetNote: 'Tip not included · Menu subject to change without notice based on local availability.',
-  reserve: 'Reserve my seat',
+  reserve: 'Reserve',
+  placesSing: 'one seat',
+  placesPlur: (n: number) => `${n} seats`,
+  moinsUne: 'One seat fewer',
+  plusUne: 'One seat more',
+  enRoute: 'Preparing checkout…',
+  echecLien: 'Checkout would not open.',
+  echecLienCta: 'Reserve one seat with the old link',
+  merci: 'Thank you, your seat at the banquet is booked. The receipt is on its way by email.',
   when: 'When',
   seats: 'Seats',
   cost: 'Cost',

@@ -222,3 +222,90 @@ exports.squareGrimoire = onRequest(
     }
   },
 );
+
+/**
+ * Lien de paiement du banquet, créé à la volée.
+ *
+ * Alex, 2026-08-23 : impossible d'acheter deux places. Le lien Square
+ * fixe (square.link/u/g0UOU5L3) ne porte qu'une place, et quand un
+ * acheteur y revient pour en prendre une deuxième, Square lui remontre
+ * le reçu de la première : la commande est déjà attachée à ce lien.
+ *
+ * Le remède tient en deux gestes : on demande le NOMBRE de places sur
+ * le site, et on crée un lien NEUF pour chaque réservation. Un lien
+ * neuf ne peut pas retomber sur un vieux reçu, et la quantité est dans
+ * la commande, donc quelqu'un qui vient à six paie une seule fois.
+ *
+ * La commande reprend exactement celle du lien d'origine : 65 $ la
+ * place, TPS 5 % et TVQ 9,975 % à l'échelle de la commande.
+ */
+const PLACE_BANQUET = 6500;          // 65,00 $ avant taxes
+const LOCATION_FMM = 'LHR5KAPF4HM1J';
+const MAX_PLACES = 12;
+
+exports.banquetLien = onRequest(
+  { secrets: [SQUARE_ACCESS_TOKEN], cors: true, region: 'us-central1' },
+  async (req, res) => {
+    try {
+      const places = Math.min(
+        MAX_PLACES,
+        Math.max(1, parseInt(String((req.body && req.body.places) || req.query.places || '1'), 10) || 1),
+      );
+      const retour = String(
+        (req.body && req.body.retour) || req.query.retour || 'https://festivalmedieval.web.app/nourriture',
+      );
+      // On n'accepte de renvoyer l'acheteur que chez nous.
+      const retourSur = /^https:\/\/(festivalmedieval\.web\.app|festivalmedievaldemontpellier\.org)(\/|$)/.test(retour)
+        ? retour
+        : 'https://festivalmedieval.web.app/nourriture';
+
+      const reponse = await fetch('https://connect.squareup.com/v2/online-checkout/payment-links', {
+        method: 'POST',
+        headers: {
+          'Square-Version': '2025-01-23',
+          Authorization: `Bearer ${SQUARE_ACCESS_TOKEN.value()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idempotency_key: crypto.randomUUID(),
+          description: `Banquet de l'Équinoxe · ${places} place${places > 1 ? 's' : ''} · FMM 2026`,
+          order: {
+            location_id: LOCATION_FMM,
+            line_items: [
+              {
+                name: 'Banquet de l’Équinoxe · FMM 2026',
+                quantity: String(places),
+                base_price_money: { amount: PLACE_BANQUET, currency: 'CAD' },
+              },
+            ],
+            taxes: [
+              { uid: 'tps', name: 'TPS', percentage: '5', scope: 'ORDER' },
+              { uid: 'tvq', name: 'TVQ', percentage: '9.975', scope: 'ORDER' },
+            ],
+          },
+          checkout_options: {
+            allow_tipping: false,
+            ask_for_shipping_address: false,
+            redirect_url: `${retourSur}${retourSur.includes('?') ? '&' : '?'}banquet=merci`,
+            accepted_payment_methods: {
+              apple_pay: true, google_pay: true, cash_app_pay: true, afterpay_clearpay: false,
+            },
+          },
+        }),
+      });
+
+      const data = await reponse.json();
+      const url = data && data.payment_link && data.payment_link.url;
+      if (!url) {
+        logger.error('[banquet] Square a refusé', data);
+        res.status(502).json({ erreur: 'square', detail: data });
+        return;
+      }
+      logger.info('[banquet] lien créé', { places, url });
+      res.json({ url, places, total: (PLACE_BANQUET * places * 1.14975) / 100 });
+    } catch (err) {
+      logger.error('[banquet] échec', err);
+      res.status(500).json({ erreur: String(err && err.message ? err.message : err) });
+    }
+  },
+);
