@@ -26,7 +26,6 @@ import AvatarUpload from '../components/compte/AvatarUpload';
 import SalonDesJeux from '../components/compte/SalonDesJeux';
 import MesBadges from '../components/compte/MesBadges';
 import MaFiche from '../components/compte/MaFiche';
-import DefisTafl from '../components/compte/DefisTafl';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
@@ -431,7 +430,6 @@ const ComptePage: React.FC = () => {
             {onglet === 'jeux' && (
               <div className="space-y-6 md:space-y-8">
                 <SalonDesJeux lang={lang} />
-                <DefisTafl lang={lang} />
               </div>
             )}
 

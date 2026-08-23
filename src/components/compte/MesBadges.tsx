@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ANNONCES } from '../../content/annonces';
-import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { COLLECTIONS, TOUS_LES_BADGES, avancement, sceauDe } from '../../firebase/badges';
-import { suivreMesAvis } from '../../firebase/avis';
 
 // ─── Le livre de collection ──────────────────────────────────────────
 // « Mes badges » (Alex, 2026-08-23). Chaque collection complétée vaut un
@@ -17,16 +14,7 @@ const PRIX_EN = { petit: 'Small prize', moyen: 'Middling prize', grand: 'Great p
 const MesBadges: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
   const { obtenus } = useBadges();
-  const { user } = useAuth();
   const etat = avancement(obtenus);
-
-  // Les avis décrochés du babillard se rangent ici aussi : c'est la
-  // collection de billets de la personne.
-  const [avisPris, setAvisPris] = useState<string[]>([]);
-  useEffect(() => {
-    if (!user?.uid) return;
-    return suivreMesAvis(user.uid, setAvisPris);
-  }, [user?.uid]);
 
   return (
     <section aria-labelledby="badges-title" className="glass-light rounded-lg-card p-7 md:p-8">
@@ -89,22 +77,6 @@ const MesBadges: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           );
         })}
       </div>
-
-      {avisPris.length > 0 && (
-        <div className="mt-8 pt-6" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
-          <h3 className="font-display title-medieval text-lg text-ivory mb-3">
-            {fr ? 'Mes avis du babillard' : 'My notices from the board'}
-          </h3>
-          <ul className="space-y-2">
-            {ANNONCES.filter((a) => avisPris.includes(a.id)).map((a) => (
-              <li key={a.id} className="font-sans text-[13px] text-ivory-soft/80 flex items-start gap-2">
-                <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}>·</span>
-                {fr ? a.titleFR : a.titleEN}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {etat.obtenus === TOUS_LES_BADGES.length && (
         <p className="mt-7 font-editorial text-sm leading-relaxed" style={{ color: 'var(--color-amber-glow)' }}>

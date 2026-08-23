@@ -68,6 +68,36 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         </span>
       </div>
 
+      {/* Ma collection d'abord : le chiffre du profil pointe ici, donc
+          la personne doit voir ce qu'elle a décroché avant le reste
+          (Alex, 2026-08-23). */}
+      {pris.length > 0 && (
+        <div className="mb-7 rounded-lg-card border border-brass/25 px-6 py-5"
+             style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+          <p className="witcher-stat-label mb-3">
+            {fr ? 'Mes avis décrochés' : 'Notices I have taken'}
+          </p>
+          <ul className="space-y-2">
+            {ANNONCES.filter((a) => pris.includes(a.id)).map((a) => (
+              <li key={a.id} className="font-editorial text-sm text-ivory-soft flex items-start gap-2.5">
+                <Check size={14} className="text-brass shrink-0 mt-0.5" />
+                <span>
+                  <span className="text-ivory">{fr ? a.titleFR : a.titleEN}</span>
+                  <span className="block text-[13px] text-ivory-soft/70">
+                    {(fr ? a.bodyFR : a.bodyEN).split('\n\n')[0].slice(0, 120)}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="font-sans text-[11px] text-ivory-soft/55 mt-4">
+            {fr
+              ? `${pris.length} sur ${ANNONCES.length}. Les quatre réunis ouvrent la collection du babillard.`
+              : `${pris.length} of ${ANNONCES.length}. All four open the notice board collection.`}
+          </p>
+        </div>
+      )}
+
       {restants.length > 0 ? (
         <NoticeBoard className="w-full" gridClassName="sm:grid-cols-2">
           {restants.map((a, i) => (

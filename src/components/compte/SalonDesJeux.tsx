@@ -44,6 +44,16 @@ const JEUX: Jeu[] = [
     image: '/tarot/T17.webp',
     pret: true,
   },
+  {
+    id: 'des',
+    path: '/jeux/des',
+    titreFR: 'Les dés du menteur',
+    titreEN: 'Liar’s Dice',
+    texteFR: 'Cinq dés sous un gobelet de cuir. Chacun annonce ce qu’il croit voir sur la table, et le premier qui doute fait lever tous les gobelets.',
+    texteEN: 'Five dice under a leather cup. Everyone bids what they believe is on the table, and the first to doubt sends every cup up.',
+    image: '/jeux/tuile-des.webp',
+    pret: true,
+  },
 ];
 
 const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
