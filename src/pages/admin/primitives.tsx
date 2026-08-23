@@ -80,14 +80,27 @@ export const ToggleSwitch: React.FC<{ checked: boolean; onChange: (v: boolean) =
   </label>
 );
 
+// Empty state: the one place in the admin that is genuinely prose
+// rather than chrome, so it gets the editorial face (Cormorant
+// Garamond) instead of the tracked sans used everywhere else.
 export const EmptyState: React.FC<{ icon?: React.ComponentType<{ size?: number; className?: string }>; children: React.ReactNode }> = ({ icon: Icon, children }) => (
-  <div className="text-center py-16" style={{ color: 'var(--admin-text-mute)' }}>
+  <div className="py-16 flex flex-col items-center text-center" style={{ color: 'var(--admin-text-mute)' }}>
     {Icon && (
-      <span className="block mx-auto mb-4" style={{ color: 'var(--admin-text-mute)' }}>
-        <Icon size={32} />
+      <span
+        aria-hidden
+        className="mb-5 flex items-center justify-center"
+        style={{
+          width: 58, height: 58, borderRadius: 15,
+          border: '1px solid var(--admin-line)',
+          background: 'rgba(196, 214, 230, 0.03)',
+          boxShadow: 'inset 0 1px 0 var(--admin-sheen)',
+          color: 'var(--admin-text-mute)',
+        }}
+      >
+        <Icon size={26} />
       </span>
     )}
-    <p className="text-sm font-sans">{children}</p>
+    <p className="admin-prose">{children}</p>
   </div>
 );
 
