@@ -11,7 +11,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2 } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2, Scroll } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -27,6 +27,10 @@ import {
   hasAnyMoves,
   initBoard,
   validMoves,
+  REGLES,
+  REGLE_DEFAUT,
+  regle,
+  setRegle,
   type Board,
   type Coord,
   type Side,
@@ -45,6 +49,8 @@ interface GameConfig {
   mode: Mode;
   humanSide: Side; // ignored when mode === 'two-player'
   difficulty: Difficulty;
+  /** Le règlement choisi : Copenhague, Fetlar, Tawlbwrdd, Tablut, Brandubh. */
+  regleId: string;
 }
 
 type VfxKind = 'king-escape' | 'king-fall' | null;
@@ -746,6 +752,10 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [humanSide, setHumanSide] = useState<Side>(initial.humanSide);
   const [difficulty, setDifficulty] = useState<Difficulty>(initial.difficulty);
+  // Le tafl n'a jamais eu un règlement unique : on choisit le sien
+  // avant de dresser la table (Alex, 2026-08-22).
+  const [regleId, setRegleId] = useState<string>(initial.regleId);
+  const regleChoisie = regle(regleId);
 
   const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
     <div className="mb-4 md:mb-6 text-center">
@@ -766,6 +776,25 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
           {s.startTitle}
         </h2>
         <div className="divider-brass w-24 mx-auto mt-4 mb-5 md:mt-5 md:mb-8" />
+
+        <Row label={lang === 'FR' ? 'Le règlement' : 'The rule set'}>
+          {REGLES.map((r) => (
+            <Pill
+              key={r.id}
+              active={regleId === r.id}
+              onClick={() => setRegleId(r.id)}
+              icon={<Scroll size={13} />}
+            >
+              {lang === 'FR' ? r.nomFR : r.nomEN}
+            </Pill>
+          ))}
+        </Row>
+        <p className="font-editorial text-[12px] md:text-sm text-ivory-soft/75 max-w-xl mx-auto -mt-2 mb-5 md:mb-7 leading-snug">
+          {lang === 'FR' ? regleChoisie.texteFR : regleChoisie.texteEN}
+          <span className="block mt-1 font-sans uppercase tracking-[0.24em] text-[10px] text-brass/70">
+            {regleChoisie.taille}×{regleChoisie.taille}
+          </span>
+        </p>
 
         <Row label={s.modeLabel}>
           <Pill
@@ -845,7 +874,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
 
         <button
           type="button"
-          onClick={() => onBegin({ mode, humanSide, difficulty })}
+          onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
           className="mt-4 inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
         >
           <Swords size={15} />
@@ -935,6 +964,7 @@ const HnefataflPage: React.FC = () => {
     mode: 'two-player',
     humanSide: 'defender',
     difficulty: 'medium',
+    regleId: REGLE_DEFAUT,
   });
   const [gameKey, setGameKey] = useState(0);
   // Avancement du chargement des modèles 3D. `pret` bascule quand tout
@@ -962,6 +992,9 @@ const HnefataflPage: React.FC = () => {
   }, [lang]);
 
   const handleBegin = (next: GameConfig) => {
+    // Le règlement s'applique AVANT que la scène ne se monte : il fixe
+    // la taille du damier et la mise en place.
+    setRegle(next.regleId);
     setConfig(next);
     setGameKey((k) => k + 1);
     setCharge(0);
