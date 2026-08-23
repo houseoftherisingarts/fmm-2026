@@ -1135,12 +1135,23 @@ const HnefataflPage: React.FC = () => {
   // Plein écran : bascule le conteneur de la scène, pas la page
   // entière (le bandeau d'état et la légende restent visibles). On
   // écoute l'événement natif plutôt que de ne se fier qu'au clic, parce
-  // que le navigateur peut aussi sortir du plein écran via Échap ou un
-  // raccourci système, et l'état affiché doit suivre.
+  // que le navigateur peut aussi sortir du plein écran via Échap, par un
+  // raccourci système ou par son propre bouton, et la page doit revenir
+  // en ordre dans les trois cas : l'état commande la hauteur du
+  // conteneur, et le ResizeObserver de la scène remesure le canevas.
   useEffect(() => {
     const surChangement = () => setPleinEcran(document.fullscreenElement === sceneRef.current);
+    const surTouche = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    };
     document.addEventListener('fullscreenchange', surChangement);
-    return () => document.removeEventListener('fullscreenchange', surChangement);
+    document.addEventListener('keydown', surTouche);
+    return () => {
+      document.removeEventListener('fullscreenchange', surChangement);
+      document.removeEventListener('keydown', surTouche);
+    };
   }, []);
 
   const basculerPleinEcran = () => {
