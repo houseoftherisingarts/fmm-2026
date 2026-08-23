@@ -385,6 +385,10 @@ const AdminShell: React.FC<Props> = ({
             <h1 className="admin-title text-3xl md:text-4xl truncate">
               {current?.label}
             </h1>
+            {/* Brass filet under the section title: lit at the start,
+                spent at the end, like the rule under the reference
+                logo's subtitle. */}
+            <hr className="admin-title-rule" />
           </div>
           <a
             href="/"
