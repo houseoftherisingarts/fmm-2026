@@ -399,7 +399,11 @@ const AdminShell: React.FC<Props> = ({
               />
               Section
             </p>
-            <h1 className="admin-title text-3xl md:text-4xl truncate">
+            {/* No truncation: clipping a section name to "BÉNÉVOL…" is
+                worse than letting it wrap. The longest label in NAV is
+                "Babillard et badges", which stays inside two lines even
+                on a 390px screen at this size. */}
+            <h1 className="admin-title text-2xl sm:text-3xl md:text-4xl">
               {current?.label}
             </h1>
             {/* Brass filet under the section title: lit at the start,
