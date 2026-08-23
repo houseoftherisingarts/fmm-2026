@@ -863,6 +863,24 @@ body.fmm-caravan-page .fmm-fire-backdrop,
 }
 .admin-nav-group:first-child { padding-top: 0.7rem; }
 
+/* La liste défile sous la carte utilisateur. Sans rien, la dernière
+   ligne se coupe net au milieu d'un mot et ça se lit comme un bogue :
+   un fondu au pied dit « ça continue ». Barre de défilement réduite à
+   un filet, pour ne pas trancher le rail en deux. */
+.admin-nav-scroll {
+  mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - 34px), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - 34px), transparent 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 214, 230, 0.14) transparent;
+}
+.admin-nav-scroll::-webkit-scrollbar { width: 5px; }
+.admin-nav-scroll::-webkit-scrollbar-track { background: transparent; }
+.admin-nav-scroll::-webkit-scrollbar-thumb {
+  background: rgba(196, 214, 230, 0.14);
+  border-radius: 999px;
+}
+.admin-nav-scroll:hover::-webkit-scrollbar-thumb { background: rgba(196, 214, 230, 0.26); }
+
 /* Entrée de menu. Géométrie constante : seule la peinture change à
    l'état actif, donc jamais de saut de mise en page. Le survol se
    déplace en transform, pas en padding. */
