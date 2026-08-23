@@ -207,7 +207,10 @@ const AdminShell: React.FC<Props> = ({
         </nav>
 
         {/* User card */}
-        <div className="px-5 py-4" style={{ borderTop: '1px solid var(--admin-line)' }}>
+        <div
+          className="px-5 py-4"
+          style={{ borderTop: '1px solid rgba(0, 0, 0, 0.55)', boxShadow: '0 -1px 0 var(--admin-sheen) inset' }}
+        >
           <div className="flex items-center gap-3 mb-3 min-w-0">
             {user.photoURL ? (
               <img
@@ -215,15 +218,16 @@ const AdminShell: React.FC<Props> = ({
                 src={user.photoURL}
                 alt=""
                 className="w-9 h-9 object-cover"
-                style={{ border: '1px solid var(--admin-line)' }}
+                style={{ borderRadius: 9, border: '1px solid var(--admin-line)' }}
               />
             ) : (
               <div
                 className="w-9 h-9 flex items-center justify-center font-sans text-xs font-semibold"
                 style={{
-                  background: 'rgba(127, 176, 232, 0.10)',
-                  border: '1px solid var(--admin-line)',
-                  color: 'var(--admin-accent)',
+                  borderRadius: 9,
+                  background: 'color-mix(in oklab, var(--admin-accent), transparent 88%)',
+                  border: '1px solid var(--admin-accent-line)',
+                  color: 'var(--admin-brass-hi)',
                 }}
               >
                 {initial}
