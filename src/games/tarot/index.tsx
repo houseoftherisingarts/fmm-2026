@@ -82,13 +82,13 @@ const TarotPage: React.FC = () => {
     eyebrow: fr ? 'Le jeu de la voyante' : 'The fortune teller’s game',
     titre: fr ? 'Tarot de Marseille' : 'Marseille Tarot',
     intro: fr
-      ? 'Le vieux jeu des routes, celui que les caravanes portaient d’une foire à l’autre. Posez votre question, choisissez un tirage, et retournez les lames une à une.'
+      ? 'Le vieux jeu des routes, celui que les caravanes portaient d’une foire à l’autre. Posez votre question, choisissez un tirage, et retournez les cartes une à une.'
       : 'The old road deck, the one the caravans carried from fair to fair. Ask your question, pick a spread, and turn the cards one at a time.',
     questionLabel: fr ? 'Votre question (facultatif)' : 'Your question (optional)',
     questionPlaceholder: fr ? 'Ce que vous voulez éclaircir…' : 'What you want light on…',
-    piocher: fr ? 'Retourner une lame' : 'Turn a card',
+    piocher: fr ? 'Retourner une carte' : 'Turn a card',
     recommencer: fr ? 'Nouveau tirage' : 'New spread',
-    restantes: (n: number) => fr ? `${n} lame${n > 1 ? 's' : ''} à retourner` : `${n} card${n > 1 ? 's' : ''} left`,
+    restantes: (n: number) => fr ? `${n} carte${n > 1 ? 's' : ''} à retourner` : `${n} card${n > 1 ? 's' : ''} left`,
     droit: fr ? 'À l’endroit' : 'Upright',
     renverse: fr ? 'Renversée' : 'Reversed',
     lecture: fr ? 'La lecture' : 'The reading',
@@ -270,7 +270,7 @@ const CaseTirage: React.FC<{
       onClick={onLire}
       disabled={!tiree}
       aria-label={titre}
-      className={`tarot-case relative w-full aspect-[2/3.4] rounded-card overflow-hidden border transition-shadow ${
+      className={`tarot-case relative w-full aspect-[813/1536] rounded-card overflow-hidden border transition-shadow ${
         active ? 'border-brass shadow-[0_0_34px_-8px_rgba(232,177,74,0.75)]' : 'border-brass/25'
       }`}
       style={{
@@ -289,19 +289,18 @@ const CaseTirage: React.FC<{
             initial={reduce ? false : { rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
             style={{ transform: tiree.renversee ? 'rotate(180deg)' : undefined }}
           />
         ) : (
-          <motion.span
+          <motion.img
             key="dos"
-            className="absolute inset-0"
+            src="/tarot/dos.webp"
+            alt=""
+            aria-hidden
+            loading="lazy"
             initial={false}
-            style={{
-              background:
-                'repeating-linear-gradient(45deg, rgba(216,155,58,0.14) 0 6px, rgba(10,4,6,0.9) 6px 12px)',
-              boxShadow: 'inset 0 0 0 1px rgba(216,155,58,0.25)',
-            }}
+            className="absolute inset-0 w-full h-full object-contain"
           />
         )}
       </AnimatePresence>

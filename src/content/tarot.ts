@@ -73,7 +73,7 @@ export const MAJEURES: Lame[] = [
   },
   {
     code: 'T6', nomFR: 'L’Amoureux', nomEN: 'The Lovers', majeure: true, rang: 6,
-    droitFR: 'Le carrefour du cœur. Un lien, un choix, et l’obligation d’en assumer un seul. La lame parle moins d’amour que de décision.',
+    droitFR: 'Le carrefour du cœur. Un lien, un choix, et l’obligation d’en assumer un seul. La carte parle moins d’amour que de décision.',
     droitEN: 'The crossroads of the heart. A bond, a choice, and the duty to hold to one. This card speaks less of love than of deciding.',
     renverseFR: 'L’indécision qui use tout le monde. Tiraillement, tentation, promesse faite à deux endroits.',
     renverseEN: 'Indecision wearing everyone down. Being pulled apart, temptation, a promise made in two places.',
@@ -322,16 +322,16 @@ export interface Tirage {
 export const TIRAGES: Tirage[] = [
   {
     id: 'une',
-    nomFR: 'Une lame', nomEN: 'One card',
+    nomFR: 'Une carte', nomEN: 'One card',
     texteFR: 'La question du jour, une seule réponse. Le tirage le plus honnête : il ne laisse pas de place aux arrangements.',
     texteEN: 'One question, one answer. The most honest draw: it leaves no room for bargaining.',
     positions: [
-      { titreFR: 'La lame du jour', titreEN: 'The card of the day', sensFR: 'Ce qui domine, maintenant.', sensEN: 'What rules, right now.' },
+      { titreFR: 'La carte du jour', titreEN: 'The card of the day', sensFR: 'Ce qui domine, maintenant.', sensEN: 'What rules, right now.' },
     ],
   },
   {
     id: 'trois',
-    nomFR: 'Trois lames', nomEN: 'Three cards',
+    nomFR: 'Trois cartes', nomEN: 'Three cards',
     texteFR: 'Le fil du temps : d’où ça vient, où ça en est, où ça va. Le tirage de tous les jours.',
     texteEN: 'The thread of time: where it comes from, where it stands, where it goes. The everyday draw.',
     positions: [
@@ -343,7 +343,7 @@ export const TIRAGES: Tirage[] = [
   {
     id: 'croix',
     nomFR: 'La croix celtique', nomEN: 'The Celtic cross',
-    texteFR: 'Dix lames, le tirage long. On y regarde la situation, ce qui la barre, ce qui la porte, et ce qu’en pensent les autres.',
+    texteFR: 'Dix cartes, le tirage long. On y regarde la situation, ce qui la barre, ce qui la porte, et ce qu’en pensent les autres.',
     texteEN: 'Ten cards, the long draw. It looks at the situation, what blocks it, what carries it, and what others make of it.',
     positions: [
       { titreFR: 'La situation', titreEN: 'The situation', sensFR: 'Le cœur de l’affaire, tel qu’il est.', sensEN: 'The heart of the matter, as it stands.' },
