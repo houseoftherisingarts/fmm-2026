@@ -17,6 +17,52 @@ export interface SceneHandle {
   dispose(): void;
 }
 
+// ── Le bois de la table ─────────────────────────────────────────────
+// Alex, 2026-08-23 : sous le damier il n'y avait qu'un rond noir. La
+// vraie table est là : un plateau de chêne peint au canevas, sans
+// fichier à télécharger.
+function boisDeTable(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#3a2412';
+  g.fillRect(0, 0, 512, 512);
+  g.strokeStyle = '#1b1008';
+  for (let i = 0; i < 170; i++) {
+    const x = Math.random() * 512;
+    g.globalAlpha = 0.05 + Math.random() * 0.15;
+    g.lineWidth = 0.7 + Math.random() * 2.6;
+    g.beginPath();
+    g.moveTo(x, 0);
+    const amp = 5 + Math.random() * 15;
+    for (let y = 0; y <= 512; y += 16) {
+      g.lineTo(x + Math.sin((y / 512) * Math.PI * (1 + Math.random())) * amp, y);
+    }
+    g.stroke();
+  }
+  for (let k = 0; k < 4; k++) {
+    const nx = 40 + Math.random() * 432;
+    const ny = 40 + Math.random() * 432;
+    for (let r = 24; r > 1; r -= 2.6) {
+      g.globalAlpha = 0.05 + (24 - r) * 0.011;
+      g.beginPath();
+      g.ellipse(nx, ny, r, r * 0.55, Math.random() * Math.PI, 0, Math.PI * 2);
+      g.stroke();
+    }
+  }
+  g.globalAlpha = 0.05;
+  for (let i = 0; i < 5000; i++) {
+    g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
+    g.fillRect(Math.random() * 512, Math.random() * 512, 1, 1);
+  }
+  g.globalAlpha = 1;
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(2, 2);
+  t.anisotropy = 8;
+  return t;
+}
+
 export function setupScene(el: HTMLElement): SceneHandle {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.shadowMap.enabled = true;
@@ -26,6 +72,18 @@ export function setupScene(el: HTMLElement): SceneHandle {
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x080502, 24, 42);
+
+  // La table sur laquelle le damier est posé : chêne, large, qui reçoit
+  // les ombres des pièces.
+  const table = new THREE.Mesh(
+    new THREE.CylinderGeometry(15.5, 16.5, 0.7, 56),
+    new THREE.MeshPhongMaterial({
+      color: 0xffffff, map: boisDeTable(), shininess: 12, specular: 0x3a2712,
+    }),
+  );
+  table.position.y = -1.15;
+  table.receiveShadow = true;
+  scene.add(table);
 
   const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, BookOpen, Clock, Users, Wine } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Clock, Lock, Users, Wine } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -29,6 +29,10 @@ const Glyphe: React.FC<{ name: keyof typeof GLYPHES; size?: number }> = ({ name,
 // l'API le 2026-08-22. Ce sont des URL publiques, pas des secrets.
 const SQUARE_BANQUET  = 'https://square.link/u/g0UOU5L3';  // 65 $ + taxes = 74,73 $
 const SQUARE_GRIMOIRE = 'https://square.link/u/OLtFu9jY';  //  9 $ + taxes = 10,35 $
+
+// 🔒 Le livre de recettes ne se vend pas encore : il se termine. Mettre
+// à true rouvre la vente, rien d'autre à toucher (Alex, 2026-08-23).
+const GRIMOIRE_EN_VENTE = false;
 
 // ─── Village Nourriture · édition 2026 ───────────────────────────────
 // Trois choses sur cette page (Alex, 2026-08-22) :
@@ -377,16 +381,26 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
                     {t.grimoireBody}
                   </p>
-                  {/* Lien Square du grimoire : 9 $ + TPS + TVQ = 10,35 $. */}
+                  {/* 🔒 La vente est FERMÉE tant que le livre n'est pas
+                      fini (Alex, 2026-08-23). Le lien Square existe et
+                      fonctionne : il suffira de repasser ce drapeau à
+                      true pour rouvrir la boutique. */}
                   <div className="flex flex-wrap items-center gap-5">
-                    <a
-                      href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL || SQUARE_GRIMOIRE}
-                      target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
-                    >
-                      {t.grimoireCta}
-                      <ArrowUpRight size={14} />
-                    </a>
+                    {GRIMOIRE_EN_VENTE ? (
+                      <a
+                        href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL || SQUARE_GRIMOIRE}
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
+                      >
+                        {t.grimoireCta}
+                        <ArrowUpRight size={14} />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 px-8 py-4 rounded-card border border-brass/30 bg-black/30 font-sans uppercase tracking-wider text-xs font-semibold text-ivory-soft/70">
+                        <Lock size={14} className="text-brass" />
+                        {t.grimoireBientot}
+                      </span>
+                    )}
                     <a
                       href="/grimoire/grimoire-fmm-2026-apercu.pdf"
                       target="_blank" rel="noopener noreferrer"
@@ -464,6 +478,7 @@ const FR = {
   grimoireEyebrow: 'À rapporter chez soi',
   grimoireTitle: 'Le Grimoire du festival',
   grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et une trentaine d’autres, écrites de la main du chef Marc-Alexis Pepin. Un livre à feuilleter l’hiver venu, quand l’envie de refaire le feu vous prend.',
+  grimoireBientot: 'Bientôt en vente',
   grimoireCta: 'Acheter le grimoire',
   grimoirePreview: 'Feuilleter les deux premières pages',
   grimoireNote: '9 $ plus taxes · Livre numérique en format PDF, envoyé par courriel après l’achat.',
@@ -518,6 +533,7 @@ const EN: typeof FR = {
   grimoireEyebrow: 'To take home',
   grimoireTitle: 'The Festival Grimoire',
   grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and some thirty more, written in the hand of chef Marc-Alexis Pepin. A book to leaf through once winter comes and the urge to light the fire returns.',
+  grimoireBientot: 'Coming soon',
   grimoireCta: 'Buy the grimoire',
   grimoirePreview: 'Read the first two pages',
   grimoireNote: '$9 plus tax · Digital book in PDF, emailed after purchase.',

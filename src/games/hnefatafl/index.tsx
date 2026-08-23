@@ -1156,8 +1156,10 @@ const HnefataflPage: React.FC = () => {
       />
 
       {/* ── La table de jeu ─────────────────────────────────────── */}
+      {/* La table prend toute la largeur : on ne joue pas dans une
+          fenêtre grande comme un timbre (Alex, 2026-08-23). */}
       <section className="relative pb-14 md:pb-20">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+        <div className="max-w-screen-2xl mx-auto px-2 md:px-6">
           {/* Bandeau de partie en ligne : contre qui, quel camp, à qui
               de jouer, et la porte de sortie. */}
           {partie && monCamp && (
@@ -1243,7 +1245,7 @@ const HnefataflPage: React.FC = () => {
                   atteignable. */}
               <div
                 ref={sceneRef}
-                className="relative w-full h-[clamp(380px,68vh,560px)] md:h-[clamp(480px,72vh,780px)] bg-[#0a0406]"
+                className="relative w-full h-[clamp(460px,78vh,900px)] md:h-[clamp(560px,82vh,1000px)] bg-[#0a0406]"
               >
                 {gameStarted && (
                   <GameCanvas

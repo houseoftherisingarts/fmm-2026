@@ -13,8 +13,12 @@
 //     (les règles de Copenhague, la référence des tournois)
 //   · tafl.cyningstan.com, pages Fetlar et variantes
 //
+// Tablut (9×9) est écarté tant que son damier n'est pas taillé en 3D
+// (Alex, 2026-08-23) : mieux vaut trois règlements qui tiennent qu'un
+// quatrième qui s'ouvre sur un plateau faux.
+//
 // Ce qui change d'une variante à l'autre :
-//   · la taille du damier (11×11, 9×9, 7×7)
+//   · la taille du damier (11×11 ou 7×7)
 //   · le roi armé (il aide à capturer) ou désarmé
 //   · le roi pris à quatre (roi fort) ou à deux (roi faible)
 //   · la sortie par les coins ou par n'importe quel bord
@@ -85,11 +89,6 @@ const setup11 = (b: Board, n: number) => {
   assaillantsAuxBords(b, n, 2, true);
 };
 
-const setup9 = (b: Board, n: number) => {
-  croix(b, n, [1, 2], []);
-  assaillantsAuxBords(b, n, 1, true);
-};
-
 const setup7 = (b: Board, n: number) => {
   croix(b, n, [1], []);
   const m = (n - 1) / 2;
@@ -121,14 +120,6 @@ export const REGLES: Regle[] = [
     texteEN: 'The Welsh board. Same grid, but the king is unarmed and falls to two spears: quick, sharp games.',
     taille: 11, roiArme: false, roiPrisA: 2, roiPrisAuBord: true, sortieCoins: true,
     troneHostileDefenseurs: true, murDeBoucliers: false, encerclement: false, setup: setup11,
-  },
-  {
-    id: 'tablut',
-    nomFR: 'Tablut', nomEN: 'Tablut',
-    texteFR: 'Le jeu sâme relevé par Linné en 1732. Damier de neuf, roi faible, et le roi s’échappe par n’importe quelle case du bord.',
-    texteEN: 'The Sámi game recorded by Linnaeus in 1732. Nine-square board, weak king, and the king escapes by any edge square.',
-    taille: 9, roiArme: true, roiPrisA: 2, roiPrisAuBord: true, sortieCoins: false,
-    troneHostileDefenseurs: false, murDeBoucliers: false, encerclement: false, setup: setup9,
   },
   {
     id: 'brandubh',

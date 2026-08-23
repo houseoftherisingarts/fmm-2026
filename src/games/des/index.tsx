@@ -34,7 +34,6 @@ const DesPage: React.FC = () => {
   const [partie, setPartie] = useState<Partie | null>(null);
   const [quantite, setQuantite] = useState(2);
   const [face, setFace] = useState<Face>(3);
-  const [lance, setLance] = useState(false);
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<TableDes | null>(null);
@@ -61,7 +60,6 @@ const DesPage: React.FC = () => {
     setPartie(p);
     setQuantite(Math.max(1, Math.round(desEnJeu(p) / 3)));
     setFace(3);
-    setLance(true);
     tableRef.current?.disposer(nbJoueurs);
     tableRef.current?.devoiler([], false);
     tableRef.current?.lancer(p.joueurs[0].des);

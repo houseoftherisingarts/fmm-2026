@@ -17,21 +17,6 @@ ok(compte(b, 1) === 24, 'Copenhague 24 assaillants, vu ' + compte(b, 1));
 ok(compte(b, 2) === 12, 'Copenhague 12 défenseurs, vu ' + compte(b, 2));
 ok(compte(b, 3) === 1, 'un roi');
 
-L.setRegle('tablut');
-b = L.initBoard();
-ok(L.N === 9, 'Tablut 9x9');
-ok(compte(b, 1) === 16, 'Tablut 16 assaillants, vu ' + compte(b, 1));
-ok(compte(b, 2) === 8, 'Tablut 8 défenseurs, vu ' + compte(b, 2));
-// Roi faible : deux lances en ligne suffisent
-b = L.initBoard();
-b = b.map((r) => r.map(() => 0));
-b[4][4] = 3; b[4][3] = 1; b[4][5] = 1;
-ok(L.checkWin(b) === 'attacker', 'Tablut : roi faible pris à deux');
-// Sortie par le bord
-b = b.map((r) => r.map(() => 0));
-b[0][4] = 3;
-ok(L.checkWin(b) === 'defender', 'Tablut : sortie par le bord');
-
 L.setRegle('copenhague');
 b = L.initBoard().map((r) => r.map(() => 0));
 b[0][5] = 3; // roi au bord, pas dans un coin

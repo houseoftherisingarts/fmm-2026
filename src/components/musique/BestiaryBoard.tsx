@@ -148,19 +148,33 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
           un cadre portrait leur coupait la moitié du groupe (Alex,
           2026-08-22). Aucun filtre sur la photo, jamais. */}
       <div ref={stage} className="relative lg:px-8 lg:order-2 lg:sticky lg:top-24 lg:self-start">
-        <div className="bestiary-portrait mx-auto w-full max-w-[34rem] lg:max-w-none" style={{ aspectRatio: ratio }}>
+        <div className="bestiary-portrait mx-auto w-full max-w-[34rem] lg:max-w-none" style={{ aspectRatio: b.image ? ratio : '16 / 10' }}>
           <AnimatePresence mode="wait">
-            <motion.img
-              key={b.name}
-              src={b.image}
-              alt={b.imageAlt ?? b.name}
-              initial={reduce ? false : { opacity: 0, scale: 1.03 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.995 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 w-full h-full object-cover"
-              onLoad={(e) => mesurer(e.currentTarget)}
-            />
+            {b.image ? (
+              <motion.img
+                key={b.name}
+                src={b.image}
+                alt={b.imageAlt ?? b.name}
+                initial={reduce ? false : { opacity: 0, scale: 1.03 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.995 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0 w-full h-full object-cover"
+                onLoad={(e) => mesurer(e.currentTarget)}
+              />
+            ) : (
+              // Portrait pas encore fourni : le panneau orné reste seul,
+              // au cadre par défaut. Même repli que la vignette du registre.
+              <motion.span
+                key={b.name}
+                aria-hidden
+                className="bestiary-row-thumb-empty absolute inset-0"
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              />
+            )}
           </AnimatePresence>
           <span aria-hidden className="bestiary-portrait-veil" />
           <span aria-hidden className="bestiary-portrait-corner tl" />
