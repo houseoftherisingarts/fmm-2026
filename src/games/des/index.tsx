@@ -96,6 +96,17 @@ const DesPage: React.FC = () => {
     tableRef.current?.lancer(p.joueurs[0].des);
   }, [nbJoueurs, fr]);
 
+  // Aperçu de développement seulement : `?apercu=1&auto=1` dresse la
+  // table sans clic, pour vérifier le rendu des dés à l'écran.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('apercu') === '1' && q.get('auto') === '1' && !partie) {
+      const t = window.setTimeout(() => commencer(), 400);
+      return () => window.clearTimeout(t);
+    }
+  }, [commencer, partie]);
+
   // Les places se reprojettent tant que la table vit : la fenêtre
   // change, les bulles suivent.
   useEffect(() => {

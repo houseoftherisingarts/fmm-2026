@@ -272,12 +272,21 @@ export const ArchivesPhotosSection: React.FC = () => {
     fetchArchivePhotos()
       .then((rows) => {
         if (!rows.length) return;
-        setGroups(PHOTOGRAPHER_ORDER.map((k) => ({
-          photographer: PHOTOGRAPHER_META[k].label,
-          photos: rows
+        // Firestore COMPLÈTE le manifeste, il ne l'écrase pas. Une photo
+        // ajoutée dans le code (les photogrammes du vidéoclip, par
+        // exemple) resterait invisible autrement, puisque la collection
+        // ne la connaît pas (Alex, 2026-08-23).
+        const statiques = staticGroups();
+        setGroups(PHOTOGRAPHER_ORDER.map((k) => {
+          const label = PHOTOGRAPHER_META[k].label;
+          const deFirestore = rows
             .filter((p) => p.photographer === k && p.active)
-            .map((p) => ({ thumb: photoThumb(p), full: photoFull(p) })),
-        })));
+            .map((p) => ({ thumb: photoThumb(p), full: photoFull(p) }));
+          const duCode = statiques.find((g) => g.photographer === label)?.photos ?? [];
+          const vus = new Set(deFirestore.map((x) => x.full));
+          const manquantes = duCode.filter((x) => !vus.has(x.full));
+          return { photographer: label, photos: [...manquantes, ...deFirestore] };
+        }));
       })
       .catch((e) => console.warn('[ArchivesPhotos] Firestore indisponible, manifeste statique conservé:', e));
   }, []);

@@ -497,7 +497,7 @@ export function creerTable(): TableDes {
   const gestes = new Map<number, Geste>();
   const POSE_Y = 0.02;         // le gobelet debout, posé sur la planche
   const RENVERSE_Y = 0.02;     // retourné, son bourrelet sur le bois
-  const LEVE_Y = 1.75;         // soulevé au-dessus des dés
+
   let intensiteVoulue = 0;
 
   const boucle = () => {
@@ -554,9 +554,16 @@ export function creerTable(): TableDes {
           son.tomber();
         }
       } else if (g.phase === 'leve') {
+        // Le gobelet monte et se pose sur le côté : il ne doit plus
+        // cacher les dés qu'il vient de découvrir.
         const e = 1 - Math.pow(1 - doux, 2);
-        gob.position.set(g.base.x, RENVERSE_Y + HAUT + e * LEVE_Y, g.base.z);
-        gob.rotation.set(Math.PI * (1 - e * 0.15), 0, 0);
+        const cote = g.base.x >= 0 ? 1 : -1;
+        gob.position.set(
+          g.base.x + e * 1.5 * cote,
+          RENVERSE_Y + HAUT * (1 - e * 0.55) + e * 0.15,
+          g.base.z + e * 0.55,
+        );
+        gob.rotation.set(Math.PI * (1 - e), 0, e * 0.25 * -cote);
       }
     });
 
@@ -706,11 +713,14 @@ export function creerTable(): TableDes {
       window.setTimeout(() => {
         mesDes.forEach((d, i) => {
           if (i >= faces.length) return;
-          const a = (i / Math.max(1, faces.length)) * Math.PI * 2;
+          // Étalés en éventail devant la place, jamais empilés : cinq
+          // dés doivent se lire d'un coup d'œil (Alex, 2026-08-23).
+          const a = (i / Math.max(1, faces.length)) * Math.PI * 2 + 0.4;
+          const r = 0.92 + Math.random() * 0.12;
           d.position.set(
-            base.x + Math.cos(a) * 0.34 + (Math.random() - 0.5) * 0.1,
+            base.x * 0.78 + Math.cos(a) * r,
             DE / 2,
-            base.z + Math.sin(a) * 0.34 + (Math.random() - 0.5) * 0.1,
+            base.z * 0.78 + Math.sin(a) * r * 0.7 - 0.35,
           );
           const [rx, ry, rz] = VERS_LE_CIEL[faces[i]];
           d.rotation.set(rx, ry + Math.random() * 0.5, rz);
