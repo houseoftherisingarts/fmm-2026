@@ -38,6 +38,8 @@ const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; t
   waitlist: { fr: 'Liste d’attente', en: 'Wait list', tone: 'text-amber-300'   },
 };
 
+const USER_APERCU = { uid: 'apercu', email: 'apercu@fmm.test', displayName: 'Dame Aperçu' };
+
 const ComptePage: React.FC = () => {
   useCaravanPage();
   const { user: compte, loading, isAdmin, openSignIn, signOut, signInWithGoogle } = useAuth();
