@@ -164,10 +164,19 @@ export function setupScene(el: HTMLElement): SceneHandle {
     updateCam();
   };
 
+  // Le canevas se remesure sur son CONTENEUR, plus sur la fenêtre. Entrer
+  // ou sortir du plein écran ne redimensionne pas toujours la fenêtre, et
+  // quand elle bouge, l'événement `resize` arrive parfois avant que la
+  // mise en page du plein écran soit posée : le canevas gardait alors son
+  // ancienne taille et une partie du plateau restait hors cadre (constat
+  // d'Alex, 2026-08-23). ResizeObserver suit la boîte réelle, déclenche
+  // dès l'attache, et couvre du même coup le redimensionnement de la
+  // fenêtre puisque la scène est dimensionnée en pourcentage.
   const attachResize = (): (() => void) => {
+    const observateur = new ResizeObserver(onResize);
+    observateur.observe(el);
     onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    return () => observateur.disconnect();
   };
 
   scene.add(new THREE.AmbientLight(0x4a2a12, 1.6));
