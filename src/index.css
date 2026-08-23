@@ -788,6 +788,19 @@ body.fmm-caravan-page .fmm-fire-backdrop,
   --admin-ease:       cubic-bezier(0.22, 1, 0.36, 1);   /* ease-out-quart */
 }
 
+/* Les quatre valeurs dérivées sont RE-déclarées sur la coquille, et
+   c'est indispensable : une propriété personnalisée se résout là où
+   elle est DÉCLARÉE, pas là où elle est employée. Laissées seules sur
+   :root, elles se figeraient sur l'or par défaut, et le rôle CA se
+   retrouverait avec une arête dorée sur une plaque bleue. AdminShell
+   pose --admin-accent en style en ligne sur ce même élément, donc les
+   dérivées se recalculent ici avec l'accent du rôle. */
+.admin-skin-root {
+  --admin-lit:         color-mix(in oklab, var(--admin-accent), #FFFBEB 55%);
+  --admin-brass-hi:    color-mix(in oklab, var(--admin-accent), #FFFBEB 32%);
+  --admin-brass-lo:    color-mix(in oklab, var(--admin-accent), #06090C 38%);
+}
+
 /* ── Scène ────────────────────────────────────────────────────────
    Quatre couches, de haut en bas de la pile : grain de toile, vignette
    qui referme les coins, halo froid au sommet, chute vers le noir.
