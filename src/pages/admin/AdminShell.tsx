@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Swords,
   LayoutDashboard, HandHeart, ShoppingBag, Users, MessageSquare, Mail,
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
@@ -20,6 +21,7 @@ export type AdminSectionId =
   | 'benevoles'
   | 'equipes'
   | 'marchands'
+  | 'activites'
   | 'musiciens'
   | 'pupitre'
   | 'matrice'
@@ -55,6 +57,7 @@ const NAV: NavItem[] = [
   { id: 'benevoles',  label: 'Bénévoles',       icon: HandHeart },
   { id: 'equipes',    label: 'Équipes',         icon: UsersRound },
   { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag },
+  { id: 'activites',  label: 'Activités',       icon: Swords },
   { id: 'musiciens',  label: 'Musique',         icon: Music },
   { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather },
   { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3 },

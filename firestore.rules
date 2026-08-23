@@ -190,6 +190,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ── Fiches d'activités (page Programmation) ──────────────────
+    // Lecture publique : la page les affiche. Écriture : l'équipe.
+    match /activitesFiches/{ficheId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     // ── La table de tafl : qui accepte d'être défié ──────────────
     // Ne contient qu'un nom d'affichage, et chacun s'y met lui-même.
     match /taflJoueurs/{uid} {

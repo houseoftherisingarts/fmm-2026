@@ -281,17 +281,21 @@ const CaseTirage: React.FC<{
     >
       <AnimatePresence mode="wait">
         {tiree ? (
-          <motion.img
+          <motion.div
             key={tiree.lame.code}
-            src={`/tarot/${tiree.lame.code}.webp`}
-            alt={fr ? tiree.lame.nomFR : tiree.lame.nomEN}
-            loading="lazy"
             initial={reduce ? false : { rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 w-full h-full object-contain"
-            style={{ transform: tiree.renversee ? 'rotate(180deg)' : undefined }}
-          />
+            className="absolute inset-0"
+          >
+            <img
+              src={`/tarot/${tiree.lame.code}.webp`}
+              alt={fr ? tiree.lame.nomFR : tiree.lame.nomEN}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-contain"
+              style={{ transform: tiree.renversee ? 'rotate(180deg)' : undefined }}
+            />
+          </motion.div>
         ) : (
           <motion.img
             key="dos"

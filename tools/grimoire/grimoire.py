@@ -137,45 +137,38 @@ body { font-family:'Cormorant Garamond',Georgia,serif; color:#3a2a18; }
 h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weight:400; }
 .gold { color:#a97c2a; }
 
-/* ── Couverture et quatrième : le livre lui-même ───────────────
-   Alex, 2026-08-23 : la couverture EST le livre. Cuir rouge, ferrures
-   et cadre d'argent, et le titre GRAVÉ dans le cartouche ovale, comme
-   sur un plat de reliure. Rien n'est posé sur un aplat. */
+/* ── Couverture et quatrième : le plat de reliure ──────────────
+   Alex, 2026-08-23 : la page EST la couverture, pas la photo d'une
+   couverture. Le cuir couvre la page entière, bord à bord, et TOUT le
+   texte est gravé : dans l'argent du cartouche, ou frappé à froid dans
+   le cuir. Aucun texte posé par-dessus, aucun aplat sombre derrière
+   une ligne : ça n'existe pas sur un vrai livre. */
 .cover, .colo { background:#140a0a; }
 .cover::before, .colo::before { background:none; }
 .cover .cuir, .colo .cuir { position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; z-index:0; }
+  object-fit:cover; object-position:center; z-index:0; }
 .cover .pad, .colo .pad { padding:0; }
 
-/* Le cartouche : mesuré sur la photo du plat (ovale d'argent). */
-.cartouche { position:absolute; left:50%; top:2.98in; transform:translateX(-50%);
-  width:1.52in; height:2.02in; z-index:3;
+/* Le cartouche d'argent, mesuré sur le plat : centre à 3,20in / 3,78in. */
+.cartouche { position:absolute; left:3.21in; top:3.06in; transform:translateX(-50%);
+  width:1.83in; height:2.30in; z-index:3;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:.1in .06in; }
-.cartouche img { width:.5in; opacity:.9; margin-bottom:.05in;
-  filter: grayscale(1) brightness(.35) contrast(1.4); }
-.cartouche .grave { font-family:'Cinzel',serif; font-weight:600;
-  font-size:9pt; line-height:1.3; letter-spacing:.05em; text-transform:uppercase;
-  color:#4a4a50; text-shadow:0 1px 0 rgba(255,255,255,.55); }
-.cartouche .grave .fin { display:block; font-size:5.6pt; letter-spacing:.24em;
-  margin-top:.06in; color:#5c5c63; }
-
-/* Sous le cartouche, sur le cuir : la ligne d'argent. */
-.cover .sous-cartouche { position:absolute; left:0; right:0; top:5.34in; z-index:3;
-  text-align:center; padding:0 .95in; }
-.cover .sous-cartouche p { font-family:'Cormorant Garamond',serif; font-size:10.5pt;
-  line-height:1.45; color:rgba(242,236,226,.96);
-  text-shadow:0 1px 3px rgba(0,0,0,.85), 0 0 12px rgba(0,0,0,.6); }
-.cover .credits, .colo .credits { position:absolute; left:0; right:0; bottom:.78in; z-index:3;
   text-align:center; }
-.cover .credits .name { font-family:'Cinzel',serif; font-size:8pt; letter-spacing:.24em;
-  text-transform:uppercase; color:rgba(240,236,228,.9); text-shadow:0 1px 3px rgba(0,0,0,.9); }
-.cover .credits .ed, .colo .credits .ed { font-family:'Cinzel',serif; font-size:6.2pt;
-  letter-spacing:.28em; text-transform:uppercase; color:rgba(238,232,220,.62);
-  text-shadow:0 1px 3px rgba(0,0,0,.9); margin-top:.07in; }
+.cartouche img { width:.46in; margin-bottom:.06in;
+  filter: grayscale(1) brightness(.42) contrast(1.5) opacity(.85)
+          drop-shadow(0 1px 0 rgba(255,255,255,.55)); }
+/* Lettres gravées dans le métal : creux sombre, arête claire dessous. */
+.grave { font-family:'Cinzel',serif; font-weight:600; text-transform:uppercase;
+  color:#4b4b52; text-shadow:0 1px 0 rgba(255,255,255,.6), 0 -1px 0 rgba(0,0,0,.22); }
+.cartouche .titre { font-size:8.6pt; line-height:1.34; letter-spacing:.05em; }
+.cartouche .annee { font-size:5.8pt; letter-spacing:.3em; margin-top:.09in; color:#5b5b62; }
+
+/* Frappé à froid dans le cuir : creux sombre, lumière sur l'arête. */
+.cuir-frappe { filter: grayscale(1) invert(1) brightness(1.25) contrast(.95) opacity(.72)
+               drop-shadow(0 2px 2px rgba(0,0,0,.9)); }
+.colo .trois-maisons { position:absolute; left:50%; top:5.62in; transform:translateX(-50%);
+  width:3.9in; z-index:3; opacity:.7; }
 .rule-gold { width:2.1in; height:1px; background:linear-gradient(90deg,transparent,#a97c2a,transparent); }
-.rule-argent { width:1.9in; height:1px;
-  background:linear-gradient(90deg,transparent,rgba(226,226,232,.8),transparent); }
 .diamond { width:9px; height:9px; transform:rotate(45deg); border:1px solid #a97c2a; }
 .orn { display:flex; align-items:center; gap:.14in; justify-content:center; }
 
@@ -278,21 +271,13 @@ def build():
     recs = {r['tab']: r for r in json.load(open(HERE / 'recettes.json'))}
     pages = []
 
-    # 1 · Couverture : le plat de reliure, titre gravé dans l'argent
+    # 1 · Couverture : le plat de reliure, tout est gravé
     pages.append(page(f"""
-      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-face.jpg')}" alt="">
+      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-plein.jpg')}" alt="">
       <div class="cartouche">
         <img src="data:image/png;base64,{b64('fmm-logo-silver.png')}" alt="">
-        <p class="grave">Le Grimoire<br>du Festival
-          <span class="fin">MMXXVI</span>
-        </p>
-      </div>
-      <div class="sous-cartouche">
-        <p>Les recettes de la cuisine du festival,<br>telles qu\u2019elles sortent des marmites</p>
-      </div>
-      <div class="credits">
-        <p class="name">Chef Marc-Alexis Pepin</p>
-        <p class="ed">Festival Médiéval de Montpellier \u00b7 Caravanes et Saltimbanques</p>
+        <p class="grave titre">Le Livre<br>de Recettes<br>du Festival</p>
+        <p class="grave annee">MMXXVI</p>
       </div>""", cls='cover'))
 
     # 2 · Le mot de la cuisine (la seule page d'encre du corps : la rupture)
@@ -391,17 +376,14 @@ def build():
             <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
           </div>""", cls='rec' + wide, folio=folio, runhead=titre))
 
-    # Colophon : la quatrième, gravée elle aussi
+    # Colophon : la quatrième. Les trois maisons frappées dans le cuir.
     pages.append(page(f"""
-      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-face.jpg')}" alt="">
+      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-plein.jpg')}" alt="">
       <div class="cartouche">
-        <p class="grave">Trois maisons<br>pour un livre
-          <span class="fin">Marc-Alexis Pepin<br>Le Salon des Inconnus<br>Festival Médiéval</span>
-        </p>
+        <p class="grave titre">Trois<br>maisons</p>
+        <p class="grave annee">MMXXVI</p>
       </div>
-      <div class="credits">
-        <p class="ed">Tous droits réservés \u00b7 Édition Caravanes et Saltimbanques \u00b7 2026</p>
-      </div>""", cls='colo'))
+      <img class="trois-maisons" src="data:image/png;base64,{b64('frappe-trois.png')}" alt="">""", cls='colo'))
 
     doc = f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <title>Le Grimoire du Festival</title>
