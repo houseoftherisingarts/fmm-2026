@@ -61,6 +61,7 @@ const FaubourgPage = lazy(() => import('./pages/FaubourgPage'));
 const MusicianApplicationPage = lazy(() => import('./pages/MusicianApplicationPage'));
 const RessourcesPage          = lazy(() => import('./pages/RessourcesPage'));
 const HnefataflGame           = lazy(() => import('./games/hnefatafl'));
+const TarotGame               = lazy(() => import('./games/tarot'));
 const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
@@ -383,6 +384,8 @@ const App: React.FC = () => (
                 <Route path="/ressources"           element={<RessourcesPage />} />
                 <Route path="/en/resources"         element={<RessourcesPage />} />
                 <Route path="/jeunesse/hnefatafl"   element={<HnefataflGame />} />
+                <Route path="/jeux/tarot"           element={<TarotGame />} />
+                <Route path="/en/games/tarot"       element={<TarotGame />} />
                 <Route path="/en/youth/hnefatafl"   element={<HnefataflGame />} />
                 <Route path="/politique-de-confidentialite" element={<PrivacyPage />} />
                 <Route path="/en/privacy" element={<PrivacyPage />} />

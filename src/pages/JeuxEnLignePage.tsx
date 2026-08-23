@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Swords } from 'lucide-react';
+import { ArrowUpRight, Swords, Sparkles } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -52,12 +52,21 @@ const JeuxEnLignePage: React.FC = () => {
             </StaggerItem>
             <StaggerItem
               as="article"
-              className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col items-start opacity-70"
+              className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col"
             >
-              <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-3">{t.jeuxComingSoon}</p>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.jeuxMoreTitle}</h3>
+              <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mb-5">
+                <Sparkles size={24} className="text-brass" />
+              </div>
+              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.tarotTitle}</h3>
               <div className="divider-brass w-16 mb-4" />
-              <p className="font-editorial text-base text-ivory-soft flex-1">{t.jeuxMoreBody}</p>
+              <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.tarotBody}</p>
+              <Link
+                to={lang === 'EN' ? '/en/games/tarot' : '/jeux/tarot'}
+                className="self-start inline-flex items-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+              >
+                {t.tarotCta}
+                <ArrowUpRight size={14} />
+              </Link>
             </StaggerItem>
           </Stagger>
         </div>
@@ -75,6 +84,9 @@ const FR = {
   jeuxComingSoon: 'Bientôt',
   jeuxMoreTitle: 'D’autres jeux à venir',
   jeuxMoreBody: 'Nous préparons d’autres jeux d’époque pour l’édition 2026. Revenez nous voir : la table se remplit.',
+  tarotTitle: 'Tarot de Marseille',
+  tarotBody: 'Le jeu que les caravanes portaient de foire en foire. Posez une question, choisissez une lame, trois lames ou la croix celtique, et lisez ce que disent les vieilles images.',
+  tarotCta: 'Tirer les lames',
 };
 
 const EN = {
@@ -86,6 +98,9 @@ const EN = {
   jeuxComingSoon: 'Coming soon',
   jeuxMoreTitle: 'More games on the way',
   jeuxMoreBody: 'We’re preparing more period games for the 2026 edition. Check back: the table is filling up.',
+  tarotTitle: 'Marseille Tarot',
+  tarotBody: 'The deck the caravans carried from fair to fair. Ask a question, pick one card, three cards or the Celtic cross, and read what the old images say.',
+  tarotCta: 'Draw the cards',
 };
 
 export default JeuxEnLignePage;

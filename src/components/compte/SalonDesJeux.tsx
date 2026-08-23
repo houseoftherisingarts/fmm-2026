@@ -34,6 +34,16 @@ const JEUX: Jeu[] = [
     image: '/photos/hnefatafl-card.webp',
     pret: true,
   },
+  {
+    id: 'tarot',
+    path: '/jeux/tarot',
+    titreFR: 'Tarot de Marseille',
+    titreEN: 'Marseille Tarot',
+    texteFR: 'Le vieux jeu des routes. Une lame, trois lames ou la croix celtique, avec la lecture de chaque carte, à l’endroit comme à l’envers.',
+    texteEN: 'The old road deck. One card, three cards or the Celtic cross, with the reading of every card, upright or reversed.',
+    image: '/tarot/T17.webp',
+    pret: true,
+  },
 ];
 
 const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {

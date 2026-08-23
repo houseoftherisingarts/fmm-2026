@@ -288,9 +288,12 @@ function mineures(): Lame[] {
   (Object.keys(COULEURS) as Couleur[]).forEach((coul) => {
     RANGS.forEach((r, i) => {
       const l = LECTURES[coul][i];
+      // « Huit de Épées » n'existe pas : la couleur qui commence par
+      // une voyelle prend l'élision.
+      const liaison = COULEURS[coul].fr === 'Épées' ? 'd’' : 'de ';
       out.push({
         code: `${r.code}${COULEURS[coul].lettre}`,
-        nomFR: `${r.fr} de ${COULEURS[coul].fr}`,
+        nomFR: `${r.fr} ${liaison}${COULEURS[coul].fr}`,
         nomEN: `${r.en} of ${COULEURS[coul].en}`,
         majeure: false,
         couleur: coul,
