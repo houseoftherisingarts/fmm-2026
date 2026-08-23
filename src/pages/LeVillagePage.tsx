@@ -29,10 +29,14 @@ const LeVillagePage: React.FC = () => {
   // Au retour du paiement, le chapitre Nourriture s'ouvre de lui-même :
   // sinon l'acheteur revient sur une page repliée et ne voit pas son
   // remerciement (vérification du 23 août).
-  const [nourritureOuverte, setNourritureOuverte] = useState(
-    () => typeof window !== 'undefined'
-      && new URLSearchParams(window.location.search).get('banquet') === 'merci',
-  );
+  // `?banquet=merci` au retour du paiement, `?banquet=1` pour le lien
+  // qu'Alex envoie par courriel : les deux ouvrent le chapitre, sinon
+  // l'acheteur tombe sur une page repliée et ne trouve rien.
+  const [nourritureOuverte, setNourritureOuverte] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const q = new URLSearchParams(window.location.search).get('banquet');
+    return q === 'merci' || q === '1';
+  });
 
   return (
     <>

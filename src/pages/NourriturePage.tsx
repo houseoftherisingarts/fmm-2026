@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, BookOpen, Clock, Lock, Users, Wine } from 'lucide-react';
 import { useGagnerBadge } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
@@ -28,6 +28,10 @@ const Glyphe: React.FC<{ name: keyof typeof GLYPHES; size?: number }> = ({ name,
 
 // Liens de paiement Square (compte Le Salon des Inconnus), créés par
 // l'API le 2026-08-22. Ce sont des URL publiques, pas des secrets.
+// Ce lien Square fixe ne vend QU'UNE place et renvoie l'acheteur à
+// l'accueil sans confirmation (retour d'une acheteuse, 23 août). Il ne
+// sert plus que de filet si notre fonction tombe, et jamais autrement :
+// le chemin normal crée un lien neuf avec le nombre de places choisi.
 const SQUARE_BANQUET  = 'https://square.link/u/g0UOU5L3';  // 65 $ + taxes = 74,73 $
 const SQUARE_GRIMOIRE = 'https://square.link/u/OLtFu9jY';  //  9 $ + taxes = 10,35 $
 
@@ -85,6 +89,17 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
   const livrePris = typeof window !== 'undefined'
     && new URLSearchParams(window.location.search).get('livre') === 'merci';
   useGagnerBadge('livre', livrePris);
+  // `?banquet=1` ou `?banquet=merci` : on descend jusqu'au banquet une
+  // fois le chapitre déplié, sinon le visiteur doit le chercher.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const q = new URLSearchParams(window.location.search).get('banquet');
+    if (q !== '1' && q !== 'merci') return;
+    const t2 = window.setTimeout(() => {
+      document.getElementById('banquet')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 700);
+    return () => window.clearTimeout(t2);
+  }, []);
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
@@ -129,7 +144,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
               maintenant son écrin sombre, comme un hero dans un hero
               (Alex, 2026-08-22). */}
           <Reveal amount={0.1}>
-            <div className="fmm-banquet-shell grid lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-14 md:mb-20 p-7 md:p-12 lg:p-14">
+            <div id="banquet" className="fmm-banquet-shell grid lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-14 md:mb-20 p-7 md:p-12 lg:p-14">
               <div className="lg:col-span-7 min-w-0">
                 <Eyebrow tone="amber" className="mb-5 inline-flex items-center gap-3">
                   <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
