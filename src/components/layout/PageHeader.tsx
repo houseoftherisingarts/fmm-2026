@@ -98,7 +98,7 @@ const PageHeader: React.FC<Props> = ({
           <h1
             ref={titleRef}
             className="font-display uppercase leading-[0.95] tracking-[0.02em] mb-2"
-            style={{ fontSize: 'clamp(1.8rem, 8.2vw, 5.6rem)' }}
+            style={{ fontSize: 'calc(clamp(1.8rem, 8.2vw, 5.6rem) * var(--fit, 1))' }}
           >
             <span
               className="block bg-gradient-to-br from-ivory via-ivory to-[var(--color-amber-glow)] bg-clip-text text-transparent"
