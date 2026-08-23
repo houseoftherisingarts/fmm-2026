@@ -1,0 +1,1543 @@
+[
+ {
+  "gid": "1025494334",
+  "tab": "salade betteraves repas",
+  "title": "salade betteraves repas",
+  "yield": "50 portions · 1 portion : 300g",
+  "ing": [
+   {
+    "n": "betteraves roties en cubes",
+    "q": "4kg"
+   },
+   {
+    "n": "orges",
+    "q": "1.5kg"
+   },
+   {
+    "n": "pois chiches",
+    "q": "1.2kg"
+   },
+   {
+    "n": "roquette",
+    "q": "2kg"
+   },
+   {
+    "n": "oignons rouges",
+    "q": "300g"
+   },
+   {
+    "n": "persil",
+    "q": "200g"
+   },
+   {
+    "n": "noix de grenoble",
+    "q": "500g"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "400ml"
+   },
+   {
+    "n": "vinaigre de cidre",
+    "q": "150ml"
+   },
+   {
+    "n": "dijon",
+    "q": "80g"
+   },
+   {
+    "n": "sirop d'érable",
+    "q": "100ml"
+   },
+   {
+    "n": "citron",
+    "q": "60ml"
+   },
+   {
+    "n": "sel",
+    "q": "q.s"
+   },
+   {
+    "n": "poivre",
+    "q": "q.s"
+   }
+  ],
+  "steps": [
+   "tremper les pois chiches 12h et les cuires dans l'eau salé jusqu'a tendreté",
+   "Rincer 1.5 kilograms orge mondé sec et cuire dans l'eau bouillante salée",
+   "(environ 3 volumes d'eau pour 1 volume d'orge)",
+   "Rôtir les betteraves",
+   "Préparer la vinaigrette à l'érable",
+   "Griller les noix",
+   "Assembler la base et laisser mariner",
+   "au moment du service, incorporer la roquette."
+  ]
+ },
+ {
+  "gid": "1086639549",
+  "tab": "hypocras",
+  "title": "hypocras",
+  "yield": "1 bouteille de 750ml",
+  "ing": [
+   {
+    "n": "vin rouge",
+    "q": "750ml"
+   },
+   {
+    "n": "miel",
+    "q": "7,5g"
+   },
+   {
+    "n": "baton canelle",
+    "q": "1un"
+   },
+   {
+    "n": "gingembre en poudre",
+    "q": "0,07 cat"
+   },
+   {
+    "n": "poivre",
+    "q": "0,07 cat"
+   },
+   {
+    "n": "clou de girofle",
+    "q": "1 un"
+   },
+   {
+    "n": "muscade",
+    "q": "0,04 cat"
+   },
+   {
+    "n": "massis",
+    "q": "0,04 cat"
+   }
+  ],
+  "steps": [
+   "Mélanger le vin et le miel ou sucre dans un grand récipient.",
+   "Ajouter toutes les épices et fleurs, bien mélanger.",
+   "Laisser macérer au frais pendant 24 à 48 h en remuant de temps en temps.",
+   "Filtrer les épices avant la mise en bouteille"
+  ]
+ },
+ {
+  "gid": "1109178404",
+  "tab": "baba ganoush",
+  "title": "babaganoush",
+  "yield": "50 portions · 1 portion : 70g",
+  "ing": [
+   {
+    "n": "aubergines",
+    "q": "5kg"
+   },
+   {
+    "n": "tahini",
+    "q": "500g"
+   },
+   {
+    "n": "jus de citron",
+    "q": "250ml"
+   },
+   {
+    "n": "ail",
+    "q": "100g"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "300ml"
+   },
+   {
+    "n": "cumin",
+    "q": "20g"
+   },
+   {
+    "n": "sel",
+    "q": "q.s"
+   },
+   {
+    "n": "poivre",
+    "q": "q.s"
+   },
+   {
+    "n": "persil",
+    "q": "50g"
+   },
+   {
+    "n": "paprika",
+    "q": "10g"
+   }
+  ],
+  "steps": [
+   "Griller les aubergines",
+   "Reposer 20 minutes",
+   "couper en deux, égoutter l'excès de liquide.",
+   "Évider la chair à la cuillère, hacher grossièrement",
+   "mélanger avec le reste des ingrédients",
+   "assaisonner",
+   "refroidir"
+  ]
+ },
+ {
+  "gid": "1191798955",
+  "tab": "brochette de poulet du verger",
+  "title": "brochette de poulet du verger",
+  "yield": "2 par portions",
+  "ing": [
+   {
+    "n": "haut de cuisse désossés (cubes 60g)",
+    "q": "15kg"
+   },
+   {
+    "n": "cidre du québec",
+    "q": "2L"
+   },
+   {
+    "n": "huile canola",
+    "q": "1L"
+   },
+   {
+    "n": "moutarde dijon",
+    "q": "500g"
+   },
+   {
+    "n": "sirop d'érable",
+    "q": "500g"
+   },
+   {
+    "n": "ail haché",
+    "q": "400g"
+   },
+   {
+    "n": "échhalotes francaise",
+    "q": "300g"
+   },
+   {
+    "n": "thym frais",
+    "q": "150g"
+   },
+   {
+    "n": "romarin",
+    "q": "100g"
+   },
+   {
+    "n": "sel kasher",
+    "q": "150g"
+   },
+   {
+    "n": "poivre",
+    "q": "50g"
+   },
+   {
+    "n": "zeste de citrons",
+    "q": "10un"
+   },
+   {
+    "n": "oignons rouges en quartiers",
+    "q": "3kg"
+   },
+   {
+    "n": "poivrons rouges",
+    "q": "3kg"
+   },
+   {
+    "n": "champignons coupés en 2",
+    "q": "3kg"
+   }
+  ],
+  "steps": [
+   "Mélanger tous les ingrédients de la marinade.",
+   "Ajouter le poulet en cubes.",
+   "Mariner 12 à 24 h.",
+   "Monter les brochettes (environ 5 morceaux par brochette).",
+   "Cuire au grill, plancha ou four jusqu'à 74 °C cœur."
+  ]
+ },
+ {
+  "gid": "1300684386",
+  "tab": "pain viking",
+  "title": "PAIN VIKING ET BEURRE",
+  "yield": "100 portions · portion : 100g",
+  "ing": [
+   {
+    "n": "farine de blé",
+    "q": "5KG"
+   },
+   {
+    "n": "eau tiède",
+    "q": "3L"
+   },
+   {
+    "n": "levure fraiche",
+    "q": "25g"
+   },
+   {
+    "n": "sel",
+    "q": "100g"
+   },
+   {
+    "n": "miel",
+    "q": "150ml"
+   }
+  ],
+  "steps": [
+   "Dans un grand bol, mélangez la farine, le levain et l'eau. Pétrissez la pâte pendant environ 10 minutes, jusqu'à ce qu'elle devienne lisse et élastique. Ajoutez le sel et continuez à pétrir pendant 5 minutes supplémentaires.",
+   "Placez la pâte dans un bol légèrement huilé, couvrez-la d'un linge humide et laissez-la lever dans un endroit chaud pendant 3 à 4 heures, ou jusqu'à ce qu'elle ait doublé de volume.",
+   "Une fois la première levée terminée, déposez la pâte sur un plan de travail légèrement fariné. Façonnez-la en une boule ou en un pain allongé, selon votre préférence.",
+   "Placez la pâte façonnée sur une plaque de cuisson recouverte de papier sulfurisé ou dans un banneton (panier à levée) légèrement fariné. Couvrez à nouveau et laissez reposer pendant 1 à 2 heures supplémentaires, jusqu'à ce que la pâte soit bien levée.",
+   "cuire sur une roche dans la braise ardente."
+  ]
+ },
+ {
+  "gid": "1494392729",
+  "tab": "pain insectes",
+  "title": "pain insectes",
+  "yield": "50 portions · 1 portion 110g brut",
+  "ing": [
+   {
+    "n": "farine tout usage",
+    "q": "2.7kg"
+   },
+   {
+    "n": "farine de criquet",
+    "q": "300g"
+   },
+   {
+    "n": "eau tiede",
+    "q": "2L"
+   },
+   {
+    "n": "levure seche",
+    "q": "30g"
+   },
+   {
+    "n": "sel",
+    "q": "60g"
+   },
+   {
+    "n": "miel",
+    "q": "90g"
+   },
+   {
+    "n": "huile végétal",
+    "q": "90ml"
+   },
+   {
+    "n": "vers de farine",
+    "q": "200g"
+   },
+   {
+    "n": "fourmis entières",
+    "q": "150g"
+   }
+  ],
+  "steps": [
+   "Mélanger les farines, dissoudre levure et miel dans l'eau tiède, laisser mousser 10 min.",
+   "Combiner liquide et farines avec sel et huile, pétrir jusqu'à pâte lisse et élastique.",
+   "Incorporer les ténébrions et la moitié des fourmis en pliant dans la pâte.",
+   "Couvrir et laisser lever au chaud jusqu'à doublement de volume.",
+   "Dégazer, diviser en 50 pâtons de ~110g, façonner en petits pains ronds.",
+   "Déposer sur plaques, presser le reste des fourmis en surface, couvrir.",
+   "Laisser lever une seconde fois jusqu'à gonflement visible.",
+   "Cuire au four à 200°C jusqu'à croûte dorée et son creux au tapotement."
+  ]
+ },
+ {
+  "gid": "1552102852",
+  "tab": "cervoise",
+  "title": "cervoise",
+  "yield": "50 portions · 1 portion 100g",
+  "ing": [
+   {
+    "n": "biere blonde",
+    "q": ""
+   },
+   {
+    "n": "canelle",
+    "q": ""
+   },
+   {
+    "n": "sirop de miel et genievre",
+    "q": ""
+   }
+  ],
+  "steps": [
+   "Dissoudre le miel dans l'eau chaude avec la baie de genièvre écrasée, laisser infuser.",
+   "Filtrer le sirop pour retirer le genièvre, laisser tiédir.",
+   "Placer les herbes et la cannelle directement dans un verre",
+   "Verser la bière",
+   "Incorporer le sirop de miel-genièvre en remuant doucement."
+  ]
+ },
+ {
+  "gid": "1565132284",
+  "tab": "bière au beurre",
+  "title": "bière au beurre",
+  "yield": "60 portions · portion : 500ml",
+  "ing": [
+   {
+    "n": "crème soda",
+    "q": "10,8L"
+   },
+   {
+    "n": "lait",
+    "q": "3L"
+   },
+   {
+    "n": "cassonade",
+    "q": "900g"
+   },
+   {
+    "n": "beurre",
+    "q": "300g"
+   },
+   {
+    "n": "extrait de vanille",
+    "q": "60 cat"
+   },
+   {
+    "n": "canelle",
+    "q": "qs"
+   },
+   {
+    "n": "creme fouetté",
+    "q": "qs"
+   }
+  ],
+  "steps": [
+   "Préparation (chaude) :",
+   "Dans une grande marmite, faire fondre le beurre à feu moyen.",
+   "Ajouter la cassonade, bien mélanger pour former un caramel léger.",
+   "Verser le lait (ou crème), l’extrait de vanille, et la cannelle. Chauffer sans bouillir.",
+   "Retirer du feu et incorporer délicatement le crème soda pour garder un peu de pétillant.",
+   "Servir chaud, garni de crème fouettée et caramel si désiré.",
+   "Variante froide :",
+   "Mélanger tous les ingrédients dans un grand récipient, en fouettant légèrement.",
+   "Réfrigérer.",
+   "Servir sur glace, garnir."
+  ]
+ },
+ {
+  "gid": "1643582363",
+  "tab": "bloodbraud",
+  "title": "BLOODBRAUD",
+  "yield": "50 portions · portion : 200g",
+  "ing": [
+   {
+    "n": "farine de blé",
+    "q": "6,25KG"
+   },
+   {
+    "n": "sang de porc frais",
+    "q": "3,125L"
+   },
+   {
+    "n": "eau tiède",
+    "q": "2,5L"
+   },
+   {
+    "n": "sel",
+    "q": "125g"
+   },
+   {
+    "n": "saindoux",
+    "q": "250g"
+   },
+   {
+    "n": "herbes aux choix",
+    "q": "q.s"
+   }
+  ],
+  "steps": [
+   "Mélanger la farine et le sel dans un grand pétrin ou cuve.",
+   "Ajouter le sang et l'eau progressivement, pétrir jusqu'à obtention d'une pâte homogène et souple.",
+   "Incorporer la graisse fondue si utilisée.",
+   "Diviser la pâte en portions d'environ 200 g chacune (galettes ou petits pains).",
+   "Cuire sur une plaque, pierre chaude ou dans un four rustique, environ 10-15 min par côté, jusqu'à cuisson complète et belle croûte."
+  ]
+ },
+ {
+  "gid": "1706663409",
+  "tab": "limonade",
+  "title": "limonade",
+  "yield": "100 tasses · portion : 1 tasse",
+  "ing": [
+   {
+    "n": "jus de citron",
+    "q": "5L"
+   },
+   {
+    "n": "sucre",
+    "q": "2,5kg"
+   },
+   {
+    "n": "eau froide",
+    "q": "20L"
+   },
+   {
+    "n": "glacons",
+    "q": "qs"
+   },
+   {
+    "n": "tranches de citron",
+    "q": "qs"
+   }
+  ],
+  "steps": [
+   "Dissoudre le sucre dans un peu d’eau chaude (1 litre suffit) pour créer un sirop simple.",
+   "Mélanger le sirop avec le jus de citron.",
+   "Ajouter l’eau froide progressivement en goûtant. Ajuster sucre ou eau au besoin.",
+   "Réfrigérer ou servir sur glaçons."
+  ]
+ },
+ {
+  "gid": "1771871717",
+  "tab": "boeuf kawaps",
+  "title": "boeuf kawaps",
+  "yield": "100 brochettes 2 par portion",
+  "ing": [
+   {
+    "n": "macreuse de boeuf (60g)",
+    "q": "15kg"
+   },
+   {
+    "n": "bicarbonate de soude",
+    "q": "60g"
+   },
+   {
+    "n": "eau froide",
+    "q": "500ml"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "2L"
+   },
+   {
+    "n": "oignons jaunes rapés avec jus",
+    "q": "1,5kg"
+   },
+   {
+    "n": "ail haché",
+    "q": "400g"
+   },
+   {
+    "n": "jus de citron",
+    "q": "500ml"
+   },
+   {
+    "n": "paprika doux",
+    "q": "250g"
+   },
+   {
+    "n": "parpika fumé",
+    "q": "50g"
+   },
+   {
+    "n": "cumin moulu",
+    "q": "70g"
+   },
+   {
+    "n": "coriandre moulue",
+    "q": "50g"
+   },
+   {
+    "n": "canelle moulue",
+    "q": "30g"
+   },
+   {
+    "n": "piment d'alep",
+    "q": "40g"
+   },
+   {
+    "n": "sel kasher",
+    "q": "150g"
+   },
+   {
+    "n": "poivre noir moulu",
+    "q": "50g"
+   },
+   {
+    "n": "persil plat haché",
+    "q": "250g"
+   },
+   {
+    "n": "menthe fraiche hachée",
+    "q": "100g"
+   },
+   {
+    "n": "vinaigre de cidre",
+    "q": "200ml"
+   },
+   {
+    "n": "oignons rouge en quartiers",
+    "q": "3kg"
+   },
+   {
+    "n": "poivrons jaunes",
+    "q": "3kg"
+   },
+   {
+    "n": "champignons en 2",
+    "q": "3kg"
+   }
+  ],
+  "steps": [
+   "Dissoudre le bicarbonate dans l'eau froide.",
+   "Mélanger avec les cubes de bœuf.",
+   "Masser la viande 2-3 minutes.",
+   "Laisser agir 45 minutes au froid.",
+   "Bien rincer rapidement la viande à l'eau froide.",
+   "Égoutter et éponger avant la marinade.",
+   "Mélanger tous les ingrédients.",
+   "Ajouter le bœuf refroidi et bien enrober.",
+   "Mariner 12 à 24 heures au froid.",
+   "Monter les brochettes juste avant cuisson."
+  ]
+ },
+ {
+  "gid": "1993289315",
+  "tab": "sauce au cidre",
+  "title": "sauce au cidre",
+  "yield": "50 portions",
+  "ing": [
+   {
+    "n": "cidre",
+    "q": "2L"
+   },
+   {
+    "n": "fond de volaille",
+    "q": "1L"
+   },
+   {
+    "n": "échalotes",
+    "q": "500g"
+   },
+   {
+    "n": "beurre",
+    "q": "150g"
+   },
+   {
+    "n": "moutarde à l'ancienne",
+    "q": "300g"
+   },
+   {
+    "n": "dijon",
+    "q": "200g"
+   },
+   {
+    "n": "creme 35%",
+    "q": "300ml"
+   },
+   {
+    "n": "sirop d'érable",
+    "q": "150ml"
+   },
+   {
+    "n": "vinaigre de cidre",
+    "q": "50ml"
+   },
+   {
+    "n": "sel, poivre",
+    "q": "q.s"
+   }
+  ],
+  "steps": [
+   "Faire suer les échalotes au beurre.",
+   "Ajouter le cidre et réduire de moitié.",
+   "Ajouter le fond de volaille et réduire jusqu'à texture nappante.",
+   "Ajouter les moutardes, l'érable et la crème.",
+   "Monter légèrement au beurre si désiré."
+  ]
+ },
+ {
+  "gid": "2029704652",
+  "tab": "gateau du voyageur",
+  "title": "gateau du voyageur",
+  "yield": "50 portions · 1 portion 105g",
+  "ing": [
+   {
+    "n": "farine tout usage",
+    "q": "1.8kg"
+   },
+   {
+    "n": "beurre",
+    "q": "900g"
+   },
+   {
+    "n": "sucre",
+    "q": "700g"
+   },
+   {
+    "n": "oeufs",
+    "q": "24un"
+   },
+   {
+    "n": "fruit seche",
+    "q": "900g"
+   },
+   {
+    "n": "grenoble",
+    "q": "400g"
+   },
+   {
+    "n": "poudre a pate",
+    "q": "40g"
+   },
+   {
+    "n": "canelle",
+    "q": "15g"
+   },
+   {
+    "n": "muscade",
+    "q": "5g"
+   },
+   {
+    "n": "sel",
+    "q": "10g"
+   },
+   {
+    "n": "lait",
+    "q": "300ml"
+   },
+   {
+    "n": "sirop d'érable",
+    "q": "200ml"
+   },
+   {
+    "n": "zeste d'orange",
+    "q": "20g"
+   }
+  ],
+  "steps": [
+   "Crémer le beurre et le sucre ensemble jusqu'à léger et aéré.",
+   "Incorporer les oeufs un à la fois en battant bien entre chaque ajout.",
+   "Tamiser la farine, la poudre à pâte, la cannelle, la muscade et le sel ensemble.",
+   "Incorporer les ingrédients secs en alternance avec le lait et une partie du sirop d'érable.",
+   "Plier les fruits séchés, les noix et le zeste d'orange dans la pâte.",
+   "Verser dans moules à pain individuels ou grands moules beurrés et farinés.",
+   "Cuire au four à 165°C jusqu'à ce qu'un cure-dent ressorte propre.",
+   "Démouler et laisser refroidir complètement sur grille.",
+   "Badigeonner du reste de sirop d'érable en glace sur le dessus avant emballage."
+  ]
+ },
+ {
+  "gid": "2030034808",
+  "tab": "lembas",
+  "title": "lembas",
+  "yield": "50 portions · 1 portion 85g",
+  "ing": [
+   {
+    "n": "farine tout usage",
+    "q": "2kg"
+   },
+   {
+    "n": "beurre",
+    "q": "600g"
+   },
+   {
+    "n": "miel",
+    "q": "800g"
+   },
+   {
+    "n": "creme",
+    "q": "400ml"
+   },
+   {
+    "n": "sucre",
+    "q": "200g"
+   },
+   {
+    "n": "avoine",
+    "q": "300g"
+   },
+   {
+    "n": "sel",
+    "q": "10g"
+   },
+   {
+    "n": "vanille",
+    "q": "15ml"
+   }
+  ],
+  "steps": [
+   "Crémer le beurre, le miel et le sucre ensemble jusqu'à homogène.",
+   "Incorporer la crème et la vanille en mélangeant bien.",
+   "Plier la farine, l'avoine et le sel dans le mélange jusqu'à pâte ferme.",
+   "Étaler la pâte sur plaques (~1,5cm) ou presser en petits moules individuels.",
+   "Réfrigérer la pâte étalée 30 minutes pour raffermir avant cuisson.",
+   "Cuire au four à 175°C jusqu'à bords dorés, centre encore ferme.",
+   "Laisser refroidir complètement, puis découper en 50 carrés égaux.",
+   "Envelopper individuellement chaque pièce pour présentation et conservation."
+  ]
+ },
+ {
+  "gid": "2061967262",
+  "tab": "cuirs du seigneur",
+  "title": "cuirs du seigneur",
+  "yield": "100 portions · portion : 50g",
+  "ing": [
+   {
+    "n": "boeuf cru (rumsteak)",
+    "q": "11kg"
+   },
+   {
+    "n": "sauce soja",
+    "q": "1,3L"
+   },
+   {
+    "n": "sauce worchestershire",
+    "q": "1,3L"
+   },
+   {
+    "n": "miel",
+    "q": "300g"
+   },
+   {
+    "n": "poivre",
+    "q": "7,5cas"
+   },
+   {
+    "n": "poudre d'ail",
+    "q": "7,5cas"
+   },
+   {
+    "n": "poudre d'oignon",
+    "q": "7,5cas"
+   },
+   {
+    "n": "piment en poudre",
+    "q": "7,5cas"
+   },
+   {
+    "n": "sel",
+    "q": "7,5cas"
+   },
+   {
+    "n": "paprika fumé",
+    "q": "7,5cas"
+   },
+   {
+    "n": "poivre de cayenne",
+    "q": "4 cas"
+   }
+  ],
+  "steps": [
+   "Couper le bœuf en fines tranches (0,5 cm), idéalement dans le sens contraire des fibres.",
+   "Mélanger tous les ingrédients de la marinade dans une grande cuve ou plusieurs bacs alimentaires.",
+   "Ajouter la viande et bien mélanger pour enrober chaque tranche.",
+   "Mariner 12 à 24 h au réfrigérateur.",
+   "Égoutter la viande, puis l’éponger légèrement.",
+   "Déshydrater à 55–65 °C pendant 5 à 8 h jusqu’à texture sèche mais souple.",
+   "Laisser refroidir à l’air libre, puis emballer dans des sachets individuels ou sous vide."
+  ]
+ },
+ {
+  "gid": "2119664717",
+  "tab": "beurre aux herbes",
+  "title": "beurre aux herbes",
+  "yield": "454g · portions : 10g",
+  "ing": [
+   {
+    "n": "beurre non salé",
+    "q": "454g"
+   },
+   {
+    "n": "persil",
+    "q": "10g"
+   },
+   {
+    "n": "ciboulette",
+    "q": "10g"
+   },
+   {
+    "n": "thym",
+    "q": "10g"
+   },
+   {
+    "n": "romarin",
+    "q": "5g"
+   },
+   {
+    "n": "ail",
+    "q": "2 gousses"
+   },
+   {
+    "n": "sel",
+    "q": "10g"
+   },
+   {
+    "n": "jus de citron",
+    "q": "30ml"
+   }
+  ],
+  "steps": [
+   "Assurez-vous que le beurre est à température ambiante pour qu'il soit facile à mélanger. Hachez finement toutes les herbes fraîches et émincez la gousse d'ail.",
+   "Dans un bol, ajoutez le beurre ramolli, les herbes hachées, l'ail émincé, le sel, le poivre, et le jus de citron (si utilisé). Mélangez bien tous les ingrédients à l'aide d'une spatule ou d'une cuillère jusqu'à ce que les herbes et l'ail soient uniformément répartis dans le beurre.",
+   "Placez le beurre aux herbes sur une feuille de papier sulfurisé ou de film plastique. Roulez le beurre en forme de bûche et enveloppez-le bien. Vous pouvez également le placer dans un petit récipient et lisser le dessus.",
+   "Mettez le beurre au réfrigérateur pendant au moins 1 heure pour qu'il durcisse et que les saveurs se mélangent. Vous pouvez également le congeler pour une conservation plus longue."
+  ]
+ },
+ {
+  "gid": "212179320",
+  "tab": "olla gitana",
+  "title": "olla gitana avec pain viking",
+  "yield": "50 portions · portions 400ml",
+  "ing": [
+   {
+    "n": "pois chiche sec (trempé 12h)",
+    "q": "4kg"
+   },
+   {
+    "n": "haricots blanc sec (trempé 12h)",
+    "q": "3kg"
+   },
+   {
+    "n": "courges musqués (cubes 2cm)",
+    "q": "5kg"
+   },
+   {
+    "n": "pomme de terre (cubes 4cm)",
+    "q": "3kg"
+   },
+   {
+    "n": "carottes en rondelles",
+    "q": "2,5kg"
+   },
+   {
+    "n": "haricots verts ou jaunes",
+    "q": "2kg"
+   },
+   {
+    "n": "poires fermes en cubes",
+    "q": "2kg"
+   },
+   {
+    "n": "oignons jaunes",
+    "q": "2kg"
+   },
+   {
+    "n": "ail",
+    "q": "300g"
+   },
+   {
+    "n": "tomates fraiches",
+    "q": "2kg"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "850ml"
+   },
+   {
+    "n": "bouillon de légumes",
+    "q": "15L"
+   },
+   {
+    "n": "feuilles de laurier",
+    "q": "10un"
+   },
+   {
+    "n": "paprika doux",
+    "q": "40g"
+   },
+   {
+    "n": "safran",
+    "q": "6g"
+   },
+   {
+    "n": "cumin",
+    "q": "30g"
+   },
+   {
+    "n": "poivre",
+    "q": "25g"
+   },
+   {
+    "n": "sel",
+    "q": "120g"
+   },
+   {
+    "n": "pain de campagne grillé",
+    "q": "500g"
+   },
+   {
+    "n": "ail roti",
+    "q": "450g avant cuisson"
+   },
+   {
+    "n": "vinaigre de cidre",
+    "q": "250ml"
+   }
+  ],
+  "steps": [
+   "Cuire les pois chiches et les haricots jusqu'à ce qu'ils soient presque tendres.",
+   "Ajouter le bouillon, les oignons, les carottes, les pommes de terre, l'ail, le laurier, le paprika, le cumin et le safran. Mijoter environ 20 minutes.",
+   "Ajouter la courge et les tomates. Cuire 15 minutes.",
+   "Ajouter les haricots verts (ou jaunes), puis cuire 8 à 10 minutes.",
+   "Ajouter les poires pour les 8 à 10 dernières minutes afin qu'elles restent légèrement fermes.",
+   "Incorporer la picada, laisser mijoter 15 minutes pour épaissir naturellement le bouillon.",
+   "Rectifier l'assaisonnement, puis ajouter le persil et la menthe juste avant le service.",
+   "picada : pain grillé, ail roti, 300ml huile d'olive, 1L bouillon chaud, 250ml vinaigre de cidre."
+  ]
+ },
+ {
+  "gid": "229360900",
+  "tab": "hotdog",
+  "title": "hotdog",
+  "yield": "50 portions",
+  "ing": [
+   {
+    "n": "pain viking",
+    "q": "50un"
+   },
+   {
+    "n": "saucisses artisanales",
+    "q": "50un"
+   },
+   {
+    "n": "choucroute",
+    "q": "5kg"
+   },
+   {
+    "n": "moutarde jaune",
+    "q": "2kg"
+   },
+   {
+    "n": "moutarde dijon",
+    "q": "2kg"
+   },
+   {
+    "n": "moutarde à l'ancienne",
+    "q": "1,5kg"
+   },
+   {
+    "n": "oignons frits",
+    "q": "1,5kg"
+   },
+   {
+    "n": "oignons marinés",
+    "q": "1,5kg"
+   },
+   {
+    "n": "cornichons tranchés",
+    "q": "1kg"
+   },
+   {
+    "n": "relish artisanale",
+    "q": "1kg"
+   },
+   {
+    "n": "ketchup",
+    "q": "1kg"
+   },
+   {
+    "n": "mayonnaise à l'ail",
+    "q": "500g"
+   }
+  ],
+  "steps": [
+   "monter au gout du client"
+  ]
+ },
+ {
+  "gid": "585757836",
+  "tab": "verdure du jardin",
+  "title": "verdure du jardin",
+  "yield": "50 portions · 1 portion : 100g",
+  "ing": [
+   {
+    "n": "mesclun",
+    "q": "3kg"
+   },
+   {
+    "n": "concombre",
+    "q": "1kg"
+   },
+   {
+    "n": "carottes rapées",
+    "q": "700g"
+   },
+   {
+    "n": "huile végétale",
+    "q": "180ml"
+   },
+   {
+    "n": "vinaigre de cidre",
+    "q": "80ml"
+   },
+   {
+    "n": "dijon",
+    "q": "30ml"
+   },
+   {
+    "n": "sirop d'érable",
+    "q": "20ml"
+   },
+   {
+    "n": "sel",
+    "q": "q.s"
+   },
+   {
+    "n": "poivre",
+    "q": "q.s"
+   }
+  ],
+  "steps": []
+ },
+ {
+  "gid": "602334996",
+  "tab": "salade betterves side",
+  "title": "salade betterves side",
+  "yield": "100 portions · 1 portion : 150g",
+  "ing": [
+   {
+    "n": "betteraves roties en cubes",
+    "q": "4kg"
+   },
+   {
+    "n": "orges",
+    "q": "1.5kg"
+   },
+   {
+    "n": "pois chiches",
+    "q": "1.2kg"
+   },
+   {
+    "n": "roquette",
+    "q": "2kg"
+   },
+   {
+    "n": "oignons rouges",
+    "q": "300g"
+   },
+   {
+    "n": "persil",
+    "q": "200g"
+   },
+   {
+    "n": "noix de grenoble",
+    "q": "500g"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "400ml"
+   },
+   {
+    "n": "vinaigre de cidre",
+    "q": "150ml"
+   },
+   {
+    "n": "dijon",
+    "q": "80g"
+   },
+   {
+    "n": "sirop d'érable",
+    "q": "100ml"
+   },
+   {
+    "n": "citron",
+    "q": "60ml"
+   },
+   {
+    "n": "sel",
+    "q": "q.s"
+   },
+   {
+    "n": "poivre",
+    "q": "q.s"
+   }
+  ],
+  "steps": [
+   "tremper les pois chiches 12h et les cuires dans l'eau salé jusqu'a tendreté",
+   "Rincer 1.5 kilograms orge mondé sec et cuire dans l'eau bouillante salée",
+   "(environ 3 volumes d'eau pour 1 volume d'orge)",
+   "Rôtir les betteraves",
+   "Préparer la vinaigrette à l'érable",
+   "Griller les noix",
+   "Assembler la base et laisser mariner",
+   "au moment du service, incorporer la roquette."
+  ]
+ },
+ {
+  "gid": "629096571",
+  "tab": "goulash",
+  "title": "goulash servi avec pain viking",
+  "yield": "50 portions · portion : 400ml",
+  "ing": [
+   {
+    "n": "palette de boeuf",
+    "q": "10kg"
+   },
+   {
+    "n": "oignons jaunes émincés",
+    "q": "4kg"
+   },
+   {
+    "n": "pomme de terre gros dés",
+    "q": "4kg"
+   },
+   {
+    "n": "carottes en rondelles",
+    "q": "3kg"
+   },
+   {
+    "n": "rutabaga gros dés",
+    "q": "2kg"
+   },
+   {
+    "n": "poivrons rouge en dés",
+    "q": "2kg"
+   },
+   {
+    "n": "tomates fraiches concassés",
+    "q": "2kg"
+   },
+   {
+    "n": "ail haché",
+    "q": "350g"
+   },
+   {
+    "n": "fond de boeuf",
+    "q": "12L"
+   },
+   {
+    "n": "vin rouge",
+    "q": "500ml"
+   },
+   {
+    "n": "huile de canola",
+    "q": "300ml"
+   },
+   {
+    "n": "paprika hongrois doux",
+    "q": "180g"
+   },
+   {
+    "n": "paprika fumé",
+    "q": "30g"
+   },
+   {
+    "n": "graines de carvi moulues",
+    "q": "25g"
+   },
+   {
+    "n": "feuille de laurier",
+    "q": "10un"
+   },
+   {
+    "n": "marjolaine séchée",
+    "q": "20g"
+   },
+   {
+    "n": "thym frais",
+    "q": "25g"
+   },
+   {
+    "n": "sel kasher",
+    "q": "130g"
+   },
+   {
+    "n": "poivre noir",
+    "q": "25g"
+   },
+   {
+    "n": "farine grillée",
+    "q": "250g"
+   },
+   {
+    "n": "persil plat haché",
+    "q": "150g"
+   }
+  ],
+  "steps": [
+   "Colorer le bœuf en plusieurs fois.",
+   "Faire revenir les oignons jusqu'à une belle coloration.",
+   "Ajouter l'ail, puis les paprikas hors du feu pendant 30 secondes (pour éviter qu'ils brûlent).",
+   "Ajouter les tomates, le fond et le vin.",
+   "Cuire à feu doux environ 2 h 30.",
+   "Ajouter pommes de terre, carottes et rutabaga.",
+   "Ajouter les poivrons dans les 20 dernières minutes.",
+   "Ajuster la texture si désiré.",
+   "Terminer avec le persil."
+  ]
+ },
+ {
+  "gid": "637744564",
+  "tab": "patate chaude",
+  "title": "patate chaude",
+  "yield": "100 portions · portion : 1 patate",
+  "ing": [
+   {
+    "n": "pomme de terre",
+    "q": "20kg"
+   },
+   {
+    "n": "beurre",
+    "q": "500g"
+   },
+   {
+    "n": "miel",
+    "q": "1L"
+   },
+   {
+    "n": "canelle",
+    "q": "50g"
+   },
+   {
+    "n": "paprika",
+    "q": "100g"
+   },
+   {
+    "n": "piments en poudre",
+    "q": "20g"
+   },
+   {
+    "n": "ail",
+    "q": "20 gousses"
+   },
+   {
+    "n": "sel,poivre",
+    "q": "q.s"
+   },
+   {
+    "n": "herbes fraiche",
+    "q": "q.s"
+   }
+  ],
+  "steps": [
+   "Préchauffer le four à 200°C (400°F).",
+   "Faire fondre le beurre ou la graisse. Ajouter le miel, l’ail, la cannelle, le paprika, le piment, le sel et le poivre. Mélanger bien.",
+   "Mettre les pommes de terre dans un grand saladier. Verser la préparation dessus et bien mélanger pour enrober les morceaux.",
+   "Étaler les pommes de terre en une couche uniforme sur des plaques de cuisson.",
+   "Cuire au four pendant 40-45 minutes, en remuant à mi-cuisson, jusqu’à ce que les pommes de terre soient tendres et caramélisées.",
+   "Garnir d’herbes fraîches hachées avant de servir, si désiré"
+  ]
+ },
+ {
+  "gid": "856922127",
+  "tab": "sauce boeuf",
+  "title": "sauce boeuf",
+  "yield": "",
+  "ing": [
+   {
+    "n": "yogourt grec",
+    "q": "3kg"
+   },
+   {
+    "n": "creme sure",
+    "q": "750g"
+   },
+   {
+    "n": "tahini",
+    "q": "250g"
+   },
+   {
+    "n": "ail roti",
+    "q": "250g"
+   },
+   {
+    "n": "jus de citron",
+    "q": "300ml"
+   },
+   {
+    "n": "menthe fraiche",
+    "q": "150g"
+   },
+   {
+    "n": "persil",
+    "q": "100g"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "80ml"
+   },
+   {
+    "n": "sel poivre",
+    "q": "q.s"
+   }
+  ],
+  "steps": [
+   "mélanger le tout"
+  ]
+ },
+ {
+  "gid": "890016814",
+  "tab": "café turc",
+  "title": "café turc",
+  "yield": "1 portions · 1 portion 70ml",
+  "ing": [
+   {
+    "n": "eau froide",
+    "q": "70ml"
+   },
+   {
+    "n": "café moulu très finement",
+    "q": "1cat"
+   },
+   {
+    "n": "sucre",
+    "q": "q.s"
+   },
+   {
+    "n": "cardamone",
+    "q": "q.s"
+   },
+   {
+    "n": "cezve",
+    "q": ""
+   },
+   {
+    "n": "bac a sable",
+    "q": ""
+   }
+  ],
+  "steps": [
+   "Verser l'eau froide dans le cezve, mesurer précisément selon le nombre de tasses.",
+   "Ajouter le café moulu et le sucre directement dans l'eau froide, sans mélanger le café.",
+   "Remuer une seule fois pour bien dissoudre le sucre, puis ne plus toucher.",
+   "Chauffer à feu très doux, sans jamais remuer davantage.",
+   "Surveiller la mousse qui se forme lentement à la surface pendant la chauffe.",
+   "Retirer du feu dès que la mousse commence à monter, juste avant l'ébullition.",
+   "Répartir une cuillère de mousse dans chaque tasse avant de continuer la cuisson.",
+   "Remettre brièvement sur le feu pour faire remonter la mousse une seconde fois, puis retirer.",
+   "Verser lentement dans les tasses en gardant la mousse sur le dessus.",
+   "Verser lentement dans les tasses en gardant la mousse sur le dessus."
+  ]
+ },
+ {
+  "gid": "930039847",
+  "tab": "les offrandes de l'oasis",
+  "title": "les offrandes de l'oasis",
+  "yield": "60 portions · portions : 3 dattes",
+  "ing": [
+   {
+    "n": "dattes",
+    "q": "180un"
+   },
+   {
+    "n": "noix",
+    "q": "750g"
+   },
+   {
+    "n": "miel",
+    "q": "9cas"
+   },
+   {
+    "n": "canelle",
+    "q": "3cat"
+   },
+   {
+    "n": "sel",
+    "q": "qs"
+   },
+   {
+    "n": "zeste d'orange",
+    "q": "qs"
+   }
+  ],
+  "steps": [
+   "Incise délicatement chaque datte et enlève le noyau.",
+   "Dans un grand bol, mélange les noix concassées, le miel, la cannelle, le sel et l’arôme choisi.",
+   "Farcis chaque datte avec environ 4 à 5 g de la préparation.",
+   "Dispose les dattes farcies sur un plat, couvre-les, et laisse reposer 30 minutes au frais avant de servir."
+  ]
+ },
+ {
+  "gid": "944647515",
+  "tab": "hummus",
+  "title": "hummus",
+  "yield": "50 portions · 1 portion : 70g",
+  "ing": [
+   {
+    "n": "pois chiche sec",
+    "q": "1.1kg"
+   },
+   {
+    "n": "bicarbonate de soude",
+    "q": "5g"
+   },
+   {
+    "n": "tahini",
+    "q": "350g"
+   },
+   {
+    "n": "jus de citron",
+    "q": "180ml"
+   },
+   {
+    "n": "ail",
+    "q": "70g"
+   },
+   {
+    "n": "huile d'olive",
+    "q": "200ml"
+   },
+   {
+    "n": "eau",
+    "q": "200ml"
+   },
+   {
+    "n": "cumin",
+    "q": "12g"
+   },
+   {
+    "n": "sel",
+    "q": "45g"
+   },
+   {
+    "n": "paprika fumé",
+    "q": "10g"
+   }
+  ],
+  "steps": [
+   "Tremper les pois chiches secs 12h, cuire avec le bicarbonate jusqu'à tendres, égoutter.",
+   "Mixer tahini, citron et ail, puis ajouter les pois chiches, l'huile et l'eau glacée jusqu'à lisse.",
+   "Assaisonner avec cumin et sel, rectifier au goût.",
+   "Réfrigérer, puis garnir d'huile, paprika et pois chiches entiers avant service."
+  ]
+ },
+ {
+  "gid": "966081690",
+  "tab": "vin chaud",
+  "title": "vin chaud",
+  "yield": "100 tasses · portion : 1 tasse",
+  "ing": [
+   {
+    "n": "vin rouge",
+    "q": "33 bouteilles"
+   },
+   {
+    "n": "miel",
+    "q": "1,5kg"
+   },
+   {
+    "n": "oranges",
+    "q": "3 un"
+   },
+   {
+    "n": "canelle en baton",
+    "q": "8 un"
+   },
+   {
+    "n": "girofle",
+    "q": "100 un"
+   },
+   {
+    "n": "gingembre frais",
+    "q": "200g"
+   },
+   {
+    "n": "anis étoilé",
+    "q": "15 un"
+   },
+   {
+    "n": "noix de muscade",
+    "q": "1 un"
+   }
+  ],
+  "steps": [
+   "Dans une grande marmite (ou plusieurs), verser le vin et ajouter tous les ingrédients.",
+   "Chauffer à feu doux sans faire bouillir (70 °C maximum) pendant 15–20 minutes, en remuant de temps en temps.",
+   "Couvrir et laisser infuser 15 à 30 minutes hors du fe",
+   "Filtrer à travers une passoire fine ou un linge.",
+   "Servir chaud dans des tasses de 250 ml ou mettre en thermos."
+  ]
+ }
+]
