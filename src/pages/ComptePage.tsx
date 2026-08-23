@@ -40,9 +40,54 @@ const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; t
 
 const ComptePage: React.FC = () => {
   useCaravanPage();
-  const { user, loading, isAdmin, openSignIn, signOut, signInWithGoogle } = useAuth();
+  const { user: compte, loading, isAdmin, openSignIn, signOut, signInWithGoogle } = useAuth();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
+
+  // Échappatoire de développement seulement, comme sur la porte du jeu :
+  // `?apercu=1` montre l'espace sans compte, pour vérifier le rendu à
+  // l'écran. Le test disparaît du bundle de production.
+  const apercu = import.meta.env.DEV
+    && new URLSearchParams(window.location.search).get('apercu') === '1';
+  const user = compte ?? (apercu
+    ? ({ uid: 'apercu', email: 'apercu@fmm.test', displayName: 'Dame Aperçu' } as unknown as typeof compte)
+    : null);
+
+  // ── Les onglets, gardés dans l'URL (?onglet=badges) pour que le
+  //    retour arrière du navigateur fonctionne comme partout ailleurs.
+  const [params, setParams] = useSearchParams();
+  const demande = params.get('onglet') || '';
+  const onglet: Onglet = (ONGLETS as readonly string[]).includes(demande) ? (demande as Onglet) : 'profil';
+  const ouvrir = (o: Onglet) => {
+    const p = new URLSearchParams(params);
+    if (o === 'profil') p.delete('onglet'); else p.set('onglet', o);
+    setParams(p);
+  };
+  const flecher = (e: React.KeyboardEvent) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const pas = e.key === 'ArrowRight' ? 1 : ONGLETS.length - 1;
+    const suivant = ONGLETS[(ONGLETS.indexOf(onglet) + pas) % ONGLETS.length];
+    ouvrir(suivant);
+    document.getElementById(`onglet-${suivant}`)?.focus();
+  };
+
+  // ── Les chiffres du profil : badges, amis, parties, avis ──
+  const { obtenus } = useBadges();
+  const etatBadges = avancement(obtenus);
+  const [amis, setAmis]       = useState(0);
+  const [parties, setParties] = useState(0);
+  const [avis, setAvis]       = useState(0);
+  useEffect(() => {
+    const uid = user?.uid;
+    if (!uid) { setAmis(0); setParties(0); setAvis(0); return; }
+    const arrets = [
+      suivreMesAmities(uid, (liens) => setAmis(liens.filter((l) => l.statut === 'amis').length)),
+      suivreMesParties(uid, (ps) => setParties(ps.filter((p) => p.statut === 'encours' || p.statut === 'fini').length)),
+      suivreMesAvis(uid, (ids) => setAvis(ids.length)),
+    ];
+    return () => arrets.forEach((stop) => stop());
+  }, [user?.uid]);
   const [googleBusy, setGoogleBusy] = useState(false);
   const [googleErr, setGoogleErr] = useState<string | null>(null);
   const handleGoogle = async () => {
