@@ -195,196 +195,282 @@ const ComptePage: React.FC = () => {
     );
   }
 
+  const nom = displayName || user.displayName || (user.email || '').split('@')[0];
+  const statut = bApp?.status === 'accepted' ? t.roleBenevole
+    : vApp                                   ? t.roleMarchand
+    : t.roleMembre;
+
+  const cta       = 'inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card';
+  const secondair = 'inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card';
+  const discret   = 'inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory-soft hover:border-brass hover:text-brass font-sans text-xs uppercase tracking-wider transition rounded-card';
+
   return (
     <main className="min-h-screen text-ivory">
       <SEO title={t.title} noindex />
-      <section className="relative caravan-stage bleed-edges pt-28 pb-12 md:pt-32 md:pb-16 overflow-hidden">
+
+      {/* ── Le bandeau de profil ────────────────────────────────────
+          La grammaire que tout le monde connaît déjà : le portrait en
+          grand, le nom à côté, une ligne de statut, puis les chiffres
+          qui mènent chacun à leur onglet (Alex, 2026-08-23). */}
+      <section className="relative caravan-stage bleed-edges pt-28 pb-8 md:pt-32 md:pb-10 overflow-hidden">
         <Brume />
-        <div className="relative max-w-screen-xl mx-auto px-4 md:px-8">
-          <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-6 transition">
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-8 transition">
             <ArrowLeft size={14} /> {t.home}
           </Link>
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-6 flex-wrap">
-              <AvatarUpload
-                uid={user.uid}
-                email={user.email || ''}
-                displayName={displayName || user.displayName || ''}
-                lang={lang}
-                avatarUrl={avatarUrl}
-                onChange={setAvatarUrl}
-              />
-              <div>
-                <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-2">{t.eyebrow}</p>
-                <h1 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-2">{displayName || user.email}</h1>
-                <p className="font-editorial italic text-sm text-ivory-soft flex items-center gap-2">
-                  <Mail size={14} className="text-brass" /> {user.email}
-                </p>
+
+          <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
+            <AvatarUpload
+              uid={user.uid}
+              email={user.email || ''}
+              displayName={displayName || user.displayName || ''}
+              lang={lang}
+              avatarUrl={avatarUrl}
+              onChange={setAvatarUrl}
+            />
+
+            <div className="flex-1 min-w-0 w-full">
+              <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words">
+                {nom}
+              </h1>
+              <p className="font-editorial text-base md:text-lg text-ivory-soft mt-2">{statut}</p>
+              <p className="font-sans text-xs mt-2 flex items-center justify-center md:justify-start gap-2" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                <Mail size={13} className="text-brass" /> {user.email}
+              </p>
+
+              <div className="mt-7 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-9 sm:justify-center md:justify-start">
+                <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
+                <Chiffre n={amis}    label={t.statAmis}    onClick={() => ouvrir('profil')} />
+                <Chiffre n={parties} label={t.statParties} onClick={() => ouvrir('jeux')} />
+                <Chiffre n={avis}    label={t.statAvis}    onClick={() => ouvrir('caravane')} />
               </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Le registre de l'Ordre : chercher quelqu'un, l'ajouter
-                  comme ami, le défier (Alex, 2026-08-23). */}
-              <Link to={addLocale('/ordre', lang)}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
-                <Users size={14} /> {lang === 'FR' ? 'Consulter le registre' : 'Open the roll'}
-              </Link>
-              {/* Se voir comme les autres nous voient. */}
-              <Link to={`${addLocale('/profil', lang)}/${user.uid}`}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory-soft hover:border-brass hover:text-brass font-sans text-xs uppercase tracking-wider transition rounded-card">
-                <Eye size={14} /> {lang === 'FR' ? 'Voir mon profil' : 'View my profile'}
-              </Link>
-              {/* Visible seulement pour les courriels autorisés (VITE_ADMIN_EMAILS
-                  ou un rôle Firestore) : useAuth() a déjà fait la vérification,
-                  ce lien ne fait qu'exposer ce que isAdmin sait déjà. */}
-              {isAdmin && (
-                <Link to="/admin"
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-brass/50 text-brass font-sans text-xs uppercase tracking-wider hover:bg-brass hover:text-midnight-deep transition rounded-card">
-                  <ShieldCheck size={14} /> {t.adminSpace}
-                </Link>
-              )}
-              <button onClick={signOut}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory font-sans text-xs uppercase tracking-wider hover:bg-ivory hover:text-midnight-deep transition rounded-card">
-                <LogOut size={14} /> {t.signOut}
-              </button>
             </div>
           </div>
 
-          {/* Quick-access bar: always shows "Apply for a kiosk" for any
-              signed-in client. Surfaces the bénévole space prominently
-              when accepted. */}
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            {bApp?.status === 'accepted' && (
+          {/* ── La bande d'actions ── */}
+          <div className="mt-9 pt-7 flex flex-wrap items-center justify-center md:justify-start gap-2"
+               style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
+            {bApp?.status === 'accepted' ? (
               <>
-                <Link to={addLocale('/espace-benevole', lang)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+                <Link to={addLocale('/espace-benevole', lang)} className={cta}>
                   <HandHeart size={14} /> {t.benevoleOpenSpace} <ArrowUpRight size={12} />
                 </Link>
-                <Link to={addLocale('/communaute', lang)}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
-                  {lang === 'FR' ? 'Communauté' : 'Community'}
+                <Link to={`${addLocale('/profil', lang)}/${user.uid}`} className={secondair}>
+                  <Eye size={14} /> {t.voirProfil}
                 </Link>
-                <Link to={addLocale('/messages', lang)}
-                  className="inline-flex items-center gap-2 px-4 py-2 border text-ivory-soft hover:border-brass hover:text-brass font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
-                  {lang === 'FR' ? 'Messages' : 'Messages'}
+                <Link to={addLocale('/communaute', lang)} className={discret}>
+                  <Users size={14} /> {lang === 'FR' ? 'Communauté' : 'Community'}
+                </Link>
+                <Link to={addLocale('/messages', lang)} className={discret}>
+                  <MessageCircle size={14} /> {lang === 'FR' ? 'Messages' : 'Messages'}
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to={`${addLocale('/profil', lang)}/${user.uid}`} className={cta}>
+                  <Eye size={14} /> {t.voirProfil} <ArrowUpRight size={12} />
+                </Link>
+                <Link to={addLocale('/benevole', lang)} className={secondair}>
+                  <HandHeart size={14} /> {bApp ? t.benevoleEdit : t.benevoleApply}
                 </Link>
               </>
             )}
-            {/* Kiosk CTA: label adapts to vendor application state. */}
-            <Link
-              to={addLocale('/marche/inscription', lang)}
-              className={
-                vApp
-                  ? 'inline-flex items-center gap-2 px-4 py-2 border border-amber-300/45 text-amber-200 hover:bg-amber-300/10 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card'
-                  : 'inline-flex items-center gap-2 px-5 py-2.5 bg-amber-300/15 border border-amber-300/55 text-amber-200 hover:bg-amber-300/25 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card'
-              }
-            >
-              <ShoppingBag size={14} />
-              {vApp
-                ? (vApp.status === 'accepted' ? t.vendorManageKiosk : t.vendorEdit)
-                : t.vendorApplyQuick}
-              <ArrowUpRight size={12} />
+
+            {/* Le registre de l'Ordre : chercher quelqu'un, l'ajouter
+                comme ami, le défier (Alex, 2026-08-23). */}
+            <Link to={addLocale('/ordre', lang)} className={discret}>
+              <Users size={14} /> {t.registre}
             </Link>
+
+            {/* Kiosque : l'intitulé suit l'état de l'inscription. */}
+            <Link to={addLocale('/marche/inscription', lang)}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-amber-300/45 text-amber-200 hover:bg-amber-300/10 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
+              <ShoppingBag size={14} />
+              {vApp ? (vApp.status === 'accepted' ? t.vendorManageKiosk : t.vendorEdit) : t.vendorApplyQuick}
+            </Link>
+
+            {/* Visible seulement pour les courriels autorisés (VITE_ADMIN_EMAILS
+                ou un rôle Firestore) : useAuth() a déjà fait la vérification,
+                ce lien ne fait qu'exposer ce que isAdmin sait déjà. */}
+            {isAdmin && (
+              <Link to="/admin" className={secondair}>
+                <ShieldCheck size={14} /> {t.adminSpace}
+              </Link>
+            )}
+
+            <button onClick={signOut}
+              className="inline-flex items-center gap-2 px-4 py-2 font-sans text-xs uppercase tracking-wider text-ivory-soft/60 hover:text-ivory transition rounded-card md:ml-auto">
+              <LogOut size={14} /> {t.signOut}
+            </button>
           </div>
         </div>
       </section>
 
-      <section className="relative caravan-stage bleed-edges py-12 md:py-16 overflow-hidden">
+      {/* ── Les onglets ─────────────────────────────────────────────
+          Un seul panneau à la fois, l'onglet retenu dans l'URL. */}
+      <section className="relative caravan-stage bleed-edges pb-16 md:pb-20 overflow-hidden">
         <Brume />
-
-        {/* Les annonces ouvrent l'inventaire : première chose vue. */}
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <AnnoncesPanel lang={lang} />
-        </div>
-
-        {/* Coffre à billets + guichet de soutien */}
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8 mb-6 md:mb-8 items-start">
-          <div className="lg:col-span-7 space-y-6 md:space-y-8">
-            <CoffreBillets uid={user.uid} lang={lang} />
-            <MesBadges lang={lang} />
-            <MaFiche lang={lang} />
-            <SalonDesJeux lang={lang} />
-            <DefisTafl lang={lang} />
+          <div
+            role="tablist"
+            aria-label={t.onglets}
+            onKeyDown={flecher}
+            className="fmm-rail flex items-center gap-1.5 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-3 mb-8"
+            style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
+          >
+            {ONGLETS.map((o) => {
+              const Icone = ICONE_ONGLET[o];
+              const actif = o === onglet;
+              return (
+                <button
+                  key={o}
+                  id={`onglet-${o}`}
+                  role="tab"
+                  type="button"
+                  aria-selected={actif}
+                  aria-controls={`panneau-${o}`}
+                  tabIndex={actif ? 0 : -1}
+                  data-active={actif}
+                  onClick={() => ouvrir(o)}
+                  className="witcher-tab shrink-0 whitespace-nowrap inline-flex items-center gap-2 rounded-card"
+                >
+                  <Icone size={14} /> {t.onglet[o]}
+                </button>
+              );
+            })}
           </div>
-          <div className="lg:col-span-5"><SoutienPanel lang={lang} userEmail={user.email || ''} userName={displayName || user.displayName || ''} /></div>
-        </div>
 
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-6 md:gap-8">
+          <motion.div
+            key={onglet}
+            id={`panneau-${onglet}`}
+            role="tabpanel"
+            aria-labelledby={`onglet-${onglet}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {onglet === 'profil' && (
+              <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
+                <div className="lg:col-span-5 space-y-6 md:space-y-8">
+                  <form onSubmit={saveProfile} className="glass-light rounded-lg-card p-7 md:p-8">
+                    <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs mb-2">
+                      <UserIcon size={12} className="inline mr-1.5 -mt-0.5" />{t.profileEyebrow}
+                    </p>
+                    <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-5">{t.profileTitle}</h2>
+                    <label className="block mb-4">
+                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.displayName}</span>
+                      <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputCls} />
+                    </label>
+                    <label className="block mb-5">
+                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.phone}</span>
+                      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
+                    </label>
+                    <button type="submit" disabled={savingProfile}
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                      <Save size={14} /> {savingProfile ? t.saving : t.save}
+                    </button>
+                    {savedAt && (
+                      <p className="text-xs font-editorial text-brass mt-3 text-center">{t.saved}</p>
+                    )}
+                  </form>
+                  <MaFiche lang={lang} />
+                </div>
 
-          {/* Profile */}
-          <form onSubmit={saveProfile} className="lg:col-span-5 glass-light rounded-lg-card p-7 md:p-8 self-start">
-            <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-2">
-              <UserIcon size={12} className="inline mr-1.5 -mt-0.5" />{t.profileEyebrow}
-            </p>
-            <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-5">{t.profileTitle}</h2>
-            <label className="block mb-4">
-              <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.displayName}</span>
-              <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputCls} />
-            </label>
-            <label className="block mb-5">
-              <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.phone}</span>
-              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
-            </label>
-            <button type="submit" disabled={savingProfile}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
-              <Save size={14} /> {savingProfile ? t.saving : t.save}
-            </button>
-            {savedAt && (
-              <p className="text-xs font-editorial italic text-brass mt-3 text-center">{t.saved}</p>
+                <div className="lg:col-span-7 space-y-6 md:space-y-8">
+                  <ApplicationCard
+                    icon={HandHeart}
+                    eyebrow={t.benevoleEyebrow}
+                    title={t.benevoleTitle}
+                    loading={loadingApps}
+                    app={bApp}
+                    ctaApply={t.benevoleApply}
+                    ctaEdit={t.benevoleEdit}
+                    href={addLocale('/benevole', lang)}
+                    acceptedCta={{ label: t.benevoleOpenSpace, href: addLocale('/espace-benevole', lang) }}
+                    statusLabel={(s) => STATUS_LABEL[s][lang === 'FR' ? 'fr' : 'en']}
+                    statusTone={(s) => STATUS_LABEL[s].tone}
+                    none={t.benevoleNone}
+                    lang={lang}
+                  />
+                  <ApplicationCard
+                    icon={ShoppingBag}
+                    eyebrow={t.vendorEyebrow}
+                    title={t.vendorTitle}
+                    loading={loadingApps}
+                    app={vApp}
+                    ctaApply={t.vendorApply}
+                    ctaEdit={t.vendorEdit}
+                    href={addLocale('/marche/inscription', lang)}
+                    acceptedCta={{ label: t.vendorManageKiosk, href: addLocale('/marche/inscription', lang) }}
+                    statusLabel={(s) => STATUS_LABEL[s][lang === 'FR' ? 'fr' : 'en']}
+                    statusTone={(s) => STATUS_LABEL[s].tone}
+                    none={t.vendorNone}
+                    lang={lang}
+                  />
+
+                  {/* ── Marchand ↔ FMM messaging ── */}
+                  {vApp && (
+                    <div className="glass-light rounded-lg-card p-6 md:p-7">
+                      <MessageThread
+                        vendorUid={user.uid}
+                        currentUid={user.uid}
+                        currentName={user.displayName || vApp.contact || 'Marchand'}
+                        currentRole="vendor"
+                        lang={lang}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-          </form>
 
-          {/* Applications */}
-          <div className="lg:col-span-7 space-y-6">
-            <ApplicationCard
-              icon={HandHeart}
-              eyebrow={t.benevoleEyebrow}
-              title={t.benevoleTitle}
-              loading={loadingApps}
-              app={bApp}
-              ctaApply={t.benevoleApply}
-              ctaEdit={t.benevoleEdit}
-              href={addLocale('/benevole', lang)}
-              acceptedCta={{ label: t.benevoleOpenSpace, href: addLocale('/espace-benevole', lang) }}
-              statusLabel={(s) => STATUS_LABEL[s][lang === 'FR' ? 'fr' : 'en']}
-              statusTone={(s) => STATUS_LABEL[s].tone}
-              none={t.benevoleNone}
-              lang={lang}
-            />
-            <ApplicationCard
-              icon={ShoppingBag}
-              eyebrow={t.vendorEyebrow}
-              title={t.vendorTitle}
-              loading={loadingApps}
-              app={vApp}
-              ctaApply={t.vendorApply}
-              ctaEdit={t.vendorEdit}
-              href={addLocale('/marche/inscription', lang)}
-              acceptedCta={{ label: t.vendorManageKiosk, href: addLocale('/marche/inscription', lang) }}
-              statusLabel={(s) => STATUS_LABEL[s][lang === 'FR' ? 'fr' : 'en']}
-              statusTone={(s) => STATUS_LABEL[s].tone}
-              none={t.vendorNone}
-              lang={lang}
-            />
-          </div>
+            {onglet === 'badges' && <MesBadges lang={lang} />}
 
-          {/* ── Marchand ↔ FMM messaging ── */}
-          {user && vApp && (
-            <div className="mt-10 glass-light rounded-lg-card p-6 md:p-7">
-              <MessageThread
-                vendorUid={user.uid}
-                currentUid={user.uid}
-                currentName={user.displayName || vApp.contact || 'Marchand'}
-                currentRole="vendor"
-                lang={lang}
-              />
-            </div>
-          )}
+            {onglet === 'jeux' && (
+              <div className="space-y-6 md:space-y-8">
+                <SalonDesJeux lang={lang} />
+                <DefisTafl lang={lang} />
+              </div>
+            )}
+
+            {onglet === 'billets' && (
+              <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
+                <div className="lg:col-span-7"><CoffreBillets uid={user.uid} lang={lang} /></div>
+                <div className="lg:col-span-5">
+                  <SoutienPanel lang={lang} userEmail={user.email || ''} userName={displayName || user.displayName || ''} />
+                </div>
+              </div>
+            )}
+
+            {onglet === 'caravane' && <AnnoncesPanel lang={lang} />}
+          </motion.div>
         </div>
       </section>
     </main>
   );
 };
+
+// ── Les onglets de l'espace ────────────────────────────────────────
+const ONGLETS = ['profil', 'badges', 'jeux', 'billets', 'caravane'] as const;
+type Onglet = typeof ONGLETS[number];
+const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
+  profil: UserIcon, badges: Award, jeux: Swords, billets: Ticket, caravane: Megaphone,
+};
+
+// Un chiffre du bandeau : le nombre en gros, le mot en petit, et un
+// clic qui ouvre l'onglet correspondant.
+const Chiffre: React.FC<{ n: number; sur?: number; label: string; onClick: () => void }> = ({ n, sur, label, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="group flex flex-col items-center md:items-start gap-1.5 px-2 py-1.5 rounded-card transition hover:bg-brass/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-brass"
+  >
+    <span className="witcher-stat-num text-2xl md:text-3xl transition group-hover:text-brass">
+      {n}{sur != null && <span className="text-base opacity-40"> / {sur}</span>}
+    </span>
+    <span className="witcher-stat-label text-[9px] md:text-[10px]">{label}</span>
+  </button>
+);
 
 interface AppCardProps {
   icon: React.ComponentType<{ size?: number; className?: string }>;
