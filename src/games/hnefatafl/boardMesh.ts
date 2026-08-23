@@ -75,6 +75,61 @@ const PALETTES: Record<string, Palette> = {
   },
 };
 
+
+// ── Le bois de la table ─────────────────────────────────────────────
+// Alex, 2026-08-22 : le socle sortait en aplat, on ne voyait aucun
+// bois. Une texture de veine est peinte au canevas (aucun fichier à
+// télécharger) : des cernes qui ondulent, quelques nœuds, un grain
+// fin. `repeat` ensuite selon la pièce pour que la veine ne s'étire pas.
+function boisTexture(teinte: number, veine: number): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 512;
+  const g = c.getContext('2d')!;
+  const hex = (n: number) => '#' + n.toString(16).padStart(6, '0');
+  g.fillStyle = hex(teinte);
+  g.fillRect(0, 0, 512, 512);
+
+  // Les cernes : des bandes verticales qui ondulent doucement.
+  g.strokeStyle = hex(veine);
+  for (let i = 0; i < 190; i++) {
+    const x = Math.random() * 512;
+    g.globalAlpha = 0.05 + Math.random() * 0.16;
+    g.lineWidth = 0.6 + Math.random() * 2.6;
+    g.beginPath();
+    g.moveTo(x, 0);
+    const amp = 5 + Math.random() * 16;
+    for (let y = 0; y <= 512; y += 16) {
+      g.lineTo(x + Math.sin((y / 512) * Math.PI * (1 + Math.random() * 1.5)) * amp, y);
+    }
+    g.stroke();
+  }
+
+  // Quelques nœuds : le bois d'une vraie table n'est jamais régulier.
+  for (let k = 0; k < 4; k++) {
+    const nx = 40 + Math.random() * 432;
+    const ny = 40 + Math.random() * 432;
+    for (let r = 22; r > 1; r -= 2.4) {
+      g.globalAlpha = 0.05 + (22 - r) * 0.012;
+      g.beginPath();
+      g.ellipse(nx, ny, r, r * 0.55, Math.random() * Math.PI, 0, Math.PI * 2);
+      g.stroke();
+    }
+  }
+
+  // Grain fin, pour que la lumière rasante accroche quelque chose.
+  g.globalAlpha = 0.05;
+  for (let i = 0; i < 5200; i++) {
+    g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
+    g.fillRect(Math.random() * 512, Math.random() * 512, 1, 1);
+  }
+  g.globalAlpha = 1;
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 8;
+  return tex;
+}
+
 export function buildBoard(
   scene: THREE.Scene,
   isAlive?: () => boolean,
@@ -98,18 +153,22 @@ export function buildBoard(
   // ── Socle : deux plateaux de velours-noyer, biseau de laiton ────
   const span = N * CELL;
 
+  const boisProfond = boisTexture(pal.socle, pal.socleHaut);
+  boisProfond.repeat.set(2.5, 2.5);
   const baseDeep = new THREE.Mesh(
     new THREE.BoxGeometry(span + 2.2, 0.5, span + 2.2),
-    new THREE.MeshPhongMaterial({ color: pal.socle, shininess: 8 }),
+    new THREE.MeshPhongMaterial({ color: 0xffffff, map: boisProfond, shininess: 10, specular: 0x2a1a0c }),
   );
   baseDeep.position.y = -0.42;
   baseDeep.receiveShadow = true;
   group.add(baseDeep);
   cosmetics.push(baseDeep);
 
+  const boisTable = boisTexture(pal.socleHaut, pal.clair);
+  boisTable.repeat.set(2, 2);
   const baseTop = new THREE.Mesh(
     new THREE.BoxGeometry(span + 1.5, 0.3, span + 1.5),
-    new THREE.MeshPhongMaterial({ color: pal.socleHaut, shininess: 14 }),
+    new THREE.MeshPhongMaterial({ color: 0xffffff, map: boisTable, shininess: 22, specular: 0x3a2712 }),
   );
   baseTop.position.y = -0.12;
   baseTop.receiveShadow = true;
