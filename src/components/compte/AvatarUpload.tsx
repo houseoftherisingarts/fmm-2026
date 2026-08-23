@@ -88,11 +88,17 @@ const AvatarUpload: React.FC<{
     } finally { setBusy(false); }
   };
 
+  // Le médaillon est à l'échelle des orbes de section : la photo est le
+  // premier objet de l'espace, comme sur n'importe quel réseau social
+  // (Alex, 2026-08-23). Les commandes passent en pastille sur le bord,
+  // au lieu d'une colonne de texte à côté.
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex flex-col items-center gap-4 shrink-0">
       <div className="relative shrink-0">
-        <div
-          className="relative w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden"
+        <label
+          htmlFor="avatar-input"
+          title={avatarUrl ? t.change : t.add}
+          className="relative block w-60 h-60 md:w-80 md:h-80 rounded-full overflow-hidden cursor-pointer"
           style={{
             border: '1px solid rgba(216, 176, 90, 0.75)',
             boxShadow: '0 0 32px -6px rgba(216,176,90,0.55), 0 10px 26px -10px rgba(0,0,0,0.85)',
@@ -108,7 +114,7 @@ const AvatarUpload: React.FC<{
             />
           ) : (
             <span
-              className="absolute inset-0 flex items-center justify-center font-display text-3xl"
+              className="absolute inset-0 flex items-center justify-center font-display text-6xl md:text-7xl"
               style={{ color: 'rgba(216,176,90,0.9)' }}
             >
               {initials}
@@ -116,51 +122,59 @@ const AvatarUpload: React.FC<{
           )}
           {busy && (
             <span className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(10,2,7,0.7)' }}>
-              <span className="w-6 h-6 rounded-full border-2 border-t-transparent border-amber-300 animate-spin" />
+              <span className="w-8 h-8 rounded-full border-2 border-t-transparent border-amber-300 animate-spin" />
             </span>
           )}
-        </div>
+        </label>
 
         {/* Anneau de laiton extérieur, comme les médaillons du site */}
         <span
           aria-hidden
-          className="absolute -inset-1.5 rounded-full pointer-events-none"
+          className="absolute -inset-2 rounded-full pointer-events-none"
           style={{ border: '1px solid rgba(216, 176, 90, 0.28)' }}
         />
-      </div>
 
-      <div className="min-w-0">
-        <p className="witcher-stat-label mb-2">{t.label}</p>
+        {/* Pastille appareil photo, posée sur la jante du médaillon. */}
+        <label
+          htmlFor="avatar-input"
+          aria-hidden
+          className="absolute bottom-[7%] right-[7%] w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition hover:brightness-125"
+          style={{
+            background: 'rgba(10,2,7,0.85)',
+            border: '1px solid rgba(216,176,90,0.7)',
+            color: '#D8B05A',
+            boxShadow: '0 8px 20px -10px rgba(0,0,0,0.95)',
+          }}
+        >
+          <Camera size={18} />
+        </label>
+
         <input
           ref={inputRef}
           id="avatar-input"
           type="file"
           accept="image/*"
+          aria-label={avatarUrl ? t.change : t.add}
           className="sr-only"
           onChange={(e) => accept(e.target.files?.[0])}
         />
-        <div className="flex items-center gap-3 flex-wrap">
-          <label htmlFor="avatar-input" className="witcher-prompt cursor-pointer inline-flex">
-            <span className="witcher-prompt-glyph"><span>A</span></span>
-            {avatarUrl ? t.change : t.add}
-            <Camera size={13} />
-          </label>
-          {avatarUrl && (
-            <button
-              type="button"
-              onClick={remove}
-              className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.2em] text-[10px] opacity-60 hover:opacity-100 transition"
-              style={{ color: '#E08A6E' }}
-            >
-              <Trash2 size={12} /> {t.remove}
-            </button>
-          )}
-        </div>
-        <p className="font-sans text-xs mt-3" style={{ color: 'rgba(244,239,227,0.4)', fontWeight: 300 }}>
+      </div>
+
+      {avatarUrl ? (
+        <button
+          type="button"
+          onClick={remove}
+          className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.2em] text-[10px] opacity-60 hover:opacity-100 transition"
+          style={{ color: '#E08A6E' }}
+        >
+          <Trash2 size={12} /> {t.remove}
+        </button>
+      ) : (
+        <p className="font-sans text-xs text-center max-w-[15rem]" style={{ color: 'rgba(244,239,227,0.42)', fontWeight: 300 }}>
           {t.hint}
         </p>
-        {err && <p className="font-sans text-sm mt-2" style={{ color: '#E08A6E' }}>{err}</p>}
-      </div>
+      )}
+      {err && <p className="font-sans text-sm text-center" style={{ color: '#E08A6E' }}>{err}</p>}
     </div>
   );
 };
