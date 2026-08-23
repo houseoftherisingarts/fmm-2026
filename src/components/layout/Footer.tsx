@@ -314,7 +314,7 @@ const Footer: React.FC = () => {
             Demandée par Alex le 2026-08-03. */}
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 pb-6 flex justify-center">
           <a
-            href="https://www.lesalondesinconnus.com"
+            href="https://vexel-webstudio.web.app"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-2.5 text-[11px] font-sans transition-colors"
@@ -330,8 +330,8 @@ const Footer: React.FC = () => {
             />
             <span className="opacity-45 group-hover:opacity-80 transition-opacity uppercase tracking-[0.28em]">
               {lang === 'FR'
-                ? 'Site développé par Le Salon des Inconnus'
-                : 'Website built by Le Salon des Inconnus'}
+                ? 'Site développé par Vexel Webstudio, un projet du Salon des Inconnus'
+                : 'Website built by Vexel Webstudio, a project of Le Salon des Inconnus'}
             </span>
           </a>
         </div>

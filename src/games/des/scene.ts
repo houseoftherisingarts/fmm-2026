@@ -18,6 +18,18 @@ const TEXTURES = {
 
 const chargeur = new THREE.TextureLoader();
 
+/** Les convives peints, un par place, dans le registre des portraits
+ *  de Thronebreaker (Alex, 2026-08-23). Six visages différents pour
+ *  que deux joueurs ne se ressemblent jamais dans la même partie. */
+const CONVIVES = [
+  '/jeux/des/convives/bourreau.webp',
+  '/jeux/des/convives/dame.webp',
+  '/jeux/des/convives/meunier.webp',
+  '/jeux/des/convives/moine.webp',
+  '/jeux/des/convives/taverniere.webp',
+  '/jeux/des/convives/colporteur.webp',
+];
+
 /**
  * Charge une texture peinte, et garde le repli fabriqué au canevas si
  * le fichier manque : le jeu ne doit jamais s'ouvrir sur du gris.
@@ -500,6 +512,7 @@ export function creerTable(): TableDes {
   }> = [];
   const envol: Array<{ de: THREE.Mesh; depart: number }> = [];
   const sieges: Array<{ x: number; z: number }> = [];
+  const convives: THREE.Mesh[] = [];
 
   // Le geste complet d'un joueur : il brasse, il retourne le gobelet
   // sur la table, puis il le soulève (Alex, 2026-08-23).
@@ -635,6 +648,12 @@ export function creerTable(): TableDes {
       });
     }
 
+    // Les convives restent tournés vers la caméra pendant qu'elle
+    // tourne autour de la table.
+    convives.forEach((c) => {
+      c.lookAt(camera.position.x, c.position.y, camera.position.z);
+    });
+
     orbite?.update();
     renderer.render(scene, camera);
   };
@@ -706,6 +725,7 @@ export function creerTable(): TableDes {
       mesDes.length = 0;
       desAdverses.length = 0;
       const pl = places(nb);
+      convives.length = 0;
       sieges.length = 0;
       pl.forEach((p) => sieges.push({ x: p.x, z: p.z }));
       pl.forEach((p, i) => {
@@ -721,6 +741,20 @@ export function creerTable(): TableDes {
             mesDes.push(d);
           }
         } else {
+          // Un convive peint se tient derrière la place, tourné vers
+          // le centre de la table.
+          const tex = chargeur.load(CONVIVES[(i - 1) % CONVIVES.length]);
+          tex.colorSpace = THREE.SRGBColorSpace;
+          const haut = 3.4;
+          const plaque = new THREE.Mesh(
+            new THREE.PlaneGeometry(haut * 0.62, haut),
+            new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }),
+          );
+          plaque.position.set(p.x * 1.32, haut / 2 - 0.35, p.z * 1.32);
+          plaque.lookAt(0, haut / 2 - 0.35, 0);
+          groupe.add(plaque);
+          convives.push(plaque);
+
           const mains: THREE.Mesh[] = [];
           for (let k = 0; k < 5; k++) {
             const d = faireDe();

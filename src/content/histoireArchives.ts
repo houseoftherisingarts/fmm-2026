@@ -157,8 +157,8 @@ export const ARCHIVES_LENA: string[] = [
 ];
 
 export const ARCHIVES_ALEX: string[] = [
-  // Photogrammes du vidéoclip des Caravanes, tiré du film de
-  // l’édition 2026 (Alex, 2026-08-23). Ils ouvrent la section.
+  // Un photogramme par PLAN du vidéoclip des Caravanes, choisi
+  // pour sa netteté, les doublons écartés (Alex, 2026-08-23).
   "clip-caravanes-01.webp",
   "clip-caravanes-02.webp",
   "clip-caravanes-03.webp",
@@ -182,6 +182,11 @@ export const ARCHIVES_ALEX: string[] = [
   "clip-caravanes-21.webp",
   "clip-caravanes-22.webp",
   "clip-caravanes-23.webp",
+  "clip-caravanes-24.webp",
+  "clip-caravanes-25.webp",
+  "clip-caravanes-26.webp",
+  "clip-caravanes-27.webp",
+  "clip-caravanes-28.webp",
   "1_1_1_1_1_1.webp",
   "1_26_1_1_26_1.webp",
   "1_30_1_1_30_1.webp",
@@ -209,7 +214,7 @@ export const ARCHIVES_ALEX: string[] = [
   "480915045_649158614156356_4457817649196276_n.webp",
   "smaller.webp",
   "smaller2.webp",
-  "smaller_3.webp"
+  "smaller_3.webp",
 ];
 
 
