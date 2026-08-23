@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "taflParties",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "joueurs", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

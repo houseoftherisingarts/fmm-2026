@@ -19,6 +19,7 @@ import CoffreBillets from '../components/compte/CoffreBillets';
 import SoutienPanel from '../components/compte/SoutienPanel';
 import AvatarUpload from '../components/compte/AvatarUpload';
 import SalonDesJeux from '../components/compte/SalonDesJeux';
+import DefisTafl from '../components/compte/DefisTafl';
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
@@ -235,6 +236,7 @@ const ComptePage: React.FC = () => {
           <div className="lg:col-span-7 space-y-6 md:space-y-8">
             <CoffreBillets uid={user.uid} lang={lang} />
             <SalonDesJeux lang={lang} />
+            <DefisTafl lang={lang} />
           </div>
           <div className="lg:col-span-5"><SoutienPanel lang={lang} userEmail={user.email || ''} userName={displayName || user.displayName || ''} /></div>
         </div>
