@@ -1,0 +1,190 @@
+// ─── La table des dés ───────────────────────────────────────────────
+// Three.js pur : une table de taverne, un gobelet de cuir par joueur,
+// des dés de bois taillés dans des faces peintes au canevas. Aucun
+// fichier à télécharger : le bois, les points et le son sont fabriqués
+// à l'exécution.
+
+import * as THREE from 'three';
+import type { Face } from './regles';
+
+export interface TableDes {
+  monter: (el: HTMLElement) => void;
+  demonter: () => void;
+  /** Place les gobelets selon le nombre de joueurs. */
+  disposer: (nb: number) => void;
+  /** Lance les dés du joueur humain, puis les pose sur leurs faces. */
+  lancer: (faces: Face[], onFini?: () => void) => void;
+  /** Montre ou cache les dés des autres au dévoilement. */
+  devoiler: (mains: Face[][], montrer: boolean) => void;
+  /** Le gobelet du joueur dont c'est le tour se soulève un peu. */
+  designer: (index: number) => void;
+}
+
+// ── Le bois, peint une fois pour toutes ─────────────────────────────
+function boisTexture(teinte: string, veine: string, taille = 512): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = c.height = taille;
+  const g = c.getContext('2d')!;
+  g.fillStyle = teinte;
+  g.fillRect(0, 0, taille, taille);
+  g.strokeStyle = veine;
+  for (let i = 0; i < 160; i++) {
+    const x = Math.random() * taille;
+    g.globalAlpha = 0.04 + Math.random() * 0.14;
+    g.lineWidth = 0.6 + Math.random() * 2.4;
+    g.beginPath();
+    g.moveTo(x, 0);
+    const amp = 4 + Math.random() * 14;
+    for (let y = 0; y <= taille; y += 16) {
+      g.lineTo(x + Math.sin((y / taille) * Math.PI * (1 + Math.random())) * amp, y);
+    }
+    g.stroke();
+  }
+  g.globalAlpha = 0.05;
+  for (let i = 0; i < 3000; i++) {
+    g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
+    g.fillRect(Math.random() * taille, Math.random() * taille, 1, 1);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 8;
+  return t;
+}
+
+// ── Une face de dé : os clair, points creusés ───────────────────────
+const POINTS: Record<number, Array<[number, number]>> = {
+  1: [[0.5, 0.5]],
+  2: [[0.28, 0.28], [0.72, 0.72]],
+  3: [[0.26, 0.26], [0.5, 0.5], [0.74, 0.74]],
+  4: [[0.28, 0.28], [0.72, 0.28], [0.28, 0.72], [0.72, 0.72]],
+  5: [[0.26, 0.26], [0.74, 0.26], [0.5, 0.5], [0.26, 0.74], [0.74, 0.74]],
+  6: [[0.28, 0.22], [0.72, 0.22], [0.28, 0.5], [0.72, 0.5], [0.28, 0.78], [0.72, 0.78]],
+};
+
+function faceTexture(n: number): THREE.CanvasTexture {
+  const s = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = s;
+  const g = c.getContext('2d')!;
+  // Os vieilli
+  g.fillStyle = '#e6dcc2';
+  g.fillRect(0, 0, s, s);
+  g.globalAlpha = 0.06;
+  for (let i = 0; i < 1600; i++) {
+    g.fillStyle = Math.random() > 0.5 ? '#8a7a55' : '#fffaf0';
+    g.fillRect(Math.random() * s, Math.random() * s, 1.5, 1.5);
+  }
+  g.globalAlpha = 1;
+  // Bord légèrement bruni
+  const grad = g.createRadialGradient(s / 2, s / 2, s * 0.28, s / 2, s / 2, s * 0.72);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(90,60,25,0.28)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, s, s);
+  // Les points, creusés
+  for (const [x, y] of POINTS[n]) {
+    const r = n === 1 ? s * 0.11 : s * 0.075;
+    g.beginPath();
+    g.arc(x * s, y * s, r, 0, Math.PI * 2);
+    g.fillStyle = '#2a1d10';
+    g.fill();
+    g.beginPath();
+    g.arc(x * s - r * 0.18, y * s - r * 0.18, r * 0.72, 0, Math.PI * 2);
+    g.fillStyle = '#14100a';
+    g.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.anisotropy = 8;
+  return t;
+}
+
+// L'ordre des matériaux d'un BoxGeometry : +X, -X, +Y, -Y, +Z, -Z.
+// On pose 3, 4, 5, 2, 1, 6 : les faces opposées font sept, comme un
+// vrai dé.
+const ORDRE_FACES = [3, 4, 5, 2, 1, 6];
+
+// Rotation à donner au dé pour amener une face vers le ciel.
+const VERS_LE_CIEL: Record<Face, [number, number, number]> = {
+  1: [Math.PI / 2, 0, 0],
+  2: [Math.PI, 0, 0],
+  3: [0, 0, Math.PI / 2],
+  4: [0, 0, -Math.PI / 2],
+  5: [0, 0, 0],
+  6: [-Math.PI / 2, 0, 0],
+};
+
+// ── Le son, fabriqué au vol ─────────────────────────────────────────
+function fabriquerSon() {
+  let ctx: AudioContext | null = null;
+  const ouvrir = () => {
+    if (!ctx) ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    return ctx;
+  };
+  const clac = (t: number, gain = 0.16) => {
+    const a = ouvrir();
+    const duree = 0.06;
+    const buf = a.createBuffer(1, a.sampleRate * duree, a.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) {
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 5);
+    }
+    const src = a.createBufferSource();
+    src.buffer = buf;
+    const filtre = a.createBiquadFilter();
+    filtre.type = 'bandpass';
+    filtre.frequency.value = 900 + Math.random() * 900;
+    filtre.Q.value = 1.4;
+    const vol = a.createGain();
+    vol.gain.value = gain;
+    src.connect(filtre).connect(vol).connect(a.destination);
+    src.start(a.currentTime + t);
+  };
+  return {
+    /** Le bruit des dés secoués dans le gobelet. */
+    secouer() {
+      for (let i = 0; i < 14; i++) clac(i * 0.055 + Math.random() * 0.03, 0.09 + Math.random() * 0.06);
+    },
+    /** Les dés qui tombent sur la table. */
+    tomber() {
+      for (let i = 0; i < 6; i++) clac(0.02 * i + Math.random() * 0.05, 0.2);
+    },
+  };
+}
+
+export function creerTable(): TableDes {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0506);
+  scene.fog = new THREE.Fog(0x0a0506, 9, 20);
+
+  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
+  camera.position.set(0, 5.6, 6.4);
+  camera.lookAt(0, 0, 0.4);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  // ── La table ──────────────────────────────────────────────────────
+  const bois = boisTexture('#3a2412', '#1c1108');
+  bois.repeat.set(3, 3);
+  const table = new THREE.Mesh(
+    new THREE.CylinderGeometry(6.2, 6.4, 0.42, 48),
+    new THREE.MeshPhongMaterial({ color: 0xffffff, map: bois, shininess: 16, specular: 0x3a2712 }),
+  );
+  table.position.y = -0.24;
+  table.receiveShadow = true;
+  scene.add(table);
+
+  // Un drap de feutre au centre, pour amortir les dés.
+  const feutre = new THREE.Mesh(
+    new THREE.CylinderGeometry(3.1, 3.1, 0.02, 48),
+    new THREE.MeshPhongMaterial({ color: 0x4a1520, shininess: 4 }),
+  );
+  feutre.position.y = -0.02;
+  feutre.receiveShadow = true;
+  scene.add(feutre);
+
+  // ── Lumières de taverne ───────────────────────────────────────────
+  scene.add(new THREE.AmbientLight(0x insufficient, 0));
+  return null as unknown as TableDes;
+}
