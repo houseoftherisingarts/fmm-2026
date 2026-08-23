@@ -244,9 +244,10 @@ const AdminShell: React.FC<Props> = ({
                 <span
                   className="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 font-sans uppercase tracking-[0.25em] text-[9px]"
                   style={{
-                    color: 'var(--admin-accent)',
-                    background: 'var(--admin-accent)0d',
-                    border: '1px solid var(--admin-line)',
+                    borderRadius: 6,
+                    color: 'var(--admin-brass-hi)',
+                    background: 'color-mix(in oklab, var(--admin-accent), transparent 91%)',
+                    border: '1px solid var(--admin-accent-line)',
                   }}
                 >
                   <ShieldCheck size={9} />
