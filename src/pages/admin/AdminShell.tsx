@@ -175,7 +175,7 @@ const AdminShell: React.FC<Props> = ({
       <aside className={`admin-rail fixed inset-y-0 left-0 z-40 w-72 flex flex-col transform transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:z-0 lg:sticky lg:top-0 lg:h-screen lg:self-start`}>
         {/* Brand block */}
         <div className="admin-rail-brand px-6 pt-7 pb-5">
-          <img decoding="async" src="/fmm-logo-embossed-silver.webp" alt="FMM" className="h-8 w-auto mb-3 opacity-90" />
+          <img decoding="async" src="/fmm-logo-embossed-silver.webp" alt="FMM" className="h-9 w-auto mb-3.5" />
           <p className="admin-eyebrow inline-flex items-center gap-2">
             <span aria-hidden style={{ width: 5, height: 5, transform: 'rotate(45deg)', background: 'var(--admin-accent)' }} />
             Espace Admin
