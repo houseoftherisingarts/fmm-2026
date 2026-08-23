@@ -204,6 +204,8 @@ const ACTIVITIES: Array<{
   descFR:  string;
   descEN:  string;
   image:   string;
+  /** Cadrage de la photo quand le centre coupe le sujet (Alex, 2026-08-22). */
+  imagePos?: string;
   category: Category;
   /** Activité en relâche : tuile grisée, mention « prochaine édition ». */
   retiree?: boolean;
@@ -215,7 +217,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Sorcières',        titleEN: 'Witches',           bodyFR: 'Herboristerie, tissage, artisanat',                       bodyEN: 'Herbalism, weaving, crafts',
     descFR: 'Herboristerie, tissage, cuisine ancestrale, sortilèges domestiques. Les sorcières du festival ouvrent leurs grimoires et partagent les savoirs qu’on a presque oubliés : entre racines, fils et chaudron.',
     descEN: 'Herbalism, weaving, ancestral cooking, household spellwork. The festival’s witches open their grimoires and share knowledge that’s almost forgotten: between roots, threads and cauldron.',
-    image: '/activites/webp/1f021070.webp', category: 'crafts' },
+    image: '/activites/webp/volvas.webp', category: 'crafts' },
   { titleFR: 'Démonstrations',   titleEN: 'Demonstrations',    bodyFR: 'Forge, savoirs ancestraux',                               bodyEN: 'Forge, ancestral knowledge',
     descFR: 'Forge, fonderie, gravure sur os, planage de bois ancestral, tissage. Les artisans-démonstrateurs travaillent devant vous, expliquant chaque geste hérité d’une époque où la matière était travaillée à la main.',
     descEN: 'Forge, foundry, bone engraving, ancestral wood planing, weaving. The demonstrator-artisans work in front of you, explaining each gesture handed down from an age when matter was shaped by hand.',
@@ -223,7 +225,9 @@ const ACTIVITIES: Array<{
   { titleFR: 'Joutes',           titleEN: 'Jousts',            bodyFR: 'Équestres',                                                bodyEN: 'On horseback',
     descFR: 'Joutes équestres à la lance et à l’épée. Chevaliers et destriers s’affrontent dans l’arène : une tradition millénaire remise au goût du jour.',
     descEN: 'Mounted joust with lance and sword. Knights and chargers face off in the arena: a thousand-year-old tradition brought up to date.',
-    image: '/activites/webp/04ba7d92.webp', category: 'combat' },
+    // Recadrée vers la droite : au centre, la tête du cheval et la main
+    // gauche du chevalier de gauche tombaient hors cadre (Alex).
+    image: '/activites/webp/04ba7d92.webp', imagePos: '62% 50%', category: 'combat' },
   { titleFR: 'Spectacles',       titleEN: 'Shows',             bodyFR: 'Et musique',                                               bodyEN: 'And music',
     descFR: 'Compagnies de scène, musiciens, conteurs, troupes itinérantes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys et plus : du tambour viking aux ballades médiévales.',
     descEN: 'Stage companies, musicians, storytellers, travelling troupes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys and more: from Viking drums to medieval ballads.',
@@ -246,11 +250,11 @@ const ACTIVITIES: Array<{
   { titleFR: 'À Boire !',        titleEN: 'Drink!',            bodyFR: 'Bières des Brasseurs Philosophales et autres rinces-gosier', bodyEN: 'Beers from Brasseurs Philosophales and other tipples',
     descFR: 'Bières des Brasseurs Philosophales, hydromels, vins épicés, infusions sans alcool. Plusieurs estaminets répartis sur le site pour étancher la soif des aventuriers.',
     descEN: 'Beers from Brasseurs Philosophales, meads, spiced wines, alcohol-free infusions. Several taverns across the site to quench adventurers’ thirst.',
-    image: '/activites/webp/1f021070.webp', category: 'ripaille' },
+    image: '/activites/webp/a-boire.webp', category: 'ripaille' },
   { titleFR: 'Soirée Dansante',  titleEN: 'Dance Party',       bodyFR: 'Ateliers éducatifs',                                       bodyEN: 'Educational workshops',
     descFR: 'La nuit venue, le feu prend, les tambours s’animent et le festival devient un grand bal médiéval. Ouvert à tous : gigue ou bourrée, on y danse autour des flammes jusqu’au matin.',
     descEN: 'Once night falls, the fire kindles, the drums come alive and the festival becomes a great medieval ball. Open to all: jig or bourrée, danced around the flames till morning.',
-    image: '/activites/webp/2c6a22e9.webp', category: 'shows' },
+    image: '/activites/webp/danse-jupes.webp', category: 'shows' },
   { titleFR: 'Boustifaille',     titleEN: 'Feast',             bodyFR: 'La becquetance et la ripaille avec le nouveau village gustatif', bodyEN: 'Eating and feasting at the new food village',
     descFR: 'Le nouveau village gustatif : cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille, comme nous les aimons.',
     descEN: 'The new food village: clan kitchens, table d’hôte, equinox banquet. Suckling pig, flatbread, stews, period pastries. Feasting and merrymaking as we love it.',
@@ -397,7 +401,6 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
   // Programmation repliable aussi (Alex, 2026-08-22) : la page réunit
   // trois pages, on doit pouvoir refermer un chapitre pour atteindre le
   // suivant. Ouverte au départ : c'est le contenu principal.
-  const [activitesOpen, setActivitesOpen] = useState(true);
   // Fiche-éclair d'un événement de l'horaire (glossaire cliquable).
   const [infoItem, setInfoItem] = useState<{ label: string; time: string; where: string; body: string } | null>(null);
   // Horaire 2026 officiel en ligne : la carte s'ouvre d'elle-même.
@@ -726,21 +729,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
               {t.activitiesLead}
             </p>
-            <button
-              type="button"
-              onClick={() => { playSelect(); setActivitesOpen((v) => !v); }}
-              aria-expanded={activitesOpen}
-              aria-controls="activites-corps"
-              className="prog-anchor mt-7 inline-flex items-center gap-3 pl-3 pr-5 py-3 font-sans text-[11px] uppercase tracking-[0.2em] font-semibold"
-            >
-              <span aria-hidden className="prog-anchor-glyph">
-                <ChevronDown size={16} style={{ transform: activitesOpen ? 'rotate(180deg)' : 'none', transition: 'transform .3s ease' }} />
-              </span>
-              {activitesOpen ? t.replier : t.deplier}
-            </button>
           </div>
 
-          <div id="activites-corps" hidden={!activitesOpen}>
+          <div id="activites-corps">
 
           {/* ── HUD top bar: inventory header. Two rows: title + stats,
               then arrow nav flanking the filter chips. Chips + arrows
@@ -884,7 +875,10 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       loading="lazy"
                       decoding="async"
                       className="fmm-grade-caravan absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-[1.04]"
-                      style={a.retiree ? { filter: 'grayscale(0.85) brightness(0.6)' } : undefined}
+                      style={{
+                        objectPosition: a.imagePos,
+                        ...(a.retiree ? { filter: 'grayscale(0.85) brightness(0.6)' } : {}),
+                      }}
                     />
 
                     {/* Sceau de relâche : l'activité reviendra. */}
@@ -1496,6 +1490,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                   src={activeActivity.image}
                   alt={lang === 'FR' ? activeActivity.titleFR : activeActivity.titleEN}
                   className="fmm-grade-caravan absolute inset-0 w-full h-full object-cover"
+                  style={{ objectPosition: activeActivity.imagePos }}
                 />
                 <span aria-hidden className="fmm-grade-caravan-tint absolute inset-0 pointer-events-none" />
                 <span
@@ -1565,7 +1560,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     color: 'var(--color-velvet-deep)',
                     background:
                       'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
-                    clipPath: 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
+                    borderRadius: 14,
                     boxShadow:
                       'inset 0 1px 0 rgba(255, 240, 200, 0.4), 0 8px 22px -8px rgba(216, 155, 58, 0.55)',
                   }}

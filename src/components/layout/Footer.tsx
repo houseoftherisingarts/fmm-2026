@@ -406,7 +406,7 @@ const SocialButton: React.FC<{ href: string; label: string; children: React.Reac
       color: 'var(--color-amber-glow)',
       background: 'rgba(232, 177, 74, 0.08)',
       border: '1px solid rgba(232, 177, 74, 0.35)',
-      clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+      borderRadius: 12,
     }}
     onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(232, 177, 74, 0.18)'; }}
     onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(232, 177, 74, 0.08)'; }}

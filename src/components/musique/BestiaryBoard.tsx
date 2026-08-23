@@ -32,11 +32,15 @@ const JOURS: { key: 'vendredi' | 'samedi' | 'dimanche'; FR: string; EN: string }
 interface Props {
   bands: BestiaryBand[];
   lang: 'FR' | 'EN';
-  /** Libellé du registre, à gauche au-dessus de la liste. */
+  /** Libellé du registre, au-dessus de la liste. */
   registre?: string;
+  /** Titre du groupe pour les fiches sans journée (archives). */
+  sansJourTitre?: string;
+  /** Archives : registre à droite, notice à gauche (demande d'Alex). */
+  mirror?: boolean;
 }
 
-const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
+const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, mirror = false }) => {
   const reduce = useReducedMotion();
   const [active, setActive] = useState(0);
   const stage = useRef<HTMLDivElement | null>(null);
@@ -51,9 +55,14 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
       if (items.length) out.push({ titre: j[lang], items });
     });
     const sansJour = bands.map((band, i) => ({ band, i })).filter(({ band }) => !band.jour);
-    if (sansJour.length) out.push({ titre: lang === 'FR' ? 'Au programme' : 'On the bill', items: sansJour });
+    if (sansJour.length) {
+      out.push({
+        titre: sansJourTitre ?? (lang === 'FR' ? 'Au programme' : 'On the bill'),
+        items: sansJour,
+      });
+    }
     return out;
-  }, [bands, lang]);
+  }, [bands, lang, sansJourTitre]);
 
   const b = bands[active];
   const jourLabel = JOURS.find((j) => j.key === b?.jour)?.[lang];
@@ -75,10 +84,16 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
   if (!b) return null;
 
   return (
-    <div className="grid gap-6 lg:gap-0 lg:grid-cols-[16rem_minmax(0,1fr)_20rem] xl:grid-cols-[18rem_minmax(0,1fr)_23rem]">
+    <div
+      className={
+        mirror
+          ? 'grid gap-6 lg:gap-0 lg:grid-cols-[20rem_minmax(0,1fr)_16rem] xl:grid-cols-[23rem_minmax(0,1fr)_18rem]'
+          : 'grid gap-6 lg:gap-0 lg:grid-cols-[16rem_minmax(0,1fr)_20rem] xl:grid-cols-[18rem_minmax(0,1fr)_23rem]'
+      }
+    >
 
       {/* ── Le registre ─────────────────────────────────────────── */}
-      <aside className="lg:pr-7">
+      <aside className={mirror ? 'lg:pl-7 lg:order-3' : 'lg:pr-7 lg:order-1'}>
         <p className="witcher-stat-label mb-4">{registre ?? (lang === 'FR' ? 'Le registre' : 'The register')}</p>
         <div className="flex lg:block gap-2.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 -mx-1 px-1 lg:mx-0 lg:px-0">
           {groupes.map((g) => (
@@ -119,11 +134,11 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
       </aside>
 
       {/* ── Le portrait ─────────────────────────────────────────
-          Format portrait, la vraie photo, cadrée et non détourée.
-          object-cover pour que toutes les fiches aient la même
-          silhouette quelle que soit la photo fournie. */}
-      <div ref={stage} className="relative lg:px-8 lg:sticky lg:top-24 lg:self-start">
-        <div className="bestiary-portrait mx-auto w-full max-w-[22rem] lg:max-w-none">
+          Cadre paysage : la plupart des formations sont à plusieurs et
+          un cadre portrait leur coupait la moitié du groupe (Alex,
+          2026-08-22). Aucun filtre sur la photo, jamais. */}
+      <div ref={stage} className="relative lg:px-8 lg:order-2 lg:sticky lg:top-24 lg:self-start">
+        <div className="bestiary-portrait mx-auto w-full max-w-[34rem] lg:max-w-none">
           <AnimatePresence mode="wait">
             <motion.img
               key={b.name}
@@ -145,7 +160,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre }) => {
       </div>
 
       {/* ── La notice ───────────────────────────────────────────── */}
-      <div className="lg:pl-7">
+      <div className={mirror ? 'lg:pr-7 lg:order-1' : 'lg:pl-7 lg:order-3'}>
         <AnimatePresence mode="wait">
           <motion.div
             key={b.name}

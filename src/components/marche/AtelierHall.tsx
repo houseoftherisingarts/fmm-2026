@@ -211,7 +211,7 @@ const FocusCard: React.FC<{
                 <div className="absolute top-5 left-5 z-10 flex items-center gap-3">
                   <span
                     className="font-sans text-[10px] tracking-[0.5em] px-3 py-1 caravan-glass"
-                    style={{ color: 'var(--color-amber-glow)', clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)' }}
+                    style={{ color: 'var(--color-amber-glow)', borderRadius: 12 }}
                   >
                     {String(index + 1).padStart(2, '0')} <span className="opacity-50">·</span> {String(total).padStart(2, '0')}
                   </span>

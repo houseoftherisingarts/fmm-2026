@@ -155,7 +155,7 @@ const FaubourgPage: React.FC = () => {
                   style={{
                     color: '#1a050b', fontWeight: 600,
                     background: 'linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%)',
-                    clipPath: 'polygon(22px 0, 100% 0, calc(100% - 22px) 100%, 0 100%)',
+                    borderRadius: 16,
                     boxShadow: '0 0 48px -8px rgba(216,176,90,0.65), 0 18px 40px -14px rgba(0,0,0,0.8)',
                   }}
                 >

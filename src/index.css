@@ -650,18 +650,11 @@
    Pair with `.fmm-grade-caravan-tint` overlaid on top (a low-opacity
    warm rectangle in mix-blend-mode: multiply) to unify the residual
    hue cast across photos shot in wildly different lighting. */
-.fmm-grade-caravan {
-  filter:
-    saturate(0.58)
-    contrast(1.06)
-    brightness(0.92)
-    sepia(0.11)
-    hue-rotate(-4deg);
-}
-.fmm-grade-caravan-tint {
-  background-color: rgba(150, 95, 45, 0.14);
-  mix-blend-mode: multiply;
-}
+/* 2026-08-22, Alex : plus AUCUN filtre sur les photos du festival.
+   Les classes restent (le markup s'en sert partout) mais ne gradent
+   plus rien : chaque photo sort telle que le photographe l'a rendue. */
+.fmm-grade-caravan { filter: none; }
+.fmm-grade-caravan-tint { background-color: transparent; mix-blend-mode: normal; }
 
 /* Auto-grade every photo on a caravan page: pulls the festival's
    wildly-mixed photography (different photographers / lighting eras)
@@ -670,14 +663,7 @@
    Opt out by giving an <img> the .fmm-no-grade class: used on logos,
    the Green Knight (already alpha-clean), and any image that needs
    to render its natural colors. */
-.fmm-caravan-page img:not(.fmm-no-grade) {
-  filter:
-    saturate(0.58)
-    contrast(1.06)
-    brightness(0.92)
-    sepia(0.11)
-    hue-rotate(-4deg);
-}
+.fmm-caravan-page img:not(.fmm-no-grade) { filter: none; }
 
 /* ── Glistening sweep: orb-style diagonal shine for cards.
    Re-uses the orb's fmm-orb-sweep keyframes. Loops on a slow cycle
@@ -1686,11 +1672,13 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
    cartouche sombre. On voit que ça se clique. */
 .prog-anchor {
   position: relative;
-  color: #F4EFE3;
-  background: linear-gradient(180deg, rgba(60,34,16,.95) 0%, rgba(34,17,10,.95) 100%);
-  border: 1px solid rgba(216,176,90,.55);
-  clip-path: polygon(13px 0, 100% 0, calc(100% - 13px) 100%, 0 100%);
-  box-shadow: 0 10px 26px -12px rgba(0,0,0,.9), inset 0 1px 0 rgba(232,200,122,.18);
+  color: rgba(244, 239, 227, .82);
+  background: rgba(19, 8, 11, .55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(216, 155, 58, .18);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .06), 0 12px 28px -18px rgba(0, 0, 0, .9);
   transition: background .28s ease, color .28s ease, transform .28s ease,
               box-shadow .28s ease, border-color .28s ease;
   cursor: pointer;
@@ -1698,75 +1686,86 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 .prog-anchor:hover,
 .prog-anchor:focus-visible {
   transform: translateY(-2px);
-  border-color: #E8C87A;
-  background: linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%);
-  color: #1a050b;
-  box-shadow: 0 0 40px -8px rgba(216,176,90,.7), 0 16px 34px -14px rgba(0,0,0,.9);
+  color: var(--color-bone);
+  border-color: rgba(232, 177, 74, .55);
+  background: linear-gradient(180deg, rgba(232, 177, 74, .10), rgba(19, 8, 11, .78));
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .18), 0 0 28px -10px rgba(232, 177, 74, .55);
 }
 .prog-anchor-glyph {
   display: inline-flex; align-items: center; justify-content: center;
   width: 30px; height: 30px;
-  border: 1px solid rgba(216,176,90,.45);
-  background: rgba(10,4,6,.55);
-  color: #E8C87A;
+  border: 1px solid rgba(216, 155, 58, .28);
+  border-radius: 10px;
+  background: rgba(10, 4, 6, .45);
+  color: var(--color-amber-glow);
   transition: inherit;
 }
 .prog-anchor:hover .prog-anchor-glyph,
 .prog-anchor:focus-visible .prog-anchor-glyph {
-  border-color: rgba(26,5,11,.5);
-  background: rgba(26,5,11,.14);
-  color: #1a050b;
+  border-color: rgba(232, 177, 74, .55);
+  background: rgba(232, 177, 74, .12);
 }
 
 /* ── Bestiaire des groupes ─────────────────────────────────────────
-   Alex, 2026-08-22, 2e passe : le registre doit se lire comme une
-   colonne de VRAIS boutons (plaque, arête, cartouche de vignette),
-   et le centre montre la vraie photo en portrait, sans détourage. */
+   Alex, 2026-08-22, 3e passe : la plaque de laiton à arête coupée
+   sortait de la charte. Le registre reprend la grammaire des plaques
+   de journée de l'horaire, la seule que le site tient pour bonne :
+   verre sombre, coins arrondis, filet ambre, halo quand c'est choisi.
+   Le cadre central passe en paysage, la plupart des formations étant
+   à plusieurs, et aucune photo ne porte de filtre. */
 .bestiary-row {
   position: relative;
-  display: flex; align-items: center; gap: .7rem;
-  padding: .5rem .75rem .5rem .5rem;
+  display: flex; align-items: center; gap: .7rem; width: 100%;
+  padding: .55rem .8rem .55rem .55rem;
   text-align: left;
-  background: linear-gradient(180deg, rgba(52,30,16,.72) 0%, rgba(26,13,8,.72) 100%);
-  border: 1px solid rgba(216,176,90,.26);
-  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-  box-shadow: inset 0 1px 0 rgba(232,200,122,.1);
-  transition: background .24s ease, border-color .24s ease, transform .24s ease;
+  background: rgba(19, 8, 11, .55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(216, 155, 58, .18);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .05);
+  transition: background .24s ease, border-color .24s ease, transform .24s ease, box-shadow .24s ease;
   cursor: pointer;
 }
-.bestiary-row + .bestiary-row { margin-top: .4rem; }
-.bestiary-row:hover { border-color: rgba(232,200,122,.6); transform: translateX(2px); }
+.bestiary-row + .bestiary-row { margin-top: .5rem; }
+.bestiary-row:hover {
+  transform: translateY(-2px);
+  border-color: rgba(232, 177, 74, .45);
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .12), 0 0 24px -12px rgba(232, 177, 74, .5);
+}
 .bestiary-row[data-on="true"] {
-  background: linear-gradient(180deg, rgba(216,176,90,.24) 0%, rgba(140,100,40,.2) 100%);
-  border-color: #E8C87A;
-  box-shadow: 0 0 26px -10px rgba(216,176,90,.75), inset 0 1px 0 rgba(255,235,180,.22);
+  background: linear-gradient(180deg, rgba(232, 177, 74, .10), rgba(19, 8, 11, .78));
+  border-color: rgba(232, 177, 74, .55);
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .18), 0 0 28px -10px rgba(232, 177, 74, .55);
 }
 .bestiary-row-thumb {
-  flex: 0 0 auto; width: 40px; height: 40px; overflow: hidden;
-  border: 1px solid rgba(216,176,90,.4);
-  background: rgba(10,4,6,.7);
+  flex: 0 0 auto; width: 46px; height: 34px; overflow: hidden;
+  border: 1px solid rgba(216, 155, 58, .3);
+  border-radius: 9px;
+  background: rgba(10, 4, 6, .6);
 }
 .bestiary-row-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .bestiary-row-thumb-empty { display: block; width: 100%; height: 100%;
-  background: radial-gradient(circle at 50% 40%, rgba(216,176,90,.22), transparent 70%); }
+  background: radial-gradient(circle at 50% 40%, rgba(232, 177, 74, .2), transparent 70%); }
 .bestiary-row-name {
   flex: 1 1 auto; min-width: 0;
   font-family: var(--font-display); font-size: 13px; line-height: 1.2;
-  color: rgba(244,239,227,.85);
+  color: rgba(244, 239, 227, .82);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.bestiary-row[data-on="true"] .bestiary-row-name { color: #F6E7BE; }
+.bestiary-row[data-on="true"] .bestiary-row-name { color: var(--color-bone); }
 .bestiary-row-mark {
   flex: 0 0 auto; width: 7px; height: 7px; transform: rotate(45deg);
-  border: 1px solid rgba(216,176,90,.35);
+  border: 1px solid rgba(216, 155, 58, .35);
   transition: background .24s ease, border-color .24s ease;
 }
-.bestiary-row[data-on="true"] .bestiary-row-mark { background: #E8C87A; border-color: #E8C87A; }
+.bestiary-row[data-on="true"] .bestiary-row-mark { background: var(--color-amber-glow); border-color: var(--color-amber-glow); }
 
 .bestiary-portrait {
-  position: relative; aspect-ratio: 3 / 4; overflow: hidden;
+  position: relative; aspect-ratio: 16 / 10; overflow: hidden;
   background: #0d0906;
-  border: 1px solid rgba(216,176,90,.34);
+  border: 1px solid rgba(216,155,58,.3);
+  border-radius: 16px;
   box-shadow: 0 34px 70px -26px rgba(0,0,0,.92);
 }
 /* Voile bas : le nom à droite garde le dessus sur une photo claire. */
@@ -1781,7 +1780,68 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   position: absolute; width: 20px; height: 20px; pointer-events: none;
   border-color: rgba(232,200,122,.75); border-style: solid; border-width: 0;
 }
-.bestiary-portrait-corner.tl { top: 8px; left: 8px;  border-top-width: 1px; border-left-width: 1px; }
-.bestiary-portrait-corner.tr { top: 8px; right: 8px; border-top-width: 1px; border-right-width: 1px; }
-.bestiary-portrait-corner.bl { bottom: 8px; left: 8px;  border-bottom-width: 1px; border-left-width: 1px; }
-.bestiary-portrait-corner.br { bottom: 8px; right: 8px; border-bottom-width: 1px; border-right-width: 1px; }
+.bestiary-portrait-corner.tl { top: 12px; left: 12px;  border-top-width: 1px; border-left-width: 1px; }
+.bestiary-portrait-corner.tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
+.bestiary-portrait-corner.bl { bottom: 12px; left: 12px;  border-bottom-width: 1px; border-left-width: 1px; }
+.bestiary-portrait-corner.br { bottom: 12px; right: 12px; border-bottom-width: 1px; border-right-width: 1px; }
+
+/* ── Le bouton de verre ────────────────────────────────────────────
+   Alex, 2026-08-22 : une seule grammaire de bouton sur tout le site,
+   celle des plaques de journée de l'horaire. Verre sombre, coins
+   arrondis, filet ambre, halo quand la souris passe. Jamais d'arête
+   coupée, jamais d'italique. */
+.fmm-glass-btn {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem;
+  border-radius: 16px;
+  background: rgba(19, 8, 11, .55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(216, 155, 58, .2);
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .06), 0 16px 34px -22px rgba(0, 0, 0, .95);
+  cursor: pointer;
+  transition: background .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+.fmm-glass-btn:hover, .fmm-glass-btn:focus-visible {
+  border-color: rgba(232, 177, 74, .55);
+  background: linear-gradient(180deg, rgba(232, 177, 74, .12), rgba(19, 8, 11, .8));
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .2), 0 0 34px -10px rgba(232, 177, 74, .6);
+}
+.fmm-glass-btn.is-primary {
+  background: linear-gradient(180deg, rgba(232, 177, 74, .16), rgba(19, 8, 11, .8));
+  border-color: rgba(232, 177, 74, .5);
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .22), 0 0 30px -12px rgba(232, 177, 74, .55);
+}
+.fmm-glass-btn-label {
+  font-family: var(--font-display);
+  font-size: 15px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--color-bone);
+}
+.fmm-glass-btn-note {
+  font-family: var(--font-sans);
+  font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(244, 239, 227, .55);
+}
+.fmm-glass-btn.is-primary .fmm-glass-btn-note { color: var(--color-amber-glow); }
+
+/* ── Contenants du village gustatif ────────────────────────────────
+   Alex, 2026-08-22 : le menu coulait d'une catégorie à l'autre et le
+   banquet flottait sur le fond. Chaque guilde a sa carte de verre, le
+   banquet a son écrin plus sombre. Même grammaire que les boutons. */
+.fmm-menu-card {
+  border-radius: 16px;
+  padding: 1.35rem 1.4rem 1.5rem;
+  background: rgba(19, 8, 11, .45);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(216, 155, 58, .16);
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .05), 0 18px 40px -30px rgba(0, 0, 0, .9);
+}
+.fmm-banquet-shell {
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(9, 4, 6, .82), rgba(14, 6, 9, .68));
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(232, 177, 74, .22);
+  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .1), 0 40px 90px -50px rgba(0, 0, 0, .95);
+}

@@ -175,7 +175,7 @@ const NavBar: React.FC = () => {
                 color: 'var(--color-velvet-deep)',
                 background:
                   'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
-                clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+                borderRadius: 999,
                 boxShadow:
                   'inset 0 1px 0 rgba(255, 240, 200, 0.4), 0 6px 18px -6px rgba(216, 155, 58, 0.55)',
               }}
@@ -210,14 +210,18 @@ const NavBar: React.FC = () => {
               ))}
             </div>
 
-            {/* Account / sign-in */}
+            {/* Account / sign-in
+                La pastille ronde avec une silhouette ne disait pas ce
+                qu'elle ouvrait (Alex, 2026-08-22). Le bouton porte
+                maintenant son mot : « Connexion » quand personne n'est
+                entré, « Mon espace » une fois la porte franchie. */}
             {user ? (
               <Link
                 to={addLocale('/compte', lang)}
-                className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full transition-all"
+                className="hidden sm:inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
                 style={{
                   background: 'rgba(10, 2, 7, 0.5)',
-                  border: '1px solid rgba(232, 177, 74, 0.25)',
+                  border: '1px solid rgba(232, 177, 74, 0.35)',
                   color: 'var(--color-amber-glow)',
                 }}
                 onMouseEnter={(e) => {
@@ -225,36 +229,38 @@ const NavBar: React.FC = () => {
                   e.currentTarget.style.boxShadow = '0 0 14px -4px rgba(232, 177, 74, 0.55)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.35)';
                   e.currentTarget.style.boxShadow = '';
                 }}
-                aria-label={lang === 'FR' ? 'Mon compte / Espace client' : 'My account / Client space'}
-                title={lang === 'FR' ? 'Mon compte / Espace client' : 'My account / Client space'}
+                aria-label={lang === 'FR' ? 'Mon espace membre' : 'My member space'}
+                title={lang === 'FR' ? 'Mon espace membre' : 'My member space'}
               >
                 <User size={14} />
+                {lang === 'FR' ? 'Mon espace' : 'My space'}
               </Link>
             ) : (
               <button
                 type="button"
                 onClick={openSignIn}
-                className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full transition-all"
+                className="hidden sm:inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
                 style={{
                   background: 'rgba(10, 2, 7, 0.5)',
-                  border: '1px solid rgba(244, 239, 227, 0.18)',
-                  color: 'rgba(244, 239, 227, 0.75)',
+                  border: '1px solid rgba(244, 239, 227, 0.22)',
+                  color: 'rgba(244, 239, 227, 0.8)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.55)';
                   e.currentTarget.style.color = 'var(--color-amber-glow)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(244, 239, 227, 0.18)';
-                  e.currentTarget.style.color = 'rgba(244, 239, 227, 0.75)';
+                  e.currentTarget.style.borderColor = 'rgba(244, 239, 227, 0.22)';
+                  e.currentTarget.style.color = 'rgba(244, 239, 227, 0.8)';
                 }}
-                aria-label={UI[lang].signIn}
-                title={UI[lang].signIn}
+                aria-label={lang === 'FR' ? 'Connexion ou création de compte' : 'Sign in or create an account'}
+                title={lang === 'FR' ? 'Connexion ou création de compte' : 'Sign in or create an account'}
               >
                 <User size={14} />
+                {lang === 'FR' ? 'Connexion' : 'Sign in'}
               </button>
             )}
 
@@ -482,7 +488,7 @@ const NavBar: React.FC = () => {
                 style={{
                   color: 'var(--color-velvet-deep)',
                   background: `linear-gradient(180deg, ${ACCENT_BRIGHT} 0%, ${ACCENT_MID} 55%, ${ACCENT_DEEP} 100%)`,
-                  clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
+                  borderRadius: 999,
                   boxShadow:
                     `inset 0 1px 0 rgba(255, 240, 200, 0.45), 0 14px 32px -10px ${ACCENT_GLOW}`,
                   border: `1px solid ${ACCENT_DEEP}`,

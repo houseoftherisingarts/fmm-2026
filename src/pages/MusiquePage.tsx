@@ -168,43 +168,6 @@ const AFFICHE_2026_BANDS: Band[] = [
   },
 ];
 
-const ArchiveCard: React.FC<{ band: Band; lang: 'FR' | 'EN' }> = ({ band, lang }) => (
-  <div className="rounded-card border border-stone/25 bg-midnight-deep/35 overflow-hidden transition-colors hover:border-stone/45">
-    <div className="relative w-full aspect-video overflow-hidden">
-      <img
-        src={band.image || '/wix/musique/skarazula.webp'}
-        alt={band.imageAlt || band.name}
-        className="w-full h-full object-cover"
-        loading="lazy"
-        style={{ filter: 'sepia(0.45) saturate(0.7) brightness(0.92) contrast(1.05)' }}
-        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/wix/musique/skarazula.webp'; }}
-      />
-      {band.annee && (
-        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/60 border border-stone/40 font-sans text-[10px] uppercase tracking-widest text-stone">
-          {band.annee}
-        </span>
-      )}
-    </div>
-    <div className="p-4 md:p-5">
-      <h3 className="font-display title-medieval text-lg md:text-xl text-ivory-soft mb-1.5">{band.name}</h3>
-      <p className="font-editorial text-sm text-ivory-soft/70 leading-snug line-clamp-2">
-        {lang === 'FR' ? band.bioFR : band.bioEN}
-      </p>
-      {band.website && (
-        <a
-          href={band.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1 font-sans text-[11px] uppercase tracking-widest text-stone hover:text-ivory-soft transition"
-        >
-          {lang === 'FR' ? 'Site web' : 'Website'}
-          <ArrowUpRight size={12} />
-        </a>
-      )}
-    </div>
-  </div>
-);
-
 // ─── Page ────────────────────────────────────────────────────────────
 const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
@@ -267,7 +230,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
         <section id="musique" className="relative pt-24 md:pt-32 pb-2">
           <div className="max-w-screen-xl mx-auto px-4 md:px-8 text-center">
             <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-4">{t.eyebrow}</p>
-            <DisplayTitle size="lg" glow>{t.title}</DisplayTitle>
+            <DisplayTitle size="xl" glow>{t.title}</DisplayTitle>
             <p className="font-editorial text-base md:text-lg max-w-2xl mx-auto mt-5"
                style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
               {t.intro1}
@@ -306,6 +269,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
 
       {/* ── Bands des Ans Passés: archive compacte, pas de carrousel ── */}
       <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-transparent via-black/20 to-transparent">
+        <SectionFog />
         <Motes className="opacity-30" count={10} />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <Reveal className="text-center mb-10 md:mb-14 max-w-2xl mx-auto">
@@ -316,18 +280,24 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
               {t.sectionPastLead}
             </p>
           </Reveal>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {archives.map((band: Band, bi: number) => (
-              <Reveal key={band.name} from="up" delay={0.08 + bi * 0.05}>
-                <ArchiveCard band={band} lang={lang} />
-              </Reveal>
-            ))}
-          </div>
+          {/* Même bestiaire que l'affiche de cette année, en miroir :
+              le registre passe à droite et la notice à gauche (Alex,
+              2026-08-22). Aucun filtre sur les photos. */}
+          <Reveal from="up" delay={0.1}>
+            <BestiaryBoard
+              bands={archives}
+              lang={lang}
+              mirror
+              registre={t.registre}
+              sansJourTitre={t.sectionPastEyebrow}
+            />
+          </Reveal>
         </div>
       </section>
 
       {/* ── Your troupe here CTA ── */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
         <Parallax speed={0.12} className="absolute inset-0 -z-10">
           <div
             className="absolute inset-x-0 top-1/4 h-1/2"
@@ -373,7 +343,7 @@ const FR = {
   section2026Note:    'Programmation en cours. Les horaires de passage seront annoncés sous peu.',
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Groupes des ans passés',
-  sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Utilisez les chevrons (ou ← →) pour parcourir les groupes.',
+  sectionPastLead:    'Les bardes qui ont animé les éditions précédentes du festival. Choisissez un nom dans le registre pour lire sa notice.',
   registre: 'Le registre des troupes',
   artist:  'Artiste',
   spotify: 'Écouter sur Spotify',
@@ -397,7 +367,7 @@ const EN = {
   section2026Note:    'Lineup in progress. Set times will be announced shortly.',
   sectionPastEyebrow: 'Archives',
   sectionPastTitle:   'Bands from past years',
-  sectionPastLead:    'The bards who animated previous editions of the festival. Use the chevrons (or ← →) to browse the bands.',
+  sectionPastLead:    'The bards who animated previous editions of the festival. Pick a name in the register to read its notice.',
   registre: 'The register of troupes',
   artist:  'Artist',
   spotify: 'Listen on Spotify',

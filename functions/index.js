@@ -41,7 +41,7 @@ const SQUARE_ACCESS_TOKEN = defineSecret('SQUARE_ACCESS_TOKEN');
 const SQUARE_WEBHOOK_KEY = defineSecret('SQUARE_WEBHOOK_KEY');
 
 // Boîte du festival, centre de données canadien de Zoho.
-const ZOHO_EMAIL = 'montpelliermedieval@gmail.com';
+const ZOHO_EMAIL = 'admin@festivalmedievaldemontpellier.org';
 const ZOHO_SMTP_HOST = 'smtp.zohocloud.ca';
 const FROM = `Festival Médiéval de Montpellier <${ZOHO_EMAIL}>`;
 
@@ -50,15 +50,24 @@ const PDF = path.join(__dirname, 'grimoire-fmm-2026.pdf');
 // n'est pas un grimoire : on ne poste rien.
 const ARTICLE = 'grimoire';
 
-const URL_WEBHOOK =
-  process.env.GRIMOIRE_WEBHOOK_URL ||
-  'https://squaregrimoire-cnbtsjxk4a-uc.a.run.app';
-
-/** Vérifie la signature HMAC-SHA256 que Square pose sur chaque webhook. */
+/**
+ * Vérifie la signature HMAC-SHA256 que Square pose sur chaque webhook.
+ * Square signe l'URL de notification concaténée au corps brut. On
+ * reconstruit l'URL depuis la requête plutôt que de la coder en dur :
+ * l'adresse Cloud Run change au premier redéploiement de région.
+ */
 function signatureValide(req, cleSignature) {
   const recue = req.get('x-square-hmacsha256-signature');
   if (!recue) return false;
-  const charge = URL_WEBHOOK + req.rawBody.toString('utf8');
+  // Square signe l'URL EXACTE enregistrée dans l'abonnement. Reconstruire
+  // depuis l'en-tête Host échoue quand Google achemine l'appel de
+  // cloudfunctions.net vers Cloud Run : l'hôte vu ici n'est plus celui
+  // que Square a signé. On garde donc l'URL enregistrée, en clair.
+  // Abonnement : wbhk_7e251fc4c85e42c79d4d2a888346bc24.
+  const url =
+    process.env.GRIMOIRE_WEBHOOK_URL ||
+    'https://us-central1-festivalmedieval.cloudfunctions.net/squareGrimoire';
+  const charge = url + req.rawBody.toString('utf8');
   const attendue = crypto
     .createHmac('sha256', cleSignature)
     .update(charge)

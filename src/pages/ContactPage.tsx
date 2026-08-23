@@ -218,7 +218,7 @@ const ContactPage: React.FC = () => {
                         color: 'var(--color-velvet-deep)',
                         background:
                           'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
-                        clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
+                        borderRadius: 16,
                         boxShadow:
                           'inset 0 1px 0 rgba(255, 240, 200, 0.45), 0 14px 32px -10px rgba(216, 155, 58, 0.7)',
                       }}

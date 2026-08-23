@@ -251,7 +251,7 @@ const BugReportModal: React.FC<Props> = ({ open, onClose }) => {
                     className="w-full font-sans uppercase tracking-[0.25em] text-xs py-3.5 transition-all disabled:opacity-60"
                     style={{
                       color: '#140a10', background: 'var(--color-amber-glow)',
-                      clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+                      borderRadius: 12,
                     }}
                   >
                     {status === 'sending' ? t.sending : t.send}

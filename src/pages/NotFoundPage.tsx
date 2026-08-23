@@ -155,7 +155,7 @@ const NotFoundPage: React.FC = () => {
                 'linear-gradient(180deg, #14361e 0%, #0a2614 55%, #04130a 100%)',
               border: '1px solid #2c5a3a',
               boxShadow: 'inset 0 1px 0 rgba(184, 224, 198, 0.10), 0 12px 28px -10px rgba(26, 68, 41, 0.25)',
-              clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
+              borderRadius: 16,
             }}
           >
             ← {t.cta}

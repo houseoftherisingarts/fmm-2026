@@ -145,24 +145,39 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
           className="mt-14 md:mt-20 pt-12 md:pt-16 pb-2 flex flex-col items-center text-center"
           style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}
         >
-          <motion.button
-            type="button"
-            onClick={onApply}
-            whileHover={reduce ? undefined : { y: -3, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            className="group relative inline-flex items-center justify-center gap-4 px-10 md:px-16 py-5 md:py-6 font-sans uppercase tracking-[0.3em] text-sm md:text-base"
-            style={{
-              color: '#1a050b',
-              fontWeight: 600,
-              background: 'linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%)',
-              clipPath: 'polygon(22px 0, 100% 0, calc(100% - 22px) 100%, 0 100%)',
-              boxShadow: '0 0 48px -8px rgba(216,176,90,0.65), 0 18px 40px -14px rgba(0,0,0,0.8)',
-            }}
-          >
-            {copy.apply2027}
-            <span aria-hidden className="inline-block w-6 h-px bg-[#1a050b]/70 transition-all group-hover:w-12" />
-          </motion.button>
+          {/* Deux portes, côte à côte : la cohorte 2026 a encore de la
+              place au Faubourg, la 2027 se prépare (Alex, 2026-08-22).
+              Boutons de verre à coins arrondis, la seule grammaire de
+              bouton du site. */}
+          <div className="flex flex-col sm:flex-row items-stretch justify-center gap-4 w-full max-w-2xl">
+            <motion.button
+              type="button"
+              onClick={() => { playLoot(); navigate(addLocale('/marche/faubourg', lang)); }}
+              whileHover={reduce ? undefined : { y: -3 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+              className="fmm-glass-btn is-primary flex-1 px-8 py-5"
+            >
+              <span className="fmm-glass-btn-label">{lang === 'FR' ? 'Postuler 2026' : 'Apply 2026'}</span>
+              <span className="fmm-glass-btn-note">
+                {lang === 'FR' ? 'Quelques places encore disponibles' : 'A few spots still open'}
+              </span>
+            </motion.button>
+
+            <motion.button
+              type="button"
+              onClick={onApply}
+              whileHover={reduce ? undefined : { y: -3 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+              className="fmm-glass-btn flex-1 px-8 py-5"
+            >
+              <span className="fmm-glass-btn-label">{copy.apply2027}</span>
+              <span className="fmm-glass-btn-note">
+                {lang === 'FR' ? 'La cohorte de l’an prochain' : 'Next year’s cohort'}
+              </span>
+            </motion.button>
+          </div>
 
           <p
             className="font-sans text-xs md:text-sm tracking-[0.25em] uppercase mt-6"
@@ -170,19 +185,6 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
           >
             {lang === 'FR' ? 'Réponse via votre espace marchand' : 'Reply via your merchant space'}
           </p>
-
-          {/* Le Faubourg 2026 : la rue marchande hors les murs a encore
-              des places. Formulaire habillé FMM, réponses chez Jessee
-              (Google Form). Posé 2026-08-22. */}
-          <button
-            type="button"
-            onClick={() => { playLoot(); navigate(addLocale('/marche/faubourg', lang)); }}
-            className="witcher-prompt mt-10"
-            data-primary="true"
-          >
-            <span className="witcher-prompt-glyph"><span>→</span></span>
-            {lang === 'FR' ? 'Le Faubourg 2026 : places encore disponibles' : 'The Faubourg 2026: spots still available'}
-          </button>
         </div>
         <div className="mt-12 md:mt-16" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }} />
       </div>

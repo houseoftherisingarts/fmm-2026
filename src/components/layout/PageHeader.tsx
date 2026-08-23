@@ -45,6 +45,8 @@ interface Props {
   orbVideo?:    string;
   /** Up to two CTAs displayed below the intro. */
   ctas?:        PageHeaderCta[];
+  /** Miroir : l'orbe passe à gauche et le texte à droite (Alex, 2026-08-22). */
+  mirrored?:    boolean;
   /** Remplace la ligne de dates. Sans cette prop, le bandeau affiche les
    *  dates de l'édition courante. Les pages qui parlent d'une AUTRE
    *  édition doivent la passer, sinon elles annoncent la mauvaise date. */
@@ -60,6 +62,7 @@ const PageHeader: React.FC<Props> = ({
   orbImagePosition = 'center',
   orbVideo,
   ctas = [],
+  mirrored = false,
   dateline,
 }) => {
   const { lang } = useUI();
@@ -83,9 +86,13 @@ const PageHeader: React.FC<Props> = ({
           stays clear so the orb has uncluttered surrounding space. */}
       <SectionFog edges="bottom" />
 
-      <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-28 md:pt-36 pb-12 md:pb-16 grid lg:grid-cols-[1.05fr_1fr] gap-x-12 gap-y-12 items-center">
-        {/* LEFT: text column */}
-        <div className="min-w-0 lg:pr-6">
+      <div
+        className={`relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-28 md:pt-36 pb-12 md:pb-16 grid gap-x-12 gap-y-12 items-center ${
+          mirrored ? 'lg:grid-cols-[1fr_1.05fr]' : 'lg:grid-cols-[1.05fr_1fr]'
+        }`}
+      >
+        {/* Colonne de texte : à droite quand le hero est en miroir */}
+        <div className={`min-w-0 ${mirrored ? 'lg:pl-6 lg:order-2' : 'lg:pr-6'}`}>
           <p className="font-editorial italic uppercase tracking-[0.45em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-7 inline-flex items-center gap-3">
             <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
             {eyebrow}
@@ -143,8 +150,10 @@ const PageHeader: React.FC<Props> = ({
           )}
         </div>
 
-        {/* RIGHT: orb */}
-        <div className="relative w-full max-w-[300px] sm:max-w-[380px] md:max-w-[480px] lg:max-w-[520px] aspect-square justify-self-center lg:justify-self-end">
+        {/* L'orbe : à droite d'ordinaire, à gauche en miroir */}
+        <div className={`relative w-full max-w-[300px] sm:max-w-[380px] md:max-w-[480px] lg:max-w-[520px] aspect-square justify-self-center ${
+          mirrored ? 'lg:order-1 lg:justify-self-start' : 'lg:justify-self-end'
+        }`}>
           {/* Outer warm glow ring */}
           <div
             aria-hidden

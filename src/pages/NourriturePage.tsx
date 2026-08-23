@@ -91,86 +91,6 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
         />
       )}
 
-      {/* ══ 05 · Le menu des kiosques ══════════════════════════════════
-          Le menu général du village : ce qui se commande aux étals
-          pendant les trois jours. Tableau de taverne : nom, meneur
-          pointillé, prix, une ligne d'histoire. */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <SectionFog edges="top" />
-        <Motes className="opacity-40" count={16} />
-        <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14">
-          <SectionTopRail
-            index="05"
-            name={t.kioskRail}
-            meta={t.kioskMeta}
-            metaValue={t.kioskMetaValue}
-            className="mb-10 md:mb-14"
-          />
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-12 md:mb-16 items-end">
-            <header className="lg:col-span-7 min-w-0">
-              <Eyebrow className="mb-5 inline-flex items-center gap-3">
-                <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
-                {t.kioskEyebrow}
-              </Eyebrow>
-              <DisplayTitle size="lg" glow className="mb-6">{t.kioskTitle}</DisplayTitle>
-              <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
-                {t.kioskLead}
-              </p>
-            </header>
-            <p className="lg:col-span-5 font-sans uppercase tracking-[0.3em] text-[10px] leading-loose text-right hidden lg:block" style={{ color: 'rgba(244,239,227,0.45)' }}>
-              {t.kioskAside}
-            </p>
-          </div>
-
-          {/* Le tableau : colonnes de journal, comme un menu papier qui se
-              lit de haut en bas puis colonne suivante. break-inside-avoid
-              garde chaque guilde entière. La taverne suit en pleine
-              largeur, encadrée d'or : la seule rupture. */}
-          <div className="columns-1 md:columns-2 gap-14">
-            {MENU.map((g) => (
-                <article key={g.name.FR} className="break-inside-avoid mb-12 md:mb-14">
-                  <header className="mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
-                    <div className="flex items-baseline gap-3">
-                      <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
-                      <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
-                    </div>
-                    {g.sub && (
-                      <p className="font-editorial italic text-sm mt-1.5 pl-9" style={{ color: 'var(--color-copper)' }}>
-                        {g.sub[lang]}
-                      </p>
-                    )}
-                  </header>
-                  <ul className="space-y-3.5">
-                    {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
-                  </ul>
-                </article>
-            ))}
-          </div>
-
-          {/* La taverne des élixirs : pleine largeur, corners dorés. */}
-          <Reveal className="mt-2">
-            <GildedFrame tone="amber" active className="block">
-              <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
-                <header className="flex items-baseline gap-3 mb-6">
-                  <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}><Glyphe name={ABREUVOIR.icon} size={26} /></span>
-                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{ABREUVOIR.name[lang]}</h3>
-                  <span className="ml-auto font-sans uppercase tracking-[0.3em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
-                    {t.tavernTag}
-                  </span>
-                </header>
-                <ul className="grid md:grid-cols-2 gap-x-14 gap-y-4">
-                  {ABREUVOIR.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
-                </ul>
-              </div>
-            </GildedFrame>
-          </Reveal>
-
-          <p className="font-editorial text-xs md:text-sm text-ivory-soft/70 mt-10 md:mt-12 max-w-2xl">
-            {t.kioskFootnote}
-          </p>
-        </div>
-      </section>
-
       {/* ══ 06 · Le banquet de l'Équinoxe ══════════════════════════════
           Le deuxième menu : cinq services servis à table le dimanche,
           50 places, payé par Square (85 $ + taxes). */}
@@ -186,8 +106,11 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
             className="mb-10 md:mb-14"
           />
 
+          {/* Le banquet flottait comme du texte posé sur le fond : il a
+              maintenant son écrin sombre, comme un hero dans un hero
+              (Alex, 2026-08-22). */}
           <Reveal amount={0.1}>
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-14 md:mb-20">
+            <div className="fmm-banquet-shell grid lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-14 md:mb-20 p-7 md:p-12 lg:p-14">
               <div className="lg:col-span-7 min-w-0">
                 <Eyebrow tone="amber" className="mb-5 inline-flex items-center gap-3">
                   <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
@@ -267,6 +190,89 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
               </StaggerItem>
             ))}
           </Stagger>
+        </div>
+      </section>
+
+      {/* ══ 05 · Le menu des kiosques ══════════════════════════════════
+          Le menu général du village : ce qui se commande aux étals
+          pendant les trois jours. Tableau de taverne : nom, meneur
+          pointillé, prix, une ligne d'histoire. */}
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-40" count={16} />
+        <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14">
+          <SectionTopRail
+            index="05"
+            name={t.kioskRail}
+            meta={t.kioskMeta}
+            metaValue={t.kioskMetaValue}
+            className="mb-10 md:mb-14"
+          />
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-12 md:mb-16 items-end">
+            <header className="lg:col-span-7 min-w-0">
+              <Eyebrow className="mb-5 inline-flex items-center gap-3">
+                <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-copper)' }} />
+                {t.kioskEyebrow}
+              </Eyebrow>
+              <DisplayTitle size="lg" glow className="mb-6">{t.kioskTitle}</DisplayTitle>
+              <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl">
+                {t.kioskLead}
+              </p>
+            </header>
+            <p className="lg:col-span-5 font-sans uppercase tracking-[0.3em] text-[10px] leading-loose text-right hidden lg:block" style={{ color: 'rgba(244,239,227,0.45)' }}>
+              {t.kioskAside}
+            </p>
+          </div>
+
+          {/* Le tableau : colonnes de journal, comme un menu papier qui se
+              lit de haut en bas puis colonne suivante. break-inside-avoid
+              garde chaque guilde entière. La taverne suit en pleine
+              largeur, encadrée d'or : la seule rupture. */}
+          <div className="columns-1 md:columns-2 gap-14">
+            {/* Un contenant par guilde : sans lui, Déjeuner, Boustifaille
+                et Marmite coulaient les uns dans les autres et l'œil ne
+                trouvait plus la frontière (Alex, 2026-08-22). */}
+            {MENU.map((g) => (
+                <article key={g.name.FR} className="fmm-menu-card break-inside-avoid mb-8 md:mb-10">
+                  <header className="mb-5 pb-3" style={{ borderBottom: '1px solid rgba(232,177,74,0.22)' }}>
+                    <div className="flex items-baseline gap-3">
+                      <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
+                      <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
+                    </div>
+                    {g.sub && (
+                      <p className="font-editorial italic text-sm mt-1.5 pl-9" style={{ color: 'var(--color-copper)' }}>
+                        {g.sub[lang]}
+                      </p>
+                    )}
+                  </header>
+                  <ul className="space-y-3.5">
+                    {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
+                  </ul>
+                </article>
+            ))}
+          </div>
+
+          {/* La taverne des élixirs : pleine largeur, corners dorés. */}
+          <Reveal className="mt-2">
+            <GildedFrame tone="amber" active className="block">
+              <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
+                <header className="flex items-baseline gap-3 mb-6">
+                  <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}><Glyphe name={ABREUVOIR.icon} size={26} /></span>
+                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{ABREUVOIR.name[lang]}</h3>
+                  <span className="ml-auto font-sans uppercase tracking-[0.3em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
+                    {t.tavernTag}
+                  </span>
+                </header>
+                <ul className="grid md:grid-cols-2 gap-x-14 gap-y-4">
+                  {ABREUVOIR.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
+                </ul>
+              </div>
+            </GildedFrame>
+          </Reveal>
+
+          <p className="font-editorial text-xs md:text-sm text-ivory-soft/70 mt-10 md:mt-12 max-w-2xl">
+            {t.kioskFootnote}
+          </p>
         </div>
       </section>
 
