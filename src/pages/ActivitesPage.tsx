@@ -217,7 +217,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Sorcières',        titleEN: 'Witches',           bodyFR: 'Herboristerie, tissage, artisanat',                       bodyEN: 'Herbalism, weaving, crafts',
     descFR: 'Herboristerie, tissage, cuisine ancestrale, sortilèges domestiques. Les sorcières du festival ouvrent leurs grimoires et partagent les savoirs qu’on a presque oubliés : entre racines, fils et chaudron.',
     descEN: 'Herbalism, weaving, ancestral cooking, household spellwork. The festival’s witches open their grimoires and share knowledge that’s almost forgotten: between roots, threads and cauldron.',
-    image: '/activites/webp/volvas.webp', category: 'crafts' },
+    image: '/activites/webp/herboristerie.webp', category: 'crafts' },
   { titleFR: 'Démonstrations',   titleEN: 'Demonstrations',    bodyFR: 'Forge, savoirs ancestraux',                               bodyEN: 'Forge, ancestral knowledge',
     descFR: 'Forge, fonderie, gravure sur os, planage de bois ancestral, tissage. Les artisans-démonstrateurs travaillent devant vous, expliquant chaque geste hérité d’une époque où la matière était travaillée à la main.',
     descEN: 'Forge, foundry, bone engraving, ancestral wood planing, weaving. The demonstrator-artisans work in front of you, explaining each gesture handed down from an age when matter was shaped by hand.',
@@ -227,7 +227,7 @@ const ACTIVITIES: Array<{
     descEN: 'Mounted joust with lance and sword. Knights and chargers face off in the arena: a thousand-year-old tradition brought up to date.',
     // Recadrée vers la droite : au centre, la tête du cheval et la main
     // gauche du chevalier de gauche tombaient hors cadre (Alex).
-    image: '/activites/webp/04ba7d92.webp', imagePos: '62% 50%', category: 'combat' },
+    image: '/activites/webp/04ba7d92.webp', imagePos: '38% 50%', category: 'combat' },
   { titleFR: 'Spectacles',       titleEN: 'Shows',             bodyFR: 'Et musique',                                               bodyEN: 'And music',
     descFR: 'Compagnies de scène, musiciens, conteurs, troupes itinérantes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys et plus : du tambour viking aux ballades médiévales.',
     descEN: 'Stage companies, musicians, storytellers, travelling troupes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys and more: from Viking drums to medieval ballads.',
@@ -246,7 +246,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Espace Jeunesse',  titleEN: 'Youth Space',       bodyFR: 'Parc, jeux, animations, gardiennage',                     bodyEN: 'Park, games, activities, supervision',
     descFR: 'Un campement réservé aux jeunes seigneurs : ateliers d’écuyer, jeux d’adresse, contes, gardiennage encadré. L’enfance médiévale, mais sans la peste.',
     descEN: 'A camp reserved for young lords: squire workshops, skill games, tales, supervised babysitting. Medieval childhood, but without the plague.',
-    image: '/wix/jeunesse/3893a56a.jpg', category: 'family' },
+    image: '/activites/webp/4027b51a.webp', category: 'family' },
   { titleFR: 'À Boire !',        titleEN: 'Drink!',            bodyFR: 'Bières des Brasseurs Philosophales et autres rinces-gosier', bodyEN: 'Beers from Brasseurs Philosophales and other tipples',
     descFR: 'Bières des Brasseurs Philosophales, hydromels, vins épicés, infusions sans alcool. Plusieurs estaminets répartis sur le site pour étancher la soif des aventuriers.',
     descEN: 'Beers from Brasseurs Philosophales, meads, spiced wines, alcohol-free infusions. Several taverns across the site to quench adventurers’ thirst.',
@@ -254,7 +254,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Soirée Dansante',  titleEN: 'Dance Party',       bodyFR: 'Ateliers éducatifs',                                       bodyEN: 'Educational workshops',
     descFR: 'La nuit venue, le feu prend, les tambours s’animent et le festival devient un grand bal médiéval. Ouvert à tous : gigue ou bourrée, on y danse autour des flammes jusqu’au matin.',
     descEN: 'Once night falls, the fire kindles, the drums come alive and the festival becomes a great medieval ball. Open to all: jig or bourrée, danced around the flames till morning.',
-    image: '/activites/webp/danse-jupes.webp', category: 'shows' },
+    image: '/activites/webp/danse-jupe-mauve.webp', category: 'shows' },
   { titleFR: 'Boustifaille',     titleEN: 'Feast',             bodyFR: 'La becquetance et la ripaille avec le nouveau village gustatif', bodyEN: 'Eating and feasting at the new food village',
     descFR: 'Le nouveau village gustatif : cuisines de clans, table d’hôte, banquet de l’équinoxe. Cochon de lait, pain plat, ragoûts, pâtisseries d’époque. La becquetance et la ripaille, comme nous les aimons.',
     descEN: 'The new food village: clan kitchens, table d’hôte, equinox banquet. Suckling pig, flatbread, stews, period pastries. Feasting and merrymaking as we love it.',
@@ -270,7 +270,7 @@ const ACTIVITIES: Array<{
   { titleFR: 'Tournois',         titleEN: 'Tournaments',       bodyFR: 'Avec l’AMQ',                                               bodyEN: 'With the AMQ',
     descFR: 'Les activités de l’Association Médiévale du Québec (AMQ), à l’horaire dans l’arène : les Chevaliers, la Joute AMQ, le Jeu du peuple et la Finale de joute du dimanche.',
     descEN: 'The activities of the Association Médiévale du Québec (AMQ), scheduled in the arena: the Knights, the AMQ Joust, the People’s Game and Sunday’s Joust Final.',
-    image: '/activites/webp/4027b51a.webp', category: 'combat' },
+    image: '/activites/webp/tournoi-epees.webp', category: 'combat' },
 ];
 
 const CATEGORIES = ['all', 'combat', 'crafts', 'shows', 'ripaille', 'family'] as const;

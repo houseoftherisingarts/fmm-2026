@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Swords, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Lock } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -8,14 +8,72 @@ import PageHeader from '../components/layout/PageHeader';
 import { Stagger, StaggerItem, ScrollProgress } from '../components/scroll';
 
 // ─── Jeux en ligne ──────────────────────────────────────────────────
-// Les jeux médiévaux jouables (Hnefatafl + à venir) vivaient dans la
-// section Jeunesse de la Programmation; ils ont maintenant leur propre
-// onglet au menu principal (demande d'Alex, 2026-08-20).
+// Une ANNÉE par jeu, comme les années de Gwent (Alex, 2026-08-23). On
+// clique sur l'année et on tombe sur son jeu. Les années sans jeu
+// restent scellées : elles annoncent la suite sans mentir.
+
+interface Annee {
+  id: string;
+  chiffre: string;
+  nomFR: string;  nomEN: string;
+  texteFR: string; texteEN: string;
+  jeuFR?: string; jeuEN?: string;
+  image: string;
+  href?: { fr: string; en: string };
+}
+
+const ANNEES: Annee[] = [
+  {
+    id: 'peste',
+    chiffre: 'I',
+    nomFR: 'L’année de la Peste', nomEN: 'The Year of the Plague',
+    texteFR: 'Les portes closes, les croix à la craie, les corbeaux sur les toits. Le jeu de cette année-là se prépare.',
+    texteEN: 'Shut doors, chalk crosses, ravens on the roofs. That year’s game is in the making.',
+    image: '/tarot/T13.webp',
+  },
+  {
+    id: 'seigneur',
+    chiffre: 'II',
+    nomFR: 'L’année du Seigneur', nomEN: 'The Year of the Lord',
+    texteFR: 'La dîme, le donjon, la table haute. Le jeu de cette année-là se prépare.',
+    texteEN: 'The tithe, the keep, the high table. That year’s game is in the making.',
+    image: '/tarot/T4.webp',
+  },
+  {
+    id: 'vikings',
+    chiffre: 'III',
+    nomFR: 'L’année des Vikings', nomEN: 'The Year of the Vikings',
+    texteFR: 'Un roi cerné cherche la sortie, ses assaillants resserrent l’étau. Cinq règlements au choix, contre l’ordinateur ou contre quelqu’un.',
+    texteEN: 'A cornered king looks for a way out while his attackers tighten the ring. Five rule sets, against the computer or against someone.',
+    jeuFR: 'Hnefatafl', jeuEN: 'Hnefatafl',
+    image: '/photos/hnefatafl-card.webp',
+    href: { fr: '/jeunesse/hnefatafl', en: '/en/youth/hnefatafl' },
+  },
+  {
+    id: 'caravanes',
+    chiffre: 'IV',
+    nomFR: 'L’année des Caravanes', nomEN: 'The Year of the Caravans',
+    texteFR: 'Le jeu que les roulottes portaient de foire en foire. Une carte, trois cartes ou la croix celtique, et la lecture qui va avec.',
+    texteEN: 'The deck the wagons carried from fair to fair. One card, three cards or the Celtic cross, with the reading that goes with it.',
+    jeuFR: 'Tarot de Marseille', jeuEN: 'Marseille Tarot',
+    image: '/tarot/T17.webp',
+    href: { fr: '/jeux/tarot', en: '/en/games/tarot' },
+  },
+  {
+    id: 'poudre',
+    chiffre: 'V',
+    nomFR: 'L’année de la Poudre', nomEN: 'The Year of the Powder',
+    texteFR: 'La mèche, le canon, la fin d’un monde de murailles. Le jeu de cette année-là se prépare.',
+    texteEN: 'The fuse, the cannon, the end of a world of walls. That year’s game is in the making.',
+    image: '/tarot/T16.webp',
+  },
+];
 
 const JeuxEnLignePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
-  const t = lang === 'FR' ? FR : EN;
+  const fr = lang === 'FR';
+  const t = fr ? FR : EN;
 
   return (
     <>
@@ -23,52 +81,89 @@ const JeuxEnLignePage: React.FC = () => {
       <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
-        titleA={lang === 'FR' ? 'Jeux\u00a0en\u00a0ligne' : 'Online\u00a0Games'}
+        titleA={fr ? 'Jeux en ligne' : 'Online Games'}
         intro={t.intro}
         orbImage="/photos/hnefatafl-hero.webp"
         orbImagePosition="center 45%"
       />
 
-      <section className="relative py-16 md:py-24 overflow-hidden">
+      <section className="relative py-14 md:py-20 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <Stagger className="grid md:grid-cols-2 gap-5 md:gap-6" stagger={0.1}>
-            <StaggerItem
-              as="article"
-              className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col"
-            >
-              <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mb-5">
-                <Swords size={24} className="text-brass" />
-              </div>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">Hnefatafl</h3>
-              <div className="divider-brass w-16 mb-4" />
-              <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.hnefataflBody}</p>
-              <Link
-                to={lang === 'EN' ? '/en/youth/hnefatafl' : '/jeunesse/hnefatafl'}
-                className="self-start inline-flex items-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
-              >
-                {t.hnefataflCta}
-                <ArrowUpRight size={14} />
-              </Link>
-            </StaggerItem>
-            <StaggerItem
-              as="article"
-              className="glass-light rounded-lg-card p-7 md:p-9 flex flex-col"
-            >
-              <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mb-5">
-                <Sparkles size={24} className="text-brass" />
-              </div>
-              <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.tarotTitle}</h3>
-              <div className="divider-brass w-16 mb-4" />
-              <p className="font-editorial text-base text-ivory-soft mb-6 flex-1">{t.tarotBody}</p>
-              <Link
-                to={lang === 'EN' ? '/en/games/tarot' : '/jeux/tarot'}
-                className="self-start inline-flex items-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
-              >
-                {t.tarotCta}
-                <ArrowUpRight size={14} />
-              </Link>
-            </StaggerItem>
+          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" stagger={0.08}>
+            {ANNEES.map((a) => {
+              const scellee = !a.href;
+              const carte = (
+                <div
+                  className={`fmm-annee-carte relative h-full overflow-hidden rounded-lg-card border transition-transform duration-300 ${
+                    scellee ? 'border-brass/15' : 'border-brass/35 hover:-translate-y-1'
+                  }`}
+                >
+                  <div className="relative h-44 md:h-52 overflow-hidden">
+                    <img
+                      src={a.image}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      style={scellee ? { filter: 'grayscale(0.9) brightness(0.45)' } : undefined}
+                    />
+                    <span
+                      aria-hidden
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          'linear-gradient(180deg, rgba(10,4,6,0.15) 0%, rgba(10,4,6,0.55) 55%, rgba(10,4,6,0.95) 100%)',
+                      }}
+                    />
+                    <span className="absolute top-3 left-4 font-display title-medieval text-3xl md:text-4xl"
+                          style={{ color: 'rgba(232,177,74,0.55)' }}>
+                      {a.chiffre}
+                    </span>
+                    {scellee && (
+                      <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-brass/35 bg-black/60 font-sans uppercase tracking-[0.2em] text-[9px] text-ivory-soft/70">
+                        <Lock size={10} /> {t.scelle}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-6 md:p-7">
+                    <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
+                      {fr ? a.nomFR : a.nomEN}
+                    </h3>
+                    {a.jeuFR && (
+                      <p className="font-sans uppercase tracking-[0.24em] text-[10px] mb-3"
+                         style={{ color: 'var(--color-amber-glow)' }}>
+                        {fr ? a.jeuFR : a.jeuEN}
+                      </p>
+                    )}
+                    <div className="divider-brass w-14 mb-4" />
+                    <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
+                      {fr ? a.texteFR : a.texteEN}
+                    </p>
+                    {!scellee && (
+                      <span className="mt-5 inline-flex items-center gap-2 font-sans uppercase tracking-widest text-xs font-semibold text-brass">
+                        {t.jouer} <ArrowUpRight size={14} />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+
+              return (
+                <StaggerItem key={a.id} as="div" className="h-full">
+                  {a.href ? (
+                    <Link to={fr ? a.href.fr : a.href.en} className="block h-full">{carte}</Link>
+                  ) : (
+                    <div className="h-full opacity-70 cursor-not-allowed" aria-disabled>{carte}</div>
+                  )}
+                </StaggerItem>
+              );
+            })}
           </Stagger>
+
+          <p className="font-editorial italic text-sm md:text-base text-ivory-soft/70 mt-10 max-w-2xl">
+            {t.pied}
+          </p>
         </div>
       </section>
     </>
@@ -76,31 +171,21 @@ const JeuxEnLignePage: React.FC = () => {
 };
 
 const FR = {
-  eyebrow: 'La table de jeux',
   title: 'Jeux en ligne',
-  intro: 'Les jeux médiévaux du festival, jouables en ligne toute l’année, sur mobile comme au bureau.',
-  hnefataflBody: 'Le jeu d’échecs viking, en 3D. Les Raiders encerclent, les Défenseurs protègent le Roi qui doit s’échapper vers un coin. Plateau 11×11, règles complètes, jouable sur mobile et au bureau.',
-  hnefataflCta: 'Jouer maintenant',
-  jeuxComingSoon: 'Bientôt',
-  jeuxMoreTitle: 'D’autres jeux à venir',
-  jeuxMoreBody: 'Nous préparons d’autres jeux d’époque pour l’édition 2026. Revenez nous voir : la table se remplit.',
-  tarotTitle: 'Tarot de Marseille',
-  tarotBody: 'Le jeu que les caravanes portaient de foire en foire. Posez une question, choisissez une lame, trois lames ou la croix celtique, et lisez ce que disent les vieilles images.',
-  tarotCta: 'Tirer les lames',
+  eyebrow: 'La table de jeux',
+  intro: 'Chaque année du festival a son jeu. Les unes sont ouvertes, les autres attendent encore leur tour de table.',
+  scelle: 'Scellée',
+  jouer: 'Jouer',
+  pied: 'Les années scellées s’ouvriront à mesure que les jeux seront prêts. Une par édition, dans l’ordre du temps.',
 };
 
 const EN = {
+  title: 'Online games',
   eyebrow: 'The games table',
-  title: 'Online Games',
-  intro: 'The festival’s medieval games, playable online all year round, on mobile and desktop.',
-  hnefataflBody: 'The Viking chess game, in 3D. Raiders surround, Defenders protect the King who must escape to a corner. 11×11 board, full rules, playable on mobile and desktop.',
-  hnefataflCta: 'Play now',
-  jeuxComingSoon: 'Coming soon',
-  jeuxMoreTitle: 'More games on the way',
-  jeuxMoreBody: 'We’re preparing more period games for the 2026 edition. Check back: the table is filling up.',
-  tarotTitle: 'Marseille Tarot',
-  tarotBody: 'The deck the caravans carried from fair to fair. Ask a question, pick one card, three cards or the Celtic cross, and read what the old images say.',
-  tarotCta: 'Draw the cards',
+  intro: 'Every year of the festival has its game. Some are open, others are still waiting their turn at the table.',
+  scelle: 'Sealed',
+  jouer: 'Play',
+  pied: 'Sealed years open as the games become ready. One per edition, in the order of time.',
 };
 
 export default JeuxEnLignePage;

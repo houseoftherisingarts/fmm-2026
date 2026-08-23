@@ -43,6 +43,16 @@ interface Props {
 const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, mirror = false }) => {
   const reduce = useReducedMotion();
   const [active, setActive] = useState(0);
+  // Le cadre épouse la photo : une photo debout reste debout, une photo
+  // couchée reste couchée (Alex, 2026-08-23). Mesuré au chargement,
+  // borné pour qu'aucune photo extrême ne casse la mise en page.
+  const [ratio, setRatio] = useState('16 / 10');
+  const mesurer = (img: HTMLImageElement) => {
+    if (!img.naturalWidth || !img.naturalHeight) return;
+    const r = img.naturalWidth / img.naturalHeight;
+    const borne = Math.min(1.85, Math.max(0.66, r));
+    setRatio(`${borne.toFixed(3)} / 1`);
+  };
   const stage = useRef<HTMLDivElement | null>(null);
 
   // Le registre suit l'ordre des jours, comme les familles de créatures.
@@ -138,7 +148,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
           un cadre portrait leur coupait la moitié du groupe (Alex,
           2026-08-22). Aucun filtre sur la photo, jamais. */}
       <div ref={stage} className="relative lg:px-8 lg:order-2 lg:sticky lg:top-24 lg:self-start">
-        <div className="bestiary-portrait mx-auto w-full max-w-[34rem] lg:max-w-none">
+        <div className="bestiary-portrait mx-auto w-full max-w-[34rem] lg:max-w-none" style={{ aspectRatio: ratio }}>
           <AnimatePresence mode="wait">
             <motion.img
               key={b.name}
@@ -149,6 +159,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
               exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.995 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0 w-full h-full object-cover"
+              onLoad={(e) => mesurer(e.currentTarget)}
             />
           </AnimatePresence>
           <span aria-hidden className="bestiary-portrait-veil" />

@@ -47,6 +47,9 @@ interface Props {
   ctas?:        PageHeaderCta[];
   /** Miroir : l'orbe passe à gauche et le texte à droite (Alex, 2026-08-22). */
   mirrored?:    boolean;
+  /** Cliquer l'orbe ouvre le chapitre (Alex, 2026-08-23). */
+  onOrbClick?:  () => void;
+  orbLabel?:    string;
   /** Remplace la ligne de dates. Sans cette prop, le bandeau affiche les
    *  dates de l'édition courante. Les pages qui parlent d'une AUTRE
    *  édition doivent la passer, sinon elles annoncent la mauvaise date. */
@@ -63,6 +66,8 @@ const PageHeader: React.FC<Props> = ({
   orbVideo,
   ctas = [],
   mirrored = false,
+  onOrbClick,
+  orbLabel,
   dateline,
 }) => {
   const { lang } = useUI();
@@ -151,9 +156,17 @@ const PageHeader: React.FC<Props> = ({
         </div>
 
         {/* L'orbe : à droite d'ordinaire, à gauche en miroir */}
-        <div className={`relative w-full max-w-[300px] sm:max-w-[380px] md:max-w-[480px] lg:max-w-[520px] aspect-square justify-self-center ${
-          mirrored ? 'lg:order-1 lg:justify-self-start' : 'lg:justify-self-end'
-        }`}>
+        <div
+          className={`relative w-full max-w-[300px] sm:max-w-[380px] md:max-w-[480px] lg:max-w-[520px] aspect-square justify-self-center ${
+            mirrored ? 'lg:order-1 lg:justify-self-start' : 'lg:justify-self-end'
+          }`}
+          onClick={onOrbClick}
+          onKeyDown={onOrbClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOrbClick(); } } : undefined}
+          role={onOrbClick ? 'button' : undefined}
+          tabIndex={onOrbClick ? 0 : undefined}
+          aria-label={onOrbClick ? orbLabel : undefined}
+          style={onOrbClick ? { cursor: 'pointer' } : undefined}
+        >
           {/* Outer warm glow ring */}
           <div
             aria-hidden

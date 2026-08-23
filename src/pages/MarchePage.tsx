@@ -8,9 +8,6 @@ import {
 } from '../content/marche';
 import { applyImageOverrides, loadVendorImageOverrides } from '../firebase/vendorImages';
 import PageHeader, { type PageHeaderCta } from '../components/layout/PageHeader';
-import { ChevronDown } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
-import NourriturePage from './NourriturePage';
 import { ScrollProgress } from '../components/scroll';
 import { addLocale } from '../lib/locale';
 import AtelierHall, { type AtelierCopy } from '../components/marche/AtelierHall';
@@ -55,10 +52,6 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const marche  = useMemo(() => applyImageOverrides(MARCHE_VENDORS,  overrides), [overrides]);
   const digital = useMemo(() => applyImageOverrides(DIGITAL_VENDORS, overrides), [overrides]);
 
-  // Les deux chapitres arrivent repliés : la page tient sur un écran.
-  const [marcheOuvert, setMarcheOuvert] = useState(false);
-  const [nourritureOuverte, setNourritureOuverte] = useState(false);
-
   const ctas: PageHeaderCta[] = [
     {
       label:   c.header.apply2027,
@@ -87,93 +80,13 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
         />
       )}
 
-      {/* ── Deux chapitres, deux portes ───────────────────────────────
-          La page ouvrait sur quatre sections de marché déroulées, et le
-          village gustatif se perdait sur une autre page (Alex,
-          2026-08-22). Elle montre maintenant deux chapitres repliés :
-          le Marché, puis la Nourriture, orbe à gauche. On clique, ça
-          s'ouvre. */}
-      <ChapitreBouton
-        label={lang === 'FR' ? 'Le marché' : 'The market'}
-        note={lang === 'FR' ? 'Pavillon premium, kiosques, marchands' : 'Premium pavilion, kiosks, merchants'}
-        open={marcheOuvert}
-        onClick={() => setMarcheOuvert((v) => !v)}
-      />
-      <Repli open={marcheOuvert}>
-        <AtelierHall   lang={lang} vendors={premium} copy={c.atelier} />
-        <MarketSquare  lang={lang} vendors={marche}  copy={c.market} />
-        <MerchantPact  lang={lang} copy={c.pact} />
-        <SealedScroll  lang={lang} vendors={digital} copy={c.sealed} />
-      </Repli>
-
-      <PageHeader
-        mirrored
-        eyebrow={lang === 'FR' ? 'Le village gustatif' : 'The food village'}
-        titleA={lang === 'FR' ? 'Nourriture' : 'Food'}
-        intro={lang === 'FR'
-          ? 'Les cuisines de clans, la taverne, le banquet de l’Équinoxe : tout ce qui se mange et se boit sur le site, en un seul chapitre.'
-          : 'Clan kitchens, the tavern, the Equinox banquet: everything you eat and drink on site, in one chapter.'}
-        orbImage="/wix/nourriture/13fb1062.jpg"
-        orbImagePosition="center 45%"
-      />
-      <ChapitreBouton
-        label={lang === 'FR' ? 'La nourriture' : 'The food'}
-        note={lang === 'FR' ? 'Banquet, menu du village, grimoire' : 'Banquet, village menu, grimoire'}
-        open={nourritureOuverte}
-        onClick={() => setNourritureOuverte((v) => !v)}
-      />
-      <Repli open={nourritureOuverte}>
-        <NourriturePage embedded />
-      </Repli>
+      <AtelierHall   lang={lang} vendors={premium} copy={c.atelier} />
+      <MarketSquare  lang={lang} vendors={marche}  copy={c.market} />
+      <MerchantPact  lang={lang} copy={c.pact} />
+      <SealedScroll  lang={lang} vendors={digital} copy={c.sealed} />
     </>
   );
 };
-
-// ─── Le bouton d'un chapitre ─────────────────────────────────────────
-// Verre sombre, coins arrondis : la seule grammaire de bouton du site.
-const ChapitreBouton: React.FC<{
-  label: string; note: string; open: boolean; onClick: () => void;
-}> = ({ label, note, open, onClick }) => (
-  <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 -mt-2 mb-6 md:mb-10">
-    <button
-      type="button"
-      onClick={onClick}
-      aria-expanded={open}
-      className="fmm-glass-btn w-full px-7 py-5 md:py-6"
-      style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-    >
-      <span className="text-left">
-        <span className="fmm-glass-btn-label block">{label}</span>
-        <span className="fmm-glass-btn-note block mt-1.5">{note}</span>
-      </span>
-      <ChevronDown
-        size={22}
-        style={{
-          color: 'var(--color-amber-glow)',
-          transform: open ? 'rotate(180deg)' : 'none',
-          transition: 'transform .35s ease',
-        }}
-      />
-    </button>
-  </div>
-);
-
-// ─── Le repli ────────────────────────────────────────────────────────
-const Repli: React.FC<{ open: boolean; children: React.ReactNode }> = ({ open, children }) => (
-  <AnimatePresence initial={false}>
-    {open && (
-      <motion.div
-        initial={{ height: 0, opacity: 0 }}
-        animate={{ height: 'auto', opacity: 1 }}
-        exit={{ height: 0, opacity: 0 }}
-        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        style={{ overflow: 'hidden' }}
-      >
-        {children}
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
 
 interface HeaderCopy {
   eyebrow:   string;

@@ -1,5 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
@@ -18,6 +19,13 @@ const LeVillagePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const fr = lang === 'FR';
+
+  // Deux chapitres, repliés à l'arrivée : la page tient sur un écran et
+  // on ouvre celui qu'on veut. Cliquer l'orbe ouvre aussi (Alex,
+  // 2026-08-23).
+  const [marcheOuvert, setMarcheOuvert] = useState(false);
+  const [nourritureOuverte, setNourritureOuverte] = useState(false);
+
   return (
     <>
       <SEO title={fr ? 'Marché' : 'Market'} />
@@ -26,16 +34,92 @@ const LeVillagePage: React.FC = () => {
         eyebrow={fr ? 'Le cœur battant du festival' : 'The beating heart of the festival'}
         titleA={fr ? 'Marché' : 'Market'}
         intro={fr
-          ? 'Le marché des artisans et le village nourriture : tout ce qui se découvre, se goûte et se rapporte du festival.'
-          : 'The artisan market and the food village: everything you discover, taste and bring home from the festival.'}
+          ? 'Les artisans, le pavillon premium, les kiosques et le faubourg : tout ce qui se découvre et se rapporte du festival.'
+          : 'Artisans, the premium pavilion, the kiosks and the faubourg: everything you discover and bring home from the festival.'}
         orbImage="/wix/marche/64edb1ee.jpg"
         orbImagePosition="center 45%"
+        onOrbClick={() => setMarcheOuvert((v) => !v)}
+        orbLabel={fr ? 'Ouvrir le marché' : 'Open the market'}
       />
-      <MarchePage embedded />
-      <NourriturePage embedded />
+      <ChapitreBouton
+        label={fr ? 'Le marché' : 'The market'}
+        note={fr ? 'Pavillon premium, kiosques, marchands' : 'Premium pavilion, kiosks, merchants'}
+        open={marcheOuvert}
+        onClick={() => setMarcheOuvert((v) => !v)}
+      />
+      <Repli open={marcheOuvert}>
+        <MarchePage embedded />
+      </Repli>
+
+      <PageHeader
+        mirrored
+        eyebrow={fr ? 'Le village gustatif' : 'The food village'}
+        titleA={fr ? 'Nourriture' : 'Food'}
+        intro={fr
+          ? 'Les cuisines de clans, la taverne, le banquet de l’Équinoxe : tout ce qui se mange et se boit sur le site.'
+          : 'Clan kitchens, the tavern, the Equinox banquet: everything you eat and drink on site.'}
+        orbImage="/wix/nourriture/feu-broche.webp"
+        orbImagePosition="center 55%"
+        onOrbClick={() => setNourritureOuverte((v) => !v)}
+        orbLabel={fr ? 'Ouvrir le village gustatif' : 'Open the food village'}
+      />
+      <ChapitreBouton
+        label={fr ? 'La nourriture' : 'The food'}
+        note={fr ? 'Banquet, menu du village, grimoire' : 'Banquet, village menu, grimoire'}
+        open={nourritureOuverte}
+        onClick={() => setNourritureOuverte((v) => !v)}
+      />
+      <Repli open={nourritureOuverte}>
+        <NourriturePage embedded />
+      </Repli>
     </>
   );
 };
+
+// ─── Le bouton d'un chapitre ────────────────────────────────────────
+const ChapitreBouton: React.FC<{
+  label: string; note: string; open: boolean; onClick: () => void;
+}> = ({ label, note, open, onClick }) => (
+  <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 -mt-2 mb-6 md:mb-10">
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={open}
+      className="fmm-glass-btn w-full px-7 py-5 md:py-6"
+      style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+    >
+      <span className="text-left">
+        <span className="fmm-glass-btn-label block">{label}</span>
+        <span className="fmm-glass-btn-note block mt-1.5">{note}</span>
+      </span>
+      <ChevronDown
+        size={22}
+        style={{
+          color: 'var(--color-amber-glow)',
+          transform: open ? 'rotate(180deg)' : 'none',
+          transition: 'transform .35s ease',
+        }}
+      />
+    </button>
+  </div>
+);
+
+// ─── Le repli ───────────────────────────────────────────────────────
+const Repli: React.FC<{ open: boolean; children: React.ReactNode }> = ({ open, children }) => (
+  <AnimatePresence initial={false}>
+    {open && (
+      <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: 'auto', opacity: 1 }}
+        exit={{ height: 0, opacity: 0 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        style={{ overflow: 'hidden' }}
+      >
+        {children}
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
 
 // ─── MenuComingSoon · teaser du Village Nourriture (retiré 2026-08-12) ─
 // Même grammaire Witcher que les sections du marché : rail indexé,
