@@ -90,7 +90,7 @@ export const MENU: Categorie[] = [
     icon: 'bread',
     dishes: [
       { name: 'Pain viking' },
-      { name: 'Pain de Khazad-dûm' },
+      { name: 'Pain aux insectes' },
       { name: 'Bludbred' },
       { name: 'Lembas', note: { FR: 'Sucré.', EN: 'Sweet.' } },
     ],

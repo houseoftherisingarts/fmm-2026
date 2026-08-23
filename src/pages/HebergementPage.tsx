@@ -83,8 +83,11 @@ const HebergementPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/wix/hebergement/tournage-camping.webp"
-        orbImagePosition="center 40%"
+        /* La caravane était coupée dans l'orbe : roues tranchées, timon
+           hors cadre. L'image a été étendue par IA (Higgsfield outpaint,
+           2026-08-23) pour montrer la voiture entière. */
+        orbImage="/wix/hebergement/caravane-complete.webp"
+        orbImagePosition="center center"
       />
 
       {/* ── Camping section ─────────────────────────────────────────── */}

@@ -213,7 +213,10 @@ const BenevolePage: React.FC = () => {
         nom:         form.nom,
         telephone:   form.telephone,
         message:     form.message,
-        status:      existing?.status || 'pending',
+        // Une candidature retravaillée redevient une candidature à
+        // étudier : la laisser marquée « refusée » l'enterrait pour de
+        // bon, personne ne la revoyait (Alex, 2026-08-23).
+        status:      existing?.status === 'accepted' ? 'accepted' : 'pending',
         year:        2026,
         createdAt:   existing?.createdAt,
         // Page 1
@@ -292,16 +295,19 @@ const BenevolePage: React.FC = () => {
               </motion.div>
             ) : (
               <>
-                {/* Status banner */}
-                {existing && (
+                {/* Bandeau de statut. Un refus ne se dit PAS au candidat
+                    sur cette page : il n'y peut rien, et le mot ferme la
+                    porte alors que le formulaire reste ouvert (Alex,
+                    2026-08-23). L'équipe, elle, voit tout dans l'admin. */}
+                {existing && existing.status !== 'rejected' && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
                     className="mb-6 glass-light rounded-card p-5 flex items-center gap-3"
                   >
-                    <AlertCircle size={20} className={existing.status === 'accepted' ? 'text-emerald-400' : existing.status === 'rejected' ? 'text-blush' : 'text-brass'} />
+                    <AlertCircle size={20} className={existing.status === 'accepted' ? 'text-emerald-400' : 'text-brass'} />
                     <div>
                       <p className="font-display title-medieval text-sm text-ivory">
-                        {t.statusPrefix}: <span className={existing.status === 'accepted' ? 'text-emerald-400' : existing.status === 'rejected' ? 'text-blush' : 'text-brass'}>{t.status[existing.status]}</span>
+                        {t.statusPrefix}: <span className={existing.status === 'accepted' ? 'text-emerald-400' : 'text-brass'}>{t.status[existing.status]}</span>
                       </p>
                       <p className="font-editorial italic text-sm text-ivory-soft">{t.editLead}</p>
                     </div>
