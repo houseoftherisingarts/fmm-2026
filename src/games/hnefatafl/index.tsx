@@ -1266,11 +1266,34 @@ const HnefataflPage: React.FC = () => {
 
               {/* La scène 3D. Hauteur bornée : la page respire au lieu
                   de verrouiller 100vh, et le pied de page reste
-                  atteignable. */}
+                  atteignable. En plein écran, cette borne doit sauter :
+                  les styles de la page l'emportent sur ceux du
+                  navigateur, et le conteneur restait haut de 900 px au
+                  milieu d'un écran noir, plateau coupé. */}
               <div
                 ref={sceneRef}
-                className="relative w-full h-[clamp(460px,78vh,900px)] md:h-[clamp(560px,82vh,1000px)] bg-[#0a0406]"
+                className={`relative w-full bg-[#0a0406] ${
+                  pleinEcran
+                    ? 'h-[100dvh]'
+                    : 'h-[clamp(460px,78vh,900px)] md:h-[clamp(560px,82vh,1000px)]'
+                }`}
               >
+                {/* La porte de sortie. Le bandeau d'état qui porte la
+                    bascule reste hors du plein écran : sans ce bouton,
+                    il ne restait que la touche Échap, que personne ne
+                    devine. */}
+                {pleinEcran && (
+                  <button
+                    type="button"
+                    onClick={basculerPleinEcran}
+                    className="absolute top-4 right-4 md:top-6 md:right-6 z-[7] inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-card border border-brass/55 bg-black/70 backdrop-blur-md text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+                    style={{ boxShadow: '0 10px 34px rgba(0,0,0,0.6)' }}
+                  >
+                    <Minimize2 size={13} />
+                    {s.quitterPleinEcran}
+                  </button>
+                )}
+
                 {gameStarted && (
                   <GameCanvas
                     ref={canvasRef}
