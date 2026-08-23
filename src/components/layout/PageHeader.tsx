@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { useUI } from '../../contexts/AppContext';
 import { SectionFog } from '../marche/atmospherics';
+import { useFitText } from '../../lib/useFitText';
 
 // ─── PageHeader ──────────────────────────────────────────────────────
 // Shared two-column header used by every pillar page. Lifted from
@@ -62,6 +63,8 @@ const PageHeader: React.FC<Props> = ({
   dateline,
 }) => {
   const { lang } = useUI();
+  // Le titre du hero ne doit jamais sortir tranché de sa colonne.
+  const { ref: titleRef } = useFitText<HTMLHeadingElement>(`${titleA}|${titleB ?? ''}`);
   // Re-key the orb sweep on first paint AND on every hover, so the
   // diagonal glistening lance plays both on mount and whenever the
   // user mouses over the orb. Re-keying remounts the sweep spans →
@@ -88,7 +91,12 @@ const PageHeader: React.FC<Props> = ({
             {eyebrow}
           </p>
 
+          {/* RÈGLE : aucun mot coupé. Le clamp en vw ignorait la largeur
+              réelle de la colonne et « PROGRAMMATION » sortait tranché en
+              « PROGRAMMAT ». useFitText mesure et rétrécit juste ce qu'il
+              faut. Voir src/lib/useFitText.ts. */}
           <h1
+            ref={titleRef}
             className="font-display uppercase leading-[0.95] tracking-[0.02em] mb-2"
             style={{ fontSize: 'clamp(1.8rem, 8.2vw, 5.6rem)' }}
           >
