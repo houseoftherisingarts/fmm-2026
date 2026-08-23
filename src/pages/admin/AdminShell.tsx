@@ -189,7 +189,10 @@ const AdminShell: React.FC<Props> = ({
             headed groups. The heading is emitted whenever the group
             changes between two consecutive VISIBLE rows, so a role that
             can only open part of a group never gets an empty heading. */}
-        <nav className="flex-1 overflow-y-auto py-2">
+        {/* min-h-0 is what actually lets this column shrink: a flex child
+            with overflow-y-auto refuses to go below its content height
+            without it, so the list would spill under the user card. */}
+        <nav className="flex-1 min-h-0 overflow-y-auto py-2">
           {visibleNav.map(({ id, label, icon: Icon, group }, i) => {
             const active = section === id;
             const opensGroup = group !== visibleNav[i - 1]?.group;
