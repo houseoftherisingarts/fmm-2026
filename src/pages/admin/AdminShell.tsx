@@ -152,12 +152,17 @@ const AdminShell: React.FC<Props> = ({
       // every `var(--admin-accent)` reference downstream paints in CA
       // blue / Super Bénévoles green / Bénévoles steel / Cuisine red /
       // Organisateurs+Super gold, without touching the stylesheet.
+      // `--admin-line` is deliberately NOT overridden: on the reference
+      // plates the structure is made of dark grooves and the brass is
+      // reserved for what you can act on, so structural hairlines stay
+      // cold and neutral. The role tint rides on --admin-accent-line
+      // for the few places that genuinely want a brass filet.
       style={(() => {
         const tone = ROLE_ACCENT[adminRole ?? 'super'];
         return {
-          ['--admin-accent'     as never]: tone.accent,
-          ['--admin-accent-dim' as never]: tone.accentDim,
-          ['--admin-line'       as never]: tone.line,
+          ['--admin-accent'      as never]: tone.accent,
+          ['--admin-accent-dim'  as never]: tone.accentDim,
+          ['--admin-accent-line' as never]: tone.line,
         } as React.CSSProperties;
       })()}
     >
