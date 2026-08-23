@@ -1,0 +1,215 @@
+/**
+ * Fonctions du Festival Médiéval de Montpellier.
+ *
+ * Livraison du Grimoire (Alex, 2026-08-22) : quand quelqu'un achète le
+ * livre de recettes par le lien Square, il doit recevoir le PDF par
+ * courriel, sans intervention humaine.
+ *
+ * Le chemin complet :
+ *   1. Square encaisse le paiement du lien du grimoire.
+ *   2. Square appelle le webhook `squareGrimoire` (événement
+ *      `payment.updated`, statut COMPLETED).
+ *   3. On vérifie la signature HMAC de Square : sans elle, n'importe qui
+ *      pourrait réclamer un livre gratuit en forgeant une requête.
+ *   4. On récupère la commande pour confirmer que c'est bien le grimoire
+ *      et pour lire le courriel de l'acheteur.
+ *   5. On envoie le PDF en pièce jointe par le SMTP Zoho du festival.
+ *   6. On journalise dans Firestore (`grimoireLivraisons/{paymentId}`),
+ *      ce qui sert aussi de garde-fou : Square rejoue ses webhooks, et
+ *      personne ne doit recevoir le livre deux fois.
+ *
+ * Secrets à poser avant le déploiement (une seule fois) :
+ *   firebase functions:secrets:set ZOHO_APP_PASSWORD
+ *   firebase functions:secrets:set SQUARE_ACCESS_TOKEN
+ *   firebase functions:secrets:set SQUARE_WEBHOOK_KEY
+ */
+
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const { onRequest } = require('firebase-functions/v2/https');
+const { defineSecret } = require('firebase-functions/params');
+const logger = require('firebase-functions/logger');
+const admin = require('firebase-admin');
+const nodemailer = require('nodemailer');
+
+admin.initializeApp();
+const db = admin.firestore();
+
+const ZOHO_APP_PASSWORD = defineSecret('ZOHO_APP_PASSWORD');
+const SQUARE_ACCESS_TOKEN = defineSecret('SQUARE_ACCESS_TOKEN');
+const SQUARE_WEBHOOK_KEY = defineSecret('SQUARE_WEBHOOK_KEY');
+
+// Boîte du festival, centre de données canadien de Zoho.
+const ZOHO_EMAIL = 'montpelliermedieval@gmail.com';
+const ZOHO_SMTP_HOST = 'smtp.zohocloud.ca';
+const FROM = `Festival Médiéval de Montpellier <${ZOHO_EMAIL}>`;
+
+const PDF = path.join(__dirname, 'grimoire-fmm-2026.pdf');
+// Le nom de l'article dans Square. Toute commande qui ne le contient pas
+// n'est pas un grimoire : on ne poste rien.
+const ARTICLE = 'grimoire';
+
+const URL_WEBHOOK =
+  process.env.GRIMOIRE_WEBHOOK_URL ||
+  'https://squaregrimoire-cnbtsjxk4a-uc.a.run.app';
+
+/** Vérifie la signature HMAC-SHA256 que Square pose sur chaque webhook. */
+function signatureValide(req, cleSignature) {
+  const recue = req.get('x-square-hmacsha256-signature');
+  if (!recue) return false;
+  const charge = URL_WEBHOOK + req.rawBody.toString('utf8');
+  const attendue = crypto
+    .createHmac('sha256', cleSignature)
+    .update(charge)
+    .digest('base64');
+  const a = Buffer.from(recue);
+  const b = Buffer.from(attendue);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+async function lireCommande(orderId, jeton) {
+  const r = await fetch(`https://connect.squareup.com/v2/orders/${orderId}`, {
+    headers: {
+      'Square-Version': '2025-06-18',
+      Authorization: `Bearer ${jeton}`,
+    },
+  });
+  if (!r.ok) throw new Error(`Square orders ${r.status}`);
+  const d = await r.json();
+  return d.order || {};
+}
+
+const CORPS_FR = (nom) => `Bonjour${nom ? ' ' + nom : ''},
+
+Merci d'avoir acheté le Grimoire du Festival. Il est en pièce jointe, en format PDF : vingt-sept recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites.
+
+Les quantités sont celles des vraies marmites, celles qui nourrissent cinquante personnes. Divisez par dix pour une tablée, et goûtez souvent.
+
+Au plaisir de festoyer ensemble,
+
+Le Festival Médiéval de Montpellier
+25, 26 et 27 septembre 2026
+festivalmedievaldemontpellier.org`;
+
+exports.squareGrimoire = onRequest(
+  {
+    region: 'us-central1',
+    secrets: [ZOHO_APP_PASSWORD, SQUARE_ACCESS_TOKEN, SQUARE_WEBHOOK_KEY],
+    // Le PDF pèse ~5 Mo : on lui laisse de la mémoire et du temps.
+    memory: '512MiB',
+    timeoutSeconds: 120,
+  },
+  async (req, res) => {
+    if (req.method !== 'POST') return res.status(405).send('POST seulement');
+
+    if (!signatureValide(req, SQUARE_WEBHOOK_KEY.value())) {
+      logger.warn('Signature Square invalide, requête rejetée');
+      return res.status(401).send('signature invalide');
+    }
+
+    const corps = req.body || {};
+    const paiement = corps?.data?.object?.payment;
+    if (!paiement) return res.status(200).send('sans paiement');
+    if (paiement.status !== 'COMPLETED') {
+      return res.status(200).send('paiement non complété');
+    }
+
+    const paymentId = paiement.id;
+    const ref = db.collection('grimoireLivraisons').doc(paymentId);
+
+    // Garde-fou : Square rejoue ses webhooks. Une transaction pose le
+    // verrou avant tout envoi, donc deux appels simultanés ne peuvent
+    // pas expédier le livre deux fois.
+    const aFaire = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      if (snap.exists) return false;
+      tx.set(ref, {
+        statut: 'en cours',
+        paymentId,
+        recuLe: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return true;
+    });
+    if (!aFaire) {
+      logger.info('Livraison déjà traitée', { paymentId });
+      return res.status(200).send('déjà livré');
+    }
+
+    try {
+      const commande = await lireCommande(
+        paiement.order_id,
+        SQUARE_ACCESS_TOKEN.value(),
+      );
+      const articles = (commande.line_items || [])
+        .map((l) => (l.name || '').toLowerCase())
+        .join(' | ');
+      if (!articles.includes(ARTICLE)) {
+        await ref.set({ statut: 'ignoré', articles }, { merge: true });
+        return res.status(200).send('pas un grimoire');
+      }
+
+      // Le courriel de l'acheteur : Square le range à des endroits
+      // différents selon le mode de paiement.
+      const courriel =
+        paiement.buyer_email_address ||
+        commande.fulfillments?.[0]?.shipment_details?.recipient?.email_address ||
+        commande.fulfillments?.[0]?.pickup_details?.recipient?.email_address ||
+        null;
+      const nom =
+        commande.fulfillments?.[0]?.shipment_details?.recipient?.display_name ||
+        commande.fulfillments?.[0]?.pickup_details?.recipient?.display_name ||
+        '';
+
+      if (!courriel) {
+        // Sans adresse, on ne peut rien envoyer. On laisse une trace
+        // pour qu'Alex livre à la main plutôt que de perdre la vente.
+        await ref.set(
+          { statut: 'sans courriel', orderId: paiement.order_id },
+          { merge: true },
+        );
+        logger.error('Achat du grimoire sans adresse courriel', { paymentId });
+        return res.status(200).send('sans courriel');
+      }
+
+      const transport = nodemailer.createTransport({
+        host: ZOHO_SMTP_HOST,
+        port: 465,
+        secure: true,
+        auth: { user: ZOHO_EMAIL, pass: ZOHO_APP_PASSWORD.value() },
+      });
+
+      await transport.sendMail({
+        from: FROM,
+        to: courriel,
+        subject: 'Votre Grimoire du Festival',
+        text: CORPS_FR(nom),
+        attachments: [
+          { filename: 'Grimoire-du-Festival-FMM-2026.pdf', content: fs.createReadStream(PDF) },
+        ],
+      });
+
+      await ref.set(
+        {
+          statut: 'livré',
+          courriel,
+          nom,
+          orderId: paiement.order_id,
+          livreLe: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+      logger.info('Grimoire livré', { paymentId, courriel });
+      return res.status(200).send('livré');
+    } catch (e) {
+      // On efface le verrou : Square réessaiera, et une panne SMTP
+      // passagère ne doit pas priver l'acheteur de son livre.
+      await ref.set(
+        { statut: 'erreur', erreur: String(e && e.message ? e.message : e) },
+        { merge: true },
+      );
+      logger.error('Livraison du grimoire échouée', { paymentId, e });
+      return res.status(500).send('erreur');
+    }
+  },
+);
