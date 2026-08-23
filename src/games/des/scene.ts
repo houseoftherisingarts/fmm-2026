@@ -43,6 +43,8 @@ export interface TableDes {
   /** Le gobelet du joueur dont c'est le tour se soulève, sous la douche
    *  de lumière qui le suit autour de la table. */
   designer: (index: number) => void;
+  /** Les gobelets des autres frissonnent sur la table, dés cachés. */
+  remuer: (indices: number[]) => void;
   /** Un dé s'efface en fumée devant la place indiquée. */
   perdreUnDe: (index: number) => void;
   /** Un dé revient sur la table, pour un « exactement ça » réussi. */
@@ -297,6 +299,11 @@ function fabriquerSon() {
     tomber() {
       for (let i = 0; i < 6; i++) clac(0.035 * i + Math.random() * 0.06, 0.17);
     },
+    /** Le frisson du gobelet retourné : deux dés qui s'entrechoquent. */
+    frisson() {
+      clac(0, 0.06);
+      clac(0.045 + Math.random() * 0.03, 0.045);
+    },
     /** Un dé qui s'en va : un toc grave, puis plus rien. */
     perdre() {
       clac(0, 0.2);
@@ -487,13 +494,25 @@ export function creerTable(): TableDes {
 
   let anim: number | null = null;
   let vivant = true;
-  const tumbling: Array<{ de: THREE.Mesh; jusqua: number; cible: Face; depart: number }> = [];
+  const tumbling: Array<{
+    de: THREE.Mesh; jusqua: number; cible: Face; depart: number;
+    arrivee?: THREE.Vector3;
+  }> = [];
   const envol: Array<{ de: THREE.Mesh; depart: number }> = [];
   const sieges: Array<{ x: number; z: number }> = [];
 
   // Le geste complet d'un joueur : il brasse, il retourne le gobelet
   // sur la table, puis il le soulève (Alex, 2026-08-23).
-  type Geste = { debut: number; phase: 'secoue' | 'renverse' | 'leve' | 'pose'; base: THREE.Vector3 };
+  type Geste = {
+    debut: number;
+    // 'secoue' et 'jette' pour ma main : je brasse, puis les dés
+    // roulent sur la table et le gobelet se range à côté.
+    // 'remue' pour les autres : leur gobelet reste retourné sur la
+    // planche et frissonne, on entend les dés dedans (Alex, 2026-08-23).
+    phase: 'secoue' | 'jette' | 'remue' | 'leve' | 'pose';
+    base: THREE.Vector3;
+    prochainBruit?: number;
+  };
   const gestes = new Map<number, Geste>();
   const POSE_Y = 0.02;         // le gobelet debout, posé sur la planche
   const RENVERSE_Y = 0.02;     // retourné, son bourrelet sur le bois
@@ -515,9 +534,14 @@ export function creerTable(): TableDes {
       if (k >= 1) {
         const [rx, ry, rz] = VERS_LE_CIEL[d.cible];
         d.de.rotation.set(rx, ry + (Math.random() - 0.5) * 0.25, rz);
+        if (d.arrivee) d.de.position.copy(d.arrivee);
         d.de.position.y = DE / 2;
         tumbling.splice(i, 1);
         continue;
+      }
+      if (d.arrivee) {
+        d.de.position.x += (d.arrivee.x - d.de.position.x) * 0.12;
+        d.de.position.z += (d.arrivee.z - d.de.position.z) * 0.12;
       }
       d.de.rotation.x += 0.34;
       d.de.rotation.y += 0.27;
@@ -528,9 +552,13 @@ export function creerTable(): TableDes {
     gestes.forEach((g, idx) => {
       const gob = gobelets[idx];
       if (!gob) return;
-      const k = (t - g.debut) / (g.phase === 'secoue' ? 900 : 620);
+      const duree = g.phase === 'secoue' ? 900 : g.phase === 'jette' ? 620 : 620;
+      const k = (t - g.debut) / duree;
       const doux = Math.min(1, Math.max(0, k));
+      const cote = g.base.x >= 0 ? 1 : -1;
+
       if (g.phase === 'secoue') {
+        // Le gobelet monte, tourne et brasse ce qu'il contient.
         const amp = 0.22 * (1 - doux * 0.35);
         gob.position.set(
           g.base.x + Math.sin(t / 42) * amp,
@@ -538,26 +566,34 @@ export function creerTable(): TableDes {
           g.base.z + Math.cos(t / 37) * amp * 0.7,
         );
         gob.rotation.set(Math.sin(t / 48) * 0.34, 0, Math.cos(t / 51) * 0.34);
-        if (k >= 1) { g.phase = 'renverse'; g.debut = t; }
-      } else if (g.phase === 'renverse') {
-        // Il bascule cul par-dessus tête et retombe sur la planche.
-        const e = 1 - Math.pow(1 - doux, 3);
-        gob.rotation.set(Math.PI * e, 0, 0);
+        if (k >= 1) { g.phase = 'jette'; g.debut = t; }
+      } else if (g.phase === 'jette') {
+        // Les dés sont partis rouler : le gobelet se couche à côté.
+        const e = 1 - Math.pow(1 - doux, 2);
         gob.position.set(
-          g.base.x, POSE_Y + 0.9 * Math.sin(doux * Math.PI) + RENVERSE_Y, g.base.z,
+          g.base.x + e * 1.6 * cote,
+          POSE_Y + Math.sin(doux * Math.PI) * 0.35,
+          g.base.z + e * 0.5,
         );
-        if (k >= 1) {
-          gob.rotation.set(Math.PI, 0, 0);
-          gob.position.set(g.base.x, RENVERSE_Y + HAUT, g.base.z);
-          g.phase = 'pose';
-          g.debut = t;
-          son.tomber();
+        gob.rotation.set(0, 0, e * (Math.PI / 2) * -cote);
+        if (k >= 1) { g.phase = 'pose'; g.debut = t; }
+      } else if (g.phase === 'remue') {
+        // Retourné sur la planche, il frissonne de gauche à droite et
+        // les dés cliquettent dedans.
+        gob.rotation.set(Math.PI, 0, Math.sin(t / 46) * 0.16);
+        gob.position.set(
+          g.base.x + Math.sin(t / 44) * 0.18,
+          RENVERSE_Y + HAUT,
+          g.base.z + Math.cos(t / 61) * 0.05,
+        );
+        if (!g.prochainBruit || t > g.prochainBruit) {
+          son.frisson();
+          g.prochainBruit = t + 210 + Math.random() * 90;
         }
       } else if (g.phase === 'leve') {
         // Le gobelet monte et se pose sur le côté : il ne doit plus
         // cacher les dés qu'il vient de découvrir.
         const e = 1 - Math.pow(1 - doux, 2);
-        const cote = g.base.x >= 0 ? 1 : -1;
         gob.position.set(
           g.base.x + e * 1.5 * cote,
           RENVERSE_Y + HAUT * (1 - e * 0.55) + e * 0.15,
@@ -698,8 +734,9 @@ export function creerTable(): TableDes {
       });
     },
     lancer(faces, onFini) {
-      // 1 · on brasse, 2 · on renverse, 3 · on soulève et les dés
-      // apparaissent, déjà tombés sur leurs faces.
+      // Ma main se joue comme une vraie poignée de dés : je brasse, je
+      // renverse le gobelet, les dés roulent devant moi et le gobelet
+      // se couche à côté (Alex, 2026-08-23).
       const t0 = performance.now();
       const base = sieges[0]
         ? new THREE.Vector3(sieges[0].x * 0.72, 0, sieges[0].z * 0.72)
@@ -709,34 +746,47 @@ export function creerTable(): TableDes {
 
       mesDes.forEach((d) => { d.visible = false; });
 
-      // Les dés se posent SOUS le gobelet renversé, puis se dévoilent.
+      // Au bout du brassage, les dés sortent du gobelet et roulent.
       window.setTimeout(() => {
+        const depart = performance.now();
         mesDes.forEach((d, i) => {
           if (i >= faces.length) return;
-          // Étalés en éventail devant la place, jamais empilés : cinq
-          // dés doivent se lire d'un coup d'œil (Alex, 2026-08-23).
+          d.visible = true;
           const a = (i / Math.max(1, faces.length)) * Math.PI * 2 + 0.4;
-          const r = 0.92 + Math.random() * 0.12;
-          d.position.set(
-            base.x * 0.78 + Math.cos(a) * r,
-            DE / 2,
-            base.z * 0.78 + Math.sin(a) * r * 0.7 - 0.35,
-          );
-          const [rx, ry, rz] = VERS_LE_CIEL[faces[i]];
-          d.rotation.set(rx, ry + Math.random() * 0.5, rz);
+          const r = 0.95 + Math.random() * 0.2;
+          d.position.set(base.x * 0.8 + Math.cos(a) * r * 0.6, 1.25, base.z * 0.8 - 0.2);
+          d.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+          tumbling.push({
+            de: d,
+            depart: depart + i * 60,
+            jusqua: depart + 780 + i * 90,
+            cible: faces[i],
+            arrivee: new THREE.Vector3(
+              base.x * 0.78 + Math.cos(a) * r,
+              DE / 2,
+              base.z * 0.78 + Math.sin(a) * r * 0.7 - 0.35,
+            ),
+          });
         });
-      }, 1560);
-
-      // 3 · la levée : le gobelet monte, les dés se voient.
-      window.setTimeout(() => {
-        const g = gestes.get(0);
-        if (g) { g.phase = 'leve'; g.debut = performance.now(); }
-        mesDes.forEach((d, i) => { d.visible = i < faces.length; });
         son.tomber();
-      }, 1900);
+      }, 900);
 
-      if (onFini) window.setTimeout(onFini, 2700);
+      if (onFini) window.setTimeout(onFini, 2100);
     },
+
+    remuer(indices) {
+      // Les autres ne montrent rien : leur gobelet reste retourné sur
+      // la planche et frissonne, avec le bruit des dés dedans.
+      const t0 = performance.now();
+      indices.forEach((idx) => {
+        if (idx === 0) return;
+        const si = sieges[idx];
+        if (!si) return;
+        const base = new THREE.Vector3(si.x * 0.72, 0, si.z * 0.72);
+        gestes.set(idx, { debut: t0, phase: 'remue', base });
+      });
+    },
+
     devoiler(mains, montrer) {
       desAdverses.forEach((groupeDes, idx) => {
         const main = mains[idx] || [];

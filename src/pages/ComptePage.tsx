@@ -49,9 +49,9 @@ const ComptePage: React.FC = () => {
   // l'écran. Le test disparaît du bundle de production.
   const apercu = import.meta.env.DEV
     && new URLSearchParams(window.location.search).get('apercu') === '1';
-  const user = compte ?? (apercu
-    ? ({ uid: 'apercu', email: 'apercu@fmm.test', displayName: 'Dame Aperçu' } as unknown as typeof compte)
-    : null);
+  // Référence stable : l'effet d'hydratation dépend de `user`, un objet
+  // recréé à chaque rendu le relancerait sans fin.
+  const user = compte ?? (apercu ? (USER_APERCU as unknown as typeof compte) : null);
 
   // ── Les onglets, gardés dans l'URL (?onglet=badges) pour que le
   //    retour arrière du navigateur fonctionne comme partout ailleurs.
@@ -271,7 +271,7 @@ const ComptePage: React.FC = () => {
                   <Eye size={14} /> {t.voirProfil} <ArrowUpRight size={12} />
                 </Link>
                 <Link to={addLocale('/benevole', lang)} className={secondair}>
-                  <HandHeart size={14} /> {bApp ? t.benevoleEdit : t.benevoleApply}
+                  <HandHeart size={14} /> {bApp ? t.benevoleEdit : t.benevoleTitle}
                 </Link>
               </>
             )}
@@ -308,7 +308,7 @@ const ComptePage: React.FC = () => {
 
       {/* ── Les onglets ─────────────────────────────────────────────
           Un seul panneau à la fois, l'onglet retenu dans l'URL. */}
-      <section className="relative caravan-stage bleed-edges pb-16 md:pb-20 overflow-hidden">
+      <section className="relative caravan-stage bleed-edges pt-2 pb-16 md:pt-4 md:pb-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <div

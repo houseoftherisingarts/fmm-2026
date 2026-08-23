@@ -184,7 +184,7 @@ const FR = {
   add:    'Ajouter une photo',
   change: 'Changer la photo',
   remove: 'Retirer',
-  hint:   'Recadrée en cercle automatiquement. Prenez n’importe quelle photo, nous nous occupons du reste.',
+  hint:   'Ajoutez votre portrait, le cadrage se fait tout seul.',
   errType:   'Choisissez une image.',
   errBackend:'Le stockage est indisponible pour le moment.',
 };
@@ -194,7 +194,7 @@ const EN: typeof FR = {
   add:    'Add a photo',
   change: 'Change photo',
   remove: 'Remove',
-  hint:   'Cropped to a circle automatically. Pick any photo, we handle the rest.',
+  hint:   'Add your portrait, the cropping happens on its own.',
   errType:   'Please choose an image.',
   errBackend:'Storage is unavailable right now.',
 };

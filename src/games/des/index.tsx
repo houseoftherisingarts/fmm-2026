@@ -94,6 +94,7 @@ const DesPage: React.FC = () => {
     tableRef.current?.devoiler([], false);
     tableRef.current?.mains(p.joueurs.map((j) => j.des.length));
     tableRef.current?.lancer(p.joueurs[0].des);
+    tableRef.current?.remuer(p.joueurs.map((_, i) => i).filter((i) => i > 0));
   }, [nbJoueurs, fr]);
 
   // Aperçu de développement seulement : `?apercu=1&auto=1` dresse la
@@ -222,6 +223,7 @@ const DesPage: React.FC = () => {
     tableRef.current?.devoiler([], false);
     tableRef.current?.mains(apres.joueurs.map((j) => j.des.length));
     tableRef.current?.lancer(apres.joueurs[0].des);
+    tableRef.current?.remuer(apres.joueurs.map((_, i) => i).filter((i) => i > 0 && !apres.joueurs[i].elimine));
     setPartie(apres);
     setQuantite(Math.max(1, Math.round(desEnJeu(apres) / 3)));
     setFace(3);
