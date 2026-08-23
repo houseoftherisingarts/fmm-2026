@@ -449,7 +449,8 @@ const AdminShell: React.FC<Props> = ({
           onClick={() => setMobileOpen(false)}
           className="fixed top-4 right-4 z-50 lg:hidden p-2 backdrop-blur"
           style={{
-            background: 'rgba(5, 8, 16, 0.85)',
+            borderRadius: 10,
+            background: 'rgba(6, 11, 15, 0.88)',
             border: '1px solid var(--admin-line)',
             color: 'var(--admin-text)',
           }}
