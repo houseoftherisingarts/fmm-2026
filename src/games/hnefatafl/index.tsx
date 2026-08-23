@@ -48,6 +48,7 @@ import {
   suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
   type PartieTafl,
 } from '../../firebase/tafl';
+import PanneauAmis from './PanneauAmis';
 
 type Mode = 'two-player' | 'vs-cpu';
 
