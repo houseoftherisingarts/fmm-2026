@@ -308,11 +308,11 @@ function fabriquerSon() {
 export function creerTable(): TableDes {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0506);
-  scene.fog = new THREE.Fog(0x0a0506, 9, 20);
+  scene.fog = new THREE.Fog(0x0a0506, 22, 46);
 
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 5.6, 6.4);
-  camera.lookAt(0, 0, 0.4);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 140);
+  camera.position.set(0, 14, 15);
+  camera.lookAt(0, 0, -0.2);
 
   // `preserveDrawingBuffer` garde l'image lisible après le rendu : ça
   // permet de capturer la table (vérification à l'œil, et le joueur
@@ -328,7 +328,7 @@ export function creerTable(): TableDes {
   renderer.toneMappingExposure = 1.15;
 
   // ── La table ──────────────────────────────────────────────────────
-  const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 2);
+  const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 1);
   // Le plateau est en bois d'un bord à l'autre : aucun drap, aucun
   // cercle au centre (Alex, 2026-08-23).
   const dessus = new THREE.MeshStandardMaterial({
@@ -349,18 +349,18 @@ export function creerTable(): TableDes {
   // Une salle basse éclairée à la chandelle : presque pas d'ambiante,
   // un rebond chaud du plancher, une flamme au-dessus de la table et
   // une braise au fond. Tout porte une ombre.
-  scene.add(new THREE.AmbientLight(0xffd2a0, 0.10));
-  scene.add(new THREE.HemisphereLight(0xffc98a, 0x1a0d07, 0.35));
+  scene.add(new THREE.AmbientLight(0xffd2a0, 0.22));
+  scene.add(new THREE.HemisphereLight(0xffc98a, 0x1a0d07, 0.6));
 
-  const chandelle = new THREE.PointLight(0xffb066, 46, 30, 2);
-  chandelle.position.set(0, 4.6, 0.8);
+  const chandelle = new THREE.PointLight(0xffb066, 90, 44, 2);
+  chandelle.position.set(0, 5.4, 0.8);
   chandelle.castShadow = true;
   chandelle.shadow.mapSize.set(1024, 1024);
   chandelle.shadow.bias = -0.0016;
   chandelle.shadow.radius = 3;
   scene.add(chandelle);
 
-  const braise = new THREE.PointLight(0xc4471f, 22, 20, 2);
+  const braise = new THREE.PointLight(0xc4471f, 40, 26, 2);
   braise.position.set(-4.6, 1.9, -3.4);
   scene.add(braise);
 
@@ -506,8 +506,8 @@ export function creerTable(): TableDes {
     const t = performance.now();
     // Flamme de chandelle
     // La flamme respire : la salle bouge avec elle.
-    chandelle.intensity = 44 + Math.sin(t / 190) * 5 + Math.sin(t / 77) * 2.4;
-    braise.intensity = 21 + Math.sin(t / 260) * 3;
+    chandelle.intensity = 88 + Math.sin(t / 190) * 9 + Math.sin(t / 77) * 4;
+    braise.intensity = 38 + Math.sin(t / 260) * 5;
     // Dés en vol
     for (let i = tumbling.length - 1; i >= 0; i--) {
       const d = tumbling[i];
@@ -596,17 +596,29 @@ export function creerTable(): TableDes {
     renderer.render(scene, camera);
   };
 
+  let orbite: OrbitControls | null = null;
+
   const ajuster = (el: HTMLElement) => {
     const w = el.clientWidth || 800;
     const h = el.clientHeight || 480;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
+    // La table entière doit tenir dans la fenêtre : sur un écran large,
+    // c'est la hauteur qui manque, alors la caméra recule d'autant.
+    const RAYON = 6.4;
+    const vertical = THREE.MathUtils.degToRad(camera.fov);
+    const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * camera.aspect);
+    const recul = Math.max(RAYON / Math.tan(vertical / 2), RAYON / Math.tan(horizontal / 2));
+    const dist = Math.max(11.5, recul * 0.92);
+    if (!orbite) {
+      camera.position.set(0, dist * 0.68, dist * 0.74);
+      camera.lookAt(0, 0, -0.2);
+    }
     camera.updateProjectionMatrix();
   };
 
   let hote: HTMLElement | null = null;
-  let orbite: OrbitControls | null = null;
   const surResize = () => { if (hote) ajuster(hote); };
 
   return {

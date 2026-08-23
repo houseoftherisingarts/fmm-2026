@@ -28,54 +28,54 @@ const ANNEES: Annee[] = [
     id: 'peste',
     chiffre: 'I',
     nomFR: 'L’année de la Peste', nomEN: 'The Year of the Plague',
-    texteFR: 'Les portes closes, les croix à la craie, les corbeaux sur les toits. Le jeu de cette année-là se prépare.',
-    texteEN: 'Shut doors, chalk crosses, ravens on the roofs. That year’s game is in the making.',
+    texteFR: 'Les portes restent closes et une croix de craie marque celles où la maladie est entrée. Le jeu de cette année-là se prépare.',
+    texteEN: 'The doors stay shut, and a chalk cross marks the ones the sickness has entered. That year’s game is in the making.',
     image: '/tarot/T13.webp',
   },
   {
     id: 'seigneur',
     chiffre: 'II',
     nomFR: 'L’année du Seigneur', nomEN: 'The Year of the Lord',
-    texteFR: 'La dîme, le donjon, la table haute. Le jeu de cette année-là se prépare.',
-    texteEN: 'The tithe, the keep, the high table. That year’s game is in the making.',
+    texteFR: 'Le seigneur prend sa dîme, tient son donjon et fait asseoir ses gens à la table haute. Le jeu de cette année-là se prépare.',
+    texteEN: 'The lord takes his tithe, holds his keep and seats his people at the high table. That year’s game is in the making.',
     image: '/tarot/T4.webp',
   },
   {
     id: 'poudre',
     chiffre: 'III',
     nomFR: 'L’année de la Poudre', nomEN: 'The Year of the Powder',
-    texteFR: 'Cinq dés sous un gobelet, une annonce qui monte, et le premier qui doute retourne les gobelets. Jusqu’à cinq joueurs, contre la maison ou contre du vrai monde.',
-    texteEN: 'Five dice under a cup, a bid that climbs, and the first to doubt turns the cups over. Up to five players, against the house or against real people.',
+    texteFR: 'Chaque joueur cache cinq dés sous son gobelet et annonce ce qu’il croit voir sur la table. L’annonce monte jusqu’à ce que quelqu’un doute, et tous les gobelets se lèvent en même temps. Jusqu’à cinq joueurs s’y affrontent, contre la maison ou contre de vraies personnes.',
+    texteEN: 'Each player hides five dice under a cup and calls out what he believes is on the table. The bid climbs until someone doubts, and every cup goes up at once. Up to five players face each other, against the house or against real people.',
     jeuFR: 'Les dés du menteur', jeuEN: 'Liar’s Dice',
-    image: '/tarot/T16.webp',
+    image: '/jeux/tuile-des.webp',
     href: { fr: '/jeux/des', en: '/en/games/dice' },
   },
   {
     id: 'vikings',
     chiffre: 'IV',
     nomFR: 'L’année des Vikings', nomEN: 'The Year of the Vikings',
-    texteFR: 'Un roi cerné cherche la sortie, ses assaillants resserrent l’étau. Cinq règlements au choix, contre l’ordinateur ou contre quelqu’un.',
-    texteEN: 'A cornered king looks for a way out while his attackers tighten the ring. Five rule sets, against the computer or against someone.',
+    texteFR: 'Un roi cerné cherche la sortie pendant que ses assaillants resserrent l’étau autour de lui. Cinq règlements différents sont proposés, contre l’ordinateur ou contre quelqu’un d’autre.',
+    texteEN: 'A cornered king looks for the way out while his attackers tighten the ring around him. Five different rule sets are offered, against the computer or against someone else.',
     jeuFR: 'Hnefatafl', jeuEN: 'Hnefatafl',
-    image: '/photos/hnefatafl-card.webp',
+    image: '/jeux/tuile-tafl.webp',
     href: { fr: '/jeunesse/hnefatafl', en: '/en/youth/hnefatafl' },
   },
   {
     id: 'caravanes',
     chiffre: 'V',
     nomFR: 'L’année des Caravanes', nomEN: 'The Year of the Caravans',
-    texteFR: 'Le jeu que les roulottes portaient de foire en foire. Une carte, trois cartes ou la croix celtique, et la lecture qui va avec.',
-    texteEN: 'The deck the wagons carried from fair to fair. One card, three cards or the Celtic cross, with the reading that goes with it.',
+    texteFR: 'Les roulottes portaient ce jeu de foire en foire, et il se lit encore de la même façon. Vous tirez une seule carte, trois cartes ou la croix celtique en dix lames. Chaque lame reçoit sa lecture.',
+    texteEN: 'The wagons carried this deck from fair to fair, and it is still read the same way. You draw a single card, three cards or the ten of the Celtic cross. Each one gets its reading.',
     jeuFR: 'Tarot de Marseille', jeuEN: 'Marseille Tarot',
-    image: '/tarot/T17.webp',
+    image: '/tarot/trois-cartes.webp',
     href: { fr: '/jeux/tarot', en: '/en/games/tarot' },
   },
   {
     id: 'mystere',
     chiffre: 'VI',
     nomFR: 'L’année du ?', nomEN: 'The Year of the ?',
-    texteFR: 'Jeu disponible lorsque nous annoncerons le thème.',
-    texteEN: 'The game opens when we announce the theme.',
+    texteFR: 'Le thème de cette année-là sera annoncé en son temps. Le jeu s’ouvrira le même jour.',
+    texteEN: 'The theme of that year will be announced in due time. The game opens the same day.',
     image: '/tarot/TT.webp',
   },
 ];
@@ -211,7 +211,7 @@ const JeuxEnLignePage: React.FC = () => {
             </div>
           </div>
 
-          <p className="font-editorial italic text-sm md:text-base text-ivory-soft/70 mt-8 max-w-2xl">
+          <p className="font-editorial text-sm md:text-base text-ivory-soft/70 mt-8 max-w-2xl">
             {t.pied}
           </p>
         </div>
@@ -223,21 +223,21 @@ const JeuxEnLignePage: React.FC = () => {
 const FR = {
   title: 'Jeux en ligne',
   eyebrow: 'La table de jeux',
-  intro: 'Chaque année du festival a son jeu. Les unes sont ouvertes, les autres attendent encore leur tour de table.',
+  intro: 'Chaque année du festival porte son jeu. Certaines sont déjà ouvertes et les autres attendent encore leur tour de table.',
   scelle: 'À venir',
   jouer: 'Jouer',
   connecter: 'Connectez-vous pour jouer',
-  pied: 'Les années scellées s’ouvriront à mesure que les jeux seront prêts. Une par édition, dans l’ordre du temps. Les parties se jouent avec un compte du festival : c’est lui qui porte vos défis et vos parties en ligne.',
+  pied: 'Les années scellées s’ouvriront à mesure que les jeux seront prêts, une par édition et dans l’ordre du temps. Les parties se jouent avec un compte du festival, qui garde vos défis et vos parties en ligne.',
 };
 
 const EN = {
   title: 'Online games',
   eyebrow: 'The games table',
-  intro: 'Every year of the festival has its game. Some are open, others are still waiting their turn at the table.',
+  intro: 'Every year of the festival carries its own game. Some are already open and the others are still waiting their turn at the table.',
   scelle: 'Coming',
   jouer: 'Play',
   connecter: 'Sign in to play',
-  pied: 'Sealed years open as the games become ready. One per edition, in the order of time. Games are played with a festival account: it carries your challenges and your online games.',
+  pied: 'Sealed years will open as the games become ready, one per edition and in the order of time. Games are played with a festival account, which keeps your challenges and your online games.',
 };
 
 export default JeuxEnLignePage;

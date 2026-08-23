@@ -1030,6 +1030,13 @@ const HnefataflPage: React.FC = () => {
   }, [partie, user]);
 
   const [gameStarted, setGameStarted] = useState(false);
+  // Aperçu de développement seulement : `?apercu=1&auto=1` ouvre la
+  // partie sans passer par l'écran de choix, pour capturer la table.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('apercu') === '1' && q.get('auto') === '1') setGameStarted(true);
+  }, []);
   useBadgeJeu('tafl');
   const { gagnerBadge } = useBadges();
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);

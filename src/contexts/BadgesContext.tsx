@@ -85,7 +85,8 @@ export const BadgesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // entrée sans qu'une annonce leur passe devant (vérifié à l'écran,
   // 2026-08-23). Le badge tombe à la première vraie page.
   const surLaccueil = typeof window !== 'undefined'
-    && ['/', '/en', '/en/'].includes(window.location.pathname);
+    && (['/', '/en', '/en/'].includes(window.location.pathname)
+        || (import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu')));
   useEffect(() => {
     if (surLaccueil) return;
     const t = window.setTimeout(() => gagnerBadge('visiteur'), 6000);

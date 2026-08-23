@@ -12,9 +12,10 @@ import { Motes } from '../../components/marche/effects';
 import { JEU, TIRAGES, type Lame, type Tirage } from '../../content/tarot';
 
 // ─── Le tarot de Marseille ──────────────────────────────────────────
-// Deuxième jeu du festival (Alex, 2026-08-23). Trois tirages : une
-// lame, trois lames, la croix celtique. Les 78 images sont le jeu de
-// Lequart (Paris), domaine public, versé sur Wikimedia Commons.
+// Deuxième jeu du festival (Alex, 2026-08-23). Trois tirages sont
+// offerts : la lame seule, les trois lames et la croix celtique. Les
+// 78 images viennent du jeu de Lequart (Paris), tombé dans le domaine
+// public et versé sur Wikimedia Commons.
 //
 // Le tirage est honnête : le paquet est mélangé une seule fois par
 // tirage (Fisher-Yates), une lame sur deux sort renversée, et rien ne
@@ -84,10 +85,10 @@ const TarotPage: React.FC = () => {
     eyebrow: fr ? 'Le jeu de la voyante' : 'The fortune teller’s game',
     titre: fr ? 'Tarot de Marseille' : 'Marseille Tarot',
     intro: fr
-      ? 'Le vieux jeu des routes, celui que les caravanes portaient d’une foire à l’autre. Posez votre question, choisissez un tirage, et retournez les cartes une à une.'
-      : 'The old road deck, the one the caravans carried from fair to fair. Ask your question, pick a spread, and turn the cards one at a time.',
-    questionLabel: fr ? 'Votre question (facultatif)' : 'Your question (optional)',
-    questionPlaceholder: fr ? 'Ce que vous voulez éclaircir…' : 'What you want light on…',
+      ? 'Le tarot de Marseille est un jeu de route qui a suivi les foires et les caravanes bien avant d’arriver jusqu’à nous. Posez votre question, choisissez un tirage et retournez les cartes une à une.'
+      : 'The Marseille tarot is a road deck, one that followed the fairs and the caravans long before it reached us. Ask your question, pick a spread and turn the cards one at a time.',
+    questionLabel: fr ? 'Votre question, si vous en avez une' : 'Your question, if you have one',
+    questionPlaceholder: fr ? 'Ce que vous aimeriez éclaircir…' : 'What you would like light on…',
     piocher: fr ? 'Retourner une carte' : 'Turn a card',
     recommencer: fr ? 'Nouveau tirage' : 'New spread',
     restantes: (n: number) => fr ? `${n} carte${n > 1 ? 's' : ''} à retourner` : `${n} card${n > 1 ? 's' : ''} left`,
@@ -235,7 +236,7 @@ const TarotPage: React.FC = () => {
                     ? (fr ? tirees[lue].lame.renverseFR : tirees[lue].lame.renverseEN)
                     : (fr ? tirees[lue].lame.droitFR : tirees[lue].lame.droitEN)}
                 </p>
-                <p className="font-editorial italic text-sm" style={{ color: 'rgba(244,239,227,0.6)' }}>
+                <p className="font-editorial text-sm" style={{ color: 'rgba(244,239,227,0.6)' }}>
                   {fr ? tirage.positions[lue].sensFR : tirage.positions[lue].sensEN}
                 </p>
                 {question.trim() && (
