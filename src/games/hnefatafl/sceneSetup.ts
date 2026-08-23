@@ -75,12 +75,22 @@ export function setupScene(el: HTMLElement): SceneHandle {
   scene.fog = new THREE.Fog(0x080502, 24, 42);
 
   // La table sur laquelle le damier est posé : chêne, large, qui reçoit
-  // les ombres des pièces.
+  // les ombres des pièces. Même texture que la table des dés; repeat=5
+  // pour garder les planches à la même échelle physique sur ce plateau
+  // presque trois fois plus large.
+  const materielTable = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.68, metalness: 0.02 });
+  const boisTable = new THREE.TextureLoader().load(
+    '/jeux/des/table-bois.webp', undefined, undefined,
+    () => { materielTable.map = boisDeTable(); materielTable.needsUpdate = true; },
+  );
+  boisTable.colorSpace = THREE.SRGBColorSpace;
+  boisTable.wrapS = boisTable.wrapT = THREE.RepeatWrapping;
+  boisTable.repeat.set(5, 5);
+  boisTable.anisotropy = 8;
+  materielTable.map = boisTable;
   const table = new THREE.Mesh(
     new THREE.CylinderGeometry(15.5, 16.5, 0.7, 56),
-    new THREE.MeshPhongMaterial({
-      color: 0xffffff, map: boisDeTable(), shininess: 12, specular: 0x3a2712,
-    }),
+    materielTable,
   );
   table.position.y = -1.15;
   table.receiveShadow = true;
