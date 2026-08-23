@@ -32,7 +32,7 @@ export interface BoardSet {
   /** Teinte du blason peint au centre, et sa présence. */
   decal?:    { couleur: number; opacite: number };
   /** Palette du plateau procédural (voir PALETTES dans boardMesh). */
-  palette?:  'noyer' | 'pierre';
+  palette?:  'noyer' | 'pierre' | 'taverne';
 }
 
 export interface PieceSet {
@@ -47,6 +47,8 @@ export interface PieceSet {
   /** Échelle par type. Meshy normalise ses sorties à une hauteur de
    *  1.9 (y de -0.95 à 0.95), d'où des valeurs autour de 0.45. */
   scales?:   Record<number, number>;
+  /** Teintes des pièces tournées, quand il n'y a pas de modèle 3D. */
+  teintes?:  { assaillant: number; defenseur: number; roi: number };
 }
 
 export const BOARD_SETS: BoardSet[] = [
@@ -85,6 +87,17 @@ export const BOARD_SETS: BoardSet[] = [
     texteEN: 'New boards are on the way, including our sponsors\u2019: backing the festival also means having your own table.',
     vignette: '',
   },
+  {
+    id: 'taverne',
+    statut: 'disponible',
+    nomFR: 'La table de la taverne',
+    nomEN: 'The tavern table',
+    texteFR: 'Le damier gravé dans le chêne sombre, entrelacs au pourtour, posé sur les planches d\u2019une table de salle basse.',
+    texteEN: 'The grid carved into dark oak, knotwork around the rim, resting on the planks of a low tavern table.',
+    vignette: '/games/hnefatafl/vignettes/table-taverne.webp',
+    palette: 'taverne',
+    decal: { couleur: 0xc9a227, opacite: 0.34 },
+  },
 ];
 
 export const PIECE_SETS: PieceSet[] = [
@@ -117,6 +130,16 @@ export const PIECE_SETS: PieceSet[] = [
       3: '/games/hnefatafl/models/piece-jarl.glb',
     },
     scales: { 1: 0.54, 2: 0.54, 3: 0.74 },
+  },
+  {
+    id: 'taverne',
+    statut: 'disponible',
+    nomFR: 'Le jeu de la taverne',
+    nomEN: 'The tavern set',
+    texteFR: 'Des pièces tournées à la main, comme celles qui traînent sur les tables du festival : l\u2019érable clair pour les défenseurs, le bois teint au sang pour les assaillants, et un roi couronné de laiton.',
+    texteEN: 'Hand-turned pieces, the kind that sit on the festival tables: pale maple for the defenders, blood-stained wood for the attackers, and a king crowned in brass.',
+    vignette: '/games/hnefatafl/vignettes/taverne.webp',
+    teintes: { assaillant: 0x7b2018, defenseur: 0xd9c49a, roi: 0xc9a227 },
   },
   {
     id: 'bientot',

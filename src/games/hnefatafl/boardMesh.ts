@@ -69,6 +69,12 @@ const PALETTES: Record<string, Palette> = {
     clair: 0x4a2f16, sombre: 0x2b1a0b, socle: 0x1a050b, socleHaut: 0x241207,
     trone: 0x571414, metal: 0xc4a45a, metalSombre: 0x7a5215, brillance: 26,
   },
+  // Le chêne sombre de la salle basse, mesuré sur l'image de la tuile
+  // des Vikings (Alex, 2026-08-23).
+  taverne: {
+    clair: 0x6b4420, sombre: 0x33200f, socle: 0x1c1108, socleHaut: 0x2a1a0d,
+    trone: 0x5a2a12, metal: 0xc9a227, metalSombre: 0x7c5c17, brillance: 18,
+  },
   pierre: {
     clair: 0x6a6558, sombre: 0x413d36, socle: 0x14161a, socleHaut: 0x22252a,
     trone: 0x3a5a4a, metal: 0x9aa3ab, metalSombre: 0x555c63, brillance: 8,

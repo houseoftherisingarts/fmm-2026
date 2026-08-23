@@ -35,7 +35,21 @@ export interface PieceMaterials {
   kC: THREE.MeshPhongMaterial;
 }
 
-export function createPieceMaterials(): PieceMaterials {
+export function createPieceMaterials(teintes?: {
+  assaillant: number; defenseur: number; roi: number;
+}): PieceMaterials {
+  if (teintes) {
+    // Un jeu de pièces tournées : le bois porte la couleur, le laiton
+    // reste au roi (Alex, 2026-08-23).
+    return {
+      a:  new THREE.MeshPhongMaterial({ color: teintes.assaillant, shininess: 46, specular: 0x6a4038 }),
+      aC: new THREE.MeshPhongMaterial({ color: teintes.assaillant, shininess: 60, emissive: 0x100302 }),
+      d:  new THREE.MeshPhongMaterial({ color: teintes.defenseur, shininess: 40, specular: 0xefe0c4 }),
+      dC: new THREE.MeshPhongMaterial({ color: teintes.defenseur, shininess: 54, emissive: 0x070706 }),
+      k:  new THREE.MeshPhongMaterial({ color: teintes.roi, shininess: 150, specular: 0xffe9a8 }),
+      kC: new THREE.MeshPhongMaterial({ color: teintes.roi, shininess: 200, specular: 0xffffff, emissive: 0x2a2008 }),
+    };
+  }
   return {
     a: new THREE.MeshPhongMaterial({ color: 0x8a2418, shininess: 90, specular: 0xff9a5a }),
     aC: new THREE.MeshPhongMaterial({ color: 0xa63a20, shininess: 110, emissive: 0x140402 }),
@@ -78,7 +92,7 @@ export interface PieceSystem {
 export function createPieceSystem(
   scene: THREE.Scene,
   clickables: THREE.Object3D[],
-  materials: PieceMaterials = createPieceMaterials(),
+  materials: PieceMaterials | undefined = undefined,
   /** Gestionnaire partagé avec le plateau : les trois pièces et leurs
    *  textures comptent dans la même barre de progression. */
   manager?: THREE.LoadingManager,
@@ -86,6 +100,11 @@ export function createPieceSystem(
   setId: string = PIECES_DEFAUT,
 ): PieceSystem {
   const jeu: PieceSet = pieceSet(setId);
+  // Un jeu sans modèle 3D peut quand même avoir ses couleurs.
+  // Un jeu sans modèle 3D peut quand même avoir ses couleurs. Sans
+  // teintes ni matériaux fournis, on retombe sur le jeu d'origine.
+  const mats: PieceMaterials = materials
+    ?? createPieceMaterials(jeu.teintes);
   const group = new THREE.Group();
   scene.add(group);
   const map: Record<string, PieceEntry> = {};
@@ -209,11 +228,11 @@ export function createPieceSystem(
 
     const body = new THREE.Mesh(
       new THREE.CylinderGeometry(br * 0.8, br, bh, isK ? 16 : 12),
-      materials[pfx],
+      mats[pfx],
     );
     const cap = new THREE.Mesh(
       new THREE.SphereGeometry(cr, isK ? 16 : 12, 8),
-      materials[`${pfx}C` as 'aC' | 'dC' | 'kC'],
+      mats[`${pfx}C` as 'aC' | 'dC' | 'kC'],
     );
 
     [body, cap].forEach((m) => {
@@ -230,7 +249,7 @@ export function createPieceSystem(
       body,
       cap,
       pType,
-      burstColor: materials[pfx].color.getHex(),
+      burstColor: mats[pfx].color.getHex(),
     };
     map[`${r},${c}`] = entry;
     clickables.push(body, cap);
