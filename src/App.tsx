@@ -60,6 +60,7 @@ const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
 const AlliancePage        = lazy(() => import('./pages/AlliancePage'));
+const VideosPage          = lazy(() => import('./pages/VideosPage'));
 const DefiLobbyPage       = lazy(() => import('./pages/DefiLobbyPage'));
 const MessagesPage     = lazy(() => import('./pages/MessagesPage'));
 const VendorApplicationPage = lazy(() => import('./pages/VendorApplicationPage'));
@@ -387,6 +388,8 @@ const App: React.FC = () => (
                 <Route path="/communaute/equipe/:teamId"        element={<CommunautePage />} />
                 <Route path="/en/community"                     element={<CommunautePage />} />
                 <Route path="/en/community/team/:teamId"        element={<CommunautePage />} />
+                <Route path="/videos"                           element={<VideosPage />} />
+                <Route path="/en/films"                         element={<VideosPage />} />
                 <Route path="/ordre"                            element={<OrdrePage />} />
                 {/* L'Alliance dort tant qu'Alex ne l'allume pas depuis
                     l'admin (drapeau pubAlliance). */}

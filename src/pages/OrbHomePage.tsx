@@ -1251,11 +1251,11 @@ const OrbHomePage: React.FC = () => {
                   <div className="flex flex-col items-center">
                     <button
                       type="button"
-                      onClick={() => setShowFilm(true)}
+                      onClick={() => navigate(lang === 'FR' ? '/videos' : '/en/films')}
                       className="orb-blurb group flex items-center justify-center gap-2 font-display title-medieval uppercase text-[11px] md:text-xs tracking-[0.3em] text-ivory-soft hover:text-ivory transition-colors"
                     >
                       <span aria-hidden className="translate-y-[-1px]">▶</span>
-                      <span>{lang === 'FR' ? 'Voir le film 2026' : 'Watch the 2026 film'}</span>
+                      <span>{lang === 'FR' ? 'Voir toutes les vidéos' : 'Watch all the films'}</span>
                     </button>
                   </div>
                   )

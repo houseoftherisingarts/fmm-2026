@@ -153,6 +153,9 @@ export function setupScene(el: HTMLElement): SceneHandle {
   const onResize = () => {
     const W = el.clientWidth;
     const H = el.clientHeight;
+    // Une boîte de hauteur nulle (conteneur replié, page cachée) donnerait
+    // un rapport infini et un cadrage perdu au retour.
+    if (W === 0 || H === 0) return;
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.aspect = W / H;

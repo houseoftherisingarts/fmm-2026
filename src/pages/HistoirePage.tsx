@@ -376,7 +376,7 @@ const FILMS: Film[] = [
   },
 ];
 
-const FilmsSection: React.FC = () => {
+export const FilmsSection: React.FC = () => {
   const { lang } = useUI();
   const fr = lang === 'FR';
   const [actif, setActif] = React.useState(0);
