@@ -169,32 +169,39 @@ const AdminShell: React.FC<Props> = ({
       {/* ── Sidebar ── */}
       <aside className={`admin-rail fixed inset-y-0 left-0 z-40 w-72 flex flex-col transform transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:z-0`}>
         {/* Brand block */}
-        <div className="px-6 pt-7 pb-6" style={{ borderBottom: '1px solid var(--admin-line)' }}>
+        <div className="admin-rail-brand px-6 pt-7 pb-5">
           <img decoding="async" src="/fmm-logo-embossed-silver.webp" alt="FMM" className="h-8 w-auto mb-3 opacity-90" />
           <p className="admin-eyebrow inline-flex items-center gap-2">
             <span aria-hidden style={{ width: 5, height: 5, transform: 'rotate(45deg)', background: 'var(--admin-accent)' }} />
             Espace Admin
           </p>
-          <p className="admin-title text-sm mt-1 tracking-[0.18em] uppercase" style={{ fontWeight: 400 }}>
+          <p className="admin-title text-sm mt-1.5 tracking-[0.18em] uppercase" style={{ fontWeight: 400 }}>
             FMM <span style={{ color: 'var(--admin-accent)' }}>2026</span>
           </p>
         </div>
 
-        {/* Nav: filtered to sections this role can open */}
-        <nav className="flex-1 overflow-y-auto py-3">
-          {visibleNav.map(({ id, label, icon: Icon }) => {
+        {/* Nav: filtered to sections this role can open, and broken into
+            headed groups. The heading is emitted whenever the group
+            changes between two consecutive VISIBLE rows, so a role that
+            can only open part of a group never gets an empty heading. */}
+        <nav className="flex-1 overflow-y-auto py-2">
+          {visibleNav.map(({ id, label, icon: Icon, group }, i) => {
             const active = section === id;
+            const opensGroup = group !== visibleNav[i - 1]?.group;
             return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => { onSectionChange(id); setMobileOpen(false); }}
-                data-active={active || undefined}
-                className="admin-nav-item"
-              >
-                <Icon size={13} className="shrink-0" />
-                <span className="flex-1 min-w-0 truncate">{label}</span>
-              </button>
+              <React.Fragment key={id}>
+                {opensGroup && <p className="admin-nav-group">{group}</p>}
+                <button
+                  type="button"
+                  onClick={() => { onSectionChange(id); setMobileOpen(false); }}
+                  data-active={active || undefined}
+                  aria-current={active ? 'page' : undefined}
+                  className="admin-nav-item"
+                >
+                  <Icon size={13} className="shrink-0" />
+                  <span className="flex-1 min-w-0 truncate">{label}</span>
+                </button>
+              </React.Fragment>
             );
           })}
         </nav>
