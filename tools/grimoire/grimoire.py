@@ -123,9 +123,8 @@ body { font-family:'Cormorant Garamond',Georgia,serif; color:#3a2a18; }
 /* Grain et vignettage du parchemin */
 .page::before { content:''; position:absolute; inset:0; pointer-events:none;
   background:
-    radial-gradient(ellipse at 22% 12%, rgba(255,252,242,.85), transparent 55%),
-    radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(120,85,40,.16) 100%),
-    repeating-linear-gradient(94deg, rgba(150,110,60,.035) 0 2px, transparent 2px 5px); }
+    radial-gradient(ellipse at 22% 12%, rgba(255,252,242,.8), transparent 58%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(120,85,40,.13) 100%); }
 .ink { background:#150e07; color:#efe3c8; }
 .ink::before { background:
     radial-gradient(ellipse at 50% 30%, rgba(216,176,90,.16), transparent 62%),
@@ -137,37 +136,16 @@ body { font-family:'Cormorant Garamond',Georgia,serif; color:#3a2a18; }
 h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weight:400; }
 .gold { color:#a97c2a; }
 
-/* ── Couverture et quatrième : le plat de reliure ──────────────
-   Alex, 2026-08-23 : la page EST la couverture, pas la photo d'une
-   couverture. Le cuir couvre la page entière, bord à bord, et TOUT le
-   texte est gravé : dans l'argent du cartouche, ou frappé à froid dans
-   le cuir. Aucun texte posé par-dessus, aucun aplat sombre derrière
-   une ligne : ça n'existe pas sur un vrai livre. */
+/* ── Couverture et quatrième ──────────────────────────────────
+   Alex, 2026-08-23, troisième passe : la page EST le plat de reliure.
+   Le titre et les marques sont GRAVÉS dans l'image elle-même, générée
+   d'un bloc. Aucun texte, aucun logo, aucun voile posé par-dessus :
+   sur un vrai livre, rien ne flotte au-dessus du cuir. */
 .cover, .colo { background:#140a0a; }
 .cover::before, .colo::before { background:none; }
-.cover .cuir, .colo .cuir { position:absolute; inset:0; width:100%; height:100%;
+.cover .plat, .colo .plat { position:absolute; inset:0; width:100%; height:100%;
   object-fit:cover; object-position:center; z-index:0; }
 .cover .pad, .colo .pad { padding:0; }
-
-/* Le cartouche d'argent, mesuré sur le plat : centre à 3,20in / 3,78in. */
-.cartouche { position:absolute; left:3.21in; top:3.06in; transform:translateX(-50%);
-  width:1.83in; height:2.30in; z-index:3;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; }
-.cartouche img { width:.46in; margin-bottom:.06in;
-  filter: grayscale(1) brightness(.42) contrast(1.5) opacity(.85)
-          drop-shadow(0 1px 0 rgba(255,255,255,.55)); }
-/* Lettres gravées dans le métal : creux sombre, arête claire dessous. */
-.grave { font-family:'Cinzel',serif; font-weight:600; text-transform:uppercase;
-  color:#4b4b52; text-shadow:0 1px 0 rgba(255,255,255,.6), 0 -1px 0 rgba(0,0,0,.22); }
-.cartouche .titre { font-size:8.6pt; line-height:1.34; letter-spacing:.05em; }
-.cartouche .annee { font-size:5.8pt; letter-spacing:.3em; margin-top:.09in; color:#5b5b62; }
-
-/* Frappé à froid dans le cuir : creux sombre, lumière sur l'arête. */
-.cuir-frappe { filter: grayscale(1) invert(1) brightness(1.25) contrast(.95) opacity(.72)
-               drop-shadow(0 2px 2px rgba(0,0,0,.9)); }
-.colo .trois-maisons { position:absolute; left:50%; top:5.62in; transform:translateX(-50%);
-  width:3.9in; z-index:3; opacity:.7; }
 .rule-gold { width:2.1in; height:1px; background:linear-gradient(90deg,transparent,#a97c2a,transparent); }
 .diamond { width:9px; height:9px; transform:rotate(45deg); border:1px solid #a97c2a; }
 .orn { display:flex; align-items:center; gap:.14in; justify-content:center; }
@@ -271,14 +249,10 @@ def build():
     recs = {r['tab']: r for r in json.load(open(HERE / 'recettes.json'))}
     pages = []
 
-    # 1 · Couverture : le plat de reliure, tout est gravé
-    pages.append(page(f"""
-      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-plein.jpg')}" alt="">
-      <div class="cartouche">
-        <img src="data:image/png;base64,{b64('fmm-logo-silver.png')}" alt="">
-        <p class="grave titre">Le Livre<br>de Recettes<br>du Festival</p>
-        <p class="grave annee">MMXXVI</p>
-      </div>""", cls='cover'))
+    # 1 · Couverture : le plat, d'un seul tenant
+    pages.append(page(
+        f'<img class="plat" src="data:image/jpeg;base64,{b64('couv-face.jpg')}" alt="Le Livre de Recettes du Festival">',
+        cls='cover'))
 
     # 2 · Le mot de la cuisine (la seule page d'encre du corps : la rupture)
     paras = ''.join(
@@ -376,14 +350,10 @@ def build():
             <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
           </div>""", cls='rec' + wide, folio=folio, runhead=titre))
 
-    # Colophon : la quatrième. Les trois maisons frappées dans le cuir.
-    pages.append(page(f"""
-      <img class="cuir" src="data:image/jpeg;base64,{b64('cuir-plein.jpg')}" alt="">
-      <div class="cartouche">
-        <p class="grave titre">Trois<br>maisons</p>
-        <p class="grave annee">MMXXVI</p>
-      </div>
-      <img class="trois-maisons" src="data:image/png;base64,{b64('frappe-trois.png')}" alt="">""", cls='colo'))
+    # Colophon : la quatrième, d'un seul tenant elle aussi
+    pages.append(page(
+        f'<img class="plat" src="data:image/jpeg;base64,{b64('couv-dos.jpg')}" alt="">',
+        cls='colo'))
 
     doc = f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <title>Le Grimoire du Festival</title>
