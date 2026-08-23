@@ -384,7 +384,14 @@ GRAMMES_PAR_CUILLERE = {
     'poudre d\'oignon': 2.4, 'poivre de cayenne': 1.8, 'thym': 1.0, 'romarin': 1.2,
     'safran': 0.7, 'clou de girofle': 2.6, 'gingembre': 1.8, 'cardamone': 2.0,
     'origan': 1.0, 'sarriette': 1.0, 'laurier': 0.6, 'massis': 2.0,
+    'persil': 1.6, 'ciboulette': 1.4, 'menthe': 1.4, 'coriandre': 1.6,
+    'basilic': 1.2, 'aneth': 1.2, 'estragon': 1.2,
 }
+
+# Les herbes fraîches ne se pèsent pas au gramme dans une cuisine de
+# maison : sous cinq grammes, on parle en poignées et en brins.
+HERBES_FRAICHES = ('persil', 'ciboulette', 'menthe', 'coriandre', 'basilic',
+                   'aneth', 'estragon', 'thym frais', 'romarin')
 
 UNITES_MASSE = {'kg': 1000.0, 'g': 1.0}
 UNITES_VOLUME = {'l': 1000.0, 'ml': 1.0}
@@ -424,6 +431,15 @@ def _joli(x, unite):
 def _mesure_de_cuisine(grammes, nom):
     """Traduit une pesée minuscule en cuillères, ou en pincée."""
     cle = (nom or '').strip().lower()
+    if any(h in cle for h in HERBES_FRAICHES) and 'sec' not in cle and 'séch' not in cle:
+        if grammes < 2:
+            return 'quelques brins'
+        if grammes < 6:
+            return 'une petite poignée'
+        if grammes < 14:
+            return 'une poignée'
+        if grammes < 22:
+            return 'une bonne poignée'
     poids = None
     for k, v in GRAMMES_PAR_CUILLERE.items():
         if cle == k or cle.startswith(k) or k in cle:
@@ -487,7 +503,12 @@ def texte_pour_cinq(txt, portions):
 
     def remplacer(m):
         brut = f'{m.group(1)}{m.group(2)}'
-        petit = pour_cinq(brut, portions)
+        # Le mot qui suit la quantité nomme l'ingrédient : il permet de
+        # rendre une petite pesée en cuillères plutôt qu'en décigrammes.
+        suite = txt[m.end():m.end() + 40].strip()
+        mots = re.match(r"(?:de |d['’]|du |des )?([a-zà-ÿ' -]{3,24})", suite, re.I)
+        nom = mots.group(1).strip() if mots else ''
+        petit = pour_cinq(brut, portions, nom)
         return f'{m.group(0)} (pour cinq : {petit})' if petit else m.group(0)
 
     return re.sub(r'(\d+[.,]?\d*)\s*(kg|g|ml|l|L)\b(?!\w)', remplacer, txt)
@@ -514,11 +535,16 @@ def pour_cinq(q, portions, nom=''):
 
     if unite in UNITES_MASSE:
         grammes = val * UNITES_MASSE[unite]
-        # Sous cinq grammes, on ne pèse plus : on mesure.
-        if grammes < 8:
+        # Sous huit grammes, on ne pèse plus : on mesure. Les herbes
+        # fraîches vont plus loin, elles se prennent à la poignée.
+        herbe = any(h in (i_nom := (nom or '').lower()) for h in HERBES_FRAICHES) \
+            and 'sec' not in i_nom and 'séch' not in i_nom
+        if grammes < 8 or (herbe and grammes < 22):
             mesure = _mesure_de_cuisine(grammes, nom)
             if mesure:
                 return mesure
+        if grammes < 1:
+            return 'une pincée'
         return _joli(grammes, 'g')
     if unite in UNITES_VOLUME:
         ml = val * UNITES_VOLUME[unite]
@@ -532,15 +558,32 @@ def pour_cinq(q, portions, nom=''):
         n2 = max(1, int(round(val)))
         return f"{n2} {mot}{'s' if n2 > 1 else ''}"
     if unite in ('cat', 'cas'):
-        nom = 'c. à thé' if unite == 'cat' else 'c. à soupe'
-        v = round(val, 2)
-        if v < 0.2:
+        # Personne ne mesure un tiers de cuillère à soupe : sous une
+        # cuillère à soupe pleine, on redescend en cuillères à thé, et
+        # sous le quart de cuillère à thé, on prend la pincée.
+        cuilleres = val * (3 if unite == 'cas' else 1)   # en c. à thé
+        if cuilleres < 0.12:
             return 'une pincée'
-        frac = _fraction(v)
-        if frac:
-            return f"{frac} {nom}"
-        s2 = _virgule(f"{v:.2f}".rstrip('0').rstrip('.'))
-        return f"{s2} {nom}"
+        if cuilleres < 0.22:
+            return 'une bonne pincée'
+        if cuilleres < 6:
+            q = round(cuilleres * 4) / 4
+            entier = int(q)
+            reste = _fraction(round(q - entier, 2))
+            if entier and reste:
+                return f'{entier} {reste} c. à thé'
+            if reste:
+                return f'{reste} c. à thé'
+            return f'{max(1, entier)} c. à thé'
+        soupes = cuilleres / 3
+        q = round(soupes * 2) / 2
+        entier = int(q)
+        reste = _fraction(round(q - entier, 2))
+        if entier and reste:
+            return f'{entier} {reste} c. à soupe'
+        if reste:
+            return f'{reste} c. à soupe'
+        return f'{entier} c. à soupe'
     if unite == '' and suite == '':
         v = round(val, 1)
         return _virgule(f"{v:.1f}".rstrip('0').rstrip('.'))

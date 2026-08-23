@@ -74,8 +74,8 @@ const ANNEES: Annee[] = [
     id: 'mystere',
     chiffre: 'VI',
     nomFR: 'L’année du ?', nomEN: 'The Year of the ?',
-    texteFR: 'Le thème de cette année-là sera annoncé en son temps. Le jeu s’ouvrira le même jour.',
-    texteEN: 'The theme of that year will be announced in due time. The game opens the same day.',
+    texteFR: 'Jeu disponible lorsque nous annoncerons le thème.',
+    texteEN: 'The game opens when we announce the theme.',
     image: '/tarot/TT.webp',
   },
 ];

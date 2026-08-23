@@ -245,7 +245,14 @@ const Chrome: React.FC = () => {
   if (isImmersive(pathname)) return null;
   return <NavBar />;
 };
-const SANS_PIED = ['/', '/en', '/labo-titre', '/backuppage', '/en/backuppage'];
+// Les jeux occupent l'écran d'un bord à l'autre : aucun pied de page ne
+// doit se dresser dessous (Alex, 2026-08-23 : « une seule fenêtre »).
+const SANS_PIED = [
+  '/', '/en', '/labo-titre', '/backuppage', '/en/backuppage',
+  '/jeux/des', '/en/games/dice',
+  '/jeux/tarot', '/en/games/tarot',
+  '/jeunesse/hnefatafl', '/en/youth/hnefatafl',
+];
 const Footing: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;

@@ -68,8 +68,6 @@ if (coup.action === 'annonce') {
   ok(R.miseValide(m.mise, coup.quantite, coup.face, R.desEnJeu(m)), 'la machine annonce légalement');
 }
 
-console.log(ko === 0 ? 'TOUT PASSE' : ko + ' échec(s)');
-process.exit(ko === 0 ? 0 : 1);
 
 // ── Le pari du calzar : « c'est exactement ça » ──────────────────────
 {
@@ -93,8 +91,11 @@ process.exit(ko === 0 ? 0 : 1);
   ok(juste.devoilement.perdantId === null, 'un exact réussi ne fait perdre personne');
   ok(juste.joueurs[0].des.length === 5, 'le gobelet ne dépasse pas cinq dés');
 
-  const q = { ...p, joueurs: [{ ...p.joueurs[0], des: [4, 4, 2] }, p.joueurs[1]] };
+  // Main sans aucun 4 : le compte tombe à deux (le 4 et l'as de l'autre),
+  // l'annonce en promettait quatre, donc l'appel est raté.
+  const q = { ...p, joueurs: [{ ...p.joueurs[0], des: [2, 3, 5] }, p.joueurs[1]] };
   const rate = R.exact(q);
+  ok(rate.devoilement.compte === 2, 'le compte du dévoilement est juste, vu ' + rate.devoilement.compte);
   ok(rate.devoilement.perdantId === 'j0', 'un exact raté coûte un dé à celui qui l\'appelle');
   ok(rate.joueurs[0].des.length === 2, 'le dé est bien retiré');
 
@@ -107,3 +108,6 @@ process.exit(ko === 0 ? 0 : 1);
   const repris = R.exact(r);
   ok(repris.joueurs[0].des.length === 5, 'un exact juste rend le dé perdu');
 }
+
+console.log(ko === 0 ? 'TOUT PASSE' : ko + ' échec(s)');
+process.exit(ko === 0 ? 0 : 1);

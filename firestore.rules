@@ -202,9 +202,12 @@ service cloud.firestore {
     match /taflParties/{partieId} {
       // Un défi ouvert par lien se lit par n'importe quel membre : c'est
       // le lobby que l'ami reçoit dans Messenger (Alex, 2026-08-23).
-      allow read:   if signedIn()
-                    && (request.auth.uid in resource.data.joueurs
-                        || resource.data.statut == 'lobby');
+      // Le lobby d'un défi par lien se lit SANS compte : l'ami qui
+      // reçoit le lien dans Messenger doit voir qui l'attend avant de
+      // s'inscrire (Alex, 2026-08-23). Le document ne montre alors
+      // qu'un nom d'affichage et un règlement.
+      allow read:   if resource.data.statut == 'lobby'
+                    || (signedIn() && request.auth.uid in resource.data.joueurs);
       allow create: if signedIn()
                     && request.auth.uid in request.resource.data.joueurs
                     && request.auth.uid == request.resource.data.lancePar

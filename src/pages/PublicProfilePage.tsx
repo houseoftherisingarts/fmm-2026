@@ -123,9 +123,14 @@ const PublicProfilePage: React.FC = () => {
               <ArrowLeft size={12} /> {lang === 'FR' ? 'Communauté' : 'Community'}
             </Link>
             <div className="flex flex-col md:flex-row gap-5 md:gap-7 items-start">
-              <div className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-midnight-deep shadow-2xl flex items-center justify-center font-display title-medieval text-4xl shrink-0"
+              {/* La photo du membre, quand il en a mis une. Les initiales
+                  ne servent que de repli (Alex, 2026-08-23). */}
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-midnight-deep shadow-2xl overflow-hidden flex items-center justify-center font-display title-medieval text-4xl shrink-0"
                 style={{ backgroundColor: `hsl(${profile.avatarHue} 30% 18%)`, color: `hsl(${profile.avatarHue} 60% 70%)` }}>
-                {init}
+                {profile.avatarUrl
+                  ? <img src={profile.avatarUrl} alt={profile.displayName} loading="lazy"
+                         className="w-full h-full object-cover" />
+                  : init}
               </div>
               <div className="flex-1 min-w-0 pt-2">
                 <h1 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-tight">{profile.displayName}</h1>
