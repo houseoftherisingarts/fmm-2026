@@ -1475,6 +1475,13 @@ const HnefataflPage: React.FC = () => {
               </div>
             </div>
           </Reveal>
+
+          {user && (
+            <div className="mt-5 lg:mt-0">
+              <PanneauAmis lang={lang} regleId={config.regleId} camp={config.humanSide} />
+            </div>
+          )}
+          </div>
         </div>
       </section>
 
