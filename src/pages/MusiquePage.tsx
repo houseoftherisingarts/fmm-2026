@@ -6,11 +6,11 @@ import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { watchGroupes, type GroupeMusical, type GroupeJour } from '../firebase/groupesMusicaux';
 import SEO from '../components/SEO';
-import BestiaryBoard, { type BestiaryBand } from '../components/musique/BestiaryBoard';
+import BestiaryBoard from '../components/musique/BestiaryBoard';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress, Parallax } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
-import { SectionFog } from '../components/marche/atmospherics';
+import { SectionFog, DisplayTitle } from '../components/marche/atmospherics';
 
 // ─── Band data ───────────────────────────────────────────────────────
 // 2026 lineup (cloned from the Wix /musique page). When the artist has
@@ -86,28 +86,6 @@ const BANDS_ARCHIVES: Band[] = [
 // Bohemio, « BicOasis » s'écrit en un mot, « Sainte-Nigoune » au long,
 // « Svarica » et non Svarika, « Las Noches Bohemias » au féminin.
 // Encore en construction : d'autres noms s'ajouteront.
-// ── Détourages du bestiaire ─────────────────────────────────────────
-// Portraits sans fond, produits localement avec rembg le 2026-08-22, puis
-// posés dans la taverne de /public/scenes. Un groupe absent de la table
-// retombe sur sa photo d'origine, jamais sur celle d'un autre groupe.
-const DETOURAGES: Record<string, string> = {
-  'Skarazula':                            'skarazula',
-  'L’Harfang':                            'harfang',
-  'Troupe Caravane':                      'troupe-caravane',
-  'L’Ensemble Klezmer de Sainte-Nigoune': 'sainte-nigoune',
-  'BicOasis':                             'bicoasis',
-  'Trifolys':                             'trifolys',
-  'Svarica':                              'svarica',
-};
-const bestiaire = (bands: Band[]): BestiaryBand[] => bands.map((b) => {
-  const slug = DETOURAGES[b.name];
-  return {
-    ...b,
-    cutout: slug ? `/musique/bestiaire/${slug}.webp` : b.image,
-    thumb:  slug ? `/musique/bestiaire/${slug}-vignette.webp` : b.image,
-  };
-});
-
 const AFFICHE_2026_BANDS: Band[] = [
   {
     name:    'Skarazula',
@@ -281,12 +259,19 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
     <>
       {!embedded && <SEO title={t.title} description={t.intro1} />}
       {!embedded && <ScrollProgress />}
+      {/* En mode embarqué, Musique arrivait en petit, aligné à gauche :
+          ça se lisait comme une note de bas de page après le grand
+          « Nos activités » centré (Alex, 2026-08-22). Même stature,
+          même axe, même ornement. */}
       {embedded ? (
-        <section id="musique" className="relative pt-20 md:pt-28 pb-2">
-          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{t.eyebrow}</p>
-            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{t.title}</h2>
-            <div className="divider-brass w-24 mt-5" />
+        <section id="musique" className="relative pt-24 md:pt-32 pb-2">
+          <div className="max-w-screen-xl mx-auto px-4 md:px-8 text-center">
+            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-4">{t.eyebrow}</p>
+            <DisplayTitle size="lg" glow>{t.title}</DisplayTitle>
+            <p className="font-editorial text-base md:text-lg max-w-2xl mx-auto mt-5"
+               style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
+              {t.intro1}
+            </p>
           </div>
         </section>
       ) : (
@@ -311,7 +296,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             className="mb-10 md:mb-14"
           />
           <Reveal from="up" delay={0.1}>
-            <BestiaryBoard bands={bestiaire(affiche)} lang={lang} registre={t.registre} />
+            <BestiaryBoard bands={affiche} lang={lang} registre={t.registre} />
           </Reveal>
           <p className="mt-6 text-center font-editorial italic text-sm md:text-base text-ivory-soft/70">
             {t.section2026Note}

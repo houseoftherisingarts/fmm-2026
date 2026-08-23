@@ -18,7 +18,8 @@ export interface Categorie {
   name: { FR: string; EN: string };
   /** Précision de service affichée sous le titre de catégorie. */
   sub?: { FR: string; EN: string };
-  icon: string;
+  /** Nom du glyphe médiéval (voir components/icons/Medieval). */
+  icon: 'sunrise' | 'cauldron' | 'flame' | 'greens' | 'bread' | 'honey' | 'scorpion' | 'pitcher';
   dishes: Plat[];
 }
 
@@ -27,7 +28,7 @@ export const MENU: Categorie[] = [
     key: 'dejeuner',
     name: { FR: 'Le déjeuner', EN: 'Breakfast' },
     sub: { FR: 'Pour partir la journée du bon pied', EN: 'To start the day right' },
-    icon: '🌅',
+    icon: 'sunrise',
     dishes: [
       { name: 'Pizza déjeuner' },
       { name: 'Sandwich déjeuner JLT' },
@@ -37,7 +38,7 @@ export const MENU: Categorie[] = [
     key: 'marmite',
     name: { FR: 'La marmite du campement', EN: 'The camp cauldron' },
     sub: { FR: 'Servie avec le pain viking', EN: 'Served with viking bread' },
-    icon: '🍲',
+    icon: 'cauldron',
     dishes: [
       { name: 'Olla gitana', note: {
         FR: 'Ragoût végétarien de pois chiches, haricots et courges.',
@@ -51,7 +52,7 @@ export const MENU: Categorie[] = [
     key: 'grillages',
     name: { FR: 'Les grillages', EN: 'The grill' },
     sub: { FR: 'Servis avec la salade verte', EN: 'Served with green salad' },
-    icon: '🔥',
+    icon: 'flame',
     dishes: [
       { name: 'Deux brochettes de poulet du verger', note: {
         FR: '300 g de poulet au cidre.',
@@ -68,7 +69,7 @@ export const MENU: Categorie[] = [
   {
     key: 'boustifailles',
     name: { FR: 'Les boustifailles', EN: 'Grub & greens' },
-    icon: '🥗',
+    icon: 'greens',
     dishes: [
       { name: 'Cuirs du seigneur', note: {
         FR: '100 g de bœuf séché maison.',
@@ -86,7 +87,7 @@ export const MENU: Categorie[] = [
     key: 'boulangerie',
     name: { FR: 'La boulangerie', EN: 'The bakery' },
     sub: { FR: 'Beurre aux herbes en supplément', EN: 'Herb butter available on the side' },
-    icon: '🍞',
+    icon: 'bread',
     dishes: [
       { name: 'Pain viking' },
       { name: 'Pain de Khazad-dûm' },
@@ -97,7 +98,7 @@ export const MENU: Categorie[] = [
   {
     key: 'desserts',
     name: { FR: 'Les desserts', EN: 'Sweet things' },
-    icon: '🍯',
+    icon: 'honey',
     dishes: [
       { name: 'Dattes farcies' },
       { name: 'Loukoum' },
@@ -108,7 +109,7 @@ export const MENU: Categorie[] = [
     key: 'courageux',
     name: { FR: 'Pour les courageux', EN: 'For the brave' },
     sub: { FR: 'À vos risques et périls', EN: 'At your own peril' },
-    icon: '🦂',
+    icon: 'scorpion',
     dishes: [
       { name: 'Criquets épicés' },
       { name: 'Œufs de cent ans' },
@@ -121,7 +122,7 @@ export const MENU: Categorie[] = [
 export const ABREUVOIR: Categorie = {
   key: 'abreuvoir',
   name: { FR: 'L’abreuvoir', EN: 'The watering hole' },
-  icon: '🍷',
+  icon: 'pitcher',
   dishes: [
     { name: 'Hypocras', note: {
       FR: 'Vin rouge épicé au miel, à la cannelle et au gingembre.',

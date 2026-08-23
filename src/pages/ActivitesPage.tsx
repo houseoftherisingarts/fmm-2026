@@ -2,7 +2,10 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, ChevronLeft, ChevronRight, ChevronDown, X, Lock as LockIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MapPin, ChevronLeft, ChevronRight, ChevronDown, X } from 'lucide-react';
+import { IconGoblet, IconScroll, IconLozenge } from '../components/icons/Medieval';
+import { addLocale } from '../lib/locale';
 import { watchSchedule, CURRENT_SCHEDULE_YEAR, type ScheduleDay } from '../firebase/schedule';
 import { watchProgFlags, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../firebase/programmationFlags';
 import { useUI } from '../contexts/AppContext';
@@ -391,6 +394,10 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
 
   // Horaire card, repliée par défaut : cliquer déplie l'horaire 2025
   const [horaireOpen, setHoraireOpen] = useState(false);
+  // Programmation repliable aussi (Alex, 2026-08-22) : la page réunit
+  // trois pages, on doit pouvoir refermer un chapitre pour atteindre le
+  // suivant. Ouverte au départ : c'est le contenu principal.
+  const [activitesOpen, setActivitesOpen] = useState(true);
   // Fiche-éclair d'un événement de l'horaire (glossaire cliquable).
   const [infoItem, setInfoItem] = useState<{ label: string; time: string; where: string; body: string } | null>(null);
   // Horaire 2026 officiel en ligne : la carte s'ouvre d'elle-même.
@@ -694,15 +701,12 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
     <div ref={rootRef}>
       {!embedded && <SEO title={t.title} description={t.intro} />}
 
-      {embedded ? (
-        <section className="relative pt-20 md:pt-28 pb-2">
-          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-            <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{t.eyebrow}</p>
-            <h2 className="font-display title-medieval text-4xl md:text-6xl text-ivory leading-[1.04]">{t.title}</h2>
-            <div className="divider-brass w-24 mt-5" />
-          </div>
-        </section>
-      ) : (
+      {/* En mode embarqué, le hero de Programmation porte déjà le titre.
+          Répéter « Programmation 2026 / Activités » juste en dessous,
+          puis « Le Grand Programme » deux fois, faisait quatre titres
+          avant le premier contenu. La page ouvre maintenant sur
+          « Nos activités ». Retiré 2026-08-22 (Alex). */}
+      {embedded ? null : (
         <PageHeader
           eyebrow={t.eyebrow}
           titleA={t.title}
@@ -716,25 +720,27 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       {progFlags.bestiaire && (
       <section id="bestiaire" className="py-16 md:py-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <SectionTopRail
-            index="01"
-            name={t.activitiesEyebrow}
-            meta={t.activitiesMeta}
-            metaValue={ACTIVITIES.length}
-            className="sec-rail mb-10 md:mb-14"
-          />
-          <div className="sec-head text-center mb-10 md:mb-14">
-            <Eyebrow tone="copper" className="mb-3 inline-flex items-center gap-3 justify-center">
-              <HexMark />
-              {t.activitiesEyebrow}
-              <HexMark />
-            </Eyebrow>
+          <div className="sec-head text-center mb-8 md:mb-10">
             <DisplayTitle size="lg" className="mb-4">{t.activitiesTitle}</DisplayTitle>
             <p className="font-editorial text-base md:text-lg max-w-2xl mx-auto"
                style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
               {t.activitiesLead}
             </p>
+            <button
+              type="button"
+              onClick={() => { playSelect(); setActivitesOpen((v) => !v); }}
+              aria-expanded={activitesOpen}
+              aria-controls="activites-corps"
+              className="prog-anchor mt-7 inline-flex items-center gap-3 pl-3 pr-5 py-3 font-sans text-[11px] uppercase tracking-[0.2em] font-semibold"
+            >
+              <span aria-hidden className="prog-anchor-glyph">
+                <ChevronDown size={16} style={{ transform: activitesOpen ? 'rotate(180deg)' : 'none', transition: 'transform .3s ease' }} />
+              </span>
+              {activitesOpen ? t.replier : t.deplier}
+            </button>
           </div>
+
+          <div id="activites-corps" hidden={!activitesOpen}>
 
           {/* ── HUD top bar: inventory header. Two rows: title + stats,
               then arrow nav flanking the filter chips. Chips + arrows
@@ -986,6 +992,8 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             })()}
           </div>
 
+          </div>
+
           <SectionBottomRail
             hint={t.activitiesHint}
             meta={t.activitiesFootMeta}
@@ -1008,7 +1016,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           />
           <div className="sec-head text-center mb-10 md:mb-14">
             <Eyebrow tone="amber" className="mb-3 inline-flex items-center gap-3 justify-center">
-              <Calendar size={12} className="opacity-80" />
+              <IconScroll size={13} className="opacity-80" />
               {t.scheduleEyebrow}
               <HexMark />
             </Eyebrow>
@@ -1287,7 +1295,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       <Eyebrow tone="copper" className="mb-2">{t.scheduleEyebrow}</Eyebrow>
                       <DisplayTitle size="lg" className="text-2xl md:text-3xl">{t.horaireCard2026Title}</DisplayTitle>
                     </div>
-                    <LockIcon size={22} className="shrink-0" style={{ color: 'var(--color-copper)' }} />
+                    <IconLozenge size={22} className="shrink-0" style={{ color: 'var(--color-copper)' }} />
                   </div>
                 </GildedFrame>
               </HexPanel>
@@ -1319,7 +1327,10 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               2026-08-03 : la jeunesse a déjà sa section plus haut dans
               le bestiaire et sa page). Le menu n'étant pas scellé, le
               bouton est un CADENAS, pas un lien : promettre un menu
-              qui n'existe pas ferait cliquer dans le vide. */}
+              qui n'existe pas ferait cliquer dans le vide.
+              2026-08-22 : le menu 1.3 est arrêté et publié, le cadenas
+              tombe. Le bouton mène à la section du banquet du Village
+              Nourriture, menu et réservation Square compris. */}
           <HexPanel size="md" className="group cross-card-left">
             <GildedFrame inset={12} tone="amber">
               <div className="caravan-glass p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
@@ -1341,19 +1352,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     {t.banquetBody}
                   </p>
                 </div>
-                <div
-                  className="shrink-0 self-start md:self-center inline-flex items-center gap-2.5 px-6 py-3.5 rounded-card border font-sans text-[11px] md:text-xs uppercase tracking-[0.22em]"
-                  style={{
-                    borderColor: 'rgba(216, 155, 58, 0.35)',
-                    color: 'rgba(244, 239, 227, 0.65)',
-                    background: 'rgba(0, 0, 0, 0.3)',
-                    cursor: 'default',
-                  }}
-                  aria-disabled
+                <Link
+                  to={addLocale('/marche', lang) + '#banquet'}
+                  className="prog-anchor shrink-0 self-start md:self-center inline-flex items-center gap-3 pl-3 pr-5 py-3 font-sans text-[11px] md:text-xs uppercase tracking-[0.2em] font-semibold"
                 >
-                  <LockIcon size={13} style={{ color: 'var(--color-amber-glow)' }} />
+                  <span aria-hidden className="prog-anchor-glyph"><IconGoblet size={17} /></span>
                   {t.banquetCta}
-                </div>
+                </Link>
               </div>
             </GildedFrame>
           </HexPanel>
@@ -1655,7 +1660,9 @@ const FR = {
   banquetEyebrow: 'Réservation requise',
   banquetTitle: 'Le Banquet de l’Équinoxe',
   banquetBody: 'Un grand banquet sera préparé par les chefs de clans du village gustatif. Le billet pour la grande tablée est vendu séparément des billets d’entrée.',
-  banquetCta: 'Menu disponible sous peu',
+  banquetCta: 'Voir le menu et réserver',
+  replier: 'Replier les activités',
+  deplier: 'Voir les activités',
 };
 
 const EN: typeof FR = {
@@ -1719,7 +1726,9 @@ const EN: typeof FR = {
   banquetEyebrow: 'Reservation required',
   banquetTitle: 'The Equinox Banquet',
   banquetBody: 'A great banquet prepared by the clan chefs of the food village. The banquet seat is sold separately from regular entry tickets.',
-  banquetCta: 'Menu available soon',
+  banquetCta: 'See the menu and book',
+  replier: 'Collapse activities',
+  deplier: 'Show activities',
 };
 
 export default ActivitesPage;

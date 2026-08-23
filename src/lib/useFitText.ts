@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 // ─── useFitText ──────────────────────────────────────────────────────
 // RÈGLE (Alex, 2026-08-22) : aucun mot ne doit JAMAIS être coupé sur le
@@ -6,47 +6,46 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // clamp(…, 8.2vw, 5.6rem) débordait sa colonne et le `overflow-hidden`
 // du header tranchait la fin du mot.
 //
-// Une taille en vw ne sait rien de la largeur réelle de sa colonne ni de
-// la longueur du mot. Ce hook mesure : il réduit la police jusqu'à ce
-// que le texte tienne, puis s'arrête. Il se recalcule au redimensionnement
-// et quand le texte change (changement de langue).
+// Le hook ne touche PAS à la taille déclarée : il ne règle qu'un
+// facteur `--fit`. L'élément garde son clamp responsive et s'écrit
 //
-// Usage :
-//   const { ref, style } = useFitText<HTMLHeadingElement>(titre);
-//   <h1 ref={ref} style={{ ...style, fontSize: 'clamp(...)' }}>…
-// Le hook écrase fontSize seulement s'il doit rétrécir.
+//   font-size: calc(clamp(1.8rem, 8.2vw, 5.6rem) * var(--fit, 1));
+//
+// Une première version écrasait `font-size` directement : elle effaçait
+// du même coup le clamp posé par React, la « taille naturelle » retombait
+// à 16 px héritée, et le titre finissait en corps de texte.
+//
+// `floor` empêche un titre de hero de descendre au rang de paragraphe :
+// sous cette valeur on arrête de réduire et on laisse le texte tenir sur
+// la largeur disponible plutôt que de le rendre illisible.
 
-export function useFitText<T extends HTMLElement>(deps: unknown = null, minPx = 18) {
+export function useFitText<T extends HTMLElement>(deps: unknown = null, floor = 0.42) {
   const ref = useRef<T | null>(null);
-  const [scale, setScale] = useState(1);
 
   const fit = useCallback(() => {
     const el = ref.current;
     if (!el) return;
-    // On repart toujours de la taille naturelle : sinon deux passes de
-    // suite rétréciraient en cascade sans jamais regrossir.
-    el.style.removeProperty('font-size');
-    const natural = parseFloat(getComputedStyle(el).fontSize) || 16;
+    el.style.setProperty('--fit', '1');
     const avail = el.clientWidth;
     if (!avail) return;
 
-    let size = natural;
-    // scrollWidth > clientWidth : ça déborde. On descend par pas de 2 %.
-    // Une trentaine de passes couvre une réduction jusqu'à ~55 %.
-    let guard = 40;
-    while (el.scrollWidth > avail + 0.5 && size > minPx && guard-- > 0) {
-      size *= 0.97;
-      el.style.fontSize = `${size}px`;
+    let f = 1;
+    // scrollWidth > clientWidth : le mot déborde. On descend par pas de
+    // 2,5 %. Une quarantaine de passes couvre jusqu'au plancher.
+    let guard = 60;
+    while (el.scrollWidth > avail + 0.5 && f > floor && guard-- > 0) {
+      f *= 0.975;
+      el.style.setProperty('--fit', String(f));
     }
-    setScale(size / natural);
-  }, [minPx]);
+  }, [floor]);
 
   useEffect(() => {
     fit();
     const el = ref.current;
     if (!el) return;
+    // On observe le PARENT : observer l'élément lui-même déclenche une
+    // boucle (réduire la police change sa hauteur, donc le retaille).
     const ro = new ResizeObserver(fit);
-    ro.observe(el);
     if (el.parentElement) ro.observe(el.parentElement);
     // Les polices display arrivent après le premier rendu : sans ça, la
     // mesure se fait sur la police de repli et le vrai titre déborde.
@@ -54,5 +53,5 @@ export function useFitText<T extends HTMLElement>(deps: unknown = null, minPx = 
     return () => ro.disconnect();
   }, [fit, deps]);
 
-  return { ref, scale, refit: fit };
+  return { ref, refit: fit };
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Swords, CalendarClock, UtensilsCrossed, Music, Baby } from 'lucide-react';
+import { IconSwords, IconScroll, IconGoblet, IconLyre, IconHobbyHorse } from '../components/icons/Medieval';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { ScrollProgress } from '../components/scroll';
@@ -25,11 +25,11 @@ const ANCRES: Array<{
   fr: string;
   en: string;
 }> = [
-  { id: 'bestiaire', icon: Swords,          fr: 'Activités', en: 'Activities' },
-  { id: 'horaire',   icon: CalendarClock,   fr: 'Horaire',   en: 'Schedule' },
-  { id: 'banquet',   icon: UtensilsCrossed, fr: 'Banquet',   en: 'Banquet' },
-  { id: 'musique',   icon: Music,           fr: 'Musique',   en: 'Music' },
-  { id: 'jeunesse',  icon: Baby,            fr: 'Jeunesse',  en: 'Youth' },
+  { id: 'bestiaire', icon: IconSwords,      fr: 'Activités', en: 'Activities' },
+  { id: 'horaire',   icon: IconScroll,      fr: 'Horaire',   en: 'Schedule' },
+  { id: 'banquet',   icon: IconGoblet,      fr: 'Banquet',   en: 'Banquet' },
+  { id: 'musique',   icon: IconLyre,        fr: 'Musique',   en: 'Music' },
+  { id: 'jeunesse',  icon: IconHobbyHorse,  fr: 'Jeunesse',  en: 'Youth' },
 ];
 
 const ProgrammationPage: React.FC = () => {
@@ -60,7 +60,11 @@ const ProgrammationPage: React.FC = () => {
         aria-label={fr ? 'Sections de la programmation' : 'Program sections'}
         className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 -mt-2 mb-8 md:mb-10"
       >
-        <div className="flex flex-wrap justify-center gap-2.5 md:gap-3">
+        {/* Ces boutons se lisaient comme du texte posé sur un filet : on
+            ne voyait pas qu'ils cliquaient (Alex, 2026-08-22). Plaque de
+            laiton pleine, arête franche, glyphe médiéval dans son propre
+            cartouche, ombre portée. Ça se voit et ça s'appuie. */}
+        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
           {ANCRES.map((a) => {
             const Icon = a.icon;
             return (
@@ -68,23 +72,12 @@ const ProgrammationPage: React.FC = () => {
                 key={a.id}
                 type="button"
                 onClick={() => aller(a.id)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-[15px] border backdrop-blur-md font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] transition-all duration-300 hover:-translate-y-0.5"
-                style={{
-                  borderColor: 'rgba(216, 155, 58, 0.3)',
-                  background: 'rgba(10, 4, 6, 0.5)',
-                  color: 'rgba(244, 239, 227, 0.85)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.7)';
-                  e.currentTarget.style.color = 'var(--color-amber-glow)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(216, 155, 58, 0.3)';
-                  e.currentTarget.style.color = 'rgba(244, 239, 227, 0.85)';
-                }}
+                className="prog-anchor group inline-flex items-center gap-3 pl-3 pr-5 py-3 min-h-[52px] font-sans text-[11px] md:text-xs uppercase tracking-[0.2em] font-semibold"
               >
-                <Icon size={13} />
-                {fr ? a.fr : a.en}
+                <span aria-hidden className="prog-anchor-glyph">
+                  <Icon size={17} />
+                </span>
+                <span>{fr ? a.fr : a.en}</span>
               </button>
             );
           })}

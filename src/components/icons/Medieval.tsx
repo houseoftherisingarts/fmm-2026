@@ -10,14 +10,14 @@ import React from 'react';
 // `currentColor` : elles héritent de la couleur du texte qui les porte,
 // comme les glyphes du bestiaire.
 
-type P = { size?: number | string; className?: string; strokeWidth?: number };
+type P = { size?: number | string; className?: string; strokeWidth?: number; style?: React.CSSProperties };
 
 const Base: React.FC<P & { children: React.ReactNode }> = ({
-  size = 16, className = '', strokeWidth = 1.4, children,
+  size = 16, className = '', strokeWidth = 1.4, style, children,
 }) => (
   <svg
     viewBox="0 0 24 24" width={size} height={size} aria-hidden
-    className={className} fill="none" stroke="currentColor"
+    className={className} style={style} fill="none" stroke="currentColor"
     strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
   >
     {children}

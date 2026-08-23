@@ -8,6 +8,22 @@ import { Reveal, Stagger, StaggerItem, ScrollProgress } from '../components/scro
 import { BubbleCanvas, Motes } from '../components/marche/effects';
 import { SectionFog, SectionTopRail, Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
 import { MENU, ABREUVOIR, BANQUET_MENU, type Plat } from '../content/menu2026';
+import {
+  IconSunrise, IconCauldron, IconFlame, IconGreens, IconBread,
+  IconHoney, IconScorpion, IconPitcher,
+} from '../components/icons/Medieval';
+
+// Les emoji de catégorie sont partis : ils cassaient la règle « aucune
+// icône générique » (Alex, 2026-08-22). Chaque catégorie porte son
+// glyphe médiéval, au trait, dans la couleur de la section.
+const GLYPHES = {
+  sunrise: IconSunrise, cauldron: IconCauldron, flame: IconFlame, greens: IconGreens,
+  bread: IconBread, honey: IconHoney, scorpion: IconScorpion, pitcher: IconPitcher,
+} as const;
+const Glyphe: React.FC<{ name: keyof typeof GLYPHES; size?: number }> = ({ name, size = 22 }) => {
+  const I = GLYPHES[name];
+  return <I size={size} className="shrink-0" />;
+};
 
 // Liens de paiement Square (compte Le Salon des Inconnus), créés par
 // l'API le 2026-08-22. Ce sont des URL publiques, pas des secrets.
@@ -115,7 +131,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                 <article key={g.name.FR} className="break-inside-avoid mb-12 md:mb-14">
                   <header className="mb-5 pb-3" style={{ borderBottom: '1px solid rgba(244,239,227,0.12)' }}>
                     <div className="flex items-baseline gap-3">
-                      <span aria-hidden className="text-xl md:text-2xl leading-none">{g.icon}</span>
+                      <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
                       <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
                     </div>
                     {g.sub && (
@@ -136,7 +152,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
             <GildedFrame tone="amber" active className="block">
               <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
                 <header className="flex items-baseline gap-3 mb-6">
-                  <span aria-hidden className="text-2xl leading-none">{ABREUVOIR.icon}</span>
+                  <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}><Glyphe name={ABREUVOIR.icon} size={26} /></span>
                   <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{ABREUVOIR.name[lang]}</h3>
                   <span className="ml-auto font-sans uppercase tracking-[0.3em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
                     {t.tavernTag}
