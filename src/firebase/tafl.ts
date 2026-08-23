@@ -11,7 +11,7 @@
 // passe pas le moteur de l'autre).
 
 import {
-  collection, doc, addDoc, getDoc, updateDoc, query, where,
+  collection, doc, addDoc, getDoc, setDoc, deleteDoc, updateDoc, query, where,
   onSnapshot, orderBy, serverTimestamp, arrayUnion, type Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -151,5 +151,40 @@ export function suivrePartie(
     doc(db, COL, id),
     (snap) => cb(snap.exists() ? ({ id: snap.id, ...(snap.data() as object) } as PartieTafl) : null),
     () => cb(null),
+  );
+}
+
+
+// ─── La table ouverte ───────────────────────────────────────────────
+// Le répertoire des membres reste fermé (décision d'Alex du 4 juillet
+// 2026 : personne ne moissonne les courriels). Pour se faire défier, on
+// s'inscrit donc VOLONTAIREMENT à la table : un document par joueur,
+// qui ne porte qu'un nom d'affichage.
+//
+//   /taflJoueurs/{uid}  { nom, depuis }
+
+export interface JoueurTafl {
+  uid: string;
+  nom: string;
+}
+
+const COL_JOUEURS = 'taflJoueurs';
+
+export async function rejoindreLaTable(uid: string, nom: string): Promise<void> {
+  if (!db) throw new Error('Firestore non configuré');
+  await setDoc(doc(db, COL_JOUEURS, uid), { nom, depuis: serverTimestamp() });
+}
+
+export async function quitterLaTable(uid: string): Promise<void> {
+  if (!db) throw new Error('Firestore non configuré');
+  await deleteDoc(doc(db, COL_JOUEURS, uid));
+}
+
+export function suivreLaTable(cb: (joueurs: JoueurTafl[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  return onSnapshot(
+    collection(db, COL_JOUEURS),
+    (snap) => cb(snap.docs.map((d) => ({ uid: d.id, nom: String((d.data() as { nom?: string }).nom ?? '') }))),
+    () => cb([]),
   );
 }

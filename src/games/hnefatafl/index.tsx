@@ -42,6 +42,11 @@ import { createHighlightSystem } from './highlightSystem';
 import { pickMove, type Difficulty } from './cpuPlayer';
 import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
 import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
+import { useAuth } from '../../contexts/AuthContext';
+import {
+  suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
+  type PartieTafl,
+} from '../../firebase/tafl';
 
 type Mode = 'two-player' | 'vs-cpu';
 
@@ -251,9 +256,25 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
 
 const CPU_THINK_MS = 500;
 
+/** Le fil d'une partie en ligne, branché sur Firestore par la page. */
+export interface FilEnLigne {
+  /** Mon camp : je ne peux toucher que mes pièces, à mon tour. */
+  monCamp: Side;
+  /** Appelé quand JE joue : la page pousse le coup à l'autre. */
+  surMonCoup: (coup: { fr: number; fc: number; tr: number; tc: number; tourSuivant: Side; gagnant: 'attacker' | 'defender' | null }) => void;
+}
+
+/** Ce que la page peut demander au damier. */
+export interface CanvasHandle {
+  /** Rejoue un coup reçu de l'adversaire. */
+  jouerDistant: (fr: number, fc: number, tr: number, tc: number) => void;
+}
+
 interface GameCanvasProps {
   gameKey: number;
   onUi: (ui: UIState) => void;
+  /** Présent = partie en ligne contre une vraie personne. */
+  enLigne?: FilEnLigne | null;
   strings: GameStrings;
   config: GameConfig;
   /** Avancement du chargement des modèles, de 0 à 1, puis `true` quand
@@ -264,7 +285,15 @@ interface GameCanvasProps {
   pieceSetId: string;
 }
 
-const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config, onLoad, boardSetId, pieceSetId }) => {
+const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, strings, config, onLoad, boardSetId, pieceSetId, enLigne }, ref) => {
+  // La poignée doit survivre aux re-rendus : le moteur vit dans un
+  // effet, il publie sa fonction ici.
+  const distantRef = useRef<((fr: number, fc: number, tr: number, tc: number) => void) | null>(null);
+  const enLigneRef = useRef<FilEnLigne | null>(enLigne ?? null);
+  enLigneRef.current = enLigne ?? null;
+  useImperativeHandle(ref, () => ({
+    jouerDistant: (fr, fc, tr, tc) => distantRef.current?.(fr, fc, tr, tc),
+  }), []);
   const mountRef = useRef<HTMLDivElement | null>(null);
   const stringsRef = useRef(strings);
   stringsRef.current = strings;
@@ -432,7 +461,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
       scheduleCpu();
     };
 
-    const commitMove = (fr: number, fc: number, tr: number, tc: number) => {
+    const commitMove = (fr: number, fc: number, tr: number, tc: number, distant = false) => {
       if (import.meta.env.DEV) {
         // eslint-disable-next-line no-console
         console.info('[Hnefatafl] commitMove', { fr, fc, tr, tc, piece: gs.board[fr][fc], turn: gs.turn });
@@ -441,6 +470,17 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
       // commit fantome basculerait le tour sans bouger le plateau).
       if (!gs.board[fr]?.[fc]) return;
       const { board: nb, removed } = applyMove(gs.board, fr, fc, tr, tc);
+      // Partie en ligne : mon coup part vers l'autre. Le coup reçu de
+      // l'adversaire, lui, ne repart pas (sinon il ferait la navette).
+      const fil = enLigneRef.current;
+      if (fil && !distant) {
+        const gagnant = checkWin(nb);
+        fil.surMonCoup({
+          fr, fc, tr, tc,
+          tourSuivant: gs.turn === 'attacker' ? 'defender' : 'attacker',
+          gagnant,
+        });
+      }
       gs.board = nb;
       gs.sel = null;
       gs.moves = [];
@@ -465,6 +505,12 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
       pieces.mvPiece(fr, fc, tr, tc, { onComplete: afterMove });
     };
 
+    // La page rejoue ici les coups de l'adversaire.
+    distantRef.current = (fr: number, fc: number, tr: number, tc: number) => {
+      if (gs.over) return;
+      commitMove(fr, fc, tr, tc, true);
+    };
+
     const handleSqClick = (r: number, c: number) => {
       if (gs.over || gs.animating) return;
       // While the CPU is thinking, lock human input on the CPU's turn.
@@ -474,6 +520,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
       // (the cpuShouldMove() check above only fires after a turn flip;
       // this guards a defender-side human from poking raider pieces).
       if (cfg.mode === 'vs-cpu' && gs.turn !== cfg.humanSide) return;
+      // En ligne : je ne touche que mes hommes, et seulement à mon tour.
+      const fil = enLigneRef.current;
+      if (fil && gs.turn !== fil.monCamp) return;
 
       const piece = gs.board[r][c];
       const mine = gs.turn === 'attacker' ? piece === 1 : piece === 2 || piece === 3;
@@ -661,7 +710,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameKey, onUi, strings, config,
   }, [gameKey, onUi]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%' }} />;
-};
+});
+GameCanvas.displayName = 'GameCanvas';
 
 // ─── Jeton de choix de l'écran de préparation ───────────────────────
 // Grammaire du site : verre sombre, filet de laiton, texte os. L'état
@@ -956,6 +1006,25 @@ const HnefataflPage: React.FC = () => {
   const { lang } = useUI();
   const s = useMemo(() => STRINGS[lang], [lang]);
 
+  // ── Partie en ligne ──────────────────────────────────────────────
+  // /jeunesse/hnefatafl?partie=<id> ouvre la partie lancée depuis
+  // l'espace client. La page suit le document, rejoue les coups de
+  // l'autre et pousse les miens (Alex, 2026-08-23).
+  const { user } = useAuth();
+  const partieId = useMemo(
+    () => new URLSearchParams(window.location.search).get('partie'),
+    [],
+  );
+  const [partie, setPartie] = useState<PartieTafl | null>(null);
+  const canvasRef = useRef<CanvasHandle>(null);
+  const appliques = useRef(0);
+  const monCamp: Side | null = useMemo(() => {
+    if (!partie || !user) return null;
+    if (partie.camps.attacker === user.uid) return 'attacker';
+    if (partie.camps.defender === user.uid) return 'defender';
+    return null;
+  }, [partie, user]);
+
   const [gameStarted, setGameStarted] = useState(false);
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -990,6 +1059,38 @@ const HnefataflPage: React.FC = () => {
       return { ...prev, msg };
     });
   }, [lang]);
+
+  useEffect(() => {
+    if (!partieId) return;
+    return suivrePartie(partieId, setPartie);
+  }, [partieId]);
+
+  // Dès que la partie est en cours, on dresse la table sans passer par
+  // l'écran de préparation : les réglages ont été choisis au défi.
+  useEffect(() => {
+    if (!partie || partie.statut !== 'encours' || gameStarted) return;
+    setRegle(partie.regleId);
+    appliques.current = 0;
+    setConfig({ mode: 'two-player', humanSide: 'defender', difficulty: 'medium', regleId: partie.regleId });
+    setGameKey((k) => k + 1);
+    setCharge(0);
+    setPret(false);
+    setUi({ turn: 'attacker', over: false, msg: s.raidersFirst, vfx: null });
+    setGameStarted(true);
+  }, [partie, gameStarted, s]);
+
+  // Les coups arrivés depuis l'autre bout se rejouent sur le damier.
+  useEffect(() => {
+    if (!partie || !pret || !gameStarted) return;
+    const restants = partie.coups.slice(appliques.current);
+    if (restants.length === 0) return;
+    restants.forEach((coup, i) => {
+      const [fr, fc, tr, tc] = coupDepuisTexte(coup);
+      // Un coup par tranche : les animations s'enchaînent proprement.
+      setTimeout(() => canvasRef.current?.jouerDistant(fr, fc, tr, tc), i * 700);
+    });
+    appliques.current = partie.coups.length;
+  }, [partie, pret, gameStarted]);
 
   const handleBegin = (next: GameConfig) => {
     // Le règlement s'applique AVANT que la scène ne se monte : il fixe
@@ -1057,6 +1158,41 @@ const HnefataflPage: React.FC = () => {
       {/* ── La table de jeu ─────────────────────────────────────── */}
       <section className="relative pb-14 md:pb-20">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          {/* Bandeau de partie en ligne : contre qui, quel camp, à qui
+              de jouer, et la porte de sortie. */}
+          {partie && monCamp && (
+            <div className="fmm-glass-btn mb-5 px-5 py-4" style={{ flexDirection: 'row', justifyContent: 'space-between', cursor: 'default' }}>
+              <span className="text-left min-w-0">
+                <span className="fmm-glass-btn-label block truncate">
+                  {lang === 'FR' ? 'Contre' : 'Against'}{' '}
+                  {partie.noms[partie.joueurs.find((u) => u !== user?.uid) ?? ''] ?? '—'}
+                </span>
+                <span className="fmm-glass-btn-note block mt-1.5">
+                  {monCamp === 'attacker'
+                    ? (lang === 'FR' ? 'Vous menez les assaillants' : 'You lead the raiders')
+                    : (lang === 'FR' ? 'Vous défendez le roi' : 'You defend the king')}
+                  {' · '}
+                  {partie.statut === 'fini'
+                    ? (lang === 'FR' ? 'Partie terminée' : 'Game over')
+                    : partie.tour === monCamp
+                      ? (lang === 'FR' ? 'À vous de jouer' : 'Your move')
+                      : (lang === 'FR' ? 'En attente de l’autre' : 'Waiting for them')}
+                </span>
+              </span>
+              {partie.statut === 'encours' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!partieId || !user) return;
+                    void abandonner(partieId, user.uid, monCamp === 'attacker' ? 'defender' : 'attacker');
+                  }}
+                  className="shrink-0 px-4 py-2 rounded-card border border-brass/35 text-ivory-soft hover:text-ivory hover:border-brass/70 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                >
+                  {lang === 'FR' ? 'Abandonner' : 'Resign'}
+                </button>
+              )}
+            </div>
+          )}
           <Reveal>
             <div
               className="relative rounded-card overflow-hidden border border-brass/25"
@@ -1111,10 +1247,18 @@ const HnefataflPage: React.FC = () => {
               >
                 {gameStarted && (
                   <GameCanvas
+                    ref={canvasRef}
                     gameKey={gameKey}
                     onUi={setUi}
                     strings={s}
                     config={config}
+                    enLigne={partieId && monCamp && partie?.statut === 'encours' ? {
+                      monCamp,
+                      surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant }) => {
+                        appliques.current += 1;
+                        void jouerCoup(partieId, coupEnTexte(fr, fc, tr, tc), tourSuivant, gagnant);
+                      },
+                    } : null}
                     boardSetId={choix.plateau}
                     pieceSetId={choix.pieces}
                     onLoad={(p, done) => {
