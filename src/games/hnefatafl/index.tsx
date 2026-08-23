@@ -1220,6 +1220,9 @@ const HnefataflPage: React.FC = () => {
               )}
             </div>
           )}
+          {/* Le damier et, pour une personne connectée, la colonne des
+              amis à sa droite : on défie sans quitter la table. */}
+          <div className={user ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-5 lg:items-start' : ''}>
           <Reveal>
             <div
               className="relative rounded-card overflow-hidden border border-brass/25"
