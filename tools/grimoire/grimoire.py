@@ -45,6 +45,40 @@ TITRES = {
     'hummus': 'Hummus',
 }
 
+
+# ── Le chapeau de chaque recette ────────────────────────────────────
+# Le frère d'Alex a raison : sans une ligne qui dit ce qu'on cuisine et
+# quand ça se sert, une page de recettes n'est qu'une fiche technique.
+CHAPEAUX = {
+    'olla gitana': "Le grand pot des campements gitans : pois chiches, courge, poires fermes, tout ce que la caravane avait sous la main. Il mijote tout l'après-midi et se sert dans un bol tenu à deux mains.",
+    'goulash': "Palette de bœuf, paprika doux, racines coupées gros. La marmite qui reste sur le feu pendant qu'on monte les tentes.",
+    'brochette de poulet du verger': "Cuisses de poulet marinées au cidre et au sirop d'érable, grillées jusqu'à ce que la peau craque. C'est la brochette qui sent le verger.",
+    'sauce au cidre': "La sauce qui va avec les brochettes du verger : cidre réduit, deux moutardes, une pointe d'érable.",
+    'boeuf kawaps': "Bœuf haché aux oignons râpés, attendri au bicarbonate, serré à la main sur la broche. Les kawaps se mangent brûlants, dans le pain.",
+    'sauce boeuf': "Yogourt, tahini, ail rôti et menthe fraîche. La sauce froide qui calme le feu des brochettes.",
+    'hotdog': "Saucisse artisanale dans un pain viking, choucroute et trois moutardes. La ligne la plus longue du village gustatif.",
+    'patate chaude': "Pomme de terre entière, beurre, miel épicé et paprika. Elle sort brûlante et on la mange sans couvert.",
+    'cuirs du seigneur': "Rumsteak mariné puis séché lentement jusqu'à devenir cuir. Ça se mâche longtemps, ça se garde des semaines.",
+    'verdure du jardin': "Mesclun, concombre, carottes râpées, vinaigrette au cidre et à l'érable. La fraîcheur entre deux grillades.",
+    'salade betteraves repas': "Betteraves rôties, orge, pois chiches et roquette. Une salade qui tient lieu de repas complet.",
+    'salade betterves side': "La même salade de betteraves, servie en accompagnement à côté d'une grillade.",
+    'baba ganoush': "Aubergines brûlées jusqu'à la peau noire, tahini, citron. La fumée fait la moitié du travail.",
+    'hummus': "Pois chiches cuits au bicarbonate jusqu'à s'écraser sous le doigt, tahini et citron. Servi tiède, il n'a rien à voir avec celui du commerce.",
+    'pain viking': "Un pain de blé au miel, pétri le matin et cuit dans la journée. C'est le pain de toutes les tables du festival.",
+    'beurre aux herbes': "Persil, ciboulette, thym, romarin et ail. Le beurre qui attend le pain viking à la sortie du four.",
+    'bloodbraud': "Le pain au sang des tables nordiques. Le sang remplace l'œuf, donne la mie sombre et le goût de fer.",
+    'lembas': "Le pain de voyage, version festival : avoine, miel, crème. Une galette suffit pour tenir une journée de marche.",
+    'pain insectes': "Farine de criquet, vers de farine, fourmis. Le pain qui fait reculer les visiteurs, puis revenir en chercher un deuxième.",
+    'gateau du voyageur': "Un gâteau de route : fruits séchés, noix, cannelle. Il se transporte dans un sac et se garde plusieurs jours.",
+    "les offrandes de l'oasis": "Dattes ouvertes, farcies de noix, de miel et de zeste d'orange. Deux bouchées et le café turc arrive.",
+    'hypocras': "Le vin d'épices du Moyen Âge, sucré au miel, parfumé à la cannelle et au girofle. Il se boit tiède, jamais bouilli.",
+    'vin chaud': "Vin rouge, oranges piquées de girofle, cannelle et anis étoilé. Le verre qu'on tient à deux mains devant le feu.",
+    'bière au beurre': "La boisson des enfants au festival : crème soda, beurre fondu, cannelle et crème fouettée par-dessus.",
+    'cervoise': "Bière blonde relevée de cannelle et d'un sirop de miel et de genièvre. Simple, et elle disparaît vite.",
+    'limonade': "Citron, sucre, eau froide, glaçons. Rien d'autre, et c'est ce qui sauve les après-midi de septembre.",
+    'café turc': "Café moulu très fin et cardamome, cuit dans le cezve posé sur le sable brûlant. Il se sert avec le marc au fond.",
+}
+
 # ── Le filigrane : un ingrédient dessiné, en demi-transparence ──────
 # Alex, 2026-08-23 : chaque page de recette porte, en fond, le dessin
 # d'un de ses ingrédients, comme les livres de cuisine d'autrefois. Le
@@ -96,19 +130,15 @@ CHAPITRES = [
                            'limonade', 'café turc']),
 ]
 
-MOT = """Ce livre sort d’une cuisine de campagne, pas d’un studio.
+MOT = """Ce livre a été écrit dehors, entre deux services.
 
-Les quantités que vous allez lire sont celles des vraies marmites du festival, celles qui nourrissent
-cinquante personnes d’un coup pendant trois jours, entre le vendredi et le dimanche, sur un terrain
-en gazon où rien n’est jamais parfaitement de niveau. Nous les avons laissées telles quelles. Divisez
-par dix et vous nourrirez votre tablée; gardez-les entières et vous nourrirez votre village.
+À gauche, les quantités du festival : cinquante couverts d’un coup, trois jours de suite, sur un terrain en herbe où rien n’est de niveau et où le vent décide de la cuisson autant que le feu. À droite, les mêmes plats ramenés à cinq personnes, pour une table ordinaire un mardi soir. Les deux colonnes disent la même recette; seule la marmite change.
 
-Rien ici n’est reconstitué à la lettre. Ce sont des recettes de route : elles empruntent aux tables
-d’Europe de l’Est, du Levant, de l’Espagne gitane et des feux nordiques, parce que c’est de là que
-viennent les caravanes de cette édition. Le pain au sang côtoie le baba ganoush, l’hypocras côtoie
-le café turc, et personne ne s’en plaint autour du feu.
+Les plats viennent de la route. L’Europe de l’Est, le Levant, l’Espagne gitane, les feux du Nord : c’est de là que viennent les caravanes de cette édition, et la table leur ressemble. Le pain au sang voisine le baba ganoush. L’hypocras voisine le café turc. Personne ne s’en plaint autour du feu.
 
-Faites-les à votre façon. Goûtez souvent. Salez plus que vous ne pensez."""
+Les proportions ont été écrites la main dans le sac de farine. Elles supportent d’être poussées, et elles pardonnent.
+
+Goûtez souvent. Salez un peu plus que vous ne croyez devoir le faire : dehors, le froid mange le sel."""
 
 # ── Gabarits ─────────────────────────────────────────────────────────
 CSS = """
@@ -197,7 +227,12 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 .ing li { font-size:9.1pt; line-height:1.34; padding:.045in 0;
   border-bottom:1px dotted rgba(120,85,40,.2); }
 .ing .q { display:block; color:#8a6524; font-family:'Cinzel',serif; font-size:7.2pt;
-  letter-spacing:.1em; margin-top:.012in; }
+  letter-spacing:.08em; margin-top:.012in; }
+.ing .q b { font-weight:600; }
+.ing .q i { font-style:normal; color:#a97c2a; }
+.chapeau { font-family:'Cormorant Garamond',serif; font-size:10.4pt; line-height:1.45;
+  color:#4a3620; margin-top:.1in; max-width:4.6in; }
+.ing .q { text-transform:none; letter-spacing:.02em; }
 .steps li { font-size:10.4pt; line-height:1.5; padding-left:.3in; position:relative;
   margin-bottom:.115in; }
 .steps li::before { content:counter(s); counter-increment:s; position:absolute; left:0; top:.015in;
@@ -229,6 +264,117 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 .colo p { color:rgba(238,234,226,.9); text-shadow:0 1px 2px rgba(0,0,0,.6); }
 .colo .logos img { filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
 """
+
+
+# ── Ramener une recette de festival à une table de cinq ─────────────
+# Chaque fiche annonce son rendement (50 portions, 100 portions, une
+# bouteille…). On en tire un facteur, puis on convertit proprement :
+# 4 kg deviennent 400 g, 850 ml deviennent 85 ml, 10 unités en font 1.
+import unicodedata
+
+def portions_de(rendement):
+    t = (rendement or '').lower()
+    m = re.search(r'(\d+)\s*(portions?|brochettes?)', t)
+    if m:
+        n = int(m.group(1))
+        if 'brochette' in m.group(2):
+            par = re.search(r'(\d+)\s*par portion', t)
+            if par:
+                n = max(1, n // int(par.group(1)))
+        return n
+    return 50  # la marmite ordinaire du village
+
+UNITES_MASSE = {'kg': 1000.0, 'g': 1.0}
+UNITES_VOLUME = {'l': 1000.0, 'ml': 1.0}
+
+def _nombre(txt):
+    return float(txt.replace(',', '.'))
+
+def _virgule(txt):
+    return txt.replace('.', ',')
+
+
+FRACTIONS = {0.25: '¼', 0.33: '⅓', 0.5: '½', 0.66: '⅔', 0.75: '¾'}
+
+def _fraction(v):
+    for cle, sym in FRACTIONS.items():
+        if abs(v - cle) < 0.06:
+            return sym
+    return None
+
+
+def _joli(x, unite):
+    if x >= 1000 and unite in ('g', 'ml'):
+        v = x / 1000
+        s2 = _virgule(f"{v:.2f}".rstrip('0').rstrip('.'))
+        return f"{s2} {'kg' if unite == 'g' else 'L'}"
+    if x >= 100:
+        return f"{int(round(x))} {unite}"
+    if x >= 10:
+        return f"{int(round(x))} {unite}"
+    v = round(x, 1)
+    frac = _fraction(v % 1)
+    if v < 1 and frac:
+        return f"{frac} {unite}"
+    s2 = _virgule(f"{v:.1f}".rstrip('0').rstrip('.'))
+    return f"{s2} {unite}"
+
+def pour_cinq(q, portions):
+    """Rend la quantité pour cinq personnes, ou None si ça n'a pas de sens."""
+    if not q:
+        return None
+    brut = q.strip().lower().replace('\u00a0', ' ')
+    if brut in ('qs', 'q.s', 'q.s.'):
+        return 'au goût'
+    facteur = 5.0 / max(1, portions)
+    m = re.match(r'^([\d.,]+)\s*([a-zéèà.]+)?(.*)$', brut)
+    if not m:
+        return None
+    try:
+        n = _nombre(m.group(1))
+    except ValueError:
+        return None
+    unite = (m.group(2) or '').strip('. ')
+    suite = (m.group(3) or '').strip()
+    val = n * facteur
+
+    if unite in UNITES_MASSE:
+        return _joli(val * UNITES_MASSE[unite], 'g')
+    if unite in UNITES_VOLUME:
+        return _joli(val * UNITES_VOLUME[unite], 'ml')
+    if unite in ('un', 'unite', 'unites', 'gousse', 'gousses', 'bouteille', 'bouteilles'):
+        mot = 'gousse' if unite.startswith('gousse') else ('bouteille' if unite.startswith('bouteille') else 'pièce')
+        n2 = max(1, int(round(val)))
+        return f"{n2} {mot}{'s' if n2 > 1 else ''}"
+    if unite in ('cat', 'cas'):
+        nom = 'c. à thé' if unite == 'cat' else 'c. à soupe'
+        v = round(val, 2)
+        if v < 0.2:
+            return 'une pincée'
+        frac = _fraction(v)
+        if frac:
+            return f"{frac} {nom}"
+        s2 = _virgule(f"{v:.2f}".rstrip('0').rstrip('.'))
+        return f"{s2} {nom}"
+    if unite == '' and suite == '':
+        v = round(val, 1)
+        return _virgule(f"{v:.1f}".rstrip('0').rstrip('.'))
+    return None
+
+
+def joli_depart(q):
+    """Écrit la quantité du festival comme un cuisinier l'écrit."""
+    t = (q or '').strip()
+    t = re.sub(r'(?i)^([\d.,]+)\s*kg', lambda m: m.group(1).replace('.', ',') + ' kg', t)
+    t = re.sub(r'(?i)^([\d.,]+)\s*g\b', lambda m: m.group(1).replace('.', ',') + ' g', t)
+    t = re.sub(r'(?i)^([\d.,]+)\s*ml', lambda m: m.group(1).replace('.', ',') + ' ml', t)
+    t = re.sub(r'(?i)^([\d.,]+)\s*l\b', lambda m: m.group(1).replace('.', ',') + ' L', t)
+    t = re.sub(r'(?i)^([\d.,]+)\s*un\b', lambda m: m.group(1) + '\u00a0×', t)
+    t = re.sub(r'(?i)^([\d.,]+)\s*cat\b', lambda m: m.group(1).replace('.', ',') + ' c. à thé', t)
+    t = re.sub(r'(?i)^([\d.,]+)\s*cas\b', lambda m: m.group(1).replace('.', ',') + ' c. à soupe', t)
+    if t.lower() in ('qs', 'q.s', 'q.s.'):
+        return 'au goût'
+    return t
 
 
 def esc(t):
@@ -300,13 +446,17 @@ def build():
         <div class="orn"><span class="diamond"></span></div>
         <h2 style="font-size:19pt">Sur les quantités</h2>
         <p style="font-size:11pt; line-height:1.6; max-width:3.6in">
-          Chaque fiche donne son rendement en tête de page : cinquante portions, cent tasses,
-          une bouteille. C’est la mesure du festival. Pour une tablée de cinq, divisez par dix et
-          arrondissez vers le bas les épices, quitte à en rajouter à la fin.
+          Chaque ingrédient porte deux mesures. En gras, celle du festival : le rendement
+          annoncé en tête de fiche, cinquante portions le plus souvent. En italique, la même
+          chose ramenée à cinq personnes.
+        </p>
+        <p style="font-size:11pt; line-height:1.6; max-width:3.6in">
+          Les épices ont été arrondies vers le bas. Il est plus facile d’en rajouter à la fin
+          que d’en retirer.
         </p>
         <p style="font-size:11pt; line-height:1.6; max-width:3.6in">
           Les temps de cuisson supposent un feu vif et une grande marmite. Sur une cuisinière
-          domestique, comptez plus long et remuez plus souvent.
+          de maison, comptez plus long et remuez plus souvent.
         </p>
         <div class="orn" style="margin-top:.1in"><span class="rule-gold" style="width:1.6in"></span></div>
       </div>""", folio=4))
@@ -326,9 +476,30 @@ def build():
               {planche}""", cls='chap'))
             last = titre
         r = recs[tab]
-        ing = ''.join(
-            f'<li>{esc(clean(i["n"]))}{f"<span class=q>{esc(i['q'])}</span>" if i['q'] else ""}</li>'
-            for i in r['ing'] if i['n'])
+        portions = portions_de(r.get('yield'))
+        def ligne_ing(i):
+            maison = pour_cinq(i['q'], portions) if i['q'] else None
+            nom = clean(i['n'])
+            # « 450g avant cuisson » : la précision suit le produit, pas
+            # le chiffre. Un cuisinier écrit « 450 g d'ail rôti (avant
+            # cuisson) ».
+            precision = ''
+            if i['q']:
+                m2 = re.match(r'^([\d.,]+\s*[a-zA-Z]+)\s+(.+)$', i['q'].strip())
+                if m2:
+                    i = {**i, 'q': m2.group(1)}
+                    precision = f" ({m2.group(2)})"
+            nom = nom[0].lower() + nom[1:] if nom else nom
+            liaison = "d’" if nom[:1] in "aeiouyéèêàâîôû" else "de "
+            if i['q']:
+                depart = joli_depart(i['q'])
+                lien = '' if depart.endswith('×') else liaison
+                tete = f"<b>{esc(depart)}</b> {lien}{esc(nom)}{esc(precision)}"
+            else:
+                tete = esc(nom[0].upper() + nom[1:])
+            pied = f"<span class=q>pour cinq : {esc(maison)}</span>" if maison else ''
+            return f"<li>{tete}{pied}</li>"
+        ing = ''.join(ligne_ing(i) for i in r['ing'] if i['n'])
         # Les lignes en fin de fiche qui expliquent un sous-ensemble deviennent une note.
         steps, notes = [], []
         for s in r['steps']:
@@ -342,6 +513,7 @@ def build():
           <header>
             <h2>{esc(TITRES.get(tab, clean(tab)))}</h2>
             <p class="yield">{esc(r['yield'] or 'Rendement du festival')}</p>
+            {f'<p class="chapeau">{esc(CHAPEAUX[tab])}</p>' if tab in CHAPEAUX else ''}
             <div class="orn" style="justify-content:flex-start; margin-top:.09in">
               <span class="rule-gold" style="width:1.15in"></span><span class="diamond"></span>
             </div>

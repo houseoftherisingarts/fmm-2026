@@ -28,7 +28,9 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const [camp, setCamp] = useState<CampTafl>('defender');
   const [envoi, setEnvoi] = useState<string | null>(null);
 
-  const monNom = user?.displayName || user?.email?.split('@')[0] || (fr ? 'Un inconnu' : 'A stranger');
+  // Jamais le courriel, même tronqué : cette collection est lue par
+  // tous les membres connectés (vérification du 23 août).
+  const monNom = user?.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger');
 
   useEffect(() => {
     if (!user) return;

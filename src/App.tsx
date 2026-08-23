@@ -62,6 +62,7 @@ const MusicianApplicationPage = lazy(() => import('./pages/MusicianApplicationPa
 const RessourcesPage          = lazy(() => import('./pages/RessourcesPage'));
 const HnefataflGame           = lazy(() => import('./games/hnefatafl'));
 const TarotGame               = lazy(() => import('./games/tarot'));
+const DesGame                 = lazy(() => import('./games/des'));
 const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
@@ -385,6 +386,8 @@ const App: React.FC = () => (
                 <Route path="/en/resources"         element={<RessourcesPage />} />
                 <Route path="/jeunesse/hnefatafl"   element={<HnefataflGame />} />
                 <Route path="/jeux/tarot"           element={<TarotGame />} />
+                <Route path="/jeux/des"             element={<DesGame />} />
+                <Route path="/en/games/dice"        element={<DesGame />} />
                 <Route path="/en/games/tarot"       element={<TarotGame />} />
                 <Route path="/en/youth/hnefatafl"   element={<HnefataflGame />} />
                 <Route path="/politique-de-confidentialite" element={<PrivacyPage />} />
@@ -405,7 +408,9 @@ const App: React.FC = () => (
                 <Route path="/en/music"    element={<Navigate to="/en/activities" replace />} />
                 <Route path="/jeunesse"    element={<Navigate to="/activites" replace />} />
                 <Route path="/en/youth"    element={<Navigate to="/en/activities" replace />} />
-                <Route path="/nourriture"  element={<Navigate to="/marche" replace />} />
+                {/* La chaîne de requête doit survivre : c'est elle qui
+                    porte le ?banquet=merci du retour de Square. */}
+                <Route path="/nourriture"  element={<Navigate to={{ pathname: '/marche', search: window.location.search }} replace />} />
                 <Route path="/en/food"     element={<Navigate to="/en/market" replace />} />
                 <Route path="/groupes"     element={<Navigate to="/mariages" replace />} />
                 <Route path="/groupe"      element={<Navigate to="/mariages" replace />} />

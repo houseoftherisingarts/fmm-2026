@@ -62,6 +62,12 @@ service firebase.storage {
     // Photo de chaque groupe à l'affiche ou aux archives. Lecture
     // publique (la page publique Musique les affiche), écriture admin
     // seulement (Éric Pichette gère la programmation).
+    // Photos des fiches d'activités, téléversées depuis l'admin.
+    match /activites/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     match /groupes/{allPaths=**} {
       allow read:  if true;
       allow write: if isAdmin();

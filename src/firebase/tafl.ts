@@ -12,7 +12,7 @@
 
 import {
   collection, doc, addDoc, getDoc, setDoc, deleteDoc, updateDoc, query, where,
-  onSnapshot, orderBy, serverTimestamp, arrayUnion, type Timestamp,
+  onSnapshot, orderBy, serverTimestamp, type Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -89,16 +89,26 @@ export async function repondreAuDefi(id: string, accepte: boolean): Promise<void
   });
 }
 
-/** Pousse un coup. Le tour bascule dans la même écriture. */
+/**
+ * Pousse un coup. Le tour bascule dans la même écriture.
+ *
+ * 🚨 Surtout pas arrayUnion : il dédoublonne. Au tafl, un même coup
+ * revient forcément (une pièce fait l'aller-retour) et le deuxième
+ * était avalé, le tour basculait quand même, et les deux damiers
+ * divergeaient pour de bon. On écrit donc la liste complète, ce que le
+ * client connaît puisqu'il suit le document en direct, et seul le
+ * joueur dont c'est le tour écrit.
+ */
 export async function jouerCoup(
   id: string,
+  coupsAvant: string[],
   coup: string,
   tourSuivant: CampTafl,
   gagnant: CampTafl | null = null,
 ): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {
-    coups: arrayUnion(coup),
+    coups: [...coupsAvant, coup],
     tour: tourSuivant,
     ...(gagnant ? { statut: 'fini' as StatutPartie, gagnant } : {}),
     updatedAt: serverTimestamp(),

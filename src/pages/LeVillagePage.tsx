@@ -24,7 +24,13 @@ const LeVillagePage: React.FC = () => {
   // on ouvre celui qu'on veut. Cliquer l'orbe ouvre aussi (Alex,
   // 2026-08-23).
   const [marcheOuvert, setMarcheOuvert] = useState(false);
-  const [nourritureOuverte, setNourritureOuverte] = useState(false);
+  // Au retour du paiement, le chapitre Nourriture s'ouvre de lui-même :
+  // sinon l'acheteur revient sur une page repliée et ne voit pas son
+  // remerciement (vérification du 23 août).
+  const [nourritureOuverte, setNourritureOuverte] = useState(
+    () => typeof window !== 'undefined'
+      && new URLSearchParams(window.location.search).get('banquet') === 'merci',
+  );
 
   return (
     <>

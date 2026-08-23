@@ -224,7 +224,13 @@ export function applyMove(
   };
   const isHostile = (r: number, c: number) => {
     if (isCorner(r, c)) return REGLE.sortieCoins;
-    if (isThrone(r, c) && b[r][c] === 0) return myT === 1 || REGLE.troneHostileDefenseurs;
+    // Le trône vide aide TOUJOURS les assaillants. Il n'aide les
+    // défenseurs (donc il est hostile aux assaillants) que là où la
+    // variante le dit. Le drapeau était branché à l'envers : il ne
+    // touchait pas au cas qu'il nomme (vérification du 23 août).
+    if (isThrone(r, c) && b[r][c] === 0) {
+      return myT === 2 ? true : REGLE.troneHostileDefenseurs;
+    }
     return false;
   };
   const removed: Coord[] = [];
@@ -340,8 +346,17 @@ export function checkWin(board: Board): Winner {
   };
   if (REGLE.roiPrisA === 4) {
     const auBord = isEdge(kr, kc);
-    if (auBord && !REGLE.roiPrisAuBord) {
-      // Copenhague : le roi collé au bord ne se prend pas.
+    if (auBord) {
+      // Copenhague : contre le bord, le roi est imprenable. Fetlar, au
+      // contraire, le prend avec trois hommes, le bord faisant le
+      // quatrième côté (c'est là toute la différence entre les deux
+      // règlements, et elle ne jouait pas).
+      if (REGLE.roiPrisAuBord) {
+        const cotes = DIRS
+          .map(([dr, dc]) => [kr + dr, kc + dc] as Coord)
+          .filter(([r, c]) => r >= 0 && r < N && c >= 0 && c < N);
+        if (cotes.length > 0 && cotes.every(([r, c]) => cerne(r, c))) return 'attacker';
+      }
     } else {
       const pris = DIRS.every(([dr, dc]) => cerne(kr + dr, kc + dc));
       if (pris) return 'attacker';

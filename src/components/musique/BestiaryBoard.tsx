@@ -74,7 +74,10 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
     return out;
   }, [bands, lang, sansJourTitre]);
 
-  const b = bands[active];
+  // La liste vient de Firestore : elle peut rétrécir pendant qu'on la
+  // regarde. Sans ce bornage, le bestiaire disparaît d'un coup.
+  const i0 = Math.min(active, bands.length - 1);
+  const b = bands[i0];
   const jourLabel = JOURS.find((j) => j.key === b?.jour)?.[lang];
 
   // Sur mobile le registre est au-dessus : le choix d'un groupe ramène
@@ -116,7 +119,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
               </p>
               <ul className="flex lg:block gap-2.5 lg:gap-0">
                 {g.items.map(({ band, i }) => {
-                  const on = i === active;
+                  const on = i === i0;
                   return (
                     <li key={band.name}>
                       <button
@@ -153,7 +156,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
             {b.image ? (
               <motion.img
                 key={b.name}
-                src={b.image}
+                src={b.image || '/wix/musique/skarazula.webp'}
                 alt={b.imageAlt ?? b.name}
                 initial={reduce ? false : { opacity: 0, scale: 1.03 }}
                 animate={{ opacity: 1, scale: 1 }}

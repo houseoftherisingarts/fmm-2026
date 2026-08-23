@@ -824,7 +824,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                         (different photographers, lighting, era) read
                         as a homogeneous set. */}
                     <img
-                      src={a.image}
+                      src={a.image || '/activites/webp/25880822.webp'}
                       alt={lang === 'FR' ? a.titleFR : a.titleEN}
                       loading="lazy"
                       decoding="async"
@@ -1118,8 +1118,16 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                   <div className="flex items-center gap-3 font-sans uppercase tracking-[0.25em] text-[10px]"
                        style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
                     <span>{day.items.length} {t.scheduleMeta}</span>
-                    <span className="opacity-50">·</span>
-                    <span style={{ color: 'var(--color-amber-glow)' }}>{day.items[0].time}–{day.items[day.items.length - 1].time.split('–').pop()}</span>
+                    {/* Une journée peut être vide (horaire 2026 saisi à moitié
+                        dans l'admin) : sans cette garde, toute la page tombe. */}
+                    {day.items.length > 0 && (
+                      <>
+                        <span className="opacity-50">·</span>
+                        <span style={{ color: 'var(--color-amber-glow)' }}>
+                          {day.items[0].time}–{day.items[day.items.length - 1].time.split('–').pop()}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
 

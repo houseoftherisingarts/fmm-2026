@@ -139,7 +139,11 @@ export function buildBoard(
   /** Identifiant du jeu de plateau choisi en boutique. */
   setId: string = BOARD_DEFAUT,
 ): BoardHandle {
-  const jeu: BoardSet = boardSet(setId);
+  // Le plateau sculpté est taillé pour onze cases. Sur un damier plus
+  // petit (Brandubh), il déborderait de partout : on retombe alors sur
+  // le plateau procédural, qui se construit à la bonne taille.
+  const jeuChoisi: BoardSet = boardSet(setId);
+  const jeu: BoardSet = N === 11 ? jeuChoisi : { ...jeuChoisi, url: undefined };
   const pal = PALETTES[jeu.palette ?? 'noyer'] ?? PALETTES.noyer;
   const group = new THREE.Group();
   scene.add(group);

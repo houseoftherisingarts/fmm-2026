@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Lock } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
@@ -43,9 +44,11 @@ const ANNEES: Annee[] = [
     id: 'poudre',
     chiffre: 'III',
     nomFR: 'L’année de la Poudre', nomEN: 'The Year of the Powder',
-    texteFR: 'La mèche, le canon, la fin d’un monde de murailles. Le jeu de cette année-là se prépare.',
-    texteEN: 'The fuse, the cannon, the end of a world of walls. That year’s game is in the making.',
+    texteFR: 'Cinq dés sous un gobelet, une annonce qui monte, et le premier qui doute retourne les gobelets. Jusqu’à cinq joueurs, contre la maison ou contre du vrai monde.',
+    texteEN: 'Five dice under a cup, a bid that climbs, and the first to doubt turns the cups over. Up to five players, against the house or against real people.',
+    jeuFR: 'Les dés du menteur', jeuEN: 'Liar’s Dice',
     image: '/tarot/T16.webp',
+    href: { fr: '/jeux/des', en: '/en/games/dice' },
   },
   {
     id: 'vikings',
@@ -67,11 +70,20 @@ const ANNEES: Annee[] = [
     image: '/tarot/T17.webp',
     href: { fr: '/jeux/tarot', en: '/en/games/tarot' },
   },
+  {
+    id: 'mystere',
+    chiffre: 'VI',
+    nomFR: 'L’année du ?', nomEN: 'The Year of the ?',
+    texteFR: 'Le nom se dira quand le jeu sera prêt. Rien à en tirer avant.',
+    texteEN: 'The name comes out when the game does. Nothing to squeeze out before that.',
+    image: '/tarot/TT.webp',
+  },
 ];
 
 const JeuxEnLignePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
+  const { user, openSignIn } = useAuth();
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
 
@@ -92,8 +104,22 @@ const JeuxEnLignePage: React.FC = () => {
           {/* Le rail des années : une console de jeu, comme le menu de
               Gwent (référence donnée par Alex, 2026-08-23). Les tuiles
               défilent à l'horizontale, la vignette se voit en entier. */}
-          <div className="fmm-console rounded-lg-card p-4 md:p-7">
-          <Stagger className="fmm-rail flex gap-4 md:gap-5 overflow-x-auto pb-2" stagger={0.08}>
+          <div className="fmm-console rounded-lg-card overflow-hidden">
+            {/* Barre haute de la console : le nom de la table et le
+                décompte, comme la barre de Gwent. */}
+            <div className="flex items-center justify-between gap-4 px-5 md:px-7 py-3.5 border-b border-brass/20"
+                 style={{ background: 'linear-gradient(180deg, rgba(232,177,74,0.07), rgba(10,4,6,0))' }}>
+              <span className="inline-flex items-center gap-3 font-display title-medieval uppercase tracking-[0.32em] text-[11px] md:text-xs"
+                    style={{ color: 'var(--color-amber-glow)' }}>
+                <span aria-hidden className="w-1.5 h-1.5 rotate-45 bg-brass" />
+                {fr ? 'La table de jeux' : 'The games table'}
+              </span>
+              <span className="font-sans uppercase tracking-[0.24em] text-[10px] text-ivory-soft/55">
+                {ANNEES.filter((a) => a.href).length} / {ANNEES.length} {fr ? 'ouvertes' : 'open'}
+              </span>
+            </div>
+            <div className="p-4 md:p-7">
+          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5" stagger={0.08}>
             {ANNEES.map((a) => {
               const scellee = !a.href;
               const carte = (
@@ -146,7 +172,7 @@ const JeuxEnLignePage: React.FC = () => {
                     </p>
                     {!scellee && (
                       <span className="mt-5 inline-flex items-center gap-2 font-sans uppercase tracking-widest text-xs font-semibold text-brass">
-                        {t.jouer} <ArrowUpRight size={14} />
+                        {user ? t.jouer : t.connecter} <ArrowUpRight size={14} />
                       </span>
                     )}
                   </div>
@@ -154,9 +180,18 @@ const JeuxEnLignePage: React.FC = () => {
               );
 
               return (
-                <StaggerItem key={a.id} as="div" className="h-full shrink-0 w-[15.5rem] md:w-[17.5rem]">
+                <StaggerItem key={a.id} as="div" className="h-full">
                   {a.href ? (
-                    <Link to={fr ? a.href.fr : a.href.en} className="block h-full">{carte}</Link>
+                    user ? (
+                      <Link to={fr ? a.href.fr : a.href.en} className="block h-full">{carte}</Link>
+                    ) : (
+                      // Jouer demande un compte du festival : c'est ce
+                      // compte qui porte les défis et les parties en
+                      // ligne (Alex, 2026-08-23).
+                      <button type="button" onClick={openSignIn} className="block h-full w-full text-left">
+                        {carte}
+                      </button>
+                    )
                   ) : (
                     <div className="h-full opacity-70 cursor-not-allowed" aria-disabled>{carte}</div>
                   )}
@@ -164,6 +199,16 @@ const JeuxEnLignePage: React.FC = () => {
               );
             })}
           </Stagger>
+            </div>
+            {/* Pied de console : la ligne d'aide, comme sur la manette. */}
+            <div className="px-5 md:px-7 py-3 border-t border-brass/20 bg-black/30 flex flex-wrap items-center gap-x-6 gap-y-1">
+              <span className="font-sans uppercase tracking-[0.24em] text-[9px] text-ivory-soft/60">
+                <span className="text-brass">◇</span> {fr ? 'Choisir une année' : 'Pick a year'}
+              </span>
+              <span className="font-sans uppercase tracking-[0.24em] text-[9px] text-ivory-soft/40">
+                <span className="text-brass/60">◇</span> {fr ? 'Les années scellées s’ouvrent une par édition' : 'Sealed years open one per edition'}
+              </span>
+            </div>
           </div>
 
           <p className="font-editorial italic text-sm md:text-base text-ivory-soft/70 mt-8 max-w-2xl">
@@ -181,7 +226,8 @@ const FR = {
   intro: 'Chaque année du festival a son jeu. Les unes sont ouvertes, les autres attendent encore leur tour de table.',
   scelle: 'À venir',
   jouer: 'Jouer',
-  pied: 'Les années scellées s’ouvriront à mesure que les jeux seront prêts. Une par édition, dans l’ordre du temps.',
+  connecter: 'Connectez-vous pour jouer',
+  pied: 'Les années scellées s’ouvriront à mesure que les jeux seront prêts. Une par édition, dans l’ordre du temps. Les parties se jouent avec un compte du festival : c’est lui qui porte vos défis et vos parties en ligne.',
 };
 
 const EN = {
@@ -190,7 +236,8 @@ const EN = {
   intro: 'Every year of the festival has its game. Some are open, others are still waiting their turn at the table.',
   scelle: 'Coming',
   jouer: 'Play',
-  pied: 'Sealed years open as the games become ready. One per edition, in the order of time.',
+  connecter: 'Sign in to play',
+  pied: 'Sealed years open as the games become ready. One per edition, in the order of time. Games are played with a festival account: it carries your challenges and your online games.',
 };
 
 export default JeuxEnLignePage;

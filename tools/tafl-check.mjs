@@ -29,5 +29,13 @@ b = L.initBoard();
 ok(L.N === 7, 'Brandubh 7x7');
 ok(compte(b, 1) === 8 && compte(b, 2) === 4, 'Brandubh 8 contre 4, vu ' + compte(b, 1) + '/' + compte(b, 2));
 
+// Fetlar prend le roi contre le bord avec trois hommes; Copenhague non.
+L.setRegle('fetlar');
+let f = L.initBoard().map((r) => r.map(() => 0));
+f[0][5] = 3; f[0][4] = 1; f[0][6] = 1; f[1][5] = 1;
+ok(L.checkWin(f) === 'attacker', 'Fetlar : roi pris contre le bord');
+L.setRegle('copenhague');
+ok(L.checkWin(f) === null, 'Copenhague : roi imprenable contre le bord');
+
 console.log(ko === 0 ? 'TOUT PASSE' : ko + ' échec(s)');
 process.exit(ko === 0 ? 0 : 1);

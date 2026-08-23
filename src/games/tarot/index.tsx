@@ -71,11 +71,9 @@ const TarotPage: React.FC = () => {
 
   const piocher = () => {
     if (fini) return;
-    setTirees((prev) => {
-      const suite = [...prev, paquet[prev.length]];
-      setLue(suite.length - 1);
-      return suite;
-    });
+    const suite = [...tirees, paquet[tirees.length]];
+    setTirees(suite);
+    setLue(suite.length - 1);
   };
 
   const t = useMemo(() => ({
@@ -257,13 +255,15 @@ const TarotPage: React.FC = () => {
 // ─── Une case du tapis ──────────────────────────────────────────────
 const CaseTirage: React.FC<{
   titre: string;
+  /** Étiquette de la carte posée en travers : elle se met de côté. */
+  titreCouche?: string;
   tiree?: LameTiree;
   active: boolean;
   onLire: () => void;
   fr: boolean;
   reduce: boolean;
   couche?: boolean;
-}> = ({ titre, tiree, active, onLire, fr, reduce, couche = false }) => (
+}> = ({ titre, titreCouche, tiree, active, onLire, fr, reduce, couche = false }) => (
   <div className="flex flex-col items-center gap-2">
     <button
       type="button"
@@ -275,7 +275,7 @@ const CaseTirage: React.FC<{
       }`}
       style={{
         background: 'rgba(10,4,6,0.7)',
-        transform: couche ? 'rotate(90deg) scale(0.82)' : undefined,
+        transform: couche ? 'rotate(90deg) scale(0.66)' : undefined,
         cursor: tiree ? 'pointer' : 'default',
       }}
     >
@@ -304,14 +304,21 @@ const CaseTirage: React.FC<{
             aria-hidden
             loading="lazy"
             initial={false}
-            className="absolute inset-0 w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         )}
       </AnimatePresence>
     </button>
-    <span className="font-sans text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-ivory-soft/60 text-center leading-tight">
-      {titre}
-    </span>
+    {titre && (
+      <span className="font-sans text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-ivory-soft/60 text-center leading-tight">
+        {titre}
+      </span>
+    )}
+    {titreCouche && (
+      <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-brass/80 text-center leading-tight">
+        {titreCouche}
+      </span>
+    )}
   </div>
 );
 
@@ -324,7 +331,7 @@ const CroixCeltique: React.FC<{
   fr: boolean;
   reduce: boolean;
 }> = ({ tirage, tirees, lue, onLire, fr, reduce }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-5 md:[grid-template-rows:repeat(4,auto)]">
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-5 md:[grid-template-rows:repeat(4,auto)] md:items-start">
     {tirage.positions.map((p, i) => {
       const place = PLACES_CROIX[i];
       return (
@@ -334,7 +341,8 @@ const CroixCeltique: React.FC<{
           style={{ ['--col' as string]: String(place.col), ['--row' as string]: String(place.row) }}
         >
           <CaseTirage
-            titre={`${i + 1} · ${fr ? p.titreFR : p.titreEN}`}
+            titre={place.couche ? '' : `${i + 1} · ${fr ? p.titreFR : p.titreEN}`}
+            titreCouche={place.couche ? `${i + 1} · ${fr ? p.titreFR : p.titreEN}` : undefined}
             tiree={tirees[i]}
             active={lue === i}
             onLire={() => tirees[i] && onLire(i)}

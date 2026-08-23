@@ -239,7 +239,7 @@ const ActivitesSection: React.FC = () => {
                         <Input
                           placeholder="ex. 38% 50%"
                           value={String(valeur(f, 'imagePos') ?? '')}
-                          onChange={(e) => changer(f.id, 'imagePos', e.target.value || undefined)}
+                          onChange={(e) => changer(f.id, 'imagePos', e.target.value)}
                         />
                       </div>
                       <div className="flex items-end">

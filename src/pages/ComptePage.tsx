@@ -24,7 +24,10 @@ import DefisTafl from '../components/compte/DefisTafl';
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
   pending:  { fr: 'En attente',      en: 'Pending',   tone: 'text-brass'       },
   accepted: { fr: 'Acceptée',        en: 'Accepted',  tone: 'text-emerald-400' },
-  rejected: { fr: 'Refusée',         en: 'Declined',  tone: 'text-blush'       },
+  // Un refus ne se dit pas au candidat : il ne peut rien en faire, et
+  // la porte reste ouverte pour une nouvelle candidature (Alex,
+  // 2026-08-23). L'équipe, elle, voit le vrai statut dans l'admin.
+  rejected: { fr: 'À revoir',        en: 'To revisit', tone: 'text-brass'      },
   waitlist: { fr: 'Liste d’attente', en: 'Wait list', tone: 'text-amber-300'   },
 };
 

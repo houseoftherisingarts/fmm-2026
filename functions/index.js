@@ -130,9 +130,14 @@ exports.squareGrimoire = onRequest(
     // Garde-fou : Square rejoue ses webhooks. Une transaction pose le
     // verrou avant tout envoi, donc deux appels simultanés ne peuvent
     // pas expédier le livre deux fois.
+    // Un échec passager (SMTP, Square) laissait le document en place et
+    // le rejeu de Square repartait aussitôt : l'acheteur ne recevait
+    // jamais rien, en silence. Un statut d'échec redonne donc le droit
+    // de réessayer (défaut confirmé par la vérification du 23 août).
+    const REJOUABLES = ['erreur', 'sans courriel'];
     const aFaire = await db.runTransaction(async (tx) => {
       const snap = await tx.get(ref);
-      if (snap.exists) return false;
+      if (snap.exists && !REJOUABLES.includes(snap.data()?.statut)) return false;
       tx.set(ref, {
         statut: 'en cours',
         paymentId,
@@ -243,10 +248,38 @@ const PLACE_BANQUET = 6500;          // 65,00 $ avant taxes
 const LOCATION_FMM = 'LHR5KAPF4HM1J';
 const MAX_PLACES = 12;
 
+// Mémoire courte des appels, par adresse : la fonction crée de vraies
+// commandes Square, elle ne doit pas servir de robinet.
+const APPELS = new Map();
+const TROP_D_APPELS = (ip) => {
+  const maintenant = Date.now();
+  const fenetre = 60 * 1000;
+  const liste = (APPELS.get(ip) || []).filter((t) => maintenant - t < fenetre);
+  liste.push(maintenant);
+  APPELS.set(ip, liste);
+  if (APPELS.size > 500) APPELS.clear();
+  return liste.length > 8;
+};
+
 exports.banquetLien = onRequest(
-  { secrets: [SQUARE_ACCESS_TOKEN], cors: true, region: 'us-central1' },
+  {
+    secrets: [SQUARE_ACCESS_TOKEN],
+    region: 'us-central1',
+    cors: [
+      /festivalmedieval\.web\.app$/,
+      /festivalmedieval\.firebaseapp\.com$/,
+      /festivalmedievaldemontpellier\.(org|com)$/,
+      /localhost:\d+$/,
+    ],
+  },
   async (req, res) => {
     try {
+      const ip = String(req.headers['x-forwarded-for'] || req.ip || 'inconnu').split(',')[0].trim();
+      if (TROP_D_APPELS(ip)) {
+        logger.warn('[banquet] trop d\'appels', { ip });
+        res.status(429).json({ erreur: 'trop de demandes' });
+        return;
+      }
       const places = Math.min(
         MAX_PLACES,
         Math.max(1, parseInt(String((req.body && req.body.places) || req.query.places || '1'), 10) || 1),
@@ -255,9 +288,12 @@ exports.banquetLien = onRequest(
         (req.body && req.body.retour) || req.query.retour || 'https://festivalmedieval.web.app/nourriture',
       );
       // On n'accepte de renvoyer l'acheteur que chez nous.
-      const retourSur = /^https:\/\/(festivalmedieval\.web\.app|festivalmedievaldemontpellier\.org)(\/|$)/.test(retour)
+      // Nos domaines, www compris : sans le www, l'acheteur qui vient de
+      // payer était renvoyé ailleurs que chez lui.
+      const NOTRE_MAISON = /^https:\/\/(www\.)?(festivalmedieval\.(web\.app|firebaseapp\.com)|festivalmedievaldemontpellier\.(org|com))(\/|$)/;
+      const retourSur = NOTRE_MAISON.test(retour)
         ? retour
-        : 'https://festivalmedieval.web.app/nourriture';
+        : 'https://festivalmedieval.web.app/marche';
 
       const reponse = await fetch('https://connect.squareup.com/v2/online-checkout/payment-links', {
         method: 'POST',
@@ -297,15 +333,17 @@ exports.banquetLien = onRequest(
       const data = await reponse.json();
       const url = data && data.payment_link && data.payment_link.url;
       if (!url) {
+        // Le détail de Square reste dans les journaux : le renvoyer à
+        // un appelant anonyme exposerait la mécanique du compte.
         logger.error('[banquet] Square a refusé', data);
-        res.status(502).json({ erreur: 'square', detail: data });
+        res.status(502).json({ erreur: 'paiement indisponible' });
         return;
       }
       logger.info('[banquet] lien créé', { places, url });
       res.json({ url, places, total: (PLACE_BANQUET * places * 1.14975) / 100 });
     } catch (err) {
       logger.error('[banquet] échec', err);
-      res.status(500).json({ erreur: String(err && err.message ? err.message : err) });
+      res.status(500).json({ erreur: 'paiement indisponible' });
     }
   },
 );

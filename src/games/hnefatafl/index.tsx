@@ -54,7 +54,7 @@ interface GameConfig {
   mode: Mode;
   humanSide: Side; // ignored when mode === 'two-player'
   difficulty: Difficulty;
-  /** Le règlement choisi : Copenhague, Fetlar, Tawlbwrdd, Tablut, Brandubh. */
+  /** Le règlement choisi : Copenhague, Fetlar, Tawlbwrdd, Brandubh. */
   regleId: string;
 }
 
@@ -260,6 +260,8 @@ const CPU_THINK_MS = 500;
 export interface FilEnLigne {
   /** Mon camp : je ne peux toucher que mes pièces, à mon tour. */
   monCamp: Side;
+  /** Partie terminée ou abandonnée : plus personne ne bouge rien. */
+  fige?: boolean;
   /** Appelé quand JE joue : la page pousse le coup à l'autre. */
   surMonCoup: (coup: { fr: number; fc: number; tr: number; tc: number; tourSuivant: Side; gagnant: 'attacker' | 'defender' | null }) => void;
 }
@@ -521,8 +523,9 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
       // this guards a defender-side human from poking raider pieces).
       if (cfg.mode === 'vs-cpu' && gs.turn !== cfg.humanSide) return;
       // En ligne : je ne touche que mes hommes, et seulement à mon tour.
+      // Une partie finie ou abandonnée verrouille les deux camps.
       const fil = enLigneRef.current;
-      if (fil && gs.turn !== fil.monCamp) return;
+      if (fil && (fil.fige || gs.turn !== fil.monCamp)) return;
 
       const piece = gs.board[r][c];
       const mine = gs.turn === 'attacker' ? piece === 1 : piece === 2 || piece === 3;
@@ -1254,11 +1257,18 @@ const HnefataflPage: React.FC = () => {
                     onUi={setUi}
                     strings={s}
                     config={config}
-                    enLigne={partieId && monCamp && partie?.statut === 'encours' ? {
+                    enLigne={partieId && monCamp ? {
                       monCamp,
+                      fige: partie?.statut !== 'encours',
                       surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant }) => {
                         appliques.current += 1;
-                        void jouerCoup(partieId, coupEnTexte(fr, fc, tr, tc), tourSuivant, gagnant);
+                        void jouerCoup(
+                          partieId,
+                          partie?.coups ?? [],
+                          coupEnTexte(fr, fc, tr, tc),
+                          tourSuivant,
+                          gagnant,
+                        );
                       },
                     } : null}
                     boardSetId={choix.plateau}
