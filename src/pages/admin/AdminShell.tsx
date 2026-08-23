@@ -216,8 +216,12 @@ const AdminShell: React.FC<Props> = ({
 
         {/* User card */}
         <div
-          className="px-5 py-4"
-          style={{ borderTop: '1px solid rgba(0, 0, 0, 0.55)', boxShadow: '0 -1px 0 var(--admin-sheen) inset' }}
+          className="shrink-0 px-5 py-4"
+          style={{
+            borderTop: '1px solid rgba(0, 0, 0, 0.55)',
+            boxShadow: '0 -1px 0 var(--admin-sheen) inset',
+            background: 'linear-gradient(180deg, rgba(6, 10, 14, 0.85) 0%, rgba(4, 7, 10, 0.95) 100%)',
+          }}
         >
           <div className="flex items-center gap-3 mb-3 min-w-0">
             {user.photoURL ? (
