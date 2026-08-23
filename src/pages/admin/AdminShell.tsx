@@ -321,7 +321,7 @@ const AdminShell: React.FC<Props> = ({
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 lg:hidden backdrop-blur-sm"
-          style={{ background: 'rgba(5, 8, 16, 0.75)' }}
+          style={{ background: 'rgba(4, 8, 11, 0.78)' }}
           onClick={() => setMobileOpen(false)}
         />
       )}
