@@ -1193,6 +1193,30 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   color: var(--admin-brass-hi);
 }
 
+/* Vingt-six fichiers de section marquent leur bouton actif avec
+   l'utilitaire brut `bg-brass` : quarante plaques de laiton pleines
+   éparpillées sur l'écran. Sur les planches, le laiton plein est rare,
+   c'est ce qui lui donne son poids. Ici il ne reste plein que sur
+   l'onglet actif et le bouton d'action principal; partout ailleurs il
+   devient une plaque CREUSE, même couleur, moitié moins de voix. Une
+   règle, zéro fichier de section touché. */
+.admin-skin-root button.bg-brass,
+.admin-skin-root button.bg-brass-soft,
+.admin-skin-root a.bg-brass,
+.admin-skin-root a.bg-brass-soft {
+  background: color-mix(in oklab, var(--color-brass), transparent 84%);
+  color: var(--admin-brass-hi);
+  border: 1px solid color-mix(in oklab, var(--color-brass), transparent 52%);
+  box-shadow: inset 0 1px 0 rgba(255, 246, 226, 0.07);
+}
+.admin-skin-root button.bg-brass:hover,
+.admin-skin-root button.bg-brass-soft:hover,
+.admin-skin-root a.bg-brass:hover,
+.admin-skin-root a.bg-brass-soft:hover {
+  background: color-mix(in oklab, var(--color-brass), transparent 72%);
+  border-color: color-mix(in oklab, var(--color-brass), transparent 34%);
+}
+
 /* Pastilles d'état. Les couleurs de statut (accepté, en attente,
    refusé) restent sémantiques : ce ne sont pas de la décoration, elles
    échappent donc à la règle de l'accent unique. */
