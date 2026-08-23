@@ -183,8 +183,8 @@ const PanneauAmis: React.FC<Props> = ({ lang, regleId, camp }) => {
         <div className="px-5 py-5">
           <p className="font-editorial text-sm leading-relaxed" style={{ color: 'rgba(244,239,227,0.62)' }}>
             {fr
-              ? 'Votre cercle est encore vide. Le registre de l’Ordre vous présentera des joueurs à ajouter.'
-              : 'Your circle is still empty. The Order’s register will introduce you to other players.'}
+              ? 'Votre cercle est encore vide. Les autres joueurs vous attendent dans le registre de l’Ordre.'
+              : 'Your circle is still empty. The other players are waiting in the Order’s register.'}
           </p>
           <Link
             to={addLocale('/ordre', lang)}
