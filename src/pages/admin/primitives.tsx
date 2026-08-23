@@ -117,8 +117,8 @@ export const Badge: React.FC<{ tone?: 'pending' | 'accepted' | 'rejected' | 'wai
     accepted: { color: '#5FD3A2', background: 'rgba(95, 211, 162, 0.08)',  borderColor: 'rgba(95, 211, 162, 0.45)' },
     rejected: { color: '#FCA5B0', background: 'rgba(252, 165, 176, 0.08)', borderColor: 'rgba(252, 165, 176, 0.45)' },
     waitlist: { color: '#E0BE6A', background: 'rgba(224, 190, 106, 0.08)', borderColor: 'rgba(224, 190, 106, 0.45)' },
-    info:     { color: 'var(--admin-accent)', background: 'rgba(127, 176, 232, 0.10)', borderColor: 'rgba(127, 176, 232, 0.45)' },
-    neutral:  { color: 'var(--admin-text-soft)', background: 'rgba(143, 161, 188, 0.06)', borderColor: 'var(--admin-line)' },
+    info:     { color: 'var(--admin-brass-hi)', background: 'color-mix(in oklab, var(--admin-accent), transparent 90%)', borderColor: 'var(--admin-accent-line)' },
+    neutral:  { color: 'var(--admin-text-soft)', background: 'rgba(196, 214, 230, 0.05)', borderColor: 'var(--admin-line)' },
   };
   return (
     <span className="admin-badge" style={styleByTone[tone]}>
