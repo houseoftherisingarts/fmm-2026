@@ -16,6 +16,10 @@ import PanneauAmis from '../../components/jeux/PanneauAmis';
 import { jeuDes } from './jeuDefiable';
 import { creerTable, type TableDes } from './scene';
 import {
+  SKINS_DE, SKINS_TABLE, chargerEmbleme, choisirParures,
+  type IdSkinDe, type IdSkinTable,
+} from './skins';
+import {
   nouvellePartie, annoncer, douter, exact as appelExact, mancheSuivante, desEnJeu,
   miseValide, coupDeLaMachine, type Partie, type Face, type Joueur,
 } from './regles';
@@ -170,14 +174,37 @@ const DesPage: React.FC = () => {
   // La taverne chante dès que la table est dressée.
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
 
+  // ── Les parures : dés d'os, du festival ou des Inconnus, et la même
+  //    famille de choix pour le plateau (Alex, 2026-08-23). Le choix
+  //    reste d'une visite à l'autre.
+  const [skinDe, setSkinDe] = useState<IdSkinDe>(() =>
+    (localStorage.getItem('fmm.des.skinDe') as IdSkinDe) || 'os');
+  const [skinTable, setSkinTable] = useState<IdSkinTable>(() =>
+    (localStorage.getItem('fmm.des.skinTable') as IdSkinTable) || 'chene');
+  const [pretParures, setPretParures] = useState(0);
+
+  useEffect(() => {
+    const de = SKINS_DE.find((k) => k.id === skinDe);
+    const tb = SKINS_TABLE.find((k) => k.id === skinTable);
+    choisirParures(de?.embleme, tb?.embleme);
+    localStorage.setItem('fmm.des.skinDe', skinDe);
+    localStorage.setItem('fmm.des.skinTable', skinTable);
+    let restant = 2;
+    const fini = () => { restant -= 1; if (restant <= 0) setPretParures((n) => n + 1); };
+    chargerEmbleme(de?.embleme, fini);
+    chargerEmbleme(tb?.embleme, fini);
+  }, [skinDe, skinTable]);
+
   // ── La table 3D vit tant que la page vit ────────────────────────
+  // Elle se rebâtit quand la parure change : les gravures sont peintes
+  // dans les textures au moment du montage.
   useEffect(() => {
     if (!sceneRef.current) return;
     const t = creerTable();
     t.monter(sceneRef.current);
     tableRef.current = t;
     return () => { t.demonter(); tableRef.current = null; };
-  }, []);
+  }, [pretParures]);
 
   const moi = partie?.joueurs[0];
   // En ligne, la parole attend que tous les gobelets soient scellés :

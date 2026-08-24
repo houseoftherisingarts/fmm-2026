@@ -18,6 +18,7 @@ import { lireFiche, type Membre } from '../firebase/ordre';
 import {
   LONGUEUR_MAX, bloquer, debloquer, signaler, suivreBlocages, tropVite,
 } from '../firebase/moderation';
+import { Portrait, teinteDe, quand } from '../components/ordre/Portrait';
 import SEO from '../components/SEO';
 
 // ─── La boîte de réception ───────────────────────────────────────────
@@ -405,44 +406,6 @@ const MessagesPage: React.FC = () => {
     </>
   );
 };
-
-// ── Le portrait : la photo si elle existe, l'initiale sinon ─────────
-const Portrait: React.FC<{ nom: string; url?: string; teinte: number; taille?: number }> = ({
-  nom, url, teinte, taille = 40,
-}) => (
-  <div className="rounded-full overflow-hidden shrink-0 border border-brass/25 flex items-center justify-center"
-       style={{ width: taille, height: taille, background: `hsl(${teinte} 40% 20%)` }}>
-    {url
-      ? <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
-      : <span className="font-display title-medieval text-ivory/75" style={{ fontSize: taille * 0.4 }}>
-          {initiales(nom)}
-        </span>}
-  </div>
-);
-
-function initiales(nom: string): string {
-  const bouts = nom.trim().split(/\s+/).filter(Boolean);
-  if (bouts.length === 0) return '?';
-  if (bouts.length === 1) return bouts[0][0].toUpperCase();
-  return (bouts[0][0] + bouts[bouts.length - 1][0]).toUpperCase();
-}
-
-function teinteDe(graine: string): number {
-  let h = 0;
-  for (let i = 0; i < graine.length; i++) h = (h * 31 + graine.charCodeAt(i)) >>> 0;
-  return h % 360;
-}
-
-function quand(v: unknown, lang: 'FR' | 'EN'): string {
-  const h = v as { toDate?: () => Date } | null;
-  const d = h?.toDate ? h.toDate() : null;
-  if (!d) return '';
-  const loc = lang === 'FR' ? 'fr-CA' : 'en-CA';
-  const memeJour = d.toDateString() === new Date().toDateString();
-  return memeJour
-    ? d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
-    : d.toLocaleDateString(loc, { month: 'short', day: 'numeric' });
-}
 
 const FR = {
   titre: 'Messages',

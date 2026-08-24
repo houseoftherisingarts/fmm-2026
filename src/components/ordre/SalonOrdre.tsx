@@ -9,6 +9,7 @@ import { lireFiche, suivreSalon, direAuSalon, type MotSalon, type Membre } from 
 import {
   LONGUEUR_MAX, bloquer, debloquer, signaler, suivreBlocages, tropVite,
 } from '../../firebase/moderation';
+import { Portrait, versDate, quand } from './Portrait';
 
 // ─── Le salon de l'Ordre ─────────────────────────────────────────────
 // La place publique du registre (Alex, 2026-08-23). Tout le monde s'y
@@ -257,7 +258,7 @@ const Mot: React.FC<{
     className={`group relative flex gap-3.5 ${enchaine ? 'mt-1' : 'mt-5 first:mt-0'}`}
   >
     <div className="w-9 shrink-0">
-      {!enchaine && <Portrait nom={mot.nom} url={mot.avatarUrl} teinte={mot.avatarHue} />}
+      {!enchaine && <Portrait nom={mot.nom} url={mot.avatarUrl} teinte={mot.avatarHue} taille={36} />}
     </div>
 
     <div className="min-w-0 flex-1">
@@ -268,7 +269,7 @@ const Mot: React.FC<{
             {mot.nom || t.sansNom}
           </Link>
           <span className="font-sans text-[10px] tabular-nums text-ivory-soft/40">
-            {heure(mot.ecritLe, lang)}
+            {quand(mot.ecritLe, lang, true)}
           </span>
         </div>
       )}
@@ -292,38 +293,11 @@ const Mot: React.FC<{
   </motion.article>
 );
 
-const Portrait: React.FC<{ nom: string; url?: string; teinte?: number }> = ({ nom, url, teinte }) => (
-  <div className="w-9 h-9 rounded-full overflow-hidden border border-brass/25"
-       style={{ background: `hsl(${teinte ?? 30} 40% 20%)` }}>
-    {url
-      ? <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
-      : <span className="w-full h-full flex items-center justify-center font-display text-sm text-ivory/75">
-          {(nom || '?').trim().slice(0, 1).toUpperCase()}
-        </span>}
-  </div>
-);
-
 // ── Les petites mécaniques ──────────────────────────────────────────
-function versDate(v: unknown): Date | null {
-  const h = v as { toDate?: () => Date } | null;
-  if (h?.toDate) return h.toDate();
-  return null;
-}
-
 function secondesEntre(a: unknown, b: unknown): number {
   const da = versDate(a); const dbb = versDate(b);
   if (!da || !dbb) return 0;
   return Math.abs(dbb.getTime() - da.getTime()) / 1000;
-}
-
-function heure(v: unknown, lang: 'FR' | 'EN'): string {
-  const d = versDate(v);
-  if (!d) return '…';
-  const loc = lang === 'FR' ? 'fr-CA' : 'en-CA';
-  const memeJour = d.toDateString() === new Date().toDateString();
-  return memeJour
-    ? d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
-    : d.toLocaleDateString(loc, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function nomBloque(mots: MotSalon[], uid: string): string | undefined {

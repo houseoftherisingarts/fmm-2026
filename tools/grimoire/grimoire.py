@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genere le Grimoire du Festival (PDF) a partir des fiches de cuisine.
+"""Genere le livre de recettes du festival (PDF) a partir des fiches de cuisine.
 
 Sortie : grimoire-fmm-2026.pdf (complet) et grimoire-fmm-2026-apercu.pdf
 (les deux premieres pages seulement, celles qui se feuillettent en ligne).
@@ -800,7 +800,7 @@ def build():
         cls='colo'))
 
     doc = f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
-<title>Le Grimoire du Festival</title>
+<title>Le livre de recettes du festival</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -835,7 +835,7 @@ if __name__ == '__main__':
     teaser = ('<section class="page ink"><div class="pad" style="justify-content:center;'
               'align-items:center;text-align:center;gap:.2in">'
               '<div class="orn"><span class="diamond"></span></div>'
-              '<h2 style="font-size:21pt;color:#e8c87a">La suite se trouve<br>dans le grimoire</h2>'
+              '<h2 style="font-size:21pt;color:#e8c87a">La suite se trouve<br>dans le livre</h2>'
               '<p style="font-size:11pt;line-height:1.6;max-width:3.5in;color:rgba(239,227,200,.82)">'
               'Vingt-sept recettes, six chapitres, du pain viking à l’hypocras. '
               'Neuf dollars plus taxes, envoyé par courriel en format PDF.</p>'
