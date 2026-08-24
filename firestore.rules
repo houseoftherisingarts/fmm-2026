@@ -425,6 +425,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ── Places du banquet · le compteur public ────────────────────
+    // Un seul document, `banquetPlaces/compteur`, et il ne porte que
+    // deux champs : `vendues` (un nombre) et `majLe` (une date). Aucun
+    // acheteur, aucun courriel, aucun montant ne descend jamais ici,
+    // parce que la page publique le lit pour afficher combien de places
+    // restent sur les cinquante.
+    //
+    // L'écriture vient du webhook Square, qui parle par le SDK admin et
+    // passe donc outre ces règles. Personne d'autre ne peut gonfler ni
+    // vider le compteur; un admin garde la main pour corriger à la
+    // main si un paiement d'essai s'est glissé dans le compte.
+    match /banquetPlaces/{docId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     // ── Musicians (one application per musician per year) ────────
     // /musicians/{uid}/years/{year} — mirrors the vendors layout so
     // a band can have multi-year history. Accepted musicians are
