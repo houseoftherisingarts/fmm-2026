@@ -427,7 +427,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                     <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
                     {t.grimoireEyebrow}
                   </Eyebrow>
-                  <DisplayTitle size="lg" glow className="mb-5">{t.grimoireTitle}</DisplayTitle>
+                  <DisplayTitle size="lg" glow className={TITRE_LIVRE}>{t.grimoireTitle}</DisplayTitle>
                   <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
                     {t.grimoireBody}
                   </p>
