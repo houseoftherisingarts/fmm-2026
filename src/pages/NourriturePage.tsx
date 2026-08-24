@@ -526,11 +526,11 @@ const FR = {
   banquetMenuEyebrow: 'Le menu du banquet',
   banquetMenuTitle: 'Trois services',
 
-  grimoireRail: 'Le Grimoire',
+  grimoireRail: 'Le livre de recettes',
   grimoireMeta: 'Recettes',
   grimoireMetaValue: '33',
   grimoireEyebrow: 'À rapporter chez soi',
-  grimoireTitle: 'Le Grimoire du festival',
+  grimoireTitle: 'Le livre de recettes du festival',
   grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et une trentaine d’autres, écrites de la main du chef Marc-Alexis Pepin. Un livre à feuilleter l’hiver venu, quand l’envie de refaire le feu vous prend.',
   grimoireBientot: 'Bientôt en vente',
   grimoireCta: 'Acheter le grimoire',
