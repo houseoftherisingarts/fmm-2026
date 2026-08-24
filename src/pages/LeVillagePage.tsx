@@ -70,8 +70,8 @@ const LeVillagePage: React.FC = () => {
         intro={fr
           ? 'Les cuisines de clans, la taverne, le banquet de l’Équinoxe : tout ce qui se mange et se boit sur le site.'
           : 'Clan kitchens, the tavern, the Equinox banquet: everything you eat and drink on site.'}
-        orbImage="/wix/nourriture/feu-broche.webp"
-        orbImagePosition="center 55%"
+        orbImage="/wix/nourriture/feu-broche-v2.webp"
+        orbImagePosition="46% 50%"
         onOrbClick={() => setNourritureOuverte((v) => !v)}
         orbLabel={fr ? 'Ouvrir le village gustatif' : 'Open the food village'}
       />

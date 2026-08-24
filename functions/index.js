@@ -417,15 +417,17 @@ exports.banquetLien = onRequest(
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { FieldValue } = require('firebase-admin/firestore');
 
-// Les mêmes courriels que la fonction isAdmin() de firestore.rules.
-// Les deux listes doivent rester jumelles : celle-ci garde la fonction,
-// celle des règles garde la base.
+// N'ÉCRIVEZ RIEN ICI À LA MAIN. La liste de l'équipe vit dans
+// config/equipe-admin.json, et scripts/sync-equipe.mjs la recopie ici,
+// dans firestore.rules et dans .env.local avant chaque déploiement.
 const COURRIELS_ADMIN = [
-  'admin@festivalmedievaldemontpellier.org',
-  'alex@lesalondesinconnus.com',
-  'houseoftherisingarts@gmail.com',
-  'm.fournel11@gmail.com',                    // Maïté, Master Bénévole
-  'benevoles.medievalmontpellier@gmail.com',  // Maïté, courriel de fonction
+  // ÉQUIPE:DÉBUT (écrit par scripts/sync-equipe.mjs)
+  'admin@festivalmedievaldemontpellier.org', // Boîte du festival
+  'alex@lesalondesinconnus.com', // Alex
+  'houseoftherisingarts@gmail.com', // Alex, second courriel
+  'm.fournel11@gmail.com', // Maïté, Master Bénévole
+  'benevoles.medievalmontpellier@gmail.com', // Maïté, courriel de fonction
+  // ÉQUIPE:FIN
 ];
 
 const FESTIVAL_NOM = 'Le Festival Médiéval de Montpellier';

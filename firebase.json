@@ -1,7 +1,10 @@
 {
   "firestore": {
     "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "indexes": "firestore.indexes.json",
+    "predeploy": [
+      "node \"$RESOURCE_DIR/scripts/sync-equipe.mjs\""
+    ]
   },
   "storage": {
     "rules": "storage.rules"
@@ -50,6 +53,9 @@
         "node_modules",
         ".git",
         "*.log"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/sync-equipe.mjs\""
       ]
     }
   ]

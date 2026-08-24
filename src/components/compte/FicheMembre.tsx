@@ -783,9 +783,12 @@ const FR = {
   demandeEnvoyee: 'Demande envoyée', accepterAmi: 'Accepter l’amitié', dejaAmi: 'Ami',
   onglets: 'Les sections de la fiche', retour: 'Retour',
   onglet: {
-    profil: 'Mon profil', badges: 'Mes badges', jeux: 'Mes jeux',
-    billets: 'Mes billets', photos: 'Mes photos', collection: 'Ma collection',
-    messages: 'Ma boîte de réception',
+    // Sept onglets avec « mes » partout débordaient à droite et
+    // coupaient le dernier (Alex, 2026-08-24). Seul le profil garde son
+    // possessif, le reste va droit au but.
+    profil: 'Mon profil', badges: 'Badges', jeux: 'Jeux',
+    billets: 'Billets', photos: 'Photos', collection: 'Collection',
+    messages: 'Boîte de réception',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Sa fiche', badges: 'Ses badges', jeux: 'Ses parties',
@@ -827,8 +830,9 @@ const EN: typeof FR = {
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
-    profil: 'My profile', badges: 'My badges', jeux: 'My games',
-    billets: 'My tickets', photos: 'My photos', collection: 'My collection',
+    profil: 'My profile', badges: 'Badges', jeux: 'Games',
+    billets: 'Tickets', photos: 'Photos', collection: 'Collection',
+    messages: 'Inbox',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Their card', badges: 'Their badges', jeux: 'Their games',

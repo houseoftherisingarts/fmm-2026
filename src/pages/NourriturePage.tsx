@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowUpRight, BookOpen, Clock, Lock, Users, Wine } from 'lucide-react';
+import { ArrowUpRight, BookOpen, ChevronDown, Clock, Lock, Users, Wine } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useGagnerBadge } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
-import { Reveal, Stagger, StaggerItem, ScrollProgress } from '../components/scroll';
+import { Reveal, ScrollProgress } from '../components/scroll';
 import { BubbleCanvas, Motes } from '../components/marche/effects';
 import { SectionFog, SectionTopRail, Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
-import { MENU, ABREUVOIR, BANQUET_MENU, type Plat } from '../content/menu2026';
+import { MENU, ABREUVOIR, BANQUET_MENU, type Categorie, type Plat } from '../content/menu2026';
 import { subscribeBanquetRestant } from '../firebase/banquetPlaces';
 import {
   IconSunrise, IconCauldron, IconFlame, IconGreens, IconBread,
@@ -84,6 +85,60 @@ const PlatRow: React.FC<{ plat: Plat; lang: 'FR' | 'EN' }> = ({ plat, lang }) =>
 );
 
 const LIEN_BANQUET = 'https://us-central1-festivalmedieval.cloudfunctions.net/banquetLien';
+
+// ─── Une guilde du menu, repliée par défaut ─────────────────────────
+// Le tableau des trois jours arrivait tout ouvert et noyait l'œil (Alex,
+// 2026-08-24). Chaque guilde n'annonce plus que son nom et sa ligne de
+// service, et les plats se déroulent au clic.
+const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ guilde: g, lang }) => {
+  const [ouverte, setOuverte] = useState(false);
+  const id = `menu-${g.name.FR.replace(/\s+/g, '-').toLowerCase()}`;
+  return (
+    <article className="fmm-menu-card break-inside-avoid mb-8 md:mb-10">
+      <button
+        type="button"
+        onClick={() => setOuverte((v) => !v)}
+        aria-expanded={ouverte}
+        aria-controls={id}
+        className="w-full text-left mb-5 pb-3 group"
+        style={{ borderBottom: '1px solid rgba(232,177,74,0.22)' }}
+      >
+        <div className="flex items-baseline gap-3">
+          <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
+          <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory flex-1">{g.name[lang]}</h3>
+          <ChevronDown
+            size={18}
+            aria-hidden
+            className="shrink-0 self-center transition-transform duration-300 group-hover:text-ivory"
+            style={{
+              color: 'var(--color-copper)',
+              transform: ouverte ? 'rotate(180deg)' : 'none',
+            }}
+          />
+        </div>
+        {g.sub && (
+          <p className="font-editorial italic text-sm mt-1.5 pl-9" style={{ color: 'var(--color-copper)' }}>
+            {g.sub[lang]}
+          </p>
+        )}
+      </button>
+      <AnimatePresence initial={false}>
+        {ouverte && (
+          <motion.ul
+            id={id}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-3.5 overflow-hidden"
+          >
+            {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </article>
+  );
+};
 
 const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const [places, setPlaces] = useState(1);
@@ -293,47 +348,56 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   <div><span className="block font-display title-medieval text-xs text-brass mb-0.5">{t.cost}</span>{t.banquetCost}</div>
                 </li>
               </ul>
+
+              {/* ── Les services, dans la même carte ────────────────
+                  Alex, 2026-08-24 : « les trois services devraient
+                  apparaître dans le même bloc que le banquet de
+                  l'Équinoxe ». Une barre plus épaisse que les autres,
+                  avec son ornement doré au milieu, ouvre la procession. */}
+              <div className="lg:col-span-12 min-w-0 pt-10 md:pt-12">
+                <div aria-hidden className="flex items-center gap-4 mb-8 md:mb-10">
+                  <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0) 0%, rgba(232,177,74,0.55) 100%)' }} />
+                  <Glyphe name="cauldron" size={26} />
+                  <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0.55) 0%, rgba(232,177,74,0) 100%)' }} />
+                </div>
+                <header className="mb-7 md:mb-9 text-center">
+                  <Eyebrow className="mb-3">{t.banquetMenuEyebrow}</Eyebrow>
+                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{t.banquetMenuTitle}</h3>
+                </header>
+                <div className="max-w-3xl mx-auto">
+                  {BANQUET_MENU.map((service, i) => (
+                    <article
+                      key={service.name.FR}
+                      className="grid grid-cols-[3rem_1fr] md:grid-cols-[4.5rem_1fr] gap-4 md:gap-8 py-5 md:py-7"
+                      style={i < BANQUET_MENU.length - 1 ? { borderBottom: '1px solid rgba(244,239,227,0.08)' } : undefined}
+                    >
+                      <span
+                        aria-hidden
+                        className="font-display text-3xl md:text-4xl leading-none text-right"
+                        style={{ color: 'var(--color-copper)', fontWeight: 400 }}
+                      >
+                        {ROMANS[i]}
+                      </span>
+                      <div className="min-w-0">
+                        <h4 className="font-display title-medieval text-lg md:text-xl text-ivory mb-2">
+                          {service.name[lang]}
+                        </h4>
+                        <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
+                          {service.items.map((item, j) => (
+                            <React.Fragment key={item}>
+                              {j > 0 && <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}> · </span>}
+                              {item}
+                            </React.Fragment>
+                          ))}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
             </div>
           </Reveal>
 
-          {/* Le menu du banquet : la procession des cinq services. */}
-          <Reveal>
-            <header className="mb-8 md:mb-10">
-              <Eyebrow className="mb-3">{t.banquetMenuEyebrow}</Eyebrow>
-              <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory">{t.banquetMenuTitle}</h3>
-            </header>
-          </Reveal>
-          <Stagger className="max-w-4xl" stagger={0.09} amount={0.12}>
-            {BANQUET_MENU.map((service, i) => (
-              <StaggerItem
-                key={service.name.FR}
-                as="article"
-                className="grid grid-cols-[3.5rem_1fr] md:grid-cols-[5rem_1fr] gap-4 md:gap-8 py-6 md:py-8"
-                style={i < BANQUET_MENU.length - 1 ? { borderBottom: '1px solid rgba(244,239,227,0.08)' } : undefined}
-              >
-                <span
-                  aria-hidden
-                  className="font-display text-3xl md:text-5xl leading-none text-right"
-                  style={{ color: 'var(--color-copper)', fontWeight: 400 }}
-                >
-                  {ROMANS[i]}
-                </span>
-                <div className="min-w-0">
-                  <h4 className="font-display title-medieval text-lg md:text-xl text-ivory mb-2">
-                    {service.name[lang]}
-                  </h4>
-                  <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
-                    {service.items.map((item, j) => (
-                      <React.Fragment key={item}>
-                        {j > 0 && <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}> · </span>}
-                        {item}
-                      </React.Fragment>
-                    ))}
-                  </p>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
         </div>
       </section>
 
@@ -377,22 +441,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                 et Marmite coulaient les uns dans les autres et l'œil ne
                 trouvait plus la frontière (Alex, 2026-08-22). */}
             {MENU.map((g) => (
-                <article key={g.name.FR} className="fmm-menu-card break-inside-avoid mb-8 md:mb-10">
-                  <header className="mb-5 pb-3" style={{ borderBottom: '1px solid rgba(232,177,74,0.22)' }}>
-                    <div className="flex items-baseline gap-3">
-                      <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
-                      <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory">{g.name[lang]}</h3>
-                    </div>
-                    {g.sub && (
-                      <p className="font-editorial italic text-sm mt-1.5 pl-9" style={{ color: 'var(--color-copper)' }}>
-                        {g.sub[lang]}
-                      </p>
-                    )}
-                  </header>
-                  <ul className="space-y-3.5">
-                    {g.dishes.map((p) => <PlatRow key={p.name} plat={p} lang={lang} />)}
-                  </ul>
-                </article>
+                <GuildeRepliable key={g.name.FR} guilde={g} lang={lang} />
             ))}
           </div>
 

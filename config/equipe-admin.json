@@ -1,0 +1,25 @@
+{
+  "_lisez_moi": "La SEULE liste des courriels de l'équipe. Ajoutez ou retirez quelqu'un ici, puis lancez « npm run equipe ». Les règles Firestore, la fonction d'envoi et le site se mettent d'accord tout seuls. Ne touchez à aucun autre fichier.",
+  "equipe": [
+    {
+      "courriel": "admin@festivalmedievaldemontpellier.org",
+      "qui": "Boîte du festival"
+    },
+    {
+      "courriel": "alex@lesalondesinconnus.com",
+      "qui": "Alex"
+    },
+    {
+      "courriel": "houseoftherisingarts@gmail.com",
+      "qui": "Alex, second courriel"
+    },
+    {
+      "courriel": "m.fournel11@gmail.com",
+      "qui": "Maïté, Master Bénévole"
+    },
+    {
+      "courriel": "benevoles.medievalmontpellier@gmail.com",
+      "qui": "Maïté, courriel de fonction"
+    }
+  ]
+}
