@@ -173,8 +173,16 @@ const DesPage: React.FC = () => {
   }, []);
 
   const moi = partie?.joueurs[0];
-  const monTour = !!partie && partie.phase === 'annonces' && partie.tour === 0 && !partie.joueurs[0].elimine;
+  // En ligne, la parole attend que tous les gobelets soient scellés :
+  // sans cette barrière, un retardataire écouterait les annonces avant
+  // de choisir sa main.
+  const monTour = !!partie
+    && partie.phase === 'annonces'
+    && partie.tour === 0
+    && !partie.joueurs[0].elimine
+    && (!enLigne || (enLigne.statut === 'encours' && toutLeMondeAScelle(enLigne)));
   const total = partie ? desEnJeu(partie) : 0;
+  const sablier = `${Math.floor(resteMs / 60000)}:${String(Math.floor((resteMs % 60000) / 1000)).padStart(2, '0')}`;
 
   const commencer = useCallback(() => {
     const noms = [
@@ -182,7 +190,7 @@ const DesPage: React.FC = () => {
       ...NOMS_MACHINE.slice(0, nbJoueurs - 1).map((n) => ({ nom: n, machine: true })),
     ];
     const p = nouvellePartie(noms);
-    setPartie(p);
+    setSolo(p);
     setQuantite(Math.max(1, Math.round(desEnJeu(p) / 3)));
     setFace(3);
     tableRef.current?.disposer(nbJoueurs);
@@ -250,7 +258,7 @@ const DesPage: React.FC = () => {
     if (!j || !j.machine || j.elimine) return;
     tableRef.current?.designer(partie.tour);
     const minuteur = window.setTimeout(() => {
-      setPartie((p) => {
+      setSolo((p) => {
         if (!p || p.phase !== 'annonces') return p;
         const coup = coupDeLaMachine(p);
         if (coup.action === 'doute') {
@@ -277,7 +285,7 @@ const DesPage: React.FC = () => {
 
   const jouerAnnonce = () => {
     if (!partie || !monTour) return;
-    setPartie(annoncer(partie, quantite, face));
+    setSolo(annoncer(partie, quantite, face));
   };
 
   /** Le dévoilement se voit sur la table : gobelets levés, dé qui part
@@ -305,14 +313,14 @@ const DesPage: React.FC = () => {
     if (!partie || !monTour || !partie.mise) return;
     const apres = douter(partie);
     montrerLeDevoilement(apres);
-    setPartie(apres);
+    setSolo(apres);
   };
 
   const jouerExact = () => {
     if (!partie || !monTour || !partie.mise) return;
     const apres = appelExact(partie);
     montrerLeDevoilement(apres);
-    setPartie(apres);
+    setSolo(apres);
   };
 
   const relancer = () => {
@@ -322,7 +330,7 @@ const DesPage: React.FC = () => {
     tableRef.current?.mains(apres.joueurs.map((j) => j.des.length));
     tableRef.current?.lancer(apres.joueurs[0].des);
     tableRef.current?.remuer(apres.joueurs.map((_, i) => i).filter((i) => i > 0 && !apres.joueurs[i].elimine));
-    setPartie(apres);
+    setSolo(apres);
     setQuantite(Math.max(1, Math.round(desEnJeu(apres) / 3)));
     setFace(3);
   };
@@ -619,7 +627,7 @@ const DesPage: React.FC = () => {
               </div>
             ) : partie.phase === 'fini' ? (
               <div className="flex justify-center">
-                <button type="button" onClick={() => setPartie(null)} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
+                <button type="button" onClick={() => setSolo(null)} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
                   <RotateCcw size={15} className="text-brass" />
                   <span className="fmm-glass-btn-label">{t.nouvelle}</span>
                 </button>
