@@ -161,7 +161,11 @@ function rendreBloc(b: BlocCampagne, fr: boolean, base: string): string {
   if (b.type === 'texte') return paragraphe(fr ? b.FR : b.EN);
 
   if (b.type === 'photo') {
-    return image(`${photos}/${b.fichier}`, fr ? b.altFR : b.altEN, credit);
+    // Les tuiles des jeux vivent à la racine du dossier courriel et ne
+    // sont pas de Léna : pas de crédit sous celles-là.
+    const tuile = b.fichier.startsWith('jeu-');
+    const url = tuile ? `${courriel}/${b.fichier}` : `${photos}/${b.fichier}`;
+    return image(url, fr ? b.altFR : b.altEN, tuile ? '' : credit);
   }
 
   if (b.type === 'video') {
@@ -333,7 +337,7 @@ export function rendreCampagne(
                    seule façon de centrer une image dans Outlook. -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                 <tr><td align="center" style="text-align:center;">
-                  <img src="${e(`${base}/courriel/blason.png`)}" width="72" height="96" alt="${e(SIGNATURE.organisation)}" border="0" style="width:72px;height:96px;display:block;margin:0 auto;border:0;outline:none;" />
+                  <img src="${e(`${base}/courriel/blason-argent.png`)}" width="76" height="93" alt="${e(SIGNATURE.organisation)}" border="0" style="width:76px;height:93px;display:block;margin:0 auto;border:0;outline:none;" />
                 </td></tr>
               </table>
               <p style="margin:18px 0 0 0;font-family:${SERIF};font-size:17px;line-height:25px;letter-spacing:3.4px;text-transform:uppercase;color:${C.texte};">Festival Médiéval<br />de Montpellier</p>

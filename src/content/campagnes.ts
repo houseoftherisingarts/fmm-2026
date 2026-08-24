@@ -289,7 +289,7 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'photo',
-        fichier: '2025-IMG_4508.jpg',
+        fichier: '2025-IMG_6361.jpg',
         altFR: 'Un cuisinier travaille sous un auvent, entre les paniers de légumes et la fumée',
         altEN: 'A cook works under an awning, among vegetable baskets and smoke',
       },
@@ -374,9 +374,21 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'photo',
-        fichier: '2025-IMG_4297.jpg',
-        altFR: 'Des boucliers vikings et un casque appuyés contre une tente de toile blanche',
-        altEN: 'Viking shields and a helmet leaning against a white canvas tent',
+        fichier: 'jeu-des.jpg',
+        altFR: 'Cinq dés rouges et un gobelet de cuir renversé sur une table de chêne, à la chandelle',
+        altEN: 'Five red dice and an upturned leather cup on an oak table, by candlelight',
+      },
+      {
+        type: 'photo',
+        fichier: 'jeu-tafl.jpg',
+        altFR: 'Un plateau de hnefatafl sculpté, ses pièces rouges et ivoire rangées sous une chandelle',
+        altEN: 'A carved hnefatafl board, its red and ivory pieces set out under a candle',
+      },
+      {
+        type: 'photo',
+        fichier: 'jeu-tarot.jpg',
+        altFR: 'Une croix celtique de cartes de tarot posée sur une table de bois, à la chandelle',
+        altEN: 'A Celtic cross of tarot cards laid on a wooden table, by candlelight',
       },
       {
         type: 'texte',

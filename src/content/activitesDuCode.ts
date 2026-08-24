@@ -14,7 +14,7 @@ const BRUT: Array<Omit<FicheInput, 'ordre'>> = [
   { titreFR: 'Sorcières',        titreEN: 'Witches',           sousTitreFR: 'Herboristerie, tissage, artisanat',                       sousTitreEN: 'Herbalism, weaving, crafts',
     descFR: 'Herboristerie, tissage, cuisine ancestrale, sortilèges domestiques. Les sorcières du festival ouvrent leurs grimoires et partagent les savoirs qu’on a presque oubliés : entre racines, fils et chaudron.',
     descEN: 'Herbalism, weaving, ancestral cooking, household spellwork. The festival’s witches open their grimoires and share knowledge that’s almost forgotten: between roots, threads and cauldron.',
-    image: '/photos/volva-v2.webp', imagePos: '44% 30%', categorie: 'crafts' },
+    image: '/histoire/archives/lena/2023-IMG_4319.webp', imagePos: '52% 34%', categorie: 'crafts' },
   { titreFR: 'Démonstrations',   titreEN: 'Demonstrations',    sousTitreFR: 'Forge, savoirs ancestraux',                               sousTitreEN: 'Forge, ancestral knowledge',
     descFR: 'Forge, fonderie, gravure sur os, planage de bois ancestral, tissage. Les artisans-démonstrateurs travaillent devant vous, expliquant chaque geste hérité d’une époque où la matière était travaillée à la main.',
     descEN: 'Forge, foundry, bone engraving, ancestral wood planing, weaving. The demonstrator-artisans work in front of you, explaining each gesture handed down from an age when matter was shaped by hand.',
