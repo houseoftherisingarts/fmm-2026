@@ -311,6 +311,24 @@ export async function listerClients(max = 3000): Promise<Client[]> {
   }
 }
 
+/**
+ * Les courriels qui portent déjà un compte sur le site, avec
+ * l'identifiant du compte. Alex veut inviter les clients à s'inscrire
+ * sans réécrire à ceux qui l'ont déjà fait, alors la liste se lit sans
+ * tri : un compte sans date de création compte autant que les autres,
+ * et le manquer reviendrait à écrire à quelqu'un pour rien.
+ */
+export async function listerComptes(max = 3000): Promise<Map<string, string>> {
+  if (!db) return new Map();
+  const snap = await getDocs(query(collection(db, 'users'), fbLimit(max)));
+  const par = new Map<string, string>();
+  for (const d of snap.docs) {
+    const courriel = normaliserCourriel((d.data() as { email?: unknown }).email);
+    if (courriel) par.set(courriel, d.id);
+  }
+  return par;
+}
+
 // ── Les regroupements de la section d'admin ─────────────────────────
 
 const sansAccents = (v: string) =>
