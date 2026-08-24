@@ -36,28 +36,84 @@ function lireLesFaces(geo: THREE.BufferGeometry): Face[] {
 const versant = (de: THREE.Vector3, vers: THREE.Vector3) =>
   new THREE.Quaternion().setFromUnitVectors(de.clone().normalize(), vers.clone().normalize());
 
-/** Le chiffre, peint sur une petite toile : rien à charger, rien à attendre. */
+/** La peinture rouge sang écaillée des dés du menteur, reprise telle
+ *  quelle : marbrures, éclats qui laissent voir l'os, crasse de table
+ *  (Alex, 2026-08-23 : « exactement comme tu as créé pour le jeu des
+ *  dés »). */
+function peintureDe(): THREE.CanvasTexture {
+  const s = 512;
+  const c = document.createElement('canvas');
+  c.width = c.height = s;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#7b2018';
+  g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 80; i++) {
+    g.globalAlpha = 0.05 + Math.random() * 0.14;
+    g.fillStyle = Math.random() > 0.5 ? '#4d1009' : '#a4392a';
+    g.beginPath();
+    g.ellipse(Math.random() * s, Math.random() * s,
+      24 + Math.random() * 110, 16 + Math.random() * 80,
+      Math.random() * Math.PI, 0, Math.PI * 2);
+    g.fill();
+  }
+  for (let i = 0; i < 52; i++) {
+    g.globalAlpha = 0.14 + Math.random() * 0.3;
+    g.fillStyle = '#d8c6a4';
+    const rx = Math.random() * s;
+    const ry = Math.random() * s;
+    g.beginPath();
+    g.moveTo(rx, ry);
+    for (let k = 0; k < 6; k++) {
+      g.lineTo(rx + (Math.random() - 0.5) * 62, ry + (Math.random() - 0.5) * 56);
+    }
+    g.closePath();
+    g.fill();
+  }
+  g.globalAlpha = 0.09;
+  for (let i = 0; i < 5200; i++) {
+    g.fillStyle = Math.random() > 0.6 ? '#1a0805' : '#e4d3b0';
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  g.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+/** Le chiffre, creusé dans l'os comme les points des dés du menteur :
+ *  une ombre portée en bas à droite, la matière claire, un liseré
+ *  lumineux en haut à gauche. */
 function chiffrePeint(n: number): THREE.CanvasTexture {
   const t = 256;
   const cv = document.createElement('canvas');
   cv.width = t; cv.height = t;
   const ctx = cv.getContext('2d')!;
   ctx.clearRect(0, 0, t, t);
-  ctx.font = `bold ${Math.floor(t * 0.62)}px Georgia, serif`;
+  const taille = Math.floor(t * (n >= 10 ? 0.52 : 0.62));
+  ctx.font = `bold ${taille}px Georgia, serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.fillText(String(n), t / 2 + 4, t / 2 + 6);
-  ctx.fillStyle = n === 20 ? '#f3e5ab' : n === 1 ? '#ee9999' : '#d8c98a';
-  ctx.fillText(String(n), t / 2, t / 2);
+  const poser = (dx: number, dy: number, couleur: string) => {
+    ctx.fillStyle = couleur;
+    ctx.fillText(String(n), t / 2 + dx, t / 2 + dy);
+  };
+  // Le creux : une ombre franche vers le bas à droite.
+  poser(5, 6, 'rgba(18,5,3,0.72)');
+  // La matière : os poli, plus chaud sur le 20, plus rouge sur le 1.
+  poser(0, 0, n === 20 ? '#f6efdc' : n === 1 ? '#e9b3a6' : '#dccca7');
+  // Le liseré lumineux en haut à gauche.
+  ctx.globalAlpha = 0.55;
+  poser(-1.6, -1.8, '#fffaf0');
+  ctx.globalAlpha = 1;
   // Le 6 et le 9 se ressemblent trop sur un dé qui tourne : un trait
   // les sépare.
   if (n === 6 || n === 9) {
-    ctx.strokeStyle = ctx.fillStyle as string;
-    ctx.lineWidth = 8;
+    ctx.strokeStyle = '#dccca7';
+    ctx.lineWidth = 9;
     ctx.beginPath();
-    ctx.moveTo(t * 0.32, t * 0.78);
-    ctx.lineTo(t * 0.68, t * 0.78);
+    ctx.moveTo(t * 0.33, t * 0.79);
+    ctx.lineTo(t * 0.67, t * 0.79);
     ctx.stroke();
   }
   const tex = new THREE.CanvasTexture(cv);
@@ -75,6 +131,7 @@ const De: React.FC<{
   const aretes = useMemo(() => new THREE.EdgesGeometry(geo), [geo]);
   const faces = useMemo(() => lireLesFaces(geo), [geo]);
   const chiffres = useMemo(() => Array.from({ length: 20 }, (_, i) => chiffrePeint(i + 1)), []);
+  const peinture = useMemo(() => peintureDe(), []);
 
   const phase = useRef<'repos' | 'culbute' | 'chute' | 'pose'>('repos');
   const debut = useRef(0);
@@ -140,13 +197,12 @@ const De: React.FC<{
     <group ref={groupe}>
       <mesh geometry={geo}>
         <meshPhysicalMaterial
-          color="#1a1208" metalness={0.35} roughness={0.35}
-          clearcoat={0.6} clearcoatRoughness={0.25}
-          emissive="#3a2a10" emissiveIntensity={0.08}
+          map={peinture} metalness={0.04} roughness={0.46}
+          clearcoat={0.18} clearcoatRoughness={0.5}
         />
       </mesh>
       <lineSegments geometry={aretes}>
-        <lineBasicMaterial color="#c5a059" />
+        <lineBasicMaterial color="#3a1109" />
       </lineSegments>
       {faces.map((f, i) => {
         const p = f.centre.clone().add(f.normale.clone().multiplyScalar(0.012));
@@ -208,7 +264,9 @@ const DeDeLaVie: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             : echec ? '0 0 34px rgba(160,50,40,0.4)' : 'none',
         }}
       >
-        <Canvas camera={{ position: [0, 1.6, 6], fov: 42 }} dpr={[1, 1.6]}>
+        {/* La caméra plonge sur la table : la face gagnante se lit sur
+            le dessus du dé (Alex, 2026-08-23). */}
+        <Canvas camera={{ position: [0, 5.1, 3.5], fov: 40 }} dpr={[1, 1.6]}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 8, 4]} intensity={1.3} />
           <directionalLight position={[-4, 2, -3]} intensity={0.5} color="#c5a059" />

@@ -344,25 +344,33 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       // La main scellée d'un joueur, pour la manche en cours.
+      //
+      // Les deux fonctions reçoivent la partie en argument pour que
+      // chaque évaluation ne coûte qu'un seul get(). Firestore en
+      // plafonne le nombre par requête, et le dévoilement lit la
+      // sous-collection entière d'un coup.
       match /mains/{uid} {
+        function auDevoilement(p) {
+          return signedIn()
+                 && request.auth.uid in p.joueurs
+                 && p.phase == 'devoilement';
+        }
+        function pourLaMancheEnCours(p) {
+          return request.auth.uid in p.joueurs
+                 && request.resource.data.uid == uid
+                 && request.resource.data.manche == p.manche;
+        }
         // Chacun lit la sienne. Les autres n'y ont accès qu'une fois
         // les gobelets levés, et alors tout le monde en même temps.
-        allow read:   if isOwner(uid)
-                      || (signedIn()
-                          && request.auth.uid in partieDes().joueurs
-                          && partieDes().phase == 'devoilement');
+        allow read:   if isOwner(uid) || auDevoilement(partieDes());
         // On scelle sa main pour la manche qui s'ouvre, jamais après.
-        allow create: if isOwner(uid)
-                      && request.auth.uid in partieDes().joueurs
-                      && request.resource.data.uid == uid
-                      && request.resource.data.manche == partieDes().manche;
+        allow create: if isOwner(uid) && pourLaMancheEnCours(partieDes());
         // Une main ne se récrit qu'à la manche suivante. Pendant la
         // manche en cours elle est figée : impossible de changer ses
         // dés après avoir entendu les annonces.
         allow update: if isOwner(uid)
-                      && request.resource.data.uid == uid
                       && request.resource.data.manche > resource.data.manche
-                      && request.resource.data.manche == partieDes().manche;
+                      && pourLaMancheEnCours(partieDes());
         allow delete: if isAdmin();
       }
     }
