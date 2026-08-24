@@ -251,9 +251,119 @@ const DesPage: React.FC = () => {
     tableRef.current?.designer(partie.tour);
   }, [partie?.tour, partie?.phase]);
 
+  // ── La partie en ligne, de bout en bout ─────────────────────────
+
+  // Le fil du jeu : le document, en direct.
+  useEffect(() => {
+    if (!partieId) return;
+    return suivrePartieDes(partieId, setEnLigne);
+  }, [partieId]);
+
+  // Les places se dressent dès que les deux joueurs sont assis.
+  useEffect(() => {
+    if (!enLigne || !user || ordre.length === 0) return;
+    if (enLigne.statut !== 'encours' && enLigne.statut !== 'fini') return;
+    if (placesPosees.current === ordre.length) return;
+    placesPosees.current = ordre.length;
+    tableRef.current?.disposer(ordre.length);
+    tableRef.current?.mains(ordre.map((u) => enLigne.des[u] ?? 0));
+    musiqueRef.current?.demarrer();
+  }, [enLigne, ordre, user]);
+
+  // Chaque manche, je tire ma main chez moi et je la scelle. Les dés
+  // ne quittent jamais le sous-document que les règles me réservent.
+  useEffect(() => {
+    if (!enLigne || !user || !partieId) return;
+    if (enLigne.statut !== 'encours' || enLigne.phase !== 'annonces') return;
+    if (enLigne.elimines.includes(user.uid)) return;
+    if (scelle.current === enLigne.manche) return;
+    scelle.current = enLigne.manche;
+    const combien = enLigne.des[user.uid] ?? 0;
+    void (async () => {
+      // Une main déjà scellée se relit plutôt que de se relancer : un
+      // rechargement de page ne doit pas rendre de nouveaux dés.
+      const deja = await lireMaMain(partieId, user.uid, enLigne.manche);
+      const des = deja ?? await scellerSaMain(partieId, user.uid, enLigne.manche, combien);
+      setMaMain(des);
+      setMainsLevees({});
+      setQuantite(Math.max(1, Math.round(Object.values(enLigne.des).reduce((n, v) => n + v, 0) / 3)));
+      setFace(3);
+      tableRef.current?.devoiler([], false);
+      tableRef.current?.lancer(des);
+      tableRef.current?.remuer(
+        ordre.map((_, i) => i).filter((i) => i > 0 && !enLigne.elimines.includes(ordre[i])),
+      );
+    })();
+  }, [enLigne, user, partieId, ordre]);
+
+  // Les gobelets se lèvent : les mains apparaissent sur la table, le
+  // dé perdu part en fumée, le dé repris retombe.
+  useEffect(() => {
+    if (!enLigne || !partieId || enLigne.phase !== 'devoilement') return;
+    const d = enLigne.devoilement;
+    if (!d || d.compte < 0) return;
+    if (revele.current === enLigne.manche) return;
+    revele.current = enLigne.manche;
+    void (async () => {
+      // Les mains recopiées dans le document servent l'affichage; la
+      // sous-collection reste la source, et chacun peut la relire.
+      const mains = Object.keys(d.mainsLevees ?? {}).length
+        ? d.mainsLevees!
+        : await lireLesMains(partieId, enLigne.manche);
+      setMainsLevees(mains);
+      const t3 = tableRef.current;
+      if (!t3) return;
+      t3.devoiler(ordre.slice(1).map((u) => mains[u] ?? []), true);
+      // Trois secondes de répit : la table se regarde, le verdict se
+      // lit, et seulement ensuite le dé s'en va.
+      if (d.perdantUid) {
+        const i = ordre.indexOf(d.perdantUid);
+        if (i >= 0) window.setTimeout(() => t3.perdreUnDe(i), 3000);
+      }
+      if (d.gagnantDeUid) {
+        const i = ordre.indexOf(d.gagnantDeUid);
+        if (i >= 0) window.setTimeout(() => t3.reprendreUnDe(i), 3000);
+      }
+      window.setTimeout(() => t3.mains(ordre.map((u) => enLigne.des[u] ?? 0)), 4200);
+    })();
+  }, [enLigne, partieId, ordre]);
+
+  // Le sablier du tour, égrené à l'écran.
+  useEffect(() => {
+    const fin = enLigne?.statut === 'encours' && enLigne.phase !== 'fini'
+      ? (enLigne.echeance?.toMillis() ?? 0)
+      : 0;
+    if (!fin) { setResteMs(0); return; }
+    const battre = () => setResteMs(Math.max(0, fin - Date.now()));
+    battre();
+    const h = window.setInterval(battre, 500);
+    return () => window.clearInterval(h);
+  }, [enLigne]);
+
+  // Le sable a fini de couler. Un seul joueur écrit la suite, pour ne
+  // pas empiler deux passages, et la transaction ferme le reste.
+  useEffect(() => {
+    if (!enLigne || !user || !partieId || enLigne.statut !== 'encours') return;
+    const fin = enLigne.echeance?.toMillis() ?? 0;
+    if (!fin || fin > Date.now()) return;
+    // Le compte du dévoilement est resté en suspens : n'importe quel
+    // joueur peut le finir à la place de celui qui a fermé son onglet.
+    if (enLigne.phase === 'devoilement') {
+      if (enLigne.devoilement && enLigne.devoilement.compte < 0) void compterLesDes(partieId, enLigne);
+      return;
+    }
+    if (enLigne.phase !== 'annonces') return;
+    const muets = vivants(enLigne).filter((u) => !enLigne.mainsPretes.includes(u));
+    const silencieux = muets.length > 0 ? muets : [enLigne.tour];
+    const greffier = enLigne.joueurs.find(
+      (u) => !enLigne.elimines.includes(u) && !silencieux.includes(u),
+    );
+    if (greffier === user.uid) void passerLeTourAbsent(partieId, enLigne);
+  }, [enLigne, user, partieId, resteMs]);
+
   // ── Les adversaires jouent tout seuls ───────────────────────────
   useEffect(() => {
-    if (!partie || partie.phase !== 'annonces') return;
+    if (enLigne || !partie || partie.phase !== 'annonces') return;
     const j = partie.joueurs[partie.tour];
     if (!j || !j.machine || j.elimine) return;
     tableRef.current?.designer(partie.tour);

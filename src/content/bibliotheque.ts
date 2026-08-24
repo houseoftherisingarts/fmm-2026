@@ -107,6 +107,36 @@ export const RAYONS: Rayon[] = [
     ],
   },
   {
+    // Rayon ajouté le 23 août 2026 : l'année de la Révolte paysanne
+    // manquait partout sur le site. Les six titres ont été vérifiés
+    // un par un (Sudoc, Persée, BnF, The Medieval Review, Gallimard).
+    id: 'revolte',
+    anneeFR: 'L’année de la Révolte paysanne',
+    anneeEN: 'The Year of the Peasants’ Revolt',
+    chapeauFR: 'Ceux qui labouraient, payaient la dîme et nourrissaient tout le monde se sont levés bien plus souvent que l’école ne le raconte. La Jacquerie de 1358 a tenu deux semaines avant d’être écrasée, et les paysans anglais de 1381 sont entrés dans Londres avant de voir leur chef tomber sous les yeux du roi. Voici de quoi comprendre ce qu’ils demandaient.',
+    chapeauEN: 'The people who ploughed, paid the tithe and fed everyone else rose far more often than school lets on. The Jacquerie of 1358 held for a fortnight before it was crushed, and the English peasants of 1381 marched into London before watching their leader fall in front of the king. Here is what they were asking for.',
+    livres: [
+      { titre: 'Ongles bleus, Jacques et Ciompi. Les révolutions populaires en Europe aux XIVe et XVe siècles', auteur: 'Michel Mollat et Philippe Wolff', repere: '1970',
+        noteFR: 'Les deux historiens racontent ensemble la Jacquerie française, la révolte anglaise et les Ciompi de Florence, et le même monde apparaît partout. C’est ce livre qui a fait des soulèvements populaires un fait européen au lieu d’une suite d’accidents locaux.',
+        noteEN: 'The two historians tell the French Jacquerie, the English rising and the Ciompi of Florence together, and the same world shows up everywhere. This is the book that turned popular revolt into a European fact instead of a string of local accidents.' },
+      { titre: 'Les Mouvements paysans du Moyen Âge et la révolte anglaise de 1381', auteur: 'Rodney Hilton', repere: '1973, traduit en 1979',
+        noteFR: 'Hilton remonte des révoltés de 1381 jusqu’aux tensions ordinaires du village, celles qui duraient depuis deux siècles. Après lui, personne n’a plus pu traiter une jacquerie comme une flambée sans cause.',
+        noteEN: 'Hilton traces the rebels of 1381 back to the ordinary tensions of the village, the ones that had been running for two centuries. After him, nobody could treat a peasant rising as a fire without a cause.' },
+      { titre: 'Les soulèvements populaires au Moyen Âge', auteur: 'Guy Fourquin', repere: '1972',
+        noteFR: 'Deux cents pages qui classent les soulèvements par ce qui les allume, la faim, l’espérance religieuse ou l’ambition d’une classe qui monte. C’est la carte la plus courte du sujet.',
+        noteEN: 'Two hundred pages that sort risings by what sets them alight, whether hunger, religious hope or the ambition of a class on its way up. It is the shortest map of the subject.' },
+      { titre: 'Lust for Liberty: The Politics of Social Revolt in Medieval Europe, 1200-1425', auteur: 'Samuel K. Cohn Jr.', repere: '2006',
+        noteFR: 'Cohn a passé au crible les révoltes d’Italie, de France et de Flandre, et il en tire une conclusion qui dérange : ces gens réclamaient d’abord des droits politiques, et le pain venait après. La peste, chez lui, a nourri l’appétit de liberté.',
+        noteEN: 'Cohn combed through the revolts of Italy, France and Flanders, and draws an uncomfortable conclusion: these people wanted political rights first, and bread came after. In his telling, the plague fed the appetite for liberty.' },
+      { titre: 'Chroniques, Livre I', auteur: 'Jean Froissart', repere: 'XIVe s.',
+        noteFR: 'Le chroniqueur raconte la Jacquerie de 1358 avec l’horreur d’un homme qui écrit pour les seigneurs. Lisez-le pour ce qu’il montre, et souvenez-vous de qui le payait.',
+        noteEN: 'The chronicler tells the Jacquerie of 1358 with the horror of a man writing for lords. Read him for what he shows, and remember who paid him.' },
+      { titre: 'Paysans d’Occident (XIe-XIVe siècles)', auteur: 'Robert Fossier', repere: '1984',
+        noteFR: 'Avant de comprendre pourquoi ils se sont levés, il faut savoir comment ils vivaient, ce qu’ils possédaient et ce qu’ils croyaient. Fossier montre un monde rural qui se fissure dès le XIIIe siècle, bien avant que la peste ne l’achève.',
+        noteEN: 'Before you understand why they rose, you need to know how they lived, what they owned and what they believed. Fossier shows a rural world already cracking in the thirteenth century, well before the plague finished it.' },
+    ],
+  },
+  {
     id: 'peste',
     anneeFR: 'L’année de la Peste',
     anneeEN: 'The Year of the Plague',
