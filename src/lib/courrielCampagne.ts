@@ -310,7 +310,15 @@ export function rendreCampagne(
     <tr>
       <td align="center" style="padding:24px 12px 40px 12px;">
 
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
+        <!--[if mso]>
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td>
+        <![endif]-->
+        <!-- La colonne « fluide-hybride ». Elle vaut 100 % de la place
+             disponible, jusqu'à 600 px, ce qui la fait tenir sur un
+             téléphone sans jamais déborder. Outlook ne comprend pas
+             max-width : le tableau fantôme ci-dessus, qu'il est seul à
+             lire, lui donne les 600 px en dur. -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;margin:0 auto;">
 
           <!-- ── L'en-tête : le blason, le nom, les dates ── -->
           <tr>
