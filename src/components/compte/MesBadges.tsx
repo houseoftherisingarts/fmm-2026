@@ -11,9 +11,17 @@ import { COLLECTIONS, TOUS_LES_BADGES, avancement, sceauDe } from '../../firebas
 const PRIX_FR = { petit: 'Petit prix', moyen: 'Prix moyen', grand: 'Grand prix' };
 const PRIX_EN = { petit: 'Small prize', moyen: 'Middling prize', grand: 'Great prize' };
 
-const MesBadges: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
+// Le livre sert aussi sur la fiche publique d'un autre membre : on lui
+// passe alors les badges de cette personne et le titre qui va avec
+// (Alex, 2026-08-23).
+const MesBadges: React.FC<{
+  lang: 'FR' | 'EN';
+  obtenus?: string[];
+  titre?: string;
+}> = ({ lang, obtenus: obtenusVus, titre }) => {
   const fr = lang === 'FR';
-  const { obtenus } = useBadges();
+  const { obtenus: mesBadges } = useBadges();
+  const obtenus = obtenusVus ?? mesBadges;
   const etat = avancement(obtenus);
 
   return (

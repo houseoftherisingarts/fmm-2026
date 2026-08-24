@@ -125,17 +125,23 @@ export function annoncer(p: Partie, quantite: number, face: Face): Partie {
     ...p,
     mise: { quantite, face, parId: joueur.id },
     tour: suivantVivant(p, p.tour),
-    journal: [...p.journal, `${joueur.nom} annonce ${quantite} × ${face}`],
+    journal: [...p.journal, `${conjugue(joueur.nom, 'annonce')} ${quantite} × ${face}`],
   };
 }
 
 // « Vous perd un dé » n'existe pas. Le verbe suit la personne : la
 // deuxième personne du pluriel pour le joueur, la troisième pour les
 // convives (Alex, 2026-08-23).
-function conjugue(nom: string, verbe: 'perd' | 'reprend' | 'crie' | 'annonce'): string {
+function conjugue(
+  nom: string,
+  verbe: 'perd' | 'reprend' | 'crie' | 'annonce' | 'annoncait',
+): string {
   const vous = nom.trim().toLowerCase() === 'vous';
-  if (!vous) return `${nom} ${verbe}`;
-  const formes = { perd: 'perdez', reprend: 'reprenez', crie: 'criez', annonce: 'annoncez' };
+  if (!vous) return `${nom} ${verbe === 'annoncait' ? 'annonçait' : verbe}`;
+  const formes = {
+    perd: 'perdez', reprend: 'reprenez', crie: 'criez',
+    annonce: 'annoncez', annoncait: 'annonciez',
+  };
   return `Vous ${formes[verbe]}`;
 }
 
@@ -170,7 +176,7 @@ export function douter(p: Partie): Partie {
       ...p.journal,
       `${conjugue(douteur.nom, 'crie')} « menteur ! »`,
       `La table comptait ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}, `
-        + `et ${annonceur.nom} en annonçait ${p.mise.quantite}. ${conjugue(perdant.nom, 'perd')} un dé.`,
+        + `et ${conjugue(annonceur.nom, 'annoncait').replace(/^Vous/, 'vous')} en ${p.mise.quantite}. ${conjugue(perdant.nom, 'perd')} un dé.`,
     ],
   };
 }
