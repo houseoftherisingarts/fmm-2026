@@ -628,7 +628,8 @@ const DesPage: React.FC = () => {
           </AnimatePresence>
 
           {/* Bandeau du haut : le titre, ce qui se dit, les dés en jeu */}
-          <div className="absolute top-0 inset-x-0 z-10 flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 py-3"
+          {/* Le côté droit garde sa place libre pour le X de fermeture. */}
+          <div className="absolute top-0 inset-x-0 z-10 flex flex-wrap items-center justify-between gap-3 pl-4 md:pl-7 pr-16 md:pr-20 py-3"
                style={{ background: 'linear-gradient(180deg, rgba(8,3,5,0.92), rgba(8,3,5,0))' }}>
             <span className="font-display title-medieval text-lg md:text-xl text-ivory">
               {t.titre}
