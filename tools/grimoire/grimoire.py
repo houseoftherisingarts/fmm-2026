@@ -792,17 +792,20 @@ def build():
         <div class="orn"><span class="diamond"></span></div>
         <h2 style="font-size:19pt">Sur les quantités</h2>
         <p style="font-size:11pt; line-height:1.6; max-width:3.6in">
-          Chaque ingrédient porte deux mesures. En gras, celle du festival : le rendement
-          annoncé en tête de fiche, cinquante portions le plus souvent. En italique, la même
-          chose ramenée à cinq personnes.
+          Chaque ingrédient porte une seule mesure, celle qui nourrit cinq personnes autour
+          d’une table ordinaire. Le rendement inscrit en tête de fiche vous dit ce que chacune
+          reçoit.
         </p>
         <p style="font-size:11pt; line-height:1.6; max-width:3.6in">
-          Les épices ont été arrondies vers le bas. Il est plus facile d’en rajouter à la fin
-          que d’en retirer.
+          Les épices ont été arrondies vers le bas, et ce qui descendait sous le gramme se
+          donne en cuillères et en pincées. Il est plus facile d’en rajouter à la fin que
+          d’en retirer.
         </p>
         <p style="font-size:11pt; line-height:1.6; max-width:3.6in">
-          Les temps de cuisson supposent un feu vif et une grande marmite. Sur une cuisinière
-          de maison, comptez plus long et remuez plus souvent.
+          Les temps de cuisson n’ont pas été divisés, parce qu’ils ne se divisent pas : un
+          ragoût mijote aussi longtemps pour cinq personnes que pour cinquante, et seul le
+          poids de la marmite change. Ces fiches ont été écrites devant un feu vif; sur une
+          cuisinière de maison, comptez un peu plus long et remuez plus souvent.
         </p>
         <div class="orn" style="margin-top:.1in"><span class="rule-gold" style="width:1.6in"></span></div>
       </div>""", folio=4))
