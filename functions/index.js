@@ -660,6 +660,28 @@ function lienDesabonnement(courriel, cle) {
 /** Pose le prénom et le lien dans un gabarit. Le nom passe par
  *  l'échappement quand il entre dans du HTML : une apostrophe ou un
  *  chevron dans un nom ne doit pas pouvoir casser la lettre. */
+/** Les images distantes n'apparaissent pas : Gmail, Apple Mail et
+ *  Outlook les bloquent tant que la personne ne clique pas « afficher
+ *  les images », et une infolettre arrive alors vide (Alex,
+ *  2026-08-24). Chaque image est donc jointe au courriel et référencée
+ *  par un identifiant interne, ce qui la fait paraître partout, sans
+ *  permission et sans réseau. Nodemailer va chercher le fichier lui-même
+ *  à partir de son adresse. */
+function incorporerImages(html) {
+  const pieces = [];
+  const vues = new Map();
+  const neuf = html.replace(/src="(https:\/\/[^"]+\.(?:jpg|jpeg|png|gif))"/gi, (tout, url) => {
+    let cid = vues.get(url);
+    if (!cid) {
+      cid = `img${vues.size}@fmm`;
+      vues.set(url, cid);
+      pieces.push({ path: url, cid, filename: url.split('/').pop() });
+    }
+    return `src="cid:${cid}"`;
+  });
+  return { html: neuf, pieces };
+}
+
 function personnaliser(gabarit, nom, lien, pourHtml) {
   const propre = String(nom || '').trim().slice(0, 60);
   const morceau = propre ? ` ${pourHtml ? echapperHtml(propre) : propre}` : '';
@@ -832,7 +854,8 @@ exports.envoyerCampagne = onCall(
               to: personne.courriel,
               subject: sujet,
               text: personnaliser(texte, personne.nom, lien, false),
-              html: personnaliser(html, personne.nom, lien, true),
+              html: incorporerImages(personnaliser(html, personne.nom, lien, true)).html,
+              attachments: incorporerImages(personnaliser(html, personne.nom, lien, true)).pieces,
               headers: {
                 // Le désabonnement d'un seul geste, depuis le bandeau
                 // du client de courriel. Gmail l'exige des expéditeurs

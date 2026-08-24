@@ -326,7 +326,16 @@ export function rendreCampagne(
           <!-- ── L'en-tête : le blason, le nom, les dates ── -->
           <tr>
             <td align="center" bgcolor="${C.bande}" class="fmm-marge" style="background-color:${C.bande};padding-top:34px;padding-bottom:28px;${MARGE}border:1px solid ${C.bordure};border-bottom:0;">
-              <img src="${e(`${base}/fmm-logo-white.png`)}" width="72" alt="${e(SIGNATURE.organisation)}" border="0" style="width:72px;max-width:72px;height:auto;display:block;border:0;outline:none;" />
+              <!-- Le blason est cuit sur le fond de l'en-tête plutôt
+                   que transparent : plusieurs clients composent la
+                   transparence sur du blanc, et un chevalier blanc y
+                   devient invisible. Il est centré par un tableau, la
+                   seule façon de centrer une image dans Outlook. -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+                <tr><td align="center" style="text-align:center;">
+                  <img src="${e(`${base}/courriel/blason.png`)}" width="72" height="96" alt="${e(SIGNATURE.organisation)}" border="0" style="width:72px;height:96px;display:block;margin:0 auto;border:0;outline:none;" />
+                </td></tr>
+              </table>
               <p style="margin:18px 0 0 0;font-family:${SERIF};font-size:17px;line-height:25px;letter-spacing:3.4px;text-transform:uppercase;color:${C.texte};">Festival Médiéval<br />de Montpellier</p>
               <p style="margin:12px 0 0 0;font-family:${SANS};font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:${C.or};">${e(dates)}</p>
             </td>
