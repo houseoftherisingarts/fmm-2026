@@ -1,9 +1,15 @@
 /**
  * Fonctions du Festival Médiéval de Montpellier.
  *
- * Livraison du Grimoire (Alex, 2026-08-22) : quand quelqu'un achète le
- * livre de recettes par le lien Square, il doit recevoir le PDF par
+ * Livraison du livre de recettes (Alex, 2026-08-22) : quand quelqu'un
+ * achète le livre par le lien Square, il doit recevoir le PDF par
  * courriel, sans intervention humaine.
+ *
+ * Le même webhook compte les places du banquet (Alex, 2026-08-23) :
+ * Square nous envoie tous les paiements du compte, alors les commandes
+ * de banquet arrivent ici aussi. Elles n'ajoutent qu'un nombre au
+ * document `banquetPlaces/compteur`, le seul que le site lit pour dire
+ * combien de places restent sur les cinquante.
  *
  * Le chemin complet :
  *   1. Square encaisse le paiement du lien du grimoire.

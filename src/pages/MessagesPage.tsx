@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Send, Search, MessageCircle, ChevronLeft, UserCircle2,
+  Flag, VolumeX, Volume2,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
@@ -10,271 +11,336 @@ import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import {
   type DMThread, type DM,
-  threadId as makeThreadId, ensureThread, subscribeDMThread, sendDM, subscribeInbox, markThreadRead,
+  threadId as faireFilId, ensureThread, subscribeDMThread, sendDM, subscribeInbox, markThreadRead,
 } from '../firebase/dms';
+import { mockListThreads, mockListDMs, mockSendDM } from '../firebase/mockCommunity';
+import { lireFiche, type Membre } from '../firebase/ordre';
 import {
-  mockListThreads, mockListDMs, mockSendDM, mockGetPublicProfile,
-} from '../firebase/mockCommunity';
-import { hueFor, type PublicProfile, getPublicProfile } from '../firebase/publicProfile';
+  LONGUEUR_MAX, bloquer, debloquer, signaler, suivreBlocages, tropVite,
+} from '../firebase/moderation';
 import SEO from '../components/SEO';
 
-// ─── Inbox + thread (Messenger-clone) ─────────────────────────────
-// /messages           → inbox
-// /messages/:otherUid → focused thread (creates the thread on first send)
+// ─── La boîte de réception ───────────────────────────────────────────
+// /messages           → la liste des conversations
+// /messages/:autreUid → une conversation, créée au premier envoi
 //
-// Threads are 1-on-1; the id is the sorted uid pair so duplicates can't
-// exist. Inbox is realtime via subscribeInbox, threads via
-// subscribeDMThread. In dev/showcase we fall through to the in-memory
-// mock store so the UI is alive without Firestore.
+// Un fil par paire de personnes : la clé est la paire d'uid triée, donc
+// deux fils pour les mêmes gens ne peuvent pas exister. La liste et le
+// fil arrivent en direct.
+//
+// Le nom et la photo de l'autre viennent du registre de l'Ordre
+// (/membres), la seule fiche qu'un membre puisse lire chez un autre.
+// L'ancienne version interrogeait /users et /benevoles, fermés par les
+// règles à tous sauf leur propriétaire, donc l'en-tête affichait un
+// inconnu sans visage à chaque conversation (corrigé le 2026-08-23).
 
-const SHOWCASE_IN_DEV = import.meta.env.DEV;
-const DEMO_UID = 'mock-bene-vole';
+const VITRINE_EN_DEV = import.meta.env.DEV;
+const UID_DEMO = 'mock-bene-vole';
 
 const MessagesPage: React.FC = () => {
   useCaravanPage();
-  const { otherUid } = useParams<{ otherUid?: string }>();
+  const { otherUid: autreUid } = useParams<{ otherUid?: string }>();
   const navigate = useNavigate();
   const { user, loading, openSignIn } = useAuth();
   const { lang } = useUI();
+  const fr = lang === 'FR';
+  const t = fr ? FR : EN;
 
-  const [threads, setThreads] = useState<DMThread[]>([]);
-  const [search, setSearch]   = useState('');
-  const [otherProfile, setOtherProfile] = useState<PublicProfile | null>(null);
-  const [msgs, setMsgs]       = useState<DM[]>([]);
-  const [draft, setDraft]     = useState('');
-  const [sending, setSending] = useState(false);
-  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [fils, setFils]         = useState<DMThread[]>([]);
+  const [recherche, setRecherche] = useState('');
+  const [autre, setAutre]       = useState<Membre | null>(null);
+  const [moiFiche, setMoiFiche] = useState<Membre | null>(null);
+  const [msgs, setMsgs]         = useState<DM[]>([]);
+  const [brouillon, setBrouillon] = useState('');
+  const [envoi, setEnvoi]       = useState(false);
+  const [avis, setAvis]         = useState('');
+  const [bloques, setBloques]   = useState<string[]>([]);
+  const [filActif, setFilActif] = useState<string | null>(null);
+  const zoneRef = useRef<HTMLDivElement>(null);
 
-  // ── Resolve "me" identity ──
-  const meUid  = user?.uid || DEMO_UID;
-  const meName = user?.displayName || 'Béné Vole';
-  const meHue  = hueFor(meName);
-  const useMock = SHOWCASE_IN_DEV && (!user || meUid === DEMO_UID || (otherUid?.startsWith('mock-')));
+  // ── Qui je suis ──
+  const monUid  = user?.uid || UID_DEMO;
+  const monNom  = (moiFiche?.nom || user?.displayName || '').trim() || t.sansNom;
+  const maPhoto = moiFiche?.avatarUrl;
+  const maTeinte = moiFiche?.avatarHue ?? teinteDe(monNom);
+  const enDemo = VITRINE_EN_DEV && (!user || monUid === UID_DEMO || !!autreUid?.startsWith('mock-'));
 
-  // ── Inbox subscription ──
+  // ── Ma fiche et mes silences ──
   useEffect(() => {
-    if (!user && !SHOWCASE_IN_DEV) return;
-    if (useMock) {
-      mockListThreads(meUid).then(setThreads);
-      return;
-    }
-    return subscribeInbox(meUid, setThreads);
-  }, [meUid, useMock, user]);
+    if (!user) { setMoiFiche(null); setBloques([]); return; }
+    let vivant = true;
+    lireFiche(user.uid).then((f) => { if (vivant) setMoiFiche(f); }).catch(() => {});
+    const stop = suivreBlocages(user.uid, setBloques);
+    return () => { vivant = false; stop(); };
+  }, [user?.uid]);
 
-  // ── Resolve other party's profile + thread for the focused view ──
+  // ── La liste des conversations ──
   useEffect(() => {
-    if (!otherUid) { setOtherProfile(null); setActiveThreadId(null); setMsgs([]); return; }
-    let cancelled = false;
+    if (!user && !VITRINE_EN_DEV) return;
+    if (enDemo) { mockListThreads(monUid).then(setFils); return; }
+    return subscribeInbox(monUid, setFils);
+  }, [monUid, enDemo, user]);
+
+  // ── La conversation ouverte ──
+  useEffect(() => {
+    if (!autreUid) { setAutre(null); setFilActif(null); setMsgs([]); return; }
+    let vivant = true;
+    let arreter: (() => void) | undefined;
     (async () => {
-      // public profile (for header)
-      let p: PublicProfile | null = null;
-      if (otherUid.startsWith('mock-')) p = await mockGetPublicProfile(otherUid);
-      else {
-        try { p = await getPublicProfile(otherUid); } catch { /* offline */ }
-        if (!p && SHOWCASE_IN_DEV) p = await mockGetPublicProfile(otherUid);
-      }
-      if (cancelled) return;
-      setOtherProfile(p);
+      let fiche: Membre | null = null;
+      try { fiche = await lireFiche(autreUid); } catch { /* hors ligne */ }
+      if (!vivant) return;
+      setAutre(fiche);
 
-      // thread id
-      const id = makeThreadId(meUid, otherUid);
-      setActiveThreadId(id);
+      const id = faireFilId(monUid, autreUid);
+      setFilActif(id);
 
-      // messages
-      if (useMock) {
-        const list = await mockListDMs(id);
-        if (!cancelled) setMsgs(list);
-      } else {
-        // ensure thread doc exists so future inbox queries find it
-        try { await ensureThread(meUid, meName, meHue, otherUid, p?.displayName || 'Bénévole', p?.avatarHue ?? hueFor(p?.displayName || '')); }
-        catch { /* offline */ }
-        const unsub = subscribeDMThread(id, (list) => { if (!cancelled) setMsgs(list); });
-        return () => unsub();
+      if (enDemo) {
+        const liste = await mockListDMs(id);
+        if (vivant) setMsgs(liste);
+        return;
       }
+      // Le fil s'ouvre avant la première lecture, sinon la conversation
+      // n'apparaîtrait jamais dans la boîte des deux personnes.
+      try {
+        await ensureThread(
+          monUid, monNom, maTeinte, maPhoto,
+          autreUid, (fiche?.nom || '').trim() || t.sansNom,
+          fiche?.avatarHue ?? teinteDe(fiche?.nom || ''), fiche?.avatarUrl,
+        );
+      } catch { /* hors ligne, ou bloqué par l'autre */ }
+      if (!vivant) return;
+      arreter = subscribeDMThread(id, (liste) => { if (vivant) setMsgs(liste); });
     })();
-    return () => { cancelled = true; };
-  }, [otherUid, meUid, useMock, meName, meHue]);
+    return () => { vivant = false; arreter?.(); };
+  }, [autreUid, monUid, enDemo, monNom, maTeinte, maPhoto, t.sansNom]);
 
-  // mark read when entering
+  // Les messages neufs se marquent lus en entrant.
   useEffect(() => {
-    if (activeThreadId && !useMock) markThreadRead(activeThreadId, meUid).catch(() => {});
-  }, [activeThreadId, meUid, useMock]);
+    if (filActif && !enDemo) markThreadRead(filActif, monUid).catch(() => {});
+  }, [filActif, monUid, enDemo, msgs.length]);
 
-  // auto-scroll to bottom on new messages
   useEffect(() => {
-    const el = scrollRef.current; if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [msgs.length, activeThreadId]);
+    const el = zoneRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [msgs.length, filActif]);
 
-  const onSend = async (e: React.FormEvent) => {
+  const bloque = !!autreUid && bloques.includes(autreUid);
+
+  const envoyer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otherUid || !draft.trim() || !activeThreadId) return;
-    setSending(true);
+    const texte = brouillon.trim();
+    if (!autreUid || !texte || !filActif || envoi) return;
+    if (tropVite(`dm:${filActif}`)) { setAvis(t.tropVite); return; }
+    setEnvoi(true);
+    setAvis('');
     try {
-      const payload = { senderUid: meUid, senderName: meName, body: draft.trim() };
-      if (useMock) {
-        const op = otherProfile;
-        await mockSendDM(activeThreadId, payload, otherUid, op?.displayName || 'Bénévole', op?.avatarHue ?? hueFor(op?.displayName || ''));
-        setMsgs(await mockListDMs(activeThreadId));
-        setThreads(await mockListThreads(meUid));
+      const charge = { senderUid: monUid, senderName: monNom, body: texte.slice(0, LONGUEUR_MAX) };
+      if (enDemo) {
+        await mockSendDM(filActif, charge, autreUid,
+          (autre?.nom || '').trim() || t.sansNom, autre?.avatarHue ?? teinteDe(autre?.nom || ''));
+        setMsgs(await mockListDMs(filActif));
+        setFils(await mockListThreads(monUid));
       } else {
-        await sendDM(activeThreadId, payload, otherUid);
+        await sendDM(filActif, charge, autreUid);
       }
-      setDraft('');
+      setBrouillon('');
+    } catch {
+      // La règle Firestore refuse l'envoi quand le destinataire vous a
+      // fait taire. Rien ne le lui dit, et rien ne vous le dit non plus.
+      setAvis(t.echec);
     } finally {
-      setSending(false);
+      setEnvoi(false);
     }
   };
 
-  // ── Auth gate ──
+  const rapporter = async () => {
+    if (!user || !autreUid || !filActif) return;
+    const dernier = [...msgs].reverse().find((m) => m.senderUid === autreUid);
+    try {
+      await signaler({
+        parUid: user.uid, parNom: monNom,
+        contreUid: autreUid, contreNom: (autre?.nom || '').trim() || t.sansNom,
+        texte: dernier?.body || '', lieu: 'prive', reference: filActif,
+      });
+      setAvis(t.signale);
+    } catch { setAvis(t.echec); }
+  };
+
+  const basculerSilence = async () => {
+    if (!user || !autreUid) return;
+    if (bloque) { await debloquer(user.uid, autreUid); setAvis(t.debloque); }
+    else { await bloquer(user.uid, autreUid); setAvis(t.bloque); }
+  };
+
+  const filtres = useMemo(() => fils.filter((f) => {
+    const u = f.participantUids.find((x) => x !== monUid);
+    const nom = u ? f.participantNames?.[u] || '' : '';
+    return recherche === '' || nom.toLowerCase().includes(recherche.toLowerCase());
+  }), [fils, recherche, monUid]);
+
   if (loading) {
-    return <main className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 rounded-full border-2 border-t-transparent border-brass animate-spin" />
-    </main>;
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-2 border-t-transparent border-brass animate-spin" />
+      </main>
+    );
   }
-  if (!user && !SHOWCASE_IN_DEV) {
+
+  if (!user && !VITRINE_EN_DEV) {
     return (
       <main className="min-h-screen text-ivory flex items-center justify-center px-6">
         <div className="max-w-md text-center glass-light rounded-lg-card p-8">
-          <h1 className="font-display title-medieval text-2xl text-ivory mb-3">{lang === 'FR' ? 'Messages' : 'Messages'}</h1>
-          <p className="font-editorial text-ivory-soft mb-6">
-            {lang === 'FR' ? 'Connectez-vous pour voir vos conversations.' : 'Sign in to see your conversations.'}
-          </p>
+          <h1 className="font-display title-medieval text-2xl text-ivory mb-3">{t.titre}</h1>
+          <p className="font-editorial text-ivory-soft mb-6">{t.connectezVous}</p>
           <button onClick={openSignIn}
             className="px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-            {lang === 'FR' ? 'Se connecter' : 'Sign in'}
+            {t.seConnecter}
           </button>
         </div>
       </main>
     );
   }
 
-  const filtered = threads.filter((t) => {
-    const otherUidInThread = t.participantUids.find((u) => u !== meUid);
-    const otherName = otherUidInThread ? t.participantNames?.[otherUidInThread] || '' : '';
-    return search === '' || otherName.toLowerCase().includes(search.toLowerCase());
-  });
+  const nomAutre = (autre?.nom || '').trim() || t.sansNom;
+  const reste = LONGUEUR_MAX - brouillon.length;
 
   return (
     <>
-      <SEO title={lang === 'FR' ? 'Messages' : 'Messages'} noindex />
+      <SEO title={t.titre} noindex />
       <div className="min-h-screen text-ivory pt-20 pb-10">
         <div className="max-w-screen-xl mx-auto px-3 md:px-6">
           <div className="flex items-center gap-3 mb-4">
-            <Link to={addLocale('/communaute', lang)}
+            <Link to={addLocale('/ordre', lang)}
               className="inline-flex items-center gap-1.5 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass transition">
-              <ArrowLeft size={12} /> {lang === 'FR' ? 'Communauté' : 'Community'}
+              <ArrowLeft size={12} /> {t.registre}
             </Link>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-4 h-[calc(100vh-10rem)] min-h-[36rem]">
-            {/* ── Inbox sidebar ── */}
-            <aside className={`lg:col-span-4 ${otherUid ? 'hidden lg:flex' : 'flex'} flex-col rounded-card border border-ivory-soft/15 bg-midnight overflow-hidden`}>
-              <div className="px-4 py-3">
-                <h2 className="font-display title-medieval text-sm text-ivory mb-2 flex items-center gap-2">
-                  <MessageCircle size={14} className="text-brass" /> {lang === 'FR' ? 'Conversations' : 'Conversations'}
-                </h2>
+            {/* ── La liste des conversations ── */}
+            <aside className={`lg:col-span-4 ${autreUid ? 'hidden lg:flex' : 'flex'} flex-col rounded-lg-card border border-brass/25 overflow-hidden`}
+                   style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+              <div className="px-4 py-3.5">
+                <h1 className="font-display title-medieval text-sm text-ivory mb-2.5 flex items-center gap-2">
+                  <MessageCircle size={14} className="text-brass" /> {t.conversations}
+                </h1>
                 <div className="relative">
-                  <Search size={11} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone" />
-                  <input value={search} onChange={(e) => setSearch(e.target.value)}
-                    placeholder={lang === 'FR' ? 'Rechercher…' : 'Search…'}
-                    className="w-full pl-8 pr-3 py-1.5 /40 border rounded-card text-xs font-sans text-ivory placeholder:text-stone focus:border-brass focus:outline-none" />
+                  <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ivory-soft/45" />
+                  <label htmlFor="chercher-fil" className="sr-only">{t.chercher}</label>
+                  <input id="chercher-fil" value={recherche} onChange={(e) => setRecherche(e.target.value)}
+                    placeholder={t.chercher}
+                    className="w-full pl-8 pr-3 py-2 rounded-card text-xs font-sans text-ivory placeholder:text-ivory-soft/40 focus:outline-none focus:border-brass/60 transition-colors"
+                    style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto">
-                {filtered.length === 0 ? (
-                  <div className="p-6 text-center text-ivory-soft/60">
-                    <UserCircle2 size={28} className="mx-auto mb-2 opacity-50" />
-                    <p className="font-editorial italic text-xs">
-                      {lang === 'FR' ? 'Aucune conversation. Allez sur un profil pour démarrer.' : 'No conversations yet. Go to a profile to start one.'}
-                    </p>
+                {filtres.length === 0 ? (
+                  <div className="p-8 text-center text-ivory-soft/60">
+                    <UserCircle2 size={28} className="mx-auto mb-3 opacity-40" />
+                    <p className="font-editorial text-[13px] leading-relaxed">{t.aucune}</p>
                   </div>
-                ) : filtered.map((t) => {
-                  const otherU = t.participantUids.find((u) => u !== meUid) || '';
-                  const otherN = t.participantNames?.[otherU] || 'Bénévole';
-                  const otherH = t.participantHues?.[otherU]  ?? hueFor(otherN);
-                  const active = otherU === otherUid;
-                  const unread = (t.unread?.[meUid] || 0) > 0;
+                ) : filtres.map((f) => {
+                  const u = f.participantUids.find((x) => x !== monUid) || '';
+                  const nom = (f.participantNames?.[u] || '').trim() || t.sansNom;
+                  const actif = u === autreUid;
+                  const neuf = (f.unread?.[monUid] || 0) > 0;
                   return (
-                    <button key={t.id} onClick={() => navigate(addLocale(`/messages/${otherU}`, lang))}
-                      className={`w-full flex items-center gap-2.5 px-4 py-3 text-left transition border-b border-ivory-soft/[0.06] ${
-                        active ? 'bg-brass/10' : 'hover:bg-ivory-soft/[0.04]'
-                      }`}>
-                      <Avatar name={otherN} hue={otherH} size={36} />
+                    <button key={f.id} onClick={() => navigate(addLocale(`/messages/${u}`, lang))}
+                      className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors ${
+                        actif ? 'bg-brass/10' : 'hover:bg-ivory-soft/[0.04]'
+                      }`}
+                      style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.06)' }}>
+                      <Portrait nom={nom} url={f.participantPhotos?.[u]}
+                                teinte={f.participantHues?.[u] ?? teinteDe(nom)} taille={40} />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className={`font-display title-medieval text-sm truncate ${active ? 'text-brass' : unread ? 'text-ivory' : 'text-ivory-soft'}`}>{otherN}</p>
-                          {unread && <span className="w-1.5 h-1.5 rounded-full bg-brass shrink-0" />}
+                        <div className="flex items-baseline gap-2">
+                          <p className={`font-display title-medieval text-sm truncate ${actif ? 'text-brass' : neuf ? 'text-ivory' : 'text-ivory-soft'}`}>{nom}</p>
+                          <span className="ml-auto font-sans text-[10px] tabular-nums text-ivory-soft/40 shrink-0">
+                            {quand(f.lastMessageAt, lang)}
+                          </span>
                         </div>
-                        <p className="font-editorial italic text-[11px] text-ivory-soft/60 truncate">
-                          {t.lastSenderUid === meUid ? (lang === 'FR' ? 'Vous : ' : 'You: ') : ''}{t.lastMessage || '…'}
+                        <p className="font-editorial text-[12px] text-ivory-soft/60 truncate mt-0.5">
+                          {f.lastSenderUid === monUid ? t.vousDeuxPoints : ''}{f.lastMessage || '…'}
                         </p>
                       </div>
+                      {neuf && <span aria-label={t.duNeuf} className="w-2 h-2 rounded-full bg-brass shrink-0" />}
                     </button>
                   );
                 })}
               </div>
             </aside>
 
-            {/* ── Thread pane ── */}
-            <section className={`lg:col-span-8 ${otherUid ? 'flex' : 'hidden lg:flex'} flex-col rounded-card border border-ivory-soft/15 bg-midnight overflow-hidden`}>
-              {!otherUid ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center text-ivory-soft/60 px-6">
-                  <MessageCircle size={36} className="opacity-40 mb-3" />
-                  <p className="font-editorial italic text-sm">
-                    {lang === 'FR'
-                      ? 'Sélectionnez une conversation, ou démarrez-en une depuis un profil bénévole.'
-                      : 'Pick a conversation, or start one from a volunteer profile.'}
-                  </p>
+            {/* ── La conversation ── */}
+            <section className={`lg:col-span-8 ${autreUid ? 'flex' : 'hidden lg:flex'} flex-col rounded-lg-card border border-brass/25 overflow-hidden`}
+                     style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+              {!autreUid ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-ivory-soft/60 px-8">
+                  <MessageCircle size={36} className="opacity-30 mb-4" />
+                  <p className="font-editorial text-sm leading-relaxed max-w-sm">{t.choisissez}</p>
                 </div>
               ) : (
                 <>
-                  {/* Thread header */}
-                  <header className="px-4 py-3 flex items-center gap-3">
+                  <header className="px-4 py-3 flex items-center gap-3"
+                          style={{ borderBottom: '1px solid rgba(232, 177, 74, 0.18)' }}>
                     <button onClick={() => navigate(addLocale('/messages', lang))}
-                      className="lg:hidden text-ivory-soft hover:text-brass transition">
-                      <ChevronLeft size={16} />
+                      aria-label={t.retourListe}
+                      className="lg:hidden text-ivory-soft hover:text-brass transition-colors">
+                      <ChevronLeft size={18} />
                     </button>
-                    <Link to={addLocale(`/profil/${otherUid}`, lang)} className="flex items-center gap-2.5 hover:opacity-80 transition flex-1 min-w-0">
-                      <Avatar name={otherProfile?.displayName || 'Bénévole'} hue={otherProfile?.avatarHue ?? hueFor(otherProfile?.displayName || '')} size={34} />
+                    <Link to={`${addLocale('/profil', lang)}/${autreUid}`}
+                          className="flex items-center gap-3 hover:opacity-80 transition flex-1 min-w-0">
+                      <Portrait nom={nomAutre} url={autre?.avatarUrl}
+                                teinte={autre?.avatarHue ?? teinteDe(nomAutre)} taille={38} />
                       <div className="min-w-0">
-                        <p className="font-display title-medieval text-sm text-ivory truncate">{otherProfile?.displayName || 'Bénévole'}</p>
-                        {otherProfile?.pronouns && (
-                          <p className="font-editorial italic text-[10px] text-ivory-soft/60">{otherProfile.pronouns}</p>
+                        <p className="font-display title-medieval text-sm text-ivory truncate">{nomAutre}</p>
+                        {autre?.ville && (
+                          <p className="font-sans text-[10px] text-ivory-soft/50 truncate">{autre.ville}</p>
                         )}
                       </div>
                     </Link>
+                    {user && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button type="button" onClick={rapporter} title={t.signaler} aria-label={t.signaler}
+                          className="p-2 rounded-card text-ivory-soft/50 hover:text-brass transition-colors">
+                          <Flag size={14} />
+                        </button>
+                        <button type="button" onClick={basculerSilence}
+                          title={bloque ? t.debloquer : t.bloquer} aria-label={bloque ? t.debloquer : t.bloquer}
+                          className={`p-2 rounded-card transition-colors ${bloque ? 'text-brass' : 'text-ivory-soft/50 hover:text-brass'}`}>
+                          {bloque ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                        </button>
+                      </div>
+                    )}
                   </header>
 
-                  {/* Thread body */}
-                  <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
+                  <div ref={zoneRef} className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-3" aria-live="polite">
                     {msgs.length === 0 ? (
-                      <div className="text-center pt-12 text-ivory-soft/50">
-                        <p className="font-editorial italic text-sm">
-                          {lang === 'FR' ? `Démarrez la conversation avec ${otherProfile?.displayName || 'cette personne'}.` : `Start a conversation with ${otherProfile?.displayName || 'this person'}.`}
-                        </p>
-                      </div>
+                      <p className="text-center pt-16 font-editorial text-sm text-ivory-soft/55">
+                        {t.premierMot(nomAutre)}
+                      </p>
                     ) : (
                       <AnimatePresence initial={false}>
                         {msgs.map((m) => {
-                          const mine = m.senderUid === meUid;
+                          const mien = m.senderUid === monUid;
                           return (
                             <motion.div key={m.id}
-                              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                              className={`flex ${mine ? 'justify-end' : 'justify-start'} gap-2`}>
-                              {!mine && (
-                                <Avatar name={m.senderName} hue={hueFor(m.senderName)} size={26} />
+                              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                              className={`flex ${mien ? 'justify-end' : 'justify-start'} gap-2.5`}>
+                              {!mien && (
+                                <Portrait nom={nomAutre} url={autre?.avatarUrl}
+                                          teinte={autre?.avatarHue ?? teinteDe(nomAutre)} taille={28} />
                               )}
-                              <div className={`max-w-[78%] px-3.5 py-2 text-sm font-sans whitespace-pre-wrap break-words rounded-card ${
-                                mine
+                              <div className={`max-w-[76%] px-4 py-2.5 text-sm font-sans whitespace-pre-wrap break-words rounded-card ${
+                                mien
                                   ? 'bg-brass text-midnight-deep'
                                   : 'bg-ivory-soft/[0.07] text-ivory-soft border border-ivory-soft/10'
                               }`}>
                                 {m.body}
-                                <p className={`font-editorial italic text-[9px] mt-1 ${mine ? 'text-midnight-deep/60' : 'text-ivory-soft/50'}`}>
-                                  {fmtTs(m.createdAt)}
-                                </p>
+                                <span className={`block font-sans text-[9px] tabular-nums mt-1.5 ${mien ? 'text-midnight-deep/55' : 'text-ivory-soft/45'}`}>
+                                  {quand(m.createdAt, lang)}
+                                </span>
                               </div>
                             </motion.div>
                           );
@@ -283,26 +349,53 @@ const MessagesPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Composer */}
-                  <form onSubmit={onSend} className="px-4 py-3 flex items-end gap-2">
-                    <textarea
-                      rows={1}
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          onSend(e as unknown as React.FormEvent);
-                        }
-                      }}
-                      placeholder={lang === 'FR' ? 'Écrire un message… (Entrée pour envoyer)' : 'Type a message… (Enter to send)'}
-                      className="flex-1 /50 border px-3 py-2 text-sm font-sans text-ivory placeholder:text-stone focus:border-brass focus:outline-none rounded-card resize-none max-h-32"
-                    />
-                    <button type="submit" disabled={sending || !draft.trim()}
-                      className="inline-flex items-center justify-center w-10 h-10 bg-brass text-midnight-deep font-sans rounded-card hover:bg-brass-soft transition disabled:opacity-40 disabled:cursor-not-allowed">
-                      <Send size={14} />
-                    </button>
-                  </form>
+                  {avis && (
+                    <p role="status" className="px-4 md:px-6 py-2 font-sans text-[11px] text-brass/90"
+                       style={{ borderTop: '1px solid rgba(244, 239, 227, 0.08)' }}>
+                      {avis}
+                    </p>
+                  )}
+
+                  {bloque ? (
+                    <div className="px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3"
+                         style={{ borderTop: '1px solid rgba(232, 177, 74, 0.18)' }}>
+                      <p className="font-editorial text-sm text-ivory-soft/70">{t.silenceEnCours(nomAutre)}</p>
+                      <button type="button" onClick={basculerSilence}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-card border border-brass/40 font-sans uppercase tracking-[0.16em] text-[10px] text-ivory hover:bg-brass/15 transition-colors">
+                        <Volume2 size={12} /> {t.debloquer}
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={envoyer} className="px-4 md:px-6 py-4 flex items-end gap-3"
+                          style={{ borderTop: '1px solid rgba(232, 177, 74, 0.18)' }}>
+                      <label htmlFor="mot-prive" className="sr-only">{t.champ}</label>
+                      <textarea
+                        id="mot-prive"
+                        rows={1}
+                        value={brouillon}
+                        maxLength={LONGUEUR_MAX}
+                        onChange={(e) => { setBrouillon(e.target.value); if (avis) setAvis(''); }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            void envoyer(e as unknown as React.FormEvent);
+                          }
+                        }}
+                        placeholder={t.champ}
+                        className="flex-1 px-4 py-2.5 rounded-card text-sm font-sans text-ivory placeholder:text-ivory-soft/40 resize-none max-h-36 focus:outline-none focus:border-brass/60 transition-colors"
+                        style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+                      />
+                      <div className="flex flex-col items-end gap-1.5">
+                        {reste < 200 && (
+                          <span aria-live="polite" className="font-sans text-[10px] tabular-nums text-ivory-soft/50">{reste}</span>
+                        )}
+                        <button type="submit" disabled={envoi || !brouillon.trim()} aria-label={t.envoyer}
+                          className="inline-flex items-center justify-center w-11 h-11 bg-brass text-midnight-deep rounded-card hover:bg-brass-soft transition-colors disabled:opacity-35 disabled:cursor-not-allowed">
+                          <Send size={15} />
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </>
               )}
             </section>
@@ -313,34 +406,96 @@ const MessagesPage: React.FC = () => {
   );
 };
 
-const Avatar: React.FC<{ name: string; hue: number; size?: number }> = ({ name, hue, size = 36 }) => {
-  const init = (() => {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '?';
-    if (parts.length === 1) return parts[0][0].toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  })();
-  return (
-    <div className="rounded-full flex items-center justify-center font-display title-medieval shrink-0"
-      style={{
-        width: size, height: size,
-        backgroundColor: `hsl(${hue} 30% 22%)`,
-        color: `hsl(${hue} 60% 70%)`,
-        fontSize: size * 0.4,
-      }}>
-      {init}
-    </div>
-  );
+// ── Le portrait : la photo si elle existe, l'initiale sinon ─────────
+const Portrait: React.FC<{ nom: string; url?: string; teinte: number; taille?: number }> = ({
+  nom, url, teinte, taille = 40,
+}) => (
+  <div className="rounded-full overflow-hidden shrink-0 border border-brass/25 flex items-center justify-center"
+       style={{ width: taille, height: taille, background: `hsl(${teinte} 40% 20%)` }}>
+    {url
+      ? <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
+      : <span className="font-display title-medieval text-ivory/75" style={{ fontSize: taille * 0.4 }}>
+          {initiales(nom)}
+        </span>}
+  </div>
+);
+
+function initiales(nom: string): string {
+  const bouts = nom.trim().split(/\s+/).filter(Boolean);
+  if (bouts.length === 0) return '?';
+  if (bouts.length === 1) return bouts[0][0].toUpperCase();
+  return (bouts[0][0] + bouts[bouts.length - 1][0]).toUpperCase();
+}
+
+function teinteDe(graine: string): number {
+  let h = 0;
+  for (let i = 0; i < graine.length; i++) h = (h * 31 + graine.charCodeAt(i)) >>> 0;
+  return h % 360;
+}
+
+function quand(v: unknown, lang: 'FR' | 'EN'): string {
+  const h = v as { toDate?: () => Date } | null;
+  const d = h?.toDate ? h.toDate() : null;
+  if (!d) return '';
+  const loc = lang === 'FR' ? 'fr-CA' : 'en-CA';
+  const memeJour = d.toDateString() === new Date().toDateString();
+  return memeJour
+    ? d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
+    : d.toLocaleDateString(loc, { month: 'short', day: 'numeric' });
+}
+
+const FR = {
+  titre: 'Messages',
+  registre: 'Le registre',
+  conversations: 'Vos conversations',
+  chercher: 'Chercher quelqu’un',
+  aucune: 'Aucune conversation pour l’instant. Ouvrez la fiche d’un membre et écrivez-lui.',
+  choisissez: 'Choisissez une conversation, ou ouvrez la fiche de quelqu’un dans le registre pour lui écrire.',
+  connectezVous: 'Connectez-vous pour retrouver vos conversations.',
+  seConnecter: 'Se connecter',
+  champ: 'Écrire un message',
+  envoyer: 'Envoyer',
+  retourListe: 'Revenir à la liste',
+  duNeuf: 'Des messages non lus',
+  vousDeuxPoints: 'Vous : ',
+  premierMot: (nom: string) => `Vous n’avez encore rien échangé avec ${nom}. Le premier mot vous revient.`,
+  signaler: 'Signaler cette conversation à l’équipe',
+  bloquer: 'Ne plus recevoir ses messages',
+  debloquer: 'Recevoir à nouveau ses messages',
+  signale: 'Signalé. L’équipe va regarder.',
+  bloque: 'Cette personne ne peut plus vous écrire.',
+  debloque: 'Cette personne peut vous écrire à nouveau.',
+  silenceEnCours: (nom: string) => `Vous avez fait taire ${nom}. Ses messages ne vous parviennent plus.`,
+  tropVite: 'Laissez passer un instant avant le prochain message.',
+  echec: 'Le message n’est pas passé. Réessayez dans un moment.',
+  sansNom: 'Un membre',
 };
 
-function fmtTs(ts: any): string {
-  if (!ts) return '…';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
-  const today = new Date();
-  const sameDay = d.toDateString() === today.toDateString();
-  return sameDay
-    ? d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })
-    : d.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
+const EN: typeof FR = {
+  titre: 'Messages',
+  registre: 'The roll',
+  conversations: 'Your conversations',
+  chercher: 'Look someone up',
+  aucune: 'No conversations yet. Open a member’s card and write to them.',
+  choisissez: 'Pick a conversation, or open someone’s card on the roll to write to them.',
+  connectezVous: 'Sign in to find your conversations.',
+  seConnecter: 'Sign in',
+  champ: 'Write a message',
+  envoyer: 'Send',
+  retourListe: 'Back to the list',
+  duNeuf: 'Unread messages',
+  vousDeuxPoints: 'You: ',
+  premierMot: (nom: string) => `You have not exchanged anything with ${nom} yet. The first word is yours.`,
+  signaler: 'Report this conversation to the team',
+  bloquer: 'Stop receiving their messages',
+  debloquer: 'Receive their messages again',
+  signale: 'Reported. The team will look at it.',
+  bloque: 'This person can no longer write to you.',
+  debloque: 'This person can write to you again.',
+  silenceEnCours: (nom: string) => `You have muted ${nom}. Their messages no longer reach you.`,
+  tropVite: 'Let a moment pass before your next message.',
+  echec: 'The message did not go through. Try again in a moment.',
+  sansNom: 'A member',
+};
 
 export default MessagesPage;
