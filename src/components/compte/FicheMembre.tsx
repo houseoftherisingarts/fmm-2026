@@ -510,7 +510,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <MaFiche lang={lang} />
                   {/* Le dé de la vie reste dans l'espace de la personne :
                       il n'a rien à faire sur la fiche d'un autre. */}
-                  <DeDeLaVie lang={lang} />
+                  <Suspense fallback={null}>
+                    <DeDeLaVie lang={lang} />
+                  </Suspense>
                 </div>
 
                 <div className="lg:col-span-7 space-y-6 md:space-y-8">
