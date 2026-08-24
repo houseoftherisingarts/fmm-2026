@@ -9,7 +9,7 @@
 // jetons du design system (--color-bone, --color-brass, etc).
 
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import CreditJeux from '../../components/jeux/CreditJeux';
+import CadreJeu from '../../components/jeux/CadreJeu';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2, Scroll, X } from 'lucide-react';
@@ -17,8 +17,6 @@ import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX,
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
-import PageHeader from '../../components/layout/PageHeader';
-import { Reveal, Stagger, StaggerItem } from '../../components/scroll';
 import {
   applyMove,
   CELL,
@@ -123,6 +121,8 @@ interface GameStrings {
   shopSoon:     string;
   pleinEcran:        string;
   quitterPleinEcran: string;
+  afficherRegles:    string;
+  cacherRegles:      string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -190,6 +190,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopSoon: 'Bientôt',
     pleinEcran: 'Plein écran',
     quitterPleinEcran: 'Quitter le plein écran',
+    afficherRegles: 'Afficher les règles',
+    cacherRegles: 'Cacher les règles',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -255,6 +257,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopSoon: 'Coming soon',
     pleinEcran: 'Fullscreen',
     quitterPleinEcran: 'Exit fullscreen',
+    afficherRegles: 'Show the rules',
+    cacherRegles: 'Hide the rules',
   },
 };
 
@@ -1047,6 +1051,9 @@ const HnefataflPage: React.FC = () => {
   const [pleinEcran, setPleinEcran] = useState(false);
   // Le panneau des amis s'ouvre par-dessus la table, sans la rétrécir.
   const [amisOuverts, setAmisOuverts] = useState(false);
+  // Les trois choses à savoir et la signature de l'atelier vivent dans
+  // un panneau posé sur la table, plus dans une section sous la page.
+  const [reglesOuvertes, setReglesOuvertes] = useState(false);
   const [config, setConfig] = useState<GameConfig>({
     mode: 'two-player',
     humanSide: 'defender',
