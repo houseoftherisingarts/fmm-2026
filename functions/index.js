@@ -697,6 +697,131 @@ async function lireDesabonnes() {
   return new Set(snap.docs.map((d) => normaliserCourriel(d.id)));
 }
 
+/**
+ * Le transport Zoho, ouvert de la même façon pour les deux chemins :
+ * l'envoi immédiat lancé depuis la page d'admin, et la minuterie des
+ * campagnes programmées. Une seule définition du rythme, donc, et pas
+ * deux réglages qui se mettent à diverger.
+ */
+function ouvrirTransport(motDePasse) {
+  return nodemailer.createTransport({
+    host: ZOHO_SMTP_HOST,
+    port: 465,
+    secure: true,
+    auth: { user: ZOHO_EMAIL, pass: motDePasse },
+    // Le rythme : deux connexions, cinquante messages par connexion
+    // avant renouvellement, quatre messages par seconde au plus.
+    pool: true,
+    maxConnections: 2,
+    maxMessages: 50,
+    rateDelta: 1000,
+    rateLimit: 4,
+  });
+}
+
+/**
+ * Les garde-fous de la lettre, au même endroit pour les deux chemins.
+ *
+ * Celui qui compte le plus est le dernier : une campagne sans lien de
+ * désabonnement est illégale au Canada (LCAP) et fait basculer le
+ * domaine du festival en pourriel chez Gmail. Une campagne programmée
+ * est écrite dans Firestore par le navigateur, alors elle repasse ici
+ * au moment de partir, des semaines plus tard. Ce qui vient du
+ * navigateur se revérifie toujours, même quand c'est l'équipe qui l'a
+ * écrit.
+ *
+ * @returns la lettre taillée, ou `{ erreur }` avec la phrase à montrer.
+ */
+function verifierLettre(d) {
+  const sujet = String((d && d.sujet) || '').trim().slice(0, SUJET_MAX);
+  const html = String((d && d.html) || '');
+  const texte = String((d && d.texte) || '');
+
+  if (!sujet) return { erreur: 'La lettre n\u2019a pas d\u2019objet.' };
+  if (!html || !texte) return { erreur: 'La lettre est vide.' };
+  if (html.length > CORPS_MAX || texte.length > CORPS_MAX) {
+    return { erreur: 'La lettre dépasse la taille permise.' };
+  }
+  if (!html.includes(JETON_DESABONNEMENT) || !texte.includes(JETON_DESABONNEMENT)) {
+    return { erreur: 'La lettre n\u2019a pas de lien de désabonnement.' };
+  }
+  return { sujet, html, texte };
+}
+
+/**
+ * La boucle d'envoi, partagée par l'envoi immédiat et par la minuterie.
+ *
+ * Chacun reçoit sa lettre : un `sendMail` par personne, une seule
+ * adresse dans le champ `to`, jamais de copie conforme ni de copie
+ * invisible.
+ *
+ * `avancer` est rappelée après chaque lot. C'est par là que la trace
+ * de l'historique monte à l'écran, et c'est aussi par là que la
+ * campagne programmée retient où elle est rendue.
+ *
+ * ponytail: le curseur de reprise (`derniere`) s'écrit une fois le lot
+ * fini, pas courriel par courriel. Une exécution qui meurt entre le
+ * dernier envoi d'un lot et l'écriture du curseur peut donc faire
+ * repartir jusqu'à vingt courriels au tour suivant. Le prix à payer
+ * pour l'éviter serait une écriture Firestore par destinataire, et
+ * vingt doublons valent mieux que quinze cents.
+ */
+async function expedierLettre({ transport, cle, sujet, html, texte, vises, avancer }) {
+  let envoyes = 0;
+  let echecs = 0;
+  let derniere = '';
+  const adressesEchouees = [];
+
+  for (let i = 0; i < vises.length; i += LOT_CAMPAGNE) {
+    const lot = vises.slice(i, i + LOT_CAMPAGNE);
+    const resultats = await Promise.allSettled(
+      lot.map((personne) => {
+        const lien = lienDesabonnement(personne.courriel, cle);
+        // Un seul passage d'incorporation par personne. La lettre est
+        // personnalisée d'abord, puis ses images sont jointes.
+        const corps = incorporerImages(personnaliser(html, personne.nom, lien, true));
+        return transport.sendMail({
+          from: FROM,
+          to: personne.courriel,
+          subject: sujet,
+          text: personnaliser(texte, personne.nom, lien, false),
+          html: corps.html,
+          attachments: corps.pieces,
+          headers: {
+            // Le désabonnement d'un seul geste, depuis le bandeau du
+            // client de courriel. Gmail l'exige des expéditeurs en
+            // nombre depuis 2024, et son absence coûte cher en
+            // délivrabilité.
+            'List-Unsubscribe': `<${lien}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
+        });
+      }),
+    );
+
+    for (let k = 0; k < resultats.length; k += 1) {
+      if (resultats[k].status === 'fulfilled') {
+        envoyes += 1;
+      } else {
+        echecs += 1;
+        if (adressesEchouees.length < 25) {
+          adressesEchouees.push({
+            courriel: lot[k].courriel,
+            raison: String(
+              (resultats[k].reason && resultats[k].reason.message) || resultats[k].reason,
+            ).slice(0, 200),
+          });
+        }
+      }
+    }
+
+    derniere = lot[lot.length - 1].courriel;
+    if (avancer) await avancer({ envoyes, echecs, derniere, adressesEchouees });
+  }
+
+  return { envoyes, echecs, adressesEchouees, derniere };
+}
+
 exports.envoyerCampagne = onCall(
   {
     region: 'us-central1',
@@ -715,41 +840,13 @@ exports.envoyerCampagne = onCall(
     }
 
     const d = requete.data || {};
-    const sujet = String(d.sujet || '').trim().slice(0, SUJET_MAX);
-    const html = String(d.html || '');
-    const texte = String(d.texte || '');
-
-    if (!sujet) throw new HttpsError('invalid-argument', 'La lettre n’a pas d’objet.');
-    if (!html || !texte) throw new HttpsError('invalid-argument', 'La lettre est vide.');
-    if (html.length > CORPS_MAX || texte.length > CORPS_MAX) {
-      throw new HttpsError('invalid-argument', 'La lettre dépasse la taille permise.');
-    }
-    // Le garde-fou qui compte le plus : une campagne sans lien de
-    // désabonnement est illégale au Canada (LCAP) et fait basculer le
-    // domaine du festival en pourriel chez Gmail. Rien ne part sans lui,
-    // dans les deux versions de la lettre.
-    if (!html.includes(JETON_DESABONNEMENT) || !texte.includes(JETON_DESABONNEMENT)) {
-      throw new HttpsError(
-        'invalid-argument',
-        'La lettre n’a pas de lien de désabonnement.',
-      );
-    }
+    const lettre = verifierLettre(d);
+    if (lettre.erreur) throw new HttpsError('invalid-argument', lettre.erreur);
+    const { sujet, html, texte } = lettre;
 
     const cle = CAMPAGNE_CLE.value();
 
-    const transport = nodemailer.createTransport({
-      host: ZOHO_SMTP_HOST,
-      port: 465,
-      secure: true,
-      auth: { user: ZOHO_EMAIL, pass: ZOHO_APP_PASSWORD.value() },
-      // Le rythme : deux connexions, cinquante messages par connexion
-      // avant renouvellement, quatre messages par seconde au plus.
-      pool: true,
-      maxConnections: 2,
-      maxMessages: 50,
-      rateDelta: 1000,
-      rateLimit: 4,
-    });
+    const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value());
 
     // ── L'exemplaire d'essai ──
     // Il part à l'adresse de la personne qui appelle, jamais à une
@@ -837,70 +934,40 @@ exports.envoyerCampagne = onCall(
       envoyeLe: FieldValue.serverTimestamp(),
     });
 
-    let envoyes = 0;
-    let echecs = 0;
-    const adressesEchouees = [];
+    // L'état vit ici pour que le bloc de rattrapage sache combien de
+    // courriels étaient partis avant l'interruption. `avancer` le
+    // remplit à chaque lot, en même temps qu'il fait monter la barre
+    // d'avancement à l'écran.
+    const etat = { envoyes: 0, echecs: 0, adressesEchouees: [] };
 
     try {
-      for (let i = 0; i < vises.length; i += LOT_CAMPAGNE) {
-        const lot = vises.slice(i, i + LOT_CAMPAGNE);
-        const resultats = await Promise.allSettled(
-          lot.map((personne) => {
-            const lien = lienDesabonnement(personne.courriel, cle);
-            return transport.sendMail({
-              from: FROM,
-              // Une seule adresse, celle de la personne. Jamais de cc,
-              // jamais de bcc, jamais de liste.
-              to: personne.courriel,
-              subject: sujet,
-              text: personnaliser(texte, personne.nom, lien, false),
-              html: incorporerImages(personnaliser(html, personne.nom, lien, true)).html,
-              attachments: incorporerImages(personnaliser(html, personne.nom, lien, true)).pieces,
-              headers: {
-                // Le désabonnement d'un seul geste, depuis le bandeau
-                // du client de courriel. Gmail l'exige des expéditeurs
-                // en nombre depuis 2024, et son absence coûte cher en
-                // délivrabilité.
-                'List-Unsubscribe': `<${lien}>`,
-                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-              },
-            });
-          }),
-        );
-
-        for (let k = 0; k < resultats.length; k += 1) {
-          if (resultats[k].status === 'fulfilled') {
-            envoyes += 1;
-          } else {
-            echecs += 1;
-            if (adressesEchouees.length < 25) {
-              adressesEchouees.push({
-                courriel: lot[k].courriel,
-                raison: String(
-                  (resultats[k].reason && resultats[k].reason.message) || resultats[k].reason,
-                ).slice(0, 200),
-              });
-            }
-          }
-        }
-
-        // L'avancement, lot par lot : la page le lit en direct.
-        await trace.update({ envoyes, echecs });
-      }
+      await expedierLettre({
+        transport, cle, sujet, html, texte, vises,
+        avancer: async (a) => {
+          etat.envoyes = a.envoyes;
+          etat.echecs = a.echecs;
+          etat.adressesEchouees = a.adressesEchouees;
+          // L'avancement, lot par lot : la page le lit en direct.
+          await trace.update({ envoyes: a.envoyes, echecs: a.echecs });
+        },
+      });
     } catch (err) {
-      logger.error('[campagne] envoi interrompu', { campagne: trace.id, envoyes, echecs, err });
+      logger.error('[campagne] envoi interrompu', {
+        campagne: trace.id, envoyes: etat.envoyes, echecs: etat.echecs, err,
+      });
       await trace.update({
         statut: 'échoué',
-        envoyes,
-        echecs,
-        adressesEchouees,
+        envoyes: etat.envoyes,
+        echecs: etat.echecs,
+        adressesEchouees: etat.adressesEchouees,
         erreur: String((err && err.message) || err),
       });
-      throw new HttpsError('internal', `L’envoi s’est arrêté après ${envoyes} courriels.`);
+      throw new HttpsError('internal', `L\u2019envoi s\u2019est arrêté après ${etat.envoyes} courriels.`);
     } finally {
       transport.close();
     }
 
+    const { envoyes, echecs, adressesEchouees } = etat;
     await trace.update({ statut: 'terminé', envoyes, echecs, adressesEchouees });
     logger.info('[campagne] terminée', {
       campagne: trace.id, modele: d.modele, envoyes, echecs, retires,
@@ -914,6 +981,326 @@ exports.envoyerCampagne = onCall(
     };
   },
 );
+
+// ─── La minuterie des campagnes ──────────────────────────────────────
+// Alex, 2026-08-24 : « Tu peux les programmer à être envoyées. » Les
+// dix infolettres doivent pouvoir partir à des dates choisies d'avance,
+// sans que personne soit devant l'écran au bon moment.
+//
+// LE CHEMIN COMPLET.
+//   1. Depuis la page d'admin, quelqu'un choisit la lettre, la portée
+//      et le moment. Le navigateur écrit un document dans
+//      `campagnesProgrammees`, avec l'instant d'envoi calculé à
+//      l'heure de Montréal (voir src/lib/heureMontreal.ts).
+//   2. Toutes les quinze minutes, cette fonction regarde les campagnes
+//      qui attendent.
+//   3. Celle dont l'heure est venue passe à « en cours » DANS UNE
+//      TRANSACTION, avant le premier courriel.
+//   4. La liste des destinataires se résout à ce moment-là, jamais au
+//      moment de la programmation.
+//   5. L'envoi passe par `expedierLettre`, exactement le même code que
+//      l'envoi immédiat, et laisse la même trace dans `campagnes`.
+//
+// LE DOUBLE ENVOI, la faute qu'on ne rattrape pas. Deux exécutions
+// peuvent se chevaucher : Cloud Scheduler ne promet pas qu'un tour
+// finisse avant que le suivant commence, et une infolettre reçue en
+// double par trois cents personnes coûte des désabonnements et de la
+// réputation d'expéditeur. La transaction est le verrou : elle relit
+// l'état, refuse si la campagne n'est plus « prévue », et écrit
+// « en cours » dans le même geste. Firestore rejoue la transaction
+// quand deux exécutions se disputent le document, et la perdante relit
+// « en cours » et s'en va.
+//
+// L'INTERRUPTION. Une exécution meurt à 540 secondes, et Cloud Run peut
+// la couper avant. La campagne retient alors la dernière adresse
+// traitée, dans `reprisA`. Comme la liste est toujours triée par
+// adresse, le tour suivant écarte tout ce qui vient avant elle et
+// reprend la suite. Rien ne recommence du début.
+//
+// ponytail: une campagne par tour. À quatre courriels par seconde, les
+// quinze cents adresses du plafond prennent un peu plus de six minutes,
+// et la fonction meurt à neuf. Deux campagnes dans le même tour la
+// feraient mourir à mi-course. La deuxième part au tour suivant, quinze
+// minutes plus tard, et personne ne s'en aperçoit.
+
+const { onSchedule } = require('firebase-functions/v2/scheduler');
+const prog = require('./programmation');
+
+const CAMPAGNES_PROGRAMMEES = 'campagnesProgrammees';
+
+/** L'édition en cours, celle qui définit « n'a rien acheté cette
+ *  année ». Le jumeau vit dans src/firebase/campagnes.ts. */
+const ANNEE_COURANTE = 2026;
+
+/** Combien de fois une campagne se reprend toute seule avant d'être
+ *  laissée à Alex. Trois tours ratés veulent dire que le problème n'est
+ *  pas passager, et continuer à cogner sur Zoho ferait plus de mal que
+ *  de bien. */
+const MAX_TENTATIVES = 3;
+
+/** Les destinataires d'une campagne programmée, résolus au moment de
+ *  l'envoi. Le registre et les comptes se relisent à chaque fois : une
+ *  lettre écrite il y a trois semaines doit toucher les gens inscrits
+ *  entre les deux. */
+async function destinatairesProgrammes(portee) {
+  const [snapClients, snapComptes] = await Promise.all([
+    db.collection('clients').limit(PLAFOND_REGISTRE).get(),
+    portee && portee.sansCompte
+      ? db.collection('users').limit(PLAFOND_REGISTRE).get()
+      : Promise.resolve({ docs: [] }),
+  ]);
+
+  const clients = snapClients.docs.map((doc) => doc.data());
+  const comptes = new Set();
+  for (const doc of snapComptes.docs) {
+    const adresse = normaliserCourriel((doc.data() || {}).email);
+    if (adresse) comptes.add(adresse);
+  }
+
+  return prog.destinatairesDuFiltre(clients, comptes, portee, ANNEE_COURANTE);
+}
+
+exports.minuterieCampagnes = onSchedule(
+  {
+    region: 'us-central1',
+    schedule: 'every 15 minutes',
+    // Le festival vit à l'heure de Montréal. Le rythme de quinze
+    // minutes s'en moque, mais le fuseau est écrit ici pour que le
+    // journal de Cloud Scheduler parle la même heure que la page
+    // d'admin et que les documents de `campagnesProgrammees`.
+    timeZone: prog.FUSEAU_FESTIVAL,
+    secrets: [ZOHO_APP_PASSWORD, CAMPAGNE_CLE],
+    memory: '512MiB',
+    timeoutSeconds: 540,
+    // Aucune reprise automatique par Cloud Scheduler : la reprise est
+    // gérée ici, avec son curseur, et une deuxième exécution lancée par
+    // la plateforme irait se cogner au verrou pour rien.
+    retryCount: 0,
+  },
+  async () => {
+    // Les campagnes qui attendent quelque chose. Une seule condition,
+    // sur un seul champ, donc aucun index composite à tenir : les
+    // documents dans ces deux états se comptent sur les doigts, et
+    // l'heure se juge ensuite, dans `estAPrendre`.
+    const attente = await db
+      .collection(CAMPAGNES_PROGRAMMEES)
+      .where('statut', 'in', ['prevue', 'en cours'])
+      .limit(25)
+      .get();
+
+    if (attente.empty) return;
+
+    // La plus vieille d'abord : une campagne dont l'heure est passée
+    // depuis longtemps ne doit pas se faire doubler par une autre.
+    const candidates = attente.docs.sort(
+      (a, b) => (prog.enMillis(a.get('envoiPrevuLe')) || 0) - (prog.enMillis(b.get('envoiPrevuLe')) || 0),
+    );
+
+    for (const candidate of candidates) {
+      const ref = candidate.ref;
+
+      // ── Le verrou ──
+      // Relire et écrire dans le même geste. C'est le seul endroit qui
+      // décide qu'une campagne part, et il ne peut pas dire oui deux
+      // fois pour le même document.
+      const verdict = await db.runTransaction(async (tx) => {
+        const frais = await tx.get(ref);
+        const decision = prog.estAPrendre(frais.data(), Date.now(), prog.VERROU_MS);
+        if (!decision.prendre) return decision;
+        tx.update(ref, {
+          statut: 'en cours',
+          demarreeLe: FieldValue.serverTimestamp(),
+          tentatives: FieldValue.increment(1),
+        });
+        return decision;
+      });
+
+      if (!verdict.prendre) continue;
+
+      const d = candidate.data() || {};
+      const tentatives = Number(d.tentatives || 0) + 1;
+      logger.info('[minuterie] campagne prise', {
+        campagne: ref.id, raison: verdict.raison, tentatives, reprisA: verdict.reprisA,
+      });
+
+      try {
+        await envoyerCampagneProgrammee(ref, d, verdict);
+      } catch (err) {
+        // Deux tours de rattrapage, puis la campagne est laissée à
+        // Alex. `demarreeLe` retombe à zéro pour que le verrou soit
+        // libre tout de suite plutôt que dans vingt minutes.
+        const abandonne = tentatives >= MAX_TENTATIVES;
+        logger.error('[minuterie] envoi interrompu', {
+          campagne: ref.id, tentatives, abandonne, err,
+        });
+        await ref.update({
+          statut: abandonne ? 'echouee' : 'en cours',
+          demarreeLe: null,
+          erreur: String((err && err.message) || err).slice(0, 500),
+        });
+      }
+
+      // Une seule campagne par tour. La suivante part dans quinze
+      // minutes, et la fonction ne risque pas de mourir à mi-course.
+      return;
+    }
+  },
+);
+
+/**
+ * L'envoi d'une campagne programmée, une fois le verrou pris.
+ *
+ * Séparée de la minuterie pour que le rattrapage d'erreur reste lisible
+ * là-haut : tout ce qui lève ici retombe dans le `catch` du tour.
+ */
+async function envoyerCampagneProgrammee(ref, d, verdict) {
+  // La lettre a été écrite dans Firestore par le navigateur, il y a
+  // peut-être des semaines. Elle repasse les mêmes garde-fous que
+  // l'envoi immédiat, le lien de désabonnement en tête.
+  const lettre = verifierLettre(d);
+  if (lettre.erreur) {
+    await ref.update({
+      statut: 'echouee',
+      erreur: lettre.erreur,
+      termineeLe: FieldValue.serverTimestamp(),
+    });
+    logger.warn('[minuterie] lettre refusée', { campagne: ref.id, raison: lettre.erreur });
+    return;
+  }
+
+  const cle = CAMPAGNE_CLE.value();
+  const portee = d.portee || {};
+
+  // ── Les destinataires, résolus maintenant ──
+  const tous = await destinatairesProgrammes(portee);
+
+  const desabonnes = await lireDesabonnes();
+  const complets = [];
+  let retires = 0;
+  let invalides = 0;
+  for (const personne of tous) {
+    if (!COURRIEL_VALIDE.test(personne.courriel)) { invalides += 1; continue; }
+    if (desabonnes.has(personne.courriel)) { retires += 1; continue; }
+    complets.push(personne);
+  }
+
+  if (complets.length > PLAFOND_CAMPAGNE) {
+    await ref.update({
+      statut: 'echouee',
+      erreur: `La portée retient ${complets.length} adresses, au-delà du plafond de ${PLAFOND_CAMPAGNE}.`,
+      termineeLe: FieldValue.serverTimestamp(),
+    });
+    logger.warn('[minuterie] portée trop large', { campagne: ref.id, nombre: complets.length });
+    return;
+  }
+
+  // Ce qui reste à faire après une interruption. La liste est triée par
+  // adresse, alors tout ce qui vient avant le curseur est déjà parti.
+  const vises = prog.resteAFaire(complets, verdict.reprisA);
+
+  if (!vises.length) {
+    await ref.update({
+      statut: 'envoyee',
+      termineeLe: FieldValue.serverTimestamp(),
+      resultat: {
+        destinataires: complets.length,
+        envoyes: Number(d.faits || 0),
+        echecs: 0,
+        desabonnesIgnores: retires,
+        adressesInvalides: invalides,
+      },
+    });
+    logger.info('[minuterie] rien à envoyer', { campagne: ref.id, retires, invalides });
+    return;
+  }
+
+  // ── La trace dans l'historique ──
+  // Une campagne programmée laisse exactement la même trace qu'un envoi
+  // lancé à la main, et paraît donc dans la même liste, à la même
+  // place. Une reprise réécrit la trace ouverte au premier tour plutôt
+  // que d'en ouvrir une deuxième.
+  const trace = d.campagneId
+    ? db.collection(CAMPAGNES).doc(d.campagneId)
+    : db.collection(CAMPAGNES).doc();
+
+  await trace.set({
+    parUid: String(d.parUid || ''),
+    parNom: String(d.parNom || 'Équipe'),
+    parCourriel: String(d.parCourriel || ''),
+    modele: String(d.modele || 'inconnu').slice(0, 60),
+    modeleNom: String(d.modeleNom || '').slice(0, 120),
+    langue: d.langue === 'EN' ? 'EN' : 'FR',
+    cible: `${String(d.cible || 'Sans portée nommée').slice(0, 180)} (programmée)`,
+    sujet: lettre.sujet,
+    destinataires: complets.length,
+    envoyes: Number(d.faits || 0),
+    echecs: 0,
+    desabonnesIgnores: retires,
+    adressesInvalides: invalides,
+    statut: 'en cours',
+    programmee: true,
+    envoyeLe: FieldValue.serverTimestamp(),
+  }, { merge: true });
+
+  await ref.update({ campagneId: trace.id });
+
+  const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value());
+  const dejaFaits = Number(d.faits || 0);
+  const etat = { envoyes: 0, echecs: 0, adressesEchouees: [], derniere: verdict.reprisA };
+
+  try {
+    await expedierLettre({
+      transport,
+      cle,
+      sujet: lettre.sujet,
+      html: lettre.html,
+      texte: lettre.texte,
+      vises,
+      avancer: async (a) => {
+        etat.envoyes = a.envoyes;
+        etat.echecs = a.echecs;
+        etat.adressesEchouees = a.adressesEchouees;
+        etat.derniere = a.derniere;
+        // Le curseur de reprise s'écrit AVANT tout le reste : c'est lui
+        // qui empêche un redémarrage de tout recommencer.
+        await Promise.all([
+          ref.update({ reprisA: a.derniere, faits: dejaFaits + a.envoyes + a.echecs }),
+          trace.update({ envoyes: dejaFaits + a.envoyes, echecs: a.echecs }),
+        ]);
+      },
+    });
+  } finally {
+    transport.close();
+  }
+
+  const envoyes = dejaFaits + etat.envoyes;
+  await trace.update({
+    statut: 'terminé',
+    envoyes,
+    echecs: etat.echecs,
+    adressesEchouees: etat.adressesEchouees,
+  });
+  await ref.update({
+    statut: 'envoyee',
+    termineeLe: FieldValue.serverTimestamp(),
+    faits: dejaFaits + etat.envoyes + etat.echecs,
+    reprisA: etat.derniere,
+    erreur: FieldValue.delete(),
+    resultat: {
+      campagneId: trace.id,
+      destinataires: complets.length,
+      envoyes,
+      echecs: etat.echecs,
+      desabonnesIgnores: retires,
+      adressesInvalides: invalides,
+      adressesEchouees: etat.adressesEchouees,
+    },
+  });
+
+  logger.info('[minuterie] campagne partie', {
+    campagne: ref.id, trace: trace.id, envoyes, echecs: etat.echecs, retires, invalides,
+  });
+}
 
 // ─── Le désabonnement ────────────────────────────────────────────────
 // Le lien au bas de chaque lettre aboutit ici. Il doit fonctionner sans

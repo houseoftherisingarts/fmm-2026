@@ -18,6 +18,11 @@
 // cours se refuse d'elle-même. C'est `estAPrendre` qui tranche, et la
 // transaction vit dans index.js.
 
+/** Le fuseau du festival. Le jumeau vit dans src/lib/heureMontreal.ts,
+ *  où se fait la vraie conversion. Ici, il ne sert qu'à dire à Cloud
+ *  Scheduler et au journal dans quelle heure nous travaillons. */
+const FUSEAU_FESTIVAL = 'America/Montreal';
+
 /** Le délai après lequel une campagne restée « en cours » est tenue
  *  pour abandonnée plutôt que vivante. La fonction d'envoi meurt à 540
  *  secondes, soit neuf minutes : à vingt minutes, aucune exécution
@@ -179,6 +184,6 @@ function resteAFaire(vises, reprisA) {
 }
 
 module.exports = {
-  VERROU_MS, ETATS, enMillis, normaliserCourriel,
+  FUSEAU_FESTIVAL, VERROU_MS, ETATS, enMillis, normaliserCourriel,
   estAPrendre, destinatairesDuFiltre, resteAFaire,
 };

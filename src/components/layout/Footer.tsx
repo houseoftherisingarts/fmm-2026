@@ -363,7 +363,9 @@ const Footer: React.FC = () => {
                       onChange={(e) => { setEmail(e.target.value); if (erreur) setErreur(null); }}
                       placeholder={t.newsletterPlaceholder}
                       aria-invalid={erreur ? true : undefined}
-                      aria-describedby={erreur ? 'fmm-infolettre-erreur' : 'fmm-infolettre-consentement'}
+                      aria-describedby={erreur
+                        ? 'fmm-infolettre-erreur fmm-infolettre-consentement'
+                        : 'fmm-infolettre-consentement'}
                       className="flex-1 min-w-0 bg-[rgba(10,2,7,0.6)] px-4 py-3 text-sm font-sans transition-colors focus:outline-none disabled:opacity-60 placeholder:text-[rgba(232,221,193,0.45)]"
                       style={{
                         color: 'var(--color-bone)',
@@ -381,7 +383,7 @@ const Footer: React.FC = () => {
                     </ChevronButton>
                   </form>
 
-                  {erreur ? (
+                  {erreur && (
                     <p
                       id="fmm-infolettre-erreur"
                       role="alert"
@@ -390,15 +392,14 @@ const Footer: React.FC = () => {
                     >
                       {erreur}
                     </p>
-                  ) : (
-                    <p
-                      id="fmm-infolettre-consentement"
-                      className="font-sans text-[12px] leading-relaxed mt-3.5 max-w-sm"
-                      style={{ color: 'var(--color-bone)', opacity: 0.62 }}
-                    >
-                      {t.newsletterConsent}
-                    </p>
                   )}
+                  <p
+                    id="fmm-infolettre-consentement"
+                    className="font-sans text-[12px] leading-relaxed mt-3.5 max-w-sm"
+                    style={{ color: 'var(--color-bone)', opacity: 0.62 }}
+                  >
+                    {t.newsletterConsent}
+                  </p>
                 </>
               )}
             </div>
