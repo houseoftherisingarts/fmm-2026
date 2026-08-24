@@ -1,6 +1,7 @@
-// ─── Saviez-vous que ────────────────────────────────────────────────
-// Le carnet de faits du festival. Chaque fait porte sa source, et
-// chaque source a été ouverte et lue avant d'être inscrite ici.
+// ─── Estage de Culture ──────────────────────────────────────────────
+// La rubrique du festival, née sur notre page Facebook en août 2023 et
+// reprise ici sous son nom d'origine. Chaque fait porte sa provenance,
+// et chaque source a été ouverte et lue avant d'être inscrite ici.
 //
 // Deux provenances cohabitent :
 //   · 'recherche' → vérifié en dictionnaire, en archive ou en musée.
@@ -11,7 +12,9 @@
 // Ajouter un fait consiste à ajouter un objet au tableau FAITS, rien
 // de plus. Le composant ne connaît aucun fait par son nom.
 
-export type CategorieFait = 'mots' | 'table' | 'taverne' | 'marche' | 'camp' | 'jeu';
+export type CategorieFait =
+  | 'mots' | 'table' | 'taverne' | 'marche' | 'camp' | 'jeu'
+  | 'roi' | 'festival';
 
 export type SourceFait = {
   /** Nom lisible, affiché sous le fait. */
@@ -53,6 +56,8 @@ export const CATEGORIES: Record<CategorieFait, { FR: string; EN: string }> = {
   marche:  { FR: 'Le marché',      EN: 'The market' },
   camp:    { FR: 'Le camp viking', EN: 'The Viking camp' },
   jeu:     { FR: 'Les jeux',       EN: 'Games' },
+  roi:     { FR: 'Le roi',         EN: 'The king' },
+  festival:{ FR: 'Notre festival', EN: 'Our festival' },
 };
 
 export const FAITS: readonly Fait[] = [
@@ -175,6 +180,23 @@ export const FAITS: readonly Fait[] = [
     ],
   },
 
+  {
+    id: 'hospitaux',
+    categorie: 'mots',
+    origine: 'festival',
+    titreFR: 'Les hospitaux',
+    titreEN: 'The hospitals',
+    texteFR:
+      'Saviez-vous que comme rares étaient les villes assez riches pour avoir une auberge, la plupart des gens demandaient l’hospitalité chez les particuliers.\n\nPuisque les gens avaient peur d’accepter les passants malades, les religieux ont établi un lieu où les malades pourraient recevoir l’hospitalité. D’où le mot « Hospital »\n\nLes soins sont venus par la suite.',
+    texteEN:
+      'Did you know that since few towns were rich enough to have an inn, most people asked for hospitality in private homes.\n\nBecause people were afraid to take in sick travellers, the religious orders set up a place where the sick could receive hospitality. Hence the word “Hospital”\n\nThe care came afterwards.',
+    publication: { date: '2023-08-15', url: 'https://www.facebook.com/photo/?fbid=318000133938874&set=a.198354179236804' },
+    sources: [
+      { nom: 'CNRTL, étymologie de « hôpital »', url: 'https://www.cnrtl.fr/etymologie/h%C3%B4pital' },
+      { nom: 'Medievalists.net, l’hôpital du haut Moyen Âge', url: 'https://www.medievalists.net/2022/06/the-early-medieval-hospital/' },
+    ],
+  },
+
   // ── À table ───────────────────────────────────────────────────────
   {
     id: 'tranchoir',
@@ -230,6 +252,23 @@ export const FAITS: readonly Fait[] = [
       'You will often hear that spices were there to cover the taste of spoiled meat. Paul Freedman, professor of history at Yale, undoes the claim in two strokes: spices cost more than meat, and fresh meat was easy to come by. Municipal records even preserve strict rules against careless butchers. What spices really brought was flavour, the medicine of the humours, and the standing of whoever could afford them.',
     sources: [
       { nom: 'Paul Freedman, Yale University', url: 'https://archive-yaleglobal.yale.edu/node/25511' },
+    ],
+  },
+
+  {
+    id: 'pain-a-lenvers',
+    categorie: 'table',
+    origine: 'festival',
+    titreFR: 'Le pain à l’envers',
+    titreEN: 'The upside-down bread',
+    texteFR:
+      'Saviez-vous que la superstition du « on ne met pas le pain à l’envers sur la table » vient d’une entente d’horaire entre le bourreau et le boulanger ?\n\nComme le bourreau se levait souvent très tôt et n’avait pas le temps de s’éterniser à la boulangerie le matin (car attendu par le Roi), le boulanger réservait son pain en le mettant à l’envers à côté des autres afin de bien l’identifier et de servir le bourreau en priorité dès son irruption dans la boulangerie.\n\nPuisque le bourreau était un homme maudit, personne n’osait toucher son pain.\n\nLa superstition a fini au travers des âges par oublier le bourreau et ne garder que la portion « à l’envers » de l’histoire.\n\nCette explication par le bourreau appartient à la tradition rapportée : la Bibliothèque municipale de Lyon note qu’aucune archive n’en garde la trace. La superstition elle-même reste bien réelle et bien documentée.',
+    texteEN:
+      'Did you know that the superstition behind “never place bread upside down on the table” comes from a scheduling arrangement between the executioner and the baker?\n\nSince the executioner often rose very early and had no time to linger at the bakery in the morning (the King being the one waiting on him), the baker set his loaf aside by turning it upside down next to the others, so it could be spotted and handed to the executioner first the moment he walked in.\n\nSince the executioner was a cursed man, nobody dared touch his bread.\n\nOver the centuries the superstition forgot the executioner and kept only the “upside down” part of the story.\n\nThe executioner explanation belongs to reported tradition: the Bibliothèque municipale de Lyon notes that no archive keeps a trace of it. The superstition itself remains very real and well documented.',
+    publication: { date: '2023-08-22', url: 'https://www.facebook.com/photo/?fbid=321295056942715&set=a.198354179236804' },
+    sources: [
+      { nom: 'Nota Bene, « Pourquoi retourner le pain porte malheur ? »', url: 'https://shows.acast.com/notabenemovies/episodes/pourquoi-retourner-le-pain-porte-malheur' },
+      { nom: 'Guichet du Savoir, Bibliothèque municipale de Lyon', url: 'https://www.guichetdusavoir.org/viewtopic.php?f=2&t=55660' },
     ],
   },
 
@@ -291,6 +330,22 @@ export const FAITS: readonly Fait[] = [
     ],
   },
 
+  {
+    id: 'auberges',
+    categorie: 'taverne',
+    origine: 'festival',
+    titreFR: 'Les auberges',
+    titreEN: 'The inns',
+    texteFR:
+      'Saviez-vous que les Auberges médiévales étaient rarement dans le même édifice que la taverne ?\n\nRares étaient les villes assez riches pour avoir une auberge et la plupart des gens demandaient l’hospitalité chez les particuliers, même le Roy !',
+    texteEN:
+      'Did you know that medieval inns were rarely in the same building as the tavern?\n\nFew towns were rich enough to have an inn, and most people asked for hospitality in private homes, the King included!',
+    publication: { date: '2023-08-13', url: 'https://www.facebook.com/photo/?fbid=317029457369275&set=a.198354179236804' },
+    sources: [
+      { nom: 'Medievalists.net, l’auberge médiévale', url: 'https://www.medievalists.net/2015/02/ye-ol-bed-breakfast-look-medieval-inn/' },
+    ],
+  },
+
   // ── Le marché ─────────────────────────────────────────────────────
   {
     id: 'assise-pain-biere',
@@ -318,6 +373,22 @@ export const FAITS: readonly Fait[] = [
       'In 1227 Henry III granted Loughborough market a charter forbidding any rival market within six and two-thirds miles, the distance a household could walk in a day to sell and come home. In 2020 the neighbouring village of Sileby set up a pop-up market. Charnwood council brought out the charter, seven hundred and ninety-three years old, and had the market closed.',
     sources: [
       { nom: 'Medievalists.net', url: 'https://www.medievalists.net/2020/08/pop-up-market/' },
+    ],
+  },
+
+  {
+    id: 'gutenberg',
+    categorie: 'marche',
+    origine: 'festival',
+    titreFR: 'Gutenberg et le pressoir à vin',
+    titreEN: 'Gutenberg and the wine press',
+    texteFR:
+      'Point Culture : Gutenberg, inventeur de la presse à imprimer, n’aurait pas trouvé son idée dans le vide. Au XVe siècle, il habitait Mayence, une région viticole au cœur d’un carrefour de commerce. Les habitants y utilisaient déjà de puissantes presses à vis... mais pour le raisin !\n\nC’est en observant ces énormes presses à vin que Gutenberg aurait imaginé le système de pression qui allait révolutionner le monde du livre. La mécanique du vin a permis l’aventure du papier. La convergence des marchands de vin a permis son expansion. Comme quoi : pas de picole, pas de lecture !',
+    texteEN:
+      'Culture note: Gutenberg, the inventor of the printing press, did not find his idea out of thin air. In the fifteenth century he lived in Mainz, a wine region at the heart of a trading crossroads. The people there were already using powerful screw presses... but for grapes!\n\nIt is by watching those huge wine presses that Gutenberg is said to have imagined the pressure system that would turn the world of books upside down. The mechanics of wine made the adventure of paper possible. The gathering of wine merchants made it spread. Which goes to show: no drink, no reading!',
+    publication: { date: '2025-09-02', url: 'https://www.facebook.com/104412411953069/posts/791732419898974' },
+    sources: [
+      { nom: 'Gutenberg-Gesellschaft, Mayence', url: 'https://www.gutenberg-gesellschaft.de/en/johannes-gutenberg/gutenberg-in-strasbourg/' },
     ],
   },
 
@@ -395,6 +466,87 @@ export const FAITS: readonly Fait[] = [
       'Ninety-three gaming pieces came back to the surface near Uig bay on the Isle of Lewis, and were shown in Edinburgh in 1831. Most are cut from walrus ivory, a few from sperm-whale teeth. They were probably carved in Norway in the late twelfth or early thirteenth century. They live apart today, between Edinburgh, London and the island itself.',
     sources: [
       { nom: 'National Museums Scotland', url: 'https://www.nms.ac.uk/explore-our-collections/stories/scottish-history-and-archaeology/lewis-chess-pieces/' },
+    ],
+  },
+  {
+    id: 'cartes-royales',
+    categorie: 'jeu',
+    origine: 'festival',
+    titreFR: 'Cartes royales',
+    titreEN: 'The card kings',
+    texteFR:
+      'Saviez-vous que les rois des jeux de cartes français (le jeu de carte dit « classique ») ont des noms ?\n\nLe Roi de Cœur s’appelle « Charles » ; référence possible à Charlemagne\n\nLe Roi de Carreau s’appelle « César » ; probablement Jules\n\nLe Roi de Trèfle s’appelle « Alexandre », sûrement Alexandre le Grand\n\nLe Roi de Pique : « David », éventuelle référence au David qui a triomphé de Goliath.',
+    texteEN:
+      'Did you know that the kings of the French pack (the deck we call “classic”) have names?\n\nThe King of Hearts is called “Charles”, a possible reference to Charlemagne\n\nThe King of Diamonds is called “Caesar”, most likely Julius\n\nThe King of Clubs is called “Alexander”, surely Alexander the Great\n\nThe King of Spades: “David”, a possible reference to the David who overcame Goliath.',
+    publication: { date: '2023-08-17', url: 'https://www.facebook.com/photo/?fbid=318984917173729&set=a.198354179236804' },
+    sources: [
+      { nom: 'Wikipédia, « Jeu de cartes français »', url: 'https://fr.wikipedia.org/wiki/Jeu_de_cartes_fran%C3%A7ais' },
+      { nom: 'Wikipedia, « Nine Worthies »', url: 'https://en.wikipedia.org/wiki/Nine_Worthies' },
+    ],
+  },
+
+  // ── Le roi ────────────────────────────────────────────────────────
+  {
+    id: 'magna-carta',
+    categorie: 'roi',
+    origine: 'festival',
+    titreFR: 'La Magna Carta',
+    titreEN: 'The Magna Carta',
+    texteFR:
+      'Saviez-vous que La Magna Carta, signée en 1215 en Angleterre, a établi pour la première fois des principes de gouvernement limité et de droits individuels, jetant les bases du droit constitutionnel moderne ?\n\nElle a contribué à établir le principe selon lequel personne, même le souverain, n’est au-dessus de la loi. Le concept de l’État de droit, dans lequel les gouvernements sont tenus de respecter les droits et les procédures légales, découle en partie de ce document.',
+    texteEN:
+      'Did you know that the Magna Carta, signed in 1215 in England, set out for the first time the principles of limited government and individual rights, laying the foundations of modern constitutional law?\n\nIt helped establish the principle that nobody, not even the sovereign, stands above the law. The idea of the rule of law, under which governments are held to respect rights and legal procedure, comes in part from this document.',
+    publication: { date: '2023-08-16', url: 'https://www.facebook.com/photo/?fbid=318747223864165&set=a.198354179236804' },
+    sources: [
+      { nom: 'The National Archives, la Magna Carta de 1215', url: 'https://www.nationalarchives.gov.uk/education/resources/magna-carta/british-library-magna-carta-1215-runnymede/' },
+      { nom: 'Parlement britannique, ce qu’il en reste aujourd’hui', url: 'https://www.parliament.uk/about/living-heritage/evolutionofparliament/originsofparliament/birthofparliament/overview/magnacarta/magnacartalegacy/' },
+    ],
+  },
+  {
+    id: 'roys-cochons',
+    categorie: 'roi',
+    origine: 'festival',
+    titreFR: 'Les bons roys, c’est comme les cochons',
+    titreEN: 'Good kings are like pigs',
+    texteFR:
+      'Et quand le Roy passait, tout le village nettoyait les maisons. Faut comprendre : si le Roy choisit ta piaule, il ne faut pas qu’elle empeste le cochon ! Comme certains paysans vivaient dans leur maison avec leur bétail (pour des raisons de sécurité), le ménage était de mise.',
+    texteEN:
+      'And when the King came through, the whole village scrubbed the houses. You have to understand: if the King picks your place, it had better not reek of pig! Since some peasants lived in their house alongside their livestock (for safety), a good cleaning was in order.',
+    publication: { date: '2023-08-14', url: 'https://www.facebook.com/photo/?fbid=317490513989836&set=a.198354179236804' },
+    sources: [
+      { nom: 'English Heritage, le village déserté de Wharram Percy', url: 'https://www.english-heritage.org.uk/visit/places/wharram-percy-deserted-medieval-village/history/description/' },
+      { nom: 'Dictionnaire historique de la Suisse, le droit de gîte', url: 'https://hls-dhs-dss.ch/fr/articles/013736/' },
+    ],
+  },
+
+  // ── Notre festival ────────────────────────────────────────────────
+  {
+    id: 'troupes-nouvelle-france',
+    categorie: 'festival',
+    origine: 'festival',
+    titreFR: 'Les troupes de la Nouvelle-France',
+    titreEN: 'The New France troupes',
+    texteFR:
+      'Saviez-vous qu’au Québec nous avons plus de 10 troupes de reconstitution de la Nouvelle-France ? Cette année au Festival Médiéval de Montpellier, les Habitants de la Nouvelle-France vont vous instruire sur les différents métiers de nos ancêtres. De plus, La Garde du Lys vous contera la merveilleuse histoire des mousquetaires en Nouvelle-France.',
+    texteEN:
+      'Did you know that here in Quebec we have more than 10 New France reenactment troupes? This year at the Festival Médiéval de Montpellier, les Habitants de la Nouvelle-France will teach you about the various trades of our ancestors. La Garde du Lys will also tell you the marvellous story of the musketeers in New France.',
+    publication: { date: '2024-08-07', url: 'https://www.facebook.com/104412411953069/posts/515871394151746' },
+    sources: [
+      { nom: 'Commission de la mémoire franco-québécoise, seize groupes', url: 'https://cfqlmc.org/seize-groupes-de-reconstitution-historique-du-quebec-rappellent-notre-aventure-commune-avec-les-francais/' },
+      { nom: 'Le Soleil, La Garde du Lys', url: 'https://www.lesoleil.com/2016/08/05/les-mysterieux-mousquetaires-de-la-nouvelle-france-e4b3a3b4e07953c2bfc7dbc8b08acd3f/' },
+    ],
+  },
+  {
+    id: 'vendredi-dimanche',
+    categorie: 'festival',
+    origine: 'festival',
+    titreFR: 'Du vendredi au dimanche',
+    titreEN: 'Friday to Sunday',
+    texteFR: 'Saviez-vous que le FMM se déroule du vendredi au dimanche ?',
+    texteEN: 'Did you know that the FMM runs from Friday to Sunday?',
+    publication: { date: '2024-07-26', url: 'https://www.facebook.com/104412411953069/posts/508667278205491' },
+    sources: [
+      { nom: 'Festival Médiéval de Montpellier, les dates de 2026', url: 'https://www.festivalmedievaldemontpellier.org/' },
     ],
   },
 ];

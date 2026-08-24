@@ -195,7 +195,7 @@ export const SectionBand: React.FC<{
   </div>
 );
 
-// ─── 5 ans d'histoire (chapter opener) ───────────────────────────────
+// ─── 6 ans d'histoire (chapter opener) ───────────────────────────────
 export const HistoireChapterSection: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
@@ -623,7 +623,7 @@ const HistoirePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
 };
 
 const FR = {
-  home: 'Accueil', eyebrow: 'Notre histoire', title: '5 ans d’histoire',
+  home: 'Accueil', eyebrow: 'Notre histoire', title: '6 ans d’histoire',
   intro1: 'Fondé en 2021, le FMM a surmonté l’épreuve de naître pendant la pandémie pour, contre toute attente, devenir l’un des plus grands festivals médiévaux du Québec. Une programmation unique et variée, une formule jusqu’ici inexplorée parmi les festivals d’ici.',
   niEyebrow: 'Une formule unique',
   niTitle: 'Ni G-N, ni reconstitution',
@@ -632,8 +632,8 @@ const FR = {
   ni3: 'Le FMM tient à se démarquer des autres événements eurocentristes en invitant ses participants à apporter leur héritage. Bien que l’Europe soit sur-représentée dans l’axiome « médiéval », l’époque dite médiévale s’est déroulée partout dans le monde, tous sont bienvenus à exhiber leur culture, qu’ils viennent d’Orient, d’Afrique, d’Amérique ou de toute région dont l’époque médiévale est peu connue du grand public.',
   galleryEyebrow: 'Archives', photosTitle: 'Archives photos', galleryTitle: 'Plongez dans nos archives', photographerBy: 'Photos par',
   capturesVideo: 'captures d’écran du vidéo',
-  galleryLead: 'Cinq éditions immortalisées par nos photographes. Une sélection, classée selon qui l’a captée.',
-  plongezLead: 'Cinq éditions, et une machine à remonter le temps : revisitez le site du festival tel qu’il était, année après année, puis passez à la salle de projection.',
+  galleryLead: 'Six éditions immortalisées par nos photographes. Une sélection, classée selon qui l’a captée.',
+  plongezLead: 'Six éditions, et une machine à remonter le temps : revisitez le site du festival tel qu’il était, année après année, puis passez à la salle de projection.',
   edition: 'Édition', viewArchive: 'Voir l’archive', morePhotos: 'Voir plus de photos',
   creditsEyebrow: 'Crédits photo',
   teamEyebrow: 'L’organisation', teamTitle: 'L’équipe',
@@ -641,7 +641,7 @@ const FR = {
   teamClose: 'Sans cette équipe, et tous les bénévoles qui s’y joignent les jours du festival, rien de tout cela n’existerait.',
 };
 const EN = {
-  home: 'Home', eyebrow: 'Our story', title: '5 years of history',
+  home: 'Home', eyebrow: 'Our story', title: '6 years of history',
   intro1: 'Founded in 2021, FMM survived being born during the pandemic to become, against all odds, one of Quebec’s largest medieval festivals. A unique, varied program; a formula previously unexplored among local festivals.',
   niEyebrow: 'A unique formula',
   niTitle: 'Neither LARP nor re-enactment',
@@ -650,8 +650,8 @@ const EN = {
   ni3: 'FMM stands apart from other Eurocentric events by inviting participants to bring their own heritage. Though Europe is over-represented in the "medieval" axiom, the medieval era unfolded all across the world, all are welcome to showcase their culture, whether they come from the East, Africa, the Americas, or any region whose medieval era is little known to the general public.',
   galleryEyebrow: 'Archives', photosTitle: 'Photo archives', galleryTitle: 'Step into the archives', photographerBy: 'Photos by',
   capturesVideo: 'stills from the film',
-  galleryLead: 'Five editions captured by our photographers. A selection, sorted by who shot it.',
-  plongezLead: 'Five editions, and a time machine: revisit the festival site as it was, year after year, then step into the screening room.',
+  galleryLead: 'Six editions captured by our photographers. A selection, sorted by who shot it.',
+  plongezLead: 'Six editions, and a time machine: revisit the festival site as it was, year after year, then step into the screening room.',
   edition: 'Edition', viewArchive: 'View the archive', morePhotos: 'Show more photos',
   creditsEyebrow: 'Photo credits',
   teamEyebrow: 'The organisation', teamTitle: 'The team',

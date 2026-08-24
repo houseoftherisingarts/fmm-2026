@@ -366,7 +366,7 @@ const FR = {
     { year: '2023', note: 'L’offre artistique s’élargit : troupes, musique, spectacles.' },
     { year: '2024', note: 'Expansion équestre et artisanale. Les cavaliers entrent en lice.' },
     { year: '2025', big: '3 100', note: 'festivaliers sur trois jours. Le cap est franchi.' },
-    { year: '2026', note: 'La cinquième édition. La scène principale attend le nom qui la fera plus grande.' },
+    { year: '2026', note: 'La sixième édition. La scène principale attend le nom qui la fera plus grande.' },
   ],
   plans: {
     baron: {
@@ -463,7 +463,7 @@ const EN = {
     { year: '2023', note: 'The artistic offering grows: troupes, music, shows.' },
     { year: '2024', note: 'Equestrian and artisan expansion. The riders enter the lists.' },
     { year: '2025', big: '3,100', note: 'festival-goers over three days. A milestone.' },
-    { year: '2026', note: 'The fifth edition. The main stage awaits the name that will make it larger.' },
+    { year: '2026', note: 'The sixth edition. The main stage awaits the name that will make it larger.' },
   ],
   plans: {
     baron: {

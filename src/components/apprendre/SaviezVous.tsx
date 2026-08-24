@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { FAITS, CATEGORIES, type CategorieFait } from '../../content/saviezVous';
 import {
   IconScroll, IconTable, IconCuisine, IconWagon, IconDrakkar, IconJester,
-  IconCastle, IconHourglass, IconWorld,
+  IconCastle, IconWorld,
   type GameIconProps,
 } from '../icons/GameIcons';
 
@@ -14,8 +14,9 @@ import {
 // tranches dépassent encore. La pile en arrière-plan dit qu'il en
 // reste, et c'est elle qui donne envie d'appuyer encore.
 //
-// Le paquet a doublé de taille : les rangées de filtres servent à
-// entrer par un sujet plutôt que de tout parcourir à la file.
+// Le paquet a grossi d'un tiers en reprenant les anciennes parutions :
+// les rangées de filtres servent à entrer par un sujet plutôt que de
+// tout parcourir à la file.
 //
 // Le composant ne connaît aucun fait par son nom : tout vient du
 // tableau FAITS de src/content/saviezVous.ts. Ajouter un fait suffit,
@@ -28,7 +29,6 @@ const ICONES: Record<CategorieFait, React.FC<GameIconProps>> = {
   marche: IconWagon,
   camp: IconDrakkar,
   jeu: IconJester,
-  croyance: IconHourglass,
   roi: IconCastle,
   festival: IconWorld,
 };
@@ -50,10 +50,6 @@ const dateLisible = (iso: string, fr: boolean) =>
   new Date(`${iso}T12:00:00Z`).toLocaleDateString(fr ? 'fr-CA' : 'en-CA', {
     day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
   });
-
-// Les textes du festival portent leurs propres alinéas. Un fait long
-// respire mieux en corps réduit qu'en corps de titre.
-const LONG = 640;
 
 const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
@@ -100,7 +96,6 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const sources = fait.sources ?? [];
   const decalage = reduire ? 0 : 18 * sens;
   const texte = fr ? fait.texteFR : fait.texteEN;
-  const dense = texte.length > LONG;
 
   return (
     <section
@@ -224,11 +219,9 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                       <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory leading-snug mb-4">
                         {fr ? fait.titreFR : fait.titreEN}
                       </h3>
-                      <div
-                        className={`font-editorial text-ivory-soft leading-relaxed max-w-[70ch] space-y-3 ${
-                          dense ? 'text-base md:text-lg' : 'text-lg md:text-xl'
-                        }`}
-                      >
+                      {/* Les textes du festival portent leurs propres
+                          alinéas : chacun devient un paragraphe. */}
+                      <div className="font-editorial text-lg md:text-xl text-ivory-soft leading-relaxed max-w-[70ch] space-y-3">
                         {texte.split('\n\n').map((alinea, i) => (
                           <p key={i}>{alinea}</p>
                         ))}
