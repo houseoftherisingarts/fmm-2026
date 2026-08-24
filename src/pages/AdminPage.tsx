@@ -50,6 +50,8 @@ const BarSection          = lazy(() => import('./admin/sections/BarSection'));
 const DisposSection       = lazy(() => import('./admin/sections/DisposSection'));
 const MariagesSection     = lazy(() => import('./admin/sections/MariagesSection'));
 const CommanditairesSection = lazy(() => import('./admin/sections/CommanditairesSection'));
+// Les photos envoyées par le public, à retenir ou à écarter.
+const PhotosRecuesSection = lazy(() => import('../components/admin/PhotosRecues'));
 const FinancesSection     = lazy(() => import('./admin/sections/FinancesSection'));
 const CarnetContactsSection = lazy(() => import('./admin/sections/CarnetContactsSection'));
 const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection'));
@@ -196,6 +198,7 @@ const AdminPage: React.FC = () => {
       case 'dispos':     return <DisposSection />;
       case 'mariages':   return <MariagesSection    devBypass={DEV_BYPASS} />;
       case 'commanditaires': return <CommanditairesSection devBypass={DEV_BYPASS} />;
+      case 'photosRecues': return <PhotosRecuesSection devBypass={DEV_BYPASS} />;
       case 'finances':   return <FinancesSection />;
       case 'carnet':     return <CarnetContactsSection />;
       case 'comptes':    return <ComptesSection    devBypass={DEV_BYPASS} />;
