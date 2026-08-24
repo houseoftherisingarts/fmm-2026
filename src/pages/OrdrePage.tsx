@@ -126,6 +126,9 @@ const OrdrePage: React.FC = () => {
               )}
             </>
           )}
+
+          {/* La place commune du registre, sous la liste des membres. */}
+          <SalonOrdre />
         </div>
       </section>
     </>
