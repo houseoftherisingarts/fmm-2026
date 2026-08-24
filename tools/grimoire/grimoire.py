@@ -560,7 +560,12 @@ def pour_cinq(q, portions, nom=''):
         # fraîches vont plus loin, elles se prennent à la poignée.
         herbe = any(h in (i_nom := (nom or '').lower()) for h in HERBES_FRAICHES) \
             and 'sec' not in i_nom and 'séch' not in i_nom
-        if grammes < 8 or (herbe and grammes < 22):
+        # Le sel et les épices se prennent à la cuillère bien au-delà de
+        # huit grammes : douze grammes de sel, ce sont deux cuillères à
+        # thé, et c'est ainsi qu'une cuisine de maison les mesure.
+        poids = _poids_cuillere(nom)
+        epice = poids is not None and grammes <= poids * CUILLERES_MAX
+        if grammes < 8 or (herbe and grammes < 22) or epice:
             mesure = _mesure_de_cuisine(grammes, nom)
             if mesure:
                 return mesure
