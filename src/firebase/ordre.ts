@@ -85,6 +85,13 @@ export async function publierFiche(uid: string, fiche: Partial<Membre>): Promise
   await setDoc(doc(db, MEMBRES, uid), { uid, ...fiche, maj: serverTimestamp() }, { merge: true });
 }
 
+/** Décerner les fonctions d'un membre. Réservé à l'équipe : la règle
+ *  Firestore refuse le champ `roles` à tous les autres. */
+export async function definirRoles(uid: string, roles: RoleMembre[]): Promise<void> {
+  if (!db) return;
+  await setDoc(doc(db, MEMBRES, uid), { uid, roles, maj: serverTimestamp() }, { merge: true });
+}
+
 export async function lireFiche(uid: string): Promise<Membre | null> {
   if (!db) return null;
   const snap = await getDoc(doc(db, MEMBRES, uid));
