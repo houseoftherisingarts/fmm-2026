@@ -65,8 +65,14 @@ const OrdrePage: React.FC = () => {
         intro={fr
           ? 'Tous ceux qui ont ouvert un compte au festival. Cherchez quelqu’un par son nom, ajoutez-le comme ami, et défiez-le quand vous voulez.'
           : 'Everyone who opened a festival account. Look someone up by name, add them as a friend, and challenge them whenever you like.'}
-        orbImage="/photos/hnefatafl-hero.webp"
-        orbImagePosition="center 45%"
+        // Cinq membres de la troupe en costume viking, assis en cercle et en pleine
+        // conversation (archives lievre, festival 2022). Choisie pour le registre :
+        // Alex voulait un vrai groupe de gens qui discutent, pas un objet de jeu.
+        orbImage="/histoire/archives/lievre/2022-e9ed2ea5.webp"
+        orbImagePosition="center"
+        orbLabel={fr
+          ? 'Cinq membres de la troupe en costume viking, agenouillés et assis en cercle sur le terrain du festival, en pleine conversation. Un bouclier peint en jaune et noir repose devant eux, et des fanions colorés flottent en arrière-plan.'
+          : 'Five reenactors in Viking costume, kneeling and sitting together on the festival grounds, mid-conversation. A shield painted yellow and black rests in front of them, with colourful pennants strung in the background.'}
       />
 
       <section className="relative py-14 md:py-20 overflow-hidden">
