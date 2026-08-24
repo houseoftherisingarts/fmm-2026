@@ -82,8 +82,8 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
       <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-6">
         {fr
-          ? 'Voici ce que les autres membres voient de vous. Les aptitudes ne servent à rien, vous vous les donnez vous-même, pour le plaisir.'
-          : 'This is what other members see of you. The stats do nothing at all, you give them to yourself, for the fun of it.'}
+          ? 'Voici ce que les autres membres lisent de vous quand ils ouvrent votre fiche. La description vous appartient : dites ce que vous voulez bien dire. Les aptitudes ne servent à rien, vous vous les donnez vous-même, pour le plaisir.'
+          : 'This is what other members read when they open your card. The introduction is yours: say as much or as little as you like. The stats do nothing at all, you give them to yourself, for the fun of it.'}
       </p>
 
       <div className="space-y-3 mb-6">
