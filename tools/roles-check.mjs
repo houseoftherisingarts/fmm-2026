@@ -11,7 +11,7 @@ await build({
   bundle: true, format: 'esm', outfile: out,
   // Le module tire la configuration de Vite : hors du navigateur, elle
   // est vide et Firebase reste endormi.
-  define: { 'import.meta.env': '({})' },
+  define: { 'import.meta.env': '{}' },
 });
 const O = await import(out);
 
