@@ -134,10 +134,10 @@ const CampagnesSection: React.FC = () => {
    *  un exemple, pour que la lettre se lise comme le destinataire la
    *  verra. Le vrai remplissage se fait dans la Cloud Function. */
   const apercuHtml = useMemo(
-    () => rendu.html
+    () => renduApercu.html
       .split(JETON_NOM).join(langue === 'FR' ? ' Marguerite' : ' Margaret')
       .split(JETON_DESABONNEMENT).join('#'),
-    [rendu.html, langue],
+    [renduApercu.html, langue],
   );
 
   // Le panneau de confirmation appelle le regard : le geste suivant
