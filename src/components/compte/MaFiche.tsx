@@ -55,10 +55,11 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
   const enregistrer = async () => {
     setEtat('ecrit');
+    // La photo et le nom ne se règlent plus ici : ils viennent du profil,
+    // au-dessus, et la fiche les reçoit de là (Alex, 2026-08-23).
     await publierFiche(user.uid, {
-      nom: fiche.nom, ville: fiche.ville || '', devise: fiche.devise || '',
+      ville: fiche.ville || '', devise: fiche.devise || '',
       stats: fiche.stats || STATS_VIDES,
-      avatarUrl: user.photoURL || fiche.avatarUrl || '',
       avatarHue: fiche.avatarHue ?? hueFor(fiche.nom || user.uid),
     }).catch(() => { /* hors ligne */ });
     setEtat('ok');
