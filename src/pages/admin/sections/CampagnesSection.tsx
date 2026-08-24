@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Mail, Search, Send, TriangleAlert, Loader2, CircleCheck, History,
-  Users, FlaskConical, Feather, Filter,
+  Users, FlaskConical, Feather, Filter, UserPlus,
 } from 'lucide-react';
 import { Card, Input, Label, PrimaryButton, GhostButton, EmptyState, Badge, fmtDate } from '../primitives';
 import { useAuth } from '../../../contexts/AuthContext';
 import { MODELES_CAMPAGNE, type LangueCampagne, type ModeleCampagne } from '../../../content/campagnes';
 import { rendreCampagne, JETON_NOM, JETON_DESABONNEMENT } from '../../../lib/courrielCampagne';
 import {
-  lireClients, filtrerClients, destinatairesDepuis, anneesDuRegistre,
-  suivreCampagnes, envoyerCampagne, CATEGORIES_CLIENT, FILTRE_VIDE,
+  listerClients, listerComptes, appliquerFiltre, destinatairesDepuis, anneesDuRegistre,
+  suivreCampagnes, envoyerCampagne, CATEGORIES_CLIENT, LIBELLE_CATEGORIE, FILTRE_VIDE,
   ANNEE_COURANTE, PLAFOND_CAMPAGNE,
   type Client, type CategorieClient, type FiltreCampagne, type Campagne, type Destinataire,
 } from '../../../firebase/campagnes';
@@ -39,6 +39,7 @@ const CampagnesSection: React.FC = () => {
   const { user } = useAuth();
 
   const [clients, setClients]     = useState<Client[]>([]);
+  const [comptes, setComptes]     = useState<Map<string, string>>(new Map());
   const [chargement, setChargement] = useState(true);
   const [erreurLecture, setErreurLecture] = useState<string | null>(null);
 
@@ -64,11 +65,20 @@ const CampagnesSection: React.FC = () => {
   // qui n'existe qu'ici.
   const ID_CONFIRMER = 'campagne-confirmer';
 
-  // ── Le registre ──
+  // ── Le registre et les comptes ──
+  // Les deux lectures partent ensemble : le filtre « sans compte » a
+  // besoin des deux, et les enchaîner doublerait l'attente pour rien.
+  // Un échec du côté des comptes n'empêche pas la section de servir,
+  // il ferme seulement ce filtre-là.
   useEffect(() => {
     let vivant = true;
-    lireClients()
-      .then((liste) => { if (vivant) { setClients(liste); setErreurLecture(null); } })
+    Promise.all([listerClients(), listerComptes().catch(() => new Map<string, string>())])
+      .then(([liste, cartes]) => {
+        if (!vivant) return;
+        setClients(liste);
+        setComptes(cartes);
+        setErreurLecture(null);
+      })
       .catch((e: unknown) => {
         if (vivant) setErreurLecture(e instanceof Error ? e.message : 'Le registre des clients n’a pas répondu.');
       })
@@ -97,7 +107,10 @@ const CampagnesSection: React.FC = () => {
 
   const annees = useMemo(() => anneesDuRegistre(clients), [clients]);
 
-  const retenus = useMemo(() => filtrerClients(clients, filtre), [clients, filtre]);
+  const retenus = useMemo(
+    () => appliquerFiltre(clients, filtre, comptes),
+    [clients, filtre, comptes],
+  );
 
   /** Les personnes que le filtre retient, une ligne par adresse. C'est
    *  cette liste qui s'affiche et qui se coche. */
@@ -127,10 +140,10 @@ const CampagnesSection: React.FC = () => {
     const bouts: string[] = [];
     if (filtre.annees.length) bouts.push(`années ${[...filtre.annees].sort().join(', ')}`);
     if (filtre.categories.length) {
-      const noms = CATEGORIES_CLIENT.filter((c) => filtre.categories.includes(c.id)).map((c) => c.libelle);
-      bouts.push(noms.join(', ').toLowerCase());
+      bouts.push(filtre.categories.map((c) => LIBELLE_CATEGORIE[c]).join(', ').toLowerCase());
     }
     if (filtre.sansAchatCetteAnnee) bouts.push(`sans achat en ${ANNEE_COURANTE}`);
+    if (filtre.sansCompte) bouts.push('sans compte sur le site');
     return bouts.length ? bouts.join(' · ') : 'tout le registre';
   }, [mode, nombre, filtre]);
 
@@ -351,17 +364,17 @@ const CampagnesSection: React.FC = () => {
           <div className="flex flex-wrap gap-2">
             {CATEGORIES_CLIENT.map((c) => (
               <button
-                key={c.id}
+                key={c}
                 type="button"
                 onClick={() => setFiltre((f) => ({
                   ...f,
-                  categories: basculer<CategorieClient>(f.categories, c.id),
+                  categories: basculer<CategorieClient>(f.categories, c),
                 }))}
-                aria-pressed={filtre.categories.includes(c.id)}
+                aria-pressed={filtre.categories.includes(c)}
                 className="px-3.5 py-1.5 font-sans tracking-[0.14em] text-[11px] transition-colors"
-                style={pastilleStyle(filtre.categories.includes(c.id))}
+                style={pastilleStyle(filtre.categories.includes(c))}
               >
-                {c.libelle}
+                {LIBELLE_CATEGORIE[c]}
               </button>
             ))}
           </div>
@@ -378,6 +391,16 @@ const CampagnesSection: React.FC = () => {
           >
             <Filter size={14} aria-hidden />
             N’a rien acheté en {ANNEE_COURANTE}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFiltre((f) => ({ ...f, sansCompte: !f.sansCompte }))}
+            aria-pressed={filtre.sansCompte}
+            className="inline-flex items-center gap-2.5 px-4 py-2.5 ml-2 font-sans text-[11px] tracking-[0.14em] transition-colors"
+            style={pastilleStyle(filtre.sansCompte)}
+          >
+            <UserPlus size={14} aria-hidden />
+            N’a pas encore de compte
           </button>
         </div>
 

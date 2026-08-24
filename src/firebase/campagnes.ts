@@ -1,9 +1,8 @@
 // ─── Les campagnes de courriels ──────────────────────────────────────
 // Alex, 2026-08-24 : l'équipe écrit aux gens des listes de clients,
-// depuis l'espace admin. Ce fichier fait trois choses et rien d'autre :
-// il lit le registre des clients, il taille la liste des destinataires
-// selon le filtre choisi à l'écran, et il appelle la Cloud Function
-// `envoyerCampagne`.
+// depuis l'espace admin. Ce fichier fait deux choses et rien d'autre :
+// il taille la liste des destinataires selon le filtre choisi à
+// l'écran, et il appelle la Cloud Function `envoyerCampagne`.
 //
 // À NE PAS CONFONDRE avec `messagerieAdmin.ts`, qui écrit dans la boîte
 // de réception des membres, sur le site. Ici, ce sont de vrais
@@ -50,61 +49,6 @@ export const PLAFOND_CAMPAGNE = 1500;
  *  pour celle-ci. */
 export const ANNEE_COURANTE = 2026;
 
-// ── Le registre des clients ─────────────────────────────────────────
-
-export type CategorieClient = 'billets' | 'kiosques' | 'camping' | 'bal-folk' | 'mecenes';
-
-export const CATEGORIES_CLIENT: { id: CategorieClient; libelle: string }[] = [
-  { id: 'billets',  libelle: 'Billets' },
-  { id: 'kiosques', libelle: 'Kiosques' },
-  { id: 'camping',  libelle: 'Camping' },
-  { id: 'bal-folk', libelle: 'Bal folk' },
-  { id: 'mecenes',  libelle: 'Mécènes' },
-];
-
-const CATEGORIES_CONNUES = new Set<string>(CATEGORIES_CLIENT.map((c) => c.id));
-
-export interface Client {
-  id: string;
-  courriel: string;
-  nom: string;
-  annee: number;
-  categorie: CategorieClient;
-  /** Vrai quand la personne a déjà un compte sur le site. */
-  compte: boolean;
-}
-
-/** Une fiche du registre, telle qu'elle sort de Firestore.
- *  Les noms français sont ceux du dépôt. Les jumeaux anglais sont lus
- *  en repli, pour que la section marche du premier coup quelle que soit
- *  la convention retenue par le chantier voisin. */
-function depuisFiche(id: string, d: DocumentData): Client | null {
-  const courriel = String(d.courriel ?? d.email ?? '').trim().toLowerCase();
-  if (!courriel) return null;
-  const categorie = String(d.categorie ?? d.category ?? '').trim();
-  return {
-    id,
-    courriel,
-    nom: String(d.nom ?? d.name ?? '').trim(),
-    annee: Number(d.annee ?? d.year ?? 0) || 0,
-    categorie: (CATEGORIES_CONNUES.has(categorie) ? categorie : 'billets') as CategorieClient,
-    compte: Boolean(d.compte ?? d.hasAccount ?? d.aUnCompte ?? false),
-  };
-}
-
-/** ⚠️ LE POINT D'ADAPTATION. À remplacer par l'appel de
- *  `src/firebase/clients.ts` le jour où ce fichier existe. */
-export async function lireClients(): Promise<Client[]> {
-  if (!db) return [];
-  const snap = await getDocs(collection(db, 'clients'));
-  const fiches: Client[] = [];
-  for (const doc of snap.docs) {
-    const fiche = depuisFiche(doc.id, doc.data());
-    if (fiche) fiches.push(fiche);
-  }
-  return fiches;
-}
-
 // ── Le filtre ───────────────────────────────────────────────────────
 
 export interface FiltreCampagne {
@@ -112,37 +56,52 @@ export interface FiltreCampagne {
   annees: number[];
   /** Les catégories retenues. Vide veut dire toutes. */
   categories: CategorieClient[];
-  /** Ne garder que les gens qui n'ont aucune fiche pour l'année en
-   *  cours. C'est le filtre de l'invitation au festival. */
+  /** Ne garder que les gens qui n'ont rien pris pour l'année en cours.
+   *  C'est le filtre de l'invitation au festival. */
   sansAchatCetteAnnee: boolean;
+  /** Ne garder que les gens qui n'ont pas encore de compte sur le site.
+   *  C'est le filtre de la lettre sur l'espace membre. */
+  sansCompte: boolean;
 }
 
 export const FILTRE_VIDE: FiltreCampagne = {
   annees: [],
   categories: [],
   sansAchatCetteAnnee: false,
+  sansCompte: false,
 };
 
-/** Les années présentes dans le registre, de la plus récente à la plus
- *  ancienne. Elles se déduisent des fiches plutôt que d'être écrites
- *  en dur : le jour où l'édition 2027 arrive, la liste suit. */
-export function anneesDuRegistre(clients: Client[]): number[] {
-  return [...new Set(clients.map((c) => c.annee).filter((a) => a > 0))].sort((a, b) => b - a);
-}
-
-export function filtrerClients(clients: Client[], filtre: FiltreCampagne): Client[] {
-  // Les adresses qui ont déjà une fiche pour l'année en cours. Le
-  // regroupement se fait sur l'adresse et non sur la fiche : quelqu'un
-  // qui a pris un billet en 2024 et un kiosque en 2026 a bien acheté
-  // cette année, même si sa fiche de 2024 dit le contraire.
-  const dejaCetteAnnee = new Set(
-    clients.filter((c) => c.annee === ANNEE_COURANTE).map((c) => c.courriel),
-  );
+/**
+ * Taille la liste des destinataires.
+ *
+ * Le nom évite `filtrerClients`, qui existe déjà dans `clients.ts` et
+ * qui fait autre chose : là-bas c'est la recherche par nom, ici c'est
+ * le filtre d'une campagne.
+ *
+ * @param comptes Les courriels qui portent déjà un compte, tels que
+ *   `listerComptes()` les rend. Sans cette carte, le filtre « sans
+ *   compte » ne peut rien trancher et se tait plutôt que de deviner.
+ */
+export function appliquerFiltre(
+  clients: Client[],
+  filtre: FiltreCampagne,
+  comptes?: Map<string, string>,
+): Client[] {
+  // Les adresses qui ont déjà pris quelque chose pour l'année en cours.
+  // Le regroupement se fait sur l'ADRESSE et non sur la fiche :
+  // quelqu'un qui a pris un billet en 2024 et un kiosque en 2026 est
+  // bien revenu cette année, même si sa fiche de 2024 dit le contraire.
+  // Une commande annulée ne compte pas, et c'est `courrielsDeLAnnee`
+  // qui le sait.
+  const dejaCetteAnnee = filtre.sansAchatCetteAnnee
+    ? courrielsDeLAnnee(clients, ANNEE_COURANTE)
+    : null;
 
   return clients.filter((c) => {
     if (filtre.annees.length && !filtre.annees.includes(c.annee)) return false;
     if (filtre.categories.length && !filtre.categories.includes(c.categorie)) return false;
-    if (filtre.sansAchatCetteAnnee && dejaCetteAnnee.has(c.courriel)) return false;
+    if (dejaCetteAnnee && dejaCetteAnnee.has(c.courriel)) return false;
+    if (filtre.sansCompte && comptes && comptes.has(c.courriel)) return false;
     return true;
   });
 }
@@ -161,10 +120,9 @@ export function destinatairesDepuis(clients: Client[]): Destinataire[] {
   const parAdresse = new Map<string, string>();
   for (const c of clients) {
     if (!c.courriel) continue;
-    const nomConnu = parAdresse.get(c.courriel);
     // Le premier nom non vide l'emporte : une fiche sans nom ne doit
     // pas effacer celui d'une autre année.
-    if (!nomConnu) parAdresse.set(c.courriel, c.nom);
+    if (!parAdresse.get(c.courriel)) parAdresse.set(c.courriel, c.nom || '');
   }
   return [...parAdresse].map(([courriel, nom]) => ({ courriel, nom }));
 }

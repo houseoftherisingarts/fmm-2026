@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt,
+  Receipt, MailPlus,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
@@ -39,6 +39,7 @@ export type AdminSectionId =
   | 'invites'
   | 'messages'
   | 'messagerie'
+  | 'campagnes'
   | 'newsletter'
   | 'social'
   | 'medias'
@@ -88,6 +89,7 @@ const NAV: NavItem[] = [
   // Écrire dans la boîte de réception des membres : une personne, un
   // groupe coché, ou tout le registre (Alex, 2026-08-24).
   { id: 'messagerie', label: 'Écrire aux membres', icon: Send,         group: 'Communications' },
+  { id: 'campagnes',  label: 'Campagnes courriel', icon: MailPlus, group: 'Communications' },
   { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Communications' },
   { id: 'social',     label: 'Médias sociaux',  icon: Megaphone,       group: 'Communications' },
   { id: 'discord',    label: 'Discord',         icon: Hash,            group: 'Communications' },

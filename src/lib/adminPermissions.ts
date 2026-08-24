@@ -72,7 +72,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   // CA: total access to every existing section (minus role management).
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'activites', 'badges', 'musiciens', 'pupitre', 'matrice', 'horaire',
-    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'clients', 'messages', 'messagerie', 'newsletter', 'social',
+    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social',
     'medias', 'photos', 'photosRecues', 'analytics', 'splash', 'parametres', 'discord', 'bugs', 'dispos', 'invites',
   ],
 
@@ -80,7 +80,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   // For now, until that tab ships, identical to CA.
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'activites', 'badges', 'musiciens', 'pupitre', 'matrice', 'horaire',
-    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'clients', 'messages', 'messagerie', 'newsletter', 'social',
+    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social',
     'medias', 'photos', 'photosRecues', 'analytics', 'splash', 'parametres', 'discord', 'bugs', 'dispos', 'invites',
   ],
 
