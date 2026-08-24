@@ -177,7 +177,7 @@ CHAPITRES = [
 
 MOT = """Ce livre a été écrit dehors, entre deux services.
 
-À gauche, les quantités du festival : cinquante couverts d’un coup, trois jours de suite, sur un terrain en herbe où rien n’est de niveau et où le vent décide de la cuisson autant que le feu. À droite, les mêmes plats ramenés à cinq personnes, pour une table ordinaire un mardi soir. Les deux colonnes disent la même recette; seule la marmite change.
+Ces plats sont nés à cinquante couverts d’un coup, trois jours de suite, sur un terrain en herbe où rien n’est de niveau et où le vent décide de la cuisson autant que le feu. Vous les trouverez ici ramenés à cinq personnes, pour une table ordinaire un mardi soir. La recette n’a pas bougé, seule la marmite a rapetissé.
 
 Les plats viennent de la route. L’Europe de l’Est, le Levant, l’Espagne gitane, les feux du Nord : c’est de là que viennent les caravanes de cette édition, et la table leur ressemble. Le pain au sang voisine le baba ganoush. L’hypocras voisine le café turc. Personne ne s’en plaint autour du feu.
 
@@ -577,7 +577,7 @@ def rendement_pour_cinq(rendement, portions, tab=''):
     """
     t = (rendement or '').strip().replace(' ', ' ')
     if not portions:
-        return t
+        return _part_lisible(t)
     tete = 'tasses' if re.search(r'\btasses?\b', t.split('·')[0], re.I) else 'portions'
     # « 2 par portion » dit ce que chaque convive reçoit : ce chiffre
     # traverse le changement d'échelle sans bouger.
