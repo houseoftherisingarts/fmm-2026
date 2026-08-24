@@ -403,10 +403,13 @@ exports.banquetLien = onRequest(
 // ce qui est parti. La fonction fait le tour par lots de deux cents
 // membres et rend le compte exact des fils touchés.
 //
-// Le message part au nom du festival, jamais au nom d'une personne :
-// un membre qui reçoit une annonce doit reconnaître d'où elle vient.
-// L'identité « festival » n'a de compte nulle part, c'est un nom
-// d'affichage, et la même chaîne vit dans src/firebase/messagerieAdmin.ts.
+// Le message s'affiche au nom du festival, jamais au nom d'une
+// personne : un membre qui reçoit une annonce doit reconnaître d'où
+// elle vient. Le SIÈGE du fil, lui, appartient à la personne de
+// l'équipe qui écrit, sinon la réponse du membre tomberait dans le
+// compte de personne et se perdrait (corrigé le 2026-08-24). Le membre
+// lit « Le Festival Médiéval de Montpellier », et sa réponse arrive
+// dans la boîte de celle ou celui qui a lancé l'envoi.
 //
 // L'envoi à une seule personne ne passe PAS par ici : il part du
 // navigateur, au nom de la personne qui écrit, dans le fil ordinaire.
@@ -425,7 +428,6 @@ const COURRIELS_ADMIN = [
   'benevoles.medievalmontpellier@gmail.com',  // Maïté, courriel de fonction
 ];
 
-const FESTIVAL_UID = 'festival';
 const FESTIVAL_NOM = 'Le Festival Médiéval de Montpellier';
 const FESTIVAL_TEINTE = 38;
 const FESTIVAL_PHOTO = '/fmm-logo-embossed-silver.webp';
@@ -447,6 +449,9 @@ exports.messagerieDeMasse = onCall(
       logger.warn('[messagerie] appel refusé', { courriel });
       throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
     }
+
+    // Le siège du fil appartient à la personne de l'équipe qui écrit.
+    const expediteurUid = auth.uid;
 
     const donnees = requete.data || {};
     const texte = String(donnees.texte || '').trim().slice(0, LONGUEUR_MAX);
@@ -480,7 +485,7 @@ exports.messagerieDeMasse = onCall(
       }
     }
 
-    const vises = membres.filter((m) => m.uid && m.uid !== FESTIVAL_UID);
+    const vises = membres.filter((m) => m.uid && m.uid !== expediteurUid);
     const ignores = membres.length - vises.length;
     if (!vises.length) {
       throw new HttpsError('not-found', 'Personne dans le registre ne correspond.');
@@ -510,26 +515,26 @@ exports.messagerieDeMasse = onCall(
       for (let i = 0; i < vises.length; i += MEMBRES_PAR_LOT) {
         const lot = db.batch();
         for (const m of vises.slice(i, i + MEMBRES_PAR_LOT)) {
-          const id = filId(FESTIVAL_UID, m.uid);
+          const id = filId(expediteurUid, m.uid);
           const fil = db.collection('dms').doc(id);
           const nom = String(m.nom || '').trim() || 'Membre';
-          const photos = { [FESTIVAL_UID]: FESTIVAL_PHOTO };
+          const photos = { [expediteurUid]: FESTIVAL_PHOTO };
           if (m.avatarUrl) photos[m.uid] = String(m.avatarUrl);
 
           lot.set(fil, {
-            participantUids:   [FESTIVAL_UID, m.uid].sort(),
-            participantNames:  { [FESTIVAL_UID]: FESTIVAL_NOM, [m.uid]: nom },
-            participantHues:   { [FESTIVAL_UID]: FESTIVAL_TEINTE, [m.uid]: Number(m.avatarHue) || 0 },
+            participantUids:   [expediteurUid, m.uid].sort(),
+            participantNames:  { [expediteurUid]: FESTIVAL_NOM, [m.uid]: nom },
+            participantHues:   { [expediteurUid]: FESTIVAL_TEINTE, [m.uid]: Number(m.avatarHue) || 0 },
             participantPhotos: photos,
             lastMessage:   texte.slice(0, 140),
             lastMessageAt: FieldValue.serverTimestamp(),
-            lastSenderUid: FESTIVAL_UID,
+            lastSenderUid: expediteurUid,
             unread:        { [m.uid]: FieldValue.increment(1) },
             annonce:       true,
           }, { merge: true });
 
           lot.set(fil.collection('messages').doc(), {
-            senderUid:  FESTIVAL_UID,
+            senderUid:  expediteurUid,
             senderName: FESTIVAL_NOM,
             body:       texte,
             createdAt:  FieldValue.serverTimestamp(),
