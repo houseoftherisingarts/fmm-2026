@@ -29,7 +29,7 @@ const MesBadges: React.FC<{
       <div className="flex items-center justify-between gap-4 mb-6 pb-2"
            style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
         <span id="badges-title" className="witcher-stat-label">
-          {fr ? 'Mes badges' : 'My badges'}
+          {titre || (fr ? 'Mes badges' : 'My badges')}
         </span>
         <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
           {etat.obtenus} / {etat.total}
