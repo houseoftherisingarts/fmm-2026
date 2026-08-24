@@ -598,10 +598,10 @@ const EN: typeof FR = {
   grimoireTitle: 'The festival cookbook',
   grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and some thirty more, written in the hand of chef Marc-Alexis Pepin. A book to leaf through once winter comes and the urge to light the fire returns.',
   grimoireBientot: 'Coming soon',
-  grimoireCta: 'Buy the grimoire',
+  grimoireCta: 'Buy the cookbook',
   grimoirePreview: 'Read the first two pages',
   grimoireNote: '$9 plus tax · Digital book in PDF, emailed after purchase.',
-  grimoireAlt: 'The cover of the Festival Grimoire',
+  grimoireAlt: 'The cover of the festival cookbook',
 };
 
 export default NourriturePage;
