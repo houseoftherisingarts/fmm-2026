@@ -58,7 +58,11 @@ const CampagnesSection: React.FC = () => {
 
   const [historique, setHistorique] = useState<Campagne[]>([]);
 
-  const boutonConfirmer = useRef<HTMLButtonElement>(null);
+  // Le focus se pose par identifiant plutôt que par `ref` : le bouton
+  // partagé de `primitives.tsx` n'expose pas de ref, et le corriger
+  // là-bas toucherait toutes les sections de l'admin pour un besoin
+  // qui n'existe qu'ici.
+  const ID_CONFIRMER = 'campagne-confirmer';
 
   // ── Le registre ──
   useEffect(() => {
