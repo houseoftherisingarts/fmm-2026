@@ -148,8 +148,8 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
           eyebrow={t.eyebrow}
           titleA={t.title}
           intro={t.intro}
-          orbImage="/wix/nourriture/41d286c9.jpg"
-          orbImagePosition="64% 40%"
+          orbImage="/wix/nourriture/banquet-cercle.webp"
+          orbImagePosition="center 46%"
         />
       )}
 

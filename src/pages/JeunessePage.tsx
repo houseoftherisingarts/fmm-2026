@@ -26,15 +26,17 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
       {embedded ? (
         /* Le chapitre jeunesse arrivait en petit titre, sans image, après
            deux chapitres illustrés (Alex, 2026-08-22). Il ouvre désormais
-           sur une bande photo : les enfants du festival avec leur animateur,
-           photo d'archives du festival. */
+           sur une bande photo : les enfants du festival avec leur monitrice,
+           photo d'archives du festival (Clair du Lièvre). Corrigée le
+           2026-08-24 : l'ancienne photo montrait un homme à la flûte plutôt
+           que des enfants. */
         <section className="relative overflow-hidden">
           <div className="relative h-[62vh] min-h-[420px] md:h-[74vh]">
             <Parallax speed={0.16} className="absolute inset-0">
               <img
-                src="/wix/jeunesse/2b1f82d0.jpg"
+                src="/histoire/archives/lievre/2022-77c6727f.webp"
                 alt={t.heroAlt}
-                className="w-full h-[118%] object-cover object-[50%_38%]"
+                className="w-full h-[118%] object-cover object-[50%_42%]"
                 loading="lazy"
               />
             </Parallax>

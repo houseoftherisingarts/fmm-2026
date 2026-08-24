@@ -13,7 +13,8 @@ import {
 } from '../../../firebase/ordre';
 import { LONGUEUR_MAX } from '../../../firebase/moderation';
 import {
-  ecrireAUnMembre, envoyerEnNombre, suivreEnvois, FESTIVAL_NOM,
+  ecrireAUnMembre, envoyerEnNombre, suivreEnvois,
+  FESTIVAL_NOM, FESTIVAL_UID, PLAFOND_REGISTRE,
   type EnvoiMasse,
 } from '../../../firebase/messagerieAdmin';
 
@@ -82,7 +83,7 @@ const MessagerieSection: React.FC = () => {
 
   useEffect(() => {
     let mort = false;
-    Promise.all([listerMembres(), listerEtiquettes()])
+    Promise.all([listerMembres(PLAFOND_REGISTRE), listerEtiquettes()])
       .then(([liste, tags]) => {
         if (mort) return;
         setMembres(liste);
@@ -101,17 +102,22 @@ const MessagerieSection: React.FC = () => {
   useEffect(() => suivreEnvois(setEnvois), []);
 
   // ── Le filtrage : le nom, la fonction et l'étiquette se cumulent ──
+  // Le registre vraiment joignable : ni la personne qui écrit, ni le
+  // compte d'affichage du festival, qui ne reçoit rien.
+  const joignables = useMemo(
+    () => membres.filter((m) => m.uid && m.uid !== user?.uid && m.uid !== FESTIVAL_UID),
+    [membres, user?.uid],
+  );
+
   const trouves = useMemo(() => {
-    let liste = membres.filter((m) => m.uid && m.uid !== user?.uid);
+    let liste = joignables;
     if (fonction !== TOUTES_FONCTIONS) liste = membresParRole(liste, fonction as RoleMembre);
     if (etiquette !== TOUTES_ETIQUETTES) liste = membresParTag(liste, etiquette);
     return filtrerMembres(liste, terme);
-  }, [membres, terme, fonction, etiquette, user?.uid]);
+  }, [joignables, terme, fonction, etiquette]);
 
   const nbCoches = coches.size;
-  const destinataires = portee === 'tous'
-    ? membres.filter((m) => m.uid && m.uid !== user?.uid).length
-    : nbCoches;
+  const destinataires = portee === 'tous' ? joignables.length : nbCoches;
 
   const seul = portee === 'une' && nbCoches === 1
     ? membres.find((m) => m.uid === [...coches][0]) ?? null

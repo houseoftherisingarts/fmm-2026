@@ -28,6 +28,7 @@ import {
   suivrePartieDes, scellerSaMain, lireMaMain, lireLesMains,
   annoncerEnLigne, leverLesGobelets, compterLesDes, mancheSuivanteEnLigne,
   passerLeTourAbsent, abandonnerDes, repondreAuDefiDes, type PartieDes,
+  demarrerPartieDes, JOUEURS_MAX,
 } from '../../firebase/desParties';
 
 // ─── Les dés du menteur ─────────────────────────────────────────────
@@ -528,6 +529,8 @@ const DesPage: React.FC = () => {
       : 'Your challenge is on its way. The table will be set as soon as the answer arrives.',
     vousDefie: fr ? 'vous défie aux dés' : 'challenges you at dice',
     prendrePlace: fr ? 'Prendre ma place' : 'Take my seat',
+    assis: fr ? 'Autour de la table' : 'Seated at the table',
+    donnerLeDepart: fr ? 'Donner le départ' : 'Start the game',
     defiRefuse: fr ? 'Ce défi a été refusé.' : 'This challenge was declined.',
     connectez: fr
       ? 'Connectez-vous pour prendre votre place à cette table.'
@@ -889,9 +892,40 @@ const DesPage: React.FC = () => {
                       <span className="fmm-glass-btn-label">{t.prendrePlace}</span>
                     </button>
                   </>
+                ) : enLigne.statut === 'lobby' ? (
+                  <>
+                    {/* La table ouverte : qui est assis, et le départ que
+                        donne celui qui a lancé le défi (Alex, 2026-08-24). */}
+                    <p className="witcher-stat-label mb-3">
+                      {t.assis} {enLigne.joueurs.length} / {JOUEURS_MAX}
+                    </p>
+                    <ul className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                      {enLigne.joueurs.map((u) => (
+                        <li key={u}
+                            className="px-3.5 py-2 rounded-[15px] border border-white/15 bg-black/35 font-editorial text-[13px] text-ivory">
+                          {enLigne.noms[u] || '—'}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed mb-4">
+                      {t.attendSiege}
+                    </p>
+                    {user && enLigne.lancePar === user.uid && (
+                      <button
+                        type="button"
+                        disabled={enLigne.joueurs.length < 2}
+                        onClick={() => { void demarrerPartieDes(partieId!); }}
+                        className="fmm-glass-btn is-primary px-6 py-3.5 disabled:opacity-40"
+                        style={{ flexDirection: 'row', gap: '0.5rem' }}
+                      >
+                        <Dices size={15} className="text-brass" />
+                        <span className="fmm-glass-btn-label">{t.donnerLeDepart}</span>
+                      </button>
+                    )}
+                  </>
                 ) : (
                   <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed">
-                    {enLigne.statut === 'lobby' ? t.attendSiege : t.attendReponse}
+                    {t.attendReponse}
                   </p>
                 )}
               </div>

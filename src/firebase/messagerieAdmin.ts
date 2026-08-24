@@ -48,6 +48,13 @@ export const FESTIVAL_PHOTO = '/fmm-logo-embossed-silver.webp';
  *  et banquetLien dans functions/index.js. */
 const REGION = 'us-central1';
 
+/** Le nombre de fiches que la page et la fonction acceptent de lire.
+ *  Les deux chiffres doivent rester égaux : si la page en comptait 300
+ *  et la fonction 3 000, le panneau de confirmation annoncerait un
+ *  nombre de destinataires plus petit que ce qui partirait vraiment.
+ *  Le jumeau vit dans functions/index.js sous PLAFOND_REGISTRE. */
+export const PLAFOND_REGISTRE = 3000;
+
 // ── L'envoi à une seule personne ────────────────────────────────────
 
 export interface Expediteur {
@@ -113,7 +120,11 @@ export async function envoyerEnNombre(demande: DemandeEnvoi): Promise<ResultatEn
     getFunctions(firebaseApp, REGION),
     'messagerieDeMasse',
   );
-  const { data } = await appeler({ ...demande, texte });
+  // La charge se construit clé par clé : un `uids: undefined` traverse
+  // le sérialiseur en `null` et brouille la lecture côté fonction.
+  const charge: DemandeEnvoi = { portee: demande.portee, texte, cible: demande.cible };
+  if (demande.portee === 'selection') charge.uids = demande.uids || [];
+  const { data } = await appeler(charge);
   return data;
 }
 

@@ -75,6 +75,12 @@ const MAINS = 'mains';
  *  laisser la table entière attendre un onglet fermé. */
 export const DUREE_TOUR_MS = 60_000;
 
+/** Une table de dés du menteur porte jusqu'à cinq joueurs (Alex,
+ *  2026-08-24 : « être capable de rajouter, avant de commencer,
+ *  plusieurs joueurs »). Le lobby reste ouvert tant que celui qui a
+ *  lancé le défi n'a pas donné le départ. */
+export const JOUEURS_MAX = 5;
+
 const prochainSablier = () => Timestamp.fromMillis(Date.now() + DUREE_TOUR_MS);
 
 /** L'état d'une manche neuve, gobelets pleins et parole au premier. */
@@ -177,9 +183,31 @@ export async function rejoindreDefiDesParLien(
   const p = snap.data() as PartieDes;
   if (p.joueurs.includes(uid)) return 'moi';
   if (p.statut !== 'lobby') return 'plein';
+  if (p.joueurs.length >= JOUEURS_MAX) return 'plein';
+  // La personne prend un siège, et la table attend. C'est celui qui a
+  // lancé le défi qui donne le départ, une fois tout le monde assis.
   const joueurs = [...p.joueurs, uid];
   await updateDoc(ref, {
     ...champsEtat(etatDeDepart(joueurs, { ...p.noms, [uid]: nom })),
+    statut: 'lobby' as StatutPartieDes,
+    echeance: null,
+    updatedAt: serverTimestamp(),
+  });
+  return 'ok';
+}
+
+/** Le départ, donné par celui qui a ouvert la table. Il faut au moins
+ *  deux personnes assises. */
+export async function demarrerPartieDes(id: string): Promise<'ok' | 'seul' | 'introuvable'> {
+  if (!db) return 'introuvable';
+  const ref = doc(db, COL, id);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return 'introuvable';
+  const p = snap.data() as PartieDes;
+  if (p.joueurs.length < 2) return 'seul';
+  await updateDoc(ref, {
+    ...champsEtat(etatDeDepart(p.joueurs, p.noms)),
+    statut: 'encours' as StatutPartieDes,
     echeance: prochainSablier(),
     updatedAt: serverTimestamp(),
   });
