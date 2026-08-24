@@ -495,6 +495,8 @@ const DesPage: React.FC = () => {
       ? 'Le curé rappelle que les jeux de hasard sont défendus. Jouez discrètement, et ne dites pas qui vous a appris.'
       : 'The priest reminds you that games of chance are forbidden. Play quietly, and do not say who taught you.',
     joueurs: fr ? 'Autour de la table' : 'Around the table',
+    paruresDes: fr ? 'Les dés' : 'The dice',
+    paruresTable: fr ? 'La table' : 'The table',
     commencer: fr ? 'Dresser la table' : 'Set the table',
     annoncer: fr ? 'Annoncer' : 'Bid',
     menteur: fr ? 'Menteur !' : 'Liar!',
@@ -917,6 +919,23 @@ const DesPage: React.FC = () => {
                   <Dices size={16} className="text-brass" />
                   <span className="fmm-glass-btn-label">{t.commencer}</span>
                 </button>
+
+                {/* Les parures : les dés et le plateau se choisissent avant
+                    de dresser la table (Alex, 2026-08-23). */}
+                <div className="w-full flex flex-col gap-3 pt-1">
+                  <Parures
+                    titre={t.paruresDes}
+                    choix={SKINS_DE.map((k) => ({ id: k.id, nom: fr ? k.nomFR : k.nomEN }))}
+                    actif={skinDe}
+                    onChoisir={(id) => setSkinDe(id as IdSkinDe)}
+                  />
+                  <Parures
+                    titre={t.paruresTable}
+                    choix={SKINS_TABLE.map((k) => ({ id: k.id, nom: fr ? k.nomFR : k.nomEN }))}
+                    actif={skinTable}
+                    onChoisir={(id) => setSkinTable(id as IdSkinTable)}
+                  />
+                </div>
               </div>
             ) : partie.phase === 'devoilement' ? (
               <div className="flex justify-center">
@@ -1024,5 +1043,32 @@ const DesPage: React.FC = () => {
     </>
   );
 };
+
+// ─── Un rang de parures ─────────────────────────────────────────────
+const Parures: React.FC<{
+  titre: string;
+  choix: Array<{ id: string; nom: string }>;
+  actif: string;
+  onChoisir: (id: string) => void;
+}> = ({ titre, choix, actif, onChoisir }) => (
+  <div className="flex flex-wrap items-center justify-center gap-2">
+    <span className="witcher-stat-label mr-1">{titre}</span>
+    {choix.map((c) => (
+      <button
+        key={c.id}
+        type="button"
+        onClick={() => onChoisir(c.id)}
+        aria-pressed={actif === c.id}
+        className={`px-3.5 py-2 rounded-[15px] border font-sans text-[10px] uppercase tracking-[0.16em] transition-colors ${
+          actif === c.id
+            ? 'border-brass/70 bg-brass/15 text-ivory'
+            : 'border-white/15 bg-black/35 text-ivory-soft hover:text-ivory hover:border-brass/45'
+        }`}
+      >
+        {c.nom}
+      </button>
+    ))}
+  </div>
+);
 
 export default DesPage;
