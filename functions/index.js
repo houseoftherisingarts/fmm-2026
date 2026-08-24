@@ -98,7 +98,7 @@ async function lireCommande(orderId, jeton) {
 
 const CORPS_FR = (nom) => `Bonjour${nom ? ' ' + nom : ''},
 
-Merci d'avoir acheté le Grimoire du Festival. Il est en pièce jointe, en format PDF : vingt-sept recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites.
+Merci d'avoir acheté le livre de recettes du festival. Il est en pièce jointe, en format PDF : vingt-sept recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites.
 
 Les quantités sont celles des vraies marmites, celles qui nourrissent cinquante personnes. Divisez par dix pour une tablée, et goûtez souvent.
 
