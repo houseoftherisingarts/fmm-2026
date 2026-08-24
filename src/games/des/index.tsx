@@ -2,16 +2,28 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import CreditJeux from '../../components/jeux/CreditJeux';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dices, Minus, Plus, Skull, RotateCcw, Users, Target, ScrollText } from 'lucide-react';
+import {
+  Dices, Minus, Plus, Skull, RotateCcw, Users, Target, ScrollText,
+  X, Hourglass, Flag, Check, LogIn,
+} from 'lucide-react';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
+import PanneauAmis from '../../components/jeux/PanneauAmis';
+import { jeuDes } from './jeuDefiable';
 import { creerTable, type TableDes } from './scene';
 import {
   nouvellePartie, annoncer, douter, exact as appelExact, mancheSuivante, desEnJeu,
-  miseValide, coupDeLaMachine, type Partie, type Face,
+  miseValide, coupDeLaMachine, type Partie, type Face, type Joueur,
 } from './regles';
+import { sieges as siegesDe, toutLeMondeAScelle, vivants } from './enLigne';
+import {
+  suivrePartieDes, scellerSaMain, lireMaMain, lireLesMains,
+  annoncerEnLigne, leverLesGobelets, compterLesDes, mancheSuivanteEnLigne,
+  passerLeTourAbsent, abandonnerDes, repondreAuDefiDes, type PartieDes,
+} from '../../firebase/desParties';
 
 // ─── Les dés du menteur ─────────────────────────────────────────────
 // Troisième jeu du festival, celui de l'année de la Poudre (Alex,
