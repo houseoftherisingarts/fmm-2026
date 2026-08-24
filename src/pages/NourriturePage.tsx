@@ -487,7 +487,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
 const FR = {
   title: 'Village Nourriture',
   eyebrow: 'Le ventre du festival',
-  intro: 'Le menu du village pour les trois jours, le grand banquet à la table du seigneur, et le grimoire de recettes à rapporter chez soi.',
+  intro: 'Le menu du village pour les trois jours, le grand banquet à la table du seigneur, et le livre de recettes à rapporter chez soi.',
 
   kioskRail: 'Village Nourriture',
   kioskMeta: 'Service',
