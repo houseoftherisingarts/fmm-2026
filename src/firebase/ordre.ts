@@ -59,6 +59,10 @@ export interface Membre {
   nom: string;
   avatarUrl?: string;
   avatarHue?: number;
+  /** Position et zoom de la photo dans le médaillon rond, en fractions
+   *  relatives (0,0 = centrée, zoom 1 = cadrage plein sans recul) pour
+   *  tenir à toute taille d'affichage (AvatarUpload, 2026-08-23). */
+  cadrage?: { x: number; y: number; zoom: number };
   ville?: string;
   /** La description que la personne écrit sur elle-même. */
   devise?: string;
