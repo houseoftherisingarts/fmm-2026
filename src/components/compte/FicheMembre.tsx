@@ -455,7 +455,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   onClick={() => ouvrir(o)}
                   className="witcher-tab shrink-0 whitespace-nowrap inline-flex items-center gap-2 rounded-card"
                 >
-                  <Icone size={14} /> {t.onglet[o]}
+                  <Icone size={14} /> {(prive ? t.onglet : t.ongletPublic)[o]}
                 </button>
               );
             })}
