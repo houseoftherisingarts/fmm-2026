@@ -177,6 +177,21 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                     reçu de la première dès qu'on y revenait : personne
                     ne pouvait en acheter deux (Alex, 2026-08-23). Un
                     lien neuf se crée à chaque réservation. */}
+                {/* Le décompte des places, juste au-dessus du choix : la
+                    salle en compte cinquante et le chiffre vient des
+                    ventes réelles. Rien ne s'affiche tant que la lecture
+                    n'est pas fiable, plutôt qu'un chiffre inventé
+                    (Alex, 2026-08-23). */}
+                {restant !== null && (
+                  <p className="inline-flex items-center gap-3 mb-5 px-4 py-2.5 rounded-card border border-brass/30 bg-black/30 font-editorial text-sm md:text-base text-ivory-soft">
+                    <span
+                      aria-hidden
+                      className="shrink-0 w-[7px] h-[7px] rotate-45"
+                      style={{ background: 'var(--color-amber-glow)' }}
+                    />
+                    {t.restant(restant)}
+                  </p>
+                )}
                 <div className="flex flex-wrap items-center gap-3 mb-3">
                   <div className="inline-flex items-center gap-1 rounded-card border border-brass/35 bg-black/30 p-1">
                     <button
