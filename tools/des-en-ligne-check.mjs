@@ -140,8 +140,10 @@ const mains = {
 // ── À trois, la partie survit à une élimination ─────────────────────
 {
   const C = 'uidGauvain';
+  // L'annonce de deux cinq tient (Gauvain en a deux), donc Brunehilde
+  // doute à tort et perd son dernier dé.
   let q = sceller(neuve([A, B, C]));
-  q = { ...q, des: { [A]: 3, [B]: 1, [C]: 2 }, mise: { quantite: 6, face: 3, parUid: A }, tour: B };
+  q = { ...q, des: { [A]: 3, [B]: 1, [C]: 2 }, mise: { quantite: 2, face: 5, parUid: A }, tour: B };
   q = E.apresDoute(q, { [A]: [2, 2, 4], [B]: [6], [C]: [5, 5] });
   ok(q.elimines.join() === B, 'Brunehilde sort, vu ' + q.elimines.join());
   ok(q.phase === 'devoilement', 'la table tient encore debout');
