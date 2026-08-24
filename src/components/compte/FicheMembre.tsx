@@ -32,7 +32,11 @@ import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import MesBadges from './MesBadges';
 import MaFiche from './MaFiche';
-import DeDeLaVie from '../ordre/DeDeLaVie';
+import PhotosPanel from './PhotosPanel';
+
+// Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
+// derrière lui, donc il arrive à part, quand l'onglet s'ouvre.
+const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 // ─── La fiche d'un membre, une seule fois ────────────────────────────
 // Alex, 2026-08-23 : la version publique d'un profil n'était pas la même
