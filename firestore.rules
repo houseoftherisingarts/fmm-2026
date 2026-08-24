@@ -292,6 +292,81 @@ service cloud.firestore {
       allow write: if isOwner(uid);
     }
 
+    // ── Les dés du menteur, à plusieurs mains ─────────────────────
+    // Même patron que le tafl : le document porte le défi puis la
+    // partie, et le lobby d'un défi par lien se lit sans compte
+    // (Alex, 2026-08-23).
+    //
+    // La différence tient aux mains. Le document partagé ne dit que
+    // COMBIEN de dés chacun tient, jamais lesquels : les faces vivent
+    // dans /mains/{uid}, que les règles ci-dessous ferment au seul
+    // propriétaire jusqu'au dévoilement.
+    match /desParties/{partieId} {
+      function partieDes() {
+        return get(/databases/$(database)/documents/desParties/$(partieId)).data;
+      }
+
+      allow read:   if resource.data.statut == 'lobby'
+                    || (signedIn() && request.auth.uid in resource.data.joueurs);
+      allow create: if signedIn()
+                    && request.auth.uid in request.resource.data.joueurs
+                    && request.auth.uid == request.resource.data.lancePar
+                    && request.resource.data.mise == null
+                    && request.resource.data.manche == 1
+                    && request.resource.data.gagnant == null
+                    && request.resource.data.mainsPretes.size() == 0
+                    && (
+                      // Un défi nommé s'ouvre à deux, en attente.
+                      (request.resource.data.statut == 'defi'
+                       && request.resource.data.joueurs.size() == 2)
+                      // Un défi par lien s'ouvre seul, siège libre.
+                      || (request.resource.data.statut == 'lobby'
+                          && request.resource.data.joueurs.size() == 1)
+                    );
+      // Prendre le siège libre d'un défi ouvert : le seul cas où
+      // quelqu'un qui n'est pas encore dans la partie peut l'écrire.
+      allow update: if signedIn()
+                    && resource.data.statut == 'lobby'
+                    && !(request.auth.uid in resource.data.joueurs)
+                    && request.resource.data.statut == 'encours'
+                    && request.resource.data.joueurs.size() == 2
+                    && request.auth.uid in request.resource.data.joueurs
+                    && request.resource.data.lancePar == resource.data.lancePar
+                    && request.resource.data.manche == 1;
+      allow update: if signedIn()
+                    && request.auth.uid in resource.data.joueurs
+                    && request.resource.data.joueurs == resource.data.joueurs
+                    && request.resource.data.lancePar == resource.data.lancePar
+                    // Un refus est définitif, et une partie finie ne
+                    // se rouvre pas par-dessus.
+                    && resource.data.statut != 'refuse'
+                    && resource.data.statut != 'fini';
+      allow delete: if isAdmin();
+
+      // La main scellée d'un joueur, pour la manche en cours.
+      match /mains/{uid} {
+        // Chacun lit la sienne. Les autres n'y ont accès qu'une fois
+        // les gobelets levés, et alors tout le monde en même temps.
+        allow read:   if isOwner(uid)
+                      || (signedIn()
+                          && request.auth.uid in partieDes().joueurs
+                          && partieDes().phase == 'devoilement');
+        // On scelle sa main pour la manche qui s'ouvre, jamais après.
+        allow create: if isOwner(uid)
+                      && request.auth.uid in partieDes().joueurs
+                      && request.resource.data.uid == uid
+                      && request.resource.data.manche == partieDes().manche;
+        // Une main ne se récrit qu'à la manche suivante. Pendant la
+        // manche en cours elle est figée : impossible de changer ses
+        // dés après avoir entendu les annonces.
+        allow update: if isOwner(uid)
+                      && request.resource.data.uid == uid
+                      && request.resource.data.manche > resource.data.manche
+                      && request.resource.data.manche == partieDes().manche;
+        allow delete: if isAdmin();
+      }
+    }
+
     // ── Les badges du site ────────────────────────────────────────
     // Chacun écrit les siens. La fiche d'un membre montre ses badges
     // aux autres membres connectés : le contenu n'est qu'une liste
