@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Mail, Search, Send, TriangleAlert, Loader2, CircleCheck, History,
   Users, FlaskConical, Feather, Filter,
@@ -18,7 +18,7 @@ import {
 // Alex, 2026-08-24 : d'ici, l'équipe écrit aux gens des listes de
 // clients. Quatre gestes, dans l'ordre où ils se posent.
 //
-//   1. Choisir la lettre parmi les neuf modèles, en français ou en
+//   1. Choisir la lettre parmi les dix modèles, en français ou en
 //      anglais.
 //   2. Choisir à qui elle part : par année, par catégorie, par le
 //      filtre « n'a rien acheté cette année », ou en cochant des noms.

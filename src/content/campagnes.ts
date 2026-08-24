@@ -335,8 +335,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Vous y trouverez la marmite du campement, avec son olla gitana aux pois chiches et sa goulash au paprika, servies dans le pain viking. Le grill donne les brochettes de poulet au cidre et le bœuf au cumin. La boulangerie sort quatre pains, dont le pain aux insectes et le lembas, et l’abreuvoir verse l’hypocras, la cervoise et la bière au beurre.',
-        EN: 'You will find the camp cauldron there, with its chickpea olla gitana and its paprika goulash, both served in viking bread. The grill gives you cider-marinated chicken skewers and cumin beef. The bakery turns out four breads, among them the insect bread and the lembas, and the watering hole pours hypocras, cervoise and butterbeer.',
+        FR: 'Vous y trouverez la marmite du campement, avec son olla gitana aux pois chiches et sa goulash au paprika, servies dans le pain viking. Le grill donne les brochettes de poulet au cidre et le bœuf au cumin. La boulangerie sort quatre pains, dont le pain aux insectes et le lembas. L’abreuvoir verse l’hypocras, la cervoise et la bière au beurre.',
+        EN: 'You will find the camp cauldron there, with its chickpea olla gitana and its paprika goulash, both served in viking bread. The grill gives you cider-marinated chicken skewers and cumin beef. The bakery turns out four breads, among them the insect bread and the lembas. The watering hole pours hypocras, cervoise and butterbeer.',
       },
       {
         type: 'photo',
