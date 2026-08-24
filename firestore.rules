@@ -372,6 +372,26 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Les ouvertures d'infolettre ───────────────────────────────
+    // Une ligne par personne et par campagne, la clé porte les deux
+    // sous la forme `<campagne>__<courriel>`. Elle dit quand cette
+    // personne a ouvert la lettre la première fois, la dernière fois,
+    // et combien de fois en tout.
+    //
+    // ÉCRITURE FERMÉE À TOUT LE MONDE, l'équipe comprise. La Cloud
+    // Function `pixel` écrit par le SDK d'administration, qui passe
+    // outre ces règles. Un taux d'ouverture qui se retouche depuis un
+    // navigateur ne vaut plus rien, et le chiffre affiché dans l'admin
+    // doit rester celui que la fonction a réellement constaté.
+    //
+    // La lecture reste à l'équipe : la collection porte l'adresse
+    // courriel de gens réels et le moment où ils lisent leurs
+    // messages. Rien de tout cela ne sort de l'admin.
+    match /campagnesOuvertures/{docId} {
+      allow read:  if isAdmin();
+      allow write: if false;
+    }
+
     // ── Les campagnes programmées ─────────────────────────────────
     // Le rendez-vous d'un envoi : la lettre rendue, la portée des
     // destinataires, l'instant d'envoi et l'état. La fonction planifiée

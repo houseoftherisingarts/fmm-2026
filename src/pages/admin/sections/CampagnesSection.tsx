@@ -20,6 +20,8 @@ import {
 import {
   FUSEAU_FESTIVAL, ecrireHeureMontreal, instantDepuisMontreal, montrealDepuisInstant,
 } from '../../../lib/heureMontreal';
+// Le taux d'ouverture de chaque lettre, tenu dans son propre fichier.
+import { OuverturesCampagne, NoteOuvertures } from './CampagnesOuvertures';
 
 // ─── Les campagnes de courriels ──────────────────────────────────────
 // Alex, 2026-08-24 : d'ici, l'équipe écrit aux gens des listes de
@@ -1043,6 +1045,7 @@ const CampagnesSection: React.FC = () => {
                     <Badge tone="neutral">{c.desabonnesIgnores} désabonnée{c.desabonnesIgnores > 1 ? 's' : ''}</Badge>
                   )}
                 </div>
+                <OuverturesCampagne campagne={c} />
                 <p className="font-sans text-[11px] mt-3" style={{ color: 'var(--admin-text-mute)' }}>
                   {c.parNom} · {c.cible}
                 </p>
@@ -1053,6 +1056,8 @@ const CampagnesSection: React.FC = () => {
             ))}
           </ul>
         )}
+
+        <NoteOuvertures />
       </Card>
 
     </div>
