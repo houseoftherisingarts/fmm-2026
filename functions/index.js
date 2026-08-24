@@ -1090,13 +1090,15 @@ exports.minuterieCampagnes = onSchedule(
 
     if (attente.empty) return;
 
-    // La plus vieille d'abord : une campagne dont l'heure est passée
-    // depuis longtemps ne doit pas se faire doubler par une autre.
-    const candidates = attente.docs.sort(
-      (a, b) => (prog.enMillis(a.get('envoiPrevuLe')) || 0) - (prog.enMillis(b.get('envoiPrevuLe')) || 0),
+    // Ce qui est dû, la plus vieille d'abord. Le verdict rendu ici est
+    // pris sur une lecture ordinaire : il dit quoi essayer, et c'est la
+    // transaction juste en dessous qui tranche pour de bon.
+    const dues = prog.campagnesDues(
+      attente.docs.map((doc) => ({ id: doc.id, ref: doc.ref, data: doc.data() })),
+      Date.now(),
     );
 
-    for (const candidate of candidates) {
+    for (const candidate of dues) {
       const ref = candidate.ref;
 
       // ── Le verrou ──
@@ -1117,7 +1119,7 @@ exports.minuterieCampagnes = onSchedule(
 
       if (!verdict.prendre) continue;
 
-      const d = candidate.data() || {};
+      const d = candidate.data || {};
       const tentatives = Number(d.tentatives || 0) + 1;
       logger.info('[minuterie] campagne prise', {
         campagne: ref.id, raison: verdict.raison, tentatives, reprisA: verdict.reprisA,

@@ -174,6 +174,28 @@ function destinatairesDuFiltre(clients, comptes, portee, anneeCourante) {
     .sort((a, b) => (a.courriel < b.courriel ? -1 : a.courriel > b.courriel ? 1 : 0));
 }
 
+/**
+ * Les campagnes à prendre, la plus vieille d'abord.
+ *
+ * La minuterie lit un paquet de documents en attente et doit décider
+ * lesquels partent, et dans quel ordre. Une campagne dont l'heure est
+ * passée depuis longtemps ne doit pas se faire doubler par une plus
+ * récente : le tri se fait donc sur l'heure prévue, jamais sur l'ordre
+ * de lecture de Firestore.
+ *
+ * Le verdict rendu ici est pris sur une lecture ordinaire. Il dit
+ * seulement quoi essayer. C'est la transaction, dans index.js, qui
+ * tranche pour de bon, sur une lecture fraîche.
+ *
+ * @param documents [{ id, data }], tels que la lecture les rend.
+ */
+function campagnesDues(documents, maintenant, verrouMs = VERROU_MS) {
+  return (documents || [])
+    .map((doc) => ({ ...doc, verdict: estAPrendre(doc && doc.data, maintenant, verrouMs) }))
+    .filter((c) => c.verdict.prendre)
+    .sort((a, b) => (enMillis(a.data.envoiPrevuLe) || 0) - (enMillis(b.data.envoiPrevuLe) || 0));
+}
+
 /** Ce qui reste à envoyer après une interruption. Les adresses déjà
  *  traitées viennent avant `reprisA` dans l'ordre alphabétique, alors
  *  il suffit de les écarter. La reprise reste juste même si le registre
@@ -185,5 +207,5 @@ function resteAFaire(vises, reprisA) {
 
 module.exports = {
   FUSEAU_FESTIVAL, VERROU_MS, ETATS, enMillis, normaliserCourriel,
-  estAPrendre, destinatairesDuFiltre, resteAFaire,
+  estAPrendre, campagnesDues, destinatairesDuFiltre, resteAFaire,
 };
