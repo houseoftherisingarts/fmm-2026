@@ -377,9 +377,9 @@ ${corps}${cta}
                 <a href="${SIGNATURE.billetterie}" target="_blank" style="color:${C.texteDoux};text-decoration:none;border-bottom:1px solid ${C.bordure};">${e(piedBillets)}</a>
               </p>
               <p style="margin:16px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">${e(piedPhotos)}</p>
-              <p style="margin:6px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">
-                ${e(piedRaison)}
-                <a href="${JETON_DESABONNEMENT}" target="_blank" style="color:${C.texteMuet};text-decoration:underline;">${e(piedDesabo)}</a>.
+              <p style="margin:6px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">${e(piedRaison)}</p>
+              <p style="margin:8px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">
+                <a href="${JETON_DESABONNEMENT}" target="_blank" style="color:${C.texteMuet};text-decoration:underline;">${e(piedDesabo)}</a>
               </p>
             </td>
           </tr>
