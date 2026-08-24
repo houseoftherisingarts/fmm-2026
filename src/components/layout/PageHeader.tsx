@@ -162,9 +162,13 @@ const PageHeader: React.FC<Props> = ({
           }`}
           onClick={onOrbClick}
           onKeyDown={onOrbClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOrbClick(); } } : undefined}
-          role={onOrbClick ? 'button' : undefined}
           tabIndex={onOrbClick ? 0 : undefined}
-          aria-label={onOrbClick ? orbLabel : undefined}
+          // L'orbe est peint en fond, donc il n'a pas d'attribut alt.
+          // Sa description doit atteindre le DOM même quand il ne se
+          // clique pas, sinon un lecteur d'écran ne voit rien du tout
+          // (2026-08-24).
+          role={onOrbClick ? 'button' : (orbLabel ? 'img' : undefined)}
+          aria-label={orbLabel}
           style={onOrbClick ? { cursor: 'pointer' } : undefined}
         >
           {/* Outer warm glow ring */}
