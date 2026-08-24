@@ -183,13 +183,15 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
     if (!prive || !uid || !fiche) return;
     const nomVoulu = (nomForm || compte?.displayName || '').trim();
     const changeNom = Boolean(nomVoulu) && nomVoulu !== fiche.nom;
-    const rien = !changeNom
+    const changePhoto = Boolean(avatarUrl) && avatarUrl !== fiche.avatarUrl;
+    const rien = !changeNom && !changePhoto
       && (fiche.amis ?? 0) === amis
       && (fiche.parties ?? 0) === parties
       && (fiche.avisPris || []).join('|') === avisIds.join('|');
     if (rien) return;
     const paquet: Partial<Membre> = {
       ...(changeNom ? { nom: nomVoulu } : {}),
+      ...(changePhoto ? { avatarUrl } : {}),
       amis, parties, avisPris: avisIds,
     };
     const signature = JSON.stringify(paquet);
