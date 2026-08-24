@@ -780,11 +780,11 @@ const FR = {
   onglets: 'Les sections de la fiche', retour: 'Retour',
   onglet: {
     profil: 'Mon profil', badges: 'Mes badges', jeux: 'Mes jeux',
-    billets: 'Mes billets', collection: 'Ma collection',
+    billets: 'Mes billets', photos: 'Mes photos', collection: 'Ma collection',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Sa fiche', badges: 'Ses badges', jeux: 'Ses parties',
-    billets: 'Billets', collection: 'Sa collection',
+    billets: 'Billets', photos: 'Photos', collection: 'Sa collection',
   } as Record<Onglet, string>,
   presentation: 'Sa présentation',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
