@@ -10,6 +10,7 @@ import {
 } from './HistoirePage';
 import FriseHistoire from '../components/histoire/FriseHistoire';
 import Bibliotheque from '../components/histoire/Bibliotheque';
+import SaviezVous from '../components/apprendre/SaviezVous';
 import {
   ApprendreChapterSection, ThemeCaravanesSection, OriginesCirqueSection,
   EpoqueSection, FormationsSection,
@@ -20,7 +21,8 @@ import {
 // hero → 5 ans d'histoire → Ni G-N ni reconstitution → Archives photos
 // → Apprendre (avec Au-delà des clichés) → Caravanes & Saltimbanques
 // → Aux origines du cirque → Une époque aux réalités variées
-// → Formations et démonstrations → Plongez dans nos archives (machine
+// → Formations et démonstrations → Saviez-vous que → Plongez dans nos
+// archives (machine
 // à remonter le temps + film Viking) → L'équipe.
 // Frise animée ajoutée après « 5 ans d'histoire » le 2026-08-05, derrière
 // `showHistoireFrise` (éteint) : invisible tant qu'Alex ne l'a pas validée.
@@ -55,6 +57,12 @@ const HistoireApprendrePage: React.FC = () => {
       <OriginesCirqueSection />
       <EpoqueSection />
       <FormationsSection />
+
+      {/* Le carnet des curiosités : des faits vérifiés, un par carte.
+          Placé au bout du bloc « Apprendre » parce qu'il appartient à
+          ce que le festival transmet, et parce que la bibliothèque
+          garde le tout dernier mot de la page (Alex, 2026-08-23). */}
+      <SaviezVous lang={lang} />
 
       <PlongezArchivesSection />
       <EquipeSection />

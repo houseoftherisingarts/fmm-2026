@@ -403,7 +403,10 @@ def _virgule(txt):
     return txt.replace('.', ',')
 
 
-FRACTIONS = {0.25: '¼', 0.33: '⅓', 0.5: '½', 0.66: '⅔', 0.75: '¾'}
+# Le tiers et les deux tiers de cuillère ont été retirés le 2026-08-24 :
+# personne ne mesure un tiers de cuillère à soupe dans une cuisine de
+# maison. Il ne reste que ce qu'un jeu de cuillères sait faire.
+FRACTIONS = {0.25: '¼', 0.5: '½', 0.75: '¾'}
 
 def _fraction(v):
     for cle, sym in FRACTIONS.items():
