@@ -393,3 +393,162 @@ exports.banquetLien = onRequest(
     }
   },
 );
+
+// ─── La messagerie de l'équipe vers les membres ──────────────────────
+// Alex, 2026-08-24 : depuis l'espace admin, l'équipe écrit dans la
+// boîte de réception d'une poignée de membres cochés, ou de tout le
+// registre d'un seul coup. Le navigateur ne peut pas s'en charger :
+// trois cents membres font six cents écritures, un onglet fermé au
+// milieu laisse la moitié du travail derrière, et rien ne dit ensuite
+// ce qui est parti. La fonction fait le tour par lots de deux cents
+// membres et rend le compte exact des fils touchés.
+//
+// Le message part au nom du festival, jamais au nom d'une personne :
+// un membre qui reçoit une annonce doit reconnaître d'où elle vient.
+// L'identité « festival » n'a de compte nulle part, c'est un nom
+// d'affichage, et la même chaîne vit dans src/firebase/messagerieAdmin.ts.
+//
+// L'envoi à une seule personne ne passe PAS par ici : il part du
+// navigateur, au nom de la personne qui écrit, dans le fil ordinaire.
+
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { FieldValue } = require('firebase-admin/firestore');
+
+// Les mêmes courriels que la fonction isAdmin() de firestore.rules.
+// Les deux listes doivent rester jumelles : celle-ci garde la fonction,
+// celle des règles garde la base.
+const COURRIELS_ADMIN = [
+  'admin@festivalmedievaldemontpellier.org',
+  'alex@lesalondesinconnus.com',
+  'houseoftherisingarts@gmail.com',
+  'm.fournel11@gmail.com',                    // Maïté, Master Bénévole
+  'benevoles.medievalmontpellier@gmail.com',  // Maïté, courriel de fonction
+];
+
+const FESTIVAL_UID = 'festival';
+const FESTIVAL_NOM = 'Le Festival Médiéval de Montpellier';
+const FESTIVAL_TEINTE = 38;
+const FESTIVAL_PHOTO = '/fmm-logo-embossed-silver.webp';
+
+const LONGUEUR_MAX = 2000;      // le même plafond que firestore.rules
+const MEMBRES_PAR_LOT = 200;    // 200 membres font 400 écritures, sous le plafond de 500
+const PLAFOND_REGISTRE = 3000;  // au-delà, l'envoi se refuse plutôt que de ramper
+
+const filId = (a, b) => [a, b].sort().join('__');
+
+exports.messagerieDeMasse = onCall(
+  { region: 'us-central1', memory: '256MiB', timeoutSeconds: 540 },
+  async (requete) => {
+    const auth = requete.auth;
+    const courriel = auth && auth.token && auth.token.email
+      ? String(auth.token.email).toLowerCase()
+      : null;
+    if (!courriel || !COURRIELS_ADMIN.includes(courriel)) {
+      logger.warn('[messagerie] appel refusé', { courriel });
+      throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
+    }
+
+    const donnees = requete.data || {};
+    const texte = String(donnees.texte || '').trim().slice(0, LONGUEUR_MAX);
+    if (!texte) throw new HttpsError('invalid-argument', 'Le message est vide.');
+
+    const portee = donnees.portee === 'tous' ? 'tous' : 'selection';
+    const cible = String(donnees.cible || 'Sans portée nommée').slice(0, 160);
+
+    // Les destinataires : soit le registre entier, soit la liste cochée.
+    // La liste cochée se relit dans le registre plutôt que d'être crue
+    // sur parole, pour qu'un uid inventé côté navigateur n'ouvre aucun
+    // fil et que les noms viennent de la base.
+    let membres = [];
+    if (portee === 'tous') {
+      const snap = await db.collection('membres').limit(PLAFOND_REGISTRE).get();
+      membres = snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+    } else {
+      const demandes = Array.isArray(donnees.uids) ? donnees.uids.map(String) : [];
+      if (!demandes.length) {
+        throw new HttpsError('invalid-argument', 'Aucun destinataire n’est coché.');
+      }
+      if (demandes.length > PLAFOND_REGISTRE) {
+        throw new HttpsError('invalid-argument', 'Trop de destinataires d’un coup.');
+      }
+      // getAll() par paquets de 200 : une seule lecture par membre.
+      for (let i = 0; i < demandes.length; i += MEMBRES_PAR_LOT) {
+        const refs = demandes.slice(i, i + MEMBRES_PAR_LOT)
+          .map((uid) => db.collection('membres').doc(uid));
+        const lus = await db.getAll(...refs);
+        for (const d of lus) if (d.exists) membres.push({ uid: d.id, ...d.data() });
+      }
+    }
+
+    const vises = membres.filter((m) => m.uid && m.uid !== FESTIVAL_UID);
+    const ignores = membres.length - vises.length;
+    if (!vises.length) {
+      throw new HttpsError('not-found', 'Personne dans le registre ne correspond.');
+    }
+
+    // La trace s'ouvre AVANT le premier lot : si la fonction meurt en
+    // route, Alex voit quand même qu'un envoi a commencé, ce qui est
+    // parti, et où il s'est arrêté. C'est aussi ce document que la page
+    // regarde pour montrer l'avancement.
+    const trace = db.collection('envoisMasse').doc();
+    const parNom = (auth.token && (auth.token.name || auth.token.email)) || 'Équipe';
+    await trace.set({
+      parUid: auth.uid,
+      parNom: String(parNom),
+      parCourriel: courriel,
+      cible,
+      portee,
+      texte,
+      destinataires: vises.length,
+      faits: 0,
+      statut: 'en cours',
+      envoyeLe: FieldValue.serverTimestamp(),
+    });
+
+    let faits = 0;
+    try {
+      for (let i = 0; i < vises.length; i += MEMBRES_PAR_LOT) {
+        const lot = db.batch();
+        for (const m of vises.slice(i, i + MEMBRES_PAR_LOT)) {
+          const id = filId(FESTIVAL_UID, m.uid);
+          const fil = db.collection('dms').doc(id);
+          const nom = String(m.nom || '').trim() || 'Membre';
+          const photos = { [FESTIVAL_UID]: FESTIVAL_PHOTO };
+          if (m.avatarUrl) photos[m.uid] = String(m.avatarUrl);
+
+          lot.set(fil, {
+            participantUids:   [FESTIVAL_UID, m.uid].sort(),
+            participantNames:  { [FESTIVAL_UID]: FESTIVAL_NOM, [m.uid]: nom },
+            participantHues:   { [FESTIVAL_UID]: FESTIVAL_TEINTE, [m.uid]: Number(m.avatarHue) || 0 },
+            participantPhotos: photos,
+            lastMessage:   texte.slice(0, 140),
+            lastMessageAt: FieldValue.serverTimestamp(),
+            lastSenderUid: FESTIVAL_UID,
+            unread:        { [m.uid]: FieldValue.increment(1) },
+            annonce:       true,
+          }, { merge: true });
+
+          lot.set(fil.collection('messages').doc(), {
+            senderUid:  FESTIVAL_UID,
+            senderName: FESTIVAL_NOM,
+            body:       texte,
+            createdAt:  FieldValue.serverTimestamp(),
+            envoiId:    trace.id,
+          });
+        }
+        await lot.commit();
+        faits += Math.min(MEMBRES_PAR_LOT, vises.length - i);
+        // L'avancement, lot par lot : la page le lit en direct.
+        await trace.update({ faits });
+      }
+    } catch (err) {
+      logger.error('[messagerie] envoi interrompu', { envoi: trace.id, faits, err });
+      await trace.update({ statut: 'échoué', faits, erreur: String((err && err.message) || err) });
+      throw new HttpsError('internal', `L’envoi s’est arrêté après ${faits} fils.`);
+    }
+
+    await trace.update({ statut: 'terminé', faits });
+    logger.info('[messagerie] envoi terminé', { envoi: trace.id, cible, fils: faits });
+    return { fils: faits, ignores, envoiId: trace.id };
+  },
+);

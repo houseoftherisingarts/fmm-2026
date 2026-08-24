@@ -318,12 +318,42 @@ service cloud.firestore {
     match /membres/{uid} {
       allow read:   if signedIn();
       allow create: if isAdmin()
-                    || (isOwner(uid) && !('roles' in request.resource.data));
+                    || (isOwner(uid)
+                        && !('roles' in request.resource.data)
+                        && !('tags'  in request.resource.data));
+      // `tags` suit exactement le sort de `roles` : les étiquettes de
+      // groupe (viking, marchand du dimanche, municipalité) servent à
+      // former les listes d'envoi de l'équipe, et personne ne se les
+      // attribue tout seul (Alex, 2026-08-24).
       allow update: if isAdmin()
                     || (isOwner(uid)
                         && !request.resource.data.diff(resource.data).affectedKeys()
-                              .hasAny(['roles']));
+                              .hasAny(['roles', 'tags']));
       allow delete: if isAdmin();
+    }
+
+    // ── Le catalogue des étiquettes de groupe ─────────────────────
+    // Un seul document, pour que l'équipe choisisse une étiquette dans
+    // une liste au lieu de la retaper et de se retrouver avec trois
+    // orthographes du même mot. Tout membre connecté le lit, puisque
+    // ses propres étiquettes paraissent sur sa fiche; l'équipe seule
+    // l'écrit.
+    match /etiquettesOrdre/{doc} {
+      allow read:  if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── L'historique des envois de groupe ─────────────────────────
+    // Qui a écrit, quand, à qui, combien de fils, et le texte exact.
+    // Alex doit pouvoir savoir ce qui est parti sans fouiller les fils
+    // un par un. Réservé à l'équipe de bout en bout : un membre n'a
+    // aucune raison de voir la liste des envois du festival. La Cloud
+    // Function `messagerieDeMasse` écrit par le SDK d'administration,
+    // qui passe outre ces règles, donc l'écriture reste fermée ici même
+    // à l'équipe : personne ne fabrique une fausse trace à la main.
+    match /envoisMasse/{docId} {
+      allow read:  if isAdmin();
+      allow write: if false;
     }
 
     // ── L'Ordre : les amitiés ─────────────────────────────────────

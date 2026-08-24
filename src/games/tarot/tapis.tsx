@@ -122,18 +122,6 @@ const CarteSeule: React.FC<{
         )}
       </AnimatePresence>
     </button>
-    <AnimatePresence>
-      {panneau && tiree && !sansPanneau && (
-        <PanneauSens
-          key={`carte-${tiree.lame.code}`}
-          tiree={tiree}
-          titre={titre}
-          fr={fr}
-          reduce={reduce}
-          className="hidden lg:block absolute inset-0 pointer-events-none"
-        />
-      )}
-    </AnimatePresence>
   </div>
 );
 

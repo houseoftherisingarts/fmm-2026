@@ -9,8 +9,9 @@
 //   /amities/{a__b}    une ligne par paire, les deux peuvent l'écrire
 
 import {
-  addDoc, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, limit as fbLimit,
-  onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where,
+  addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs,
+  limit as fbLimit, onSnapshot, orderBy, query, serverTimestamp, setDoc,
+  updateDoc, where, writeBatch,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { LONGUEUR_MAX } from './moderation';
@@ -159,6 +160,33 @@ export async function creerEtiquette(nom: string): Promise<string> {
     tags: arrayUnion(propre), maj: serverTimestamp(),
   }, { merge: true });
   return propre;
+}
+
+/** Coller ou décoller une étiquette sur plusieurs membres d'un coup.
+ *  Un lot Firestore accepte 500 écritures, donc le registre entier
+ *  passe en une poignée d'allers-retours au lieu d'un par membre. */
+export async function marquerMembres(
+  uids: string[], tag: string, poser: boolean,
+): Promise<number> {
+  const propre = normaliserTag(tag);
+  if (!db || !propre || !uids.length) return 0;
+  let touches = 0;
+  for (let i = 0; i < uids.length; i += 400) {
+    const lot = writeBatch(db);
+    for (const uid of uids.slice(i, i + 400)) {
+      lot.set(doc(db, MEMBRES, uid), {
+        uid,
+        tags: poser ? arrayUnion(propre) : arrayRemove(propre),
+        maj: serverTimestamp(),
+      }, { merge: true });
+      touches += 1;
+    }
+    await lot.commit();
+  }
+  // Une étiquette posée pour la première fois entre au catalogue, pour
+  // que le choix suivant se fasse dans la liste.
+  if (poser) await creerEtiquette(propre);
+  return touches;
 }
 
 /** Les membres qui portent l'étiquette, sans se soucier des accents ni

@@ -751,9 +751,11 @@ export function creerTable(): TableDes {
           POSE_Y + hauteur + e * 0.70,
           g.base.z + e * 0.66,
         );
-        // Il bascule de renversé (PI) à couché sur le flanc (PI/2),
-        // sans jamais claquer d'un coup dans l'autre sens.
-        gob.rotation.set(Math.PI - e * (Math.PI / 2), 0, 0);
+        // Il bascule de renversé à couché SUR LE FLANC, la bouche
+        // tournée de côté. En basculant sur l'axe X il finissait la
+        // bouche vers la caméra, et se lisait comme un grand disque noir
+        // posé sur la table (Alex, 2026-08-24).
+        gob.rotation.set(Math.PI * (1 - e), 0, e * (Math.PI / 2) * -cote);
       }
     });
 
