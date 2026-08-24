@@ -385,6 +385,9 @@ ${corps}${cta}
           </tr>
 
         </table>
+        <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
 
       </td>
     </tr>
