@@ -145,6 +145,22 @@ function conjugue(
   return `Vous ${formes[verbe]}`;
 }
 
+
+/** La partie s'arrête quand il ne reste qu'une personne debout, ou dès
+ *  que le joueur humain n'a plus un seul dé : il ne regarde pas les
+ *  autres finir sans lui (Alex, 2026-08-23). */
+function finie(joueurs: Joueur[]): boolean {
+  const debout = joueurs.filter((j) => !j.elimine);
+  return debout.length <= 1 || !!joueurs[0]?.elimine;
+}
+
+/** Le dernier debout gagne. Si le joueur humain tombe, personne ne
+ *  gagne à sa place tant que la table n'est pas réduite à un. */
+function vainqueur(joueurs: Joueur[]): string | undefined {
+  const debout = joueurs.filter((j) => !j.elimine);
+  return debout.length === 1 ? debout[0].id : undefined;
+}
+
 /** « Menteur ! » : on retourne les gobelets et quelqu'un perd un dé. */
 export function douter(p: Partie): Partie {
   if (p.phase !== 'annonces' || !p.mise) return p;
@@ -163,8 +179,8 @@ export function douter(p: Partie): Partie {
   return {
     ...p,
     joueurs: apres,
-    phase: restants.length <= 1 ? 'fini' : 'devoilement',
-    gagnantId: restants.length === 1 ? restants[0].id : undefined,
+    phase: finie(apres) ? 'fini' : 'devoilement',
+    gagnantId: vainqueur(apres),
     devoilement: {
       doutePar: douteur.id,
       contre: annonceur.id,
@@ -208,8 +224,8 @@ export function exact(p: Partie): Partie {
   return {
     ...p,
     joueurs: apres,
-    phase: restants.length <= 1 ? 'fini' : 'devoilement',
-    gagnantId: restants.length === 1 ? restants[0].id : undefined,
+    phase: finie(apres) ? 'fini' : 'devoilement',
+    gagnantId: vainqueur(apres),
     devoilement: {
       doutePar: appelant.id,
       contre: p.mise.parId,

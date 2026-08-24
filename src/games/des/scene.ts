@@ -255,7 +255,7 @@ const VERS_LE_CIEL: Record<Face, [number, number, number]> = {
  *  d'Euler il faisait basculer le dé sur une face voisine, et parfois
  *  le laissait en suspens (Alex, 2026-08-23). */
 const AXE_Y = new THREE.Vector3(0, 1, 0);
-function poserLeDe(de: THREE.Object3D, face: Face, hauteur = DE / 2): void {
+function poserLeDe(de: THREE.Object3D, face: Face, hauteur = 0.29): void {
   const [rx, ry, rz] = VERS_LE_CIEL[face];
   de.rotation.set(rx, ry, rz);
   de.rotateOnWorldAxis(AXE_Y, Math.random() * Math.PI * 2);
@@ -986,6 +986,10 @@ export function creerTable(): TableDes {
         const n = comptes[idx + 1] ?? 0;
         groupeDes.forEach((d, k) => { if (k >= n) d.visible = false; });
       });
+      // Qui n'a plus de dé quitte la table : son gobelet et sa place
+      // s'effacent (Alex, 2026-08-23).
+      gobelets.forEach((g, i) => { g.visible = (comptes[i] ?? 0) > 0; });
+      convives.forEach((c, i) => { c.visible = (comptes[i + 1] ?? 0) > 0; });
     },
   };
 }

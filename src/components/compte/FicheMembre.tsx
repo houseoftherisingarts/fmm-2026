@@ -32,6 +32,7 @@ import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import MesBadges from './MesBadges';
 import MaFiche from './MaFiche';
+import DeDeLaVie from '../ordre/DeDeLaVie';
 
 // ─── La fiche d'un membre, une seule fois ────────────────────────────
 // Alex, 2026-08-23 : la version publique d'un profil n'était pas la même
