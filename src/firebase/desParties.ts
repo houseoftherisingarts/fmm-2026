@@ -123,6 +123,12 @@ function champsTour(e: EtatDes) {
   };
 }
 
+/** L'état complet, gobelets à sceller compris : à la création d'une
+ *  partie, à l'arrivée du second joueur et à l'ouverture d'une manche. */
+function champsEtat(e: EtatDes) {
+  return { ...champsTour(e), mainsPretes: e.mainsPretes };
+}
+
 // ─── Ouvrir une partie ──────────────────────────────────────────────
 
 /** Défier quelqu'un par son nom. Le défi tombe dans son espace. */
