@@ -256,7 +256,8 @@ service cloud.firestore {
                     || (isOwner(uid) && !('roles' in request.resource.data));
       allow update: if isAdmin()
                     || (isOwner(uid)
-                        && !('roles' in request.resource.data.diff(resource.data).affectedKeys()));
+                        && !request.resource.data.diff(resource.data).affectedKeys()
+                              .hasAny(['roles']));
       allow delete: if isAdmin();
     }
 

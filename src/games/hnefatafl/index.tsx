@@ -1223,7 +1223,7 @@ const HnefataflPage: React.FC = () => {
           )}
           {/* Le damier et, pour une personne connectée, la colonne des
               amis à sa droite : on défie sans quitter la table. */}
-          <div className={user ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-5 lg:items-start' : ''}>
+          <div>
           <Reveal>
             <div
               className="relative rounded-card overflow-hidden border border-brass/25"
@@ -1477,11 +1477,7 @@ const HnefataflPage: React.FC = () => {
             </div>
           </Reveal>
 
-          {user && (
-            <div className="mt-5 lg:mt-0">
-              <PanneauAmis lang={lang} regleId={config.regleId} camp={config.humanSide} />
-            </div>
-          )}
+
           </div>
         </div>
       </section>
