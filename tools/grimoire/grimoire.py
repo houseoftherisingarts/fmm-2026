@@ -815,7 +815,6 @@ def build():
         r = recs[tab]
         portions = portions_de(r.get('yield'))
         def ligne_ing(i):
-            maison = pour_cinq(i['q'], portions, i['n']) if i['q'] else None
             nom = clean(i['n'])
             # « 450g avant cuisson » : la précision suit le produit, pas
             # le chiffre. Un cuisinier écrit « 450 g d'ail rôti (avant
