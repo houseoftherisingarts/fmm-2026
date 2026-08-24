@@ -9,21 +9,31 @@
 // de réception des membres, sur le site. Ici, ce sont de vrais
 // courriels qui sortent par le SMTP Zoho du festival.
 //
-// ⚠️ LE POINT D'ADAPTATION. La collection `clients` se bâtissait dans
-// un autre chantier au moment où ce fichier a été écrit, et
-// `src/firebase/clients.ts` n'existait pas encore. La lecture ci-dessous
-// est donc écrite contre la forme convenue (année, catégorie, courriel,
-// nom, présence d'un compte). Le jour où `clients.ts` arrive, une seule
-// fonction est à remplacer, `lireClients()`, et rien d'autre dans ce
-// fichier ni dans la section d'admin ne bouge.
+// LE REGISTRE DES CLIENTS ne se relit pas ici : il vit dans
+// `src/firebase/clients.ts`, bâti par le chantier voisin. Ce fichier
+// s'en sert et n'en duplique rien, pas même la liste des catégories.
+// Le seul travail propre aux campagnes est le FILTRE, qui taille la
+// liste des destinataires, et l'appel de la Cloud Function.
 
 import {
-  collection, getDocs, limit as fbLimit, onSnapshot, orderBy, query,
-  type DocumentData, type Timestamp,
+  collection, limit as fbLimit, onSnapshot, orderBy, query,
+  type Timestamp,
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, firebaseApp } from '../firebase';
+import {
+  listerClients, listerComptes, anneesDuRegistre, courrielsDeLAnnee,
+  CATEGORIES_CLIENT, LIBELLE_CATEGORIE,
+  type Client, type CategorieClient,
+} from './clients';
 import type { IdCampagne, LangueCampagne } from '../content/campagnes';
+
+// Réexportés pour que la section d'admin n'ait qu'une porte d'entrée.
+export {
+  listerClients, listerComptes, anneesDuRegistre,
+  CATEGORIES_CLIENT, LIBELLE_CATEGORIE,
+};
+export type { Client, CategorieClient };
 
 /** La région des Cloud Functions du festival, la même que
  *  `messagerieDeMasse` et `squareGrimoire`. */
