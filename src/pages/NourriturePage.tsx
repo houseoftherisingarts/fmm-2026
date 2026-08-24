@@ -39,6 +39,12 @@ const SQUARE_GRIMOIRE = 'https://square.link/u/OLtFu9jY';  //  9 $ + taxes = 10,
 // à true rouvre la vente, rien d'autre à toucher (Alex, 2026-08-23).
 const GRIMOIRE_EN_VENTE = false;
 
+// Le titre porte le nom complet du livre, qui est long. Les tailles sont
+// mesurées écran par écran pour qu'il tienne toujours sur deux lignes :
+// la colonne du bloc se resserre à `lg` (sept douzièmes moins les
+// gouttières), d'où le cran plus petit là et le retour à 48 px à `xl`.
+const TITRE_LIVRE = 'text-[1.5rem]! sm:text-3xl! md:text-5xl! lg:text-4xl! xl:text-5xl! mb-5';
+
 // ─── Village Nourriture · édition 2026 ───────────────────────────────
 // Trois choses sur cette page (Alex, 2026-08-22) :
 //   1. Le MENU DU VILLAGE : ce qui se commande aux étals les trois
