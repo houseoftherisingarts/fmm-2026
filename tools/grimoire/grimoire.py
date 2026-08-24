@@ -511,28 +511,76 @@ def _mesure_liquide(ml):
     return None
 
 
-def texte_pour_cinq(txt, portions):
-    """Ramène à cinq personnes les quantités écrites DANS une étape.
+# ── Les quantités écrites DANS une marche à suivre ──────────────────
+# Cinq étapes du livre portent un chiffre, et elles ne disent pas
+# toutes la même chose. Certaines donnent ce que reçoit UNE part, le
+# poids d'un pâton, la farce d'une datte, la contenance d'une tasse :
+# celles-là ne se divisent jamais, elles sont déjà à l'échelle du
+# convive. Les autres reprennent des quantités de la fiche et
+# descendent à cinq personnes comme le reste. Chaque ligne a été relue
+# à la main, rien n'est deviné (2026-08-24).
+ETAPES_POUR_CINQ = {
+    'pain insectes': [
+        ('50 pâtons', '5 pâtons'),
+    ],
+    'olla gitana': [
+        ("300ml huile", "30 ml d'huile"),
+        ("1L bouillon", "100 ml de bouillon"),
+        ("250ml vinaigre", "25 ml de vinaigre"),
+    ],
+}
 
-    Seules les masses et les volumes sont touchés. Un temps de cuisson
-    ne se divise jamais : vingt minutes de mijotage restent vingt
-    minutes, que la marmite nourrisse cinquante personnes ou cinq
-    (Alex, 2026-08-23).
+# Ce qui porte un chiffre et reste tel quel, avec la raison. Le
+# garde-fou de build() s'appuie là-dessus : une étape chiffrée qui
+# n'est nommée ni ici ni au-dessus fait crier l'outil.
+ETAPES_INCHANGEES = {
+    'bloodbraud': "le poids d'une galette, déjà par portion",
+    "les offrandes de l'oasis": "la farce d'une seule datte",
+    'vin chaud': "la contenance d'une tasse, pas une quantité",
+    'pain insectes': "le poids d'un pâton, déjà par portion",
+}
+
+ETAPE_CHIFFREE = re.compile(r'(\d+[.,]?\d*)\s*(kg|g|ml|l|L)\b(?!\w)')
+
+
+def etapes_pour_cinq(txt, tab):
+    """Applique à une étape les corrections relues pour cette recette."""
+    for motif, remplacement in ETAPES_POUR_CINQ.get(tab, ()):
+        txt = txt.replace(motif, remplacement)
+    return txt
+
+
+def _part_lisible(txt):
+    """« 110g brut » s'écrit « 110 g brut » dans un livre."""
+    t = re.sub(r'\s+', ' ', txt).strip().rstrip('.')
+    return re.sub(
+        r'(?i)\b(\d+[.,]?\d*)\s*(kg|g|ml|l)\b',
+        lambda m: m.group(1).replace('.', ',') + ' '
+        + ('L' if m.group(2).lower() == 'l' else m.group(2).lower()), t)
+
+
+def rendement_pour_cinq(rendement, portions, tab=''):
+    """Ce que la fiche donne une fois ramenée à cinq personnes.
+
+    Le livre ne compte plus qu'en tablée de cinq. Ce qui ne se divise
+    pas, une bouteille d'hypocras par exemple, garde le rendement de la
+    fiche : une bouteille reste une bouteille.
     """
-    if not portions or portions <= 5:
-        return txt
-
-    def remplacer(m):
-        brut = f'{m.group(1)}{m.group(2)}'
-        # Le mot qui suit la quantité nomme l'ingrédient : il permet de
-        # rendre une petite pesée en cuillères plutôt qu'en décigrammes.
-        suite = txt[m.end():m.end() + 40].strip()
-        mots = re.match(r"(?:de |d['’]|du |des )?([a-zà-ÿ' -]{3,24})", suite, re.I)
-        nom = mots.group(1).strip() if mots else ''
-        petit = pour_cinq(brut, portions, nom)
-        return f'{m.group(0)} (pour cinq : {petit})' if petit else m.group(0)
-
-    return re.sub(r'(\d+[.,]?\d*)\s*(kg|g|ml|l|L)\b(?!\w)', remplacer, txt)
+    t = (rendement or '').strip().replace(' ', ' ')
+    if not portions:
+        return t
+    tete = 'tasses' if re.search(r'\btasses?\b', t.split('·')[0], re.I) else 'portions'
+    # « 2 par portion » dit ce que chaque convive reçoit : ce chiffre
+    # traverse le changement d'échelle sans bouger.
+    m = re.search(r'(\d+)\s*par\s*portions?', t, re.I)
+    if m:
+        objet = 'brochettes' if 'brochette' in (t + tab).lower() else 'pièces'
+        return f'5 portions · {m.group(1)} {objet} par personne'
+    m = re.search(r'portions?\s*:?\s+([^·]+)$', t, re.I)
+    part = _part_lisible(m.group(1)) if m else ''
+    if not part or part.lower() == f'1 {tete[:-1]}':
+        return f'5 {tete}'
+    return f'5 {tete} · {part} par personne'
 
 
 def pour_cinq(q, portions, nom=''):
