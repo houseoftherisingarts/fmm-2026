@@ -348,6 +348,18 @@ console.log('');
 console.log(`  Total : ${toutesLesLignes.length} lignes retenues, ${fiches.length} fiches`
   + ` · ${annulees} annulées · ${presumees} à l’année présumée ${M.ANNEE_PRESUMEE}`);
 
+// La question qui commande tout le reste : à qui écrire pour l'an
+// prochain sans déranger ceux qui sont déjà revenus.
+const anneeCourante = M.anneesDuRegistre(fiches)[0];
+if (anneeCourante) {
+  const revenus = M.courrielsDeLAnnee(fiches, anneeCourante);
+  const absents = new Set(fiches
+    .filter((f) => f.annee !== anneeCourante && f.statut !== 'annule' && !revenus.has(f.courriel))
+    .map((f) => f.courriel));
+  console.log(`  ${revenus.size} personnes ont pris quelque chose en ${anneeCourante}.`
+    + ` ${absents.size} des années passées n’y sont pas revenues.`);
+}
+
 if (essai) {
   // Trois fiches au hasard, pour vérifier à l'œil que la fusion a bien
   // travaillé. Le courriel est masqué : un essai se lance souvent

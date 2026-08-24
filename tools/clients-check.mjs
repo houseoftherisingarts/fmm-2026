@@ -49,8 +49,8 @@ ok(C.identifiantClient(2025, 'billets', 'jean@exemple.com')
 ok(C.identifiantClient(2026, 'camping', 'jean@exemple.com')
    !== C.identifiantClient(2026, 'billets', 'jean@exemple.com'),
   'la même personne se range à part d’une catégorie à l’autre');
-ok(C.identifiantClient(null, 'camping', 'jean@exemple.com') === 'inconnue__camping__jean@exemple.com',
-  'une année absente se dit « inconnue », elle ne s’invente pas');
+ok(C.identifiantClient(C.ANNEE_PRESUMEE, 'camping', 'jean@exemple.com') === '2024__camping__jean@exemple.com',
+  'l’année présumée range la fiche comme n’importe quelle autre');
 
 // ── Les articles se lisent ──────────────────────────────────────────
 ok(C.analyserArticle('3 × Prévente').quantite === 3, 'trois préventes se comptent trois');
@@ -75,9 +75,9 @@ ok(classe('Prévente Festival Medieval de Montpellier 2025_8-24-2026.xlsx') === 
   'une prévente reste des billets');
 ok(classe('Bal Folk du 24 Mai 2024_8-24-2026.xlsx') === 'bal-folk/2024', 'le bal folk a sa catégorie');
 ok(classe('Mécènes du Festival_8-24-2026.xlsx') === 'mecenes/null',
-  'les mécènes n’ont pas d’année dans leur nom de fichier');
+  'les mécènes n’ont pas d’année dans leur nom de fichier, l’import ira la lire dans les dates');
 ok(classe('Camping Médiéval de Montpellier_8-24-2026.xlsx') === 'camping/null',
-  'un nom sans année rend null plutôt qu’un chiffre inventé');
+  'un nom sans année rend null plutôt qu’un chiffre tiré de la date d’export');
 ok(C.categorieEtAnnee('Prévente - Festival Medieval de Montpellier - Edition Nouvelle France_8-24-2026.xlsx').edition
    === 'Nouvelle France',
   'l’édition thématique se retient');
@@ -149,13 +149,28 @@ ok(toutAnnule[0].quantite === 0, 'sans rien au compteur');
 ok(C.fusionnerClients([billet('', 'Adulte Passe Weekend'), billet('None', 'Adulte Passe Weekend')]).length === 0,
   'une ligne sans courriel ne fabrique pas de fiche fantôme');
 
-// ── L'année qui reste à confirmer ───────────────────────────────────
-const sansAnnee = C.fusionnerClients([
-  { courriel: 'alienor@exemple.com', nom: 'Aliénor', annee: null, categorie: 'camping',
+// ── D'où vient l'année ──────────────────────────────────────────────
+// Alex a tranché le 24 août : un export qui ne date rien vient des
+// années où le festival ne datait pas ses fichiers, donc 2024. La fiche
+// doit dire d'où sort son année, sans quoi le présumé et le certain se
+// confondent au premier coup d'œil.
+ok(C.ANNEE_PRESUMEE === 2024, 'l’année présumée est 2024');
+
+const presumee = C.fusionnerClients([
+  { courriel: 'alienor@exemple.com', nom: 'Aliénor', annee: C.ANNEE_PRESUMEE,
+    anneeSource: 'defaut-2024', categorie: 'camping',
     articles: [{ libelle: 'Caravane', quantite: 1 }] },
 ]);
-ok(sansAnnee[0].annee === null, 'l’année absente reste absente');
-ok(sansAnnee[0].anneeAConfirmer === true, 'et la fiche le dit clairement');
+ok(presumee[0].annee === 2024, 'la fiche porte bien 2024');
+ok(presumee[0].anneeSource === 'defaut-2024', 'et elle dit que l’année est présumée');
+ok(C.anneesPresumees(presumee).length === 1, 'les fiches présumées se retrouvent d’un geste');
+
+const datee = C.fusionnerClients([
+  { courriel: 'mecene@exemple.com', nom: 'Guillaume', annee: 2023, anneeSource: 'donnees',
+    categorie: 'mecenes', montant: 5 },
+]);
+ok(datee[0].anneeSource === 'donnees', 'une année lue dans une date le dit aussi');
+ok(C.anneesPresumees(datee).length === 0, 'et elle ne se compte pas parmi les présumées');
 
 // ── Les dons ────────────────────────────────────────────────────────
 const dons = C.fusionnerClients([

@@ -184,10 +184,11 @@ export function formeDuFichier(entetes: string[]): FormeExport {
 
 /** La catégorie et l'année, lues dans le nom du fichier.
  *
- *  L'année ne se devine JAMAIS. Quand le nom ne la porte pas, cette
+ *  L'année ne se devine JAMAIS ici. Quand le nom ne la porte pas, cette
  *  fonction rend `null` et l'outil d'import va la chercher dans les
- *  données (une date de paiement). Quand rien ne tranche, la fiche
- *  reste marquée à confirmer et Alex décide. */
+ *  données, une date de paiement par exemple. Quand rien ne tranche,
+ *  l'import pose ANNEE_PRESUMEE et l'inscrit dans `anneeSource`, pour
+ *  que le présumé ne se confonde jamais avec le certain. */
 export function categorieEtAnnee(nomFichier: string): {
   categorie: CategorieClient;
   annee: number | null;

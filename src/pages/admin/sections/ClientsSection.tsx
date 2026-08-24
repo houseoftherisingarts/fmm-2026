@@ -6,7 +6,8 @@ import {
 import { Card, Badge, EmptyState, GhostButton, downloadCsv } from '../primitives';
 import {
   listerClients, listerComptes, filtrerClients, anneesDuRegistre, courrielsDeLAnnee,
-  CATEGORIES_CLIENT, LIBELLE_CATEGORIE, UNITE_CATEGORIE, ANNEE_INCONNUE,
+  anneesPresumees, ANNEE_PRESUMEE,
+  CATEGORIES_CLIENT, LIBELLE_CATEGORIE, UNITE_CATEGORIE,
   type Client, type CategorieClient,
 } from '../../../firebase/clients';
 import { listerMembres } from '../../../firebase/ordre';
@@ -27,22 +28,29 @@ import { listerMembres } from '../../../firebase/ordre';
 // ⚠️ DONNÉES PERSONNELLES RÉELLES. Rien de cette page ne se recopie
 // ailleurs que dans le CSV qu'un membre de l'équipe télécharge lui-même.
 
-type FiltreAnnee = 'toutes' | 'inconnue' | number;
+type FiltreAnnee = 'toutes' | number;
 type FiltreCategorie = 'toutes' | CategorieClient;
 
-/** L'état du client vis-à-vis du site, en trois marches. */
-type Lien = 'registre' | 'compte' | 'inviter';
+/** L'état du client vis-à-vis du site.
+ *
+ *  `inconnu` existe pour une raison précise : quand la liste des comptes
+ *  n'a pas pu se lire, dire « à inviter » à tout le monde ferait écrire
+ *  à trois cents personnes qui ont déjà un compte. Tant que la lecture
+ *  n'a pas abouti, la page l'avoue au lieu de deviner. */
+type Lien = 'registre' | 'compte' | 'inviter' | 'inconnu';
 
 const LIEN_LIBELLE: Record<Lien, string> = {
   registre: 'Compte',
   compte:   'Compte sans fiche',
   inviter:  'À inviter',
+  inconnu:  'Non vérifié',
 };
 
 const LIEN_TON: Record<Lien, 'accepted' | 'waitlist' | 'neutral'> = {
   registre: 'accepted',
   compte:   'waitlist',
   inviter:  'neutral',
+  inconnu:  'neutral',
 };
 
 /** Une pastille de compteur, posée sur la couture du bandeau. */
@@ -139,6 +147,8 @@ const Bascule: React.FC<{
 const ClientsSection: React.FC = () => {
   const [clients, setClients]   = useState<Client[]>([]);
   const [comptes, setComptes]   = useState<Map<string, string>>(new Map());
+  /** Faux tant que la liste des comptes n'a pas été lue pour de bon. */
+  const [comptesLus, setComptesLus] = useState(false);
   const [registre, setRegistre] = useState<Set<string>>(new Set());
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -159,12 +169,12 @@ const ClientsSection: React.FC = () => {
         // savoir qui est déjà des nôtres.
         const [lesClients, lesComptes, lesMembres] = await Promise.all([
           listerClients(),
-          listerComptes(),
+          listerComptes().catch(() => null),
           listerMembres(3000).catch(() => []),
         ]);
         if (annule) return;
         setClients(lesClients);
-        setComptes(lesComptes);
+        if (lesComptes) { setComptes(lesComptes); setComptesLus(true); }
         setRegistre(new Set(lesMembres.map((m) => m.uid)));
       } catch (e) {
         console.warn('[ClientsSection] lecture impossible', e);
@@ -186,18 +196,18 @@ const ClientsSection: React.FC = () => {
   );
 
   const lienDe = useMemo(() => (c: Client): Lien => {
+    if (!comptesLus) return 'inconnu';
     const uid = comptes.get(c.courriel);
     if (!uid) return 'inviter';
     return registre.has(uid) ? 'registre' : 'compte';
-  }, [comptes, registre]);
+  }, [comptes, comptesLus, registre]);
 
   /** Tout sauf le filtre de catégorie : c'est ce tas qui alimente les
    *  compteurs du rail, sans quoi chaque onglet afficherait son propre
    *  compte et le rail deviendrait aveugle. */
   const avantCategorie = useMemo(() => {
     let liste = clients;
-    if (annee === 'inconnue') liste = liste.filter((c) => c.annee == null);
-    else if (typeof annee === 'number') liste = liste.filter((c) => c.annee === annee);
+    if (typeof annee === 'number') liste = liste.filter((c) => c.annee === annee);
     if (confirmesSeulement) liste = liste.filter((c) => c.statut !== 'annule');
     if (nouveauxSeulement) liste = liste.filter((c) => !dejaRevenus.has(c.courriel));
     if (aInviterSeulement) liste = liste.filter((c) => lienDe(c) === 'inviter');
@@ -207,13 +217,13 @@ const ClientsSection: React.FC = () => {
   const visibles = useMemo(
     () => (categorie === 'toutes' ? avantCategorie : avantCategorie.filter((c) => c.categorie === categorie))
       .slice()
-      .sort((a, b) => (b.annee ?? 0) - (a.annee ?? 0) || a.nom.localeCompare(b.nom, 'fr')),
+      .sort((a, b) => b.annee - a.annee || a.nom.localeCompare(b.nom, 'fr')),
     [avantCategorie, categorie],
   );
 
   const sansCompte = visibles.filter((c) => lienDe(c) === 'inviter').length;
   const aRelancer = visibles.filter((c) => !dejaRevenus.has(c.courriel)).length;
-  const sansAnnee = clients.filter((c) => c.anneeAConfirmer).length;
+  const presumees = anneesPresumees(clients).length;
 
   const exporter = () => {
     const morceaux = [
@@ -227,7 +237,8 @@ const ClientsSection: React.FC = () => {
       nom: c.nom,
       courriel: c.courriel,
       telephone: c.telephone || '',
-      annee: c.annee ?? 'à confirmer',
+      annee: c.annee,
+      annee_source: c.anneeSource ?? '',
       categorie: LIBELLE_CATEGORIE[c.categorie],
       edition: c.edition || '',
       detail: c.detail,
@@ -271,14 +282,25 @@ const ClientsSection: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-5 gap-x-4">
           <Compteur valeur={visibles.length} libelle="personnes affichées" icone={Users} accent />
           <Compteur valeur={aRelancer} libelle={`absentes de ${anneeReference}`} icone={CalendarClock} />
-          <Compteur valeur={sansCompte} libelle="sans compte sur le site" icone={UserPlus} />
+          <Compteur
+            valeur={comptesLus ? sansCompte : '—'}
+            libelle="sans compte sur le site"
+            icone={UserPlus}
+          />
           <Compteur valeur={clients.length} libelle="dans le registre entier" icone={Sparkles} />
         </div>
-        {sansAnnee > 0 && (
+        {!comptesLus && (
+          <p className="font-sans text-[11px] mt-5 flex items-center gap-2" style={{ color: '#E0BE6A' }}>
+            <TriangleAlert size={13} className="shrink-0" />
+            La liste des comptes du site n’a pas pu se lire. Personne n’est marqué « à inviter » tant
+            {' '}que ce n’est pas réglé, pour t’éviter d’écrire à des gens déjà inscrits.
+          </p>
+        )}
+        {presumees > 0 && (
           <p className="font-sans text-[11px] mt-5 flex items-center gap-2" style={{ color: '#E0BE6A' }}>
             <MailQuestion size={13} className="shrink-0" />
-            {sansAnnee} fiches attendent que quelqu’un tranche leur année. Elles se trouvent sous
-            {' '}« Année à confirmer ».
+            {presumees} fiches portent l’année {ANNEE_PRESUMEE} par présomption : leur export ne datait
+            {' '}rien. Elles se reconnaissent à la mention « présumée » sous le nom.
           </p>
         )}
       </Card>
@@ -324,7 +346,7 @@ const ClientsSection: React.FC = () => {
           value={String(annee)}
           onChange={(e) => {
             const v = e.target.value;
-            setAnnee(v === 'toutes' || v === ANNEE_INCONNUE ? (v as FiltreAnnee) : Number(v));
+            setAnnee(v === 'toutes' ? 'toutes' : Number(v));
           }}
           className="admin-input"
           style={{ width: 'auto', minWidth: 168 }}
@@ -332,7 +354,6 @@ const ClientsSection: React.FC = () => {
         >
           <option value="toutes">Toutes les années</option>
           {annees.map((a) => <option key={a} value={a}>{a}</option>)}
-          {sansAnnee > 0 && <option value={ANNEE_INCONNUE}>Année à confirmer</option>}
         </select>
 
         <Bascule
@@ -343,13 +364,15 @@ const ClientsSection: React.FC = () => {
           <CalendarClock size={13} /> Absents de {anneeReference}
         </Bascule>
 
-        <Bascule
-          actif={aInviterSeulement}
-          onClick={() => setAInviterSeulement((v) => !v)}
-          titre="Ne garde que les personnes sans compte sur le site"
-        >
-          <UserPlus size={13} /> Sans compte
-        </Bascule>
+        {comptesLus && (
+          <Bascule
+            actif={aInviterSeulement}
+            onClick={() => setAInviterSeulement((v) => !v)}
+            titre="Ne garde que les personnes sans compte sur le site"
+          >
+            <UserPlus size={13} /> Sans compte
+          </Bascule>
+        )}
 
         <Bascule
           actif={confirmesSeulement}
@@ -416,9 +439,15 @@ const ClientsSection: React.FC = () => {
                     {c.courriel}
                   </a>
                   <p className="mt-1 flex items-center gap-1.5 flex-wrap font-sans" style={{ fontSize: 10.5, color: 'var(--admin-text-mute)' }}>
-                    <span style={{ color: 'var(--admin-brass-hi)' }}>
-                      {c.annee ?? 'Année à confirmer'}
-                    </span>
+                    <span style={{ color: 'var(--admin-brass-hi)' }}>{c.annee}</span>
+                    {c.anneeSource === 'defaut-2024' && (
+                      <span
+                        title={`L’export ne portait aucune date. ${ANNEE_PRESUMEE} par présomption.`}
+                        style={{ color: '#E0BE6A' }}
+                      >
+                        présumée
+                      </span>
+                    )}
                     <span aria-hidden>·</span>
                     <span>{LIBELLE_CATEGORIE[c.categorie]}</span>
                     {c.edition && (<><span aria-hidden>·</span><span>{c.edition}</span></>)}
@@ -475,12 +504,15 @@ const ClientsSection: React.FC = () => {
                     title={
                       lien === 'registre' ? 'Elle a un compte et une fiche : Écrire aux membres la rejoint.'
                       : lien === 'compte' ? 'Elle a un compte, mais pas encore de fiche dans le registre.'
+                      : lien === 'inconnu' ? 'La liste des comptes n’a pas pu se lire. Rien ne dit encore si elle en a un.'
                       : 'Aucun compte sur le site. À inviter à s’en créer un.'
                     }
                     className="inline-flex"
                   >
                     <Badge tone={LIEN_TON[lien]}>
-                      {lien === 'inviter' ? <CircleSlash size={10} /> : <CircleCheck size={10} />}
+                      {lien === 'registre' || lien === 'compte'
+                        ? <CircleCheck size={10} />
+                        : <CircleSlash size={10} />}
                       <span className="ml-1.5">{LIEN_LIBELLE[lien]}</span>
                     </Badge>
                   </span>
