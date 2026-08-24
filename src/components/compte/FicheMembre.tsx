@@ -773,7 +773,7 @@ const FR = {
   introuvable: 'Cette fiche est introuvable',
   sansNom: 'Membre de la caravane',
   signOut: 'Déconnexion', adminSpace: 'Espace admin',
-  statBadges: 'Badges', statAmis: 'Amis', statParties: 'Parties', statAvis: 'Avis',
+  statBadges: 'Badges', statAmis: 'Amis', statParties: 'Joutes', statAvis: 'Avis',
   voirProfil: 'Voir mon profil public', retourEspace: 'Revenir à mon espace',
   ecrire: 'Écrire à ce membre', ajouterAmi: 'Ajouter comme ami',
   demandeEnvoyee: 'Demande envoyée', accepterAmi: 'Accepter l’amitié', dejaAmi: 'Ami',

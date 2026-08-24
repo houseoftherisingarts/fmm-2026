@@ -110,9 +110,15 @@ const DesPage: React.FC = () => {
     const joueurs: Joueur[] = ordre.map((uid) => ({
       id: uid,
       nom: enLigne.noms[uid] || (fr ? 'Un inconnu' : 'A stranger'),
-      des: uid === user.uid
-        ? maMain
-        : (mainsLevees[uid] ?? Array.from({ length: enLigne.des[uid] ?? 0 }, () => 6 as Face)),
+      // Les gobelets levés montrent les vraies faces. Le reste du
+      // temps, ma main est la mienne et celle des autres n'est qu'un
+      // compte : la main scellée d'une manche passée se rogne au
+      // compte officiel pour que le total reste juste.
+      des: enLigne.phase === 'devoilement' && mainsLevees[uid]
+        ? mainsLevees[uid]
+        : uid === user.uid
+          ? maMain.slice(0, enLigne.des[uid] ?? 0)
+          : Array.from({ length: enLigne.des[uid] ?? 0 }, () => 6 as Face),
       machine: false,
       elimine: enLigne.elimines.includes(uid),
     }));
