@@ -17,7 +17,7 @@ const CreditJeux: React.FC<{ lang?: 'fr' | 'en'; dense?: boolean }> = ({ lang = 
           className="inline-flex items-center gap-1.5 text-amber-200/70 underline-offset-4 hover:text-amber-100 hover:underline transition-colors"
         >
           <img src="/logos/vexel.webp" alt="" aria-hidden width={17} height={16}
-               className="h-4 w-auto opacity-75" loading="lazy" />
+               className="h-4 w-auto opacity-75" />
           Vexel Webstudio
         </a>
         <span>{fr ? ', un projet du' : ', a project of'}</span>
@@ -28,7 +28,7 @@ const CreditJeux: React.FC<{ lang?: 'fr' | 'en'; dense?: boolean }> = ({ lang = 
           className="inline-flex items-center gap-1.5 text-amber-200/70 underline-offset-4 hover:text-amber-100 hover:underline transition-colors"
         >
           <img src="/logos/salon.webp" alt="" aria-hidden width={6} height={16}
-               className="h-4 w-auto opacity-75" loading="lazy" />
+               className="h-4 w-auto opacity-75" />
           {fr ? 'Salon des Inconnus' : 'Le Salon des Inconnus'}
         </a>
         <span>.</span>
