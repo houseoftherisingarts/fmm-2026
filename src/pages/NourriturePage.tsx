@@ -47,8 +47,10 @@ const GRIMOIRE_EN_VENTE = false;
 //   2. Le BANQUET : trois services servis à table, 50 places,
 //      65 $ plus taxes, payé par Square. L'ancien banquet à cinq
 //      services (85 $) est retiré : il est passé.
-//   3. LE GRIMOIRE : le livre de recettes du festival, 9 $ plus
-//      taxes, payé par Square lui aussi.
+//   3. LE LIVRE DE RECETTES : le livre du festival, 9 $ plus
+//      taxes, payé par Square lui aussi. Il s'appelait « le Grimoire »
+//      jusqu'au 2026-08-23; les clés et les fichiers gardent l'ancien
+//      nom, seul le texte affiché a changé (Alex).
 // Les données de menu vivent dans src/content/menu2026.ts.
 
 const ROMANS = ['I', 'II', 'III'];
