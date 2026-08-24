@@ -463,8 +463,12 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   <p className="font-editorial text-xs text-ivory-soft/70 mt-5">{t.grimoireNote}</p>
                 </div>
                 <div className="lg:col-span-5">
+                  {/* Nom neuf pour la couverture refaite : les images de
+                      public/ sont servies avec un cache d'un an marqué
+                      immuable, donc remplacer le fichier sans changer son
+                      nom laisse tout le monde devant l'ancienne image. */}
                   <img
-                    src="/grimoire/grimoire-couverture.jpg"
+                    src="/grimoire/couverture-livre-recettes.webp"
                     alt={t.grimoireAlt}
                     loading="lazy"
                     className="w-full max-w-sm mx-auto rounded-card"
