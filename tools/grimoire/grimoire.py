@@ -421,7 +421,9 @@ def _joli(x, unite):
         s2 = _virgule(f"{v:.2f}".rstrip('0').rstrip('.'))
         return f"{s2} {'kg' if unite == 'g' else 'L'}"
     if x >= 100:
-        return f"{int(round(x))} {unite}"
+        # Au-dessus de cent, personne ne verse au millilitre près : on
+        # arrondit au cinq le plus proche (312 ml devient 310 ml).
+        return f"{int(round(x / 5) * 5)} {unite}"
     if x >= 10:
         return f"{int(round(x))} {unite}"
     v = round(x, 1)
