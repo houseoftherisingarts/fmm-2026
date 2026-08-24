@@ -10,6 +10,7 @@ import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
+import { addLocale } from '../../lib/locale';
 import SEO from '../../components/SEO';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
 import { jeuDes } from './jeuDefiable';
@@ -380,7 +381,7 @@ const DesPage: React.FC = () => {
       });
     }, 1100 + Math.random() * 900);
     return () => window.clearTimeout(minuteur);
-  }, [partie]);
+  }, [partie, enLigne]);
 
   // Quand c'est à moi, la mise proposée doit rester légale.
   useEffect(() => {
@@ -395,6 +396,7 @@ const DesPage: React.FC = () => {
 
   const jouerAnnonce = () => {
     if (!partie || !monTour) return;
+    if (enLigne && partieId) { void annoncerEnLigne(partieId, enLigne, quantite, face); return; }
     setSolo(annoncer(partie, quantite, face));
   };
 
@@ -421,6 +423,9 @@ const DesPage: React.FC = () => {
 
   const jouerDoute = () => {
     if (!partie || !monTour || !partie.mise) return;
+    // En ligne, le dévoilement se joue en deux temps : lever les
+    // gobelets ouvre la lecture des mains, compter vient ensuite.
+    if (enLigne && partieId && user) { void leverLesGobelets(partieId, enLigne, user.uid, false); return; }
     const apres = douter(partie);
     montrerLeDevoilement(apres);
     setSolo(apres);
@@ -428,6 +433,7 @@ const DesPage: React.FC = () => {
 
   const jouerExact = () => {
     if (!partie || !monTour || !partie.mise) return;
+    if (enLigne && partieId && user) { void leverLesGobelets(partieId, enLigne, user.uid, true); return; }
     const apres = appelExact(partie);
     montrerLeDevoilement(apres);
     setSolo(apres);
@@ -435,6 +441,7 @@ const DesPage: React.FC = () => {
 
   const relancer = () => {
     if (!partie) return;
+    if (enLigne && partieId) { void mancheSuivanteEnLigne(partieId, enLigne); return; }
     const apres = mancheSuivante(partie);
     tableRef.current?.devoiler([], false);
     tableRef.current?.mains(apres.joueurs.map((j) => j.des.length));
@@ -470,6 +477,27 @@ const DesPage: React.FC = () => {
       : 'Call the bid exact: if you are right, you win back a lost die. If not, you lose one.',
     gagne: fr ? 'Vous ramassez la mise.' : 'You take the pot.',
     perdu: fr ? 'La table vous a eu.' : 'The table got you.',
+    defier: fr ? 'Défier un ami' : 'Challenge a friend',
+    fermer: fr ? 'Fermer' : 'Close',
+    quitter: fr ? 'Quitter la table' : 'Leave the table',
+    sablierAide: fr
+      ? 'Une minute par tour. Passé ce délai, le joueur silencieux laisse passer son tour.'
+      : 'One minute per turn. After that, a silent player lets their turn go by.',
+    gobelets: fr ? 'Les gobelets se referment.' : 'The cups are closing.',
+    compte: fr ? 'Les dés se comptent.' : 'The dice are being counted.',
+    attendSiege: fr
+      ? 'Votre adversaire n’a pas encore pris son siège. Envoyez-lui le lien, et la partie s’ouvrira dès qu’il sera assis.'
+      : 'Your opponent has not taken their seat yet. Send them the link, and the game will open the moment they sit down.',
+    attendReponse: fr
+      ? 'Votre défi est parti. La table se dressera dès que la réponse arrivera.'
+      : 'Your challenge is on its way. The table will be set as soon as the answer arrives.',
+    vousDefie: fr ? 'vous défie aux dés' : 'challenges you at dice',
+    prendrePlace: fr ? 'Prendre ma place' : 'Take my seat',
+    defiRefuse: fr ? 'Ce défi a été refusé.' : 'This challenge was declined.',
+    connectez: fr
+      ? 'Connectez-vous pour prendre votre place à cette table.'
+      : 'Sign in to take your seat at this table.',
+    seConnecter: fr ? 'Se connecter' : 'Sign in',
   }), [fr]);
 
   const faces: Face[] = [1, 2, 3, 4, 5, 6];
@@ -572,16 +600,105 @@ const DesPage: React.FC = () => {
               {!partie
                 ? t.pretre
                 : partie.phase === 'fini'
-                  ? (partie.gagnantId === 'j0' ? t.gagne : t.perdu)
+                  ? (partie.gagnantId === partie.joueurs[0]?.id ? t.gagne : t.perdu)
                   : partie.phase === 'devoilement'
                     ? partie.journal[partie.journal.length - 1]
                     : monTour ? t.aVous : t.attend}
             </span>
-            <span className="font-sans text-[10px] uppercase tracking-[0.22em] order-2 md:order-3"
+            <span className="font-sans text-[10px] uppercase tracking-[0.22em] order-2 md:order-3 inline-flex items-center gap-3"
                   style={{ color: 'var(--color-amber-glow)' }}>
+              {/* Le sablier du tour : une minute, visible de tous. */}
+              {enLigne && enLigne.statut === 'encours' && resteMs > 0 && (
+                <span
+                  title={t.sablierAide}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[15px] border backdrop-blur-md tabular-nums ${
+                    resteMs < 15000 ? 'border-brass/70 text-brass' : 'border-white/15 text-ivory-soft'
+                  }`}
+                  style={{ background: 'rgba(0,0,0,0.4)' }}
+                >
+                  <Hourglass size={11} /> {sablier}
+                </span>
+              )}
               {partie ? `${total} ${t.enJeu}` : ''}
             </span>
           </div>
+
+          {/* Les plaques : le nom de chaque convive, au-dessus de sa place */}
+          {enLigne && partie && ancres.map((a, i) => {
+            const j = partie.joueurs[i];
+            if (!j || i === 0) return null;
+            const parle = partie.tour === i && partie.phase === 'annonces';
+            return (
+              <div
+                key={`plaque-${j.id}`}
+                className="absolute z-10 pointer-events-none"
+                style={{ left: `${a.x}%`, top: `${a.y}%`, transform: 'translate(-50%, 0.7rem)' }}
+              >
+                <div
+                  className={`px-2.5 py-1 rounded-[15px] border backdrop-blur-md text-center ${j.elimine ? 'opacity-40' : ''}`}
+                  style={{
+                    background: 'rgba(0,0,0,0.45)',
+                    borderColor: parle ? 'rgba(198,150,74,0.7)' : 'rgba(255,255,255,0.15)',
+                  }}
+                >
+                  <span className="block font-display text-[13px] leading-tight text-ivory whitespace-nowrap">
+                    {j.nom}
+                  </span>
+                  <span className="block font-sans text-[9px] tracking-[0.16em] text-ivory-soft/60 tabular-nums">
+                    {'◆'.repeat(j.des.length) || '—'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* ── Les amis, en overlay sur la table ──────────────────── */}
+          {user && (
+            <>
+              <div className="absolute top-16 right-3 md:right-6 z-20 flex flex-col items-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAmisOuverts((v) => !v)}
+                  aria-expanded={amisOuverts}
+                  className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                >
+                  <Users size={13} className="text-brass" />
+                  {t.defier}
+                </button>
+                {enLigne && enLigne.statut === 'encours' && partieId && (
+                  <button
+                    type="button"
+                    onClick={() => { void abandonnerDes(partieId, enLigne, user.uid); }}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft/80 hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                  >
+                    <Flag size={12} className="text-brass" />
+                    {t.quitter}
+                  </button>
+                )}
+              </div>
+              <AnimatePresence>
+                {amisOuverts && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 24 }}
+                    transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute top-16 right-3 md:right-6 z-30 w-[min(20rem,calc(100%-1.5rem))] max-h-[calc(100%-5.5rem)] overflow-y-auto rounded-[15px] border border-white/15 bg-black/55 backdrop-blur-xl p-3"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setAmisOuverts(false)}
+                      aria-label={t.fermer}
+                      className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
+                    >
+                      <X size={15} />
+                    </button>
+                    <PanneauAmis lang={lang} jeu={jeuDefi} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
 
           {/* À gauche : qui est encore là, et avec combien de dés */}
           {partie && (
@@ -605,7 +722,9 @@ const DesPage: React.FC = () => {
 
           {/* À droite : les trois dernières paroles */}
           {partie && partie.journal.length > 0 && (
-            <div className="absolute right-3 md:right-6 top-16 md:top-20 z-10 w-44 md:w-64 text-right">
+            <div className={`absolute right-3 md:right-6 z-10 w-44 md:w-64 text-right ${
+              user ? (enLigne ? 'top-[9.5rem] md:top-[10rem]' : 'top-[6.75rem] md:top-[7.25rem]') : 'top-16 md:top-20'
+            }`}>
               <AnimatePresence initial={false}>
                 {[...partie.journal].reverse().slice(0, 3).map((l, i) => (
                   <motion.p
@@ -704,7 +823,45 @@ const DesPage: React.FC = () => {
           {/* Le pupitre : tout se joue ici */}
           <div className="absolute inset-x-0 bottom-0 z-10 px-3 md:px-6 pb-4 pt-8"
                style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}>
-            {!partie ? (
+            {partieId && !user ? (
+              <div className="mx-auto w-full max-w-2xl rounded-lg-card border border-brass/30 px-5 py-5 text-center"
+                   style={{ background: 'rgba(8,3,5,0.72)', backdropFilter: 'blur(8px)' }}>
+                <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed mb-4">
+                  {t.connectez}
+                </p>
+                <button type="button" onClick={openSignIn} className="fmm-glass-btn is-primary px-6 py-3.5" style={{ flexDirection: 'row', gap: '0.5rem' }}>
+                  <LogIn size={15} className="text-brass" />
+                  <span className="fmm-glass-btn-label">{t.seConnecter}</span>
+                </button>
+              </div>
+            ) : enLigne && enLigne.statut !== 'encours' && enLigne.statut !== 'fini' ? (
+              /* Le défi est parti, la table attend encore quelqu'un. */
+              <div className="mx-auto w-full max-w-2xl rounded-lg-card border border-brass/30 px-5 py-5 text-center"
+                   style={{ background: 'rgba(8,3,5,0.72)', backdropFilter: 'blur(8px)' }}>
+                {enLigne.statut === 'refuse' ? (
+                  <p className="font-editorial text-[15px] text-ivory-soft">{t.defiRefuse}</p>
+                ) : enLigne.statut === 'defi' && user && enLigne.lancePar !== user.uid ? (
+                  <>
+                    <p className="font-display title-medieval text-xl text-ivory mb-4">
+                      {(enLigne.noms[enLigne.lancePar] || '—')} {t.vousDefie}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { void repondreAuDefiDes(partieId!, true); }}
+                      className="fmm-glass-btn is-primary px-6 py-3.5"
+                      style={{ flexDirection: 'row', gap: '0.5rem' }}
+                    >
+                      <Check size={15} className="text-brass" />
+                      <span className="fmm-glass-btn-label">{t.prendrePlace}</span>
+                    </button>
+                  </>
+                ) : (
+                  <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed">
+                    {enLigne.statut === 'lobby' ? t.attendSiege : t.attendReponse}
+                  </p>
+                )}
+              </div>
+            ) : !partie ? (
               <div className="mx-auto w-full max-w-2xl rounded-lg-card border border-brass/30 px-5 py-5 flex flex-wrap items-center justify-center gap-4"
                    style={{ background: 'rgba(8,3,5,0.72)', backdropFilter: 'blur(8px)' }}>
                 <span className="witcher-stat-label inline-flex items-center gap-2">
@@ -730,17 +887,34 @@ const DesPage: React.FC = () => {
               </div>
             ) : partie.phase === 'devoilement' ? (
               <div className="flex justify-center">
-                <button type="button" onClick={relancer} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
-                  <RotateCcw size={15} className="text-brass" />
-                  <span className="fmm-glass-btn-label">{t.manche}</span>
-                </button>
+                {partie.devoilement ? (
+                  <button type="button" onClick={relancer} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
+                    <RotateCcw size={15} className="text-brass" />
+                    <span className="fmm-glass-btn-label">{t.manche}</span>
+                  </button>
+                ) : (
+                  <p className="font-editorial text-[15px] text-ivory-soft">{t.compte}</p>
+                )}
               </div>
             ) : partie.phase === 'fini' ? (
               <div className="flex justify-center">
-                <button type="button" onClick={() => setSolo(null)} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (enLigne) { window.location.assign(addLocale('/jeux/des', lang)); return; }
+                    setSolo(null);
+                  }}
+                  className="fmm-glass-btn is-primary px-6 py-4"
+                  style={{ flexDirection: 'row', gap: '0.6rem' }}
+                >
                   <RotateCcw size={15} className="text-brass" />
                   <span className="fmm-glass-btn-label">{t.nouvelle}</span>
                 </button>
+              </div>
+            ) : enLigne && !toutLeMondeAScelle(enLigne) ? (
+              /* Tant qu'un gobelet n'est pas scellé, personne ne parle. */
+              <div className="flex justify-center">
+                <p className="font-editorial text-[15px] text-ivory-soft">{t.gobelets}</p>
               </div>
             ) : (
               <div className="mx-auto w-full max-w-4xl rounded-lg-card border border-brass/25 px-4 md:px-5 py-4 flex flex-wrap items-end justify-center gap-3 md:gap-4"

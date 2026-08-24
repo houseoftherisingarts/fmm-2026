@@ -108,8 +108,8 @@ export const RAYONS: Rayon[] = [
   },
   {
     // Rayon ajouté le 23 août 2026 : l'année de la Révolte paysanne
-    // manquait partout sur le site. Les six titres ont été vérifiés
-    // un par un (Sudoc, Persée, BnF, The Medieval Review, Gallimard).
+    // manquait partout sur le site. Chacun des six titres a été vérifié
+    // sur une notice publique avant d'être écrit ici.
     id: 'revolte',
     anneeFR: 'L’année de la Révolte paysanne',
     anneeEN: 'The Year of the Peasants’ Revolt',

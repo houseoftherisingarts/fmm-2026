@@ -143,7 +143,7 @@ function versMoteur(etat: EtatDes, mains?: Record<string, Face[]>): Partie {
 export function peutAnnoncer(etat: EtatDes, uid: string, quantite: number, face: Face): boolean {
   if (etat.phase !== 'annonces' || etat.tour !== uid) return false;
   if (!toutLeMondeAScelle(etat)) return false;
-  return miseValide(etat.mise, quantite, face, totalDes(etat));
+  return miseValide(versMoteur(etat).mise, quantite, face, totalDes(etat));
 }
 
 export function apresAnnonce(etat: EtatDes, quantite: number, face: Face): EtatDes {
