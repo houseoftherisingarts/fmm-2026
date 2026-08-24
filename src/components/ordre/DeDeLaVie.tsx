@@ -10,7 +10,28 @@ import { Dices } from 'lucide-react';
 // de rien sur le site, seulement dans la vie de qui le lance.
 
 const RAYON = 1.6;
-const DUREE = 2.6;
+const DUREE = 1.55;
+const SOL = -RAYON * 0.62;  // au repos, le centre du dé tombe sur l'origine
+
+/** La même courbe que les dés du menteur : une grande arche, puis deux
+ *  plus petites, chacune écrasée par la précédente (Alex, 2026-08-24 :
+ *  « ça doit ressembler plus aux physiques de dés sur une table »). */
+function hauteurRebond(k: number, h0: number): number {
+  if (k <= 0) return h0;
+  const arches: Array<[number, number, number]> = [
+    [0, 0.5, 1],
+    [0.5, 0.79, 0.33],
+    [0.79, 1, 0.1],
+  ];
+  for (const [a, b, h] of arches) {
+    if (k >= a && k < b) {
+      const u = (k - a) / (b - a);
+      const arc = a === 0 ? Math.cos(u * (Math.PI / 2)) : Math.sin(u * Math.PI);
+      return h0 * h * arc;
+    }
+  }
+  return 0;
+}
 
 type Face = { centre: THREE.Vector3; normale: THREE.Vector3 };
 
@@ -139,12 +160,17 @@ const De: React.FC<{
   const cible = useRef(new THREE.Quaternion());
   const axe = useRef(new THREE.Vector3(1, 0, 0));
   const tours = useRef(6);
+  // Le dé ne tombe pas à pic : il part de côté et glisse en roulant.
+  const depX = useRef(0);
+  const depZ = useRef(0);
 
   useEffect(() => {
     if (jet === 0 || !groupe.current) return;
     const r = () => Math.random() * 2 - 1;
     axe.current.set(r(), r(), r()).normalize();
     tours.current = 5 + Math.random() * 3;
+    depX.current = r() * 1.5;
+    depZ.current = r() * 0.9;
     phase.current = 'culbute';
   }, [jet]);
 
@@ -163,34 +189,43 @@ const De: React.FC<{
     const t = performance.now() / 1000;
 
     if (phase.current === 'repos') {
+      g.position.y = SOL + RAYON * 0.62;
       g.rotation.y += dt * 0.35;
       g.rotation.x += dt * 0.2;
       return;
     }
     if (phase.current === 'culbute') {
-      g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axe.current, dt * 13));
-      g.position.y = -0.4 + Math.abs(Math.sin(t * 5.5)) * 0.45;
+      // La main secoue le dé au-dessus de la table, le temps que le
+      // sort se décide.
+      g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axe.current, dt * 14));
+      g.position.set(depX.current, 1.5 + Math.sin(t * 6.4) * 0.16, depZ.current);
       return;
     }
     if (phase.current === 'chute') {
       const k = Math.min(1, (t - debut.current) / DUREE);
-      const doux = 1 - Math.pow(1 - k, 4);
+      // La course horizontale s'épuise comme un dé qui perd sa vitesse
+      // sur les planches.
+      const glisse = 1 - Math.pow(1 - k, 3);
+      g.position.x = depX.current * (1 - glisse * 0.72);
+      g.position.z = depZ.current * (1 - glisse * 0.72);
+      g.position.y = SOL + RAYON * 0.62 + hauteurRebond(k, 1.7);
+      // Le roulis s'éteint au fil des rebonds, et la face choisie prend
+      // le dessus sur la dernière arche.
+      const doux = 1 - Math.pow(1 - k, 3.2);
       const roulis = new THREE.Quaternion()
         .setFromAxisAngle(axe.current, (1 - doux) * Math.PI * 2 * tours.current);
       const posee = new THREE.Quaternion()
         .slerpQuaternions(depart.current, cible.current, doux);
       g.quaternion.copy(roulis.multiply(posee));
-      g.position.y = Math.max(0, Math.sin(k * Math.PI))
-        + Math.max(0, Math.sin(k * Math.PI * 2.4) * 0.18) - 0.4;
       if (k >= 1) {
         g.quaternion.copy(cible.current);
-        g.position.y = -0.4;
+        g.position.set(0, SOL + RAYON * 0.62, 0);
         phase.current = 'pose';
         onPose();
       }
       return;
     }
-    g.position.y = -0.4 + Math.sin(t * 1.2) * 0.02;
+    g.position.y = SOL + RAYON * 0.62 + Math.sin(t * 1.2) * 0.015;
   });
 
   return (
@@ -266,7 +301,7 @@ const DeDeLaVie: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       >
         {/* La caméra plonge sur la table : la face gagnante se lit sur
             le dessus du dé (Alex, 2026-08-23). */}
-        <Canvas camera={{ position: [0, 5.1, 3.5], fov: 40 }} dpr={[1, 1.6]}>
+        <Canvas camera={{ position: [0, 4.3, 4.5], fov: 38 }} dpr={[1, 1.6]}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 8, 4]} intensity={1.3} />
           <directionalLight position={[-4, 2, -3]} intensity={0.5} color="#c5a059" />

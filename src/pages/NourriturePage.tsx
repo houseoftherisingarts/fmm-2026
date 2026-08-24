@@ -105,7 +105,10 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
       >
         <div className="flex items-baseline gap-3">
           <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
-          <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory flex-1">{g.name[lang]}</h3>
+          {/* Le nom de la guilde doit écraser celui des plats, sinon
+              Boustifaille et Cuirs du Seigneur se lisent au même
+              niveau (Alex, 2026-08-24). */}
+          <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory flex-1 leading-tight">{g.name[lang]}</h3>
           <ChevronDown
             size={18}
             aria-hidden
@@ -117,7 +120,7 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
           />
         </div>
         {g.sub && (
-          <p className="font-editorial italic text-sm mt-1.5 pl-9" style={{ color: 'var(--color-copper)' }}>
+          <p className="font-editorial italic text-sm mt-2 pl-9" style={{ color: 'var(--color-copper)' }}>
             {g.sub[lang]}
           </p>
         )}
@@ -347,54 +350,51 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   <Wine size={16} className="text-brass mt-0.5 shrink-0" />
                   <div><span className="block font-display title-medieval text-xs text-brass mb-0.5">{t.cost}</span>{t.banquetCost}</div>
                 </li>
+
+                {/* ── Les trois services, dans la colonne de droite ──
+                    Alex, 2026-08-24 : la carte doit rester horizontale
+                    et se lire d'un coup d'œil, donc les services se
+                    rangent sous le coût plutôt qu'en pleine largeur.
+                    Une barre plus épaisse que les autres, avec son
+                    chaudron doré au milieu, ouvre la procession. */}
+                <li className="pt-7">
+                  <div aria-hidden className="flex items-center gap-3 mb-5">
+                    <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0) 0%, rgba(232,177,74,0.5) 100%)' }} />
+                    <Glyphe name="cauldron" size={22} />
+                    <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0.5) 0%, rgba(232,177,74,0) 100%)' }} />
+                  </div>
+                  <p className="font-display title-medieval text-xs text-brass mb-4 text-center">
+                    {t.banquetMenuTitle}
+                  </p>
+                  <div className="space-y-3.5">
+                    {BANQUET_MENU.map((service, i) => (
+                      <div key={service.name.FR} className="flex items-start gap-3">
+                        <span
+                          aria-hidden
+                          className="font-display text-base leading-tight w-6 shrink-0 text-right"
+                          style={{ color: 'var(--color-copper)' }}
+                        >
+                          {ROMANS[i]}
+                        </span>
+                        <div className="min-w-0">
+                          <span className="block font-display title-medieval text-xs text-brass mb-0.5">
+                            {service.name[lang]}
+                          </span>
+                          <span className="block font-editorial text-[13px] leading-relaxed">
+                            {service.items.map((item, j) => (
+                              <React.Fragment key={item}>
+                                {j > 0 && <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}> · </span>}
+                                {item}
+                              </React.Fragment>
+                            ))}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </li>
               </ul>
 
-              {/* ── Les services, dans la même carte ────────────────
-                  Alex, 2026-08-24 : « les trois services devraient
-                  apparaître dans le même bloc que le banquet de
-                  l'Équinoxe ». Une barre plus épaisse que les autres,
-                  avec son ornement doré au milieu, ouvre la procession. */}
-              <div className="lg:col-span-12 min-w-0 pt-10 md:pt-12">
-                <div aria-hidden className="flex items-center gap-4 mb-8 md:mb-10">
-                  <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0) 0%, rgba(232,177,74,0.55) 100%)' }} />
-                  <Glyphe name="cauldron" size={26} />
-                  <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0.55) 0%, rgba(232,177,74,0) 100%)' }} />
-                </div>
-                <header className="mb-7 md:mb-9 text-center">
-                  <Eyebrow className="mb-3">{t.banquetMenuEyebrow}</Eyebrow>
-                  <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{t.banquetMenuTitle}</h3>
-                </header>
-                <div className="max-w-3xl mx-auto">
-                  {BANQUET_MENU.map((service, i) => (
-                    <article
-                      key={service.name.FR}
-                      className="grid grid-cols-[3rem_1fr] md:grid-cols-[4.5rem_1fr] gap-4 md:gap-8 py-5 md:py-7"
-                      style={i < BANQUET_MENU.length - 1 ? { borderBottom: '1px solid rgba(244,239,227,0.08)' } : undefined}
-                    >
-                      <span
-                        aria-hidden
-                        className="font-display text-3xl md:text-4xl leading-none text-right"
-                        style={{ color: 'var(--color-copper)', fontWeight: 400 }}
-                      >
-                        {ROMANS[i]}
-                      </span>
-                      <div className="min-w-0">
-                        <h4 className="font-display title-medieval text-lg md:text-xl text-ivory mb-2">
-                          {service.name[lang]}
-                        </h4>
-                        <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
-                          {service.items.map((item, j) => (
-                            <React.Fragment key={item}>
-                              {j > 0 && <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}> · </span>}
-                              {item}
-                            </React.Fragment>
-                          ))}
-                        </p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
             </div>
           </Reveal>
 
