@@ -175,7 +175,7 @@ exports.squareGrimoire = onRequest(
       const articles = (commande.line_items || [])
         .map((l) => (l.name || '').toLowerCase())
         .join(' | ');
-      if (!articles.includes(ARTICLE)) {
+      if (!ARTICLES_LIVRE.some((nom) => articles.includes(nom))) {
         // Les places du banquet se comptent ici. La salle en a cinquante,
         // et le site affiche ce qu'il en reste, alors le chiffre doit
         // venir des ventes réelles et de rien d'autre (Alex, 2026-08-23).
