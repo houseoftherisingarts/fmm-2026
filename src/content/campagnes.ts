@@ -235,8 +235,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
         altEN: 'The duo L’Harfang takes a bow, hurdy-gurdy in hand',
         titreFR: 'L’Harfang revient, accompagné',
         titreEN: 'L’Harfang returns, with guests',
-        texteFR: 'Le duo joue pour le festival depuis le tout début. Alison Gowan tient la vielle à roue et Éric Pichette la musette de seize pouces, entre folklore, musique médiévale, baroque et bal folk moderne. Cette année, ils reviennent accompagnés d’invités.',
-        texteEN: 'The duo has played the festival since the very beginning. Alison Gowan is on hurdy-gurdy and Éric Pichette on the sixteen-inch musette, between folk, medieval, baroque and modern balfolk. This year, they return with guests alongside them.',
+        texteFR: 'Le duo joue pour le festival depuis le tout début. Alison Gowan tient la vielle à roue et Éric Pichette la musette de seize pouces. Leur répertoire va du folklore à la musique médiévale, en passant par le baroque et le bal folk moderne. Cette année, ils reviennent accompagnés d’invités.',
+        texteEN: 'The duo has played the festival since the very beginning. Alison Gowan is on hurdy-gurdy and Éric Pichette on the sixteen-inch musette. Their repertoire runs from folk to medieval music, by way of baroque and modern balfolk. This year, they return with guests alongside them.',
       },
       {
         type: 'carte',
