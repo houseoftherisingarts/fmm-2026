@@ -147,7 +147,7 @@ const CampagnesSection: React.FC = () => {
   // Le panneau de confirmation appelle le regard : le geste suivant
   // est celui qui envoie, et il reçoit le focus du clavier.
   useEffect(() => {
-    if (confirme) boutonConfirmer.current?.focus();
+    if (confirme) document.getElementById(ID_CONFIRMER)?.focus();
   }, [confirme]);
 
   // Changer de modèle, de langue ou de cible annule une confirmation en
