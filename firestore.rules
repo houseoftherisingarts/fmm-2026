@@ -359,6 +359,57 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Les campagnes de courriels ────────────────────────────────
+    // La trace d'un envoi : qui a écrit, quand, quelle lettre, combien
+    // sont partis et combien ont échoué. Réservée à l'équipe de bout en
+    // bout. La Cloud Function `envoyerCampagne` écrit par le SDK
+    // d'administration, qui passe outre ces règles, donc l'écriture
+    // reste fermée ici même à l'équipe : personne ne fabrique une
+    // fausse trace à la main, et le compte affiché dans l'admin est
+    // toujours celui que la fonction a réellement constaté.
+    match /campagnes/{docId} {
+      allow read:  if isAdmin();
+      allow write: if false;
+    }
+
+    // ── Les désabonnements ────────────────────────────────────────
+    // La clé du document EST l'adresse en minuscules. Deux clics sur le
+    // même lien écrivent donc le même document, et la liste ne peut pas
+    // contenir deux fois la même personne.
+    //
+    // La création est ouverte SANS COMPTE, et c'est voulu : quelqu'un
+    // qui reçoit une lettre doit pouvoir se retirer d'un seul geste,
+    // sans avoir à s'inscrire sur le site pour cela. C'est la loi
+    // canadienne anti-pourriel, et c'est aussi la simple politesse.
+    //
+    // Le chemin normal passe par la fonction `desabonnement`, qui
+    // vérifie la signature du lien avant d'écrire. Cette voie-ci reste
+    // ouverte pour qu'une page du site puisse faire le même geste un
+    // jour, et la forme du document y est verrouillée : rien d'autre
+    // que les trois champs attendus n'entre, et l'adresse doit
+    // correspondre à la clé.
+    //
+    // ponytail: le plafond d'abus est qu'un inconnu désabonne une
+    // adresse qu'il connaît déjà, ou gonfle la collection de fausses
+    // adresses. Les règles Firestore ne savent pas limiter un débit. Si
+    // cela devait arriver, la voie à fermer est celle-ci (`allow create:
+    // if false`), et le lien signé de la fonction suffit à tout.
+    match /desabonnements/{courriel} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['courriel', 'source', 'desabonneLe'])
+                    && request.resource.data.courriel is string
+                    && request.resource.data.courriel == courriel
+                    && request.resource.data.courriel.size() > 4
+                    && request.resource.data.courriel.size() < 200
+                    && request.resource.data.courriel.matches('^[^@ ]+@[^@ ]+[.][a-zA-Z]+$')
+                    && request.resource.data.source is string
+                    && request.resource.data.source.size() < 40;
+      // Remettre une adresse sur la liste est un geste de l'équipe,
+      // jamais celui d'un inconnu : personne ne doit pouvoir réinscrire
+      // quelqu'un qui s'est retiré.
+      allow update, delete: if isAdmin();
+    }
+
     // ── L'Ordre : les amitiés ─────────────────────────────────────
     // Une ligne par paire, la clé porte les deux uid triés. Les deux
     // membres de la paire écrivent, personne d'autre ne lit.
