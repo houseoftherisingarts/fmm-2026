@@ -3,10 +3,12 @@
 // sa page, avec le chemin vers l'atelier qui l'a bâti.
 import React from 'react';
 
-const CreditJeux: React.FC<{ lang?: 'fr' | 'en' }> = ({ lang = 'fr' }) => {
+// `dense` sert au cadre des jeux : la mention vit dans l'aire de jeu,
+// où chaque pixel de hauteur compte (Alex, 2026-08-23).
+const CreditJeux: React.FC<{ lang?: 'fr' | 'en'; dense?: boolean }> = ({ lang = 'fr', dense = false }) => {
   const fr = lang !== 'en';
   return (
-    <footer className="w-full px-6 py-5 text-center">
+    <footer className={`w-full px-6 text-center ${dense ? 'py-2' : 'py-5'}`}>
       <p className="text-[11px] leading-relaxed tracking-[0.14em] uppercase text-amber-200/40">
         {fr ? 'Jeux développés par ' : 'Games built by '}
         <a
