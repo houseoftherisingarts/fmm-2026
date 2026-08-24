@@ -186,9 +186,16 @@ function lignesDuFichier(chemin) {
 
     const notes = cellule(l, iNotes);
 
-    // L'année : celle du nom du fichier d'abord, puis celle d'une date
-    // de paiement dans les données. Rien des deux, rien d'inventé.
-    const annee = anneeDuNom ?? (iDate !== -1 ? anneeDepuisDate(l[iDate]) : null);
+    // L'année, dans cet ordre : celle du nom du fichier, puis celle
+    // d'une date de paiement dans les données, puis la présomption de
+    // 2024. Alex, 2026-08-24 : les exports qui ne portent pas de date
+    // datent des années où le festival ne datait pas encore ses
+    // fichiers. La fiche garde la trace de ce qui a tranché.
+    const anneeLue = anneeDuNom ?? (iDate !== -1 ? anneeDepuisDate(l[iDate]) : null);
+    const annee = anneeLue ?? M.ANNEE_PRESUMEE;
+    const anneeSource = anneeDuNom != null ? 'nom-fichier'
+      : anneeLue != null ? 'donnees'
+      : 'defaut-2024';
 
     let nomAcheteur = cellule(l, iNom);
     if (forme === 'dons') {
@@ -211,6 +218,7 @@ function lignesDuFichier(chemin) {
       nom: nomAcheteur,
       telephone: cellule(l, iTel) || telephoneDansLeTexte(notes),
       annee,
+      anneeSource,
       categorie,
       edition,
       articles: articles.filter((a) => a.libelle),
@@ -323,20 +331,22 @@ for (const r of rapports) {
   // sans année ramasserait les fiches de tous les autres.
   const cles = new Set(r.sorties.map((s) => M.identifiantClient(s.annee, s.categorie, s.courriel)));
   const lesSiennes = { length: cles.size };
-  const annee = r.anneeDuNom ?? (r.sorties.find((s) => s.annee != null)?.annee ?? null);
+  const annees = [...new Set(r.sorties.map((s) => s.annee))].sort();
+  const source = r.sorties[0]?.anneeSource ?? 'defaut-2024';
   console.log(`  ${r.nom}`);
   console.log(`    forme ${r.forme} · catégorie ${r.categorie}`
-    + ` · année ${annee ?? 'À CONFIRMER'}${r.edition ? ` · édition ${r.edition}` : ''}`);
+    + ` · année ${annees.join(', ')}${source === 'defaut-2024' ? ' (présumée)' : ''}`
+    + `${r.edition ? ` · édition ${r.edition}` : ''}`);
   console.log(`    ${r.lues} lignes lues`
     + (r.sansCourriel ? ` · ${r.sansCourriel} sans courriel, écartées` : '')
     + ` · ${lesSiennes.length} personnes après fusion`);
 }
 
 const annulees = fiches.filter((f) => f.statut === 'annule').length;
-const aConfirmer = fiches.filter((f) => f.anneeAConfirmer).length;
+const presumees = fiches.filter((f) => f.anneeSource === 'defaut-2024').length;
 console.log('');
 console.log(`  Total : ${toutesLesLignes.length} lignes retenues, ${fiches.length} fiches`
-  + ` · ${annulees} annulées · ${aConfirmer} sans année`);
+  + ` · ${annulees} annulées · ${presumees} à l’année présumée ${M.ANNEE_PRESUMEE}`);
 
 if (essai) {
   // Trois fiches au hasard, pour vérifier à l'œil que la fusion a bien
@@ -345,7 +355,8 @@ if (essai) {
   console.log('\n  Aperçu :');
   for (const f of fiches.filter((_, i) => i % Math.ceil(fiches.length / 3) === 0).slice(0, 3)) {
     const masque = f.courriel.replace(/^(.).*(@.*)$/, '$1•••$2');
-    console.log(`    ${f.nom} · ${masque} · ${f.annee ?? 'année à confirmer'} · ${f.categorie}`);
+    console.log(`    ${f.nom} · ${masque} · ${f.annee}`
+      + `${f.anneeSource === 'defaut-2024' ? ' (présumée)' : ''} · ${f.categorie}`);
     console.log(`      ${f.detail || 'aucun détail'} · ${f.quantite} au total`
       + ` · ${f.lignes} ligne${f.lignes > 1 ? 's' : ''} fondue${f.lignes > 1 ? 's' : ''}`
       + (f.telephone ? ` · tél. présent` : ' · sans téléphone')

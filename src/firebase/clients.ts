@@ -52,8 +52,27 @@ export const UNITE_CATEGORIE: Record<CategorieClient, [string, string]> = {
 // vente passait par la billetterie ou par la boutique.
 export type FormeExport = 'billets' | 'boutique' | 'dons';
 
-/** L'année qui n'a pas pu se lire, ni dans le nom ni dans les données. */
-export const ANNEE_INCONNUE = 'inconnue';
+/**
+ * L'année que porte une vente quand rien ne la dit.
+ *
+ * Alex, 2026-08-24 : « Celles qui ne portent pas de date sont celles des
+ * années passées. On peut considérer que ce sont les gens de 2024 parce
+ * qu'à l'époque on n'avait pas encore commencé à dater les choses. »
+ *
+ * Chaque fiche garde la trace de ce qui a tranché son année, dans
+ * `anneeSource`, pour qu'on sache toujours ce qui est certain et ce qui
+ * est présumé.
+ */
+export const ANNEE_PRESUMEE = 2024;
+
+/** D'où vient l'année d'une fiche. */
+export type SourceAnnee = 'nom-fichier' | 'donnees' | 'defaut-2024';
+
+export const LIBELLE_SOURCE_ANNEE: Record<SourceAnnee, string> = {
+  'nom-fichier': 'année lue dans le nom du fichier',
+  'donnees':     'année lue dans une date de paiement',
+  'defaut-2024': 'année présumée, l’export ne la portait nulle part',
+};
 
 // ── La fiche ────────────────────────────────────────────────────────
 export interface Client {
@@ -64,10 +83,10 @@ export interface Client {
   courriel: string;
   nom: string;
   telephone?: string;
-  /** `null` quand ni le nom du fichier ni les données ne tranchent. */
-  annee: number | null;
-  /** Vrai quand l'année reste à confirmer par quelqu'un de l'équipe. */
-  anneeAConfirmer?: boolean;
+  annee: number;
+  /** Ce qui a tranché l'année : le nom du fichier, une date dans les
+   *  données, ou la présomption de 2024. */
+  anneeSource?: SourceAnnee;
   categorie: CategorieClient;
   /** L'édition thématique, quand l'export en nomme une (Nouvelle France). */
   edition?: string;
@@ -95,7 +114,8 @@ export interface LigneClient {
   courriel: string;
   nom: string;
   telephone?: string;
-  annee: number | null;
+  annee: number;
+  anneeSource?: SourceAnnee;
   categorie: CategorieClient;
   edition?: string;
   articles?: { libelle: string; quantite: number }[];
@@ -131,14 +151,14 @@ export function normaliserTexte(valeur: unknown): string {
 /** L'identifiant du document. Deux imports du même fichier écrivent au
  *  même endroit, donc rien ne se dédouble. */
 export function identifiantClient(
-  annee: number | null,
+  annee: number,
   categorie: CategorieClient,
   courriel: string,
 ): string {
   const c = normaliserCourriel(courriel);
   // La barre oblique est le seul caractère qu'un identifiant Firestore
   // refuse. Aucune adresse n'en porte, mais un export sale, oui.
-  return `${annee ?? ANNEE_INCONNUE}__${categorie}__${c}`.replace(/\//g, '_');
+  return `${annee}__${categorie}__${c}`.replace(/\//g, '_');
 }
 
 /** « 3 × Prévente » se lit trois préventes. Un libellé sans compteur
@@ -227,7 +247,8 @@ export function fusionnerClients(lignes: LigneClient[]): Client[] {
         id,
         courriel,
         nom: '',
-        annee: ligne.annee ?? null,
+        annee: ligne.annee,
+        anneeSource: ligne.anneeSource,
         categorie: ligne.categorie,
         detail: '',
         quantite: 0,
@@ -237,7 +258,6 @@ export function fusionnerClients(lignes: LigneClient[]): Client[] {
         _sources: new Set(),
         _notes: new Set(),
       };
-      if (ligne.annee == null) fiche.anneeAConfirmer = true;
       parId.set(id, fiche);
     }
 
@@ -345,11 +365,16 @@ export function filtrerClients(clients: Client[], terme: string): Client[] {
 }
 
 /** Les années présentes dans le registre, de la plus récente à la plus
- *  ancienne. Les fiches sans année se rangent à la fin. */
+ *  ancienne. */
 export function anneesDuRegistre(clients: Client[]): number[] {
   const vues = new Set<number>();
   for (const c of clients) if (typeof c.annee === 'number') vues.add(c.annee);
   return [...vues].sort((a, b) => b - a);
+}
+
+/** Les fiches dont l'année est présumée plutôt que lue. */
+export function anneesPresumees(clients: Client[]): Client[] {
+  return clients.filter((c) => c.anneeSource === 'defaut-2024');
 }
 
 /**
