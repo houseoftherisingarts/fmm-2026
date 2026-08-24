@@ -607,6 +607,13 @@ exports.messagerieDeMasse = onCall(
 // (Cloud Tasks) plutôt qu'une boucle plus longue.
 
 const CAMPAGNE_CLE = defineSecret('CAMPAGNE_CLE');
+// ZeptoMail, le service d'envoi en nombre de Zoho. Une boîte Zoho
+// ordinaire refuse au-delà d'une poignée de lettres et rend
+// « Unusual sending activity detected » : elle n'est pas faite pour
+// une infolettre (constat du 2026-08-24, 25 lettres parties sur 126).
+// Le jeton reste facultatif : sans lui, tout retombe sur la boîte Zoho.
+const ZEPTO_TOKEN = defineSecret('ZEPTO_TOKEN');
+const ZEPTO_HOST = 'smtp.zeptomail.ca';
 
 const CAMPAGNES = 'campagnes';
 const DESABONNEMENTS = 'desabonnements';
@@ -703,7 +710,34 @@ async function lireDesabonnes() {
  * campagnes programmées. Une seule définition du rythme, donc, et pas
  * deux réglages qui se mettent à diverger.
  */
-function ouvrirTransport(motDePasse) {
+/** Le jeton ZeptoMail s'il est posé. Un secret jamais défini fait
+ *  lever `.value()`, et une infolettre ne doit pas tomber pour ça. */
+function jetonZeptoOuVide() {
+  // Le secret existe toujours, sinon le déploiement refuse. Tant qu'il
+  // porte la sentinelle, ZeptoMail dort et tout passe par Zoho.
+  try {
+    const v = String(ZEPTO_TOKEN.value() || '').trim();
+    return v && v !== 'non-configure' && v.length > 20 ? v : '';
+  } catch { return ''; }
+}
+
+function ouvrirTransport(motDePasse, jetonZepto) {
+  // ZeptoMail quand son jeton est posé, la boîte Zoho sinon. L'adresse
+  // d'expéditeur ne change pas : les deux partent de admin@ et le
+  // destinataire ne voit aucune différence.
+  if (jetonZepto) {
+    return nodemailer.createTransport({
+      host: ZEPTO_HOST,
+      port: 465,
+      secure: true,
+      auth: { user: 'emailapikey', pass: jetonZepto },
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 200,
+      rateDelta: 1000,
+      rateLimit: 10,
+    });
+  }
   return nodemailer.createTransport({
     host: ZOHO_SMTP_HOST,
     port: 465,
@@ -828,7 +862,7 @@ async function expedierLettre({ transport, cle, campagneId, sujet, html, texte, 
 exports.envoyerCampagne = onCall(
   {
     region: 'us-central1',
-    secrets: [ZOHO_APP_PASSWORD, CAMPAGNE_CLE],
+    secrets: [ZOHO_APP_PASSWORD, CAMPAGNE_CLE, ZEPTO_TOKEN],
     memory: '512MiB',
     timeoutSeconds: 540,
   },
@@ -849,7 +883,7 @@ exports.envoyerCampagne = onCall(
 
     const cle = CAMPAGNE_CLE.value();
 
-    const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value());
+    const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value(), jetonZeptoOuVide());
 
     // ── L'exemplaire d'essai ──
     // Il part à l'adresse de la personne qui appelle, jamais à une
@@ -864,7 +898,10 @@ exports.envoyerCampagne = onCall(
           to: courrielAppelant,
           subject: `[Essai] ${sujet}`,
           text: personnaliser(texte, auth.token.name || '', lien, false),
-          html: personnaliser(html, auth.token.name || '', lien, true),
+          // Un essai ne se mesure pas : `poserPixel` sans campagne
+          // efface simplement le jeton, qui paraîtrait autrement en
+          // toutes lettres au bas de la lettre d'essai.
+          html: poserPixel(personnaliser(html, auth.token.name || '', lien, true), null, courrielAppelant, cle),
         });
       } finally {
         transport.close();
@@ -1073,7 +1110,7 @@ exports.minuterieCampagnes = onSchedule(
     // journal de Cloud Scheduler parle la même heure que la page
     // d'admin et que les documents de `campagnesProgrammees`.
     timeZone: prog.FUSEAU_FESTIVAL,
-    secrets: [ZOHO_APP_PASSWORD, CAMPAGNE_CLE],
+    secrets: [ZOHO_APP_PASSWORD, CAMPAGNE_CLE, ZEPTO_TOKEN],
     memory: '512MiB',
     timeoutSeconds: 540,
     // Aucune reprise automatique par Cloud Scheduler : la reprise est
@@ -1254,7 +1291,7 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
 
   await ref.update({ campagneId: trace.id });
 
-  const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value());
+  const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value(), jetonZeptoOuVide());
   // Deux compteurs, et ils ne disent pas la même chose. `faits` est le
   // nombre d'adresses TRAITÉES, celui qui fait avancer le curseur.
   // `envoyesTotal` est le nombre de lettres réellement parties. Les

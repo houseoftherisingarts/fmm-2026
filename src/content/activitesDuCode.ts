@@ -26,8 +26,8 @@ const BRUT: Array<Omit<FicheInput, 'ordre'>> = [
     // gauche du chevalier de gauche tombaient hors cadre (Alex).
     image: '/activites/webp/joute-chevaliers.webp', imagePos: '38% 50%', categorie: 'combat' },
   { titreFR: 'Spectacles',       titreEN: 'Shows',             sousTitreFR: 'Et musique',                                               sousTitreEN: 'And music',
-    descFR: 'Compagnies de scène, musiciens, conteurs, troupes itinérantes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys et plus : du tambour viking aux ballades médiévales.',
-    descEN: 'Stage companies, musicians, storytellers, travelling troupes. Mystic Projekt, Skarazula, Harfang, Canteraine, Trifolys and more: from Viking drums to medieval ballads.',
+    descFR: 'Compagnies de scène, musiciens, conteurs, troupes itinérantes. Skarazula, L’Harfang, la Troupe Caravane, BicOasis, Trifolys, Svarica et plus : du tambour viking aux ballades médiévales.',
+    descEN: 'Stage companies, musicians, storytellers, travelling troupes. Skarazula, L’Harfang, Troupe Caravane, BicOasis, Trifolys, Svarica and more: from Viking drums to medieval ballads.',
     image: '/activites/webp/musiciens-scene.webp', categorie: 'shows' },
   { titreFR: 'Marché',           titreEN: 'Market',            sousTitreFR: 'Artisans et foire locale',                                 sousTitreEN: 'Artisans and local fair',
     descFR: 'Une cinquantaine d’artisans et marchands d’époque. Forgerons, costumiers, bijoutiers, brasseurs, herboristes. Achetez local, en armure ou en bourgeois.',

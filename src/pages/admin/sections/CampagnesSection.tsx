@@ -6,7 +6,7 @@ import {
 import { Card, Input, Label, PrimaryButton, GhostButton, EmptyState, Badge, fmtDate } from '../primitives';
 import { useAuth } from '../../../contexts/AuthContext';
 import { MODELES_CAMPAGNE, type LangueCampagne, type ModeleCampagne } from '../../../content/campagnes';
-import { rendreCampagne, JETON_NOM, JETON_DESABONNEMENT } from '../../../lib/courrielCampagne';
+import { rendreCampagne, JETON_NOM, JETON_DESABONNEMENT, JETON_PIXEL } from '../../../lib/courrielCampagne';
 import {
   listerClients, listerComptes, appliquerFiltre, destinatairesDepuis, anneesDuRegistre,
   suivreCampagnes, envoyerCampagne, CATEGORIES_CLIENT, LIBELLE_CATEGORIE, FILTRE_VIDE,
@@ -190,7 +190,10 @@ const CampagnesSection: React.FC = () => {
   const apercuHtml = useMemo(
     () => renduApercu.html
       .split(JETON_NOM).join(langue === 'FR' ? ' Marguerite' : ' Margaret')
-      .split(JETON_DESABONNEMENT).join('#'),
+      .split(JETON_DESABONNEMENT).join('#')
+      // Le pixel de mesure est invisible dans une vraie boîte : ici, il
+      // s'efface, sans quoi le jeton se lirait au bas de l’aperçu.
+      .split(JETON_PIXEL).join(''),
     [renduApercu.html, langue],
   );
 

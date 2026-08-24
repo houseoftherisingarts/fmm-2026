@@ -225,8 +225,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Le dimanche midi, la cérémonie de Freya salue le passage de la saison au camp viking, et le Banquet de l’Équinoxe suit à treize heures. Six groupes montent sur la scène cette année : L’Harfang, Skarazula, Mystic Projekt, Arrünn, Trifolys et Canteraine. La musique porte le festival du tambour viking jusqu’aux ballades médiévales.',
-        EN: 'On Sunday at midday, the ceremony of Freya greets the turning of the season at the Viking camp, and the Equinox Banquet follows at one o’clock. Six bands take the stage this year: L’Harfang, Skarazula, Mystic Projekt, Arrünn, Trifolys and Canteraine. The music carries the festival from Viking drums to medieval ballads.',
+        FR: 'Le dimanche midi, la cérémonie de Freya salue le passage de la saison au camp viking, et le Banquet de l’Équinoxe suit à treize heures. Neuf troupes montent sur la scène cette année : Skarazula, L’Harfang, la Troupe Caravane, l’Ensemble Klezmer de Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias et Alhambra. La musique porte le festival du tambour viking jusqu’aux ballades médiévales.',
+        EN: 'On Sunday at midday, the ceremony of Freya greets the turning of the season at the Viking camp, and the Equinox Banquet follows at one o’clock. Nine troupes take the stage this year: Skarazula, L’Harfang, Troupe Caravane, the Klezmer Ensemble of Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias and Alhambra. The music carries the festival from Viking drums to medieval ballads.',
       },
       {
         type: 'carte',
