@@ -548,7 +548,7 @@ const FR = {
 const EN: typeof FR = {
   title: 'Food Village',
   eyebrow: 'The belly of the festival',
-  intro: 'The village menu for all three days, the great banquet at the lord’s table, and the recipe grimoire to take home.',
+  intro: 'The village menu for all three days, the great banquet at the lord’s table, and the festival cookbook to take home.',
 
   kioskRail: 'Food Village',
   kioskMeta: 'Serving',
