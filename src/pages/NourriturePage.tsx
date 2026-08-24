@@ -405,7 +405,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
         </div>
       </section>
 
-      {/* ══ 07 · Le Grimoire du festival ═══════════════════════════════
+      {/* ══ 07 · Le livre de recettes du festival ══════════════════════
           Le livre de recettes de Marc-Alexis, 9 $ plus taxes, payé par
           Square. Deux pages se lisent en ligne, le reste s'achète. */}
       <section className="relative py-16 md:py-24 overflow-hidden">
