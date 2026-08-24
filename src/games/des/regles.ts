@@ -174,7 +174,6 @@ export function douter(p: Partie): Partie {
     j.id === perdant.id ? { ...j, des: j.des.slice(0, -1) } : j,
   );
   const apres = joueurs.map((j) => ({ ...j, elimine: j.des.length === 0 }));
-  const restants = apres.filter((j) => !j.elimine);
 
   return {
     ...p,
@@ -219,7 +218,6 @@ export function exact(p: Partie): Partie {
     return { ...j, des: j.des.slice(0, -1) };
   });
   const apres = joueurs.map((j) => ({ ...j, elimine: j.des.length === 0 }));
-  const restants = apres.filter((j) => !j.elimine);
 
   return {
     ...p,
