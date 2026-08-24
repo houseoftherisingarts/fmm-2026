@@ -312,7 +312,7 @@ export async function listerClients(max = 3000): Promise<Client[]> {
 // ── Les regroupements de la section d'admin ─────────────────────────
 
 const sansAccents = (v: string) =>
-  v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 /** La recherche par nom ou par courriel, accents et casse ignorés. */
 export function filtrerClients(clients: Client[], terme: string): Client[] {
