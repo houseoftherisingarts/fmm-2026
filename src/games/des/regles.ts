@@ -159,7 +159,8 @@ export function douter(p: Partie): Partie {
     journal: [
       ...p.journal,
       `${douteur.nom} crie « menteur ! »`,
-      `Il y avait ${compte} × ${p.mise.face} : ${perdant.nom} perd un dé.`,
+      `La table comptait ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}, `
+        + `et ${annonceur.nom} en annonçait ${p.mise.quantite}. ${perdant.nom} perd un dé.`,
     ],
   };
 }
@@ -206,8 +207,10 @@ export function exact(p: Partie): Partie {
       ...p.journal,
       `${appelant.nom} annonce « c’est exactement ça ! »`,
       juste
-        ? `Il y avait bien ${compte} × ${p.mise.face} : ${appelant.nom} reprend un dé.`
-        : `Il y avait ${compte} × ${p.mise.face} : ${appelant.nom} perd un dé.`,
+        ? `La table comptait bien ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}. `
+            + `${appelant.nom} reprend un dé.`
+        : `La table comptait ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}, `
+            + `et l'annonce en promettait ${p.mise.quantite}. ${appelant.nom} perd un dé.`,
     ],
   };
 }

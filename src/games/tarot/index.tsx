@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import CreditJeux from '../../components/jeux/CreditJeux';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Sparkles, RotateCcw, Shuffle } from 'lucide-react';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
@@ -35,20 +36,6 @@ function melanger(): LameTiree[] {
   return paquet;
 }
 
-// La croix celtique se lit en croix, pas en ligne : chaque position a
-// sa place sur la grille (colonne, rangée) au-dessus de `md`.
-const PLACES_CROIX: Array<{ col: number; row: number; couche?: boolean }> = [
-  { col: 2, row: 2 },              // 1 · la situation
-  { col: 2, row: 2, couche: true },// 2 · ce qui barre, posée en travers
-  { col: 2, row: 3 },              // 3 · la racine
-  { col: 1, row: 2 },              // 4 · le passé récent
-  { col: 2, row: 1 },              // 5 · ce qui couronne
-  { col: 3, row: 2 },              // 6 · le proche avenir
-  { col: 4, row: 4 },              // 7 · vous
-  { col: 4, row: 3 },              // 8 · l'entourage
-  { col: 4, row: 2 },              // 9 · espoir et crainte
-  { col: 4, row: 1 },              // 10 · l'issue
-];
 
 const TarotPage: React.FC = () => {
   useCaravanPage();
@@ -253,11 +240,60 @@ const TarotPage: React.FC = () => {
           </p>
         </div>
       </section>
+      <CreditJeux lang={fr ? 'fr' : 'en'} />
     </>
   );
 };
 
 // ─── Une case du tapis ──────────────────────────────────────────────
+const CarteSeule: React.FC<{
+  tiree?: LameTiree;
+  active: boolean;
+  onLire: () => void;
+  fr: boolean;
+  reduce: boolean;
+}> = ({ tiree, active, onLire, fr, reduce }) => (
+  <button
+    type="button"
+    onClick={onLire}
+    disabled={!tiree}
+    className={`tarot-case relative w-full aspect-[813/1536] rounded-card overflow-hidden border transition-shadow ${
+      active ? 'border-brass shadow-[0_0_34px_-8px_rgba(232,177,74,0.75)]' : 'border-brass/25'
+    }`}
+    style={{ background: 'rgba(10,4,6,0.7)', cursor: tiree ? 'pointer' : 'default' }}
+  >
+    <AnimatePresence mode="wait">
+      {tiree ? (
+        <motion.div
+          key={tiree.lame.code}
+          initial={reduce ? false : { rotateY: 90, opacity: 0 }}
+          animate={{ rotateY: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          <img
+            src={`/tarot/${tiree.lame.code}.webp`}
+            alt={fr ? tiree.lame.nomFR : tiree.lame.nomEN}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ transform: tiree.renversee ? 'rotate(180deg)' : undefined }}
+          />
+        </motion.div>
+      ) : (
+        <motion.img
+          key="dos"
+          src="/tarot/dos.webp"
+          alt=""
+          aria-hidden
+          loading="lazy"
+          initial={false}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+    </AnimatePresence>
+  </button>
+);
+
 const CaseTirage: React.FC<{
   titre: string;
   /** Étiquette de la carte posée en travers : elle se met de côté. */
@@ -328,6 +364,30 @@ const CaseTirage: React.FC<{
 );
 
 // ─── La croix celtique ──────────────────────────────────────────────
+// Dix cartes, deux blocs. La croix occupe trois colonnes à gauche, avec
+// la deuxième lame posée EN TRAVERS de la première, dans la même case.
+// Les quatre dernières montent en colonne à droite, du bas vers le haut.
+//
+// Le piège corrigé le 2026-08-23 : les cartes 1 et 2 partageaient une
+// case de grille, donc elles s'empilaient et leurs étiquettes se
+// marchaient dessus. La paire vit maintenant dans son propre bloc, la
+// carte couchée en position absolue, et les deux titres se lisent sous
+// l'ensemble au lieu de passer derrière les images.
+const CENTRE = { croisee: 1 };            // index de la lame en travers
+
+const PLACES_CROIX: Array<{ col: number; row: number }> = [
+  { col: 2, row: 2 },   // 1 · la situation, avec la 2 en travers
+  { col: 2, row: 2 },   // 2 · ce qui barre (rendue dans la même case)
+  { col: 2, row: 3 },   // 3 · la racine
+  { col: 1, row: 2 },   // 4 · le passé récent
+  { col: 2, row: 1 },   // 5 · ce qui couronne
+  { col: 3, row: 2 },   // 6 · le proche avenir
+  { col: 4, row: 4 },   // 7 · vous
+  { col: 4, row: 3 },   // 8 · l'entourage
+  { col: 4, row: 2 },   // 9 · espoir et crainte
+  { col: 4, row: 1 },   // 10 · l'issue
+];
+
 const CroixCeltique: React.FC<{
   tirage: Tirage;
   tirees: LameTiree[];
@@ -335,30 +395,76 @@ const CroixCeltique: React.FC<{
   onLire: (i: number) => void;
   fr: boolean;
   reduce: boolean;
-}> = ({ tirage, tirees, lue, onLire, fr, reduce }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-5 md:[grid-template-rows:repeat(4,auto)] md:items-start">
-    {tirage.positions.map((p, i) => {
-      const place = PLACES_CROIX[i];
-      return (
-        <div
-          key={i}
-          className="md:[grid-column:var(--col)] md:[grid-row:var(--row)]"
-          style={{ ['--col' as string]: String(place.col), ['--row' as string]: String(place.row) }}
-        >
-          <CaseTirage
-            titre={place.couche ? '' : `${i + 1} · ${fr ? p.titreFR : p.titreEN}`}
-            titreCouche={place.couche ? `${i + 1} · ${fr ? p.titreFR : p.titreEN}` : undefined}
-            tiree={tirees[i]}
-            active={lue === i}
-            onLire={() => tirees[i] && onLire(i)}
-            fr={fr}
-            reduce={reduce}
-            couche={place.couche}
-          />
-        </div>
-      );
-    })}
-  </div>
-);
+}> = ({ tirage, tirees, lue, onLire, fr, reduce }) => {
+  const nom = (i: number) => `${i + 1} · ${fr ? tirage.positions[i].titreFR : tirage.positions[i].titreEN}`;
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 md:[grid-template-rows:repeat(4,auto)] md:items-start">
+      {tirage.positions.map((_p, i) => {
+        // La lame en travers est dessinée avec la première : elle n'a
+        // pas de case à elle.
+        if (i === CENTRE.croisee) return null;
+        const place = PLACES_CROIX[i];
+        const centre = i === 0;
+
+        return (
+          <div
+            key={i}
+            className="md:[grid-column:var(--col)] md:[grid-row:var(--row)]"
+            style={{ ['--col' as string]: String(place.col), ['--row' as string]: String(place.row) }}
+          >
+            {centre ? (
+              <div className="flex flex-col items-center gap-2">
+                {/* La paire : la situation, et ce qui la traverse. La
+                    case garde la place de la carte couchée à droite et
+                    à gauche pour que rien ne déborde sur les voisines. */}
+                <div className="relative w-full px-[14%]">
+                  <CarteSeule
+                    tiree={tirees[0]}
+                    active={lue === 0}
+                    onLire={() => tirees[0] && onLire(0)}
+                    fr={fr}
+                    reduce={reduce}
+                  />
+                  <div
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                    aria-hidden={!tirees[1]}
+                  >
+                    <div className="w-[74%] rotate-90 pointer-events-auto">
+                      <CarteSeule
+                        tiree={tirees[1]}
+                        active={lue === 1}
+                        onLire={() => tirees[1] && onLire(1)}
+                        fr={fr}
+                        reduce={reduce}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="font-sans text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-ivory-soft/60 text-center leading-tight">
+                    {nom(0)}
+                  </span>
+                  <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-brass/80 text-center leading-tight">
+                    {nom(1)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <CaseTirage
+                titre={nom(i)}
+                tiree={tirees[i]}
+                active={lue === i}
+                onLire={() => tirees[i] && onLire(i)}
+                fr={fr}
+                reduce={reduce}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 export default TarotPage;

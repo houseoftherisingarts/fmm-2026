@@ -9,6 +9,7 @@
 // jetons du design system (--color-bone, --color-brass, etc).
 
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import CreditJeux from '../../components/jeux/CreditJeux';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2, Scroll } from 'lucide-react';
@@ -1566,6 +1567,7 @@ const HnefataflPage: React.FC = () => {
           </Reveal>
         </div>
       </section>
+      <CreditJeux lang={lang === 'FR' ? 'fr' : 'en'} />
     </>
   );
 };

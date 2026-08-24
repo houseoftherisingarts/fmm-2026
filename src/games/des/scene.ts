@@ -327,7 +327,7 @@ function fabriquerSon() {
 export function creerTable(): TableDes {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0506);
-  scene.fog = new THREE.Fog(0x0a0506, 22, 46);
+  scene.fog = new THREE.Fog(0x0d0906, 24, 58);
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 140);
   camera.position.set(0, 14, 15);
@@ -346,6 +346,26 @@ export function creerTable(): TableDes {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
 
+  // ── La salle autour de la table ───────────────────────────────────
+  // La table flottait dans le noir. La même taverne que le jeu de tafl
+  // l'entoure maintenant, enroulée sur un cylindre ouvert vers
+  // l'intérieur : un seul décor, deux jeux (Alex, 2026-08-23).
+  const salleTex = chargeur.load('/scenes/taverne-salle.jpg', (t) => {
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = THREE.RepeatWrapping;
+    t.repeat.x = 3;
+  });
+  const salle = new THREE.Mesh(
+    new THREE.CylinderGeometry(26, 26, 20, 48, 1, true),
+    new THREE.MeshBasicMaterial({
+      map: salleTex, side: THREE.BackSide, fog: true, depthWrite: false,
+      color: 0x5f5142,        // en retrait : la table reste le sujet
+    }),
+  );
+  salle.position.y = 4;
+  salle.renderOrder = -1;
+  scene.add(salle);
+
   // ── La table ──────────────────────────────────────────────────────
   const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 1);
   // Le plateau est en bois d'un bord à l'autre : aucun drap, aucun
@@ -356,11 +376,15 @@ export function creerTable(): TableDes {
   const tranche = new THREE.MeshStandardMaterial({
     map: bois, roughness: 0.82, metalness: 0.02, color: 0xb08a5e,
   });
+  // Le dessous de la table débordait en disque clair autour du plateau
+  // (Alex, 2026-08-23). Il passe en bois presque noir, et le plateau
+  // s'épaissit pour qu'on ne le voie plus depuis la caméra.
+  const dessous = new THREE.MeshStandardMaterial({ color: 0x120b06, roughness: 0.95 });
   const table = new THREE.Mesh(
-    new THREE.CylinderGeometry(6.2, 6.35, 0.42, 64),
-    [tranche, dessus, dessus],
+    new THREE.CylinderGeometry(6.2, 6.05, 0.9, 64),
+    [tranche, dessus, dessous],
   );
-  table.position.y = -0.21;
+  table.position.y = -0.45;
   table.receiveShadow = true;
   scene.add(table);
 
@@ -475,8 +499,10 @@ export function creerTable(): TableDes {
   const faireDe = () => {
     const grp = new THREE.Group();
     const corps = new THREE.Mesh(geoCorps, matCorps);
-    corps.castShadow = true;
-    corps.receiveShadow = true;
+    // Aucune ombre portée par les dés : la carte d'ombre les rendait en
+    // carrés noirs sur la planche (Alex, 2026-08-23).
+    corps.castShadow = false;
+    corps.receiveShadow = false;
     grp.add(corps);
     POSES.forEach(([pos, rot], i) => {
       const f = new THREE.Mesh(geoFace, materiaux[i]);
@@ -522,7 +548,7 @@ export function creerTable(): TableDes {
     // roulent sur la table et le gobelet se range à côté.
     // 'remue' pour les autres : leur gobelet reste retourné sur la
     // planche et frissonne, on entend les dés dedans (Alex, 2026-08-23).
-    phase: 'secoue' | 'jette' | 'remue' | 'leve' | 'pose';
+    phase: 'remue' | 'leve' | 'pose';
     base: THREE.Vector3;
     prochainBruit?: number;
   };
@@ -565,32 +591,21 @@ export function creerTable(): TableDes {
     gestes.forEach((g, idx) => {
       const gob = gobelets[idx];
       if (!gob) return;
-      const duree = g.phase === 'secoue' ? 900 : g.phase === 'jette' ? 620 : 620;
+      const duree = 620;
       const k = (t - g.debut) / duree;
       const doux = Math.min(1, Math.max(0, k));
       const cote = g.base.x >= 0 ? 1 : -1;
 
-      if (g.phase === 'secoue') {
-        // Le gobelet monte, tourne et brasse ce qu'il contient.
-        const amp = 0.22 * (1 - doux * 0.35);
-        gob.position.set(
-          g.base.x + Math.sin(t / 42) * amp,
-          POSE_Y + 0.42 + Math.abs(Math.sin(t / 55)) * 0.3,
-          g.base.z + Math.cos(t / 37) * amp * 0.7,
-        );
-        gob.rotation.set(Math.sin(t / 48) * 0.34, 0, Math.cos(t / 51) * 0.34);
-        if (k >= 1) { g.phase = 'jette'; g.debut = t; }
-      } else if (g.phase === 'jette') {
-        // Les dés sont partis rouler : le gobelet se couche à côté.
-        const e = 1 - Math.pow(1 - doux, 2);
-        gob.position.set(
-          g.base.x + e * 1.6 * cote,
-          POSE_Y + Math.sin(doux * Math.PI) * 0.35,
-          g.base.z + e * 0.5,
-        );
-        gob.rotation.set(0, 0, e * (Math.PI / 2) * -cote);
-        if (k >= 1) { g.phase = 'pose'; g.debut = t; }
-      } else if (g.phase === 'remue') {
+      if (g.phase === 'remue') {
+        // Le frisson dure le temps d'un brassage, puis le gobelet se
+        // repose : il ne vibre plus jusqu'à la fin des temps.
+        if (t - g.debut > 2200) {
+          gob.rotation.set(Math.PI, 0, 0);
+          gob.position.set(g.base.x, RENVERSE_Y + HAUT, g.base.z);
+          g.phase = 'pose';
+          g.debut = t;
+          return;
+        }
         // Retourné sur la planche, il frissonne de gauche à droite et
         // les dés cliquettent dedans.
         gob.rotation.set(Math.PI, 0, Math.sin(t / 46) * 0.16);
@@ -604,15 +619,20 @@ export function creerTable(): TableDes {
           g.prochainBruit = t + 210 + Math.random() * 90;
         }
       } else if (g.phase === 'leve') {
-        // Le gobelet monte et se pose sur le côté : il ne doit plus
-        // cacher les dés qu'il vient de découvrir.
+        // Le gobelet se soulève, puis se COUCHE à côté des dés. Posé
+        // dessus, il les cachait (Alex, 2026-08-23).
         const e = 1 - Math.pow(1 - doux, 2);
+        const hauteur = Math.sin(doux * Math.PI) * 1.2;
+        // Couché, le gobelet repose sur son flanc : sa hauteur devient
+        // son RAYON, sinon il s'enfonce dans la planche.
         gob.position.set(
-          g.base.x + e * 1.5 * cote,
-          RENVERSE_Y + HAUT * (1 - e * 0.55) + e * 0.15,
-          g.base.z + e * 0.55,
+          g.base.x + e * 1.9 * cote,
+          POSE_Y + hauteur + e * 0.70,
+          g.base.z + e * 0.66,
         );
-        gob.rotation.set(Math.PI * (1 - e), 0, e * 0.25 * -cote);
+        // Il bascule de renversé (PI) à couché sur le flanc (PI/2),
+        // sans jamais claquer d'un coup dans l'autre sens.
+        gob.rotation.set(Math.PI - e * (Math.PI / 2), 0, 0);
       }
     });
 
@@ -745,12 +765,20 @@ export function creerTable(): TableDes {
           // le centre de la table.
           const tex = chargeur.load(CONVIVES[(i - 1) % CONVIVES.length]);
           tex.colorSpace = THREE.SRGBColorSpace;
-          const haut = 3.4;
+          const haut = 3.2;
+          // `alphaTest` plutôt que la transparence mélangée : le convive
+          // devient un objet plein qui se cache derrière la table au
+          // lieu d'un filigrane posé par-dessus (Alex, 2026-08-23).
           const plaque = new THREE.Mesh(
             new THREE.PlaneGeometry(haut * 0.62, haut),
-            new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }),
+            new THREE.MeshBasicMaterial({
+              map: tex, transparent: false, alphaTest: 0.5, depthWrite: true, depthTest: true,
+            }),
           );
-          plaque.position.set(p.x * 1.32, haut / 2 - 0.35, p.z * 1.32);
+          // Le buste se pose DERRIÈRE le bord de la table, assez bas
+          // pour que la découpe du bas disparaisse derrière les
+          // planches : de face, il a l'air assis (Alex, 2026-08-23).
+          plaque.position.set(p.x * 1.24, haut / 2 - 1.15, p.z * 1.24);
           plaque.lookAt(0, haut / 2 - 0.35, 0);
           groupe.add(plaque);
           convives.push(plaque);
@@ -768,44 +796,53 @@ export function creerTable(): TableDes {
       });
     },
     lancer(faces, onFini) {
-      // Ma main se joue comme une vraie poignée de dés : je brasse, je
-      // renverse le gobelet, les dés roulent devant moi et le gobelet
-      // se couche à côté (Alex, 2026-08-23).
-      const t0 = performance.now();
+      // Le vrai geste de la table : les dés sont dessous, le gobelet
+      // renversé les brasse en frottant la planche, puis il se lève et
+      // les découvre (Alex, 2026-08-23 : « pense à comment ça se passe
+      // dans la vraie vie »).
       const base = sieges[0]
         ? new THREE.Vector3(sieges[0].x * 0.72, 0, sieges[0].z * 0.72)
         : new THREE.Vector3(0, 0, 2.5);
-      gestes.set(0, { debut: t0, phase: 'secoue', base });
-      son.secouer();
 
       mesDes.forEach((d) => { d.visible = false; });
+      gestes.set(0, { debut: performance.now(), phase: 'remue', base });
+      son.secouer();
 
-      // Au bout du brassage, les dés sortent du gobelet et roulent.
+      // Les dés se posent sous le gobelet pendant qu'il brasse.
       window.setTimeout(() => {
-        const depart = performance.now();
         mesDes.forEach((d, i) => {
           if (i >= faces.length) return;
-          d.visible = true;
           const a = (i / Math.max(1, faces.length)) * Math.PI * 2 + 0.4;
-          const r = 0.95 + Math.random() * 0.2;
-          d.position.set(base.x * 0.8 + Math.cos(a) * r * 0.6, 1.25, base.z * 0.8 - 0.2);
-          d.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
-          tumbling.push({
-            de: d,
-            depart: depart + i * 60,
-            jusqua: depart + 780 + i * 90,
-            cible: faces[i],
-            arrivee: new THREE.Vector3(
-              base.x * 0.78 + Math.cos(a) * r,
-              DE / 2,
-              base.z * 0.78 + Math.sin(a) * r * 0.7 - 0.35,
-            ),
-          });
+          const r = 0.42 + Math.random() * 0.12;
+          d.position.set(
+            base.x + Math.cos(a) * r,
+            DE / 2,
+            base.z + Math.sin(a) * r * 0.8,
+          );
+          const [rx, ry, rz] = VERS_LE_CIEL[faces[i]];
+          d.rotation.set(rx, ry + Math.random() * 0.6, rz);
+        });
+      }, 1200);
+
+      // Le gobelet se lève, les dés apparaissent, étalés devant moi.
+      window.setTimeout(() => {
+        const g = gestes.get(0);
+        if (g) { g.phase = 'leve'; g.debut = performance.now(); }
+        mesDes.forEach((d, i) => {
+          if (i >= faces.length) return;
+          const a = (i / Math.max(1, faces.length)) * Math.PI * 2 + 0.4;
+          const r = 0.92 + Math.random() * 0.16;
+          d.position.set(
+            base.x * 0.8 + Math.cos(a) * r,
+            DE / 2,
+            base.z * 0.8 + Math.sin(a) * r * 0.7 - 0.3,
+          );
+          d.visible = true;
         });
         son.tomber();
-      }, 900);
+      }, 2150);
 
-      if (onFini) window.setTimeout(onFini, 2100);
+      if (onFini) window.setTimeout(onFini, 3100);
     },
 
     remuer(indices) {

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CreditJeux from '../../components/jeux/CreditJeux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dices, Minus, Plus, Skull, RotateCcw, Users, Target, ScrollText } from 'lucide-react';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
@@ -194,13 +195,15 @@ const DesPage: React.FC = () => {
     if (!d) return;
     if (d.perdantId) {
       const i = apres.joueurs.findIndex((j) => j.id === d.perdantId);
-      if (i >= 0) window.setTimeout(() => t3.perdreUnDe(i), 700);
+      // Trois secondes de répit : la table se regarde, le verdict se
+      // lit, et seulement ensuite le dé s'en va.
+      if (i >= 0) window.setTimeout(() => t3.perdreUnDe(i), 3000);
     }
     if (d.gagnantDeId) {
       const i = apres.joueurs.findIndex((j) => j.id === d.gagnantDeId);
-      if (i >= 0) window.setTimeout(() => t3.reprendreUnDe(i), 700);
+      if (i >= 0) window.setTimeout(() => t3.reprendreUnDe(i), 3000);
     }
-    window.setTimeout(() => t3.mains(apres.joueurs.map((j) => j.des.length)), 1700);
+    window.setTimeout(() => t3.mains(apres.joueurs.map((j) => j.des.length)), 4200);
   };
 
   const jouerDoute = () => {
@@ -271,6 +274,34 @@ const DesPage: React.FC = () => {
           style={{ height: 'calc(100vh - 5rem)', minHeight: '32rem', marginTop: '5rem' }}
         >
           <div ref={sceneRef} className="absolute inset-0" />
+
+          {/* Le verdict : au centre de la table, en grand, le temps que
+              tout le monde regarde les dés avant qu'un dé s'en aille
+              (Alex, 2026-08-23). */}
+          <AnimatePresence>
+            {partie?.phase === 'devoilement' && partie.devoilement && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.86 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ type: 'spring', stiffness: 190, damping: 22 }}
+                className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-center px-6 pointer-events-none"
+              >
+                <div className="max-w-2xl rounded-lg-card border border-brass/45 px-8 py-6 text-center"
+                     style={{ background: 'rgba(8,3,5,0.86)', backdropFilter: 'blur(10px)',
+                              boxShadow: '0 26px 70px rgba(0,0,0,0.6)' }}>
+                  <p className="font-sans uppercase tracking-[0.3em] text-[10px] text-ivory-soft/60 mb-3">
+                    {partie.devoilement.exact
+                      ? (fr ? 'Exactement ça' : 'Spot on')
+                      : (fr ? 'Menteur' : 'Liar')}
+                  </p>
+                  <p className="font-display title-medieval text-2xl md:text-3xl text-ivory leading-snug">
+                    {partie.journal[partie.journal.length - 1]}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Les bulles : ce que chacun annonce, au-dessus de sa place */}
           <AnimatePresence>
@@ -556,6 +587,7 @@ const DesPage: React.FC = () => {
             )}
           </div>
         </div>
+        <CreditJeux lang={lang === 'FR' ? 'fr' : 'en'} />
       </section>
     </>
   );

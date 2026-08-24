@@ -95,7 +95,7 @@ const JeuxEnLignePage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={fr ? 'Jeux en ligne' : 'Online Games'}
         intro={t.intro}
-        orbImage="/photos/hnefatafl-hero.webp"
+        orbImage="/jeux/tuile-tafl.webp"
         orbImagePosition="center 45%"
       />
 

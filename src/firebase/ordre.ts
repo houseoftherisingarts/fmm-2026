@@ -19,14 +19,58 @@ export interface StatsMembre {
   force: number; ruse: number; chance: number; verve: number; endurance: number;
 }
 
+// ── Les fonctions portées au festival ───────────────────────────────
+// Une même personne en cumule souvent plusieurs : bénévole le samedi,
+// marchande le dimanche, trésorière toute l'année. Les fonctions se
+// décernent depuis l'espace admin et se lisent partout ailleurs, en
+// petites pastilles sous le nom (Alex, 2026-08-23).
+export type RoleMembre =
+  | 'membre' | 'benevole' | 'marchand' | 'artisan' | 'musicien' | 'securite'
+  | 'administrateur' | 'tresorier' | 'secretaire' | 'commanditaire' | 'chevalier';
+
+export const ROLES_MEMBRE: RoleMembre[] = [
+  'membre', 'benevole', 'marchand', 'artisan', 'musicien', 'securite',
+  'administrateur', 'tresorier', 'secretaire', 'commanditaire', 'chevalier',
+];
+
+export const LIBELLE_ROLE: Record<RoleMembre, { FR: string; EN: string }> = {
+  membre:         { FR: 'Membre',         EN: 'Member'        },
+  benevole:       { FR: 'Bénévole',       EN: 'Volunteer'     },
+  marchand:       { FR: 'Marchand',       EN: 'Merchant'      },
+  artisan:        { FR: 'Artisan',        EN: 'Artisan'       },
+  musicien:       { FR: 'Musicien',       EN: 'Musician'      },
+  securite:       { FR: 'Sécurité',       EN: 'Security'      },
+  administrateur: { FR: 'Administrateur', EN: 'Administrator' },
+  tresorier:      { FR: 'Trésorier',      EN: 'Treasurer'     },
+  secretaire:     { FR: 'Secrétaire',     EN: 'Secretary'     },
+  commanditaire:  { FR: 'Commanditaire',  EN: 'Sponsor'       },
+  chevalier:      { FR: 'Chevalier',      EN: 'Knight'        },
+};
+
+/** Tout le monde porte au moins « Membre », le reste s'ajoute par-dessus. */
+export function rolesAffiches(roles?: RoleMembre[]): RoleMembre[] {
+  const autres = (roles || []).filter((r) => r !== 'membre' && ROLES_MEMBRE.includes(r));
+  return ['membre', ...autres];
+}
+
 export interface Membre {
   uid: string;
   nom: string;
   avatarUrl?: string;
   avatarHue?: number;
   ville?: string;
+  /** La description que la personne écrit sur elle-même. */
   devise?: string;
   stats?: StatsMembre;
+  /** Décernées par l'équipe seulement (voir firestore.rules). */
+  roles?: RoleMembre[];
+  // Les trois chiffres du bandeau que personne d'autre ne peut aller
+  // lire à la source : les amitiés, les parties et les avis dorment
+  // dans des collections fermées. La personne les recopie ici en
+  // visitant son espace, et sa fiche publique les affiche.
+  amis?: number;
+  parties?: number;
+  avisPris?: string[];
   maj?: unknown;
 }
 
