@@ -737,13 +737,13 @@ function verifierLettre(d) {
   const html = String((d && d.html) || '');
   const texte = String((d && d.texte) || '');
 
-  if (!sujet) return { erreur: 'La lettre n\u2019a pas d\u2019objet.' };
+  if (!sujet) return { erreur: 'La lettre n’a pas d’objet.' };
   if (!html || !texte) return { erreur: 'La lettre est vide.' };
   if (html.length > CORPS_MAX || texte.length > CORPS_MAX) {
     return { erreur: 'La lettre dépasse la taille permise.' };
   }
   if (!html.includes(JETON_DESABONNEMENT) || !texte.includes(JETON_DESABONNEMENT)) {
-    return { erreur: 'La lettre n\u2019a pas de lien de désabonnement.' };
+    return { erreur: 'La lettre n’a pas de lien de désabonnement.' };
   }
   return { sujet, html, texte };
 }
@@ -962,7 +962,7 @@ exports.envoyerCampagne = onCall(
         adressesEchouees: etat.adressesEchouees,
         erreur: String((err && err.message) || err),
       });
-      throw new HttpsError('internal', `L\u2019envoi s\u2019est arrêté après ${etat.envoyes} courriels.`);
+      throw new HttpsError('internal', `L’envoi s’est arrêté après ${etat.envoyes} courriels.`);
     } finally {
       transport.close();
     }
