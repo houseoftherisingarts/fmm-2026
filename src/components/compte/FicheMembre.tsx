@@ -822,11 +822,11 @@ const EN: typeof FR = {
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
     profil: 'My profile', badges: 'My badges', jeux: 'My games',
-    billets: 'My tickets', collection: 'My collection',
+    billets: 'My tickets', photos: 'My photos', collection: 'My collection',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Their card', badges: 'Their badges', jeux: 'Their games',
-    billets: 'Tickets', collection: 'Their collection',
+    billets: 'Tickets', photos: 'Photos', collection: 'Their collection',
   } as Record<Onglet, string>,
   presentation: 'Their introduction',
   sansDescription: 'This member has not written an introduction yet.',
