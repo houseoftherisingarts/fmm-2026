@@ -214,13 +214,15 @@ export function apresExact(etat: EtatDes, mains: Record<string, Face[]>): EtatDe
 }
 
 /** Nouvelle manche : les gobelets se referment et chacun relance chez
- *  lui. Le perdant de la manche précédente ouvre les annonces, et un
- *  exact réussi rend la main à celui qui l'a appelé. */
+ *  lui. Le perdant de la manche précédente ouvre les annonces. S'il a
+ *  perdu son dernier dé, la main passe à son voisin, et un exact
+ *  réussi la rend à celui qui l'a appelé. */
 export function apresManche(etat: EtatDes): EtatDes {
   if (etat.phase !== 'devoilement') return etat;
   const d = etat.devoilement;
   const debout = (u?: string | null) => !!u && !etat.elimines.includes(u);
   const ouvreur = debout(d?.perdantUid) ? d!.perdantUid!
+    : d?.perdantUid ? suivantVivant(etat, d.perdantUid)
     : debout(d?.doutePar) ? d!.doutePar
     : vivants(etat)[0];
   return {
