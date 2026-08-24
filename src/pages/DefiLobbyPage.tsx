@@ -163,7 +163,7 @@ const DefiLobbyPage: React.FC = () => {
                 </p>
               ) : user ? (
                 <p className="font-editorial text-base text-ivory-soft inline-flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" /> {fr ? 'On vous assoit…' : 'Seating you…'}
+                  <Loader2 size={16} className="animate-spin" /> {fr ? 'Nous vous asseyons…' : 'Seating you…'}
                 </p>
               ) : (
                 <>
