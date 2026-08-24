@@ -832,18 +832,21 @@ def build():
             voyelle = nom[:1] in "aeiouyéèêàâîôû" or nom.startswith(H_MUET)
             liaison = "d’" if voyelle else "de "
             if i['q']:
-                depart = joli_depart(i['q'])
+                # Une seule mesure par ingrédient depuis le 2026-08-24,
+                # celle de la table de cinq. Quand la fiche ne se divise
+                # pas, une bouteille d'hypocras par exemple, sa quantité
+                # tient telle quelle.
+                mesure = pour_cinq(i['q'], portions, i['n']) or joli_depart(i['q'])
                 # « au goût » se met APRÈS l'ingrédient : un cuisinier
                 # écrit « sel et poivre, au goût », jamais l'inverse.
-                if depart == 'au goût':
+                if mesure == 'au goût':
                     tete = f"{esc(clean(nom))}{esc(precision)}, <b>au goût</b>"
                 else:
-                    lien = '' if depart.endswith('×') else liaison
-                    tete = f"<b>{esc(depart)}</b> {lien}{esc(nom)}{esc(precision)}"
+                    lien = '' if mesure.endswith('×') else liaison
+                    tete = f"<b>{esc(mesure)}</b> {lien}{esc(nom)}{esc(precision)}"
             else:
                 tete = esc(nom[0].upper() + nom[1:])
-            pied = f"<span class=q>pour cinq : {esc(maison)}</span>" if maison else ''
-            return f"<li>{tete}{pied}</li>"
+            return f"<li>{tete}</li>"
         ing = ''.join(ligne_ing(i) for i in r['ing'] if i['n'])
         # Les lignes en fin de fiche qui expliquent un sous-ensemble deviennent une note.
         steps, notes = [], []
