@@ -47,8 +47,15 @@ const FROM = `Festival Médiéval de Montpellier <${ZOHO_EMAIL}>`;
 
 const PDF = path.join(__dirname, 'grimoire-fmm-2026.pdf');
 // Le nom de l'article dans Square. Toute commande qui ne le contient pas
-// n'est pas un grimoire : on ne poste rien.
+// n'est pas le livre de recettes : rien ne part par la poste.
+// Le fichier et la clé gardent le mot « grimoire », qui était l'ancien
+// nom du livre; seul le texte lu par les gens a changé (Alex, 2026-08-23).
 const ARTICLE = 'grimoire';
+// Square envoie au même webhook TOUS les paiements du compte. Les
+// commandes de banquet passent donc ici, et c'est là que se compte le
+// nombre de places vendues.
+const ARTICLE_BANQUET = 'banquet';
+const COMPTEUR_BANQUET = 'banquetPlaces/compteur';
 
 /**
  * Vérifie la signature HMAC-SHA256 que Square pose sur chaque webhook.
