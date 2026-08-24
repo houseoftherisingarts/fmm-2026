@@ -366,27 +366,25 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   </>
                 ) : (
                   <>
+                    {/* L'ordre demandé par Alex le 2026-08-23 : le profil
+                        public, le registre juste à côté, puis les deux
+                        candidatures, et l'espace admin tout à la fin. */}
                     <Link to={`${addLocale('/profil', lang)}/${uid}`} className={cta}>
                       <Eye size={14} /> {t.voirProfil} <ArrowUpRight size={12} />
                     </Link>
+                    <Link to={addLocale('/ordre', lang)} className={discret}>
+                      <Users size={14} /> {t.registre}
+                    </Link>
                     <Link to={addLocale('/benevole', lang)} className={secondair}>
-                      <HandHeart size={14} /> {bApp ? t.benevoleEdit : t.benevoleTitle}
+                      <HandHeart size={14} /> {t.benevoleTitle}
+                    </Link>
+                    <Link to={addLocale('/marche/inscription', lang)}
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-amber-300/45 text-amber-200 hover:bg-amber-300/10 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
+                      <ShoppingBag size={14} />
+                      {vApp && vApp.status === 'accepted' ? t.vendorManageKiosk : t.vendorApplyQuick}
                     </Link>
                   </>
                 )}
-
-                {/* Le registre de l'Ordre : chercher quelqu'un, l'ajouter
-                    comme ami, le défier (Alex, 2026-08-23). */}
-                <Link to={addLocale('/ordre', lang)} className={discret}>
-                  <Users size={14} /> {t.registre}
-                </Link>
-
-                {/* Kiosque : l'intitulé suit l'état de l'inscription. */}
-                <Link to={addLocale('/marche/inscription', lang)}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-amber-300/45 text-amber-200 hover:bg-amber-300/10 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
-                  <ShoppingBag size={14} />
-                  {vApp ? (vApp.status === 'accepted' ? t.vendorManageKiosk : t.vendorEdit) : t.vendorApplyQuick}
-                </Link>
 
                 {/* Visible seulement pour les courriels autorisés : useAuth()
                     a déjà fait la vérification. */}
@@ -798,7 +796,7 @@ const FR = {
   profileEyebrow: 'Profil', profileTitle: 'Vos informations',
   displayName: 'Nom affiché', phone: 'Téléphone',
   save: 'Enregistrer', saving: 'Enregistrement…', saved: 'Enregistré.',
-  benevoleEyebrow: 'Application bénévole', benevoleTitle: 'Devenir bénévole',
+  benevoleEyebrow: 'Application bénévole', benevoleTitle: 'Postuler comme bénévole',
   benevoleApply: 'Postuler', benevoleEdit: 'Voir / modifier ma candidature',
   benevoleOpenSpace: 'Ouvrir mon espace bénévole',
   benevoleNone: 'Aucune candidature pour le moment.',
@@ -840,7 +838,7 @@ const EN: typeof FR = {
   profileEyebrow: 'Profile', profileTitle: 'Your information',
   displayName: 'Display name', phone: 'Phone',
   save: 'Save', saving: 'Saving…', saved: 'Saved.',
-  benevoleEyebrow: 'Volunteer application', benevoleTitle: 'Become a volunteer',
+  benevoleEyebrow: 'Volunteer application', benevoleTitle: 'Apply as a volunteer',
   benevoleApply: 'Apply', benevoleEdit: 'View / edit my application',
   benevoleOpenSpace: 'Open my volunteer space',
   benevoleNone: 'No application yet.',

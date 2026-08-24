@@ -121,7 +121,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
           titleA={t.title}
           intro={t.intro}
           orbImage="/wix/nourriture/41d286c9.jpg"
-          orbImagePosition="center 40%"
+          orbImagePosition="64% 40%"
         />
       )}
 

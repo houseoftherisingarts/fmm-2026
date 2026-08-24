@@ -96,14 +96,20 @@ function etatDeDepart(joueurs: string[], noms: Record<string, string>): EtatDes 
   };
 }
 
-/** Les seuls champs de jeu qui partent à l'écriture. Le reste du
- *  document (le statut du défi, qui l'a lancé) ne bouge plus. */
-function champsEtat(e: EtatDes) {
+/**
+ * Ce qui bouge à chaque coup.
+ *
+ * `mainsPretes` en est absent volontairement. Au début d'une manche,
+ * les deux joueurs y ajoutent leur uid en même temps, chacun par un
+ * arrayUnion; le récrire depuis un instantané pris une seconde plus
+ * tôt effacerait le gobelet que l'autre venait de sceller. Seuls
+ * l'ajout par arrayUnion et l'ouverture d'une manche y touchent.
+ */
+function champsTour(e: EtatDes) {
   return {
     joueurs: e.joueurs,
     noms: e.noms,
     des: e.des,
-    mainsPretes: e.mainsPretes,
     elimines: e.elimines,
     mise: e.mise,
     tour: e.tour,
