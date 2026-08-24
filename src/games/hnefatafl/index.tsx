@@ -933,14 +933,22 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
           ))}
         </Row>
 
-        <button
-          type="button"
-          onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
-          className="mt-4 inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+        {/* Le bouton se collait au bas d'un long panneau et passait
+            sous le texte. Il reste maintenant accroché au bas de la
+            fenêtre, toujours atteignable (Alex, 2026-08-24). */}
+        <div
+          className="sticky bottom-0 -mx-4 md:-mx-6 mt-5 px-4 md:px-6 pt-4 pb-4 flex justify-center"
+          style={{ background: 'linear-gradient(0deg, rgba(10,4,6,0.96) 62%, rgba(10,4,6,0))' }}
         >
-          <Swords size={15} />
-          {s.begin}
-        </button>
+          <button
+            type="button"
+            onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+          >
+            <Swords size={15} />
+            {s.begin}
+          </button>
+        </div>
       </div>
     </div>
   );
