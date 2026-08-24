@@ -638,6 +638,12 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </div>
             )}
 
+            {/* Les photos qu'une personne envoie aux archives du festival :
+                son affaire à elle, jamais celle d'un visiteur. */}
+            {onglet === 'photos' && prive && compte && (
+              <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+            )}
+
             {onglet === 'collection' && (prive ? (
               <AnnoncesPanel lang={lang} />
             ) : (
