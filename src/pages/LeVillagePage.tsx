@@ -77,7 +77,9 @@ const LeVillagePage: React.FC = () => {
       />
       <ChapitreBouton
         label={fr ? 'La nourriture' : 'The food'}
-        note={fr ? 'Banquet, menu du village, grimoire' : 'Banquet, village menu, grimoire'}
+        note={fr
+          ? 'Le banquet, le menu du village et le livre de recettes'
+          : 'The banquet, the village menu and the cookbook'}
         open={nourritureOuverte}
         onClick={() => setNourritureOuverte((v) => !v)}
       />
