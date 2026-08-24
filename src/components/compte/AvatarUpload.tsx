@@ -38,6 +38,16 @@ async function toSquareWebp(file: File): Promise<Blob> {
   });
 }
 
+// Le médaillon, à l'identique dans les deux modes : c'est la même photo
+// aux mêmes dimensions sur l'espace de la personne et sur sa fiche
+// publique (Alex, 2026-08-23).
+const MEDAILLON = 'relative block w-60 h-60 md:w-80 md:h-80 rounded-full overflow-hidden';
+const MEDAILLON_STYLE: React.CSSProperties = {
+  border: '1px solid rgba(216, 176, 90, 0.75)',
+  boxShadow: '0 0 32px -6px rgba(216,176,90,0.55), 0 10px 26px -10px rgba(0,0,0,0.85)',
+  background: 'radial-gradient(circle at 35% 28%, rgba(216,176,90,0.20), rgba(26,5,11,0.9))',
+};
+
 const AvatarUpload: React.FC<{
   uid: string;
   email: string;
@@ -45,7 +55,9 @@ const AvatarUpload: React.FC<{
   lang: 'FR' | 'EN';
   avatarUrl?: string;
   onChange: (url: string | undefined) => void;
-}> = ({ uid, email, displayName, lang, avatarUrl, onChange }) => {
+  /** Sur la fiche de quelqu'un d'autre : la photo se regarde, rien de plus. */
+  lecture?: boolean;
+}> = ({ uid, email, displayName, lang, avatarUrl, onChange, lecture = false }) => {
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
   const [busy, setBusy] = useState(false);

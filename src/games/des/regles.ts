@@ -129,6 +129,16 @@ export function annoncer(p: Partie, quantite: number, face: Face): Partie {
   };
 }
 
+// « Vous perd un dé » n'existe pas. Le verbe suit la personne : la
+// deuxième personne du pluriel pour le joueur, la troisième pour les
+// convives (Alex, 2026-08-23).
+function conjugue(nom: string, verbe: 'perd' | 'reprend' | 'crie' | 'annonce'): string {
+  const vous = nom.trim().toLowerCase() === 'vous';
+  if (!vous) return `${nom} ${verbe}`;
+  const formes = { perd: 'perdez', reprend: 'reprenez', crie: 'criez', annonce: 'annoncez' };
+  return `Vous ${formes[verbe]}`;
+}
+
 /** « Menteur ! » : on retourne les gobelets et quelqu'un perd un dé. */
 export function douter(p: Partie): Partie {
   if (p.phase !== 'annonces' || !p.mise) return p;
@@ -158,9 +168,9 @@ export function douter(p: Partie): Partie {
     },
     journal: [
       ...p.journal,
-      `${douteur.nom} crie « menteur ! »`,
+      `${conjugue(douteur.nom, 'crie')} « menteur ! »`,
       `La table comptait ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}, `
-        + `et ${annonceur.nom} en annonçait ${p.mise.quantite}. ${perdant.nom} perd un dé.`,
+        + `et ${annonceur.nom} en annonçait ${p.mise.quantite}. ${conjugue(perdant.nom, 'perd')} un dé.`,
     ],
   };
 }
@@ -205,12 +215,12 @@ export function exact(p: Partie): Partie {
     },
     journal: [
       ...p.journal,
-      `${appelant.nom} annonce « c’est exactement ça ! »`,
+      `${conjugue(appelant.nom, 'annonce')} « c’est exactement ça ! »`,
       juste
         ? `La table comptait bien ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}. `
-            + `${appelant.nom} reprend un dé.`
+            + `${conjugue(appelant.nom, 'reprend')} un dé.`
         : `La table comptait ${compte} dé${compte > 1 ? 's' : ''} de ${p.mise.face}, `
-            + `et l'annonce en promettait ${p.mise.quantite}. ${appelant.nom} perd un dé.`,
+            + `et l'annonce en promettait ${p.mise.quantite}. ${conjugue(appelant.nom, 'perd')} un dé.`,
     ],
   };
 }
