@@ -2,9 +2,12 @@
 """Genere le livre de recettes du festival (PDF) a partir des fiches de cuisine.
 
 Sortie : grimoire-fmm-2026.pdf (complet) et grimoire-fmm-2026-apercu.pdf
-(les deux premieres pages seulement, celles qui se feuillettent en ligne).
+(la couverture, deux recettes et la page qui invite a prendre le livre).
+
+Depuis le 2026-08-24, chaque ingredient ne porte qu'une seule mesure,
+celle qui nourrit cinq personnes. La colonne du festival est partie.
 """
-import json, base64, html, re, subprocess, pathlib, sys
+import json, base64, html, re, shutil, subprocess, pathlib, sys
 
 HERE = pathlib.Path(__file__).parent
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
@@ -260,30 +263,25 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
 .rec h2 { font-size:17.5pt; line-height:1.16; margin-bottom:.05in; }
 .rec .yield { font-family:'Cinzel',serif; font-size:7.6pt; letter-spacing:.26em;
   text-transform:uppercase; color:#8a6524; }
-.rec .cols { display:grid; grid-template-columns: 1.42in 1fr; gap:.28in; margin-top:.24in; flex:1;
+/* Une seule colonne de quantités depuis le 2026-08-24 : la mesure du
+   festival est partie, et la place qu'elle laissait revient au texte.
+   Les ingrédients tiennent sur une ligne plus large, la marche à
+   suivre respire, et les corps de texte remontent d'un cran. */
+.rec .cols { display:grid; grid-template-columns: 1.72in 1fr; gap:.3in; margin-top:.26in; flex:1;
   min-height:0; }
 .lbl { font-family:'Cinzel',serif; font-size:7.4pt; letter-spacing:.24em; text-transform:uppercase;
   color:#a97c2a; padding-bottom:.05in; margin-bottom:.1in;
   border-bottom:1px solid rgba(169,124,42,.34); }
-.rec.wide .cols { grid-template-columns: 2.62in 1fr; gap:.24in; }
-.rec.wide .ing { column-count:2; column-gap:.2in; }
-.rec.wide .ing li { break-inside:avoid; font-size:8.4pt; padding:.032in 0; }
-.rec.wide .ing .q { font-size:6.8pt; }
-.ing li { font-size:9.1pt; line-height:1.34; padding:.045in 0;
+.rec.wide .cols { grid-template-columns: 3.05in 1fr; gap:.26in; }
+.rec.wide .ing { column-count:2; column-gap:.22in; }
+.rec.wide .ing li { break-inside:avoid; font-size:9pt; padding:.045in 0; }
+.ing li { font-size:10pt; line-height:1.4; padding:.062in 0;
   border-bottom:1px dotted rgba(120,85,40,.2); }
-.ing .q { display:block; color:#8a6524; font-family:'Cinzel',serif; font-size:7.2pt;
-  letter-spacing:.08em; margin-top:.012in; }
-.ing .q b { font-weight:600; }
-.ing .q i { font-style:normal; color:#a97c2a; }
-.legende { font-family:'Cinzel',serif; font-size:6.6pt; letter-spacing:.11em;
-  text-transform:uppercase; color:rgba(138,101,36,.78); margin-top:.09in; max-width:4.4in;
-  line-height:1.5; }
-.rec[data-serre="2"] .legende, .rec[data-serre="3"] .legende { font-size:6.2pt; }
-.chapeau { font-family:'Cormorant Garamond',serif; font-size:10.4pt; line-height:1.45;
-  color:#4a3620; margin-top:.1in; max-width:4.6in; }
-.ing .q { text-transform:none; letter-spacing:.02em; }
-.steps li { font-size:10.4pt; line-height:1.5; padding-left:.3in; position:relative;
-  margin-bottom:.115in; }
+.ing li b { font-weight:600; color:#8a6524; }
+.chapeau { font-family:'Cormorant Garamond',serif; font-size:10.8pt; line-height:1.47;
+  color:#4a3620; margin-top:.11in; max-width:4.6in; }
+.steps li { font-size:11.2pt; line-height:1.55; padding-left:.32in; position:relative;
+  margin-bottom:.15in; }
 .steps li::before { content:counter(s); counter-increment:s; position:absolute; left:0; top:.015in;
   font-family:'Cinzel Decorative',serif; font-size:10pt; color:#a97c2a; }
 .steps { counter-reset:s; list-style:none; }
@@ -295,19 +293,17 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
    ingrédients ne tient pas dans la même fonte qu'une recette de six.
    Plutôt que de la couper au ras du papier, la page se resserre d'un
    cran, mesure faite (Alex, 2026-08-23). */
-.rec[data-serre="1"] .steps li { font-size:9.8pt; margin-bottom:.092in; }
-.rec[data-serre="1"] .chapeau  { font-size:9.9pt; line-height:1.4; }
-.rec[data-serre="1"] .ing li   { font-size:8.5pt; padding:.03in 0; }
-.rec[data-serre="1"] .note     { font-size:8.8pt; padding:.085in .11in; }
-.rec[data-serre="2"] .steps li { font-size:9.2pt; line-height:1.44; margin-bottom:.072in; }
-.rec[data-serre="2"] .chapeau  { font-size:9.4pt; line-height:1.36; }
-.rec[data-serre="2"] .ing li   { font-size:8pt; padding:.024in 0; line-height:1.28; }
-.rec[data-serre="2"] .ing .q   { font-size:6.5pt; }
-.rec[data-serre="2"] .note     { font-size:8.4pt; padding:.07in .1in; }
-.rec[data-serre="3"] .steps li { font-size:8.7pt; line-height:1.4; margin-bottom:.058in; }
+.rec[data-serre="1"] .steps li { font-size:10.4pt; margin-bottom:.115in; }
+.rec[data-serre="1"] .chapeau  { font-size:10.2pt; line-height:1.42; }
+.rec[data-serre="1"] .ing li   { font-size:9.2pt; padding:.042in 0; }
+.rec[data-serre="1"] .note     { font-size:9pt; padding:.085in .11in; }
+.rec[data-serre="2"] .steps li { font-size:9.6pt; line-height:1.46; margin-bottom:.086in; }
+.rec[data-serre="2"] .chapeau  { font-size:9.6pt; line-height:1.38; }
+.rec[data-serre="2"] .ing li   { font-size:8.5pt; padding:.03in 0; line-height:1.3; }
+.rec[data-serre="2"] .note     { font-size:8.5pt; padding:.07in .1in; }
+.rec[data-serre="3"] .steps li { font-size:8.9pt; line-height:1.4; margin-bottom:.062in; }
 .rec[data-serre="3"] .chapeau  { font-size:9pt; line-height:1.32; }
-.rec[data-serre="3"] .ing li   { font-size:7.6pt; padding:.019in 0; line-height:1.24; }
-.rec[data-serre="3"] .ing .q   { font-size:6.2pt; }
+.rec[data-serre="3"] .ing li   { font-size:7.8pt; padding:.02in 0; line-height:1.24; }
 .rec[data-serre="3"] .note     { font-size:8pt; padding:.06in .09in; }
 .rec[data-serre="3"] h2        { font-size:16.4pt; }
 
@@ -913,6 +909,31 @@ def to_pdf(src, out, extra=()):
                    check=True, capture_output=True)
 
 
+# Les deux recettes qui se feuillettent en ligne, choisies pour montrer
+# le livre sans le donner : la marmite qui ouvre le premier chapitre et
+# la brochette qui ouvre le second.
+APERCU_RECETTES = ('olla gitana', 'brochette de poulet du verger')
+
+# `public/**` est servi avec un cache d'un an marque immuable. Remplacer
+# le fichier sans changer son nom laisserait tout le monde devant
+# l'ancien aperçu : le numero monte a chaque refonte du livre.
+APERCU_PUBLIC = 'apercu-livre-recettes-v3.pdf'
+
+RACINE = HERE.parent.parent
+
+
+def deposer():
+    """Recopie les deux PDF aux places d'ou le site et les courriels les servent."""
+    cibles = [
+        (HERE / 'grimoire-fmm-2026.pdf', RACINE / 'functions' / 'grimoire-fmm-2026.pdf'),
+        (HERE / 'grimoire-fmm-2026-apercu.pdf', RACINE / 'public' / 'grimoire' / APERCU_PUBLIC),
+    ]
+    for source, cible in cibles:
+        cible.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, cible)
+        print(f'  déposé : {cible.relative_to(RACINE)} ({cible.stat().st_size // 1024} ko)')
+
+
 if __name__ == '__main__':
     n = build()
     print(n, 'pages')
@@ -925,19 +946,26 @@ if __name__ == '__main__':
     except Exception as e:  # noqa: BLE001
         print('calage impossible :', e)
     to_pdf('grimoire.html', 'grimoire-fmm-2026.pdf')
-    # Apercu : la couverture et le mot de la cuisine, rien de plus.
+    # Aperçu : la couverture, deux vraies recettes, puis l'invitation.
     doc = (HERE / 'grimoire.html').read_text(encoding='utf-8')
     head, rest = doc.split('<body>', 1)
     secs = re.findall(r'<section class="page.*?</section>', rest, re.S)
+    choisies = [sec for cle in APERCU_RECETTES
+                for sec in secs if f'data-cle="{cle}"' in sec]
+    if len(choisies) != len(APERCU_RECETTES):
+        raise SystemExit('aperçu : une des recettes vitrine est introuvable')
     teaser = ('<section class="page ink"><div class="pad" style="justify-content:center;'
               'align-items:center;text-align:center;gap:.2in">'
               '<div class="orn"><span class="diamond"></span></div>'
               '<h2 style="font-size:21pt;color:#e8c87a">La suite se trouve<br>dans le livre</h2>'
               '<p style="font-size:11pt;line-height:1.6;max-width:3.5in;color:rgba(239,227,200,.82)">'
-              'Vingt-sept recettes, six chapitres, du pain viking à l’hypocras. '
-              'Neuf dollars plus taxes, envoyé par courriel en format PDF.</p>'
+              'Vingt-sept recettes écrites pour cinq personnes, réparties en six chapitres '
+              'qui vont du pain viking à l’hypocras. Le livre coûte neuf dollars plus taxes '
+              'et vous arrive par courriel, en format PDF.</p>'
               '<div class="orn"><span class="rule-gold" style="width:1.7in"></span></div></div></section>')
-    (HERE / 'apercu.html').write_text(head + '<body>' + secs[0] + secs[1] + teaser + '</body></html>',
-                                      encoding='utf-8')
+    (HERE / 'apercu.html').write_text(
+        head + '<body>' + secs[0] + ''.join(choisies) + teaser + '</body></html>',
+        encoding='utf-8')
     to_pdf('apercu.html', 'grimoire-fmm-2026-apercu.pdf')
     print('pdf ok')
+    deposer()
