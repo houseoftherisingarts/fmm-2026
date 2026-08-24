@@ -456,6 +456,23 @@ export const FAITS: readonly Fait[] = [
     ],
   },
 
+  {
+    id: 'gui',
+    categorie: 'camp',
+    origine: 'festival',
+    titreFR: 'Le gui',
+    titreEN: 'The mistletoe',
+    texteFR:
+      'Saviez-vous que le gui est un parasite ? Lâché par un oiseau après la digestion, il s’incruste lentement de façon invisible dans l’arbre et peut mettre des mois à apparaître. Il pousse lentement au début, mais double à chaque année son nombre de branches. Comme il fleurit au printemps et garde ses baies bien visibles tout l’hiver, quand les autres plantes « meurent », les Druides l’ont associé à la vitalité, à la renaissance et à la fécondité. S’embrasser sous le gui était donc un moyen de se placer sous la protection de l’énergie du gui.\n\nCette lecture druidique du baiser appartient à la légende plutôt qu’à l’archive : sa première trace écrite remonte à l’Angleterre de 1784, bien après l’époque des Druides.',
+    texteEN:
+      'Did you know that mistletoe is a parasite? Dropped by a bird after digestion, it slowly and invisibly settles into the tree and can take months to appear. It grows slowly at first, but doubles its number of branches every year. Since it flowers in spring and keeps its berries clearly visible through the whole winter, when other plants “die”, the Druids linked it to vitality, rebirth and fertility. Kissing under the mistletoe was therefore a way of placing yourself under the protection of the mistletoe’s energy.\n\nThat druidic reading of the kiss belongs to legend rather than to the archive: its first written trace goes back to England in 1784, long after the age of the Druids.',
+    publication: { date: '2023-08-30', url: 'https://www.facebook.com/photo/?fbid=325053303233557&set=a.198354179236804' },
+    sources: [
+      { nom: 'Wikipédia, « Viscum album »', url: 'https://fr.wikipedia.org/wiki/Viscum_album' },
+      { nom: 'Wikipedia, « Mistletoe », la coutume du baiser', url: 'https://en.wikipedia.org/wiki/Mistletoe' },
+    ],
+  },
+
   // ── Les jeux ──────────────────────────────────────────────────────
   {
     id: 'tablut-linne',
