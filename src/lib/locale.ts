@@ -31,6 +31,11 @@ const FR_TO_EN: Record<string, string> = {
   '/musique': '/music',
   '/jeunesse/hnefatafl': '/youth/hnefatafl',
   '/jeunesse': '/youth',
+  // Les jeux et le lobby des défis, qui manquaient à la table de
+  // correspondance : un lien de défi copié depuis la version anglaise
+  // tombait sur `/en/defi/...`, une adresse qui n'existe pas.
+  '/jeux/des': '/games/dice',
+  '/defi': '/challenge',
   '/nourriture': '/food',
   '/apprendre': '/learn',
   '/ressources': '/resources',
