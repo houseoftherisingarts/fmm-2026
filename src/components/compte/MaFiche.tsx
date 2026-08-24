@@ -87,17 +87,17 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
       <div className="space-y-3 mb-6">
         <input className={champ} style={champStyle}
-               value={fiche.nom || ''} maxLength={60}
-               onChange={(e) => setFiche({ ...fiche, nom: e.target.value })}
-               placeholder={fr ? 'Le nom que les autres voient' : 'The name others see'} />
-        <input className={champ} style={champStyle}
                value={fiche.ville || ''} maxLength={60}
                onChange={(e) => setFiche({ ...fiche, ville: e.target.value })}
                placeholder={fr ? 'D’où venez-vous ?' : 'Where are you from?'} />
-        <input className={champ} style={champStyle}
-               value={fiche.devise || ''} maxLength={140}
-               onChange={(e) => setFiche({ ...fiche, devise: e.target.value })}
-               placeholder={fr ? 'Votre devise, en une ligne' : 'Your motto, in one line'} />
+        {/* La description : le seul texte libre que les autres membres
+            lisent sur la fiche, ici comme sur la version publique. */}
+        <textarea className={`${champ} min-h-[7rem] leading-relaxed`} style={champStyle}
+                  value={fiche.devise || ''} maxLength={400} rows={4}
+                  onChange={(e) => setFiche({ ...fiche, devise: e.target.value })}
+                  placeholder={fr
+                    ? 'Quelques mots sur vous, sur ce qui vous amène au festival.'
+                    : 'A few words about you, and what brings you to the festival.'} />
       </div>
 
       <ul className="space-y-3 mb-6">
