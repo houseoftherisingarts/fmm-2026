@@ -601,8 +601,40 @@ export const FAITS: readonly Fait[] = [
       { nom: 'Dictionnaire historique de la Suisse, le droit de gîte', url: 'https://hls-dhs-dss.ch/fr/articles/013736/' },
     ],
   },
+  {
+    id: 'chats-peste',
+    categorie: 'roi',
+    origine: 'festival',
+    titreFR: 'Les chats et la peste',
+    titreEN: 'Cats and the plague',
+    texteFR:
+      'Saviez-vous qu’en 1233, le pape Grégoire IX publia la bulle Vox in Rama, qui prêtait à une secte hérétique un rituel où l’on embrassait un chat noir, sans jamais ordonner qu’on les extermine ? Marie Tudor (aka Bloody Mary) en Angleterre fut une des plus efficaces dans sa quête génocidaire parce qu’elle pensait que les chats représentaient l’hérésie protestante. Quand sa sœur Élisabeth Ire, protestante, accède au trône, elle remet le protestantisme légal, et brûle les chats parce qu’ils représentent... l’hérésie catholique.\n\nLe génocide atteignit plusieurs millions, tant bien qu’il n’y avait presque plus de prédateurs pour les rats, qui eux, se multipliaient. Comme beaucoup de rats étaient vecteurs de puces qui, elles, étaient des véhicules de la peste bubonique... bah voilà.\n\nIl fallut attendre l’arrivée de Louis XIV, fan de chats, pour que prenne fin cette folie (même si certaines superstitions restent).\n\nCe récit reprend la légende telle qu’elle circule : aucune archive ne documente un massacre de chats à l’échelle de l’Europe, et les travaux récents sur la peste noire penchent plutôt vers les puces et les poux humains que vers les rats.',
+    texteEN:
+      'Did you know that in 1233 Pope Gregory IX issued the bull Vox in Rama, which pinned a ritual of kissing a black cat on a heretical sect, without ever ordering that cats be exterminated? Mary Tudor (aka Bloody Mary) in England was one of the most efficient in her genocidal quest, since she believed cats stood for Protestant heresy. When her sister Elizabeth I, a Protestant, took the throne, she made Protestantism legal again and burned cats because they now stood for... Catholic heresy.\n\nThe genocide reached into the millions, so much so that there were almost no predators left for the rats, which then multiplied. Since many rats carried fleas, and those fleas carried bubonic plague... well, there it is.\n\nIt took the arrival of Louis XIV, a cat lover, to put an end to this madness (even if some superstitions remain).\n\nThis account carries the legend as it circulates: no archive documents a cat massacre on a European scale, and recent research on the Black Death leans toward human fleas and lice rather than rats.',
+    publication: { date: '2023-08-29', url: 'https://www.facebook.com/photo/?fbid=324755879929966&set=a.198354179236804' },
+    sources: [
+      { nom: 'Wikipedia, « Vox in Rama »', url: 'https://en.wikipedia.org/wiki/Vox_in_Rama' },
+      { nom: 'Wikipedia, « Black Death », les vecteurs de la peste', url: 'https://en.wikipedia.org/wiki/Black_Death' },
+      { nom: 'Wikipédia, « Feu de la Saint-Jean »', url: 'https://fr.wikipedia.org/wiki/Feu_de_la_Saint-Jean' },
+    ],
+  },
 
   // ── Notre festival ────────────────────────────────────────────────
+  {
+    id: 'quebec-reconstitution',
+    categorie: 'festival',
+    origine: 'festival',
+    titreFR: 'Le Québec et la reconstitution médiévale',
+    titreEN: 'Quebec and medieval reenactment',
+    texteFR:
+      'Saviez-vous que le Québec compte une scène active de reconstitution médiévale ? Avec des groupes tels que l’AMQ, l’Association médiévale de Québec, qui personnifie des chevaliers du XVe siècle, ou la troupe Hird Hafn Hullsborg qui incarne des Vikings dans les règles de l’art, le Festival médiéval de Montpellier est choyé !',
+    texteEN:
+      'Did you know that Quebec has an active medieval reenactment scene? With groups such as the AMQ, the Association médiévale de Québec, who bring fifteenth-century knights to life, or the troupe Hird Hafn Hullsborg, who embody Vikings by the book, the Festival Médiéval de Montpellier is well served!',
+    publication: { date: '2024-07-13', url: 'https://www.facebook.com/104412411953069/posts/501436592261893' },
+    sources: [
+      { nom: 'Festival Médiéval de Montpellier, la programmation', url: 'https://www.festivalmedievaldemontpellier.org/activites' },
+    ],
+  },
   {
     id: 'troupes-nouvelle-france',
     categorie: 'festival',
