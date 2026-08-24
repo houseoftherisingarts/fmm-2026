@@ -38,6 +38,22 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
+    // ── Photos publiques (envoyées par les membres) ──────────────
+    // Chacun téléverse les siennes depuis son espace compte (voir
+    // photosPubliques.ts) : redimensionnées côté navigateur en webp
+    // avant l'envoi, donc le type est verrouillé et la taille reste
+    // modeste malgré la limite large (marge de sécurité, pas un
+    // objectif). Lecture publique : une photo retenue peut nourrir une
+    // affiche ou une page, et Firestore filtre déjà qui voit quel
+    // statut. Suppression réservée à l'équipe (section Photos reçues).
+    match /photos-publiques/{uid}/{fileName} {
+      allow read:   if true;
+      allow create: if (isOwner(uid) || isAdmin())
+        && request.resource.contentType == 'image/webp'
+        && request.resource.size < 15 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
     // ── Vendor-uploaded photos ──────────────────────────────────
     // Each merchant uploads their own booth photos under their uid.
     // Publicly readable so the marketplace can render them; only
