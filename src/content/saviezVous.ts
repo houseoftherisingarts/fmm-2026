@@ -551,6 +551,22 @@ export const FAITS: readonly Fait[] = [
       { nom: 'Wikipedia, « Nine Worthies »', url: 'https://en.wikipedia.org/wiki/Nine_Worthies' },
     ],
   },
+  {
+    id: 'cartes-regines',
+    categorie: 'jeu',
+    origine: 'festival',
+    titreFR: 'Cartes régines',
+    titreEN: 'The card queens',
+    texteFR:
+      'Saviez-vous que les reines des jeux de cartes français (le jeu de cartes dit « classique ») ont des noms ?\n\nDame de cœur : « Judith » ; référence possible à Judith, héroïne biblique qui sauva Béthulie en décapitant Holopherne, le général assyrien de Nabuchodonosor.\n\nDame de carreau : « Rachel » ; peut-être Rachel, autre figure biblique (qui sert de fondement théologique à l’utilisation de servantes à but procréatif dans la dystopie La servante écarlate de Margaret Atwood).\n\nDame de trèfle : « Argine » ; il pourrait s’agir d’une anagramme de regina, « reine » en latin.\n\nDame de pique : « Pallas » ; sûrement Pallas, épiclèse d’Athéna.',
+    texteEN:
+      'Did you know that the queens of the French pack (the deck we call “classic”) have names?\n\nQueen of Hearts: “Judith”, a possible reference to Judith, the biblical heroine who saved Bethulia by beheading Holofernes, the Assyrian general of Nebuchadnezzar.\n\nQueen of Diamonds: “Rachel”, perhaps another biblical figure (who serves as the theological basis for the use of handmaids for procreative ends in Margaret Atwood’s dystopia The Handmaid’s Tale).\n\nQueen of Clubs: “Argine”, possibly an anagram of regina, Latin for queen.\n\nQueen of Spades: “Pallas”, most likely Pallas, an epithet of Athena.',
+    publication: { date: '2023-08-18', url: 'https://www.facebook.com/photo/?fbid=319482463790641&set=a.198354179236804' },
+    sources: [
+      { nom: 'Wikipedia, « Book of Judith »', url: 'https://en.wikipedia.org/wiki/Book_of_Judith' },
+      { nom: 'Wikipédia, « Jeu de cartes français »', url: 'https://fr.wikipedia.org/wiki/Jeu_de_cartes_fran%C3%A7ais' },
+    ],
+  },
 
   // ── Le roi ────────────────────────────────────────────────────────
   {
