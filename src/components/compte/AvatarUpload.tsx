@@ -104,18 +104,37 @@ const AvatarUpload: React.FC<{
   // premier objet de l'espace, comme sur n'importe quel réseau social
   // (Alex, 2026-08-23). Les commandes passent en pastille sur le bord,
   // au lieu d'une colonne de texte à côté.
+  if (lecture) {
+    return (
+      <div className="flex flex-col items-center gap-4 shrink-0">
+        <div className="relative shrink-0">
+          <div className={MEDAILLON} style={MEDAILLON_STYLE}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={displayName}
+                   className="absolute inset-0 w-full h-full object-cover"
+                   decoding="async" loading="lazy" />
+            ) : (
+              <span className="absolute inset-0 flex items-center justify-center font-display text-6xl md:text-7xl"
+                    style={{ color: 'rgba(216,176,90,0.9)' }}>
+                {initials}
+              </span>
+            )}
+          </div>
+          <span aria-hidden className="absolute -inset-2 rounded-full pointer-events-none"
+                style={{ border: '1px solid rgba(216, 176, 90, 0.28)' }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-4 shrink-0">
       <div className="relative shrink-0">
         <label
           htmlFor="avatar-input"
           title={avatarUrl ? t.change : t.add}
-          className="relative block w-60 h-60 md:w-80 md:h-80 rounded-full overflow-hidden cursor-pointer"
-          style={{
-            border: '1px solid rgba(216, 176, 90, 0.75)',
-            boxShadow: '0 0 32px -6px rgba(216,176,90,0.55), 0 10px 26px -10px rgba(0,0,0,0.85)',
-            background: 'radial-gradient(circle at 35% 28%, rgba(216,176,90,0.20), rgba(26,5,11,0.9))',
-          }}
+          className={`${MEDAILLON} cursor-pointer`}
+          style={MEDAILLON_STYLE}
         >
           {avatarUrl ? (
             <img
