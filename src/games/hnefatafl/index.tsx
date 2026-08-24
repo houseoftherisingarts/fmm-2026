@@ -1177,439 +1177,406 @@ const HnefataflPage: React.FC = () => {
   // Pastille de tour : oxblood du site pour les Raiders, os pour les
   // Défenseurs. Plus de rouge néon ni de jaune saturé.
   const tc = ui.turn === 'attacker' ? '#A6392B' : '#E8DDC1';
-
   return (
     <>
       <SEO title={`${s.pageTitle} | FMM 2026`} description={s.pageIntro} />
 
-      <PageHeader
+      {/* Une seule page : le hero, puis la table qui prend tout l'écran,
+          et le reste posé dessus en verre sombre. Les trois choses à
+          savoir et la signature de l'atelier ne vivent plus dans des
+          sections détachées sous le jeu (Alex, 2026-08-23). */}
+      <CadreJeu
         eyebrow={s.pageEyebrow}
-        titleA={s.pageTitle}
-        titleB=""
+        titre={s.pageTitle}
         intro={s.pageIntro}
         orbImage="/jeux/tuile-tafl-v2.webp"
-      />
-
-      {/* ── La table de jeu ─────────────────────────────────────── */}
-      {/* La table prend toute la largeur : on ne joue pas dans une
-          fenêtre grande comme un timbre (Alex, 2026-08-23). */}
-      <section className="relative pb-14 md:pb-20">
-        <div className="max-w-screen-2xl mx-auto px-2 md:px-6">
-          {/* Bandeau de partie en ligne : contre qui, quel camp, à qui
-              de jouer, et la porte de sortie. */}
-          {partie && monCamp && (
-            <div className="fmm-glass-btn mb-5 px-5 py-4" style={{ flexDirection: 'row', justifyContent: 'space-between', cursor: 'default' }}>
-              <span className="text-left min-w-0">
-                <span className="fmm-glass-btn-label block truncate">
-                  {lang === 'FR' ? 'Contre' : 'Against'}{' '}
-                  {partie.noms[partie.joueurs.find((u) => u !== user?.uid) ?? ''] ?? '—'}
-                </span>
-                <span className="fmm-glass-btn-note block mt-1.5">
-                  {monCamp === 'attacker'
-                    ? (lang === 'FR' ? 'Vous menez les assaillants' : 'You lead the raiders')
-                    : (lang === 'FR' ? 'Vous défendez le roi' : 'You defend the king')}
-                  {' · '}
-                  {partie.statut === 'fini'
-                    ? (lang === 'FR' ? 'Partie terminée' : 'Game over')
-                    : partie.tour === monCamp
-                      ? (lang === 'FR' ? 'À vous de jouer' : 'Your move')
-                      : (lang === 'FR' ? 'En attente de l’autre' : 'Waiting for them')}
-                </span>
-              </span>
-              {partie.statut === 'encours' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!partieId || !user) return;
-                    void abandonner(partieId, user.uid, monCamp === 'attacker' ? 'defender' : 'attacker');
-                  }}
-                  className="shrink-0 px-4 py-2 rounded-card border border-brass/35 text-ivory-soft hover:text-ivory hover:border-brass/70 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
-                >
-                  {lang === 'FR' ? 'Abandonner' : 'Resign'}
-                </button>
-              )}
-            </div>
-          )}
-          {/* Le damier garde toute la largeur. Les amis, le registre et
-              le lien de défi vivent en overlay DANS la fenêtre du jeu
-              (Alex, 2026-08-23). */}
-          <div>
-          <Reveal>
-            <div
-              className="relative rounded-card overflow-hidden border border-brass/25"
-              style={{
-                background: 'rgba(10, 4, 6, 0.55)',
-                boxShadow: '0 30px 90px rgba(0,0,0,0.55)',
-              }}
+        lang={lang}
+      >
+        {/* ── La table ────────────────────────────────────────────── */}
+        <div ref={sceneRef} className="absolute inset-0 bg-[#0a0406]">
+          {/* La porte de sortie du plein écran. Le bandeau qui porte la
+              bascule reste hors du plein écran : sans ce bouton, il ne
+              resterait que la touche Échap, que personne ne devine. */}
+          {pleinEcran && (
+            <button
+              type="button"
+              onClick={basculerPleinEcran}
+              className="absolute top-4 right-4 md:top-6 md:right-6 z-[7] inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-[15px] border border-brass/55 bg-black/70 backdrop-blur-md text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+              style={{ boxShadow: '0 10px 34px rgba(0,0,0,0.6)' }}
             >
-              {/* Bandeau d'état : qui joue, et le retour au menu */}
-              <div className="flex items-center justify-between gap-3 px-4 md:px-6 py-3 border-b border-brass/20 bg-black/30">
-                <span className="inline-flex items-center gap-2.5 min-w-0">
-                  <span
-                    aria-hidden
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ background: tc, boxShadow: `0 0 10px ${tc}` }}
-                  />
-                  <span className="font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] text-ivory-soft truncate">
-                    {gameStarted ? ui.msg : s.tableReady}
-                  </span>
-                </span>
-                <span className="shrink-0 inline-flex items-center gap-2">
-                  <BoutonMusique ref={musiqueRef} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
-                  <button
-                    type="button"
-                    onClick={basculerPleinEcran}
-                    title={pleinEcran ? s.quitterPleinEcran : s.pleinEcran}
-                    aria-pressed={pleinEcran}
-                    className="shrink-0 inline-flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-card border border-brass/30 text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
-                  >
-                    {pleinEcran ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-                    <span className="hidden sm:inline">{pleinEcran ? s.quitterPleinEcran : s.pleinEcran}</span>
-                  </button>
-                {gameStarted && (
-                  <button
-                    type="button"
-                    onClick={returnToMenu}
-                    className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 min-h-[40px] rounded-card border border-brass/35 text-ivory-soft hover:text-ivory hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
-                  >
-                    <RotateCcw size={12} />
-                    <span className="hidden sm:inline">{s.newSaga}</span>
-                  </button>
-                )}
-                </span>
-              </div>
+              <Minimize2 size={13} />
+              {s.quitterPleinEcran}
+            </button>
+          )}
 
-              {/* La scène 3D. Hauteur bornée : la page respire au lieu
-                  de verrouiller 100vh, et le pied de page reste
-                  atteignable. En plein écran, cette borne doit sauter :
-                  les styles de la page l'emportent sur ceux du
-                  navigateur, et le conteneur restait haut de 900 px au
-                  milieu d'un écran noir, plateau coupé. */}
-              <div
-                ref={sceneRef}
-                className={`relative w-full bg-[#0a0406] ${
-                  pleinEcran
-                    ? 'h-[100dvh]'
-                    : 'h-[clamp(460px,78vh,900px)] md:h-[clamp(560px,82vh,1000px)]'
-                }`}
+          {gameStarted && (
+            <GameCanvas
+              ref={canvasRef}
+              gameKey={gameKey}
+              onUi={setUi}
+              strings={s}
+              config={config}
+              enLigne={partieId && monCamp ? {
+                monCamp,
+                fige: partie?.statut !== 'encours',
+                surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant }) => {
+                  appliques.current += 1;
+                  // Une partie menée jusqu'au bout vaut son badge,
+                  // gagnée ou perdue : c'est d'aller au bout qui compte.
+                  if (gagnant) gagnerBadge('tafl');
+                  void jouerCoup(
+                    partieId,
+                    partie?.coups ?? [],
+                    coupEnTexte(fr, fc, tr, tc),
+                    tourSuivant,
+                    gagnant,
+                  );
+                },
+              } : null}
+              boardSetId={choix.plateau}
+              pieceSetId={choix.pieces}
+              onLoad={(p, done) => {
+                setCharge(p);
+                if (done) setPret(true);
+              }}
+            />
+          )}
+
+          {/* ── Écran d'attente ───────────────────────────────────
+              Le plateau et les pièces pèsent près de 2,5 Mo : sans cet
+              écran, la partie s'ouvrait sur un plateau procédural nu
+              qui se transformait sous les yeux du joueur. La barre suit
+              le vrai décompte du LoadingManager. */}
+          <AnimatePresence>
+            {gameStarted && !pret && (
+              <motion.div
+                key="chargement"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+                className="absolute inset-0 z-[6] flex flex-col items-center justify-center px-6 text-center bg-[rgba(10,4,6,0.92)] backdrop-blur-md"
               >
-                {/* La porte de sortie. Le bandeau d'état qui porte la
-                    bascule reste hors du plein écran : sans ce bouton,
-                    il ne restait que la touche Échap, que personne ne
-                    devine. */}
-                {pleinEcran && (
-                  <button
-                    type="button"
-                    onClick={basculerPleinEcran}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 z-[7] inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-card border border-brass/55 bg-black/70 backdrop-blur-md text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
-                    style={{ boxShadow: '0 10px 34px rgba(0,0,0,0.6)' }}
-                  >
-                    <Minimize2 size={13} />
-                    {s.quitterPleinEcran}
-                  </button>
-                )}
-
-                {gameStarted && (
-                  <GameCanvas
-                    ref={canvasRef}
-                    gameKey={gameKey}
-                    onUi={setUi}
-                    strings={s}
-                    config={config}
-                    enLigne={partieId && monCamp ? {
-                      monCamp,
-                      fige: partie?.statut !== 'encours',
-                      surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant }) => {
-                        appliques.current += 1;
-                        // Une partie menée jusqu'au bout vaut son badge,
-                        // gagnée ou perdue : c'est d'aller au bout qui compte.
-                        if (gagnant) gagnerBadge('tafl');
-                        void jouerCoup(
-                          partieId,
-                          partie?.coups ?? [],
-                          coupEnTexte(fr, fc, tr, tc),
-                          tourSuivant,
-                          gagnant,
-                        );
-                      },
-                    } : null}
-                    boardSetId={choix.plateau}
-                    pieceSetId={choix.pieces}
-                    onLoad={(p, done) => {
-                      setCharge(p);
-                      if (done) setPret(true);
+                <img
+                  src="/salon/salon-logo.webp"
+                  alt=""
+                  aria-hidden
+                  className="h-12 w-auto opacity-70 mb-6 animate-pulse"
+                />
+                <p className="font-editorial uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+                  {s.loadingLead}
+                </p>
+                <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight mb-7">
+                  {s.loadingTitle}
+                </h3>
+                {/* Jauge de laiton */}
+                <div
+                  className="w-56 md:w-72 h-[3px] rounded-full overflow-hidden"
+                  style={{ background: 'rgba(244,239,227,0.12)' }}
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(charge * 100)}
+                >
+                  <div
+                    className="h-full rounded-full transition-[width] duration-300 ease-out"
+                    style={{
+                      width: `${Math.max(6, Math.round(charge * 100))}%`,
+                      background:
+                        'linear-gradient(90deg, var(--color-brass), var(--color-amber-glow))',
+                      boxShadow: '0 0 12px rgba(232,177,74,0.55)',
                     }}
                   />
-                )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                {/* ── Écran d'attente ─────────────────────────────
-                    Le plateau et les pièces pèsent près de 2,5 Mo :
-                    sans cet écran, la partie s'ouvrait sur un plateau
-                    procédural nu qui se transformait sous les yeux du
-                    joueur. La barre suit le vrai décompte du
-                    LoadingManager, pas un faux défilement. */}
-                <AnimatePresence>
-                  {gameStarted && !pret && (
-                    <motion.div
-                      key="chargement"
-                      initial={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.6, ease: 'easeOut' }}
-                      className="absolute inset-0 z-[6] flex flex-col items-center justify-center px-6 text-center bg-[rgba(10,4,6,0.92)] backdrop-blur-md"
-                    >
-                      <img
-                        src="/salon/salon-logo.webp"
-                        alt=""
-                        aria-hidden
-                        className="h-12 w-auto opacity-70 mb-6 animate-pulse"
-                      />
-                      <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
-                        {s.loadingLead}
-                      </p>
-                      <h3 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-tight mb-7">
-                        {s.loadingTitle}
-                      </h3>
-                      {/* Jauge de laiton */}
-                      <div
-                        className="w-56 md:w-72 h-[3px] rounded-full overflow-hidden"
-                        style={{ background: 'rgba(244,239,227,0.12)' }}
-                        role="progressbar"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={Math.round(charge * 100)}
-                      >
-                        <div
-                          className="h-full rounded-full transition-[width] duration-300 ease-out"
-                          style={{
-                            width: `${Math.max(6, Math.round(charge * 100))}%`,
-                            background:
-                              'linear-gradient(90deg, var(--color-brass), var(--color-amber-glow))',
-                            boxShadow: '0 0 12px rgba(232,177,74,0.55)',
-                          }}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          {!gameStarted && (
+            <>
+              {/* Le plateau en photo derrière l'écran de préparation :
+                  le flou a quelque chose à flouter, et on voit ce qui
+                  nous attend. */}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: 'url(/photos/hnefatafl-card.webp)' }}
+              />
+              <StartScreen
+                initial={config}
+                strings={s}
+                onBegin={handleBegin}
+                lang={lang}
+                choix={choix}
+                onChoix={(cle, id) => {
+                  const n = { ...choix, [cle]: id };
+                  setChoix(n);
+                  ecrireChoix(n.plateau, n.pieces);
+                }}
+              />
+            </>
+          )}
 
-                {!gameStarted && (
-                  <>
-                    {/* Le plateau en photo derrière l'écran de
-                        préparation : le flou a quelque chose à flouter,
-                        et on voit ce qui nous attend. */}
-                    <div
-                      aria-hidden
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: 'url(/photos/hnefatafl-card.webp)' }}
-                    />
-                    <StartScreen
-                      initial={config}
-                      strings={s}
-                      onBegin={handleBegin}
-                      lang={lang}
-                      choix={choix}
-                      onChoix={(cle, id) => {
-                        const n = { ...choix, [cle]: id };
-                        setChoix(n);
-                        ecrireChoix(n.plateau, n.pieces);
-                      }}
-                    />
-                  </>
-                )}
+          <AnimatePresence>
+            {ui.vfx === 'king-escape' && (
+              <motion.div
+                key={`fx-escape-${gameKey}`}
+                initial={{ opacity: 0.9 }}
+                animate={{ opacity: 0 }}
+                transition={{ duration: 1.8, ease: 'easeOut' }}
+                className="absolute inset-0 z-[4] pointer-events-none"
+                style={{
+                  background:
+                    'radial-gradient(circle at center, rgba(232,177,74,0.8) 0%, rgba(184,106,42,0.45) 35%, rgba(0,0,0,0) 70%)',
+                }}
+              />
+            )}
+            {ui.vfx === 'king-fall' && (
+              <motion.div
+                key={`fx-fall-${gameKey}`}
+                initial={{ opacity: 0.95 }}
+                animate={{ opacity: 0.4 }}
+                transition={{ duration: 1.4, ease: 'easeOut' }}
+                className="absolute inset-0 z-[4] pointer-events-none"
+                style={{
+                  background:
+                    'radial-gradient(ellipse at center, rgba(40,0,0,0) 30%, rgba(107,31,31,0.6) 75%, rgba(20,0,0,0.9) 100%)',
+                }}
+              />
+            )}
+          </AnimatePresence>
 
-                <AnimatePresence>
-                  {ui.vfx === 'king-escape' && (
-                    <motion.div
-                      key={`fx-escape-${gameKey}`}
-                      initial={{ opacity: 0.9 }}
-                      animate={{ opacity: 0 }}
-                      transition={{ duration: 1.8, ease: 'easeOut' }}
-                      className="absolute inset-0 z-[4] pointer-events-none"
-                      style={{
-                        background:
-                          'radial-gradient(circle at center, rgba(232,177,74,0.8) 0%, rgba(184,106,42,0.45) 35%, rgba(0,0,0,0) 70%)',
-                      }}
-                    />
-                  )}
-                  {ui.vfx === 'king-fall' && (
-                    <motion.div
-                      key={`fx-fall-${gameKey}`}
-                      initial={{ opacity: 0.95 }}
-                      animate={{ opacity: 0.4 }}
-                      transition={{ duration: 1.4, ease: 'easeOut' }}
-                      className="absolute inset-0 z-[4] pointer-events-none"
-                      style={{
-                        background:
-                          'radial-gradient(ellipse at center, rgba(40,0,0,0) 30%, rgba(107,31,31,0.6) 75%, rgba(20,0,0,0.9) 100%)',
-                      }}
-                    />
-                  )}
-                </AnimatePresence>
+          {ui.over && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 1.2, ease: 'easeOut' }}
+              className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-6 text-center bg-[rgba(10,4,6,0.85)] backdrop-blur-md"
+            >
+              <p className="font-editorial uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+                {s.ending}
+              </p>
+              <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-[1.15] max-w-xl">
+                {ui.msg}
+              </h2>
+              <div className="divider-brass w-24 mx-auto my-7" />
+              <button
+                type="button"
+                onClick={returnToMenu}
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+              >
+                <RotateCcw size={15} />
+                {s.newSaga}
+              </button>
+            </motion.div>
+          )}
+        </div>
 
-                {ui.over && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.7, delay: 1.2, ease: 'easeOut' }}
-                    className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-6 text-center bg-[rgba(10,4,6,0.85)] backdrop-blur-md"
-                  >
-                    <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
-                      {s.ending}
-                    </p>
-                    <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-[1.15] max-w-xl">
-                      {ui.msg}
-                    </h2>
-                    <div className="divider-brass w-24 mx-auto my-7" />
-                    <button
-                      type="button"
-                      onClick={returnToMenu}
-                      className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
-                    >
-                      <RotateCcw size={15} />
-                      {s.newSaga}
-                    </button>
-                  </motion.div>
-                )}
-              </div>
+        {/* ── Bandeau du haut : à qui de jouer, et les commandes ──── */}
+        {/* Le côté droit garde sa place libre pour le X de fermeture. */}
+        <div
+          className="absolute top-0 inset-x-0 z-20 flex flex-wrap items-center justify-between gap-3 pl-4 md:pl-7 pr-16 md:pr-20 py-3"
+          style={{ background: 'linear-gradient(180deg, rgba(8,3,5,0.92), rgba(8,3,5,0))' }}
+        >
+          <span className="inline-flex items-center gap-2.5 min-w-0">
+            <span
+              aria-hidden
+              className="w-2 h-2 rounded-full shrink-0"
+              style={{ background: tc, boxShadow: `0 0 10px ${tc}` }}
+            />
+            <span className="font-sans text-[11px] md:text-xs uppercase tracking-[0.18em] text-ivory-soft truncate">
+              {gameStarted ? ui.msg : s.tableReady}
+            </span>
+          </span>
+          <span className="shrink-0 inline-flex items-center gap-2">
+            <BoutonMusique ref={musiqueRef} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
+            <button
+              type="button"
+              onClick={basculerPleinEcran}
+              title={pleinEcran ? s.quitterPleinEcran : s.pleinEcran}
+              aria-pressed={pleinEcran}
+              className="shrink-0 inline-flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-[15px] border border-white/15 bg-black/40 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+            >
+              {pleinEcran ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+              <span className="hidden sm:inline">{pleinEcran ? s.quitterPleinEcran : s.pleinEcran}</span>
+            </button>
+            {gameStarted && (
+              <button
+                type="button"
+                onClick={returnToMenu}
+                className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 min-h-[40px] rounded-[15px] border border-white/15 bg-black/40 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+              >
+                <RotateCcw size={12} />
+                <span className="hidden sm:inline">{s.newSaga}</span>
+              </button>
+            )}
+          </span>
+        </div>
 
-              {/* Légende. Elle ENVELOPPE au lieu de déborder : l'ancien
-                  bandeau en nowrap sortait de l'écran sur mobile. */}
-              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 px-4 py-3 border-t border-brass/20 bg-black/30">
-                <span className="font-sans text-[10px] md:text-[11px] text-ivory-soft/65 text-center">
-                  {s.hint}
-                </span>
-                <span className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-sans text-[10px] md:text-[11px]">
-                  <span style={{ color: '#C0503E' }}>{s.raidersDot}</span>
-                  <span className="text-ivory-soft">{s.defendersDot}</span>
-                  <span className="text-brass">{s.kingDot}</span>
-                </span>
-              </div>
+        {/* ── La partie en ligne : contre qui, quel camp, à qui de jouer ── */}
+        {partie && monCamp && (
+          <div className="absolute left-3 md:left-6 top-16 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-3">
+            <span className="min-w-0">
+              <span className="block font-display text-[13px] text-ivory truncate">
+                {lang === 'FR' ? 'Contre' : 'Against'}{' '}
+                {partie.noms[partie.joueurs.find((u) => u !== user?.uid) ?? ''] ?? '—'}
+              </span>
+              <span className="block font-sans text-[9px] uppercase tracking-[0.16em] text-ivory-soft/60 mt-1">
+                {monCamp === 'attacker'
+                  ? (lang === 'FR' ? 'Vous menez les assaillants' : 'You lead the raiders')
+                  : (lang === 'FR' ? 'Vous défendez le roi' : 'You defend the king')}
+                {' · '}
+                {partie.statut === 'fini'
+                  ? (lang === 'FR' ? 'Partie terminée' : 'Game over')
+                  : partie.tour === monCamp
+                    ? (lang === 'FR' ? 'À vous de jouer' : 'Your move')
+                    : (lang === 'FR' ? 'En attente de l’autre' : 'Waiting for them')}
+              </span>
+            </span>
+            {partie.statut === 'encours' && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (!partieId || !user) return;
+                  void abandonner(partieId, user.uid, monCamp === 'attacker' ? 'defender' : 'attacker');
+                }}
+                className="shrink-0 px-3 py-2 rounded-[15px] border border-white/15 text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors font-sans text-[9px] uppercase tracking-[0.18em]"
+              >
+                {lang === 'FR' ? 'Abandonner' : 'Resign'}
+              </button>
+            )}
+          </div>
+        )}
 
-              {/* ── Les amis, en overlay sur la table ──────────────── */}
-              {user && (
-                <>
+        {/* ── Les amis, en overlay sur la table ────────────────────── */}
+        {user && (
+          <>
+            <button
+              type="button"
+              onClick={() => setAmisOuverts((v) => !v)}
+              aria-expanded={amisOuverts}
+              className="absolute top-16 right-3 md:right-6 z-20 inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+            >
+              <Users size={13} className="text-brass" />
+              {lang === 'FR' ? 'Défier un ami' : 'Challenge a friend'}
+            </button>
+            <AnimatePresence>
+              {amisOuverts && (
+                <motion.div
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 24 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute top-16 right-3 md:right-6 z-30 w-[min(20rem,calc(100%-1.5rem))] max-h-[calc(100%-8rem)] overflow-y-auto rounded-[15px] border border-white/15 bg-black/55 backdrop-blur-xl p-3"
+                >
                   <button
                     type="button"
-                    onClick={() => setAmisOuverts((v) => !v)}
-                    aria-expanded={amisOuverts}
-                    className="absolute top-16 right-3 md:right-4 z-20 inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                    onClick={() => setAmisOuverts(false)}
+                    aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
+                    className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
                   >
-                    <Users size={13} className="text-brass" />
-                    {lang === 'FR' ? 'Défier un ami' : 'Challenge a friend'}
+                    <X size={15} />
                   </button>
-                  <AnimatePresence>
-                    {amisOuverts && (
-                      <motion.div
-                        initial={{ opacity: 0, x: 24 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 24 }}
-                        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute top-16 right-3 md:right-4 z-30 w-[min(20rem,calc(100%-1.5rem))] max-h-[calc(100%-5.5rem)] overflow-y-auto rounded-[15px] border border-white/15 bg-black/55 backdrop-blur-xl p-3"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setAmisOuverts(false)}
-                          aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
-                          className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
-                        >
-                          <X size={15} />
-                        </button>
-                        <PanneauAmis lang={lang} jeu={jeuDefi} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </>
+                  <PanneauAmis lang={lang} jeu={jeuDefi} />
+                </motion.div>
               )}
-            </div>
-          </Reveal>
+            </AnimatePresence>
+          </>
+        )}
 
-
-          </div>
-        </div>
-      </section>
-
-      {/* ── Les règles, en trois cartes ─────────────────────────── */}
-      <section className="relative pb-20 md:pb-28">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <Reveal>
-            <div className="text-center mb-10 md:mb-14">
-              <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">
+        {/* ── Les règles, dans un panneau posé sur la table ────────── */}
+        <AnimatePresence>
+          {reglesOuvertes && (
+            <motion.aside
+              initial={{ opacity: 0, x: -18 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute left-3 md:left-6 bottom-20 z-30 w-[22rem] max-w-[calc(100%-1.5rem)] max-h-[72%] overflow-y-auto rounded-[15px] border border-white/15 bg-black/60 backdrop-blur-xl p-5"
+            >
+              <button
+                type="button"
+                onClick={() => setReglesOuvertes(false)}
+                aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
+                className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
+              >
+                <X size={15} />
+              </button>
+              <p className="font-sans uppercase tracking-[0.28em] text-[10px] text-[var(--color-amber-glow)] mb-1.5">
                 {s.rulesEyebrow}
               </p>
-              <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.06]">
+              <h2 className="font-display title-medieval text-xl text-ivory">
                 {s.rulesTitle}
               </h2>
-              <div className="divider-brass w-24 mx-auto mt-5" />
-            </div>
-          </Reveal>
+              <div className="divider-brass w-12 my-4" />
+              <ol className="space-y-4 list-none">
+                {s.rules.map((r, i) => {
+                  const Icon = [Crown, Users, Swords][i] ?? Crown;
+                  return (
+                    <li key={r.title} className="flex gap-3">
+                      <span
+                        aria-hidden
+                        className="w-9 h-9 shrink-0 rounded-full bg-brass/15 border border-brass/40 grid place-items-center"
+                      >
+                        <Icon size={16} className="text-brass" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block font-display title-medieval text-base text-ivory mb-1">
+                          {r.title}
+                        </span>
+                        <span className="block font-editorial text-[13px] text-ivory-soft leading-relaxed">
+                          {r.body}
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
 
-          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-7">
-            {s.rules.map((r, i) => {
-              const Icon = [Crown, Users, Swords][i] ?? Crown;
-              return (
-                <StaggerItem
-                  key={r.title}
-                  as="article"
-                  className="glass-light rounded-card p-7 md:p-8 text-center transition-transform duration-300 hover:-translate-y-1"
-                >
-                  <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
-                    <Icon size={24} className="text-brass" />
-                  </div>
-                  <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
-                    {r.title}
-                  </h3>
-                  <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-snug">
-                    {r.body}
-                  </p>
-                </StaggerItem>
-              );
-            })}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* ── Signature de l'atelier ──────────────────────────────── */}
-      {/* Le jeu est bâti par Le Salon des Inconnus, et il se télécharge
-          aussi chez eux. Lien vérifié : /outils et /tools mènent tous
-          deux à la vue « outils » du site du Salon. */}
-      <section className="relative pb-20 md:pb-28">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <Reveal>
-            <div
-              className="rounded-card border border-brass/25 px-6 py-8 md:px-10 md:py-9 flex flex-col md:flex-row md:items-center gap-6 md:gap-9"
-              style={{ background: 'rgba(10, 4, 6, 0.5)' }}
-            >
-              <img
-                src="/salon/salon-logo.webp"
-                alt=""
-                aria-hidden
-                className="h-16 md:h-20 w-auto shrink-0 self-start md:self-center opacity-90"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-2">
-                  {s.builtEyebrow}
-                </p>
-                <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory leading-snug mb-2.5">
-                  {s.builtBy}
-                </h3>
-                <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-relaxed">
+              {/* L'atelier qui a bâti le jeu, et le chemin pour l'emporter
+                  chez soi. Ce bloc vivait dans une section détachée sous
+                  la page : il vit maintenant ici. */}
+              <div className="mt-5 pt-4 border-t border-white/10">
+                <p className="font-editorial text-[13px] text-ivory-soft/85 leading-relaxed mb-3">
                   {s.builtLead}
                 </p>
+                <a
+                  href="https://www.lesalondesinconnus.com/outils"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[15px] border border-brass/45 text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] uppercase tracking-[0.18em]"
+                >
+                  <Download size={13} />
+                  {s.builtCta}
+                </a>
               </div>
-              <a
-                href="https://www.lesalondesinconnus.com/outils"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 inline-flex items-center justify-center gap-2.5 px-6 py-3.5 min-h-[48px] rounded-card border border-brass/45 text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[11px] md:text-xs uppercase tracking-[0.2em]"
-              >
-                <Download size={14} />
-                {s.builtCta}
-              </a>
-            </div>
-          </Reveal>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* ── Bandeau du bas : les règles, le geste, les camps ─────── */}
+        <div
+          className="absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-3 md:px-6 pt-10 pb-3"
+          style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}
+        >
+          <button
+            type="button"
+            onClick={() => setReglesOuvertes((v) => !v)}
+            aria-expanded={reglesOuvertes}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
+          >
+            <Scroll size={13} className="text-brass" />
+            {reglesOuvertes ? s.cacherRegles : s.afficherRegles}
+          </button>
+          <span className="font-sans text-[10px] md:text-[11px] text-ivory-soft/65 text-center">
+            {s.hint}
+          </span>
+          <span className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-sans text-[10px] md:text-[11px]">
+            <span style={{ color: '#C0503E' }}>{s.raidersDot}</span>
+            <span className="text-ivory-soft">{s.defendersDot}</span>
+            <span className="text-brass">{s.kingDot}</span>
+          </span>
         </div>
-      </section>
-      <CreditJeux lang={lang === 'FR' ? 'fr' : 'en'} />
+      </CadreJeu>
     </>
   );
 };

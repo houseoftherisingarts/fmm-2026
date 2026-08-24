@@ -20,6 +20,21 @@ import { db } from '../firebase';
 export const PLACES_BANQUET = 50;
 
 /**
+ * Traduit le champ `vendues` du compteur en places encore libres.
+ *
+ * Tout ce qui n'est pas un nombre entier positif rend `null`, qui veut
+ * dire « je ne sais pas » et fait taire l'affichage. Un document vide,
+ * une chaîne, un négatif : rien de tout cela ne doit produire un chiffre.
+ * Vérifiée par `node tools/banquet-check.mjs`.
+ */
+export function placesRestantes(vendues: unknown): number | null {
+  if (typeof vendues !== 'number' || !Number.isFinite(vendues) || vendues < 0) return null;
+  // Une vente de plus que la capacité ne descend pas sous zéro : la page
+  // dirait alors « il reste moins deux places ».
+  return Math.max(0, PLACES_BANQUET - Math.floor(vendues));
+}
+
+/**
  * S'abonne au nombre de places encore libres.
  * Rend une fonction de désabonnement, comme `onSnapshot`.
  * La valeur `null` signifie « aucune lecture fiable », jamais « zéro ».
@@ -28,16 +43,7 @@ export function subscribeBanquetRestant(cb: (restant: number | null) => void): (
   if (!db) { cb(null); return () => {}; }
   return onSnapshot(
     doc(db, 'banquetPlaces', 'compteur'),
-    (snap) => {
-      const vendues = snap.exists() ? (snap.data() as { vendues?: unknown }).vendues : undefined;
-      if (typeof vendues !== 'number' || !Number.isFinite(vendues) || vendues < 0) {
-        cb(null);
-        return;
-      }
-      // Une vente de plus que la capacité ne descend pas sous zéro : la
-      // page dirait alors « il reste moins deux places ».
-      cb(Math.max(0, PLACES_BANQUET - Math.floor(vendues)));
-    },
+    (snap) => cb(placesRestantes(snap.exists() ? (snap.data() as { vendues?: unknown }).vendues : undefined)),
     () => cb(null),
   );
 }
