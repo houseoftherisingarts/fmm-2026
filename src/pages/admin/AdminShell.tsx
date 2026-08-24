@@ -40,6 +40,7 @@ export type AdminSectionId =
   | 'social'
   | 'medias'
   | 'photos'
+  | 'photosRecues'
   | 'analytics'
   | 'splash'
   | 'parametres'
