@@ -52,12 +52,13 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 export type ModeFiche = 'prive' | 'public';
 
-const ONGLETS_PRIVE  = ['profil', 'badges', 'jeux', 'billets', 'collection'] as const;
+const ONGLETS_PRIVE  = ['profil', 'badges', 'jeux', 'billets', 'photos', 'collection'] as const;
 const ONGLETS_PUBLIC = ['profil', 'badges', 'jeux', 'collection'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
-  profil: UserIcon, badges: Award, jeux: Swords, billets: Ticket, collection: Megaphone,
+  profil: UserIcon, badges: Award, jeux: Swords, billets: Ticket,
+  photos: Camera, collection: Megaphone,
 };
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
