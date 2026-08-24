@@ -852,12 +852,17 @@ def build():
         steps, notes = [], []
         for s in r['steps']:
             (notes if re.match(r'^[a-zéèêà\' ]{3,24}\s*:', s.strip(), re.I) and len(steps) else steps).append(s)
-        body = ''.join(f'<li>{esc(texte_pour_cinq(clean(s), portions))}</li>' for s in steps)
-        note = ''.join(f'<div class="note">{esc(texte_pour_cinq(clean(x), portions))}</div>' for x in notes)
-        wide = ' wide' if len([i for i in r['ing'] if i['n']]) > 13 else ''
-        legende = ('<p class="legende">La ligne dorée sous chaque ingrédient donne la mesure '
-                   'pour cinq personnes. Les temps de cuisson, eux, ne changent pas.</p>'
-                   if portions and portions > 5 else '')
+        # Garde-fou : toute étape qui porte une quantité doit avoir été
+        # relue à la main, sinon un chiffre du festival dormirait dans
+        # une recette de cinq personnes sans que personne le voie.
+        for s in r['steps']:
+            if ETAPE_CHIFFREE.search(s) and tab not in ETAPES_POUR_CINQ \
+                    and tab not in ETAPES_INCHANGEES:
+                print(f'  ⚠ « {tab} » : quantité non relue dans une étape → {s[:70]}')
+        body = ''.join(f'<li>{esc(etapes_pour_cinq(clean(s), tab))}</li>' for s in steps)
+        note = ''.join(f'<div class="note">{esc(etapes_pour_cinq(clean(x), tab))}</div>'
+                       for x in notes)
+        wide = ' wide' if len([i for i in r['ing'] if i['n']]) > 15 else ''
         eau = filigrane(tab)
         pages.append(page(f"""
           <img class="filigrane" src="data:image/png;base64,{b64(eau)}" alt="">
