@@ -584,6 +584,10 @@ const EN: typeof FR = {
   banquetWhen: 'Sunday · 1:00 PM. Registration deadline: September 17, 2026.',
   banquetSeats: '50 seats, limited',
   banquetCost: '$65 per person, plus tax',
+  restant: (n: number) =>
+    n === 0 ? 'All fifty seats are taken.'
+      : n === 1 ? 'One of the fifty seats is still free.'
+        : `${n} of the fifty seats are still free.`,
   banquetMenuEyebrow: 'The banquet menu',
   banquetMenuTitle: 'Three courses',
 
