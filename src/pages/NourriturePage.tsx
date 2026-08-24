@@ -102,16 +102,31 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
   const livrePris = typeof window !== 'undefined'
     && new URLSearchParams(window.location.search).get('livre') === 'merci';
   useGagnerBadge('livre', livrePris);
-  // `?banquet=1` ou `?banquet=merci` : on descend jusqu'au banquet une
-  // fois le chapitre déplié, sinon le visiteur doit le chercher.
+  // `?banquet=1` ou `?banquet=merci` : la vue descend jusqu'au banquet
+  // une fois le chapitre déplié, sinon le visiteur doit le chercher.
+  //
+  // Un seul minuteur de 700 ms tombait à côté une fois sur deux. Trois
+  // choses bougent en même temps au chargement : le morceau de code de
+  // cette page arrive quand il arrive, le repli du chapitre s'ouvre en
+  // 450 ms, et les images qui se posent au-dessus repoussent le banquet
+  // vers le bas. Nous visons donc à quelques reprises, jusqu'à ce que la
+  // cible ne bouge plus (Alex, 2026-08-23).
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const q = new URLSearchParams(window.location.search).get('banquet');
     if (q !== '1' && q !== 'merci') return;
-    const t2 = window.setTimeout(() => {
-      document.getElementById('banquet')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 700);
-    return () => window.clearTimeout(t2);
+    let precedent = -1;
+    let essais = 10;
+    const tic = window.setInterval(() => {
+      const cible = document.getElementById('banquet');
+      if (!cible) return;             // le chapitre n'est pas encore monté
+      const haut = Math.round(cible.getBoundingClientRect().top + window.scrollY);
+      cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // La cible a cessé de bouger : le dernier tir était le bon.
+      if (haut === precedent || --essais <= 0) window.clearInterval(tic);
+      precedent = haut;
+    }, 320);
+    return () => window.clearInterval(tic);
   }, []);
   useCaravanPage();
   const { lang } = useUI();

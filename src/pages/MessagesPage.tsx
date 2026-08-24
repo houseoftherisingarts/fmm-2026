@@ -203,7 +203,19 @@ const MessagesPage: React.FC = () => {
     );
   }
 
-  const nomAutre = (autre?.nom || '').trim() || t.sansNom;
+  // Le fil garde lui-même le nom et la photo de l'autre. Quand sa fiche
+  // du registre n'arrive pas (hors ligne, ou membre qui n'a jamais
+  // rempli la sienne), ils servent de repli plutôt que d'afficher un
+  // inconnu sans visage.
+  const filCourant = autreUid ? fils.find((f) => f.id === filActif) : undefined;
+  const nomAutre = (autre?.nom
+    || (autreUid ? filCourant?.participantNames?.[autreUid] : '')
+    || '').trim() || t.sansNom;
+  const photoAutre = autre?.avatarUrl
+    || (autreUid ? filCourant?.participantPhotos?.[autreUid] : undefined);
+  const teinteAutre = autre?.avatarHue
+    ?? (autreUid ? filCourant?.participantHues?.[autreUid] : undefined)
+    ?? teinteDe(nomAutre);
   const reste = LONGUEUR_MAX - brouillon.length;
 
   return (
@@ -291,8 +303,7 @@ const MessagesPage: React.FC = () => {
                     </button>
                     <Link to={`${addLocale('/profil', lang)}/${autreUid}`}
                           className="flex items-center gap-3 hover:opacity-80 transition flex-1 min-w-0">
-                      <Portrait nom={nomAutre} url={autre?.avatarUrl}
-                                teinte={autre?.avatarHue ?? teinteDe(nomAutre)} taille={38} />
+                      <Portrait nom={nomAutre} url={photoAutre} teinte={teinteAutre} taille={38} />
                       <div className="min-w-0">
                         <p className="font-display title-medieval text-sm text-ivory truncate">{nomAutre}</p>
                         {autre?.ville && (
@@ -330,8 +341,7 @@ const MessagesPage: React.FC = () => {
                               transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                               className={`flex ${mien ? 'justify-end' : 'justify-start'} gap-2.5`}>
                               {!mien && (
-                                <Portrait nom={nomAutre} url={autre?.avatarUrl}
-                                          teinte={autre?.avatarHue ?? teinteDe(nomAutre)} taille={28} />
+                                <Portrait nom={nomAutre} url={photoAutre} teinte={teinteAutre} taille={28} />
                               )}
                               <div className={`max-w-[76%] px-4 py-2.5 text-sm font-sans whitespace-pre-wrap break-words rounded-card ${
                                 mien
