@@ -756,10 +756,14 @@ const FR = {
   voirProfil: 'Voir mon profil public', retourEspace: 'Revenir à mon espace',
   ecrire: 'Écrire à ce membre', ajouterAmi: 'Ajouter comme ami',
   demandeEnvoyee: 'Demande envoyée', accepterAmi: 'Accepter l’amitié', dejaAmi: 'Ami',
-  onglets: 'Les sections de la fiche',
+  onglets: 'Les sections de la fiche', retour: 'Retour',
   onglet: {
     profil: 'Mon profil', badges: 'Mes badges', jeux: 'Mes jeux',
     billets: 'Mes billets', collection: 'Ma collection',
+  } as Record<Onglet, string>,
+  ongletPublic: {
+    profil: 'Sa fiche', badges: 'Ses badges', jeux: 'Ses parties',
+    billets: 'Billets', collection: 'Sa collection',
   } as Record<Onglet, string>,
   presentation: 'Sa présentation',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
