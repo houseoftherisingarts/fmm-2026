@@ -798,10 +798,14 @@ const EN: typeof FR = {
   voirProfil: 'View my public profile', retourEspace: 'Back to my space',
   ecrire: 'Write to this member', ajouterAmi: 'Add as friend',
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
-  onglets: 'Sections of the member card',
+  onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
     profil: 'My profile', badges: 'My badges', jeux: 'My games',
     billets: 'My tickets', collection: 'My collection',
+  } as Record<Onglet, string>,
+  ongletPublic: {
+    profil: 'Their card', badges: 'Their badges', jeux: 'Their games',
+    billets: 'Tickets', collection: 'Their collection',
   } as Record<Onglet, string>,
   presentation: 'Their introduction',
   sansDescription: 'This member has not written an introduction yet.',
