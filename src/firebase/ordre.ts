@@ -9,10 +9,11 @@
 //   /amities/{a__b}    une ligne par paire, les deux peuvent l'écrire
 
 import {
-  collection, doc, getDoc, getDocs, limit as fbLimit, onSnapshot, orderBy,
-  query, serverTimestamp, setDoc, updateDoc, where,
+  addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit as fbLimit,
+  onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { LONGUEUR_MAX } from './moderation';
 
 // ── Les fiches ──────────────────────────────────────────────────────
 export interface StatsMembre {
