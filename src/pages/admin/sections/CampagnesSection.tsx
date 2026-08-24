@@ -568,7 +568,7 @@ const CampagnesSection: React.FC = () => {
                 </p>
                 <div className="flex flex-wrap items-center gap-3 mt-4">
                   <PrimaryButton
-                    ref={boutonConfirmer}
+                    id={ID_CONFIRMER}
                     type="button"
                     onClick={() => void lancer()}
                     disabled={envoi}
