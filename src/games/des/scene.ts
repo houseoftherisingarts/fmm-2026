@@ -327,7 +327,7 @@ function fabriquerSon() {
 export function creerTable(): TableDes {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0506);
-  scene.fog = new THREE.Fog(0x0d0906, 24, 58);
+  scene.fog = new THREE.Fog(0x0d0906, 17, 34);
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 140);
   camera.position.set(0, 14, 15);
@@ -365,6 +365,19 @@ export function creerTable(): TableDes {
   salle.position.y = 4;
   salle.renderOrder = -1;
   scene.add(salle);
+
+  // Le cylindre de la salle était ouvert par en bas : son cerclage
+  // dessinait un grand disque gris autour de la table (Alex,
+  // 2026-08-23). Un plancher de taverne le referme, et la brume avale
+  // tout ce qui dépasse du plateau.
+  const plancher = new THREE.Mesh(
+    new THREE.CircleGeometry(26, 48),
+    new THREE.MeshBasicMaterial({ color: 0x140d08, fog: true }),
+  );
+  plancher.rotation.x = -Math.PI / 2;
+  plancher.position.y = -5.98;
+  plancher.renderOrder = -2;
+  scene.add(plancher);
 
   // ── La table ──────────────────────────────────────────────────────
   const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 1);
@@ -571,8 +584,7 @@ export function creerTable(): TableDes {
       const d = tumbling[i];
       const k = (t - d.depart) / (d.jusqua - d.depart);
       if (k >= 1) {
-        const [rx, ry, rz] = VERS_LE_CIEL[d.cible];
-        d.de.rotation.set(rx, ry + (Math.random() - 0.5) * 0.25, rz);
+        poserLeDe(d.de, d.cible);
         if (d.arrivee) d.de.position.copy(d.arrivee);
         d.de.position.y = DE / 2;
         tumbling.splice(i, 1);

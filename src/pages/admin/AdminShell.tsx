@@ -88,6 +88,9 @@ const NAV: NavItem[] = [
 
   { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon,       group: 'Contenu' },
   { id: 'photos',     label: 'Photos',          icon: Camera,          group: 'Contenu' },
+  // Photos envoyées par les membres depuis leur espace compte (à ne
+  // pas confondre avec 'photos' ci-dessus : les archives Histoire).
+  { id: 'photosRecues', label: 'Photos reçues', icon: Images,          group: 'Contenu' },
   { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles,        group: 'Contenu' },
 
   { id: 'comptes',    label: 'Comptes',         icon: Users,           group: 'Régie' },
