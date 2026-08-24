@@ -1187,7 +1187,7 @@ const HnefataflPage: React.FC = () => {
         titleA={s.pageTitle}
         titleB=""
         intro={s.pageIntro}
-        orbImage="/jeux/tuile-tafl.webp"
+        orbImage="/jeux/tuile-tafl-v2.webp"
       />
 
       {/* ── La table de jeu ─────────────────────────────────────── */}

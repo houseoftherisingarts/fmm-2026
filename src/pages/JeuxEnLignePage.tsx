@@ -65,7 +65,7 @@ const ANNEES: Annee[] = [
     texteFR: 'Un roi attablé à la taverne se retrouve cerné par un groupe de dissidents sans chef, et il cherche la sortie par un des quatre coins de l’établissement. Cinq règlements différents sont proposés, contre l’ordinateur ou contre quelqu’un d’autre de la communauté.',
     texteEN: 'A king sitting in the tavern finds himself ringed by a leaderless band of dissidents, and he looks for the way out through one of the four corners of the room. Five rule sets are offered, against the computer or against someone else from the community.',
     jeuFR: 'Hnefatafl', jeuEN: 'Hnefatafl',
-    image: '/jeux/tuile-tafl.webp',
+    image: '/jeux/tuile-tafl-v2.webp',
     href: { fr: '/jeunesse/hnefatafl', en: '/en/youth/hnefatafl' },
   },
   {
@@ -75,7 +75,7 @@ const ANNEES: Annee[] = [
     texteFR: 'Les roulottes portaient ce jeu de foire en foire, et il se lit encore de la même façon. Vous tirez une seule carte, trois cartes ou la croix celtique en dix lames. Chaque lame reçoit sa lecture.',
     texteEN: 'The wagons carried this deck from fair to fair, and it is still read the same way. You draw a single card, three cards or the ten of the Celtic cross. Each one gets its reading.',
     jeuFR: 'Tarot de Marseille', jeuEN: 'Marseille Tarot',
-    image: '/tarot/trois-cartes.webp',
+    image: '/jeux/tuile-tarot.webp',
     href: { fr: '/jeux/tarot', en: '/en/games/tarot' },
   },
   {
@@ -103,7 +103,7 @@ const JeuxEnLignePage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={fr ? 'Jeux en ligne' : 'Online Games'}
         intro={t.intro}
-        orbImage="/jeux/tuile-tafl.webp"
+        orbImage="/jeux/tuile-tafl-v2.webp"
         orbImagePosition="center 45%"
       />
 
