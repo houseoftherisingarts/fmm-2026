@@ -77,7 +77,7 @@ const CarteSeule: React.FC<{
   onQuitter: () => void;
   fr: boolean;
   reduce: boolean;
-}> = ({ tiree, titre, active, panneau, sansPanneau = false, onLire, onSurvol, onQuitter, fr, reduce }) => (
+}> = ({ tiree, titre, active, onLire, onSurvol, onQuitter, fr, reduce }) => (
   <div className="relative w-full" onMouseEnter={onSurvol} onMouseLeave={onQuitter}>
     <button
       type="button"

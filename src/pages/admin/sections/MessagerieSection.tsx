@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Search, Send, Users, User, UserCheck, Tag, Plus, Check, X,
   History, TriangleAlert, Loader2, CircleCheck,
@@ -79,8 +79,6 @@ const MessagerieSection: React.FC = () => {
     || (user?.displayName || '').trim()
     || (user?.email || '').split('@')[0]
     || 'L’équipe du festival';
-
-  const zoneTexte = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     let mort = false;
@@ -518,7 +516,6 @@ const MessagerieSection: React.FC = () => {
         </p>
 
         <Textarea
-          ref={zoneTexte}
           value={texte}
           rows={7}
           maxLength={LONGUEUR_MAX}

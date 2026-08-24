@@ -57,6 +57,7 @@ const CarnetContactsSection = lazy(() => import('./admin/sections/CarnetContacts
 const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection'));
 const InvitesSection      = lazy(() => import('./admin/sections/InvitesSection'));
 const MessagesSection     = lazy(() => import('./admin/sections/MessagesSection'));
+const MessagerieSection   = lazy(() => import('./admin/sections/MessagerieSection'));
 const NewsletterSection   = lazy(() => import('./admin/sections/NewsletterSection'));
 const MediasSection       = lazy(() => import('./admin/sections/MediasSection'));
 const PhotosSection       = lazy(() => import('./admin/sections/PhotosSection'));
@@ -204,6 +205,7 @@ const AdminPage: React.FC = () => {
       case 'comptes':    return <ComptesSection    devBypass={DEV_BYPASS} />;
       case 'invites':    return <InvitesSection />;
       case 'messages':   return <MessagesSection   devBypass={DEV_BYPASS} />;
+      case 'messagerie': return <MessagerieSection />;
       case 'newsletter': return <NewsletterSection devBypass={DEV_BYPASS} />;
       case 'social':     return <SocialMediaSection />;
       case 'medias':     return <MediasSection     devBypass={DEV_BYPASS} />;

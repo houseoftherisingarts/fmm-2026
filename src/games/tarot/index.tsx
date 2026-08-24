@@ -108,6 +108,9 @@ const TarotPage: React.FC = () => {
       ? 'Le tarot de Marseille est un jeu de route qui a suivi les foires et les caravanes bien avant d’arriver jusqu’à nous. Posez votre question, choisissez un tirage et retournez les cartes une à une.'
       : 'The Marseille tarot is a road deck, one that followed the fairs and the caravans long before it reached us. Ask your question, pick a spread and turn the cards one at a time.',
     questionLabel: fr ? 'Votre question, si vous en avez une' : 'Your question, if you have one',
+    coteAttente: fr
+      ? 'Posez le curseur sur une lame retournée et son sens viendra se lire ici.'
+      : 'Rest the cursor on a turned card and its meaning will be read here.',
     questionPlaceholder: fr ? 'Ce que vous aimeriez éclaircir…' : 'What you would like light on…',
     piocher: fr ? 'Retourner une carte' : 'Turn a card',
     recommencer: fr ? 'Nouveau tirage' : 'New spread',
@@ -191,10 +194,13 @@ const TarotPage: React.FC = () => {
             </div>
           </div>
 
-          {/* ── Le tapis ─────────────────────────────────────────── */}
-          <div className="relative flex-1 min-h-0 overflow-y-auto px-3 md:px-8 py-4 flex flex-col">
+          {/* ── Le tapis, et la lecture dans sa propre colonne ────
+              Le panneau du sens se posait par-dessus les cartes. Le
+              tapis se décale à gauche et lui laisse sa place à droite
+              (Alex, 2026-08-24). */}
+          <div className="relative flex-1 min-h-0 overflow-y-auto px-3 md:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:gap-7">
             <div
-              className={`tarot-tapis relative mx-auto my-auto rounded-[15px] border border-brass/20 p-3 md:p-7 w-full ${
+              className={`tarot-tapis relative mx-auto my-auto lg:mx-0 rounded-[15px] border border-brass/20 p-3 md:p-7 w-full lg:flex-1 ${
                 tirage.id === 'une' ? 'max-w-[19rem]' : tirage.id === 'trois' ? 'max-w-[46rem]' : 'max-w-[44rem]'
               }`}
               style={{ background: 'rgba(12, 5, 8, 0.55)', backdropFilter: 'blur(10px)' }}
@@ -243,10 +249,36 @@ const TarotPage: React.FC = () => {
                     fr={fr}
                     reduce={!!reduce}
                     onFermer={quitter}
-                    className={`absolute left-4 right-4 bottom-4 mx-auto max-w-[26rem] max-h-[70%] ${
-                      panneau === 1 && tirage.id === 'croix' ? '' : 'lg:hidden'
-                    }`}
+                    className="lg:hidden absolute left-4 right-4 bottom-4 mx-auto max-w-[26rem] max-h-[70%]" 
                   />
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* La colonne de lecture, à droite du tapis sur grand
+                écran. Elle garde sa place même quand rien n'est
+                survolé, pour que le tapis ne saute pas. */}
+            <div className="hidden lg:flex w-[23rem] xl:w-[25rem] shrink-0 self-center min-h-[18rem] max-h-full overflow-y-auto items-center">
+              <AnimatePresence mode="wait">
+                {panneau !== null && tirees[panneau] ? (
+                  <PanneauSens
+                    key={`cote-${panneau}-${tirees[panneau]!.lame.code}`}
+                    tiree={tirees[panneau]!}
+                    titre={titrePosition(panneau)}
+                    fr={fr}
+                    reduce={!!reduce}
+                    className="w-full"
+                  />
+                ) : (
+                  <motion.p
+                    key="attente"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="w-full font-editorial text-[14px] leading-relaxed text-ivory-soft/45 px-2"
+                  >
+                    {t.coteAttente}
+                  </motion.p>
                 )}
               </AnimatePresence>
             </div>

@@ -4,7 +4,7 @@ import {
   LayoutDashboard, HandHeart, ShoppingBag, Users, MessageSquare, Mail,
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
-  Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award,
+  Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
@@ -36,6 +36,7 @@ export type AdminSectionId =
   | 'comptes'
   | 'invites'
   | 'messages'
+  | 'messagerie'
   | 'newsletter'
   | 'social'
   | 'medias'
@@ -82,6 +83,9 @@ const NAV: NavItem[] = [
   { id: 'finances',   label: 'Finances',        icon: Wallet,          group: 'Partenaires et deniers' },
 
   { id: 'messages',   label: 'Messages',        icon: MessageSquare,   group: 'Communications' },
+  // Écrire dans la boîte de réception des membres : une personne, un
+  // groupe coché, ou tout le registre (Alex, 2026-08-24).
+  { id: 'messagerie', label: 'Écrire aux membres', icon: Send,         group: 'Communications' },
   { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Communications' },
   { id: 'social',     label: 'Médias sociaux',  icon: Megaphone,       group: 'Communications' },
   { id: 'discord',    label: 'Discord',         icon: Hash,            group: 'Communications' },
