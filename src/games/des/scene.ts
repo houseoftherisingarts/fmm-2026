@@ -462,6 +462,39 @@ export function creerTable(): TableDes {
   table.receiveShadow = true;
   scene.add(table);
 
+  // La parure de table pose un emblème brûlé dans le chêne, au centre
+  // du plateau (Alex, 2026-08-23 : « comme si c'était gravé dans le
+  // bois »). Un disque très mince flotte d'un cheveu au-dessus des
+  // planches et se mélange en multiplication, donc le grain du bois
+  // continue de passer au travers.
+  const embTable = emblemePret(parures.table);
+  if (embTable) {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = 1024;
+    const g = cv.getContext('2d')!;
+    g.fillStyle = '#ffffff';
+    g.fillRect(0, 0, 1024, 1024);
+    const large = 620;
+    const haut = large * (embTable.height / embTable.width);
+    g.globalAlpha = 0.62;
+    g.filter = 'brightness(0)';
+    g.drawImage(embTable, (1024 - large) / 2, (1024 - haut) / 2, large, haut);
+    g.filter = 'none';
+    g.globalAlpha = 1;
+    const tex = new THREE.CanvasTexture(cv);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const decalque = new THREE.Mesh(
+      new THREE.CircleGeometry(4.5, 64),
+      new THREE.MeshBasicMaterial({
+        map: tex, transparent: true, opacity: 0.55,
+        blending: THREE.MultiplyBlending, depthWrite: false,
+      }),
+    );
+    decalque.rotation.x = -Math.PI / 2;
+    decalque.position.y = 0.004;
+    scene.add(decalque);
+  }
+
   // ── Lumières de taverne ───────────────────────────────────────────
   // Une salle basse éclairée à la chandelle : presque pas d'ambiante,
   // un rebond chaud du plancher, une flamme au-dessus de la table et

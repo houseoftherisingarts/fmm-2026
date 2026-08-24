@@ -203,10 +203,10 @@ exports.squareGrimoire = onRequest(
       await transport.sendMail({
         from: FROM,
         to: courriel,
-        subject: 'Votre Grimoire du Festival',
+        subject: 'Votre livre de recettes du festival',
         text: CORPS_FR(nom),
         attachments: [
-          { filename: 'Grimoire-du-Festival-FMM-2026.pdf', content: fs.createReadStream(PDF) },
+          { filename: 'Livre-de-recettes-du-festival-FMM-2026.pdf', content: fs.createReadStream(PDF) },
         ],
       });
 
