@@ -1308,8 +1308,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     {t.banquetBody}
                   </p>
                 </div>
+                {/* `?banquet=1` plutôt que `#banquet` : le chapitre
+                    Nourriture arrive replié, et une ancre ne peut rien
+                    atteindre dans un panneau fermé. Le paramètre déplie
+                    la section puis y fait descendre la vue en douceur
+                    (Alex, 2026-08-23). */}
                 <Link
-                  to={addLocale('/marche', lang) + '#banquet'}
+                  to={addLocale('/marche', lang) + '?banquet=1'}
                   className="prog-anchor shrink-0 self-start md:self-center inline-flex items-center gap-3 pl-3 pr-5 py-3 font-sans text-[11px] md:text-xs uppercase tracking-[0.2em] font-semibold"
                 >
                   <span aria-hidden className="prog-anchor-glyph"><IconGoblet size={17} /></span>

@@ -5,6 +5,7 @@
 // à l'exécution.
 
 import * as THREE from 'three';
+import { emblemePret, parures } from './skins';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { Face } from './regles';
@@ -206,6 +207,33 @@ function faceTexture(n: number): THREE.CanvasTexture {
   grad.addColorStop(1, 'rgba(28,6,4,0.5)');
   g.fillStyle = grad;
   g.fillRect(0, 0, s, s);
+  // La face du un peut porter un emblème gravé à la place du point :
+  // le chevalier du festival ou le sceau du Salon (Alex, 2026-08-23).
+  const embleme = n === 1 ? emblemePret(parures.de) : null;
+  if (embleme) {
+    const large = s * 0.62;
+    const haut = large * (embleme.height / embleme.width);
+    const px = (s - large) / 2;
+    const py = (s - haut) / 2;
+    // Le creux d'abord, décalé vers le bas à droite.
+    g.globalAlpha = 0.7;
+    g.filter = 'brightness(0)';
+    g.drawImage(embleme, px + s * 0.016, py + s * 0.02, large, haut);
+    g.filter = 'none';
+    // La matière d'os, puis le liseré lumineux en haut à gauche.
+    g.globalAlpha = 1;
+    g.filter = 'sepia(1) saturate(0.35) brightness(1.32)';
+    g.drawImage(embleme, px, py, large, haut);
+    g.filter = 'brightness(1.9)';
+    g.globalAlpha = 0.45;
+    g.drawImage(embleme, px - s * 0.006, py - s * 0.007, large, haut);
+    g.filter = 'none';
+    g.globalAlpha = 1;
+    const tSeul = new THREE.CanvasTexture(c);
+    tSeul.anisotropy = 8;
+    return tSeul;
+  }
+
   // Les points : des cuvettes d'os, un bord lumineux en haut à gauche
   // et une ombre portée en bas à droite, comme sur la photo.
   for (const [x, y] of POINTS[n]) {
