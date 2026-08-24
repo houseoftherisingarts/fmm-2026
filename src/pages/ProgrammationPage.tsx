@@ -53,8 +53,8 @@ const ProgrammationPage: React.FC = () => {
         intro={fr
           ? 'Activités, musique et jeux de la jeunesse : tout le programme du festival, réuni en un seul lieu.'
           : 'Activities, music and youth games: the whole festival program, gathered in one place.'}
-        orbImage="/wix/home/danse-jupe-mauve.webp"
-        orbImagePosition="center 42%"
+        orbImage="/wix/home/danse-jupe-mauve-v2.webp"
+        orbImagePosition="44% 42%"
       />
 
       {/* ── Ancres de chapitre ─────────────────────────────────────── */}

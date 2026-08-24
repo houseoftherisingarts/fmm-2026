@@ -302,7 +302,7 @@ export async function annoncerEnLigne(
   const apres = apresAnnonce(etat, quantite, face);
   if (apres === etat) return;
   await updateDoc(doc(db, COL, id), {
-    ...champsEtat(apres),
+    ...champsTour(apres),
     echeance: prochainSablier(),
     updatedAt: serverTimestamp(),
   });
@@ -361,7 +361,7 @@ export async function compterLesDes(id: string, etat: EtatDes): Promise<void> {
     const depart: EtatDes = { ...etat, phase: 'annonces' };
     const apres = vu.devoilement.exact ? apresExact(depart, mains) : apresDoute(depart, mains);
     tx.update(ref, {
-      ...champsEtat(apres),
+      ...champsTour(apres),
       echeance: prochainSablier(),
       updatedAt: serverTimestamp(),
     });
@@ -398,7 +398,7 @@ export async function passerLeTourAbsent(id: string, etat: EtatDes): Promise<voi
     if (vu.tour !== etat.tour || vu.manche !== etat.manche || vu.phase !== etat.phase) return;
     if (vu.echeance && vu.echeance.toMillis() > Date.now()) return;
     tx.update(ref, {
-      ...champsEtat(apresAbsence(etat)),
+      ...champsTour(apresAbsence(etat)),
       echeance: prochainSablier(),
       updatedAt: serverTimestamp(),
     });
@@ -409,7 +409,7 @@ export async function passerLeTourAbsent(id: string, etat: EtatDes): Promise<voi
 export async function abandonnerDes(id: string, etat: EtatDes, uid: string): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {
-    ...champsEtat(apresAbandon(etat, uid)),
+    ...champsTour(apresAbandon(etat, uid)),
     echeance: prochainSablier(),
     updatedAt: serverTimestamp(),
   });

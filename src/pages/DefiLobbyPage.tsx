@@ -118,9 +118,14 @@ const DefiLobbyPage: React.FC = () => {
              }}>
           <p className="font-sans uppercase tracking-[0.28em] text-[10px] text-ivory-soft/55 mb-4 inline-flex items-center gap-2">
             {jeu === 'des' ? <Dices size={12} /> : <Swords size={12} />}
+            {/* Un lien mort ne résout aucun des deux jeux : la mention
+                reste neutre plutôt que d'annoncer une table qui
+                n'existe pas. */}
             {jeu === 'des'
               ? (fr ? 'Défi aux dés' : 'Dice challenge')
-              : (fr ? 'Défi de hnefatafl' : 'Hnefatafl challenge')}
+              : jeu === 'tafl'
+                ? (fr ? 'Défi de hnefatafl' : 'Hnefatafl challenge')
+                : (fr ? 'Défi du festival' : 'Festival challenge')}
           </p>
 
           {lecture || loading ? (
