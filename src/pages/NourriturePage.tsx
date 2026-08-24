@@ -530,7 +530,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                       </span>
                     )}
                     <a
-                      href="/grimoire/grimoire-fmm-2026-apercu.pdf"
+                      href="/grimoire/apercu-livre-recettes-v2.pdf"
                       target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft hover:text-[var(--color-amber-glow)] transition"
                     >
