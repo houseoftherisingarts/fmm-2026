@@ -1,16 +1,21 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { FAITS, CATEGORIES, type CategorieFait } from '../../content/saviezVous';
 import {
   IconScroll, IconTable, IconCuisine, IconWagon, IconDrakkar, IconJester,
+  IconCastle, IconHourglass, IconWorld,
   type GameIconProps,
 } from '../icons/GameIcons';
 
-// ─── Saviez-vous que ────────────────────────────────────────────────
-// Les faits se découvrent un à un, comme une carte tirée d'un paquet
-// dont les tranches dépassent encore. La pile en arrière-plan
-// dit qu'il en reste, et c'est elle qui donne envie d'appuyer encore.
+// ─── Estage de Culture ──────────────────────────────────────────────
+// La rubrique du festival, née sur notre page en août 2023. Les faits
+// se découvrent un à un, comme une carte tirée d'un paquet dont les
+// tranches dépassent encore. La pile en arrière-plan dit qu'il en
+// reste, et c'est elle qui donne envie d'appuyer encore.
+//
+// Le paquet a doublé de taille : les rangées de filtres servent à
+// entrer par un sujet plutôt que de tout parcourir à la file.
 //
 // Le composant ne connaît aucun fait par son nom : tout vient du
 // tableau FAITS de src/content/saviezVous.ts. Ajouter un fait suffit,
@@ -23,20 +28,48 @@ const ICONES: Record<CategorieFait, React.FC<GameIconProps>> = {
   marche: IconWagon,
   camp: IconDrakkar,
   jeu: IconJester,
+  croyance: IconHourglass,
+  roi: IconCastle,
+  festival: IconWorld,
 };
 
 // Courbe maison du projet : sortie douce, sans rebond.
 const DOUX = [0.16, 1, 0.3, 1] as const;
 
+// Une catégorie vide ne mérite pas son bouton. La liste se calcule une
+// seule fois, au chargement du module, puisque FAITS ne bouge jamais.
+const FILTRES = (Object.keys(CATEGORIES) as CategorieFait[])
+  .filter((c) => FAITS.some((f) => f.categorie === c));
+
+/**
+ * Les dates de parution sont stockées en AAAA-MM-JJ. Midi UTC est
+ * imposé pour que la date affichée ne recule pas d'un jour une fois
+ * rendue à Montréal.
+ */
+const dateLisible = (iso: string, fr: boolean) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString(fr ? 'fr-CA' : 'en-CA', {
+    day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+  });
+
+// Les textes du festival portent leurs propres alinéas. Un fait long
+// respire mieux en corps réduit qu'en corps de titre.
+const LONG = 640;
+
 const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
   const reduire = useReducedMotion();
-  const total = FAITS.length;
 
   // `sens` retient le dernier geste pour que la carte sortante parte
   // du bon côté : en avant elle monte, en arrière elle descend.
   const [index, setIndex] = useState(0);
   const [sens, setSens] = useState<1 | -1>(1);
+  const [filtre, setFiltre] = useState<CategorieFait | null>(null);
+
+  const paquet = useMemo(
+    () => (filtre ? FAITS.filter((f) => f.categorie === filtre) : FAITS),
+    [filtre],
+  );
+  const total = paquet.length;
 
   const avancer = useCallback(() => {
     setSens(1);
@@ -48,21 +81,31 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     setIndex((i) => (i - 1 + total) % total);
   }, [total]);
 
+  // Changer de rayon remet le paquet sur sa première carte, sinon
+  // l'index d'hier pointerait dans le vide.
+  const changerFiltre = useCallback((c: CategorieFait | null) => {
+    setFiltre((actuel) => (actuel === c ? null : c));
+    setSens(1);
+    setIndex(0);
+  }, []);
+
   const auClavier = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); avancer(); }
     if (e.key === 'ArrowLeft')  { e.preventDefault(); reculer(); }
   }, [avancer, reculer]);
 
-  const fait = FAITS[index];
+  const fait = paquet[index];
   const Icone = ICONES[fait.categorie];
   const categorie = CATEGORIES[fait.categorie];
   const sources = fait.sources ?? [];
   const decalage = reduire ? 0 : 18 * sens;
+  const texte = fr ? fait.texteFR : fait.texteEN;
+  const dense = texte.length > LONG;
 
   return (
     <section
       className="relative py-16 md:py-24 overflow-hidden"
-      aria-labelledby="saviez-vous-titre"
+      aria-labelledby="estage-de-culture-titre"
     >
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
         <div
@@ -76,20 +119,58 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               className="font-sans uppercase tracking-[0.3em] text-[10px] mb-4 inline-flex items-center gap-2"
               style={{ color: 'var(--color-amber-glow)' }}
             >
-              <IconScroll size={13} /> {fr ? 'Le carnet des curiosités' : 'The book of curiosities'}
+              <IconScroll size={13} /> {fr ? 'Le carnet du festival' : 'The festival notebook'}
             </p>
             <h2
-              id="saviez-vous-titre"
+              id="estage-de-culture-titre"
               className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-tight mb-5"
             >
-              {fr ? 'Saviez-vous que' : 'Did you know'}
+              Estage de Culture
             </h2>
             <div className="divider-brass w-20 mb-6" />
             <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">
               {fr
-                ? 'Nous avons rassemblé ici des faits qui tiennent debout. Chacun a été vérifié dans un dictionnaire, une archive ou un musée, et chacun porte son adresse pour que vous alliez voir de vos yeux. Les belles histoires qui se défont à la vérification sont restées dehors, même celles qui nous plaisaient. Tirez-en une, puis une autre.'
-                : 'We have gathered here the facts that hold up. Each one was checked against a dictionary, an archive or a museum, and each carries its address so you can go and see for yourself. The fine stories that come apart under checking stayed outside, even the ones we liked. Draw one, then another.'}
+                ? 'La rubrique est née sur notre page en août 2023, à raison d’un parchemin par jour ou presque, et elle reprend ici son nom. Vous y retrouverez les parutions d’origine avec leur date, et des faits que nous sommes allés vérifier depuis dans un dictionnaire, une archive ou un musée. Chacun porte son adresse pour que vous alliez voir de vos yeux, et les belles histoires qui se défont à la vérification sont restées dehors, même celles qui nous plaisaient. Tirez-en une, puis une autre.'
+                : 'The column was born on our page in August 2023, a parchment a day or close to it, and it keeps its French name here. You will find the original posts with their dates, and facts we have gone and checked since against a dictionary, an archive or a museum. Each one carries its address so you can go and see for yourself, and the fine stories that come apart under checking stayed outside, even the ones we liked. Draw one, then another.'}
             </p>
+
+            {/* Les rayons du carnet : une porte d'entrée par sujet. */}
+            <div
+              className="flex flex-wrap gap-2 mt-7"
+              role="group"
+              aria-label={fr ? 'Choisir un sujet' : 'Choose a subject'}
+            >
+              <button
+                type="button"
+                onClick={() => changerFiltre(null)}
+                aria-pressed={filtre === null}
+                className="font-sans uppercase tracking-[0.14em] text-[10px] h-8 px-3.5 rounded-full border transition-colors"
+                style={filtre === null
+                  ? { borderColor: 'var(--color-amber-glow)', background: 'rgba(232,177,74,0.14)', color: 'var(--color-ivory)' }
+                  : { borderColor: 'rgba(232,177,74,0.22)', color: 'rgba(240,232,218,0.7)' }}
+              >
+                {fr ? 'Tout' : 'All'}
+              </button>
+              {FILTRES.map((c) => {
+                const actif = filtre === c;
+                const IconeFiltre = ICONES[c];
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => changerFiltre(c)}
+                    aria-pressed={actif}
+                    className="font-sans uppercase tracking-[0.14em] text-[10px] h-8 px-3.5 rounded-full border inline-flex items-center gap-1.5 transition-colors"
+                    style={actif
+                      ? { borderColor: 'var(--color-amber-glow)', background: 'rgba(232,177,74,0.14)', color: 'var(--color-ivory)' }
+                      : { borderColor: 'rgba(232,177,74,0.22)', color: 'rgba(240,232,218,0.7)' }}
+                  >
+                    <IconeFiltre size={12} />
+                    {fr ? CATEGORIES[c].FR : CATEGORIES[c].EN}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* ── Colonne de droite : le paquet ────────────────────── */}
@@ -143,9 +224,15 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                       <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory leading-snug mb-4">
                         {fr ? fait.titreFR : fait.titreEN}
                       </h3>
-                      <p className="font-editorial text-lg md:text-xl text-ivory-soft leading-relaxed max-w-[70ch]">
-                        {fr ? fait.texteFR : fait.texteEN}
-                      </p>
+                      <div
+                        className={`font-editorial text-ivory-soft leading-relaxed max-w-[70ch] space-y-3 ${
+                          dense ? 'text-base md:text-lg' : 'text-lg md:text-xl'
+                        }`}
+                      >
+                        {texte.split('\n\n').map((alinea, i) => (
+                          <p key={i}>{alinea}</p>
+                        ))}
+                      </div>
                     </div>
 
                     {/* La provenance, discrète mais toujours consultable. */}
@@ -159,7 +246,7 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                             rel="noopener noreferrer"
                             className="underline underline-offset-2 hover:text-ivory transition-colors"
                           >
-                            {fait.publication.date}
+                            {dateLisible(fait.publication.date, fr)}
                           </a>
                         </p>
                       )}

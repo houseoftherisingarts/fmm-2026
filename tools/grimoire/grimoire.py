@@ -276,6 +276,12 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
    pouces : elle la laisse à la marche à suivre, qui est ce qui reste
    long quand les quantités tiennent sur une ligne. */
 .rec.maigre .cols { grid-template-columns: 1.4in 1fr; }
+/* La verdure du jardin n'a aucune étape sur la fiche du chef : plutôt
+   qu'un titre « La façon de faire » posé au-dessus du vide, la liste
+   des ingrédients prend toute la largeur. */
+.rec .cols.solo { grid-template-columns: 1fr; }
+.rec .cols.solo .ing { column-count:2; column-gap:.36in; }
+.rec .cols.solo .ing li { break-inside:avoid; }
 .ing li { font-size:9.6pt; line-height:1.38; padding:.055in 0;
   border-bottom:1px dotted rgba(120,85,40,.2); }
 .ing li b { font-weight:600; color:#8a6524; }
@@ -901,9 +907,9 @@ def build():
               <span class="rule-gold" style="width:1.15in"></span><span class="diamond"></span>
             </div>
           </header>
-          <div class="cols">
+          <div class="cols{'' if body or note else ' solo'}">
             <div><p class="lbl">Ingrédients</p><ul class="ing">{ing}</ul></div>
-            <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
+            {f'<div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>' if body or note else ''}
           </div>""", cls='rec' + forme, folio=folio, runhead=titre, cle=tab))
 
     # Colophon : la quatrième, d'un seul tenant elle aussi
