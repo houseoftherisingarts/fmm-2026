@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import CreditJeux from '../../components/jeux/CreditJeux';
+import CadreJeu from '../../components/jeux/CadreJeu';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
