@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Mail, Phone, MapPin, Lock, Ticket, Bug } from 'lucide-react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useUI } from '../../contexts/AppContext';
 import { useSiteFlags } from '../../contexts/SiteFlagsContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { FOOTER, PILLARS, SITE, SPONSORS } from '../../content';
 import { isPillarVisible } from '../../firebase/siteFlags';
-import { db, isFirebaseReady } from '../../firebase';
+import { addSub } from '../../firebase/newsletter';
+import { isFirebaseReady } from '../../firebase';
 import { HexPanel, ChevronButton, HexMark, Eyebrow } from '../marche/atmospherics';
 import { BubbleCanvas } from '../marche/effects';
 import { useCountdown } from '../../lib/useCountdown';
@@ -14,6 +15,34 @@ import BugReportModal from './BugReportModal';
 
 // Local dev previews every pillar; production shows only published ones.
 const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
+
+// ─── Infolettre · l'inscription qui ouvre le compte ──────────────────
+// Alex, 2026-08-24 : « ce n'est pas seulement une inscription à
+// l'infolettre, c'est carrément leur compte ». La personne donne son
+// adresse une fois et repart avec les deux : son nom entre au registre
+// des envois, puis un lien de connexion sans mot de passe
+// (sendSignInLinkToEmail, déjà câblé dans AuthContext) lui ouvre son
+// compte au retour. Sa fiche de l'Ordre se pose toute seule à la
+// première connexion réussie, dans AuthContext.
+//
+// Quatre états, et pas un de plus. « attente » montre le formulaire,
+// « envoi » le verrouille le temps des deux écritures, « lien » dit
+// qu'un courriel est parti, « inscrit » sert aux deux cas où rien ne
+// part : la personne était déjà connectée, ou le lien sans mot de
+// passe dort dans la console Firebase.
+type EtatInfolettre = 'attente' | 'envoi' | 'lien' | 'inscrit';
+
+// La même forme que la règle Firestore attend sur /newsletter : ce qui
+// passe ici passe là-bas, et la personne apprend la faute de frappe
+// avant l'aller-retour plutôt qu'après.
+const COURRIEL_VALIDE = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+/** Le code d'erreur de Firebase Auth, qu'il arrive par la propriété
+ *  `code` ou noyé dans le message. */
+function codeAuth(e: unknown): string {
+  const brut = e as { code?: string; message?: string } | null;
+  return brut?.code || brut?.message?.match(/auth\/[a-z-]+/)?.[0] || '';
+}
 
 // ─── Footer · Caravan Edition ────────────────────────────────────────
 // Hex-cut blocks on a velvet-deep base. Top edge fades up from the
@@ -24,32 +53,62 @@ const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
 const Footer: React.FC = () => {
   const { lang } = useUI();
   const t = FOOTER[lang];
+  const { user, sendMagicLink, openSignIn } = useAuth();
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [subError, setSubError] = useState(false);
+  const [etat, setEtat] = useState<EtatInfolettre>('attente');
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [compteAPart, setCompteAPart] = useState(false);
   const [bugOpen, setBugOpen] = useState(false);
   const cd = useCountdown(`${SITE.dates.start}T10:00:00-04:00`);
 
+  // Une seule adresse ouvre les deux portes : la lettre du festival et
+  // le compte. L'ordre des gestes compte. Le consentement s'écrit en
+  // premier, pour qu'une inscription reste inscrite même si le lien de
+  // connexion se perd en route; le lien part ensuite.
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes('@')) return;
-    setSubError(false);
+    if (etat === 'envoi') return;
+    const adresse = email.trim().toLowerCase();
+    if (!COURRIEL_VALIDE.test(adresse)) { setErreur(t.newsletterErrAddress); return; }
+    setErreur(null); setCompteAPart(false); setEtat('envoi');
+
+    // Sans configuration Firebase (développement local), le formulaire
+    // reste utilisable : la console reçoit l'adresse et l'écran répond.
+    if (!isFirebaseReady) {
+      console.info('[FMM] Infolettre hors ligne :', adresse);
+      setEtat('inscrit');
+      return;
+    }
+
     try {
-      if (db && isFirebaseReady) {
-        await addDoc(collection(db, 'newsletter'), {
-          email: email.trim().toLowerCase(),
-          lang,
-          source: 'footer',
-          subscribedAt: serverTimestamp(),
-          unsubscribed: false,
-        });
-      } else {
-        console.info('[FMM] Newsletter subscription (offline mode):', email);
-      }
-      setSubmitted(true);
+      await addSub({ email: adresse, lang, source: 'footer' });
     } catch (err) {
-      console.warn('[FMM] Newsletter write failed:', err);
-      setSubError(true);
+      console.warn('[FMM] Infolettre, inscription refusée :', err);
+      setErreur(t.newsletterErrNetwork); setEtat('attente');
+      return;
+    }
+
+    // Déjà connectée, la personne a son compte : rien à lui envoyer.
+    if (user) { setEtat('inscrit'); return; }
+
+    try {
+      await sendMagicLink(adresse);
+      setEtat('lien');
+    } catch (err) {
+      console.warn('[FMM] Infolettre, lien de connexion :', err);
+      const code = codeAuth(err);
+      if (code === 'auth/operation-not-allowed' || code === 'auth/unauthorized-continue-uri') {
+        // Le lien sans mot de passe dort dans la console Firebase.
+        // L'inscription tient quand même, et le compte s'ouvre par la
+        // porte habituelle, celle de la fenêtre de connexion.
+        setCompteAPart(true); setEtat('inscrit');
+      } else if (code === 'auth/invalid-email') {
+        setErreur(t.newsletterErrAddress); setEtat('attente');
+      } else if (code === 'auth/too-many-requests') {
+        setErreur(t.newsletterErrTooMany); setEtat('attente');
+      } else {
+        setErreur(t.newsletterErrNetwork); setEtat('attente');
+      }
     }
   };
 
@@ -223,57 +282,124 @@ const Footer: React.FC = () => {
         </FooterColumn>
       </div>
 
-      {/* ── Newsletter ──────────────────────────────────────────── */}
+      {/* ── Infolettre · l'inscription qui ouvre le compte ─────── */}
+      {/* Même carcasse que la carte BILLETS plus haut : panneau hexagoné,
+          verre de caravane, colonne de gauche qui parle et colonne de
+          droite qui agit. La hiérarchie manquait ici, le bloc n'avait
+          qu'un sourcil en petites capitales et pas de titre; le titre
+          d'affichage la rétablit sans sortir du canon du pied de page. */}
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 pb-12 md:pb-16">
         <HexPanel size="md">
-          <div className="caravan-glass relative overflow-hidden px-6 md:px-10 py-8 md:py-10 grid md:grid-cols-12 gap-x-10 gap-y-6 items-center">
+          <div className="caravan-glass relative overflow-hidden px-6 md:px-10 py-8 md:py-11 grid md:grid-cols-12 gap-x-10 gap-y-7 items-center">
             <div className="md:col-span-6">
               <Eyebrow className="mb-3 inline-flex items-center gap-2">
                 <HexMark className="opacity-80" />
-                {t.newsletterTitle}
+                {t.newsletterEyebrow}
               </Eyebrow>
+              <h3
+                className="font-display leading-[1.06] tracking-[-0.005em] text-2xl md:text-3xl lg:text-[2.1rem] mb-3"
+                style={{
+                  color: 'var(--color-bone)',
+                  fontWeight: 400,
+                  textShadow: '0 0 28px rgba(232, 177, 74, 0.18)',
+                }}
+              >
+                {t.newsletterTitle}
+              </h3>
               <p
-                className="font-editorial text-base md:text-lg leading-relaxed max-w-md"
+                className="font-editorial text-base leading-relaxed max-w-md"
                 style={{ color: 'var(--color-bone)', opacity: 0.78 }}
               >
                 {t.newsletterBody}
               </p>
             </div>
+
             <div className="md:col-span-6">
-              {submitted ? (
-                <p
-                  className="font-editorial italic text-base inline-flex items-center gap-2"
-                  style={{ color: 'var(--color-amber-glow)' }}
-                >
-                  <HexMark /> {t.newsletterThanks}
-                </p>
+              {etat === 'lien' || etat === 'inscrit' ? (
+                <div role="status">
+                  <p
+                    className="font-editorial text-base leading-relaxed flex items-start gap-2.5"
+                    style={{ color: 'var(--color-amber-glow)' }}
+                  >
+                    <HexMark className="mt-2 shrink-0" />
+                    <span>{etat === 'lien' ? t.newsletterLinkSent : t.newsletterDone}</span>
+                  </p>
+                  {etat === 'lien' && (
+                    <p
+                      className="font-sans text-sm mt-2 pl-[22px] break-all"
+                      style={{ color: 'var(--color-bone)', opacity: 0.7 }}
+                    >
+                      {email.trim().toLowerCase()}
+                    </p>
+                  )}
+                  {compteAPart && (
+                    <div className="mt-5 pl-[22px]">
+                      <p
+                        className="font-editorial text-sm leading-relaxed mb-4 max-w-sm"
+                        style={{ color: 'var(--color-bone)', opacity: 0.72 }}
+                      >
+                        {t.newsletterAccountAside}
+                      </p>
+                      <ChevronButton type="button" variant="ghost" onClick={openSignIn}>
+                        {t.newsletterAccountCta}
+                      </ChevronButton>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t.newsletterPlaceholder}
-                    className="flex-1 bg-[rgba(10,2,7,0.6)] px-4 py-3 text-sm font-sans focus:outline-none transition-colors"
-                    style={{
-                      color: 'var(--color-bone)',
-                      border: '1px solid rgba(232, 177, 74, 0.35)',
-                    }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.35)'; }}
-                  />
-                  <ChevronButton type="submit" variant="gold">
-                    {t.newsletterCta}
-                  </ChevronButton>
-                </form>
-              )}
-              {!submitted && subError && (
-                <p className="font-editorial italic text-sm mt-3" style={{ color: '#e08a7a' }} role="alert">
-                  {lang === 'FR'
-                    ? 'Une erreur est survenue, réessayez.'
-                    : 'Something went wrong, please try again.'}
-                </p>
+                <>
+                  <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-2.5" noValidate>
+                    <label htmlFor="fmm-infolettre" className="sr-only">
+                      {t.newsletterLabel}
+                    </label>
+                    <input
+                      id="fmm-infolettre"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      required
+                      disabled={etat === 'envoi'}
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); if (erreur) setErreur(null); }}
+                      placeholder={t.newsletterPlaceholder}
+                      aria-invalid={erreur ? true : undefined}
+                      aria-describedby={erreur ? 'fmm-infolettre-erreur' : 'fmm-infolettre-consentement'}
+                      className="flex-1 min-w-0 bg-[rgba(10,2,7,0.6)] px-4 py-3 text-sm font-sans transition-colors focus:outline-none disabled:opacity-60 placeholder:text-[rgba(232,221,193,0.45)]"
+                      style={{
+                        color: 'var(--color-bone)',
+                        border: `1px solid ${erreur ? 'rgba(224, 138, 122, 0.55)' : 'rgba(232, 177, 74, 0.35)'}`,
+                      }}
+                      onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = erreur
+                          ? 'rgba(224, 138, 122, 0.55)'
+                          : 'rgba(232, 177, 74, 0.35)';
+                      }}
+                    />
+                    <ChevronButton type="submit" variant="gold" disabled={etat === 'envoi'}>
+                      {etat === 'envoi' ? t.newsletterBusy : t.newsletterCta}
+                    </ChevronButton>
+                  </form>
+
+                  {erreur ? (
+                    <p
+                      id="fmm-infolettre-erreur"
+                      role="alert"
+                      className="font-editorial text-sm leading-relaxed mt-3"
+                      style={{ color: '#e08a7a' }}
+                    >
+                      {erreur}
+                    </p>
+                  ) : (
+                    <p
+                      id="fmm-infolettre-consentement"
+                      className="font-sans text-[12px] leading-relaxed mt-3.5 max-w-sm"
+                      style={{ color: 'var(--color-bone)', opacity: 0.62 }}
+                    >
+                      {t.newsletterConsent}
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </div>

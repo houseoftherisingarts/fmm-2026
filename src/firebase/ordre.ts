@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { LONGUEUR_MAX } from './moderation';
+import { hueFor } from './publicProfile';
 
 // ── Les fiches ──────────────────────────────────────────────────────
 export interface StatsMembre {
@@ -95,6 +96,34 @@ const MEMBRES = 'membres';
 export async function publierFiche(uid: string, fiche: Partial<Membre>): Promise<void> {
   if (!db) return;
   await setDoc(doc(db, MEMBRES, uid), { uid, ...fiche, maj: serverTimestamp() }, { merge: true });
+}
+
+/** La fiche d'entrée au registre, posée à la première connexion, quel
+ *  que soit le chemin emprunté : Google, mot de passe, ou le lien reçu
+ *  après une inscription à l'infolettre. Une fiche déjà là reste
+ *  intacte, personne ne se fait écraser son nom à chaque visite.
+ *
+ *  Le champ `roles` ne s'écrit pas ici, et c'est voulu : la règle
+ *  Firestore le réserve à l'équipe, et `rolesAffiches` porte déjà
+ *  « membre » à tout le monde. La fonction de base n'a donc pas
+ *  besoin d'être inscrite pour exister (Alex, 2026-08-24).
+ *
+ *  Le courriel n'entre jamais dans la fiche : la collection se lit par
+ *  tous les membres connectés. Sans nom d'affichage, la personne entre
+ *  sous « Un inconnu » et se renomme depuis son espace. */
+export async function assurerFiche(
+  uid: string, nom: string, avatarUrl?: string | null,
+): Promise<void> {
+  if (!db) return;
+  const deja = await getDoc(doc(db, MEMBRES, uid));
+  if (deja.exists()) return;
+  const propre = nom.trim() || 'Un inconnu';
+  await publierFiche(uid, {
+    nom: propre,
+    avatarHue: hueFor(propre),
+    ...(avatarUrl ? { avatarUrl } : {}),
+    stats: { ...STATS_VIDES },
+  });
 }
 
 /** Décerner les fonctions d'un membre. Réservé à l'équipe : la règle

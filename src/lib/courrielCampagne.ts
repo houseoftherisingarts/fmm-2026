@@ -44,8 +44,8 @@ export const BASE_PUBLIQUE = 'https://www.festivalmedievaldemontpellier.org';
  *  festival : c'est ici, et seulement ici, que le nom d'Alex paraît. */
 export const SIGNATURE = {
   nom: 'Alex Turcot St-Laurent',
-  titreFR: 'Directeur des communications',
-  titreEN: 'Director of Communications',
+  titreFR: 'Webmaster',
+  titreEN: 'Webmaster',
   organisation: 'Festival Médiéval de Montpellier',
   site: 'festivalmedievaldemontpellier.org',
   siteUrl: 'https://festivalmedievaldemontpellier.org',

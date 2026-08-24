@@ -157,8 +157,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
         url: 'https://www.youtube.com/watch?v=jPw1ivtK26k',
         altFR: 'Des saltimbanques dansent devant une caravane peinte, sous le titre Caravanes et Saltimbanques',
         altEN: 'Travelling players dance in front of a painted caravan, under the title Caravanes et Saltimbanques',
-        legendeFR: 'La sixième édition se place sous le signe des caravanes et des saltimbanques. Acrobates et danseuses rejoignent les chevaliers, les Vikings et les marchands. La caravane est l’œuvre de Jonathan Leduc, et nous l’en remercions.',
-        legendeEN: 'The sixth edition falls under the sign of caravans and travelling players. Acrobats and dancers join the knights, the Vikings and the merchants. The caravan is the work of Jonathan Leduc, and we thank him for it.',
+        legendeFR: 'La sixième édition se place sous le signe des caravanes et des saltimbanques. Acrobates et danseuses rejoignent les chevaliers, les Vikings et les marchands.',
+        legendeEN: 'The sixth edition falls under the sign of caravans and travelling players. Acrobats and dancers join the knights, the Vikings and the merchants.',
       },
       {
         type: 'texte',

@@ -15,6 +15,7 @@ import {
 } from 'firebase/auth';
 import { auth, isFirebaseReady } from '../firebase';
 import { watchAdminRole, backfillUid } from '../firebase/adminRoles';
+import { assurerFiche } from '../firebase/ordre';
 import type { AdminRole } from '../lib/adminPermissions';
 
 // Allowlist: who counts as a SUPER ADMIN by email. Sourced from
@@ -98,6 +99,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      // Toute personne connectée entre au registre de l'Ordre, quel que
+      // soit le chemin pris : Google, mot de passe, ou le lien reçu
+      // après une inscription à l'infolettre du pied de page. La fiche
+      // se pose une seule fois et l'échec reste sans conséquence, la
+      // page « Ma fiche » repassera derrière (Alex, 2026-08-24).
+      if (u) {
+        const nom = u.displayName?.trim()
+          || (window.location.pathname.startsWith('/en') ? 'A stranger' : 'Un inconnu');
+        void assurerFiche(u.uid, nom, u.photoURL).catch(() => { /* hors ligne */ });
+      }
     });
     return () => unsub();
   }, []);
