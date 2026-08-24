@@ -291,6 +291,9 @@ export function rendreCampagne(
     @media only screen and (max-width: 620px) {
       .fmm-marge { padding-left: 22px !important; padding-right: 22px !important; }
       .fmm-titre { font-size: 26px !important; line-height: 34px !important; }
+      /* Le surtitre tient sur une ligne jusqu'en bas de 320 px, à
+         condition de resserrer l'interlettrage. */
+      .fmm-surtitre { letter-spacing: 1.2px !important; }
       .fmm-corps p { font-size: 16px !important; line-height: 27px !important; }
       /* Sur un téléphone, l'attribut width d'une image fixe la largeur
          MINIMALE de sa cellule, et le tableau refuse alors de descendre
