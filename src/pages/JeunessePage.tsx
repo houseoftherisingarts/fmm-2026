@@ -143,7 +143,7 @@ const FR = {
 const EN = {
   home: 'Home',
   eyebrow: 'Presented by Les Camps Légendaires',
-  heroAlt: 'Festival children sitting in a forest circle with their guide',
+  heroAlt: 'A line of festival children, wooden training swords in hand, waiting their turn in front of their camp counselor',
   title: 'Youth & Games Village',
   intro: 'FMM strives to offer the most kid-friendly space possible for the young-hearted still living in young bodies. This year (beyond family-adjusted prices), we expanded the site, added comfort, and enriched the workshops and activities for kids.',
   campsEyebrow: 'Official presenter of the youth section',

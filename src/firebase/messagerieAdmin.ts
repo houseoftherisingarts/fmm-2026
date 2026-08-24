@@ -37,6 +37,10 @@ import type { Membre } from './ordre';
 /** Le compte au nom duquel partent les envois de groupe. Il n'existe
  *  dans aucune table d'authentification : c'est une identité
  *  d'affichage, et la même chaîne vit dans functions/index.js. */
+/** L'ancien siège « festival » ne recevait aucune réponse : le fil
+ *  appartient désormais à la personne de l'équipe qui écrit, et seul le
+ *  nom affiché reste celui du festival. La constante survit pour écarter
+ *  d'anciennes fiches qui porteraient encore cet identifiant. */
 export const FESTIVAL_UID = 'festival';
 export const FESTIVAL_NOM = 'Le Festival Médiéval de Montpellier';
 /** La teinte du médaillon quand aucune photo n'est jointe : le laiton
