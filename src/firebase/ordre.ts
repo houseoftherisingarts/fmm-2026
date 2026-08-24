@@ -167,3 +167,59 @@ export function estAmi(liens: Amitie[], moi: string, autre: string): boolean {
 export function amitieEnAttente(liens: Amitie[], moi: string, autre: string): Amitie | undefined {
   return liens.find((l) => l.statut === 'demande' && l.paire.includes(moi) && l.paire.includes(autre));
 }
+
+// ── Le salon de l'Ordre ─────────────────────────────────────────────
+// La place publique du registre (Alex, 2026-08-23). Un seul fil, ouvert
+// à tous les membres connectés, du plus ancien au plus récent, comme
+// une table où chacun prend la parole à son tour.
+//
+//   /salonOrdre/{motId}
+//
+// La lecture ne rapatrie que les derniers mots : le salon d'un festival
+// tient largement dans deux cents lignes, et personne n'a envie de
+// remonter plus loin. Firestore les rend du plus récent au plus ancien,
+// donc le navigateur les retourne avant de les afficher.
+
+const SALON = 'salonOrdre';
+const MOTS_AFFICHES = 200;
+
+export interface MotSalon {
+  id?: string;
+  uid: string;
+  nom: string;
+  avatarUrl?: string;
+  avatarHue?: number;
+  texte: string;
+  ecritLe?: unknown;
+}
+
+/** Le salon en direct, du plus ancien au plus récent. */
+export function suivreSalon(cb: (mots: MotSalon[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  return onSnapshot(
+    query(collection(db, SALON), orderBy('ecritLe', 'desc'), fbLimit(MOTS_AFFICHES)),
+    (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as MotSalon) })).reverse()),
+    (err) => { console.warn('[salon] lecture', err); cb([]); },
+  );
+}
+
+export async function direAuSalon(mot: Omit<MotSalon, 'id' | 'ecritLe'>): Promise<void> {
+  if (!db) throw new Error('Firestore n’est pas configuré');
+  const texte = mot.texte.trim().slice(0, LONGUEUR_MAX);
+  if (!texte) return;
+  await addDoc(collection(db, SALON), {
+    uid: mot.uid,
+    nom: mot.nom,
+    ...(mot.avatarUrl ? { avatarUrl: mot.avatarUrl } : {}),
+    ...(typeof mot.avatarHue === 'number' ? { avatarHue: mot.avatarHue } : {}),
+    texte,
+    ecritLe: serverTimestamp(),
+  });
+}
+
+/** Retirer son propre mot. La règle Firestore laisse aussi passer
+ *  l'équipe, et personne d'autre. */
+export async function retirerDuSalon(motId: string): Promise<void> {
+  if (!db) return;
+  await deleteDoc(doc(db, SALON, motId));
+}
