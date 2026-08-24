@@ -397,10 +397,11 @@ GRAMMES_PAR_CUILLERE = {
     'parpika': 2.3,
 }
 
-# Au-delà de six cuillères à thé, la cuillère ne dit plus rien de
-# clair : deux cent cinquante grammes de paprika restent des grammes.
-# En deçà, l'épice se mesure, elle ne se pèse pas.
-CUILLERES_MAX = 6
+# Au-delà d'une cuillère à soupe, la cuillère ne dit plus rien de
+# clair : vingt grammes de sucre restent des grammes, et personne ne
+# compte « une virgule six cuillère à soupe ». En deçà, l'épice se
+# mesure, elle ne se pèse pas.
+CUILLERES_MAX = 3
 
 
 def _poids_cuillere(nom):
