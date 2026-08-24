@@ -254,6 +254,26 @@ const VERS_LE_CIEL: Record<Face, [number, number, number]> = {
  *  aléatoire se fait autour de l'axe Y du MONDE : sur les angles
  *  d'Euler il faisait basculer le dé sur une face voisine, et parfois
  *  le laissait en suspens (Alex, 2026-08-23). */
+/** La courbe d'un dé qui tombe et rebondit deux fois : une grande arche,
+ *  puis deux plus petites, chacune écrasée par la précédente. */
+const CHUTE_MS = 1250;
+function hauteurRebond(k: number, h0: number): number {
+  const arches: Array<[number, number, number]> = [
+    [0, 0.52, 1],        // début, fin, hauteur relative
+    [0.52, 0.80, 0.34],
+    [0.80, 1, 0.11],
+  ];
+  for (const [a, b, h] of arches) {
+    if (k >= a && k < b) {
+      const u = (k - a) / (b - a);
+      // Une demi-sinusoïde donne l'arche; la première commence en haut.
+      const arc = a === 0 ? Math.cos(u * (Math.PI / 2)) : Math.sin(u * Math.PI);
+      return h0 * h * arc;
+    }
+  }
+  return 0;
+}
+
 const AXE_Y = new THREE.Vector3(0, 1, 0);
 function poserLeDe(de: THREE.Object3D, face: Face, hauteur = 0.29): void {
   const [rx, ry, rz] = VERS_LE_CIEL[face];
@@ -562,6 +582,14 @@ export function creerTable(): TableDes {
     de: THREE.Mesh; jusqua: number; cible: Face; depart: number;
     arrivee?: THREE.Vector3;
   }> = [];
+  // Les dés qui tombent du gobelet levé : chacun garde son point de
+  // départ, son point d'arrivée et sa face (Alex, 2026-08-23 : « les
+  // dés tombent du verre, ils rebondissent en tournant »).
+  const chute: Array<{
+    de: THREE.Mesh; cible: Face; depart: number;
+    x0: number; z0: number; x1: number; z1: number;
+    h0: number; axe: THREE.Vector3; tours: number;
+  }> = [];
   const sieges: Array<{ x: number; z: number }> = [];
   const convives: THREE.Mesh[] = [];
 
@@ -587,6 +615,7 @@ export function creerTable(): TableDes {
    *  rien ne flotte au-dessus de la table (Alex, 2026-08-23). */
   const calmer = () => {
     tumbling.length = 0;
+    chute.length = 0;
   };
 
   const boucle = () => {
@@ -672,6 +701,28 @@ export function creerTable(): TableDes {
     projecteur.position.set(visee.x * 0.42, 7.4, visee.z * 0.42 + 0.5);
     const pulse = 1 + Math.sin(t / 520) * 0.05;
     projecteur.intensity = intensiteVoulue * pulse;
+
+    // Les dés lâchés par le gobelet : ils tombent, rebondissent deux
+    // fois en tournant, puis se posent à plat sur la bonne face.
+    for (let i = chute.length - 1; i >= 0; i--) {
+      const c = chute[i];
+      const k = (t - c.depart) / CHUTE_MS;
+      if (k >= 1) {
+        c.de.position.set(c.x1, DE / 2, c.z1);
+        poserLeDe(c.de, c.cible);
+        chute.splice(i, 1);
+        continue;
+      }
+      // Le déplacement horizontal ralentit comme un dé qui perd sa
+      // course sur les planches.
+      const glisse = 1 - Math.pow(1 - k, 3);
+      c.de.position.x = c.x0 + (c.x1 - c.x0) * glisse;
+      c.de.position.z = c.z0 + (c.z1 - c.z0) * glisse;
+      c.de.position.y = DE / 2 + hauteurRebond(k, c.h0);
+      // La rotation s'épuise avec les rebonds.
+      const reste = Math.pow(1 - k, 1.6);
+      c.de.rotateOnWorldAxis(c.axe, reste * c.tours * 0.28);
+    }
 
     // Les convives restent tournés vers la caméra pendant qu'elle
     // tourne autour de la table.
@@ -802,10 +853,9 @@ export function creerTable(): TableDes {
     },
     lancer(faces, onFini) {
       calmer();
-      // Le vrai geste de la table : les dés sont dessous, le gobelet
-      // renversé les brasse en frottant la planche, puis il se lève et
-      // les découvre (Alex, 2026-08-23 : « pense à comment ça se passe
-      // dans la vraie vie »).
+      // Le vrai geste de la table : le gobelet renversé brasse en
+      // frottant la planche, puis il se lève et les dés lui tombent
+      // dessous, rebondissent et se posent (Alex, 2026-08-23).
       const base = sieges[0]
         ? new THREE.Vector3(sieges[0].x * 0.72, 0, sieges[0].z * 0.72)
         : new THREE.Vector3(0, 0, 2.5);
@@ -814,40 +864,37 @@ export function creerTable(): TableDes {
       gestes.set(0, { debut: performance.now(), phase: 'remue', base });
       son.secouer();
 
-      // Les dés se posent sous le gobelet pendant qu'il brasse.
-      window.setTimeout(() => {
-        mesDes.forEach((d, i) => {
-          if (i >= faces.length) return;
-          const a = (i / Math.max(1, faces.length)) * Math.PI * 2 + 0.4;
-          const r = 0.42 + Math.random() * 0.12;
-          d.position.set(
-            base.x + Math.cos(a) * r,
-            DE / 2,
-            base.z + Math.sin(a) * r * 0.8,
-          );
-          poserLeDe(d, faces[i]);
-        });
-      }, 1200);
-
-      // Le gobelet se lève, les dés apparaissent, étalés devant moi.
+      // Le gobelet se lève et lâche ce qu'il tenait.
       window.setTimeout(() => {
         const g = gestes.get(0);
         if (g) { g.phase = 'leve'; g.debut = performance.now(); }
+        const t0 = performance.now();
         mesDes.forEach((d, i) => {
           if (i >= faces.length) return;
           const a = (i / Math.max(1, faces.length)) * Math.PI * 2 + 0.4;
-          const r = 0.92 + Math.random() * 0.16;
-          d.position.set(
-            base.x * 0.8 + Math.cos(a) * r,
-            DE / 2,
-            base.z * 0.8 + Math.sin(a) * r * 0.7 - 0.3,
-          );
+          const r = 0.95 + Math.random() * 0.2;
+          const x1 = base.x * 0.78 + Math.cos(a) * r;
+          const z1 = base.z * 0.78 + Math.sin(a) * r * 0.7 - 0.35;
+          // Ils partent de la bouche du gobelet, serrés les uns contre
+          // les autres, et s'écartent en tombant.
+          const x0 = base.x + (Math.random() - 0.5) * 0.26;
+          const z0 = base.z + (Math.random() - 0.5) * 0.26;
+          d.position.set(x0, DE / 2 + 1.5, z0);
           d.visible = true;
+          const rr = () => Math.random() * 2 - 1;
+          chute.push({
+            de: d, cible: faces[i], depart: t0 + i * 55,
+            x0, z0, x1, z1,
+            h0: 1.45 + Math.random() * 0.25,
+            axe: new THREE.Vector3(rr(), rr(), rr()).normalize(),
+            tours: 6 + Math.random() * 4,
+          });
         });
         son.tomber();
+        window.setTimeout(() => son.tomber(), 420);
       }, 2150);
 
-      if (onFini) window.setTimeout(onFini, 3100);
+      if (onFini) window.setTimeout(onFini, 2150 + CHUTE_MS + 380);
     },
 
     remuer(indices) {
