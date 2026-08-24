@@ -50,6 +50,10 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
 
   return (
     <div className="space-y-5">
+      {/* Les fonctions portées au festival : le seul endroit d'où elles
+          se décernent (Alex, 2026-08-23). */}
+      <FonctionsMembres />
+
       {error && (
         <Card className="p-5 border border-blush/30 bg-blush/5">
           <p className="font-editorial italic text-sm text-ivory-soft">{error}</p>
