@@ -643,8 +643,16 @@ const DesPage: React.FC = () => {
                     ? partie.journal[partie.journal.length - 1]
                     : monTour ? t.aVous : t.attend}
             </span>
-            <span className="font-sans text-[10px] uppercase tracking-[0.22em] order-2 md:order-3 inline-flex items-center gap-3"
+            <span className="font-sans text-[10px] uppercase tracking-[0.22em] order-2 md:order-3 inline-flex items-center gap-2.5"
                   style={{ color: 'var(--color-amber-glow)' }}>
+              <BoutonMusique
+                ref={musiqueRef}
+                cle="des"
+                url="/audio/master-of-the-feast.mp3"
+                titre="Master of the Feast · Kevin MacLeod"
+                onLabel={fr ? 'Couper' : 'Mute'}
+                offLabel={fr ? 'Musique' : 'Music'}
+              />
               {/* Le sablier du tour : une minute, visible de tous. */}
               {enLigne && enLigne.statut === 'encours' && resteMs > 0 && (
                 <span
@@ -740,7 +748,7 @@ const DesPage: React.FC = () => {
 
           {/* À gauche : qui est encore là, et avec combien de dés */}
           {partie && (
-            <div className="absolute left-3 md:left-6 top-16 md:top-20 z-10 w-40 md:w-52 rounded-lg-card border border-brass/25 px-3.5 py-3"
+            <div className="absolute left-3 md:left-6 top-[8.5rem] md:top-[7.25rem] z-10 w-40 md:w-52 rounded-lg-card border border-brass/25 px-3.5 py-3"
                  style={{ background: 'rgba(8,3,5,0.62)', backdropFilter: 'blur(6px)' }}>
               <p className="witcher-stat-label mb-2">{t.joueurs}</p>
               <ul className="space-y-1.5">
@@ -806,18 +814,6 @@ const DesPage: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* La musique de taverne, en haut à gauche de la table */}
-          <div className="absolute left-3 md:left-6 top-16 z-20">
-            <BoutonMusique
-              ref={musiqueRef}
-              cle="des"
-              url="/audio/master-of-the-feast.mp3"
-              titre="Master of the Feast · Kevin MacLeod"
-              onLabel={fr ? 'Couper' : 'Mute'}
-              offLabel={fr ? 'Musique' : 'Music'}
-            />
-          </div>
 
           {/* Les règles, à gauche de la table */}
           <button

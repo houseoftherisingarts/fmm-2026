@@ -475,22 +475,20 @@ export function creerTable(): TableDes {
     const cv = document.createElement('canvas');
     cv.width = cv.height = 1024;
     const g = cv.getContext('2d')!;
-    g.fillStyle = '#ffffff';
-    g.fillRect(0, 0, 1024, 1024);
-    const large = 620;
+    // La toile reste transparente : seule la silhouette assombrit le
+    // bois. Un fond blanc en multiplication délavait tout le plateau.
+    const large = 600;
     const haut = large * (embTable.height / embTable.width);
-    g.globalAlpha = 0.62;
     g.filter = 'brightness(0)';
+    g.globalAlpha = 1;
     g.drawImage(embTable, (1024 - large) / 2, (1024 - haut) / 2, large, haut);
     g.filter = 'none';
-    g.globalAlpha = 1;
     const tex = new THREE.CanvasTexture(cv);
     tex.colorSpace = THREE.SRGBColorSpace;
     const decalque = new THREE.Mesh(
-      new THREE.CircleGeometry(4.5, 64),
+      new THREE.CircleGeometry(4.8, 64),
       new THREE.MeshBasicMaterial({
-        map: tex, transparent: true, opacity: 0.55,
-        blending: THREE.MultiplyBlending, depthWrite: false,
+        map: tex, transparent: true, opacity: 0.6, depthWrite: false,
       }),
     );
     decalque.rotation.x = -Math.PI / 2;
@@ -808,14 +806,17 @@ export function creerTable(): TableDes {
     camera.aspect = w / h;
     // La table entière doit tenir dans la fenêtre : sur un écran large,
     // c'est la hauteur qui manque, alors la caméra recule d'autant.
-    const RAYON = 6.4;
+    // Le cadrage doit contenir la table ET les convives assis derrière
+    // elle, et la table doit remonter au-dessus du bandeau d'annonce
+    // qui occupe le bas de la fenêtre (Alex, 2026-08-23).
+    const RAYON = 8.9;
     const vertical = THREE.MathUtils.degToRad(camera.fov);
     const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * camera.aspect);
     const recul = Math.max(RAYON / Math.tan(vertical / 2), RAYON / Math.tan(horizontal / 2));
     const dist = Math.max(11.5, recul * 0.92);
     if (!orbite) {
-      camera.position.set(0, dist * 0.68, dist * 0.74);
-      camera.lookAt(0, 0, -0.2);
+      camera.position.set(0, dist * 0.66, dist * 0.72);
+      camera.lookAt(0, -1.35, -0.2);
     }
     camera.updateProjectionMatrix();
   };
@@ -833,7 +834,7 @@ export function creerTable(): TableDes {
       // On tourne autour de la table à la souris, comme au tafl : le
       // regard reste sur le plateau, la hauteur reste crédible.
       orbite = new OrbitControls(camera, renderer.domElement);
-      orbite.target.set(0, 0, -0.2);
+      orbite.target.set(0, -1.35, -0.2);
       orbite.enableDamping = true;
       orbite.dampingFactor = 0.08;
       orbite.enablePan = false;

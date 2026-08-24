@@ -168,7 +168,7 @@ const TarotPage: React.FC = () => {
             className="shrink-0 z-20 flex flex-wrap items-center gap-x-4 gap-y-2 pl-4 md:pl-7 pr-16 md:pr-20 py-3"
             style={{ background: 'linear-gradient(180deg, rgba(8,3,5,0.92), rgba(8,3,5,0))' }}
           >
-            <span className="font-display title-medieval text-lg md:text-xl text-ivory">
+            <span className="hidden sm:inline font-display title-medieval text-lg md:text-xl text-ivory">
               {t.titre}
             </span>
             <div className="flex flex-wrap items-center gap-2">
@@ -192,9 +192,11 @@ const TarotPage: React.FC = () => {
           </div>
 
           {/* ── Le tapis ─────────────────────────────────────────── */}
-          <div className="relative flex-1 min-h-0 overflow-y-auto px-4 md:px-8 py-4">
+          <div className="relative flex-1 min-h-0 overflow-y-auto px-3 md:px-8 py-4 flex flex-col">
             <div
-              className="tarot-tapis relative mx-auto rounded-[15px] border border-brass/20 p-4 md:p-7 w-full max-w-screen-xl"
+              className={`tarot-tapis relative mx-auto my-auto rounded-[15px] border border-brass/20 p-3 md:p-7 w-full ${
+                tirage.id === 'une' ? 'max-w-[19rem]' : tirage.id === 'trois' ? 'max-w-[46rem]' : 'max-w-[44rem]'
+              }`}
               style={{ background: 'rgba(12, 5, 8, 0.55)', backdropFilter: 'blur(10px)' }}
             >
               {tirage.id === 'croix' ? (
@@ -210,7 +212,7 @@ const TarotPage: React.FC = () => {
                   reduce={!!reduce}
                 />
               ) : (
-                <div className={`grid gap-4 md:gap-6 mx-auto ${tirage.id === 'une' ? 'grid-cols-1 max-w-[240px]' : 'grid-cols-3 max-w-[42rem]'}`}>
+                <div className={`grid gap-3 md:gap-6 mx-auto w-full ${tirage.id === 'une' ? 'grid-cols-1' : 'grid-cols-3'}`}>
                   {tirage.positions.map((p, i) => (
                     <CaseTirage
                       key={i}
@@ -252,25 +254,27 @@ const TarotPage: React.FC = () => {
 
           {/* ── Le pupitre : la question et les gestes ───────────── */}
           <div
-            className="shrink-0 z-20 flex flex-wrap items-end justify-center gap-3 px-3 md:px-6 pt-6 pb-4"
+            className="shrink-0 z-20 px-3 md:px-6 pt-5 pb-3"
             style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}
           >
-            <label className="min-w-0 flex-1 max-w-md">
+          <div className="mx-auto w-full max-w-5xl flex flex-col sm:flex-row sm:flex-wrap sm:items-end justify-center gap-2.5 sm:gap-3">
+            <label className="w-full sm:w-auto sm:flex-1 sm:min-w-[13rem] sm:max-w-sm">
               <span className="witcher-stat-label block mb-1.5">{t.questionLabel}</span>
               <input
                 type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder={t.questionPlaceholder}
-                className="w-full bg-black/45 backdrop-blur-md border border-white/15 px-4 py-3 text-base font-editorial text-ivory placeholder:text-stone focus:border-brass focus:outline-none rounded-[15px]"
+                className="w-full bg-black/45 backdrop-blur-md border border-white/15 px-4 py-2.5 md:py-3 text-sm md:text-base font-editorial text-ivory placeholder:text-stone focus:border-brass focus:outline-none rounded-[15px]"
               />
             </label>
 
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={piocher}
               disabled={fini}
-              className="fmm-glass-btn is-primary px-5 py-3.5 disabled:opacity-45"
+              className="fmm-glass-btn is-primary px-4 py-2.5 md:px-5 md:py-3.5 disabled:opacity-45"
               style={{ flexDirection: 'row', gap: '0.5rem' }}
             >
               <Sparkles size={15} className="text-brass" />
@@ -279,7 +283,7 @@ const TarotPage: React.FC = () => {
             <button
               type="button"
               onClick={() => recommencer()}
-              className="fmm-glass-btn px-5 py-3.5"
+              className="fmm-glass-btn px-4 py-2.5 md:px-5 md:py-3.5"
               style={{ flexDirection: 'row', gap: '0.5rem' }}
             >
               <RotateCcw size={15} className="text-brass" />
@@ -290,7 +294,7 @@ const TarotPage: React.FC = () => {
               type="button"
               onClick={() => setReglesOuvertes((v) => !v)}
               aria-expanded={reglesOuvertes}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
+              className="inline-flex items-center gap-2 px-4 py-2.5 md:py-3 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
             >
               <ScrollText size={13} className="text-brass" />
               {reglesOuvertes ? t.cacherRegles : t.afficherRegles}
@@ -300,17 +304,19 @@ const TarotPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setLectureOuverte(true)}
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2.5 md:py-3 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
               >
                 <BookOpen size={13} className="text-brass" />
                 {t.ouvrirLecture}
               </button>
             )}
 
-            <span className="font-sans text-[10px] uppercase tracking-[0.24em] text-ivory-soft/55 inline-flex items-center gap-2 pb-3">
+            <span className="hidden sm:inline-flex font-sans text-[10px] uppercase tracking-[0.24em] text-ivory-soft/55 items-center gap-2">
               <Shuffle size={12} />
               {t.restantes(tirage.positions.length - revelees.length)}
             </span>
+            </div>
+          </div>
           </div>
         </div>
 
