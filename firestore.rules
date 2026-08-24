@@ -227,11 +227,6 @@ service cloud.firestore {
     // Un fil ne se lit et ne s'écrit que par ses deux participants.
     // La clé du fil est la paire d'uid triée, jointe par '__'.
     match /dms/{threadId} {
-      // L'autre personne du fil, celle qui n'est pas moi.
-      function autreDuFil() {
-        return resource.data.participantUids.removeAll([request.auth.uid])[0];
-      }
-
       allow read:  if signedIn() && request.auth.uid in resource.data.participantUids;
       allow create: if signedIn()
                     && request.auth.uid in request.resource.data.participantUids
