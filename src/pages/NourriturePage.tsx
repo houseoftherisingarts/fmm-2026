@@ -523,6 +523,12 @@ const FR = {
   banquetWhen: 'Dimanche · 13h00. Date limite d’inscription : 17 septembre 2026.',
   banquetSeats: '50 places limitées',
   banquetCost: '65 $ par personne, plus taxes',
+  // Le décompte dit le vrai et rien de plus : pas de compte à rebours,
+  // pas de « dépêchez-vous ». Le chiffre vient des ventes réelles.
+  restant: (n: number) =>
+    n === 0 ? 'Les cinquante places sont prises.'
+      : n === 1 ? 'Il reste une place sur cinquante.'
+        : `Il reste ${n} places sur cinquante.`,
   banquetMenuEyebrow: 'Le menu du banquet',
   banquetMenuTitle: 'Trois services',
 
