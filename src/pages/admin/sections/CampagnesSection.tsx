@@ -80,7 +80,16 @@ const CampagnesSection: React.FC = () => {
     [modeleId],
   );
 
+  // Deux rendus, et la différence tient à l'adresse des images.
+  // Celui qui PART pointe vers le site public : c'est la seule adresse
+  // qu'un client de courriel saura joindre. Celui de l'APERÇU pointe
+  // vers le site en cours, pour que les images se voient à l'écran même
+  // avant que la production ait reçu les nouveaux fichiers.
   const rendu = useMemo(() => rendreCampagne(modele, langue), [modele, langue]);
+  const renduApercu = useMemo(
+    () => rendreCampagne(modele, langue, window.location.origin),
+    [modele, langue],
+  );
 
   const annees = useMemo(() => anneesDuRegistre(clients), [clients]);
 
