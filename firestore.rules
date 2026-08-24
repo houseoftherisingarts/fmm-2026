@@ -290,6 +290,28 @@ service cloud.firestore {
       allow write: if isOwner(uid);
     }
 
+    // ── Photos publiques (envoyées par les membres) ────────────────
+    // Chacun téléverse ses propres photos (PhotosPanel de l'espace
+    // compte) : elles partent en 'attente'. Une photo 'retenue' devient
+    // publique (elle peut nourrir une affiche ou une page); les autres
+    // statuts restent visibles seulement du propriétaire et de l'équipe.
+    // Seule l'équipe change le statut, l'auteur ne peut pas s'auto-
+    // approuver. Suppression réservée à l'équipe (section Photos reçues).
+    match /photosPubliques/{docId} {
+      allow read:   if resource.data.statut == 'retenue'
+                    || isAdmin()
+                    || (signedIn() && resource.data.uid == request.auth.uid);
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.statut == 'attente'
+                    && request.resource.data.consentement == true;
+      allow update: if isAdmin()
+                    || (signedIn()
+                        && resource.data.uid == request.auth.uid
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende']));
+      allow delete: if isAdmin();
+    }
+
     // ── Les avis décrochés du babillard ───────────────────────────
     // La clé porte l'uid : personne ne peut décrocher un avis au nom
     // d'un autre. L'équipe voit qui a pris quoi.

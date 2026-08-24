@@ -250,6 +250,19 @@ const VERS_LE_CIEL: Record<Face, [number, number, number]> = {
   6: [-Math.PI / 2, 0, 0],
 };
 
+/** Pose un dé à plat sur la planche, la bonne face au ciel. Le tour
+ *  aléatoire se fait autour de l'axe Y du MONDE : sur les angles
+ *  d'Euler il faisait basculer le dé sur une face voisine, et parfois
+ *  le laissait en suspens (Alex, 2026-08-23). */
+const AXE_Y = new THREE.Vector3(0, 1, 0);
+function poserLeDe(de: THREE.Object3D, face: Face, hauteur = DE / 2): void {
+  const [rx, ry, rz] = VERS_LE_CIEL[face];
+  de.rotation.set(rx, ry, rz);
+  de.rotateOnWorldAxis(AXE_Y, Math.random() * Math.PI * 2);
+  de.position.y = hauteur;
+}
+
+
 // ── Le son, fabriqué au vol ─────────────────────────────────────────
 function fabriquerSon() {
   let ctx: AudioContext | null = null;
@@ -571,6 +584,14 @@ export function creerTable(): TableDes {
 
   let intensiteVoulue = 0;
 
+  /** Coupe court aux dés qui s'envolent : au brassage suivant, plus
+   *  rien ne flotte au-dessus de la table (Alex, 2026-08-23). */
+  const calmer = () => {
+    envol.forEach((e) => e.de.parent?.remove(e.de));
+    envol.length = 0;
+    tumbling.length = 0;
+  };
+
   const boucle = () => {
     if (!vivant) return;
     anim = requestAnimationFrame(boucle);
@@ -809,6 +830,7 @@ export function creerTable(): TableDes {
       });
     },
     lancer(faces, onFini) {
+      calmer();
       // Le vrai geste de la table : les dés sont dessous, le gobelet
       // renversé les brasse en frottant la planche, puis il se lève et
       // les découvre (Alex, 2026-08-23 : « pense à comment ça se passe
@@ -832,8 +854,7 @@ export function creerTable(): TableDes {
             DE / 2,
             base.z + Math.sin(a) * r * 0.8,
           );
-          const [rx, ry, rz] = VERS_LE_CIEL[faces[i]];
-          d.rotation.set(rx, ry + Math.random() * 0.6, rz);
+          poserLeDe(d, faces[i]);
         });
       }, 1200);
 
@@ -859,6 +880,7 @@ export function creerTable(): TableDes {
     },
 
     remuer(indices) {
+      calmer();
       // Les autres ne montrent rien : leur gobelet reste retourné sur
       // la planche et frissonne, avec le bruit des dés dedans.
       const t0 = performance.now();
@@ -877,8 +899,7 @@ export function creerTable(): TableDes {
         groupeDes.forEach((d, k) => {
           d.visible = montrer && k < main.length;
           if (d.visible) {
-            const [rx, ry, rz] = VERS_LE_CIEL[main[k]];
-            d.rotation.set(rx, ry, rz);
+            poserLeDe(d, main[k]);
           }
         });
       });
