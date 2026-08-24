@@ -724,7 +724,7 @@ const CampagnesSection: React.FC = () => {
             <PrimaryButton
               type="button"
               onClick={() => setConfirme(true)}
-              disabled={envoi || nombre === 0 || tropDeMonde}
+              disabled={envoi || programmation || nombre === 0 || tropDeMonde}
             >
               {envoi
                 ? <><Loader2 size={13} className="inline mr-1.5 -mt-0.5 animate-spin" aria-hidden /> Envoi en cours</>

@@ -104,8 +104,12 @@ export interface CampagneProgrammee {
   creeeLe?: Timestamp;
   demarreeLe?: Timestamp | null;
   termineeLe?: Timestamp;
-  /** Combien de destinataires ont déjà été traités, reprises comprises. */
+  /** Combien de destinataires ont déjà été traités, reprises comprises.
+   *  Ce compteur fait avancer le curseur, il ne dit pas combien de
+   *  lettres sont parties. */
   faits?: number;
+  /** Combien de lettres sont réellement parties, reprises comprises. */
+  envoyesTotal?: number;
   /** La dernière adresse traitée, curseur de reprise. */
   reprisA?: string;
   tentatives?: number;
@@ -151,6 +155,7 @@ export async function programmerCampagne(demande: DemandeProgrammation): Promise
     parCourriel: demande.parCourriel.trim().toLowerCase(),
     statut: 'prevue' as StatutProgrammee,
     faits: 0,
+    envoyesTotal: 0,
     reprisA: '',
     tentatives: 0,
     creeeLe: serverTimestamp(),

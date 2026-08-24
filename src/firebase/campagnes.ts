@@ -184,6 +184,11 @@ export interface Campagne {
   desabonnesIgnores?: number;
   adressesInvalides?: number;
   adressesEchouees?: { courriel: string; raison: string }[];
+  /** Le nombre de PERSONNES qui ont ouvert la lettre, jamais le nombre
+   *  d'ouvertures. La Cloud Function `pixel` le fait monter d'un cran à
+   *  la première ouverture de chacun et le laisse tranquille aux
+   *  suivantes. Absent tant que personne n'a ouvert. */
+  ouvertures?: number;
   statut: StatutCampagne;
   erreur?: string;
   envoyeLe?: Timestamp;

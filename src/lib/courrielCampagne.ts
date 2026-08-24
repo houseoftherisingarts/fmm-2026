@@ -27,11 +27,16 @@
 // couper par Gmail. Leur largeur d'affichage est bornée à 600 px, et
 // le fichier fait le double pour les écrans à forte densité.
 //
-// LES DEUX JETONS. Le HTML et le texte sortent d'ici avec `{{nom}}` et
+// LES JETONS. Le HTML et le texte sortent d'ici avec `{{nom}}` et
 // `{{desabonnement}}` encore en place : c'est la Cloud Function qui les
 // remplace, destinataire par destinataire, au moment de l'envoi. Le
 // navigateur n'a donc jamais à fabriquer trois cents versions d'une
 // même lettre, et le lien de désabonnement se signe côté serveur.
+//
+// Le HTML en porte un troisième, `{{pixel}}`, tout au bas de la page.
+// La fonction y met une image d'un pixel qui mesure les ouvertures. La
+// version texte seul n'en porte pas : une image n'y a rien à faire, et
+// personne ne mesure une lecture en texte brut.
 
 import type { BlocCampagne, LangueCampagne, ModeleCampagne } from '../content/campagnes';
 
@@ -79,6 +84,13 @@ const C = {
  *  part en toutes lettres dans la boîte du destinataire. */
 export const JETON_NOM = '{{nom}}';
 export const JETON_DESABONNEMENT = '{{desabonnement}}';
+
+/** Le pixel de mesure des ouvertures. Il se pose tout au bas du HTML,
+ *  après le pied de page, et la Cloud Function le remplace par une
+ *  image d'un pixel adressée à cette personne et à cette campagne.
+ *  Une lettre à qui il manque ne casse pas : la fonction efface alors
+ *  le jeton, et l'envoi part sans mesure. */
+export const JETON_PIXEL = '{{pixel}}';
 
 export interface RenduCourriel {
   sujet: string;
@@ -408,6 +420,13 @@ ${corps}${cta}
       </td>
     </tr>
   </table>
+
+  <!-- La mesure des ouvertures, tout au bas, après le pied de page. La
+       Cloud Function remplace ce jeton par une image d'un pixel, ou
+       l'efface. Il reste une image DISTANTE, jamais jointe au message :
+       une image jointe s'affiche sans jamais toucher notre serveur, et
+       ne mesurerait donc plus rien. -->
+  ${JETON_PIXEL}
 </body>
 </html>`;
 

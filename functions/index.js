@@ -766,7 +766,7 @@ function verifierLettre(d) {
  * pour l'éviter serait une écriture Firestore par destinataire, et
  * vingt doublons valent mieux que quinze cents.
  */
-async function expedierLettre({ transport, cle, sujet, html, texte, vises, avancer }) {
+async function expedierLettre({ transport, cle, campagneId, sujet, html, texte, vises, avancer }) {
   let envoyes = 0;
   let echecs = 0;
   let derniere = '';
@@ -785,7 +785,10 @@ async function expedierLettre({ transport, cle, sujet, html, texte, vises, avanc
           to: personne.courriel,
           subject: sujet,
           text: personnaliser(texte, personne.nom, lien, false),
-          html: corps.html,
+          // Le pixel de mesure se pose ICI, après l'incorporation des
+          // images : il doit rester une image distante, sans quoi il ne
+          // mesure plus rien. Voir poserPixel, au bas de ce fichier.
+          html: poserPixel(corps.html, campagneId, personne.courriel, cle),
           attachments: corps.pieces,
           headers: {
             // Le désabonnement d'un seul geste, depuis le bandeau du
@@ -943,6 +946,7 @@ exports.envoyerCampagne = onCall(
     try {
       await expedierLettre({
         transport, cle, sujet, html, texte, vises,
+        campagneId: trace.id,
         avancer: async (a) => {
           etat.envoyes = a.envoyes;
           etat.echecs = a.echecs;
@@ -1206,7 +1210,7 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
       termineeLe: FieldValue.serverTimestamp(),
       resultat: {
         destinataires: complets.length,
-        envoyes: Number(d.faits || 0),
+        envoyes: Number(d.envoyesTotal || 0),
         echecs: 0,
         desabonnesIgnores: retires,
         adressesInvalides: invalides,
@@ -1221,7 +1225,8 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
   // lancé à la main, et paraît donc dans la même liste, à la même
   // place. Une reprise réécrit la trace ouverte au premier tour plutôt
   // que d'en ouvrir une deuxième.
-  const trace = d.campagneId
+  const reprend = Boolean(d.campagneId);
+  const trace = reprend
     ? db.collection(CAMPAGNES).doc(d.campagneId)
     : db.collection(CAMPAGNES).doc();
 
@@ -1235,25 +1240,36 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
     cible: `${String(d.cible || 'Sans portée nommée').slice(0, 180)} (programmée)`,
     sujet: lettre.sujet,
     destinataires: complets.length,
-    envoyes: Number(d.faits || 0),
+    envoyes: Number(d.envoyesTotal || 0),
     echecs: 0,
     desabonnesIgnores: retires,
     adressesInvalides: invalides,
     statut: 'en cours',
     programmee: true,
-    envoyeLe: FieldValue.serverTimestamp(),
+    // La date de la trace est celle du PREMIER départ. Une reprise ne
+    // la repousse pas : la campagne resterait sinon en tête de
+    // l'historique à chaque tour, comme si elle venait de partir.
+    ...(reprend ? {} : { envoyeLe: FieldValue.serverTimestamp() }),
   }, { merge: true });
 
   await ref.update({ campagneId: trace.id });
 
   const transport = ouvrirTransport(ZOHO_APP_PASSWORD.value());
+  // Deux compteurs, et ils ne disent pas la même chose. `faits` est le
+  // nombre d'adresses TRAITÉES, celui qui fait avancer le curseur.
+  // `envoyesTotal` est le nombre de lettres réellement parties. Les
+  // confondre ferait mentir l'historique dès qu'une adresse échoue au
+  // premier tour et que la campagne reprend au second.
   const dejaFaits = Number(d.faits || 0);
+  const dejaEnvoyes = Number(d.envoyesTotal || 0);
   const etat = { envoyes: 0, echecs: 0, adressesEchouees: [], derniere: verdict.reprisA };
 
   try {
     await expedierLettre({
       transport,
       cle,
+      // Le pixel d'ouverture vise la même trace que l’envoi immédiat.
+      campagneId: trace.id,
       sujet: lettre.sujet,
       html: lettre.html,
       texte: lettre.texte,
@@ -1266,8 +1282,12 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
         // Le curseur de reprise s'écrit AVANT tout le reste : c'est lui
         // qui empêche un redémarrage de tout recommencer.
         await Promise.all([
-          ref.update({ reprisA: a.derniere, faits: dejaFaits + a.envoyes + a.echecs }),
-          trace.update({ envoyes: dejaFaits + a.envoyes, echecs: a.echecs }),
+          ref.update({
+            reprisA: a.derniere,
+            faits: dejaFaits + a.envoyes + a.echecs,
+            envoyesTotal: dejaEnvoyes + a.envoyes,
+          }),
+          trace.update({ envoyes: dejaEnvoyes + a.envoyes, echecs: a.echecs }),
         ]);
       },
     });
@@ -1275,7 +1295,7 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
     transport.close();
   }
 
-  const envoyes = dejaFaits + etat.envoyes;
+  const envoyes = dejaEnvoyes + etat.envoyes;
   await trace.update({
     statut: 'terminé',
     envoyes,
@@ -1286,6 +1306,7 @@ async function envoyerCampagneProgrammee(ref, d, verdict) {
     statut: 'envoyee',
     termineeLe: FieldValue.serverTimestamp(),
     faits: dejaFaits + etat.envoyes + etat.echecs,
+    envoyesTotal: envoyes,
     reprisA: etat.derniere,
     erreur: FieldValue.delete(),
     resultat: {
@@ -1382,5 +1403,162 @@ exports.desabonnement = onRequest(
 
     res.set('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(PAGE_DESABO(fr, adresse));
+  },
+);
+
+// ─── Le pixel d'ouverture ────────────────────────────────────────────
+// Alex, 2026-08-24 : « Je dois pouvoir tracker qui ouvre les
+// infolettres. » Chaque lettre porte au bas du HTML une image d'un
+// pixel, transparente, servie par cette fonction. Le client de courriel
+// va la chercher quand la personne ouvre le message, et c'est cet
+// appel-là qui se note.
+//
+// L'IMAGE PASSE TOUJOURS, même quand le jeton est faux, absent ou
+// tordu. Une image cassée dans la boîte de quelqu'un se voit, alors
+// qu'une statistique manquée ne se voit pas : entre les deux, la lettre
+// intacte gagne à tous les coups. Un appel sans jeton valable reçoit
+// donc le même pixel que les autres et n'écrit rien.
+//
+// AUCUNE MISE EN CACHE. Gmail et Apple relaient nos images par leur
+// propre serveur, et une réponse mise en cache ferait disparaître
+// toutes les ouvertures suivantes derrière la première. Les en-têtes
+// ci-dessous ferment les trois caches qui comptent : celui du client,
+// celui du relais et celui du navigateur.
+//
+// CE QUE LA MESURE VAUT VRAIMENT. Elle sous-compte : une personne qui
+// lit avec les images bloquées ne paraîtra jamais ici. Elle sur-compte
+// aussi : Apple charge les images de ses usagers avant même qu'ils
+// ouvrent quoi que ce soit. Le nombre affiché dans l'admin est une
+// tendance d'une infolettre à l'autre, jamais une vérité. C'est écrit
+// noir sur blanc sous le tableau, dans CampagnesSection.tsx.
+//
+// ponytail: une écriture Firestore par ouverture, sans regroupement.
+// À quinze cents destinataires par campagne, cela reste quelques
+// milliers d'écritures par mois, très loin du premier dollar. Le jour
+// où le festival écrit à cent mille personnes, le regroupement se fait
+// par une file de tâches plutôt qu'ici.
+
+const ouv = require('./ouvertures');
+
+const OUVERTURES = 'campagnesOuvertures';
+
+// L'adresse publique de la fonction, posée en clair comme celle du
+// désabonnement : l'hôte vu depuis Cloud Run n'est pas celui que le
+// destinataire a sous les yeux.
+const URL_PIXEL =
+  process.env.PIXEL_URL ||
+  'https://us-central1-festivalmedieval.cloudfunctions.net/pixel';
+
+// Le troisième jeton du gabarit. Le jumeau vit dans
+// src/lib/courrielCampagne.ts sous JETON_PIXEL. Si l'une des deux
+// chaînes change, l'autre doit suivre, sinon le pixel part en toutes
+// lettres dans la boîte du destinataire.
+const JETON_PIXEL = '{{pixel}}';
+
+/**
+ * Pose le pixel de mesure dans une lettre déjà personnalisée.
+ *
+ * L'ORDRE COMPTE, et c'est la seule chose à retenir ici. Cette
+ * fonction s'applique APRÈS `incorporerImages`, jamais avant. Les
+ * images de la lettre sont jointes au message pour paraître sans
+ * permission, et un pixel joint au message ne mesurerait plus rien du
+ * tout : il faut qu'il reste une image distante, allée chercher sur
+ * notre serveur au moment de la lecture. Le passer après l'incorporation
+ * est ce qui l'en exclut.
+ *
+ * Une lettre sans le jeton (une campagne programmée écrite avant ce
+ * jour) ressort inchangée : rien ne casse, elle n'est simplement pas
+ * mesurée.
+ */
+function poserPixel(html, campagneId, courriel, cle) {
+  if (!campagneId || !html.includes(JETON_PIXEL)) {
+    return html.split(JETON_PIXEL).join('');
+  }
+  const adresse = ouv.normaliserCourriel(courriel);
+  const url =
+    `${URL_PIXEL}?c=${encodeURIComponent(campagneId)}` +
+    `&e=${encodeURIComponent(adresse)}` +
+    `&j=${ouv.jetonPixel(campagneId, adresse, cle)}`;
+  // La hauteur de ligne et la taille de police à un pixel empêchent le
+  // trou blanc qu'une image seule laisse au bas de la lettre chez
+  // Outlook.
+  const balise =
+    `<div style="line-height:1px;font-size:1px;">` +
+    `<img src="${echapperHtml(url)}" width="1" height="1" alt="" border="0" ` +
+    `style="width:1px;height:1px;display:block;border:0;outline:none;" /></div>`;
+  return html.split(JETON_PIXEL).join(balise);
+}
+
+/**
+ * Écrit l'ouverture, et fait monter le compte de la campagne une seule
+ * fois par personne.
+ *
+ * La transaction n'est pas décorative. Un téléphone qui ouvre la lettre
+ * pendant qu'un ordinateur fait la même chose lance deux appels dans la
+ * même seconde, et une lecture suivie d'une écriture hors transaction
+ * compterait deux personnes là où il n'y en a qu'une. Le taux affiché à
+ * Alex se mettrait à monter tout seul.
+ *
+ * La fiche de campagne s'écrit en fusion plutôt qu'en mise à jour : une
+ * trace effacée à la main ne doit pas faire échouer l'écriture de
+ * l'ouverture elle-même.
+ */
+async function noterOuverture(campagneId, courriel) {
+  const cle = ouv.cleOuverture(campagneId, courriel);
+  if (!cle) return;
+
+  const ligne = db.collection(OUVERTURES).doc(cle);
+  const fiche = db.collection(CAMPAGNES).doc(String(campagneId));
+
+  await db.runTransaction(async (t) => {
+    const avant = await t.get(ligne);
+    const suite = ouv.fusionnerOuverture(avant.exists ? avant.data() : null);
+
+    const champs = {
+      campagne: String(campagneId),
+      courriel: ouv.normaliserCourriel(courriel),
+      fois: suite.fois,
+      derniereLe: FieldValue.serverTimestamp(),
+    };
+    if (suite.unique) champs.premiereLe = FieldValue.serverTimestamp();
+
+    t.set(ligne, champs, { merge: true });
+    if (suite.unique) {
+      t.set(fiche, { ouvertures: FieldValue.increment(1) }, { merge: true });
+    }
+  });
+}
+
+exports.pixel = onRequest(
+  { region: 'us-central1', secrets: [CAMPAGNE_CLE], memory: '256MiB' },
+  async (req, res) => {
+    const campagneId = String(req.query.c || '').slice(0, 60);
+    const adresse = normaliserCourriel(req.query.e);
+    const jeton = String(req.query.j || '');
+
+    const signe =
+      campagneId &&
+      adresse &&
+      COURRIEL_VALIDE.test(adresse) &&
+      ouv.jetonValide(campagneId, adresse, jeton, CAMPAGNE_CLE.value());
+
+    if (signe) {
+      // Une panne d'écriture ne prive personne de son image. Elle part
+      // au journal et la lettre reste intacte.
+      try {
+        await noterOuverture(campagneId, adresse);
+      } catch (err) {
+        logger.error('[ouverture] écriture manquée', { campagne: campagneId, err });
+      }
+    } else if (campagneId || jeton) {
+      logger.warn('[ouverture] appel non signé', { campagne: campagneId });
+    }
+
+    res.set('Content-Type', 'image/gif');
+    res.set('Content-Length', String(ouv.PIXEL_GIF.length));
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private, max-age=0');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    return res.status(200).end(ouv.PIXEL_GIF);
   },
 );
