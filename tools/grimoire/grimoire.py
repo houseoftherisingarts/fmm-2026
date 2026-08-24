@@ -580,9 +580,14 @@ def pour_cinq(q, portions, nom=''):
                 return mesure
         return _joli(ml, 'ml')
     if unite in ('un', 'unite', 'unites', 'gousse', 'gousses', 'bouteille', 'bouteilles'):
-        mot = 'gousse' if unite.startswith('gousse') else ('bouteille' if unite.startswith('bouteille') else 'pièce')
         n2 = max(1, int(round(val)))
-        return f"{n2} {mot}{'s' if n2 > 1 else ''}"
+        # « Une pièce de feuilles de laurier » ne se dit pas. Quand
+        # l'ingrédient se compte, le livre écrit « 1 × feuille de
+        # laurier », comme la fiche du chef l'écrit déjà.
+        if unite.startswith(('gousse', 'bouteille')):
+            mot = 'gousse' if unite.startswith('gousse') else 'bouteille'
+            return f"{n2} {mot}{'s' if n2 > 1 else ''}"
+        return f"{n2} ×"
     if unite in ('cat', 'cas'):
         # Personne ne mesure un tiers de cuillère à soupe : sous une
         # cuillère à soupe pleine, on redescend en cuillères à thé, et
