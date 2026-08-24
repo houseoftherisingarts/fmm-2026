@@ -166,8 +166,37 @@ exports.squareGrimoire = onRequest(
         .map((l) => (l.name || '').toLowerCase())
         .join(' | ');
       if (!articles.includes(ARTICLE)) {
+        // Les places du banquet se comptent ici. La salle en a cinquante,
+        // et le site affiche ce qu'il en reste, alors le chiffre doit
+        // venir des ventes réelles et de rien d'autre (Alex, 2026-08-23).
+        //
+        // Le compteur public ne reçoit QUE le nombre : ni le nom, ni le
+        // courriel, ni le montant de l'acheteur ne le touchent jamais.
+        //
+        // L'incrément et le statut partent dans le même lot d'écriture.
+        // Firestore le commet d'un seul bloc, donc une panne au milieu ne
+        // peut pas laisser une place comptée sans sa trace, et le rejeu
+        // de Square retombe alors sur le verrou posé plus haut.
+        const places = (commande.line_items || [])
+          .filter((l) => (l.name || '').toLowerCase().includes(ARTICLE_BANQUET))
+          .reduce((n, l) => n + (parseInt(l.quantity, 10) || 0), 0);
+        if (places > 0) {
+          const lot = db.batch();
+          lot.set(
+            db.doc(COMPTEUR_BANQUET),
+            {
+              vendues: admin.firestore.FieldValue.increment(places),
+              majLe: admin.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          );
+          lot.set(ref, { statut: 'banquet', places, orderId: paiement.order_id }, { merge: true });
+          await lot.commit();
+          logger.info('Places de banquet comptées', { paymentId, places });
+          return res.status(200).send('banquet compté');
+        }
         await ref.set({ statut: 'ignoré', articles }, { merge: true });
-        return res.status(200).send('pas un grimoire');
+        return res.status(200).send('ni livre ni banquet');
       }
 
       // Le courriel de l'acheteur : Square le range à des endroits
