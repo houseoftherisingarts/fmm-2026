@@ -292,10 +292,12 @@ service cloud.firestore {
     }
 
     // ── Les badges du site ────────────────────────────────────────
-    // Chacun écrit les siens, personne ne lit ceux d'un autre sauf
-    // l'équipe. Le contenu n'est qu'une liste d'identifiants.
+    // Chacun écrit les siens. La fiche d'un membre montre ses badges
+    // aux autres membres connectés : le contenu n'est qu'une liste
+    // d'identifiants, rien de personnel n'y transite (Alex,
+    // 2026-08-23).
     match /badges/{uid} {
-      allow read:  if isOwner(uid) || isAdmin();
+      allow read:  if signedIn();
       allow write: if isOwner(uid);
     }
 
