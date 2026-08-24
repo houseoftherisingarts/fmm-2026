@@ -386,7 +386,27 @@ GRAMMES_PAR_CUILLERE = {
     'origan': 1.0, 'sarriette': 1.0, 'laurier': 0.6, 'massis': 2.0,
     'persil': 1.6, 'ciboulette': 1.4, 'menthe': 1.4, 'coriandre': 1.6,
     'basilic': 1.2, 'aneth': 1.2, 'estragon': 1.2,
+    # Le zeste se compte à la cuillère, jamais à la balance : deux
+    # grammes de zeste d'orange ne se pèsent nulle part.
+    'zeste': 2.0,
+    # La fiche du chef écrit « parpika fumé ». On ne corrige pas sa
+    # feuille, on apprend juste à la lire.
+    'parpika': 2.3,
 }
+
+# Au-delà de six cuillères à thé, la cuillère ne dit plus rien de
+# clair : deux cent cinquante grammes de paprika restent des grammes.
+# En deçà, l'épice se mesure, elle ne se pèse pas.
+CUILLERES_MAX = 6
+
+
+def _poids_cuillere(nom):
+    """Ce qu'une cuillère à thé de cet ingrédient pèse, ou rien."""
+    cle = (nom or '').strip().lower()
+    for k, v in GRAMMES_PAR_CUILLERE.items():
+        if cle == k or cle.startswith(k) or k in cle:
+            return v
+    return None
 
 # Les herbes fraîches ne se pèsent pas au gramme dans une cuisine de
 # maison : sous cinq grammes, on parle en poignées et en brins.
