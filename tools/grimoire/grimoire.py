@@ -868,9 +868,8 @@ def build():
           <img class="filigrane" src="data:image/png;base64,{b64(eau)}" alt="">
           <header>
             <h2>{esc(TITRES.get(tab, clean(tab)))}</h2>
-            <p class="yield">{esc(r['yield'] or 'Rendement du festival')}</p>
+            <p class="yield">{esc(rendement_pour_cinq(r['yield'], portions, tab) or 'Pour cinq personnes')}</p>
             {f'<p class="chapeau">{esc(CHAPEAUX[tab])}</p>' if tab in CHAPEAUX else ''}
-            {legende}
             <div class="orn" style="justify-content:flex-start; margin-top:.09in">
               <span class="rule-gold" style="width:1.15in"></span><span class="diamond"></span>
             </div>

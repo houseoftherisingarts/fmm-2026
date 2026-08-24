@@ -9,7 +9,7 @@ import {
 
 // ─── Saviez-vous que ────────────────────────────────────────────────
 // Les faits se découvrent un à un, comme une carte tirée d'un paquet
-// dont on voit encore les tranches dépasser. La pile en arrière-plan
+// dont les tranches dépassent encore. La pile en arrière-plan
 // dit qu'il en reste, et c'est elle qui donne envie d'appuyer encore.
 //
 // Le composant ne connaît aucun fait par son nom : tout vient du
