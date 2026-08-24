@@ -30,6 +30,18 @@ export function resume(t: LameTiree, fr: boolean): string {
   return sortie;
 }
 
+// Les petits nombres s’écrivent en toutes lettres, comme dans un livre.
+const CHIFFRES_FR = ['zéro', 'une', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix'];
+const CHIFFRES_EN = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const nombre = (n: number, fr: boolean) =>
+  (fr ? CHIFFRES_FR : CHIFFRES_EN)[n] ?? String(n);
+
+/** La première lettre en capitale, pour ouvrir une phrase. */
+const capitale = (mot: string) => mot.charAt(0).toLocaleUpperCase() + mot.slice(1);
+
+/** La première lettre en minuscule, pour glisser un titre après une préposition. */
+const minuscule = (mot: string) => mot.charAt(0).toLocaleLowerCase() + mot.slice(1);
+
 // ── Le terrain de chaque couleur ────────────────────────────────────
 const COULEURS: Record<Couleur, {
   nomFR: string; nomEN: string;
@@ -38,7 +50,7 @@ const COULEURS: Record<Couleur, {
 }> = {
   batons: {
     nomFR: 'Bâtons', nomEN: 'Wands',
-    gloseFR: 'elles apportent le feu, l’ouvrage et l’envie de commencer',
+    gloseFR: 'ils apportent le feu, l’ouvrage et l’envie de commencer',
     gloseEN: 'they bring fire, work and the urge to begin',
     reponseFR: 'La réponse arrive par les Bâtons, donc par l’ouvrage et par l’élan. Elle vous renvoie à ce que vos mains peuvent commencer sans attendre la permission de personne.',
     reponseEN: 'The answer comes by way of the Wands, which is to say by work and by drive. It sends you back to what your hands can start without waiting for anyone’s leave.',
@@ -59,7 +71,7 @@ const COULEURS: Record<Couleur, {
   },
   deniers: {
     nomFR: 'Deniers', nomEN: 'Coins',
-    gloseFR: 'elles apportent la terre, l’argent et ce que le corps peut porter',
+    gloseFR: 'ils apportent la terre, l’argent et ce que le corps peut porter',
     gloseEN: 'they bring earth, money and what the body is able to carry',
     reponseFR: 'La réponse arrive par les Deniers, donc par la terre et par l’argent. Elle vous renvoie au concret, aux ressources dont vous disposez vraiment et au temps qu’il faudra y mettre.',
     reponseEN: 'The answer comes by way of the Coins, which is to say by earth and by money. It sends you back to the concrete, to the means you actually hold and to the time it will take.',
@@ -95,7 +107,7 @@ export function interpretation(
       : `A single card has fallen, and it is ${nom(0)}. It holds the whole reading, with no neighbour to soften it or argue with it, and that is what makes the one-card draw so plain.`);
   } else if (tirage.id === 'trois') {
     paragraphes.push(fr
-      ? `La première place, celle du passé, porte ${nom(0)}. Le présent revient à ${nom(1)}, et c’est ${nom(2)} qui referme la ligne du côté de l’avenir. Votre regard va de gauche à droite comme va le temps, et chaque lame éclaire celle qui la suit.`
+      ? `La première place, celle du passé, porte ${nom(0)}. Le présent est tenu par ${nom(1)}, et c’est ${nom(2)} qui referme la ligne du côté de l’avenir. Votre regard va de gauche à droite comme va le temps, et chaque lame éclaire celle qui la suit.`
       : `The first place, the one that holds the past, carries ${nom(0)}. The present falls to ${nom(1)}, and ${nom(2)} closes the line on the side of what is coming. Your eye travels from left to right the way time does, and each card lights the one after it.`);
   } else {
     paragraphes.push(fr
@@ -126,15 +138,15 @@ export function interpretation(
       : `Only one major arcanum came out, ${seul}, and it sets the tone for all the rest. The minor cards will give you the detail, while this one names the subject.`;
   } else {
     matiere = fr
-      ? `${majeures.length} arcanes majeurs se sont invités sur le tapis, et cela pèse dans la balance. Les majeures nomment les grands passages d’une vie, ceux que vous traversez plus que vous ne les choisissez.`
-      : `${majeures.length} major arcana have invited themselves onto the cloth, and that carries weight. The majors name the great crossings of a life, the ones you go through rather than choose.`;
+      ? `${capitale(nombre(majeures.length, true))} arcanes majeurs se sont invités sur le tapis, et cela pèse dans la balance. Les majeures nomment les grands passages d’une vie, ceux que vous traversez plus que vous ne les choisissez.`
+      : `${capitale(nombre(majeures.length, false))} major arcana have invited themselves onto the cloth, and that carries weight. The majors name the great crossings of a life, the ones you go through rather than choose.`;
   }
 
   if (dominante && dominante[1] >= 2) {
     const c = COULEURS[dominante[0]];
     matiere += fr
-      ? ` Les ${c.nomFR} reviennent ${dominante[1]} fois, et ${c.gloseFR}.`
-      : ` The ${c.nomEN} come back ${dominante[1]} times, and ${c.gloseEN}.`;
+      ? ` Les ${c.nomFR} reviennent ${nombre(dominante[1], true)} fois, et ${c.gloseFR}.`
+      : ` The ${c.nomEN} come back ${nombre(dominante[1], false)} times, and ${c.gloseEN}.`;
   } else if (total - majeures.length >= 2) {
     matiere += fr
       ? ` Les couleurs se partagent le tapis sans qu’aucune ne l’emporte, ce qui arrive quand une question touche plusieurs terrains à la fois.`
@@ -158,16 +170,20 @@ export function interpretation(
   } else if (renversees.length === 1) {
     const r = renversees[0];
     paragraphes.push(fr
-      ? `${nom(r.i)} est la seule lame renversée du tirage, à la place que la tradition appelle ${titre(r.i)}. Une carte renversée garde son mouvement et le retourne vers vous, et c’est là, précisément là, que vous aurez à pousser un peu.`
+      ? `${nom(r.i)} est la seule lame renversée du tirage, à la place que la tradition appelle ${titre(r.i)}. Une carte renversée garde son mouvement et le retourne vers vous. C’est là, précisément là, que vous aurez à pousser un peu.`
       : `${nom(r.i)} is the only reversed card in the draw, in the place tradition calls ${titre(r.i)}. A reversed card keeps its movement and turns it back on you, and that is exactly where you will have to push a little.`);
   } else {
     const noms = renversees.map((r) => nom(r.i));
-    const liste = fr
-      ? noms.slice(0, -1).join(', ') + ' et ' + noms[noms.length - 1]
-      : noms.slice(0, -1).join(', ') + ' and ' + noms[noms.length - 1];
+    // Au-delà de trois noms, la liste devient un empilement de virgules :
+    // le compte suffit alors, et les cartes se lisent une à une sur le tapis.
+    const liste = noms.length > 3
+      ? ''
+      : (fr
+        ? `, soit ${noms.slice(0, -1).join(', ')} et ${noms[noms.length - 1]}`
+        : `, namely ${noms.slice(0, -1).join(', ')} and ${noms[noms.length - 1]}`);
     paragraphes.push(fr
-      ? `${renversees.length} lames sur ${total} sont sorties renversées, soit ${liste}. Une carte renversée garde son mouvement et le retourne vers vous, empêché ou rentré, et ces places-là sont celles où votre tirage résiste.`
-      : `${renversees.length} cards out of ${total} came out reversed, namely ${liste}. A reversed card keeps its movement and turns it back on you, held up or drawn inward, and those places are where your draw puts up a fight.`);
+      ? `${capitale(nombre(renversees.length, true))} lames sur ${nombre(total, true)} sont sorties renversées${liste}. Une carte renversée garde son mouvement et le retourne vers vous, empêché ou rentré, et ces places-là sont celles où votre tirage résiste.`
+      : `${capitale(nombre(renversees.length, false))} cards out of ${nombre(total, false)} came out reversed${liste}. A reversed card keeps its movement and turns it back on you, held up or drawn inward, and those places are where your draw puts up a fight.`);
   }
 
   // ── La marche vers la fin ─────────────────────────────────────────
@@ -177,12 +193,12 @@ export function interpretation(
       : `A single card is worth reading again a few hours later, once the day has passed over it. ${nom(0)} nearly always keeps a second thing to say, and it says it to whoever comes back to look.`);
   } else if (tirage.id === 'trois') {
     paragraphes.push(fr
-      ? `De ${nom(0)} à ${nom(2)}, la route se dessine assez clairement. La dernière lame donne la pente plutôt que la fin, et si vous ne changez rien à votre pas, c’est ${nom(2)} qui aura le dernier mot.`
-      : `From ${nom(0)} to ${nom(2)}, the road draws itself plainly enough. The last card gives the slope rather than the ending, and if you change nothing in your stride, ${nom(2)} will have the last word.`);
+      ? `La route entière tient entre votre première lame et la dernière. ${nom(2)} donne la pente plutôt que la fin, et si vous ne changez rien à votre pas, c’est elle qui aura le dernier mot.`
+      : `The whole road is held between your first card and your last. ${nom(2)} gives the slope rather than the ending, and if you change nothing in your stride, it will have the last word.`);
   } else {
     paragraphes.push(fr
-      ? `De ${nom(0)}, qui ouvre la croix, à ${nom(9)}, qui la referme, un chemin entier se laisse suivre. L’issue indique où mène la route pour peu que vous la teniez jusqu’au bout, et rien n’y est écrit d’avance.`
-      : `From ${nom(0)}, which opens the cross, to ${nom(9)}, which closes it, a whole road can be followed. The outcome shows where that road leads provided you hold to it, and nothing there is written in advance.`);
+      ? `La croix se referme sur ${nom(9)}, et c’est là que le chemin aboutit. L’issue indique où mène la route pour peu que vous la teniez jusqu’au bout, et rien n’y est écrit d’avance.`
+      : `The cross closes on ${nom(9)}, and that is where the road arrives. The outcome shows where it leads provided you hold to it, and nothing there is written in advance.`);
   }
 
   // ── La question, si elle a été posée ──────────────────────────────
@@ -190,8 +206,8 @@ export function interpretation(
   if (demande) {
     const cle = lames[dernier];
     let reponse = fr
-      ? `Vous aviez demandé : « ${demande} » Le tirage vous répond par ${nom(dernier)}, tombée à la place de ${titre(dernier)}.`
-      : `You had asked: “${demande}” The draw answers you with ${nom(dernier)}, fallen in the place of ${titre(dernier)}.`;
+      ? `Vous aviez demandé : « ${demande} » Le tirage vous répond par ${nom(dernier)}, tombée à la place de ${minuscule(titre(dernier))}.`
+      : `You had asked: “${demande}” The draw answers you with ${nom(dernier)}, fallen in the place of ${minuscule(titre(dernier))}.`;
 
     if (cle.lame.majeure) {
       reponse += fr
