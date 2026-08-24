@@ -765,20 +765,21 @@ export function creerTable(): TableDes {
           // le centre de la table.
           const tex = chargeur.load(CONVIVES[(i - 1) % CONVIVES.length]);
           tex.colorSpace = THREE.SRGBColorSpace;
-          const haut = 3.2;
+          const haut = 3.9;
           // `alphaTest` plutôt que la transparence mélangée : le convive
           // devient un objet plein qui se cache derrière la table au
           // lieu d'un filigrane posé par-dessus (Alex, 2026-08-23).
           const plaque = new THREE.Mesh(
             new THREE.PlaneGeometry(haut * 0.62, haut),
             new THREE.MeshBasicMaterial({
-              map: tex, transparent: false, alphaTest: 0.5, depthWrite: true, depthTest: true,
+              map: tex, transparent: true, alphaTest: 0.02,
+              depthWrite: true, depthTest: true,
             }),
           );
-          // Le buste se pose DERRIÈRE le bord de la table, assez bas
-          // pour que la découpe du bas disparaisse derrière les
-          // planches : de face, il a l'air assis (Alex, 2026-08-23).
-          plaque.position.set(p.x * 1.24, haut / 2 - 1.15, p.z * 1.24);
+          // Le buste se pose AU-DELÀ du bord de la table (rayon 6,2),
+          // et son bas plonge sous le plateau : les planches cachent la
+          // découpe et le convive a l'air assis (Alex, 2026-08-23).
+          plaque.position.set(p.x * 1.95, haut / 2 - 1.7, p.z * 1.95);
           plaque.lookAt(0, haut / 2 - 0.35, 0);
           groupe.add(plaque);
           convives.push(plaque);
