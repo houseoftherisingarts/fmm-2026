@@ -465,11 +465,7 @@ def _mesure_de_cuisine(grammes, nom):
             return 'une poignée'
         if grammes < 22:
             return 'une bonne poignée'
-    poids = None
-    for k, v in GRAMMES_PAR_CUILLERE.items():
-        if cle == k or cle.startswith(k) or k in cle:
-            poids = v
-            break
+    poids = _poids_cuillere(cle)
     if poids is None:
         return None
     # Le safran ne se mesure jamais à la cuillère : il se compte en
