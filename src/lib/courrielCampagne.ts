@@ -340,7 +340,7 @@ export function rendreCampagne(
                 <!-- Le titre -->
                 <tr>
                   <td class="fmm-marge" style="${MARGE}padding-top:38px;padding-bottom:0;">
-                    <p style="margin:0 0 12px 0;font-family:${SANS};font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:${C.or};">${e(theme)}</p>
+                    <p class="fmm-surtitre" style="margin:0 0 12px 0;font-family:${SANS};font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:${C.or};">${e(theme)}</p>
                     <h1 class="fmm-titre" style="margin:0;font-family:${SERIF};font-size:32px;line-height:41px;font-weight:400;color:${C.texte};">${e(titre)}</h1>
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 30px 0;">
                       <tr><td width="56" height="2" style="width:56px;height:2px;line-height:2px;font-size:2px;background-color:${C.or};">&nbsp;</td></tr>
