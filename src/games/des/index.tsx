@@ -541,14 +541,16 @@ const DesPage: React.FC = () => {
     <>
       <SEO title={`${t.titre} | FMM 2026`} description={t.intro} />
 
-      {/* Une seule fenêtre : la table occupe l'écran, tout le reste se
-          pose dessus (Alex, 2026-08-23 : « le jeu doit être
-          self-contained dans une seule page, une seule fenêtre »). */}
-      <section className="relative w-full" style={{ background: '#0a0506' }}>
-        <div
-          className="relative w-full overflow-hidden"
-          style={{ height: 'calc(100vh - 5rem)', minHeight: '32rem', marginTop: '5rem' }}
-        >
+      {/* Une seule fenêtre : le hero, puis la table qui occupe l'écran
+          et tout le reste posé dessus (Alex, 2026-08-23 : « le jeu doit
+          être self-contained dans une seule page, une seule fenêtre »). */}
+      <CadreJeu
+        eyebrow={t.eyebrow}
+        titre={t.titre}
+        intro={t.intro}
+        orbImage="/jeux/tuile-des.webp"
+        lang={lang}
+      >
           <div ref={sceneRef} className="absolute inset-0" />
 
           {/* Le verdict : au centre de la table, en grand, le temps que
