@@ -398,9 +398,11 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </>
             ) : (
               <>
-                <Link to={addLocale(`/messages/${uid}`, lang)} className={cta}>
-                  <MessageCircle size={14} /> {t.ecrire}
-                </Link>
+                {!moi && (
+                  <Link to={addLocale(`/messages/${uid}`, lang)} className={cta}>
+                    <MessageCircle size={14} /> {t.ecrire}
+                  </Link>
+                )}
                 {visiteur && !moi && (
                   <button
                     type="button"
