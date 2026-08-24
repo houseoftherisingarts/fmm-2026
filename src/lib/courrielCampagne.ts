@@ -292,6 +292,13 @@ export function rendreCampagne(
       .fmm-marge { padding-left: 22px !important; padding-right: 22px !important; }
       .fmm-titre { font-size: 26px !important; line-height: 34px !important; }
       .fmm-corps p { font-size: 16px !important; line-height: 27px !important; }
+      /* Sur un téléphone, l'attribut width d'une image fixe la largeur
+         MINIMALE de sa cellule, et le tableau refuse alors de descendre
+         sous 600 px : la lettre déborde de l'écran vers la droite.
+         Cette règle relâche la contrainte. Outlook ignore le bloc, et
+         garde donc ses largeurs en pixels, qui sont ce qu'il lui faut. */
+      img { max-width: 100% !important; height: auto !important; }
+      table { max-width: 100% !important; }
     }
     a { color: ${C.orPale}; }
   </style>
