@@ -389,6 +389,9 @@ GRAMMES_PAR_CUILLERE = {
     # Le zeste se compte à la cuillère, jamais à la balance : deux
     # grammes de zeste d'orange ne se pèsent nulle part.
     'zeste': 2.0,
+    # La moutarde se prend à la cuillère tant qu'elle reste sous la
+    # cuillère à soupe : quatre grammes de dijon ne se pèsent pas.
+    'dijon': 5.5, 'moutarde': 5.5,
     # La fiche du chef écrit « parpika fumé ». On ne corrige pas sa
     # feuille, on apprend juste à la lire.
     'parpika': 2.3,
