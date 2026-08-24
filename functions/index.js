@@ -573,3 +573,402 @@ exports.messagerieDeMasse = onCall(
     return { fils: faits, ignores, envoiId: trace.id };
   },
 );
+
+// ─── Les campagnes de courriels ──────────────────────────────────────
+// Alex, 2026-08-24 : depuis l'espace admin, l'équipe écrit aux gens des
+// listes de clients. Une lettre, une liste de destinataires, et le
+// compte exact de ce qui est parti.
+//
+// L'IDENTITÉ DE L'EXPÉDITEUR, la règle qui prime sur tout le reste. La
+// lettre part de `admin@festivalmedievaldemontpellier.org` et s'affiche
+// « Festival Médiéval de Montpellier » dans la boîte du destinataire.
+// Le nom d'Alex ne paraît qu'à la signature, au bas du texte, comme
+// directeur des communications. Jamais l'inverse. La constante FROM en
+// haut de ce fichier est la seule adresse d'expédition du festival, et
+// aucune autre ne se fabrique ici.
+//
+// CHACUN REÇOIT SA LETTRE. Un `sendMail` par destinataire, avec une
+// seule adresse dans le champ `to`. Ni copie conforme, ni copie
+// invisible, ni liste entassée dans un même champ : personne ne doit
+// découvrir l'adresse de son voisin, et un courriel adressé à trois
+// cents personnes à la fois tombe droit dans le pourriel.
+//
+// LE RYTHME. Le transport tourne en mode « pool » avec la limite de
+// débit de nodemailer, quatre messages par seconde au plus, sur deux
+// connexions. Zoho coupe une session qui pousse trop fort, et le
+// festival y perdrait sa boîte pour la journée. Le plafond réel reste
+// celui du forfait Zoho : un refus de sa part se retrouve compté dans
+// les échecs de la campagne, avec l'adresse en cause.
+//
+// ponytail: une campagne tient dans un seul appel, et l'appel meurt à
+// 540 secondes. À quatre messages par seconde, le plafond utile tourne
+// autour de mille cinq cents adresses, d'où PLAFOND_CAMPAGNE. Le jour
+// où une liste dépasse ce chiffre, la suite est une file de tâches
+// (Cloud Tasks) plutôt qu'une boucle plus longue.
+
+const CAMPAGNE_CLE = defineSecret('CAMPAGNE_CLE');
+
+const CAMPAGNES = 'campagnes';
+const DESABONNEMENTS = 'desabonnements';
+
+const LOT_CAMPAGNE = 20;        // le pas d'avancement écrit dans la trace
+const PLAFOND_CAMPAGNE = 1500;  // au-delà, l'envoi se refuse plutôt que de mourir à mi-course
+const SUJET_MAX = 200;
+const CORPS_MAX = 200000;       // une lettre rendue pèse environ 8 ko
+
+// Les deux jetons que le navigateur laisse dans le gabarit. Les mêmes
+// chaînes vivent dans src/lib/courrielCampagne.ts. Si l'une des deux
+// change d'un côté, le lien de désabonnement part en toutes lettres
+// dans la boîte du destinataire.
+const JETON_NOM = '{{nom}}';
+const JETON_DESABONNEMENT = '{{desabonnement}}';
+
+// L'adresse publique de la fonction de désabonnement. Elle se pose en
+// clair, comme l'URL du webhook Square plus haut : l'hôte vu depuis
+// Cloud Run n'est pas celui que le destinataire a sous les yeux.
+const URL_DESABONNEMENT =
+  process.env.DESABONNEMENT_URL ||
+  'https://us-central1-festivalmedieval.cloudfunctions.net/desabonnement';
+
+const COURRIEL_VALIDE = /^[^\s@,;<>]+@[^\s@,;<>]+\.[a-zA-Z]{2,}$/;
+const normaliserCourriel = (c) => String(c || '').trim().toLowerCase();
+
+function echapperHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** Le jeton qui signe un lien de désabonnement. Sans lui, l'adresse
+ *  suffirait à retirer n'importe qui de la liste, et l'endroit
+ *  deviendrait un robinet ouvert sur notre base de données. */
+function jetonDesabonnement(courriel, cle) {
+  return crypto
+    .createHmac('sha256', cle)
+    .update(normaliserCourriel(courriel))
+    .digest('hex')
+    .slice(0, 32);
+}
+
+function lienDesabonnement(courriel, cle) {
+  const adresse = encodeURIComponent(normaliserCourriel(courriel));
+  return `${URL_DESABONNEMENT}?e=${adresse}&j=${jetonDesabonnement(courriel, cle)}`;
+}
+
+/** Pose le prénom et le lien dans un gabarit. Le nom passe par
+ *  l'échappement quand il entre dans du HTML : une apostrophe ou un
+ *  chevron dans un nom ne doit pas pouvoir casser la lettre. */
+function personnaliser(gabarit, nom, lien, pourHtml) {
+  const propre = String(nom || '').trim().slice(0, 60);
+  const morceau = propre ? ` ${pourHtml ? echapperHtml(propre) : propre}` : '';
+  return gabarit.split(JETON_NOM).join(morceau).split(JETON_DESABONNEMENT).join(lien);
+}
+
+/** Les adresses qui ont demandé à ne plus rien recevoir. Elles sont
+ *  relues à chaque campagne, jamais mises en cache : une personne qui
+ *  se retire pendant qu'un envoi tourne doit être épargnée par le
+ *  suivant, sans redéploiement. */
+async function lireDesabonnes() {
+  const snap = await db.collection(DESABONNEMENTS).get();
+  return new Set(snap.docs.map((d) => normaliserCourriel(d.id)));
+}
+
+exports.envoyerCampagne = onCall(
+  {
+    region: 'us-central1',
+    secrets: [ZOHO_APP_PASSWORD, CAMPAGNE_CLE],
+    memory: '512MiB',
+    timeoutSeconds: 540,
+  },
+  async (requete) => {
+    const auth = requete.auth;
+    const courrielAppelant = auth && auth.token && auth.token.email
+      ? normaliserCourriel(auth.token.email)
+      : null;
+    if (!courrielAppelant || !COURRIELS_ADMIN.includes(courrielAppelant)) {
+      logger.warn('[campagne] appel refusé', { courriel: courrielAppelant });
+      throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
+    }
+
+    const d = requete.data || {};
+    const sujet = String(d.sujet || '').trim().slice(0, SUJET_MAX);
+    const html = String(d.html || '');
+    const texte = String(d.texte || '');
+
+    if (!sujet) throw new HttpsError('invalid-argument', 'La lettre n’a pas d’objet.');
+    if (!html || !texte) throw new HttpsError('invalid-argument', 'La lettre est vide.');
+    if (html.length > CORPS_MAX || texte.length > CORPS_MAX) {
+      throw new HttpsError('invalid-argument', 'La lettre dépasse la taille permise.');
+    }
+    // Le garde-fou qui compte le plus : une campagne sans lien de
+    // désabonnement est illégale au Canada (LCAP) et fait basculer le
+    // domaine du festival en pourriel chez Gmail. Rien ne part sans lui,
+    // dans les deux versions de la lettre.
+    if (!html.includes(JETON_DESABONNEMENT) || !texte.includes(JETON_DESABONNEMENT)) {
+      throw new HttpsError(
+        'invalid-argument',
+        'La lettre n’a pas de lien de désabonnement.',
+      );
+    }
+
+    const cle = CAMPAGNE_CLE.value();
+
+    const transport = nodemailer.createTransport({
+      host: ZOHO_SMTP_HOST,
+      port: 465,
+      secure: true,
+      auth: { user: ZOHO_EMAIL, pass: ZOHO_APP_PASSWORD.value() },
+      // Le rythme : deux connexions, cinquante messages par connexion
+      // avant renouvellement, quatre messages par seconde au plus.
+      pool: true,
+      maxConnections: 2,
+      maxMessages: 50,
+      rateDelta: 1000,
+      rateLimit: 4,
+    });
+
+    // ── L'exemplaire d'essai ──
+    // Il part à l'adresse de la personne qui appelle, jamais à une
+    // adresse fournie par le navigateur : un essai ne doit pas pouvoir
+    // servir à écrire à quelqu'un d'autre sans passer par la campagne
+    // et sa trace.
+    if (d.essai) {
+      const lien = lienDesabonnement(courrielAppelant, cle);
+      try {
+        await transport.sendMail({
+          from: FROM,
+          to: courrielAppelant,
+          subject: `[Essai] ${sujet}`,
+          text: personnaliser(texte, auth.token.name || '', lien, false),
+          html: personnaliser(html, auth.token.name || '', lien, true),
+        });
+      } finally {
+        transport.close();
+      }
+      logger.info('[campagne] essai envoyé', { courriel: courrielAppelant });
+      return { essai: true, courriel: courrielAppelant };
+    }
+
+    // ── Les destinataires ──
+    // La liste vient du navigateur, parce que le filtre qui la produit
+    // (l'année, la catégorie, « rien acheté en 2026 ») se calcule à
+    // l'écran, sous les yeux de la personne qui envoie. Le garde-fou
+    // n'est donc pas la provenance de la liste, c'est l'allocation :
+    // seule l'équipe appelle, chaque campagne laisse sa trace signée du
+    // courriel de l'appelant, et le plafond par appel est ferme.
+    const bruts = Array.isArray(d.destinataires) ? d.destinataires : [];
+    if (!bruts.length) throw new HttpsError('invalid-argument', 'Aucun destinataire n’est retenu.');
+    if (bruts.length > PLAFOND_CAMPAGNE) {
+      throw new HttpsError(
+        'invalid-argument',
+        `Une campagne ne peut pas dépasser ${PLAFOND_CAMPAGNE} adresses d’un coup.`,
+      );
+    }
+
+    // Dédoublonnage par adresse : une même personne inscrite deux
+    // années de suite ne reçoit pas la lettre en double.
+    const parAdresse = new Map();
+    let invalides = 0;
+    for (const b of bruts) {
+      const adresse = normaliserCourriel(b && b.courriel);
+      if (!adresse || !COURRIEL_VALIDE.test(adresse)) { invalides += 1; continue; }
+      if (!parAdresse.has(adresse)) {
+        parAdresse.set(adresse, String((b && b.nom) || '').trim().slice(0, 60));
+      }
+    }
+
+    const desabonnes = await lireDesabonnes();
+    const vises = [];
+    let retires = 0;
+    for (const [adresse, nom] of parAdresse) {
+      if (desabonnes.has(adresse)) { retires += 1; continue; }
+      vises.push({ courriel: adresse, nom });
+    }
+
+    if (!vises.length) {
+      transport.close();
+      throw new HttpsError('not-found', 'Toutes les adresses retenues sont désabonnées ou invalides.');
+    }
+
+    // La trace s'ouvre AVANT le premier envoi. Si la fonction meurt en
+    // route, Alex voit quand même qu'une campagne a commencé, ce qui
+    // est parti et où elle s'est arrêtée. C'est aussi ce document que
+    // la page regarde pour montrer l'avancement.
+    const trace = db.collection(CAMPAGNES).doc();
+    await trace.set({
+      parUid: auth.uid,
+      parNom: String((auth.token && (auth.token.name || auth.token.email)) || 'Équipe'),
+      parCourriel: courrielAppelant,
+      modele: String(d.modele || 'inconnu').slice(0, 60),
+      modeleNom: String(d.modeleNom || '').slice(0, 120),
+      langue: d.langue === 'EN' ? 'EN' : 'FR',
+      cible: String(d.cible || 'Sans portée nommée').slice(0, 200),
+      sujet,
+      destinataires: vises.length,
+      envoyes: 0,
+      echecs: 0,
+      desabonnesIgnores: retires,
+      adressesInvalides: invalides,
+      statut: 'en cours',
+      envoyeLe: FieldValue.serverTimestamp(),
+    });
+
+    let envoyes = 0;
+    let echecs = 0;
+    const adressesEchouees = [];
+
+    try {
+      for (let i = 0; i < vises.length; i += LOT_CAMPAGNE) {
+        const lot = vises.slice(i, i + LOT_CAMPAGNE);
+        const resultats = await Promise.allSettled(
+          lot.map((personne) => {
+            const lien = lienDesabonnement(personne.courriel, cle);
+            return transport.sendMail({
+              from: FROM,
+              // Une seule adresse, celle de la personne. Jamais de cc,
+              // jamais de bcc, jamais de liste.
+              to: personne.courriel,
+              subject: sujet,
+              text: personnaliser(texte, personne.nom, lien, false),
+              html: personnaliser(html, personne.nom, lien, true),
+              headers: {
+                // Le désabonnement d'un seul geste, depuis le bandeau
+                // du client de courriel. Gmail l'exige des expéditeurs
+                // en nombre depuis 2024, et son absence coûte cher en
+                // délivrabilité.
+                'List-Unsubscribe': `<${lien}>`,
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+              },
+            });
+          }),
+        );
+
+        for (let k = 0; k < resultats.length; k += 1) {
+          if (resultats[k].status === 'fulfilled') {
+            envoyes += 1;
+          } else {
+            echecs += 1;
+            if (adressesEchouees.length < 25) {
+              adressesEchouees.push({
+                courriel: lot[k].courriel,
+                raison: String(
+                  (resultats[k].reason && resultats[k].reason.message) || resultats[k].reason,
+                ).slice(0, 200),
+              });
+            }
+          }
+        }
+
+        // L'avancement, lot par lot : la page le lit en direct.
+        await trace.update({ envoyes, echecs });
+      }
+    } catch (err) {
+      logger.error('[campagne] envoi interrompu', { campagne: trace.id, envoyes, echecs, err });
+      await trace.update({
+        statut: 'échoué',
+        envoyes,
+        echecs,
+        adressesEchouees,
+        erreur: String((err && err.message) || err),
+      });
+      throw new HttpsError('internal', `L’envoi s’est arrêté après ${envoyes} courriels.`);
+    } finally {
+      transport.close();
+    }
+
+    await trace.update({ statut: 'terminé', envoyes, echecs, adressesEchouees });
+    logger.info('[campagne] terminée', {
+      campagne: trace.id, modele: d.modele, envoyes, echecs, retires,
+    });
+    return {
+      campagneId: trace.id,
+      envoyes,
+      echecs,
+      desabonnesIgnores: retires,
+      adressesInvalides: invalides,
+    };
+  },
+);
+
+// ─── Le désabonnement ────────────────────────────────────────────────
+// Le lien au bas de chaque lettre aboutit ici. Il doit fonctionner sans
+// compte, sans mot de passe et sans que la personne ait à chercher quoi
+// que ce soit : elle clique, son adresse sort de la liste, et une page
+// le lui confirme dans sa langue.
+//
+// Deux façons d'arriver, et les deux mènent au même geste. Le clic
+// ordinaire est un GET et rend la page de confirmation. Le bandeau
+// « Se désabonner » de Gmail et d'Apple Mail envoie un POST silencieux
+// (RFC 8058), auquel il suffit de répondre 200.
+//
+// La signature protège l'endroit : sans le jeton, connaître l'adresse
+// de quelqu'un suffirait à le retirer de nos listes, et la fonction
+// deviendrait un robinet ouvert sur la base de données.
+
+const PAGE_DESABO = (fr, adresse) => `<!DOCTYPE html>
+<html lang="${fr ? 'fr' : 'en'}">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${fr ? 'Votre adresse est retirée' : 'Your address has been removed'}</title>
+</head>
+<body style="margin:0;padding:0;background:#0B0508;font-family:Georgia,'Times New Roman',serif;">
+  <div style="max-width:520px;margin:0 auto;padding:72px 24px;text-align:center;">
+    <p style="margin:0;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#C9A85A;">Festival Médiéval de Montpellier</p>
+    <h1 style="margin:26px 0 0 0;font-size:27px;line-height:38px;font-weight:400;color:#EDE6D9;">
+      ${fr ? 'Votre adresse est retirée de nos listes.' : 'Your address has been removed from our lists.'}
+    </h1>
+    <p style="margin:20px 0 0 0;font-size:16px;line-height:27px;color:#BDB3A2;">
+      ${fr
+        ? `Nous n’écrirons plus à ${echapperHtml(adresse)}. Les confirmations liées à un achat continueront de vous parvenir, parce qu’elles vous appartiennent.`
+        : `We will no longer write to ${echapperHtml(adresse)}. Confirmations tied to a purchase will still reach you, because they belong to you.`}
+    </p>
+    <p style="margin:34px 0 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;">
+      <a href="https://festivalmedievaldemontpellier.org" style="color:#C9A85A;text-decoration:none;">${fr ? 'Retour au village' : 'Back to the village'}</a>
+    </p>
+  </div>
+</body>
+</html>`;
+
+exports.desabonnement = onRequest(
+  { region: 'us-central1', secrets: [CAMPAGNE_CLE], memory: '256MiB' },
+  async (req, res) => {
+    const fr = String(req.query.l || 'fr').toLowerCase() !== 'en';
+    const adresse = normaliserCourriel(req.query.e);
+    const jeton = String(req.query.j || '');
+
+    if (!adresse || !COURRIEL_VALIDE.test(adresse) || !jeton) {
+      return res.status(400).send(fr ? 'Lien incomplet.' : 'Incomplete link.');
+    }
+
+    const attendu = jetonDesabonnement(adresse, CAMPAGNE_CLE.value());
+    const a = Buffer.from(jeton);
+    const b = Buffer.from(attendu);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+      logger.warn('[désabonnement] jeton invalide', { adresse });
+      return res.status(403).send(fr ? 'Lien invalide.' : 'Invalid link.');
+    }
+
+    // La clé du document EST l'adresse : deux clics sur le même lien
+    // écrivent le même document, et la liste ne peut pas contenir deux
+    // fois la même personne.
+    await db.collection(DESABONNEMENTS).doc(adresse).set(
+      {
+        courriel: adresse,
+        source: 'lien-courriel',
+        desabonneLe: FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+    logger.info('[désabonnement] adresse retirée', { adresse });
+
+    // Le POST vient du bandeau du client de courriel : il n'affiche
+    // aucune page, il attend seulement un 200.
+    if (req.method === 'POST') return res.status(200).send('ok');
+
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(PAGE_DESABO(fr, adresse));
+  },
+);

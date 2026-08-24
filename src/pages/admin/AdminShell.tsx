@@ -5,6 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
+  Receipt,
 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
@@ -34,6 +35,7 @@ export type AdminSectionId =
   | 'finances'
   | 'carnet'
   | 'comptes'
+  | 'clients'
   | 'invites'
   | 'messages'
   | 'messagerie'
@@ -98,6 +100,9 @@ const NAV: NavItem[] = [
   { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles,        group: 'Contenu' },
 
   { id: 'comptes',    label: 'Comptes',         icon: Users,           group: 'Régie' },
+  // Tout ce que le festival a vendu depuis 2023, une personne par
+  // ligne, versé par tools/importer-clients.mjs (Alex, 2026-08-24).
+  { id: 'clients',    label: 'Clients',         icon: Receipt,         group: 'Régie' },
   { id: 'carnet',     label: 'Carnet de contacts', icon: BookUser,     group: 'Régie' },
   { id: 'analytics',  label: 'Analytics',       icon: BarChart3,       group: 'Régie' },
   { id: 'parametres', label: 'Paramètres',      icon: Settings,        group: 'Régie' },

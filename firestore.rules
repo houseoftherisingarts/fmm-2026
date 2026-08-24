@@ -602,6 +602,15 @@ service cloud.firestore {
     // sensible sur des personnes réelles, jamais publique. Collection
     // distincte de `contacts` (formulaire public "Nous contacter" ci-dessus).
     match /carnetContacts/{docId}     { allow read, write: if isAdmin(); }
+
+    // Registre des clients (section admin Clients) : tout ce que le
+    // festival a vendu depuis 2023, versé par tools/importer-clients.mjs
+    // depuis les exports Zeffy. Noms, courriels et téléphones de vraies
+    // personnes qui n'ont jamais consenti à être vues d'ailleurs que par
+    // l'équipe. L'équipe seulement, en lecture comme en écriture, sans
+    // condition, sans exception, et aucun chemin public nulle part.
+    match /clients/{docId}     { allow read, write: if isAdmin(); }
+
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
     // Team availability polls (Disponibilités : Doodle interne).
     match /teamPolls/{docId}   { allow read, write: if isAdmin(); }
