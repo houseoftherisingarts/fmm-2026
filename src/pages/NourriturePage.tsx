@@ -88,6 +88,10 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
   const [places, setPlaces] = useState(1);
   const [enRoute, setEnRoute] = useState(false);
   const [echec, setEchec] = useState(false);
+  // Les places encore libres, comptées par le webhook Square. `null` tant
+  // que rien de fiable n'est lu : la ligne du décompte reste alors muette.
+  const [restant, setRestant] = useState<number | null>(null);
+  useEffect(() => subscribeBanquetRestant(setRestant), []);
   // Retour de Square après paiement : ?banquet=merci
   const merci = typeof window !== 'undefined'
     && new URLSearchParams(window.location.search).get('banquet') === 'merci';
