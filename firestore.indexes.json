@@ -7,6 +7,14 @@
         { "fieldPath": "joueurs", "arrayConfig": "CONTAINS" },
         { "fieldPath": "updatedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "desParties",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "joueurs", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
