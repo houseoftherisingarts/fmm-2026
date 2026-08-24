@@ -286,6 +286,9 @@ const VERS_LE_CIEL: Record<Face, [number, number, number]> = {
  *  puis deux plus petites, chacune écrasée par la précédente. */
 const CHUTE_MS = 1250;
 function hauteurRebond(k: number, h0: number): number {
+  // Avant son tour, le dé attend en haut, dans le gobelet : sans cela il
+  // se posait sur la planche puis sautait d'un coup.
+  if (k <= 0) return h0;
   const arches: Array<[number, number, number]> = [
     [0, 0.52, 1],        // début, fin, hauteur relative
     [0.52, 0.80, 0.34],

@@ -307,7 +307,7 @@ function nomBloque(mots: MotSalon[], uid: string): string | undefined {
 const FR = {
   eyebrow: 'La place commune',
   titre: 'Le salon de l’Ordre',
-  intro: 'Tout le monde s’y parle. Ce qui s’écrit ici se lit par tous les membres du registre, alors gardez le ton d’une table où il y a des enfants.',
+  intro: 'C’est ici que les gens du festival se parlent. Ce qui s’écrit dans le salon se lit par tous les membres du registre, alors gardez le ton d’une table où il y a des enfants.',
   vide: 'Personne n’a encore parlé. Vous pouvez commencer.',
   videInvite: 'Le salon s’ouvre aux membres connectés.',
   champ: 'Dites quelque chose à la salle',
@@ -327,7 +327,7 @@ const FR = {
 const EN: typeof FR = {
   eyebrow: 'The common floor',
   titre: 'The Order’s hall',
-  intro: 'Everyone talks here. What you write is read by every member on the roll, so keep the tone of a table with children at it.',
+  intro: 'This is where the festival’s people talk to each other. What you write in the hall is read by every member on the roll, so keep the tone of a table with children at it.',
   vide: 'Nobody has spoken yet. You can start.',
   videInvite: 'The hall opens to signed-in members.',
   champ: 'Say something to the room',
