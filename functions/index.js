@@ -333,6 +333,18 @@ exports.banquetLien = onRequest(
       const retour = String(
         (req.body && req.body.retour) || req.query.retour || 'https://festivalmedieval.web.app/nourriture',
       );
+      // Le banquet passe désormais par un compte : quatre places
+      // avaient été vendues sans qu'une seule fiche apparaisse au
+      // registre (Alex, 2026-08-24). Le navigateur envoie l'identifiant
+      // de la personne connectée, et il voyage jusqu'au webhook de
+      // Square pour que l'achat se raccroche à son compte.
+      const uid = String((req.body && req.body.uid) || '').slice(0, 128);
+      const courrielAcheteur = String((req.body && req.body.courriel) || '').slice(0, 160);
+      const nomAcheteur = String((req.body && req.body.nom) || '').slice(0, 160);
+      if (!uid) {
+        res.status(401).json({ erreur: 'compte requis' });
+        return;
+      }
       // On n'accepte de renvoyer l'acheteur que chez nous.
       // Nos domaines, www compris : sans le www, l'acheteur qui vient de
       // payer était renvoyé ailleurs que chez lui.
@@ -350,7 +362,9 @@ exports.banquetLien = onRequest(
         },
         body: JSON.stringify({
           idempotency_key: crypto.randomUUID(),
-          description: `Banquet de l'Équinoxe · ${places} place${places > 1 ? 's' : ''} · FMM 2026`,
+          description: `Banquet de l'Équinoxe · ${places} place${places > 1 ? 's' : ''} · FMM 2026`
+            + ` · compte ${uid}${courrielAcheteur ? ` · ${courrielAcheteur}` : ''}`
+            + `${nomAcheteur ? ` · ${nomAcheteur}` : ''}`,
           order: {
             location_id: LOCATION_FMM,
             line_items: [

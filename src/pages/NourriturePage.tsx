@@ -3,6 +3,7 @@ import { ArrowUpRight, BookOpen, ChevronDown, Clock, Lock, Users, Wine } from 'l
 import { AnimatePresence, motion } from 'framer-motion';
 import { useGagnerBadge } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
@@ -144,6 +145,9 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
 };
 
 const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+  // Le banquet passe par un compte : Alex a vu quatre places vendues
+  // sans une seule fiche dans le registre (2026-08-24).
+  const { user, openSignIn } = useAuth();
   const [places, setPlaces] = useState(1);
   const [enRoute, setEnRoute] = useState(false);
   const [echec, setEchec] = useState(false);
@@ -297,13 +301,23 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   type="button"
                   disabled={enRoute}
                   onClick={async () => {
+                    // Sans compte, la table du banquet reste fermée :
+                    // c'est par le compte que la place, le menu et les
+                    // nouvelles rejoignent la personne.
+                    if (!user) { openSignIn(); return; }
                     setEnRoute(true);
                     setEchec(false);
                     try {
                       const r = await fetch(LIEN_BANQUET, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ places, retour: window.location.origin + window.location.pathname }),
+                        body: JSON.stringify({
+                          places,
+                          uid: user.uid,
+                          courriel: user.email || '',
+                          nom: user.displayName || '',
+                          retour: window.location.origin + window.location.pathname,
+                        }),
                       });
                       const d = await r.json();
                       if (!d.url) throw new Error('sans url');
@@ -317,7 +331,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                   }}
                   className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-60"
                 >
-                  {enRoute ? t.enRoute : t.reserve}
+                  {enRoute ? t.enRoute : user ? t.reserve : t.reserveCompte}
                   <ArrowUpRight size={14} />
                 </button>
                 {echec && (
@@ -573,6 +587,7 @@ const FR = {
   banquetBody: 'Historiquement réservé aux chefs de clans, ce banquet est maintenant ouvert à tous les voyageurs, guerriers, marchands et skjaldmös qui veulent profiter d’un repas de fin de festival bien mérité.',
   banquetNote: 'Pourboire non inclus · Menu sujet à changement sans préavis selon la disponibilité locale des produits.',
   reserve: 'Réserver',
+  reserveCompte: 'Ouvrir un compte et réserver',
   placesSing: 'une place',
   placesPlur: (n: number) => `${n} places`,
   moinsUne: 'Une place de moins',
@@ -635,6 +650,7 @@ const EN: typeof FR = {
   banquetNote: 'Tip not included · Menu subject to change without notice based on local availability.',
   reserve: 'Reserve',
   placesSing: 'one seat',
+  reserveCompte: 'Open an account and reserve',
   placesPlur: (n: number) => `${n} seats`,
   moinsUne: 'One seat fewer',
   plusUne: 'One seat more',
