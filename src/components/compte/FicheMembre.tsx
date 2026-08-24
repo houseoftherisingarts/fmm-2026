@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
   HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
-  Megaphone, MessageCircle, MapPin, Dices, Check,
+  Megaphone, MessageCircle, MapPin, Dices, Check, Camera,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
