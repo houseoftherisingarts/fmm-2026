@@ -3,6 +3,7 @@ import { Users, Mail, Phone, Languages, Download, HandHeart, ShoppingBag } from 
 import { Card, Badge, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
 import { listUsers, type AppUser } from '../../../firebase/users';
 import { mockUsers } from '../../../firebase/mockData';
+import FonctionsMembres from './FonctionsMembres';
 
 interface Props { devBypass: boolean }
 
