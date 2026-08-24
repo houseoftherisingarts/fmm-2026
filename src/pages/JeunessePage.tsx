@@ -129,7 +129,7 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
 const FR = {
   home: 'Accueil',
   eyebrow: 'Présenté par Les Camps Légendaires',
-  heroAlt: 'Des enfants du festival assis en cercle dans la forêt avec leur animateur',
+  heroAlt: 'Une file d’enfants du festival, épée d’entraînement en main, attend son tour devant leur monitrice de camp',
   title: 'Village Jeunesse & Jeux',
   intro: 'Le FMM tient à offrir un espace aussi adapté que possible pour les cœurs d’enfants qui sont encore dans des corps d’enfants. Cette année (en plus d’avoir adapté les prix aux familles), nous avons agrandi le site, ajouté du confort et bonifié les ateliers et activités pour les jeunes.',
   campsEyebrow: 'Présentateur officiel de la section jeunesse',
