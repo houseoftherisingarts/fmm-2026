@@ -445,9 +445,12 @@ const App: React.FC = () => (
                 <Route path="/jeunesse"    element={<Navigate to="/activites" replace />} />
                 <Route path="/en/youth"    element={<Navigate to="/en/activities" replace />} />
                 {/* La chaîne de requête doit survivre : c'est elle qui
-                    porte le ?banquet=merci du retour de Square. */}
+                    porte le ?banquet=merci du retour de Square et le
+                    ?banquet=1 des boutons du banquet. La version anglaise
+                    la perdait en chemin, donc un lecteur anglophone
+                    arrivait sur un chapitre replié (Alex, 2026-08-23). */}
                 <Route path="/nourriture"  element={<Navigate to={{ pathname: '/marche', search: window.location.search }} replace />} />
-                <Route path="/en/food"     element={<Navigate to="/en/market" replace />} />
+                <Route path="/en/food"     element={<Navigate to={{ pathname: '/en/market', search: window.location.search }} replace />} />
                 <Route path="/groupes"     element={<Navigate to="/mariages" replace />} />
                 <Route path="/groupe"      element={<Navigate to="/mariages" replace />} />
                 <Route path="/en/groups"   element={<Navigate to="/en/weddings" replace />} />
