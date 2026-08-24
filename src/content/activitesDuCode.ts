@@ -47,7 +47,7 @@ const BRUT: Array<Omit<FicheInput, 'ordre'>> = [
   { titreFR: 'À Boire !',        titreEN: 'Drink!',            sousTitreFR: 'Bières des Brasseurs Philosophales et autres rinces-gosier', sousTitreEN: 'Beers from Brasseurs Philosophales and other tipples',
     descFR: 'Bières des Brasseurs Philosophales, hydromels, vins épicés, infusions sans alcool. Plusieurs estaminets répartis sur le site pour étancher la soif des aventuriers.',
     descEN: 'Beers from Brasseurs Philosophales, meads, spiced wines, alcohol-free infusions. Several taverns across the site to quench adventurers’ thirst.',
-    image: '/activites/webp/a-boire.webp', categorie: 'ripaille' },
+    image: '/activites/webp/a-boire-v2.webp', categorie: 'ripaille' },
   { titreFR: 'Soirée Dansante',  titreEN: 'Dance Party',       sousTitreFR: 'Ateliers éducatifs',                                       sousTitreEN: 'Educational workshops',
     descFR: 'La nuit venue, le feu prend, les tambours s’animent et le festival devient un grand bal médiéval. Ouvert à tous : gigue ou bourrée, on y danse autour des flammes jusqu’au matin.',
     descEN: 'Once night falls, the fire kindles, the drums come alive and the festival becomes a great medieval ball. Open to all: jig or bourrée, danced around the flames till morning.',
