@@ -1039,9 +1039,7 @@ const DesPage: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
-        <CreditJeux lang={lang === 'FR' ? 'fr' : 'en'} />
-      </section>
+      </CadreJeu>
     </>
   );
 };
