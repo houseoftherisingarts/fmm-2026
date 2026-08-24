@@ -49,7 +49,8 @@ import {
   suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
   type PartieTafl,
 } from '../../firebase/tafl';
-import PanneauAmis from './PanneauAmis';
+import PanneauAmis from '../../components/jeux/PanneauAmis';
+import { jeuTafl } from './jeuDefiable';
 
 type Mode = 'two-player' | 'vs-cpu';
 
@@ -1053,6 +1054,12 @@ const HnefataflPage: React.FC = () => {
     regleId: REGLE_DEFAUT,
   });
   const [gameKey, setGameKey] = useState(0);
+  // Ce que le panneau des amis doit savoir du tafl. Mémorisé : le
+  // panneau se réabonne à chaque fois que l'adaptateur change.
+  const jeuDefi = useMemo(
+    () => jeuTafl({ lang, regleId: config.regleId, camp: config.humanSide }),
+    [lang, config.regleId, config.humanSide],
+  );
   // Avancement du chargement des modèles 3D. `pret` bascule quand tout
   // est en scène, ou qu'un garde-fou a libéré la partie.
   const [charge, setCharge] = useState(0);
@@ -1507,7 +1514,7 @@ const HnefataflPage: React.FC = () => {
                         >
                           <X size={15} />
                         </button>
-                        <PanneauAmis lang={lang} regleId={config.regleId} camp={config.humanSide} />
+                        <PanneauAmis lang={lang} jeu={jeuDefi} />
                       </motion.div>
                     )}
                   </AnimatePresence>

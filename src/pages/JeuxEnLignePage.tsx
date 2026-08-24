@@ -41,8 +41,16 @@ const ANNEES: Annee[] = [
     image: '/tarot/T4.webp',
   },
   {
-    id: 'poudre',
+    id: 'revolte',
     chiffre: 'III',
+    nomFR: 'L’année de la Révolte paysanne', nomEN: 'The Year of the Peasants’ Revolt',
+    texteFR: 'Les faux et les fléaux quittent les granges, et le peuple qui nourrissait le château vient lui demander des comptes. Jeu disponible lorsque nous annoncerons le thème.',
+    texteEN: 'The scythes and the flails leave the barns, and the people who fed the castle come to ask it for a reckoning. The game opens when we announce the theme.',
+    image: '/tarot/T11.webp',
+  },
+  {
+    id: 'poudre',
+    chiffre: 'IV',
     nomFR: 'L’année de la Poudre', nomEN: 'The Year of the Powder',
     texteFR: 'Chaque joueur cache cinq dés sous son gobelet et annonce ce qu’il croit voir sur la table. L’annonce monte jusqu’à ce que quelqu’un doute, et tous les gobelets se lèvent en même temps. Jusqu’à cinq joueurs s’y affrontent, contre la maison ou contre de vraies personnes.',
     texteEN: 'Each player hides five dice under a cup and calls out what he believes is on the table. The bid climbs until someone doubts, and every cup goes up at once. Up to five players face each other, against the house or against real people.',
@@ -52,7 +60,7 @@ const ANNEES: Annee[] = [
   },
   {
     id: 'vikings',
-    chiffre: 'IV',
+    chiffre: 'V',
     nomFR: 'L’année des Vikings', nomEN: 'The Year of the Vikings',
     texteFR: 'Un roi attablé à la taverne se retrouve cerné par un groupe de dissidents sans chef, et il cherche la sortie par un des quatre coins de l’établissement. Cinq règlements différents sont proposés, contre l’ordinateur ou contre quelqu’un d’autre de la communauté.',
     texteEN: 'A king sitting in the tavern finds himself ringed by a leaderless band of dissidents, and he looks for the way out through one of the four corners of the room. Five rule sets are offered, against the computer or against someone else from the community.',
@@ -62,7 +70,7 @@ const ANNEES: Annee[] = [
   },
   {
     id: 'caravanes',
-    chiffre: 'V',
+    chiffre: 'VI',
     nomFR: 'L’année des Caravanes', nomEN: 'The Year of the Caravans',
     texteFR: 'Les roulottes portaient ce jeu de foire en foire, et il se lit encore de la même façon. Vous tirez une seule carte, trois cartes ou la croix celtique en dix lames. Chaque lame reçoit sa lecture.',
     texteEN: 'The wagons carried this deck from fair to fair, and it is still read the same way. You draw a single card, three cards or the ten of the Celtic cross. Each one gets its reading.',
@@ -72,7 +80,7 @@ const ANNEES: Annee[] = [
   },
   {
     id: 'mystere',
-    chiffre: 'VI',
+    chiffre: 'VII',
     nomFR: 'L’année du ?', nomEN: 'The Year of the ?',
     texteFR: 'Jeu disponible lorsque nous annoncerons le thème.',
     texteEN: 'The game opens when we announce the theme.',
