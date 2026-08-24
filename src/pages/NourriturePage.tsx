@@ -9,6 +9,7 @@ import { Reveal, Stagger, StaggerItem, ScrollProgress } from '../components/scro
 import { BubbleCanvas, Motes } from '../components/marche/effects';
 import { SectionFog, SectionTopRail, Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
 import { MENU, ABREUVOIR, BANQUET_MENU, type Plat } from '../content/menu2026';
+import { subscribeBanquetRestant } from '../firebase/banquetPlaces';
 import {
   IconSunrise, IconCauldron, IconFlame, IconGreens, IconBread,
   IconHoney, IconScorpion, IconPitcher,
