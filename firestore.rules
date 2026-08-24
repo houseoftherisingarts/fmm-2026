@@ -246,9 +246,18 @@ service cloud.firestore {
 
     // ── L'Ordre : les fiches des membres ──────────────────────────
     // Chacun publie la sienne, tous les membres connectés les lisent.
+    // Le champ `roles` fait exception : les fonctions portées au
+    // festival (administrateur, trésorier, sécurité…) se décernent
+    // depuis l'espace admin. Personne ne se les donne à soi-même
+    // (Alex, 2026-08-23).
     match /membres/{uid} {
-      allow read:  if signedIn();
-      allow write: if isOwner(uid);
+      allow read:   if signedIn();
+      allow create: if isAdmin()
+                    || (isOwner(uid) && !('roles' in request.resource.data));
+      allow update: if isAdmin()
+                    || (isOwner(uid)
+                        && !('roles' in request.resource.data.diff(resource.data).affectedKeys()));
+      allow delete: if isAdmin();
     }
 
     // ── L'Ordre : les amitiés ─────────────────────────────────────
