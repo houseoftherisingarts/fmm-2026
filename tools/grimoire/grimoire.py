@@ -493,10 +493,15 @@ def _mesure_de_cuisine(grammes, nom):
         if reste:
             return f'{reste} c. à thé'
         return f'{max(1, entier)} c. à thé'
-    soupes = cuilleres / 3
-    if soupes < 1.2:
-        return '1 c. à soupe'
-    return f'{round(soupes, 1):g}'.replace('.', ',') + ' c. à soupe'
+    # La cuillère à soupe se compte par demies, jamais par décimales.
+    soupes = round(cuilleres / 3 * 2) / 2
+    entier = int(soupes)
+    reste = _fraction(round(soupes - entier, 2))
+    if entier and reste:
+        return f'{entier} {reste} c. à soupe'
+    if reste:
+        return f'{reste} c. à soupe'
+    return f'{max(1, entier)} c. à soupe'
 
 
 def _mesure_liquide(ml):
