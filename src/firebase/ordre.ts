@@ -9,7 +9,7 @@
 //   /amities/{a__b}    une ligne par paire, les deux peuvent l'écrire
 
 import {
-  addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit as fbLimit,
+  addDoc, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, limit as fbLimit,
   onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where,
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -69,6 +69,12 @@ export interface Membre {
   stats?: StatsMembre;
   /** Décernées par l'équipe seulement (voir firestore.rules). */
   roles?: RoleMembre[];
+  /** Les étiquettes libres que l'équipe attribue pour former des
+   *  groupes d'envoi : viking, pirate, villageois, saltimbanque,
+   *  client, municipalité. Elles n'ont aucun effet sur les droits et
+   *  ne paraissent que dans l'admin. Comme les fonctions, la règle
+   *  Firestore réserve le champ à l'équipe (Alex, 2026-08-24). */
+  tags?: string[];
   // Les trois chiffres du bandeau que personne d'autre ne peut aller
   // lire à la source : les amitiés, les parties et les avis dorment
   // dans des collections fermées. La personne les recopie ici en
@@ -95,6 +101,77 @@ export async function publierFiche(uid: string, fiche: Partial<Membre>): Promise
 export async function definirRoles(uid: string, roles: RoleMembre[]): Promise<void> {
   if (!db) return;
   await setDoc(doc(db, MEMBRES, uid), { uid, roles, maj: serverTimestamp() }, { merge: true });
+}
+
+/** Attribuer les étiquettes d'un membre. Réservé à l'équipe, comme
+ *  les fonctions. Une étiquette vide se retire de la fiche. */
+export async function definirTags(uid: string, tags: string[]): Promise<void> {
+  if (!db) return;
+  await setDoc(doc(db, MEMBRES, uid), {
+    uid, tags: normaliserTags(tags), maj: serverTimestamp(),
+  }, { merge: true });
+}
+
+// ── Le catalogue des étiquettes ─────────────────────────────────────
+// Un seul document porte la liste de toutes les étiquettes créées, pour
+// que l'équipe choisisse dans une liste au lieu de retaper un mot et de
+// se retrouver avec « viking », « Viking » et « vikings ». Le document
+// se lit par tout membre connecté et ne s'écrit que par l'équipe.
+//
+//   /etiquettesOrdre/liste   { tags: ['viking', 'pirate', ...] }
+
+const ETIQUETTES = 'etiquettesOrdre';
+const DOC_ETIQUETTES = 'liste';
+export const LONGUEUR_TAG = 24;
+
+/** Une étiquette tient sur une ligne, sans espaces de bout, et deux
+ *  écritures voisines du même mot deviennent la même étiquette. */
+export function normaliserTag(brut: string): string {
+  return brut.replace(/\s+/g, ' ').trim().slice(0, LONGUEUR_TAG);
+}
+
+function normaliserTags(tags: string[]): string[] {
+  const vus = new Set<string>();
+  const propres: string[] = [];
+  for (const t of tags) {
+    const n = normaliserTag(t);
+    const cle = sansAccents(n);
+    if (!n || vus.has(cle)) continue;
+    vus.add(cle);
+    propres.push(n);
+  }
+  return propres.sort((a, b) => a.localeCompare(b, 'fr'));
+}
+
+export async function listerEtiquettes(): Promise<string[]> {
+  if (!db) return [];
+  const snap = await getDoc(doc(db, ETIQUETTES, DOC_ETIQUETTES));
+  const brut = snap.exists() ? (snap.data().tags as unknown) : [];
+  return Array.isArray(brut) ? normaliserTags(brut as string[]) : [];
+}
+
+/** Ajouter une étiquette au catalogue. Le document naît à la première
+ *  création, d'où la fusion plutôt qu'une mise à jour. */
+export async function creerEtiquette(nom: string): Promise<string> {
+  const propre = normaliserTag(nom);
+  if (!db || !propre) return propre;
+  await setDoc(doc(db, ETIQUETTES, DOC_ETIQUETTES), {
+    tags: arrayUnion(propre), maj: serverTimestamp(),
+  }, { merge: true });
+  return propre;
+}
+
+/** Les membres qui portent l'étiquette, sans se soucier des accents ni
+ *  de la casse : « Viking » et « viking » désignent le même groupe. */
+export function membresParTag(membres: Membre[], tag: string): Membre[] {
+  const cible = sansAccents(normaliserTag(tag));
+  if (!cible) return [];
+  return membres.filter((m) => (m.tags || []).some((t) => sansAccents(t) === cible));
+}
+
+/** Les membres qui portent la fonction, « membre » comprise. */
+export function membresParRole(membres: Membre[], role: RoleMembre): Membre[] {
+  return membres.filter((m) => rolesAffiches(m.roles).includes(role));
 }
 
 export async function lireFiche(uid: string): Promise<Membre | null> {

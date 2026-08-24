@@ -33,6 +33,7 @@ import SalonDesJeux from './SalonDesJeux';
 import MesBadges from './MesBadges';
 import MaFiche from './MaFiche';
 import PhotosPanel from './PhotosPanel';
+import BoiteReception from './BoiteReception';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
 // derrière lui, donc il arrive à part, quand l'onglet s'ouvre.
@@ -52,13 +53,13 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 export type ModeFiche = 'prive' | 'public';
 
-const ONGLETS_PRIVE  = ['profil', 'badges', 'jeux', 'billets', 'photos', 'collection'] as const;
+const ONGLETS_PRIVE  = ['profil', 'badges', 'jeux', 'billets', 'photos', 'collection', 'messages'] as const;
 const ONGLETS_PUBLIC = ['profil', 'badges', 'jeux', 'collection'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
   profil: UserIcon, badges: Award, jeux: Swords, billets: Ticket,
-  photos: Camera, collection: Megaphone,
+  photos: Camera, collection: Megaphone, messages: MessageCircle,
 };
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
@@ -642,6 +643,11 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
             )}
 
+            {/* Le courrier du membre, dans son espace (Alex, 2026-08-24). */}
+            {onglet === 'messages' && prive && compte && (
+              <BoiteReception uid={compte.uid} lang={lang} />
+            )}
+
             {onglet === 'collection' && (prive ? (
               <AnnoncesPanel lang={lang} />
             ) : (
@@ -779,10 +785,12 @@ const FR = {
   onglet: {
     profil: 'Mon profil', badges: 'Mes badges', jeux: 'Mes jeux',
     billets: 'Mes billets', photos: 'Mes photos', collection: 'Ma collection',
+    messages: 'Ma boîte de réception',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Sa fiche', badges: 'Ses badges', jeux: 'Ses parties',
     billets: 'Billets', photos: 'Photos', collection: 'Sa collection',
+    messages: 'Messages',
   } as Record<Onglet, string>,
   presentation: 'Sa présentation',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',

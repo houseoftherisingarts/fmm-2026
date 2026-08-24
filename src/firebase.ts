@@ -42,6 +42,10 @@ if (isConfigured) {
   );
 }
 
+// L'instance elle-même : les Cloud Functions appelables en ont besoin
+// pour se brancher sur le bon projet et la bonne région.
+export const firebaseApp = app;
+
 export const auth = _auth;
 export const db = _db;
 export const storage = _storage;

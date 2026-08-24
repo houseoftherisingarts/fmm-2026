@@ -13,7 +13,6 @@ import {
   type DMThread, type DM,
   threadId as faireFilId, ensureThread, subscribeDMThread, sendDM, subscribeInbox, markThreadRead,
 } from '../firebase/dms';
-import { mockListThreads, mockListDMs, mockSendDM } from '../firebase/mockCommunity';
 import { lireFiche, type Membre } from '../firebase/ordre';
 import {
   LONGUEUR_MAX, bloquer, debloquer, signaler, suivreBlocages, tropVite,
@@ -35,8 +34,9 @@ import SEO from '../components/SEO';
 // règles à tous sauf leur propriétaire, donc l'en-tête affichait un
 // inconnu sans visage à chaque conversation (corrigé le 2026-08-23).
 
-const VITRINE_EN_DEV = import.meta.env.DEV;
-const UID_DEMO = 'mock-bene-vole';
+// La vitrine de démonstration a été retirée le 2026-08-24 : Alex a pris
+// une conversation fabriquée pour une vraie personne. Une boîte de
+// réception ne montre plus que de vrais échanges.
 
 const MessagesPage: React.FC = () => {
   useCaravanPage();
@@ -60,11 +60,10 @@ const MessagesPage: React.FC = () => {
   const zoneRef = useRef<HTMLDivElement>(null);
 
   // ── Qui je suis ──
-  const monUid  = user?.uid || UID_DEMO;
+  const monUid  = user?.uid || '';
   const monNom  = (moiFiche?.nom || user?.displayName || '').trim() || t.sansNom;
   const maPhoto = moiFiche?.avatarUrl;
   const maTeinte = moiFiche?.avatarHue ?? teinteDe(monNom);
-  const enDemo = VITRINE_EN_DEV && (!user || monUid === UID_DEMO || !!autreUid?.startsWith('mock-'));
 
   // ── Ma fiche et mes silences ──
   useEffect(() => {
@@ -77,10 +76,9 @@ const MessagesPage: React.FC = () => {
 
   // ── La liste des conversations ──
   useEffect(() => {
-    if (!user && !VITRINE_EN_DEV) return;
-    if (enDemo) { mockListThreads(monUid).then(setFils); return; }
+    if (!user) return;
     return subscribeInbox(monUid, setFils);
-  }, [monUid, enDemo, user]);
+  }, [monUid, user]);
 
   // ── La conversation ouverte ──
   useEffect(() => {
@@ -96,11 +94,6 @@ const MessagesPage: React.FC = () => {
       const id = faireFilId(monUid, autreUid);
       setFilActif(id);
 
-      if (enDemo) {
-        const liste = await mockListDMs(id);
-        if (vivant) setMsgs(liste);
-        return;
-      }
       // Le fil s'ouvre avant la première lecture, sinon la conversation
       // n'apparaîtrait jamais dans la boîte des deux personnes.
       try {
@@ -114,12 +107,12 @@ const MessagesPage: React.FC = () => {
       arreter = subscribeDMThread(id, (liste) => { if (vivant) setMsgs(liste); });
     })();
     return () => { vivant = false; arreter?.(); };
-  }, [autreUid, monUid, enDemo, monNom, maTeinte, maPhoto, t.sansNom]);
+  }, [autreUid, monUid, monNom, maTeinte, maPhoto, t.sansNom]);
 
   // Les messages neufs se marquent lus en entrant.
   useEffect(() => {
-    if (filActif && !enDemo) markThreadRead(filActif, monUid).catch(() => {});
-  }, [filActif, monUid, enDemo, msgs.length]);
+    if (filActif) markThreadRead(filActif, monUid).catch(() => {});
+  }, [filActif, monUid, msgs.length]);
 
   useEffect(() => {
     const el = zoneRef.current;
@@ -137,14 +130,7 @@ const MessagesPage: React.FC = () => {
     setAvis('');
     try {
       const charge = { senderUid: monUid, senderName: monNom, body: texte.slice(0, LONGUEUR_MAX) };
-      if (enDemo) {
-        await mockSendDM(filActif, charge, autreUid,
-          (autre?.nom || '').trim() || t.sansNom, autre?.avatarHue ?? teinteDe(autre?.nom || ''));
-        setMsgs(await mockListDMs(filActif));
-        setFils(await mockListThreads(monUid));
-      } else {
-        await sendDM(filActif, charge, autreUid);
-      }
+      await sendDM(filActif, charge, autreUid);
       setBrouillon('');
     } catch {
       // La règle Firestore refuse l'envoi quand le destinataire vous a
@@ -188,7 +174,7 @@ const MessagesPage: React.FC = () => {
     );
   }
 
-  if (!user && !VITRINE_EN_DEV) {
+  if (!user) {
     return (
       <main className="min-h-screen text-ivory flex items-center justify-center px-6">
         <div className="max-w-md text-center glass-light rounded-lg-card p-8">
