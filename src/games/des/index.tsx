@@ -65,15 +65,94 @@ const DesPage: React.FC = () => {
   const { lang } = useUI();
   const fr = lang === 'FR';
 
+  const { user, openSignIn } = useAuth();
+
+  // ── La partie en ligne ──────────────────────────────────────────
+  // /jeux/des?partie=<id> ouvre la partie lancée depuis le panneau des
+  // amis. La page suit le document, scelle sa main chez elle et pousse
+  // ses annonces (Alex, 2026-08-23).
+  const partieId = useMemo(
+    () => new URLSearchParams(window.location.search).get('partie'),
+    [],
+  );
+  const [enLigne, setEnLigne] = useState<PartieDes | null>(null);
+  const [maMain, setMaMain] = useState<Face[]>([]);
+  const [mainsLevees, setMainsLevees] = useState<Record<string, Face[]>>({});
+  const [resteMs, setResteMs] = useState(0);
+  const [amisOuverts, setAmisOuverts] = useState(false);
+  const jeuDefi = useMemo(() => jeuDes(lang), [lang]);
+
   const [nbJoueurs, setNbJoueurs] = useState(3);
-  const [partie, setPartie] = useState<Partie | null>(null);
-  useBadgeJeu('des');
-  useGagnerBadge('des', partie?.gagnantId === 'j0');
+  const [solo, setSolo] = useState<Partie | null>(null);
   const [quantite, setQuantite] = useState(2);
   const [face, setFace] = useState<Face>(3);
 
+  // Les places autour de la table, la mienne en premier : la table 3D
+  // et les bulles raisonnent par siège, le document par uid.
+  const ordre = useMemo(
+    () => (enLigne && user ? siegesDe(enLigne, user.uid) : []),
+    [enLigne, user],
+  );
+
+  /**
+   * La partie telle que la page l'affiche.
+   *
+   * Le rendu, les bulles et la table 3D ne connaissent qu'une seule
+   * forme, celle du moteur local. La partie en ligne se traduit donc
+   * dedans, et tout le reste du fichier continue de fonctionner sans
+   * savoir contre qui il joue. Les dés des autres restent des dés
+   * anonymes tant que les gobelets ne sont pas levés : seule leur
+   * QUANTITÉ est connue, et les faces bouchées ici ne sont jamais lues.
+   */
+  const partie: Partie | null = useMemo(() => {
+    if (!enLigne || !user) return solo;
+    const joueurs: Joueur[] = ordre.map((uid) => ({
+      id: uid,
+      nom: enLigne.noms[uid] || (fr ? 'Un inconnu' : 'A stranger'),
+      des: uid === user.uid
+        ? maMain
+        : (mainsLevees[uid] ?? Array.from({ length: enLigne.des[uid] ?? 0 }, () => 6 as Face)),
+      machine: false,
+      elimine: enLigne.elimines.includes(uid),
+    }));
+    const d = enLigne.devoilement;
+    return {
+      joueurs,
+      tour: Math.max(0, ordre.indexOf(enLigne.tour)),
+      mise: enLigne.mise
+        ? { quantite: enLigne.mise.quantite, face: enLigne.mise.face, parId: enLigne.mise.parUid }
+        : null,
+      phase: enLigne.phase,
+      manche: enLigne.manche,
+      journal: enLigne.journal,
+      // Un compte négatif veut dire que les gobelets sont levés mais
+      // que personne n'a fini de compter : le verdict n'existe pas
+      // encore, et rien ne doit s'afficher.
+      devoilement: d && d.compte >= 0
+        ? {
+          doutePar: d.doutePar,
+          contre: d.contre,
+          mise: { quantite: d.mise.quantite, face: d.mise.face, parId: d.mise.parUid },
+          compte: d.compte,
+          perdantId: d.perdantUid,
+          gagnantDeId: d.gagnantDeUid ?? undefined,
+          exact: d.exact,
+        }
+        : undefined,
+      gagnantId: enLigne.gagnant ?? undefined,
+    };
+  }, [enLigne, user, ordre, maMain, mainsLevees, solo, fr]);
+
+  useBadgeJeu('des');
+  useGagnerBadge('des', !!partie && partie.gagnantId === partie.joueurs[0]?.id);
+
   const sceneRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<TableDes | null>(null);
+  // La manche déjà scellée, et celle déjà dévoilée : les deux gestes
+  // ne doivent partir qu'une seule fois par manche.
+  const scelle = useRef(0);
+  const revele = useRef(0);
+  const placesPosees = useRef(0);
 
   // ── Les bulles de dialogue ──────────────────────────────────────
   // Ce qu'un joueur annonce s'écrit au-dessus de sa place, comme dans
