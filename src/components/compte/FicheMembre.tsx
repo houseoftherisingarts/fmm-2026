@@ -199,7 +199,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
     if (signature === dernierEnvoi.current) return;
     dernierEnvoi.current = signature;
     void publierFiche(uid, paquet).catch(() => { /* hors ligne */ });
-  }, [prive, uid, fiche, nomForm, avatarUrl, compte, amis, parties, avisIds]);
+  }, [prive, uid, chargement, fiche, nomForm, avatarUrl, compte, amis, parties, avisIds]);
 
   const enregistrerProfil = async (e: React.FormEvent) => {
     e.preventDefault();
