@@ -302,7 +302,11 @@ const AccueilPage: React.FC = () => {
               <div className="divider-brass w-20 mb-4" />
               <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5">{t.banquet.body}</p>
               <p className="font-editorial italic text-sm text-ivory-soft mb-6">{t.banquet.note}</p>
-              <Link to={addLocale('/nourriture', lang)}
+              {/* Même geste que la carte du banquet dans Programmation :
+                  `?banquet=1` déplie le chapitre Nourriture et descend
+                  jusqu'au banquet, au lieu de laisser le visiteur devant
+                  une page repliée (Alex, 2026-08-23). */}
+              <Link to={addLocale('/nourriture', lang) + '?banquet=1'}
                 className="inline-flex items-center gap-2 px-6 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
                 {t.banquet.cta} <ArrowUpRight size={14} />
               </Link>
