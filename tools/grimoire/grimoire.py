@@ -267,21 +267,22 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
    festival est partie, et la place qu'elle laissait revient au texte.
    Les ingrédients tiennent sur une ligne plus large, la marche à
    suivre respire, et les corps de texte remontent d'un cran. */
-.rec .cols { display:grid; grid-template-columns: 1.72in 1fr; gap:.3in; margin-top:.26in; flex:1;
+.rec .cols { display:grid; grid-template-columns: 1.85in 1fr; gap:.3in; margin-top:.26in; flex:1;
   min-height:0; }
 .lbl { font-family:'Cinzel',serif; font-size:7.4pt; letter-spacing:.24em; text-transform:uppercase;
   color:#a97c2a; padding-bottom:.05in; margin-bottom:.1in;
   border-bottom:1px solid rgba(169,124,42,.34); }
-.rec.wide .cols { grid-template-columns: 3.05in 1fr; gap:.26in; }
-.rec.wide .ing { column-count:2; column-gap:.22in; }
-.rec.wide .ing li { break-inside:avoid; font-size:9pt; padding:.045in 0; }
-.ing li { font-size:10pt; line-height:1.4; padding:.062in 0;
+/* Une fiche de cinq ingrédients n'a pas besoin d'une colonne de deux
+   pouces : elle la laisse à la marche à suivre, qui est ce qui reste
+   long quand les quantités tiennent sur une ligne. */
+.rec.maigre .cols { grid-template-columns: 1.4in 1fr; }
+.ing li { font-size:9.6pt; line-height:1.38; padding:.055in 0;
   border-bottom:1px dotted rgba(120,85,40,.2); }
 .ing li b { font-weight:600; color:#8a6524; }
-.chapeau { font-family:'Cormorant Garamond',serif; font-size:10.8pt; line-height:1.47;
+.chapeau { font-family:'Cormorant Garamond',serif; font-size:10.6pt; line-height:1.46;
   color:#4a3620; margin-top:.11in; max-width:4.6in; }
-.steps li { font-size:11.2pt; line-height:1.55; padding-left:.32in; position:relative;
-  margin-bottom:.15in; }
+.steps li { font-size:10.9pt; line-height:1.52; padding-left:.32in; position:relative;
+  margin-bottom:.135in; }
 .steps li::before { content:counter(s); counter-increment:s; position:absolute; left:0; top:.015in;
   font-family:'Cinzel Decorative',serif; font-size:10pt; color:#a97c2a; }
 .steps { counter-reset:s; list-style:none; }
@@ -293,19 +294,36 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
    ingrédients ne tient pas dans la même fonte qu'une recette de six.
    Plutôt que de la couper au ras du papier, la page se resserre d'un
    cran, mesure faite (Alex, 2026-08-23). */
-.rec[data-serre="1"] .steps li { font-size:10.4pt; margin-bottom:.115in; }
-.rec[data-serre="1"] .chapeau  { font-size:10.2pt; line-height:1.42; }
-.rec[data-serre="1"] .ing li   { font-size:9.2pt; padding:.042in 0; }
+/* L'échelle des crans, du plus aéré au plus serré. caler.py choisit
+   celui qui remplit la page sans la faire déborder : une fiche de six
+   ingrédients grossit, une fiche de vingt et un se resserre. */
+.rec[data-serre="-2"] .steps li { font-size:12.6pt; line-height:1.6; margin-bottom:.195in; }
+.rec[data-serre="-2"] .chapeau  { font-size:11.8pt; line-height:1.52; }
+.rec[data-serre="-2"] .ing li   { font-size:11.2pt; line-height:1.44; padding:.085in 0; }
+.rec[data-serre="-2"] .note     { font-size:10.2pt; padding:.13in .15in; }
+.rec[data-serre="-2"] h2        { font-size:18.6pt; }
+.rec[data-serre="-1"] .steps li { font-size:11.8pt; line-height:1.56; margin-bottom:.165in; }
+.rec[data-serre="-1"] .chapeau  { font-size:11.2pt; line-height:1.5; }
+.rec[data-serre="-1"] .ing li   { font-size:10.4pt; line-height:1.41; padding:.07in 0; }
+.rec[data-serre="-1"] .note     { font-size:9.8pt; padding:.115in .14in; }
+.rec[data-serre="1"] .steps li { font-size:10.2pt; margin-bottom:.105in; }
+.rec[data-serre="1"] .chapeau  { font-size:10.1pt; line-height:1.42; }
+.rec[data-serre="1"] .ing li   { font-size:9pt; padding:.042in 0; }
 .rec[data-serre="1"] .note     { font-size:9pt; padding:.085in .11in; }
-.rec[data-serre="2"] .steps li { font-size:9.6pt; line-height:1.46; margin-bottom:.086in; }
-.rec[data-serre="2"] .chapeau  { font-size:9.6pt; line-height:1.38; }
-.rec[data-serre="2"] .ing li   { font-size:8.5pt; padding:.03in 0; line-height:1.3; }
+.rec[data-serre="2"] .steps li { font-size:9.5pt; line-height:1.46; margin-bottom:.08in; }
+.rec[data-serre="2"] .chapeau  { font-size:9.5pt; line-height:1.38; }
+.rec[data-serre="2"] .ing li   { font-size:8.4pt; padding:.03in 0; line-height:1.3; }
 .rec[data-serre="2"] .note     { font-size:8.5pt; padding:.07in .1in; }
-.rec[data-serre="3"] .steps li { font-size:8.9pt; line-height:1.4; margin-bottom:.062in; }
+.rec[data-serre="3"] .steps li { font-size:8.8pt; line-height:1.4; margin-bottom:.058in; }
 .rec[data-serre="3"] .chapeau  { font-size:9pt; line-height:1.32; }
-.rec[data-serre="3"] .ing li   { font-size:7.8pt; padding:.02in 0; line-height:1.24; }
+.rec[data-serre="3"] .ing li   { font-size:7.7pt; padding:.02in 0; line-height:1.24; }
 .rec[data-serre="3"] .note     { font-size:8pt; padding:.06in .09in; }
 .rec[data-serre="3"] h2        { font-size:16.4pt; }
+.rec[data-serre="4"] .steps li { font-size:8.2pt; line-height:1.34; margin-bottom:.042in; }
+.rec[data-serre="4"] .chapeau  { font-size:8.5pt; line-height:1.28; }
+.rec[data-serre="4"] .ing li   { font-size:7.2pt; padding:.014in 0; line-height:1.2; }
+.rec[data-serre="4"] .note     { font-size:7.6pt; padding:.05in .08in; }
+.rec[data-serre="4"] h2        { font-size:15.6pt; }
 
 .folio { position:absolute; left:0; right:0; bottom:.3in; text-align:center;
   font-family:'Cinzel',serif; font-size:7.6pt; letter-spacing:.3em; color:rgba(120,85,40,.6); z-index:2; }
@@ -870,7 +888,8 @@ def build():
         body = ''.join(f'<li>{esc(etapes_pour_cinq(clean(s), tab))}</li>' for s in steps)
         note = ''.join(f'<div class="note">{esc(etapes_pour_cinq(clean(x), tab))}</div>'
                        for x in notes)
-        wide = ' wide' if len([i for i in r['ing'] if i['n']]) > 15 else ''
+        combien = len([i for i in r['ing'] if i['n']])
+        forme = ' maigre' if combien <= 9 else ''
         eau = filigrane(tab)
         pages.append(page(f"""
           <img class="filigrane" src="data:image/png;base64,{b64(eau)}" alt="">
@@ -885,7 +904,7 @@ def build():
           <div class="cols">
             <div><p class="lbl">Ingrédients</p><ul class="ing">{ing}</ul></div>
             <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
-          </div>""", cls='rec' + wide, folio=folio, runhead=titre, cle=tab))
+          </div>""", cls='rec' + forme, folio=folio, runhead=titre, cle=tab))
 
     # Colophon : la quatrième, d'un seul tenant elle aussi
     pages.append(page(

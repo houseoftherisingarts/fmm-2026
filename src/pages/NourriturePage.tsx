@@ -485,7 +485,9 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
 
       {/* ══ 07 · Le livre de recettes du festival ══════════════════════
           Le livre de recettes de Marc-Alexis, 9 $ plus taxes, payé par
-          Square. Deux pages se lisent en ligne, le reste s'achète. */}
+          Square. Deux recettes se lisent en ligne, le reste s'achète.
+          Chaque recette est écrite pour cinq personnes depuis le
+          2026-08-24 : la colonne des cinquante portions a été retirée. */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-30" count={12} />
@@ -530,7 +532,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
                       </span>
                     )}
                     <a
-                      href="/grimoire/apercu-livre-recettes-v2.pdf"
+                      href="/grimoire/apercu-livre-recettes-v3.pdf"
                       target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft hover:text-[var(--color-amber-glow)] transition"
                     >
@@ -616,10 +618,10 @@ const FR = {
   grimoireMetaValue: '27',
   grimoireEyebrow: 'À rapporter chez soi',
   grimoireTitle: 'Le livre de recettes du festival',
-  grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et vingt-trois autres, écrites de la main du chef Marc-Alexis Pepin. Un livre à feuilleter l’hiver venu, quand l’envie de refaire le feu vous prend.',
+  grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et vingt-trois autres, écrites de la main du chef Marc-Alexis Pepin. Elles ont été ramenées à cinq personnes pour que vous puissiez les refaire chez vous, un mardi soir, sans avoir à diviser quoi que ce soit.',
   grimoireBientot: 'Bientôt en vente',
   grimoireCta: 'Acheter le livre',
-  grimoirePreview: 'Feuilleter les deux premières pages',
+  grimoirePreview: 'Feuilleter deux recettes',
   grimoireNote: '9 $ plus taxes · Livre numérique en format PDF, envoyé par courriel après l’achat.',
   grimoireAlt: 'La couverture du livre de recettes du festival',
 };
@@ -676,10 +678,10 @@ const EN: typeof FR = {
   grimoireMetaValue: '27',
   grimoireEyebrow: 'To take home',
   grimoireTitle: 'The festival cookbook',
-  grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and twenty-three more, written in the hand of chef Marc-Alexis Pepin. A book to leaf through once winter comes and the urge to light the fire returns.',
+  grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and twenty-three more, written in the hand of chef Marc-Alexis Pepin. Every one of them has been scaled down to five people, so you can cook it at home on a Tuesday night without dividing anything.',
   grimoireBientot: 'Coming soon',
   grimoireCta: 'Buy the cookbook',
-  grimoirePreview: 'Read the first two pages',
+  grimoirePreview: 'Read two recipes',
   grimoireNote: '$9 plus tax · Digital book in PDF, emailed after purchase.',
   grimoireAlt: 'The cover of the festival cookbook',
 };
