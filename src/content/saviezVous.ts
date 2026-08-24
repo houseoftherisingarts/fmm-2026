@@ -346,6 +346,22 @@ export const FAITS: readonly Fait[] = [
     ],
   },
 
+  {
+    id: 'lits',
+    categorie: 'taverne',
+    origine: 'festival',
+    titreFR: 'Les lits',
+    titreEN: 'The beds',
+    texteFR:
+      'Saviez-vous que les lits des auberges médiévales étaient énormes, plus grands que les « kings » d’aujourd’hui, car les gens payaient pour une place dans un lit et non une chambre (c’était plus rentable). Les places en bordure de lit étaient donc plus chères.\n\nCe tarif plus élevé en bordure de lit est une tradition rapportée par Nota Bene, plutôt qu’un prix retrouvé dans un registre d’auberge.',
+    texteEN:
+      'Did you know that the beds in medieval inns were enormous, bigger than today’s “kings”, since people paid for a spot in a bed rather than a room (it was more profitable). The spots along the edge of the bed cost more.\n\nThat higher price for the edge of the bed is a tradition reported by Nota Bene, rather than a rate found in an inn’s ledger.',
+    publication: { date: '2023-08-12', url: 'https://www.facebook.com/photo/?fbid=316683647403856&set=a.198354179236804' },
+    sources: [
+      { nom: 'Nota Bene, « Comment on dormait au Moyen Âge ? »', url: 'https://www.youtube.com/watch?v=QtGhbfrhP2k' },
+    ],
+  },
+
   // ── Le marché ─────────────────────────────────────────────────────
   {
     id: 'assise-pain-biere',
