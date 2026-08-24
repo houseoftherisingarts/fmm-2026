@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Swords, LogIn, Loader2 } from 'lucide-react';
+import { Swords, Dices, LogIn, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { addLocale } from '../lib/locale';
 import { lirePartie, rejoindreDefiParLien, type PartieTafl } from '../firebase/tafl';
+import { lirePartieDes, rejoindreDefiDesParLien, type PartieDes } from '../firebase/desParties';
 import { REGLES } from '../games/hnefatafl/gameLogic';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
@@ -14,6 +15,13 @@ import Brume from '../components/Brume';
 // Quelqu'un a collé son lien dans Messenger. La personne arrive ici,
 // voit qui l'attend, se crée un compte, et la partie s'ouvre (Alex,
 // 2026-08-23). C'est la porte d'entrée du site.
+//
+// Le lien ne dit pas à quel jeu il mène : le même chemin sert au tafl
+// et aux dés. Le lobby regarde donc les deux collections et garde
+// celle qui répond. Une lecture de plus au chargement, et un seul
+// lien à retenir pour tous les jeux du festival.
+
+type Jeu = 'tafl' | 'des';
 
 const DefiLobbyPage: React.FC = () => {
   useCaravanPage();
@@ -23,52 +31,83 @@ const DefiLobbyPage: React.FC = () => {
   const { user, loading, openSignIn } = useAuth();
   const navigate = useNavigate();
 
-  const [partie, setPartie] = useState<PartieTafl | null>(null);
+  const [jeu, setJeu] = useState<Jeu | null>(null);
+  const [tafl, setTafl] = useState<PartieTafl | null>(null);
+  const [des, setDes] = useState<PartieDes | null>(null);
   const [lecture, setLecture] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
   const [entree, setEntree] = useState(false);
 
   useEffect(() => {
     let vivant = true;
-    lirePartie(id)
-      .then((p) => { if (vivant) setPartie(p); })
-      .catch(() => { /* règles : la partie n'est plus ouverte */ })
-      .finally(() => { if (vivant) setLecture(false); });
+    void (async () => {
+      try {
+        const p = await lirePartie(id);
+        if (vivant && p) { setTafl(p); setJeu('tafl'); return; }
+      } catch { /* les règles ferment ce défi : nous tentons les dés */ }
+      try {
+        const d = await lirePartieDes(id);
+        if (vivant && d) { setDes(d); setJeu('des'); }
+      } catch { /* rien à ouvrir sous ce lien */ }
+    })().finally(() => { if (vivant) setLecture(false); });
     return () => { vivant = false; };
   }, [id, user?.uid]);
 
   // Une fois connecté, on prend le siège libre et on entre en jeu.
+  const chemin = jeu === 'des' ? '/jeux/des' : '/jeunesse/hnefatafl';
+  const partie: { joueurs: string[]; statut: string; noms: Record<string, string>; lancePar: string } | null =
+    tafl ?? des;
+
   useEffect(() => {
-    if (!user || !partie || entree) return;
+    if (!user || !partie || !jeu || entree) return;
     if (partie.joueurs.includes(user.uid)) {
-      navigate(`${addLocale('/jeunesse/hnefatafl', lang)}?partie=${id}`, { replace: true });
+      navigate(`${addLocale(chemin, lang)}?partie=${id}`, { replace: true });
       return;
     }
     if (partie.statut !== 'lobby') { setErreur('plein'); return; }
     setEntree(true);
-    void rejoindreDefiParLien(id, user.uid, user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger'))
+    const nom = user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger');
+    const prendre = jeu === 'des'
+      ? rejoindreDefiDesParLien(id, user.uid, nom)
+      : rejoindreDefiParLien(id, user.uid, nom);
+    void prendre
       .then((r) => {
         if (r === 'ok' || r === 'moi') {
-          navigate(`${addLocale('/jeunesse/hnefatafl', lang)}?partie=${id}`, { replace: true });
+          navigate(`${addLocale(chemin, lang)}?partie=${id}`, { replace: true });
         } else {
           setErreur(r);
           setEntree(false);
         }
       })
       .catch(() => { setErreur('plein'); setEntree(false); });
-  }, [user, partie, entree, id, lang, fr, navigate]);
+  }, [user, partie, jeu, chemin, entree, id, lang, fr, navigate]);
 
   const hote = partie ? (partie.noms[partie.lancePar] || (fr ? 'Un inconnu' : 'A stranger')) : '';
-  const regle = partie ? REGLES.find((r) => r.id === partie.regleId) : undefined;
+  const regle = tafl ? REGLES.find((r) => r.id === tafl.regleId) : undefined;
+
+  const titreSEO = jeu === 'des'
+    ? (fr ? `${hote || 'Quelqu’un'} vous attend aux dés` : `${hote || 'Someone'} is waiting for you at dice`)
+    : (fr ? `${hote || 'Quelqu’un'} vous attend au tafl` : `${hote || 'Someone'} is waiting for you at tafl`);
+
+  const descriptionSEO = jeu === 'des'
+    ? (fr
+      ? 'Une partie de dés du menteur vous attend au Festival Médiéval de Montpellier. Prenez votre siège.'
+      : 'A game of liar’s dice is waiting for you at the Festival Médiéval de Montpellier. Take your seat.')
+    : (fr
+      ? 'Un défi de hnefatafl vous attend au Festival Médiéval de Montpellier. Prenez votre siège.'
+      : 'A hnefatafl challenge is waiting for you at the Festival Médiéval de Montpellier. Take your seat.');
+
+  const scene = jeu === 'des'
+    ? (fr
+      ? 'Cinq dés roulent sous un gobelet de cuir, chacun annonce plus haut que son voisin, et le premier qui doute fait lever tous les gobelets. Prenez le siège libre et la partie commence.'
+      : 'Five dice roll under a leather cup, everyone bids higher than the last, and the first to doubt sends every cup up. Take the free seat and the game begins.')
+    : (fr
+      ? 'Un roi cerné cherche la sortie, ses assaillants resserrent l’étau. Prenez le siège libre et la partie commence.'
+      : 'A cornered king looks for a way out while his attackers tighten the ring. Take the free seat and the game begins.');
 
   return (
     <>
-      <SEO
-        title={fr ? `${hote || 'Quelqu’un'} vous attend au tafl` : `${hote || 'Someone'} is waiting for you at tafl`}
-        description={fr
-          ? 'Un défi de hnefatafl vous attend au Festival Médiéval de Montpellier. Prenez votre siège.'
-          : 'A hnefatafl challenge is waiting for you at the Festival Médiéval de Montpellier. Take your seat.'}
-      />
+      <SEO title={titreSEO} description={descriptionSEO} />
       <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-24 overflow-hidden">
         <Brume />
         <div className="relative z-10 w-full max-w-lg text-center rounded-lg-card border border-brass/35 px-7 py-12 md:px-12"
@@ -78,7 +117,10 @@ const DefiLobbyPage: React.FC = () => {
                boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
              }}>
           <p className="font-sans uppercase tracking-[0.28em] text-[10px] text-ivory-soft/55 mb-4 inline-flex items-center gap-2">
-            <Swords size={12} /> {fr ? 'Défi de hnefatafl' : 'Hnefatafl challenge'}
+            {jeu === 'des' ? <Dices size={12} /> : <Swords size={12} />}
+            {jeu === 'des'
+              ? (fr ? 'Défi aux dés' : 'Dice challenge')
+              : (fr ? 'Défi de hnefatafl' : 'Hnefatafl challenge')}
           </p>
 
           {lecture || loading ? (
@@ -108,9 +150,7 @@ const DefiLobbyPage: React.FC = () => {
               </h1>
               <div className="divider-brass w-16 mx-auto mb-5" />
               <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-3">
-                {fr
-                  ? 'Un roi cerné cherche la sortie, ses assaillants resserrent l’étau. Prenez le siège libre et la partie commence.'
-                  : 'A cornered king looks for a way out while his attackers tighten the ring. Take the free seat and the game begins.'}
+                {scene}
               </p>
               {regle && (
                 <p className="font-sans uppercase tracking-[0.2em] text-[10px] text-ivory-soft/55 mb-8">

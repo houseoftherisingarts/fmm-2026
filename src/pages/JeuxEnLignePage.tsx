@@ -44,8 +44,8 @@ const ANNEES: Annee[] = [
     id: 'revolte',
     chiffre: 'III',
     nomFR: 'L’année de la Révolte paysanne', nomEN: 'The Year of the Peasants’ Revolt',
-    texteFR: 'Les faux et les fléaux quittent les granges, et le peuple qui nourrissait le château vient lui demander des comptes. Jeu disponible lorsque nous annoncerons le thème.',
-    texteEN: 'The scythes and the flails leave the barns, and the people who fed the castle come to ask it for a reckoning. The game opens when we announce the theme.',
+    texteFR: 'Les faux et les fléaux quittent les granges, et le peuple qui nourrissait le château vient lui demander des comptes. Le jeu de cette année-là se prépare.',
+    texteEN: 'The scythes and the flails leave the barns, and the people who fed the castle come to ask it for a reckoning. That year’s game is in the making.',
     image: '/tarot/T11.webp',
   },
   {
