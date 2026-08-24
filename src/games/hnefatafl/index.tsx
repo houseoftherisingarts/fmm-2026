@@ -12,7 +12,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, use
 import CreditJeux from '../../components/jeux/CreditJeux';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2, Scroll } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2, Scroll, X } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -1044,6 +1044,8 @@ const HnefataflPage: React.FC = () => {
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [pleinEcran, setPleinEcran] = useState(false);
+  // Le panneau des amis s'ouvre par-dessus la table, sans la rétrécir.
+  const [amisOuverts, setAmisOuverts] = useState(false);
   const [config, setConfig] = useState<GameConfig>({
     mode: 'two-player',
     humanSide: 'defender',
@@ -1221,8 +1223,9 @@ const HnefataflPage: React.FC = () => {
               )}
             </div>
           )}
-          {/* Le damier et, pour une personne connectée, la colonne des
-              amis à sa droite : on défie sans quitter la table. */}
+          {/* Le damier garde toute la largeur. Les amis, le registre et
+              le lien de défi vivent en overlay DANS la fenêtre du jeu
+              (Alex, 2026-08-23). */}
           <div>
           <Reveal>
             <div
@@ -1474,6 +1477,42 @@ const HnefataflPage: React.FC = () => {
                   <span className="text-brass">{s.kingDot}</span>
                 </span>
               </div>
+
+              {/* ── Les amis, en overlay sur la table ──────────────── */}
+              {user && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setAmisOuverts((v) => !v)}
+                    aria-expanded={amisOuverts}
+                    className="absolute top-16 right-3 md:right-4 z-20 inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                  >
+                    <Users size={13} className="text-brass" />
+                    {lang === 'FR' ? 'Défier un ami' : 'Challenge a friend'}
+                  </button>
+                  <AnimatePresence>
+                    {amisOuverts && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 24 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 24 }}
+                        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute top-16 right-3 md:right-4 z-30 w-[min(20rem,calc(100%-1.5rem))] max-h-[calc(100%-5.5rem)] overflow-y-auto rounded-[15px] border border-white/15 bg-black/55 backdrop-blur-xl p-3"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setAmisOuverts(false)}
+                          aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
+                          className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
+                        >
+                          <X size={15} />
+                        </button>
+                        <PanneauAmis lang={lang} regleId={config.regleId} camp={config.humanSide} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
             </div>
           </Reveal>
 
