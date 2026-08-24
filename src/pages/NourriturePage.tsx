@@ -591,11 +591,11 @@ const EN: typeof FR = {
   banquetMenuEyebrow: 'The banquet menu',
   banquetMenuTitle: 'Three courses',
 
-  grimoireRail: 'The Grimoire',
+  grimoireRail: 'The cookbook',
   grimoireMeta: 'Recipes',
   grimoireMetaValue: '33',
   grimoireEyebrow: 'To take home',
-  grimoireTitle: 'The Festival Grimoire',
+  grimoireTitle: 'The festival cookbook',
   grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and some thirty more, written in the hand of chef Marc-Alexis Pepin. A book to leaf through once winter comes and the urge to light the fire returns.',
   grimoireBientot: 'Coming soon',
   grimoireCta: 'Buy the grimoire',
