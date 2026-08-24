@@ -439,6 +439,23 @@ export const FAITS: readonly Fait[] = [
     ],
   },
 
+  {
+    id: 'casques-a-cornes',
+    categorie: 'camp',
+    origine: 'festival',
+    titreFR: 'Casques à cornes',
+    titreEN: 'Horned helmets',
+    texteFR:
+      'Saviez-vous que les Vikings ne portaient pas de casques à cornes ? Aucun casque viking retrouvé n’en porte, et le casque de Gjermundbu, le seul casque viking complet connu, n’en garde ni trace ni fixation. L’image vient du dix-neuvième siècle : ce sont les costumes de la Tétralogie de Wagner, en 1876, qui l’ont ancrée pour de bon.',
+    texteEN:
+      'Did you know that the Vikings did not wear horned helmets? No Viking helmet ever found carries horns, and the Gjermundbu helmet, the only complete Viking helmet known, shows no trace or fitting for any. The image comes from the nineteenth century: the costumes of Wagner’s Ring cycle, in 1876, are what fixed it in place for good.',
+    publication: { date: '2023-08-21', url: 'https://www.facebook.com/photo/?fbid=320799303658957&set=a.198354179236804' },
+    sources: [
+      { nom: 'Wikipedia, « Horned helmet »', url: 'https://en.wikipedia.org/wiki/Horned_helmet' },
+      { nom: 'Store norske leksikon, « Gjermundbufunnet »', url: 'https://snl.no/Gjermundbufunnet' },
+    ],
+  },
+
   // ── Les jeux ──────────────────────────────────────────────────────
   {
     id: 'tablut-linne',
