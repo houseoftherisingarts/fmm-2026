@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Mail, Search, Send, TriangleAlert, Loader2, CircleCheck, History,
-  Users, FlaskConical, Feather, Filter, UserPlus,
+  Users, FlaskConical, Feather, Filter, UserPlus, CalendarClock, CalendarX,
 } from 'lucide-react';
 import { Card, Input, Label, PrimaryButton, GhostButton, EmptyState, Badge, fmtDate } from '../primitives';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -13,6 +13,13 @@ import {
   ANNEE_COURANTE, PLAFOND_CAMPAGNE,
   type Client, type CategorieClient, type FiltreCampagne, type Campagne, type Destinataire,
 } from '../../../firebase/campagnes';
+import {
+  programmerCampagne, annulerCampagneProgrammee, suivreCampagnesProgrammees, porteeDepuis,
+  LIBELLE_STATUT, type CampagneProgrammee, type StatutProgrammee,
+} from '../../../firebase/campagnesProgrammees';
+import {
+  FUSEAU_FESTIVAL, ecrireHeureMontreal, instantDepuisMontreal, montrealDepuisInstant,
+} from '../../../lib/heureMontreal';
 
 // ─── Les campagnes de courriels ──────────────────────────────────────
 // Alex, 2026-08-24 : d'ici, l'équipe écrit aux gens des listes de
@@ -34,6 +41,15 @@ import {
 // qu'à la signature, comme directeur des communications.
 
 type ModeDestinataires = 'filtre' | 'coches';
+
+/** La couleur de chaque état dans la file des envois programmés. */
+const TON_STATUT: Record<StatutProgrammee, 'pending' | 'info' | 'accepted' | 'neutral' | 'rejected'> = {
+  'prevue':   'pending',
+  'en cours': 'info',
+  'envoyee':  'accepted',
+  'annulee':  'neutral',
+  'echouee':  'rejected',
+};
 
 const CampagnesSection: React.FC = () => {
   const { user } = useAuth();
@@ -59,11 +75,27 @@ const CampagnesSection: React.FC = () => {
 
   const [historique, setHistorique] = useState<Campagne[]>([]);
 
+  // ── Le rendez-vous ──
+  // `jour` et `heure` sont lus par des champs natifs, dans la forme
+  // que le navigateur impose : « 2026-09-02 » et « 09:00 ». La
+  // conversion vers un instant absolu se fait dans heureMontreal.ts.
+  const [jour, setJour]     = useState('');
+  const [heure, setHeure]   = useState('09:00');
+  const [confirmeProg, setConfirmeProg]   = useState(false);
+  const [programmation, setProgrammation] = useState(false);
+  const [file, setFile] = useState<CampagneProgrammee[]>([]);
+  /** L'identifiant de la campagne dont l'annulation est en train de se
+   *  faire confirmer, dans la page. Jamais de boîte du navigateur. */
+  const [aRetirer, setARetirer] = useState<string | null>(null);
+  const [messageProg, setMessageProg] = useState<string | null>(null);
+  const [erreurProg, setErreurProg]   = useState<string | null>(null);
+
   // Le focus se pose par identifiant plutôt que par `ref` : le bouton
   // partagé de `primitives.tsx` n'expose pas de ref, et le corriger
   // là-bas toucherait toutes les sections de l'admin pour un besoin
   // qui n'existe qu'ici.
   const ID_CONFIRMER = 'campagne-confirmer';
+  const ID_PROGRAMMER = 'campagne-programmer';
 
   // ── Le registre et les comptes ──
   // Les deux lectures partent ensemble : le filtre « sans compte » a
@@ -88,6 +120,9 @@ const CampagnesSection: React.FC = () => {
 
   // ── L'historique, en direct ──
   useEffect(() => suivreCampagnes(setHistorique), []);
+
+  // ── La file des envois programmés, en direct ──
+  useEffect(() => suivreCampagnesProgrammees(setFile), []);
 
   const modele: ModeleCampagne = useMemo(
     () => MODELES_CAMPAGNE.find((m) => m.id === modeleId) ?? MODELES_CAMPAGNE[0],
@@ -163,10 +198,20 @@ const CampagnesSection: React.FC = () => {
     if (confirme) document.getElementById(ID_CONFIRMER)?.focus();
   }, [confirme]);
 
+  useEffect(() => {
+    if (confirmeProg) document.getElementById(ID_PROGRAMMER)?.focus();
+  }, [confirmeProg]);
+
   // Changer de modèle, de langue ou de cible annule une confirmation en
   // attente : le nombre affiché dans le panneau doit toujours être le
   // nombre réel.
   useEffect(() => { setConfirme(false); }, [modeleId, langue, mode, filtre, coches]);
+
+  // La même prudence pour le rendez-vous : le panneau redit une date et
+  // un nombre, alors il se referme dès que l'un des deux change.
+  useEffect(() => {
+    setConfirmeProg(false);
+  }, [modeleId, langue, mode, filtre, coches, jour, heure]);
 
   const basculer = <T,>(liste: T[], valeur: T): T[] =>
     (liste.includes(valeur) ? liste.filter((v) => v !== valeur) : [...liste, valeur]);
@@ -217,6 +262,70 @@ const CampagnesSection: React.FC = () => {
       setErreur(e instanceof Error ? e.message : 'L’envoi s’est arrêté.');
     } finally {
       setEnvoi(false);
+    }
+  };
+
+  // ── Le moment de l'envoi ──
+  // L'instant absolu que vise le rendez-vous. Il se calcule à partir de
+  // l'heure de MONTRÉAL, jamais de celle du portable qui sert à
+  // programmer : Alex ne travaille pas toujours depuis le Québec, et
+  // une lettre qui part à 9 h heure de Bogotá arrive au village en
+  // pleine nuit.
+  const instantPrevu = useMemo(() => {
+    if (!jour || !heure) return null;
+    try { return instantDepuisMontreal(jour, heure); } catch { return null; }
+  }, [jour, heure]);
+
+  const dejaPasse = instantPrevu !== null && instantPrevu.getTime() <= Date.now();
+
+  /** Aujourd'hui à Montréal, pour que le champ refuse d'emblée une date
+   *  passée. Le garde-fou du navigateur, doublé par celui du dessus. */
+  const aujourdhui = useMemo(() => montrealDepuisInstant(new Date()).date, []);
+
+  const peutProgrammer = instantPrevu !== null && !dejaPasse && nombre > 0 && !tropDeMonde;
+
+  /** Le moment d'une campagne de la file, écrit pour être lu. */
+  const quandDe = (c: CampagneProgrammee): string => {
+    const t = c.envoiPrevuLe;
+    const d = t && typeof t.toDate === 'function' ? t.toDate() : null;
+    return d ? ecrireHeureMontreal(d) : 'moment inconnu';
+  };
+
+  const programmer = async () => {
+    if (!instantPrevu || !user) return;
+    setProgrammation(true); setErreurProg(null); setMessageProg(null);
+    try {
+      await programmerCampagne({
+        modele: modele.id, modeleNom: modele.nom, langue, cible,
+        sujet: rendu.sujet, html: rendu.html, texte: rendu.texte,
+        // La portée, pas la liste. Les gens se retrouvent au moment de
+        // l'envoi, à partir du registre de ce jour-là.
+        portee: porteeDepuis(mode, filtre, destinataires.map((d) => d.courriel)),
+        envoiPrevuLe: instantPrevu,
+        quandLocal: `${jour} ${heure}`,
+        fuseau: FUSEAU_FESTIVAL,
+        apercuDestinataires: nombre,
+        parUid: user.uid,
+        parNom: user.displayName || user.email || 'Équipe',
+        parCourriel: user.email || '',
+      });
+      setMessageProg(`Le rendez-vous est posé pour le ${ecrireHeureMontreal(instantPrevu)}.`);
+      setConfirmeProg(false);
+    } catch (e: unknown) {
+      setErreurProg(e instanceof Error ? e.message : 'Le rendez-vous n’a pas pu être posé.');
+    } finally {
+      setProgrammation(false);
+    }
+  };
+
+  const retirer = async (c: CampagneProgrammee) => {
+    setErreurProg(null); setMessageProg(null);
+    try {
+      await annulerCampagneProgrammee(c.id, user?.displayName || user?.email || 'Équipe');
+      setARetirer(null);
+      setMessageProg('La campagne est retirée de la file. Elle ne partira pas.');
+    } catch (e: unknown) {
+      setErreurProg(e instanceof Error ? e.message : 'L’annulation n’a pas abouti.');
     }
   };
 
@@ -666,7 +775,227 @@ const CampagnesSection: React.FC = () => {
         </div>
       </Card>
 
-      {/* ── 4 · L'historique ── */}
+      {/* ── 4 · Le rendez-vous ── */}
+      {/* Programmer plutôt qu'envoyer. Le même garde-fou que l'envoi
+          immédiat : un panneau dans la page qui redit la date et le
+          nombre, jamais une boîte du navigateur. */}
+      <Card className="p-5 md:p-6">
+        <div className="flex items-center gap-2 mb-1">
+          <CalendarClock size={16} style={{ color: 'var(--admin-accent)' }} aria-hidden />
+          <h3 className="font-display title-medieval text-lg" style={{ color: 'var(--admin-text)' }}>
+            Programmer l’envoi
+          </h3>
+        </div>
+        <p className="admin-prose mb-2.5">
+          Tu peux poser un rendez-vous au lieu d’envoyer tout de suite. Choisis le jour et
+          l’heure, et la lettre partira toute seule, même si personne n’est devant l’écran ce
+          matin-là.
+        </p>
+        <p className="admin-prose mb-6">
+          L’heure est celle de Montréal, où que tu sois quand tu la programmes. La liste des
+          destinataires se refait au moment du départ, à partir de la portée choisie plus
+          haut, alors quelqu’un qui prend son billet d’ici là ne recevra pas une lettre qui
+          l’invite à en prendre un.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2 max-w-md mb-5">
+          <div>
+            <Label>Le jour</Label>
+            <Input
+              type="date"
+              value={jour}
+              min={aujourdhui}
+              onChange={(e) => setJour(e.target.value)}
+              aria-label="Jour de l’envoi"
+              // Sans cela, le sélecteur natif du navigateur s'affiche
+              // en clair au milieu d'une page sombre.
+              style={{ colorScheme: 'dark' }}
+            />
+          </div>
+          <div>
+            <Label>L’heure, à Montréal</Label>
+            <Input
+              type="time"
+              value={heure}
+              onChange={(e) => setHeure(e.target.value)}
+              aria-label="Heure de l’envoi, à l’heure de Montréal"
+              style={{ colorScheme: 'dark' }}
+            />
+          </div>
+        </div>
+
+        {/* Le moment retenu, écrit en toutes lettres. C'est la phrase
+            qu'on relit avant de poser le rendez-vous. */}
+        <div role="status" aria-live="polite" className="mb-5">
+          {instantPrevu && !dejaPasse && (
+            <p className="font-display" style={{ fontSize: '1.28rem', lineHeight: 1.45, color: 'var(--admin-brass-hi)' }}>
+              Départ le {ecrireHeureMontreal(instantPrevu)}
+            </p>
+          )}
+          {instantPrevu && dejaPasse && (
+            <p className="admin-prose" style={{ color: '#FCA5B0' }}>
+              Ce moment est déjà passé. Choisis un jour ou une heure qui vient.
+            </p>
+          )}
+          {!instantPrevu && (
+            <p className="font-sans text-xs" style={{ color: 'var(--admin-text-mute)' }}>
+              Choisis un jour pour voir le moment du départ.
+            </p>
+          )}
+        </div>
+
+        {confirmeProg ? (
+          <div
+            role="group"
+            aria-labelledby="campagne-programmation"
+            className="p-5"
+            style={{
+              borderRadius: 15,
+              background: 'color-mix(in oklab, var(--admin-accent), transparent 93%)',
+              border: '1px solid var(--admin-accent-line)',
+              boxShadow: 'inset 0 1px 0 var(--admin-sheen)',
+            }}
+          >
+            <div className="flex items-start gap-3.5">
+              <CalendarClock size={18} style={{ color: 'var(--admin-brass-hi)' }} className="shrink-0 mt-0.5" aria-hidden />
+              <div className="min-w-0">
+                <p id="campagne-programmation" className="font-display title-medieval text-lg" style={{ color: 'var(--admin-text)' }}>
+                  Cette lettre partira toute seule
+                </p>
+                <p className="admin-prose mt-1.5">
+                  Le départ est fixé au {instantPrevu ? ecrireHeureMontreal(instantPrevu) : ''}, et la
+                  minuterie passe au quart d’heure, alors compte quelques minutes de plus. La portée
+                  retenue est : {cible}, ce qui fait environ {nombre} personne{nombre > 1 ? 's' : ''}
+                  {' '}d’après le registre d’aujourd’hui. Tu pourras encore la retirer de la file tant
+                  qu’elle n’est pas partie.
+                </p>
+                <div className="flex flex-wrap items-center gap-3 mt-4">
+                  <PrimaryButton
+                    id={ID_PROGRAMMER}
+                    type="button"
+                    onClick={() => void programmer()}
+                    disabled={programmation}
+                  >
+                    <CalendarClock size={13} className="inline mr-1.5 -mt-0.5" aria-hidden />
+                    {programmation ? 'Rendez-vous en cours' : 'Poser le rendez-vous'}
+                  </PrimaryButton>
+                  <GhostButton type="button" onClick={() => setConfirmeProg(false)}>
+                    Revenir en arrière
+                  </GhostButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <PrimaryButton
+            type="button"
+            onClick={() => setConfirmeProg(true)}
+            disabled={!peutProgrammer || programmation || envoi}
+          >
+            <CalendarClock size={13} className="inline mr-1.5 -mt-0.5" aria-hidden />
+            Programmer cette campagne
+          </PrimaryButton>
+        )}
+
+        <div role="status" aria-live="polite">
+          {erreurProg && <p className="admin-prose mt-4" style={{ color: '#FCA5B0' }}>{erreurProg}</p>}
+          {messageProg && (
+            <p className="admin-prose mt-4 inline-flex items-start gap-2" style={{ color: '#5FD3A2' }}>
+              <CircleCheck size={15} className="shrink-0 mt-0.5" aria-hidden />
+              {messageProg}
+            </p>
+          )}
+        </div>
+
+        <div className="admin-seam my-6" />
+
+        {/* ── La file ── */}
+        <h4 className="font-display title-medieval text-base mb-1" style={{ color: 'var(--admin-text)' }}>
+          Ce qui s’en vient
+        </h4>
+        <p className="admin-prose mb-4">
+          De la plus proche à la plus lointaine. Une campagne se retire tant qu’elle n’est pas
+          partie.
+        </p>
+
+        {file.length === 0 ? (
+          <EmptyState icon={CalendarClock}>Aucune campagne n’attend son tour.</EmptyState>
+        ) : (
+          <ul className="space-y-2.5">
+            {file.map((c) => (
+              <li
+                key={c.id}
+                className="p-4"
+                style={{
+                  borderRadius: 15,
+                  border: '1px solid var(--admin-line)',
+                  background: 'rgba(196, 214, 230, 0.02)',
+                  // Ce qui est passé ou annulé recule d'un cran, pour que
+                  // ce qui s'en vient se détache.
+                  opacity: c.statut === 'prevue' || c.statut === 'en cours' ? 1 : 0.62,
+                }}
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5">
+                  <span className="font-display text-[1rem]" style={{ color: 'var(--admin-text)' }}>
+                    {c.modeleNom || c.modele}
+                  </span>
+                  <span className="font-sans text-[11px]" style={{ color: 'var(--admin-brass-hi)' }}>
+                    {quandDe(c)}
+                  </span>
+                </div>
+                <p className="admin-prose mt-1.5">{c.sujet}</p>
+
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  <Badge tone={TON_STATUT[c.statut] ?? 'neutral'}>{LIBELLE_STATUT[c.statut] ?? c.statut}</Badge>
+                  <Badge tone="info">{c.langue}</Badge>
+                  {c.statut === 'envoyee' && c.resultat
+                    ? <Badge tone="neutral">{c.resultat.envoyes ?? 0} sur {c.resultat.destinataires ?? 0}</Badge>
+                    : <Badge tone="neutral">environ {c.apercuDestinataires} personne{c.apercuDestinataires > 1 ? 's' : ''}</Badge>}
+                  {!!c.resultat?.echecs && (
+                    <Badge tone="rejected">{c.resultat.echecs} échec{c.resultat.echecs > 1 ? 's' : ''}</Badge>
+                  )}
+                </div>
+
+                <p className="font-sans text-[11px] mt-3" style={{ color: 'var(--admin-text-mute)' }}>
+                  {c.parNom} · {c.cible}
+                </p>
+
+                {c.erreur && (
+                  <p className="admin-prose mt-2" style={{ color: '#FCA5B0' }}>{c.erreur}</p>
+                )}
+
+                {/* Le retrait, confirmé dans la page. Deux gestes, et le
+                    second dit ce qui va se passer. */}
+                {c.statut === 'prevue' && (
+                  aRetirer === c.id ? (
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <span className="admin-prose" style={{ color: 'var(--admin-text)' }}>
+                        Cette lettre ne partira pas.
+                      </span>
+                      <PrimaryButton type="button" onClick={() => void retirer(c)}>
+                        <CalendarX size={13} className="inline mr-1.5 -mt-0.5" aria-hidden />
+                        Retirer de la file
+                      </PrimaryButton>
+                      <GhostButton type="button" onClick={() => setARetirer(null)}>
+                        Garder le rendez-vous
+                      </GhostButton>
+                    </div>
+                  ) : (
+                    <div className="mt-4">
+                      <GhostButton type="button" onClick={() => setARetirer(c.id)}>
+                        <CalendarX size={13} className="inline mr-1.5 -mt-0.5" aria-hidden />
+                        Annuler cet envoi
+                      </GhostButton>
+                    </div>
+                  )
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      {/* ── 5 · L'historique ── */}
       <Card className="p-5 md:p-6">
         <div className="flex items-center gap-2 mb-1">
           <History size={16} style={{ color: 'var(--admin-accent)' }} aria-hidden />

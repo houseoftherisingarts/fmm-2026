@@ -372,6 +372,59 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Les campagnes programmées ─────────────────────────────────
+    // Le rendez-vous d'un envoi : la lettre rendue, la portée des
+    // destinataires, l'instant d'envoi et l'état. La fonction planifiée
+    // `minuterieCampagnes` vient y chercher ce qui est dû, l'envoie et
+    // écrit le résultat par le SDK d'administration, qui passe outre
+    // ces règles.
+    //
+    // Réservée à l'équipe de bout en bout, comme le registre des
+    // clients auquel la portée renvoie.
+    //
+    // L'ÉCRITURE EST ÉTROITE, et c'est voulu. L'équipe pose un
+    // rendez-vous, et le seul geste qu'elle peut poser ensuite est
+    // d'annuler une campagne encore prévue. Ni la lettre, ni l'heure,
+    // ni la portée ne se retouchent après coup : une campagne qui doit
+    // changer s'annule et se reprogramme, ce qui laisse les deux gestes
+    // dans l'historique au lieu d'un document qui a changé de sens en
+    // silence.
+    //
+    // Une campagne ne s'efface jamais. Une lettre partie à trois cents
+    // personnes doit rester traçable, même quand elle s'est mal passée.
+    match /campagnesProgrammees/{docId} {
+      allow read: if isAdmin();
+
+      allow create: if isAdmin()
+                    && request.resource.data.statut == 'prevue'
+                    // Personne ne programme au nom de quelqu'un d'autre.
+                    && request.resource.data.parCourriel == request.auth.token.email.lower()
+                    && request.resource.data.envoiPrevuLe is timestamp
+                    && request.resource.data.sujet is string
+                    && request.resource.data.sujet.size() > 0
+                    && request.resource.data.sujet.size() <= 200
+                    // Les mêmes plafonds que la fonction d'envoi, pour
+                    // qu'une lettre trop lourde soit refusée ici plutôt
+                    // que de dormir trois semaines avant d'échouer.
+                    && request.resource.data.html is string
+                    && request.resource.data.html.size() > 0
+                    && request.resource.data.html.size() < 200000
+                    && request.resource.data.texte is string
+                    && request.resource.data.texte.size() > 0
+                    && request.resource.data.texte.size() < 200000
+                    && request.resource.data.portee is map;
+
+      // Annuler, et rien d'autre. Une campagne déjà en cours d'envoi ne
+      // se rappelle pas : les courriels sont sortis.
+      allow update: if isAdmin()
+                    && resource.data.statut == 'prevue'
+                    && request.resource.data.statut == 'annulee'
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['statut', 'annuleeParNom', 'annuleeLe']);
+
+      allow delete: if false;
+    }
+
     // ── Les désabonnements ────────────────────────────────────────
     // La clé du document EST l'adresse en minuscules. Deux clics sur le
     // même lien écrivent donc le même document, et la liste ne peut pas
