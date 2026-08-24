@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CreditJeux from '../../components/jeux/CreditJeux';
+import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dices, Minus, Plus, Skull, RotateCcw, Users, Target, ScrollText } from 'lucide-react';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
@@ -68,6 +69,8 @@ const DesPage: React.FC = () => {
   const [ancres, setAncres] = useState<Array<{ x: number; y: number }>>([]);
   const [bulles, setBulles] = useState<Record<number, string>>({});
   const [reglesOuvertes, setReglesOuvertes] = useState(false);
+  // La taverne chante dès que la table est dressée.
+  const musiqueRef = useRef<BoutonMusiqueHandle>(null);
 
   // ── La table 3D vit tant que la page vit ────────────────────────
   useEffect(() => {
@@ -96,6 +99,7 @@ const DesPage: React.FC = () => {
     tableRef.current?.mains(p.joueurs.map((j) => j.des.length));
     tableRef.current?.lancer(p.joueurs[0].des);
     tableRef.current?.remuer(p.joueurs.map((_, i) => i).filter((i) => i > 0));
+    musiqueRef.current?.demarrer();
   }, [nbJoueurs, fr]);
 
   // Aperçu de développement seulement : `?apercu=1&auto=1` dresse la
@@ -436,6 +440,18 @@ const DesPage: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* La musique de taverne, en haut à gauche de la table */}
+          <div className="absolute left-3 md:left-6 top-16 z-20">
+            <BoutonMusique
+              ref={musiqueRef}
+              cle="des"
+              url="/audio/master-of-the-feast.mp3"
+              titre="Master of the Feast · Kevin MacLeod"
+              onLabel={fr ? 'Couper' : 'Mute'}
+              offLabel={fr ? 'Musique' : 'Music'}
+            />
+          </div>
 
           {/* Les règles, à gauche de la table */}
           <button

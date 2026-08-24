@@ -233,11 +233,24 @@ export function setupScene(el: HTMLElement): SceneHandle {
   salle.renderOrder = -1;
   scene.add(salle);
 
+  // Le cylindre de la salle est ouvert par en bas, et son cerclage se
+  // lisait comme un grand cercle noir sous la table dès qu'on montait
+  // la caméra (Alex, 2026-08-23). Un plancher le referme.
+  const plancherGeo = new THREE.CircleGeometry(34, 48);
+  const plancherMat = new THREE.MeshBasicMaterial({ color: 0x150e08, fog: true });
+  const plancher = new THREE.Mesh(plancherGeo, plancherMat);
+  plancher.rotation.x = -Math.PI / 2;
+  plancher.position.y = -7.98;
+  plancher.renderOrder = -2;
+  scene.add(plancher);
+
   // Le brouillard doit laisser voir la salle : il se referme plus loin
   // que le rayon du cylindre, sinon le décor disparaît dans le noir.
   scene.fog = new THREE.Fog(0x0d0906, 26, 62);
 
   const dispose = () => {
+    plancherGeo.dispose();
+    plancherMat.dispose();
     salleGeo.dispose();
     salleMat.dispose();
     salleTex.dispose();

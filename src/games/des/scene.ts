@@ -340,7 +340,7 @@ function fabriquerSon() {
 export function creerTable(): TableDes {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0506);
-  scene.fog = new THREE.Fog(0x0d0906, 17, 34);
+  scene.fog = new THREE.Fog(0x0d0906, 27, 60);
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 140);
   camera.position.set(0, 14, 15);
@@ -562,7 +562,6 @@ export function creerTable(): TableDes {
     de: THREE.Mesh; jusqua: number; cible: Face; depart: number;
     arrivee?: THREE.Vector3;
   }> = [];
-  const envol: Array<{ de: THREE.Mesh; depart: number }> = [];
   const sieges: Array<{ x: number; z: number }> = [];
   const convives: THREE.Mesh[] = [];
 
@@ -587,8 +586,6 @@ export function creerTable(): TableDes {
   /** Coupe court aux dés qui s'envolent : au brassage suivant, plus
    *  rien ne flotte au-dessus de la table (Alex, 2026-08-23). */
   const calmer = () => {
-    envol.forEach((e) => e.de.parent?.remove(e.de));
-    envol.length = 0;
     tumbling.length = 0;
   };
 
@@ -676,31 +673,6 @@ export function creerTable(): TableDes {
     const pulse = 1 + Math.sin(t / 520) * 0.05;
     projecteur.intensity = intensiteVoulue * pulse;
 
-    // Les dés qui s'en vont : ils montent, tournent et se dissipent.
-    for (let i = envol.length - 1; i >= 0; i--) {
-      const e = envol[i];
-      const k = (t - e.depart) / 900;
-      if (k >= 1) {
-        e.de.parent?.remove(e.de);
-        envol.splice(i, 1);
-        continue;
-      }
-      e.de.position.y = DE / 2 + k * 1.5;
-      e.de.rotation.x += 0.06;
-      e.de.rotation.z += 0.045;
-      const ech = 1 - k * 0.85;
-      e.de.scale.setScalar(Math.max(0.02, ech));
-      e.de.traverse((o) => {
-        const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
-        const appliquer = (mat: THREE.Material) => {
-          mat.transparent = true;
-          (mat as THREE.MeshPhongMaterial).opacity = Math.max(0, 1 - k * 1.1);
-        };
-        if (Array.isArray(m)) m.forEach(appliquer);
-        else if (m) appliquer(m);
-      });
-    }
-
     // Les convives restent tournés vers la caméra pendant qu'elle
     // tourne autour de la table.
     convives.forEach((c) => {
@@ -773,7 +745,6 @@ export function creerTable(): TableDes {
     disposer(nb) {
       // On vide et on repose : c'est peu fréquent, ça reste lisible.
       groupe.clear();
-      envol.length = 0;
       gobelets.length = 0;
       mesDes.length = 0;
       desAdverses.length = 0;
@@ -798,7 +769,7 @@ export function creerTable(): TableDes {
           // le centre de la table.
           const tex = chargeur.load(CONVIVES[(i - 1) % CONVIVES.length]);
           tex.colorSpace = THREE.SRGBColorSpace;
-          const haut = 3.9;
+          const haut = 5.4;
           // `alphaTest` plutôt que la transparence mélangée : le convive
           // devient un objet plein qui se cache derrière la table au
           // lieu d'un filigrane posé par-dessus (Alex, 2026-08-23).
@@ -812,8 +783,8 @@ export function creerTable(): TableDes {
           // Le buste se pose AU-DELÀ du bord de la table (rayon 6,2),
           // et son bas plonge sous le plateau : les planches cachent la
           // découpe et le convive a l'air assis (Alex, 2026-08-23).
-          plaque.position.set(p.x * 1.95, haut / 2 - 1.7, p.z * 1.95);
-          plaque.lookAt(0, haut / 2 - 0.35, 0);
+          plaque.position.set(p.x * 1.78, haut / 2 - 2.35, p.z * 1.78);
+          plaque.lookAt(0, haut / 2 - 2.0, 0);
           groupe.add(plaque);
           convives.push(plaque);
 
@@ -927,18 +898,11 @@ export function creerTable(): TableDes {
       }
     },
 
-    perdreUnDe(index) {
-      const s2 = sieges[index];
-      const de = faireDe();
-      de.position.set(
-        (s2 ? s2.x : 0) * 0.72 + (Math.random() - 0.5) * 0.4,
-        DE / 2,
-        (s2 ? s2.z : 2.3) * 0.72 + (Math.random() - 0.5) * 0.4,
-      );
-      const [rx, ry, rz] = VERS_LE_CIEL[((1 + Math.floor(Math.random() * 6)) as Face)];
-      de.rotation.set(rx, ry, rz);
-      groupe.add(de);
-      envol.push({ de, depart: performance.now() });
+    perdreUnDe(_index) {
+      // Le dé perdu quitte la table sans cérémonie. Le petit dé qui
+      // montait en rapetissant avant de s'évaporer a été retiré : il se
+      // voyait comme un défaut d'affichage (Alex, 2026-08-23). Seul le
+      // son marque la perte, et le compte des mains suit derrière.
       son.perdre();
     },
 
