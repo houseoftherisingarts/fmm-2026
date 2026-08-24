@@ -21,10 +21,9 @@
 
 import { build } from 'esbuild';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { homedir, tmpdir } from 'node:os';
-import { mkdtempSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -96,7 +95,7 @@ const M = await import(sortie);
 // village venez-vous ? ». On cherche donc par morceau de mot, accents
 // et casse mis de côté.
 const plat = (v) => String(v ?? '')
-  .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
 function colonne(entetes, ...motifs) {
   for (const motif of motifs) {
@@ -104,6 +103,12 @@ function colonne(entetes, ...motifs) {
     if (i !== -1) return i;
   }
   return -1;
+}
+
+/** Au mot exact. « Nom » ne doit pas attraper « Prénom », et la forme
+ *  des dons porte les deux colonnes côte à côte. */
+function colonneExacte(entetes, motif) {
+  return entetes.findIndex((e) => plat(e) === plat(motif));
 }
 
 const cellule = (ligne, i) => (i === -1 ? '' : M.normaliserTexte(ligne[i]));
@@ -123,8 +128,12 @@ function anneeDepuisDate(valeur) {
  *  boutique n'ont pas de colonne de téléphone : les gens l'écrivent
  *  dans « Questions et notes », collé au nom de leur entreprise. */
 function telephoneDansLeTexte(texte) {
-  const m = String(texte ?? '').replace(/[\s().-]/g, '').match(/\b1?\d{10}\b/);
-  return m ? m[0] : '';
+  // Un numéro nord-américain, avec ou sans indicatif 1, écrit collé ou
+  // espacé. Les gardes de chiffres évitent d'attraper un morceau de
+  // numéro plus long ou une suite de chiffres dans une adresse web.
+  const m = String(texte ?? '')
+    .match(/(?<!\d)(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}(?!\d)/);
+  return m ? m[0].replace(/\D/g, '') : '';
 }
 
 const ouiNon = (v) => {
@@ -157,7 +166,7 @@ function lignesDuFichier(chemin) {
   const iRemb   = colonne(entetes, 'montant rembourse');
   const iDate   = colonne(entetes, 'date du paiement', 'date de la commande');
   const iPrenom = colonne(entetes, 'prenom');
-  const iNomSeul = colonne(entetes, 'nom de famille');
+  const iNomSeul = colonneExacte(entetes, 'nom');
   const iEntreprise = colonne(entetes, "nom de l'entreprise");
   const iStatut = forme === 'dons'
     ? colonne(entetes, 'statut du paiement')
@@ -186,7 +195,7 @@ function lignesDuFichier(chemin) {
       // La forme des dons éclate le nom en deux colonnes, et une
       // entreprise donne parfois à la place d'une personne.
       const prenom = cellule(l, iPrenom);
-      const famille = iNomSeul !== -1 ? cellule(l, iNomSeul) : cellule(l, colonne(entetes, 'nom'));
+      const famille = cellule(l, iNomSeul);
       nomAcheteur = M.normaliserTexte(`${prenom} ${famille}`) || cellule(l, iEntreprise);
     }
 
@@ -194,7 +203,8 @@ function lignesDuFichier(chemin) {
     if (forme === 'boutique' && iArt !== -1) articles.push(M.analyserArticle(l[iArt]));
     else if (forme === 'billets' && iType !== -1) articles.push({ libelle: cellule(l, iType), quantite: 1 });
 
-    const montant = forme === 'dons' ? Number(cellule(l, iMont)) : NaN;
+    const brutMontant = cellule(l, iMont);
+    const montant = forme === 'dons' && brutMontant ? Number(brutMontant) : NaN;
 
     sorties.push({
       courriel,
@@ -308,8 +318,11 @@ const fiches = M.fusionnerClients(toutesLesLignes);
 // Le compte rendu, fichier par fichier.
 console.log('');
 for (const r of rapports) {
-  const lesSiennes = fiches.filter((f) => f.categorie === r.categorie
-    && (r.anneeDuNom == null || f.annee === r.anneeDuNom));
+  // Les personnes de CE fichier : les clés que ses propres lignes
+  // produisent, jamais un filtre sur le tas commun, sinon un fichier
+  // sans année ramasserait les fiches de tous les autres.
+  const cles = new Set(r.sorties.map((s) => M.identifiantClient(s.annee, s.categorie, s.courriel)));
+  const lesSiennes = { length: cles.size };
   const annee = r.anneeDuNom ?? (r.sorties.find((s) => s.annee != null)?.annee ?? null);
   console.log(`  ${r.nom}`);
   console.log(`    forme ${r.forme} · catégorie ${r.categorie}`
@@ -326,6 +339,18 @@ console.log(`  Total : ${toutesLesLignes.length} lignes retenues, ${fiches.lengt
   + ` · ${annulees} annulées · ${aConfirmer} sans année`);
 
 if (essai) {
+  // Trois fiches au hasard, pour vérifier à l'œil que la fusion a bien
+  // travaillé. Le courriel est masqué : un essai se lance souvent
+  // devant quelqu'un, et ces adresses appartiennent à de vraies gens.
+  console.log('\n  Aperçu :');
+  for (const f of fiches.filter((_, i) => i % Math.ceil(fiches.length / 3) === 0).slice(0, 3)) {
+    const masque = f.courriel.replace(/^(.).*(@.*)$/, '$1•••$2');
+    console.log(`    ${f.nom} · ${masque} · ${f.annee ?? 'année à confirmer'} · ${f.categorie}`);
+    console.log(`      ${f.detail || 'aucun détail'} · ${f.quantite} au total`
+      + ` · ${f.lignes} ligne${f.lignes > 1 ? 's' : ''} fondue${f.lignes > 1 ? 's' : ''}`
+      + (f.telephone ? ` · tél. présent` : ' · sans téléphone')
+      + (f.statut === 'annule' ? ' · ANNULÉE' : ''));
+  }
   console.log('\n  Essai seulement. Rien n’a été écrit dans Firestore.\n');
   process.exit(0);
 }

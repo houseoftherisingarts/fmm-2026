@@ -280,7 +280,9 @@ export function fusionnerClients(lignes: LigneClient[]): Client[] {
     if (fiche.categorie === 'mecenes') {
       const [un, plusieurs] = UNITE_CATEGORIE.mecenes;
       const nb = fiche.quantite;
-      detail = `${nb} ${nb > 1 ? plusieurs : un} · ${ecrireMontant(fiche.montant ?? 0)}`;
+      detail = nb > 0
+        ? `${nb} ${nb > 1 ? plusieurs : un} · ${ecrireMontant(fiche.montant ?? 0)}`
+        : 'Aucun paiement abouti';
     }
 
     return {
