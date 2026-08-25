@@ -110,12 +110,15 @@ const BoutiquesProchesWJW: React.FC = () => {
           })}
         </div>
 
-        <div className="mt-10 md:mt-14 text-center">
+        {/* `.fmm-glass-btn` est un flex de niveau bloc : sans ce conteneur
+            centré et sans `display` remis en ligne, le bouton s'étirait
+            sur toute la largeur et se collait à gauche. */}
+        <div className="mt-10 md:mt-14 flex justify-center">
           <button
             type="button"
             onClick={() => setCarteOuverte(true)}
-            className="fmm-glass-btn inline-flex px-8 py-5"
-            style={{ flexDirection: 'row', gap: '.9rem', alignItems: 'center' }}
+            className="fmm-glass-btn px-8 py-5"
+            style={{ display: 'inline-flex', flexDirection: 'row', gap: '.9rem', alignItems: 'center', width: 'auto' }}
           >
             <MapPin size={18} style={{ color: 'var(--color-amber-glow)' }} />
             <span className="fmm-glass-btn-label">Trouver les autres points de vente</span>
