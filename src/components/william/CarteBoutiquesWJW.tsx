@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { BOUTIQUES_WJW, type BoutiqueWJW } from '../../content/boutiquesWJW';
@@ -66,6 +67,7 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
       const map = L.map(hote.current, {
         center: [46.6, -73.4],
         zoom: 6,
+        zoomSnap: 0.25,
         scrollWheelZoom: false,
         attributionControl: true,
       });
@@ -118,8 +120,18 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
         .addTo(map)
         .bindPopup(`<strong>${FESTIVAL.nom}</strong><br>25, 26 et 27 septembre 2026`);
 
+      // Le cadrage se calcule sur les punaises elles-mêmes plutôt que
+      // sur un centre fixe : la carte s'ouvre sur le Québec habité, sans
+      // moitié d'écran perdue en Ontario et en Nouvelle-Angleterre.
+      const points: Array<[number, number]> = BOUTIQUES_WJW.map((b) => [b.lat, b.lon]);
+      points.push([FESTIVAL.lat, FESTIVAL.lon]);
+      map.fitBounds(points, { padding: [38, 38] });
+
       carte.current = map;
-      setTimeout(() => map.invalidateSize(), 120);
+      setTimeout(() => {
+        map.invalidateSize();
+        map.fitBounds(points, { padding: [38, 38] });
+      }, 160);
     })();
 
     return () => {
@@ -129,7 +141,11 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
     };
   }, [ouverte]);
 
-  return (
+  // Le site anime ses sections avec une transformation CSS, et une
+  // transformation piège tout ce qui est en `position: fixed` à
+  // l'intérieur. Sans ce portail vers le corps du document, la carte
+  // s'ouvrait quatre mille pixels plus bas au lieu de couvrir l'écran.
+  const contenu = (
     <AnimatePresence>
       {ouverte && (
         <motion.div
@@ -228,6 +244,9 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
       )}
     </AnimatePresence>
   );
+
+  if (typeof document === 'undefined') return null;
+  return createPortal(contenu, document.body);
 };
 
 export default CarteBoutiquesWJW;

@@ -11,7 +11,13 @@ import CarteBoutiquesWJW, { boutiquesParProximite } from './CarteBoutiquesWJW';
 // cartes du visiteur, parce que c'est ce qu'on fait d'une adresse.
 
 const BoutiquesProchesWJW: React.FC = () => {
-  const [carteOuverte, setCarteOuverte] = useState(false);
+  // `?carte=1` ouvre la carte dès l'arrivée : ça sert au lien direct
+  // qu'Alex envoie au commanditaire, et à la vérification visuelle
+  // automatisée, qui ne sait pas cliquer.
+  const [carteOuverte, setCarteOuverte] = useState(
+    () => typeof window !== 'undefined'
+      && new URLSearchParams(window.location.search).get('carte') === '1',
+  );
   const proches = useMemo(() => boutiquesParProximite().slice(0, 4), []);
 
   return (

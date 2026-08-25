@@ -1,15 +1,18 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { Eyebrow, GildedFrame, SectionFog } from '../marche/atmospherics';
 
 // ─── La bannière du commanditaire ───────────────────────────────────
-// Une seule rupture visuelle sur toute la page (effet Von Restorff) :
-// le site est nuit bleue et laiton, cette bande est un parchemin clair
-// qui coupe le noir d'un bord à l'autre. Le clash se voit, il reste
-// dans la famille chaude du festival, et le logo de la maison garde son
-// noir d'origine au lieu d'être renversé.
+// Une seule rupture visuelle sur la page (effet Von Restorff), mais
+// une rupture qui reste dans la famille : la nuit bleue du site vire
+// au velours et au rubis du chapitre de la caravane, d'un bord à
+// l'autre, le temps d'une bande. Le logo de la maison est repeint en
+// os sur ce vin, comme un fer chaud sur un tonneau, à la façon des
+// panneaux de commanditaire de la page Partenaires (logo incrusté,
+// jamais posé en aplat clair).
 //
-// La bande chapeaute la page : elle vient avant tout le reste, comme
-// une plaque de commanditaire à l'entrée du village.
+// Tout vient des primitives du site : Eyebrow, GildedFrame, SectionFog
+// et les jetons de couleur. Rien de neuf à entretenir.
 
 const BanniereWJW: React.FC = () => {
   const reduit = useReducedMotion();
@@ -20,96 +23,59 @@ const BanniereWJW: React.FC = () => {
       className="relative w-full overflow-hidden"
       style={{
         background:
-          'radial-gradient(120% 140% at 50% 0%, #FBF6EA 0%, #F4EFE3 38%, #E8DDC1 100%)',
-        borderTop: '1px solid var(--color-brass)',
-        borderBottom: '1px solid var(--color-brass)',
+          'radial-gradient(90% 120% at 50% 100%, rgba(123, 30, 45, .55) 0%, rgba(43, 10, 18, .0) 60%),' +
+          'linear-gradient(180deg, var(--color-velvet-deep) 0%, var(--color-velvet) 55%, var(--color-velvet-deep) 100%)',
       }}
     >
-      {/* Grain de papier de boucher : deux trames très faibles qui
-          empêchent l'aplat crème de paraître plat à l'écran. */}
+      {/* La lanterne : une lueur de cuivre derrière le logo, comme la
+          braise derrière le titre du banquet. */}
       <div
         aria-hidden
-        className="absolute inset-0 pointer-events-none"
+        className="absolute pointer-events-none"
         style={{
-          backgroundImage:
-            'repeating-linear-gradient(90deg, rgba(107,31,31,.045) 0 1px, transparent 1px 14px),' +
-            'repeating-linear-gradient(0deg, rgba(107,31,31,.035) 0 1px, transparent 1px 14px)',
-          mixBlendMode: 'multiply',
+          left: '50%', top: '52%', width: 'min(70vw, 44rem)', height: 'min(70vw, 44rem)',
+          transform: 'translate(-50%, -50%)',
+          background: 'radial-gradient(circle, rgba(184, 106, 42, .28) 0%, rgba(232, 177, 74, .10) 32%, transparent 62%)',
+          filter: 'blur(6px)',
         }}
       />
-      {/* Ombre douce sur les deux bords, pour que la bande semble posée
-          sur la nuit du site plutôt que découpée dedans. */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-24 pointer-events-none"
-        style={{ background: 'linear-gradient(180deg, rgba(42,10,18,.16), transparent)' }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
-        style={{ background: 'linear-gradient(0deg, rgba(42,10,18,.16), transparent)' }}
-      />
+      <SectionFog edges="both" />
 
-      <div className="relative max-w-screen-lg mx-auto px-5 md:px-10 py-14 md:py-20 text-center">
+      {/* Deux filets de laiton qui bordent la bande : c'est la couture
+          entre la nuit du site et le vin de la bannière. */}
+      <span aria-hidden className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--color-brass), transparent)' }} />
+      <span aria-hidden className="absolute inset-x-0 bottom-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--color-brass), transparent)' }} />
+
+      <div className="relative z-10 max-w-screen-xl mx-auto px-5 md:px-10 py-16 md:py-24 text-center">
         <motion.div
-          initial={reduit ? false : { opacity: 0, y: 18 }}
+          initial={reduit ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          <img
-            src="/fmm-crest-chrome.webp"
-            alt=""
-            aria-hidden
-            className="mx-auto mb-5 w-11 md:w-14 opacity-90"
-            style={{ filter: 'grayscale(1) brightness(.35)' }}
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-          />
-
-          <p
-            className="font-sans uppercase mb-6"
-            style={{
-              color: 'var(--color-oxblood)',
-              letterSpacing: '0.34em',
-              fontSize: 'clamp(9px, 1.6vw, 11px)',
-            }}
-          >
+          <Eyebrow tone="amber" className="mb-8 inline-flex items-center gap-4 justify-center">
+            <span aria-hidden className="h-px w-10" style={{ background: 'var(--color-amber-glow)' }} />
             Le Village Nourriture présenté par
-          </p>
+            <span aria-hidden className="h-px w-10" style={{ background: 'var(--color-amber-glow)' }} />
+          </Eyebrow>
 
-          <img
-            src="/partenaires/wjw-logo.svg"
-            alt="William J. Walter, saucissier"
-            className="mx-auto w-[min(78vw,26rem)] md:w-[min(60vw,32rem)]"
-          />
-
-          <div
-            aria-hidden
-            className="mx-auto mt-8 mb-6 flex items-center justify-center gap-4"
-            style={{ maxWidth: '18rem' }}
-          >
-            <span className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, var(--color-brass))' }} />
-            <span
-              className="inline-block"
-              style={{
-                width: 7, height: 7, transform: 'rotate(45deg)',
-                background: 'var(--color-oxblood)',
-              }}
-            />
-            <span className="h-px flex-1" style={{ background: 'linear-gradient(270deg, transparent, var(--color-brass))' }} />
-          </div>
+          <GildedFrame tone="amber" active inset={10} className="inline-block">
+            <div className="px-10 py-8 md:px-16 md:py-10">
+              <img
+                src="/partenaires/wjw-logo-bone.svg"
+                alt="William J. Walter, saucissier"
+                className="mx-auto w-[min(72vw,22rem)] md:w-[min(46vw,28rem)]"
+                style={{ filter: 'drop-shadow(0 0 22px rgba(232, 177, 74, .22))' }}
+              />
+            </div>
+          </GildedFrame>
 
           <p
-            className="font-editorial mx-auto"
-            style={{
-              color: '#4A3520',
-              maxWidth: '38rem',
-              fontSize: 'clamp(17px, 2.3vw, 22px)',
-              lineHeight: 1.5,
-            }}
+            className="font-editorial mx-auto mt-10 text-ivory-soft"
+            style={{ maxWidth: '36rem', fontSize: 'clamp(16px, 2.1vw, 20px)', lineHeight: 1.55 }}
           >
-            Trois recettes sur nos grils, du 25 au 27 septembre 2026. La William Suisse,
-            la Toulouse et la Sanglier Bleuet cuisent devant vous, à quarante minutes
-            de la boutique de Buckingham.
+            Trois recettes sur nos grils du 25 au 27 septembre. La William Suisse, la
+            Toulouse et la Sanglier Bleuet cuisent devant vous, à quarante minutes de
+            la boutique de Buckingham.
           </p>
         </motion.div>
       </div>
