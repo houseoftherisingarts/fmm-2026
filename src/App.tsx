@@ -454,6 +454,11 @@ const App: React.FC = () => (
                     ?banquet=1 des boutons du banquet. La version anglaise
                     la perdait en chemin, donc un lecteur anglophone
                     arrivait sur un chapitre replié (Alex, 2026-08-23). */}
+                {/* Maquette de commandite montrée à William J. Walter.
+                    Slug à part, hors menus et hors plan du site : le vrai
+                    village gustatif reste intact tant qu'Alex n'a pas
+                    tranché. */}
+                <Route path="/william"     element={<WilliamPage />} />
                 <Route path="/nourriture"  element={<Navigate to={{ pathname: '/marche', search: window.location.search }} replace />} />
                 <Route path="/en/food"     element={<Navigate to={{ pathname: '/en/market', search: window.location.search }} replace />} />
                 <Route path="/groupes"     element={<Navigate to="/mariages" replace />} />
