@@ -1144,8 +1144,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 <ol className="relative">
                   {day.items.map((item, i) => {
                     const prev = i > 0 ? day.items[i - 1] : null;
-                    const hourOf = (s: string) => s.split('–')[0].split('h')[0].slice(0, 2);
-                    const showTime = !prev || hourOf(item.time) !== hourOf(prev.time);
+                    // L'heure ne se cache que devant une entrée qui commence
+                    // exactement au même moment que la précédente : deux
+                    // spectacles à 11h00 partagent leur ancre, alors qu'une
+                    // activité de 10h30 garde la sienne. Le regroupement par
+                    // heure ronde effaçait le départ de la moitié du programme
+                    // officiel, et le visiteur ne savait plus quand arriver.
+                    const showTime = !prev || item.time !== prev.time;
                     return (
                       <li
                         key={i}
