@@ -28,7 +28,7 @@ const BoutiquesProchesWJW: React.FC = () => {
       <SectionFog edges="top" />
       <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14">
         <SectionTopRail
-          index="09"
+          index="08"
           name="Après le festival"
           meta="Boutiques"
           metaValue="35"
@@ -42,7 +42,7 @@ const BoutiquesProchesWJW: React.FC = () => {
               Les quatre comptoirs de l’Outaouais
             </Eyebrow>
             <DisplayTitle size="lg" glow className="mb-5">
-              La saucisse se rapporte à la maison
+              La saucisse rentre chez elle
             </DisplayTitle>
             <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed max-w-prose mb-8">
               Ce que vous avez goûté sur le site se retrouve au comptoir le mardi

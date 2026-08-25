@@ -34,7 +34,7 @@ const WilliamPage: React.FC = () => {
 
       <BanniereWJW />
 
-      <div className="pt-10 md:pt-16">
+      <div className="pt-2 md:pt-4">
         <NourriturePage embedded />
       </div>
 
