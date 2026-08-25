@@ -57,7 +57,7 @@ const BanniereWJW: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <img
-            src="/logos/fmm-blason.webp"
+            src="/fmm-crest-chrome.webp"
             alt=""
             aria-hidden
             className="mx-auto mb-5 w-11 md:w-14 opacity-90"
