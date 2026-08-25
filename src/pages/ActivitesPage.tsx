@@ -1123,8 +1123,17 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     {day.items.length > 0 && (
                       <>
                         <span className="opacity-50">·</span>
+                        {/* Une entrée peut porter un moment plutôt qu'une
+                            heure (« Après »), et la plage du jour se calcule
+                            alors sur les vraies heures, sinon elle afficherait
+                            « 10h00–Après ». */}
                         <span style={{ color: 'var(--color-amber-glow)' }}>
-                          {day.items[0].time}–{day.items[day.items.length - 1].time.split('–').pop()}
+                          {(() => {
+                            const heures = day.items.map((it) => it.time).filter((h) => /\dh/.test(h));
+                            const debut = heures[0] ?? day.items[0].time;
+                            const fin = (heures[heures.length - 1] ?? debut).split('–').pop();
+                            return `${debut.split('–')[0]}–${fin}`;
+                          })()}
                         </span>
                       </>
                     )}
