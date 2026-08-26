@@ -8,6 +8,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { Reveal, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
+import HebergementHostPanel from '../components/hebergement/HebergementHostPanel';
 
 // ─── Hébergement bestiary entries ─────────────────────────────────────
 interface Lodging {
