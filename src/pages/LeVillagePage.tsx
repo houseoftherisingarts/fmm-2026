@@ -68,8 +68,8 @@ const LeVillagePage: React.FC = () => {
         eyebrow={fr ? 'Le village gustatif' : 'The food village'}
         titleA={fr ? 'Nourriture' : 'Food'}
         intro={fr
-          ? 'Les cuisines de clans, la taverne, le banquet de l’Équinoxe : tout ce qui se mange et se boit sur le site.'
-          : 'Clan kitchens, the tavern, the Equinox banquet: everything you eat and drink on site.'}
+          ? 'Les cuisines de clans, la taverne, le banquet du Prince William : tout ce qui se mange et se boit sur le site.'
+          : 'Clan kitchens, the tavern, the Prince William banquet: everything you eat and drink on site.'}
         orbImage="/wix/nourriture/feu-broche-v3.webp"
         orbImagePosition="45% 50%"
         onOrbClick={() => setNourritureOuverte((v) => !v)}

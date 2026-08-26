@@ -22,7 +22,7 @@ const LIBELLES: Record<string, string> = {
 const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
   { flag: 'bestiaire',        label: 'Grille des activités' },
   { flag: 'horaire',          label: 'Horaire (souvenir 2025)' },
-  { flag: 'banquet',          label: "Banquet de l'Équinoxe" },
+  { flag: 'banquet',          label: "Banquet du Prince William" },
   { flag: 'behourd',          label: 'Tournoi de Béhourd' },
   { flag: 'ateliersJeunesse', label: 'Ateliers Jeunesse (inscriptions)' },
 ];

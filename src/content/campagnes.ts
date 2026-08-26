@@ -162,8 +162,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Le festival se remonte les 25, 26 et 27 septembre. Les cuisines de clans rallument leurs feux et la taverne rouvre ses fûts. Le dimanche à treize heures, cinquante convives s’assoient au Banquet de l’Équinoxe pour un repas à trois services.',
-        EN: 'The festival rises again on September 25, 26 and 27. The clan kitchens light their fires and the tavern rolls out its casks. On Sunday at one o’clock, fifty guests sit down to the Equinox Banquet for a meal in three courses.',
+        FR: 'Le festival se remonte les 25, 26 et 27 septembre. Les cuisines de clans rallument leurs feux et la taverne rouvre ses fûts. Le dimanche à treize heures, cinquante convives s’assoient au Banquet du Prince William pour un repas à trois services.',
+        EN: 'The festival rises again on September 25, 26 and 27. The clan kitchens light their fires and the tavern rolls out its casks. On Sunday at one o’clock, fifty guests sit down to the Prince William Banquet for a meal in three courses.',
       },
       {
         type: 'photo',
@@ -225,8 +225,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Le dimanche midi, la cérémonie de Freya salue le passage de la saison au camp viking, et le Banquet de l’Équinoxe suit à treize heures. Neuf troupes montent sur la scène cette année : Skarazula, L’Harfang, la Troupe Caravane, l’Ensemble Klezmer de Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias et Alhambra. La musique porte le festival du tambour viking jusqu’aux ballades médiévales.',
-        EN: 'On Sunday at midday, the ceremony of Freya greets the turning of the season at the Viking camp, and the Equinox Banquet follows at one o’clock. Nine troupes take the stage this year: Skarazula, L’Harfang, Troupe Caravane, the Klezmer Ensemble of Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias and Alhambra. The music carries the festival from Viking drums to medieval ballads.',
+        FR: 'Le dimanche midi, la cérémonie de Freya salue le passage de la saison au camp viking, et le Banquet du Prince William suit à treize heures. Neuf troupes montent sur la scène cette année : Skarazula, L’Harfang, la Troupe Caravane, l’Ensemble Klezmer de Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias et Alhambra. La musique porte le festival du tambour viking jusqu’aux ballades médiévales.',
+        EN: 'On Sunday at midday, the ceremony of Freya greets the turning of the season at the Viking camp, and the Prince William Banquet follows at one o’clock. Nine troupes take the stage this year: Skarazula, L’Harfang, Troupe Caravane, the Klezmer Ensemble of Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias and Alhambra. The music carries the festival from Viking drums to medieval ballads.',
       },
       {
         type: 'carte',
@@ -259,22 +259,22 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     cta: { url: `${SITE}/activites`, labelFR: 'Lire la programmation', labelEN: 'Read the programme' },
   },
 
-  // ── 3 · Le banquet de l'Équinoxe ──────────────────────────────────
+  // ── 3 · Le banquet du Prince William ──────────────────────────────────
   // Les plats viennent de BANQUET_MENU dans `src/content/menu2026.ts`,
   // le prix et la date limite de la copie de NourriturePage.
   {
     id: 'banquet',
-    nom: 'L’invitation au Banquet de l’Équinoxe',
+    nom: 'L’invitation au Banquet du Prince William',
     pourQui: 'Les billets et les mécènes, pour les cinquante places',
     sujetFR: 'Cinquante places à la table du seigneur',
     sujetEN: 'Fifty seats at the lord’s table',
-    titreFR: 'Le Banquet de l’Équinoxe',
-    titreEN: 'The Equinox Banquet',
+    titreFR: 'Le Banquet du Prince William',
+    titreEN: 'The Prince William Banquet',
     blocs: [
       {
         type: 'texte',
-        FR: 'Le dimanche du festival, à treize heures, une longue tablée se dresse sur la scène et cinquante convives s’y assoient. C’est le Banquet de l’Équinoxe, et nous vous y invitons.',
-        EN: 'On the Sunday of the festival, at one o’clock, a long table is raised on the stage and fifty guests sit down at it. This is the Equinox Banquet, and we are inviting you to it.',
+        FR: 'Le dimanche du festival, à treize heures, une longue tablée se dresse sur la scène et cinquante convives s’y assoient. C’est le Banquet du Prince William, et nous vous y invitons.',
+        EN: 'On the Sunday of the festival, at one o’clock, a long table is raised on the stage and fifty guests sit down at it. This is the Prince William Banquet, and we are inviting you to it.',
       },
       {
         type: 'photo',

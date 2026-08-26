@@ -32,6 +32,7 @@ import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import MesBadges from './MesBadges';
 import MaFiche from './MaFiche';
+import ConcoursPanel from './ConcoursPanel';
 import PhotosPanel from './PhotosPanel';
 import BoiteReception from './BoiteReception';
 
@@ -507,6 +508,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       <p className="text-xs font-editorial text-brass mt-3 text-center">{t.saved}</p>
                     )}
                   </form>
+                  {/* La participation au concours du commanditaire, quand il y en a une. */}
+                  {compte?.email && <ConcoursPanel email={compte.email} />}
                   <MaFiche lang={lang} />
                   {/* Le dé de la vie reste dans l'espace de la personne :
                       il n'a rien à faire sur la fiche d'un autre. */}

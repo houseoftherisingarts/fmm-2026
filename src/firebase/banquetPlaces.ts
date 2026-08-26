@@ -1,4 +1,4 @@
-// Le décompte des places du banquet de l'Équinoxe.
+// Le décompte des places du banquet du Prince William.
 //
 // La salle compte cinquante places, et pas une de plus. Le nombre de
 // places déjà vendues est tenu par le webhook Square (`squareGrimoire`

@@ -4,6 +4,7 @@ import { ScrollProgress } from '../components/scroll';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import BanniereWJW from '../components/william/BanniereWJW';
 import BoutiquesProchesWJW from '../components/william/BoutiquesProchesWJW';
+import ConcoursWJW from '../components/william/ConcoursWJW';
 import NourriturePage from './NourriturePage';
 
 // ─── La page du commanditaire, en maquette ──────────────────────────
@@ -34,10 +35,11 @@ const WilliamPage: React.FC = () => {
 
       <BanniereWJW />
 
-      <div className="pt-2 md:pt-4">
-        <NourriturePage embedded />
+      <div className="pt-0">
+        <NourriturePage embedded sansEntete />
       </div>
 
+      <ConcoursWJW />
       <BoutiquesProchesWJW />
     </>
   );

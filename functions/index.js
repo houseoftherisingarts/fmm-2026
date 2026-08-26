@@ -362,14 +362,14 @@ exports.banquetLien = onRequest(
         },
         body: JSON.stringify({
           idempotency_key: crypto.randomUUID(),
-          description: `Banquet de l'Équinoxe · ${places} place${places > 1 ? 's' : ''} · FMM 2026`
+          description: `Banquet du Prince William · ${places} place${places > 1 ? 's' : ''} · FMM 2026`
             + ` · compte ${uid}${courrielAcheteur ? ` · ${courrielAcheteur}` : ''}`
             + `${nomAcheteur ? ` · ${nomAcheteur}` : ''}`,
           order: {
             location_id: LOCATION_FMM,
             line_items: [
               {
-                name: 'Banquet de l’Équinoxe · FMM 2026',
+                name: 'Banquet du Prince William · FMM 2026',
                 quantity: String(places),
                 base_price_money: { amount: PLACE_BANQUET, currency: 'CAD' },
               },

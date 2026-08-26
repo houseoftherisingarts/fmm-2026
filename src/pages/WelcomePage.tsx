@@ -334,8 +334,8 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     key: 'nourriture', slug: '/nourriture', image: '/wix/home/bonfire-warm.jpg',
     titleFR: 'Banquet', titleEN: 'Banquet',
-    bodyFR: 'Cinq tentes du village gustatif et le Banquet de l’Équinoxe : 5 services, 50 places, dimanche à 13h.',
-    bodyEN: 'Five tents in the food village and the Equinox Banquet: 5 courses, 50 seats, Sunday 1 PM.',
+    bodyFR: 'Cinq tentes du village gustatif et le Banquet du Prince William : 5 services, 50 places, dimanche à 13h.',
+    bodyEN: 'Five tents in the food village and the Prince William Banquet: 5 courses, 50 seats, Sunday 1 PM.',
     ctaFR: 'Voir le menu', ctaEN: 'See the menu',
     leftFR: '03 · À la table',       leftEN: '03 · At the table',
     rightFR: '5 tentes · 1 banquet', rightEN: '5 tents · 1 banquet',
@@ -464,7 +464,7 @@ const Stat: React.FC<{ value: string; label: string }> = ({ value, label }) => (
 
 // ── Activities for the scrolling marquee, drawn from the FMM pillars ──
 const ACTIVITIES = [
-  { icon: UtensilsCrossed, label: { FR: 'Banquet de l’Équinoxe', EN: 'Equinox Banquet' } },
+  { icon: UtensilsCrossed, label: { FR: 'Banquet du Prince William', EN: 'Prince William Banquet' } },
   { icon: Music2,          label: { FR: 'Musique Nordique',       EN: 'Nordic Music' } },
   { icon: Sword,           label: { FR: 'Joutes & Combats',       EN: 'Jousts & Combat' } },
   { icon: Hammer,          label: { FR: 'Forge & Artisans',       EN: 'Forge & Artisans' } },

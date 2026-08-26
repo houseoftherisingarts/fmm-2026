@@ -547,7 +547,7 @@ const FR = {
   },
   banquet: {
     eyebrow: 'Réservation requise',
-    title: 'Banquet de l’Équinoxe (50 places)',
+    title: 'Banquet du Prince William (50 places)',
     body: 'Une tablée foisonnante à 5 services sur réservation, avec un spectacle musical de bardes à la table.',
     note: 'Places limitées · Pourboire non inclus · Menu sujet à changement selon la disponibilité locale des produits. Dimanche · 13h00 · 100$. Date limite d’inscription : 7 septembre 2026.',
     cta: 'Voir le menu',
@@ -618,7 +618,7 @@ const EN = {
     cta: 'Learn',
   },
   billetterie: { eyebrow: 'Ticketing', title: 'Tickets', lead: 'Head to our Zeffy payment portal to purchase your tickets. Family-adjusted pricing, day, weekend or banquet packages.', cta: 'Buy on Zeffy' },
-  banquet:     { eyebrow: 'Reservation required', title: 'Equinox Banquet (50 seats)', body: 'A teeming 5-course table by reservation with bard musicians at table.', note: 'Limited seats · Tip not included · Menu subject to change based on local availability. Sunday · 1:00 PM · $100. Registration deadline: September 7, 2026.', cta: 'See the menu' },
+  banquet:     { eyebrow: 'Reservation required', title: 'Prince William Banquet (50 seats)', body: 'A teeming 5-course table by reservation with bard musicians at table.', note: 'Limited seats · Tip not included · Menu subject to change based on local availability. Sunday · 1:00 PM · $100. Registration deadline: September 7, 2026.', cta: 'See the menu' },
   map: { eyebrow: 'Site plan', title: 'The village stretches through the woods', download: 'Download the map' },
   marche: { title: 'Market', cta: 'Shop' },
   crosspromo: {

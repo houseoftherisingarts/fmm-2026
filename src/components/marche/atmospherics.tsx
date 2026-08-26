@@ -224,6 +224,8 @@ export const GildedFrame: React.FC<{
   );
 };
 
+// Décoratif : l'ornement ne prend jamais le clic, sinon il couvre le
+// bouton de fermeture posé dans le même coin (fiche d'horaire, 25 août).
 const CornerOrnament: React.FC<{
   pos: 'tl' | 'tr' | 'bl' | 'br';
   inset: number;
@@ -253,7 +255,7 @@ const CornerOrnament: React.FC<{
       aria-hidden
       viewBox="0 0 38 38"
       style={style}
-      className="group-hover:opacity-100 transition-opacity duration-500"
+      className="group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
     >
       <g fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round">
         {/* Long L stroke */}

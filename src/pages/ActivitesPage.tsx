@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -1382,8 +1383,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           long description, the hero image, the category chip and a
           dismiss button. Backdrop click or X closes. */}
       {/* ── Fiche-éclair de l'horaire (glossaire) ── */}
-      <AnimatePresence>
-        {infoItem && (
+        {/* Le site anime ses sections avec une transformation CSS, et une
+            transformation piège tout ce qui est en position fixe à
+            l'intérieur : la fiche s'ouvrait décalée et son X ne répondait
+            plus (Alex, 25 août). Elle sort donc par un portail. */}
+        {typeof document !== 'undefined' && createPortal(
+          <AnimatePresence>
+            {infoItem && (
           <motion.div
             className="fixed inset-0 z-[95] flex items-center justify-center p-4"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -1405,7 +1411,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     type="button"
                     onClick={() => { playSelect(); setInfoItem(null); }}
                     aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
-                    className="absolute top-3 right-3 p-2 transition hover:scale-110"
+                    className="absolute top-3 right-3 z-20 p-2 transition hover:scale-110"
                     style={{ color: 'var(--color-amber-glow)' }}
                   >
                     <X size={18} />
@@ -1429,7 +1435,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+          </AnimatePresence>,
+          document.body,
+        )}
 
       <AnimatePresence>
         {activeActivity && (
@@ -1634,7 +1642,7 @@ const FR = {
   crossRailName: 'Quêtes secondaires',
   crossMeta: 'Disponibles',
   banquetEyebrow: 'Réservation requise',
-  banquetTitle: 'Le Banquet de l’Équinoxe',
+  banquetTitle: 'Le Banquet du Prince William',
   banquetBody: 'Un grand banquet sera préparé par les chefs de clans du village gustatif. Le billet pour la grande tablée est vendu séparément des billets d’entrée.',
   banquetCta: 'Voir le menu et réserver',
   replier: 'Replier les activités',
@@ -1700,7 +1708,7 @@ const EN: typeof FR = {
   crossRailName: 'Side quests',
   crossMeta: 'Available',
   banquetEyebrow: 'Reservation required',
-  banquetTitle: 'The Equinox Banquet',
+  banquetTitle: 'The Prince William Banquet',
   banquetBody: 'A great banquet prepared by the clan chefs of the food village. The banquet seat is sold separately from regular entry tickets.',
   banquetCta: 'See the menu and book',
   replier: 'Collapse activities',

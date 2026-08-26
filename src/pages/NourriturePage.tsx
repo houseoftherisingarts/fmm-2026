@@ -144,7 +144,9 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
   );
 };
 
-const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+// `sansEntete` : la page /william porte déjà « Village Nourriture » dans
+// son héros, alors le chapitre embarqué ne répète pas le titre.
+const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = ({ embedded = false, sansEntete = false }) => {
   // Le banquet passe par un compte : Alex a vu quatre places vendues
   // sans une seule fiche dans le registre (2026-08-24).
   const { user, openSignIn } = useAuth();
@@ -197,7 +199,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
     <>
       {!embedded && <SEO title={t.title} description={t.intro} />}
       {!embedded && <ScrollProgress />}
-      {embedded ? (
+      {embedded && sansEntete ? null : embedded ? (
         <section className="relative pt-20 md:pt-28 pb-2">
           <div className="max-w-screen-xl mx-auto px-4 md:px-8">
             <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-3">{t.eyebrow}</p>
@@ -215,7 +217,7 @@ const NourriturePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) 
         />
       )}
 
-      {/* ══ 06 · Le banquet de l'Équinoxe ══════════════════════════════
+      {/* ══ 06 · Le banquet du Prince William ══════════════════════════════
           Le deuxième menu : cinq services servis à table le dimanche,
           50 places, payé par Square (85 $ + taxes). */}
       <section className="relative py-16 md:py-24 overflow-hidden">
@@ -584,7 +586,7 @@ const FR = {
   banquetMeta: 'Places',
   banquetMetaValue: '50',
   banquetEyebrow: 'Dimanche, à la table du seigneur',
-  banquetTitle: 'Banquet de l’Équinoxe',
+  banquetTitle: 'Banquet du Prince William',
   banquetSub: 'Une tablée foisonnante à trois services sur réservation, avec un spectacle musical de bardes à la table.',
   banquetBody: 'Historiquement réservé aux chefs de clans, ce banquet est maintenant ouvert à tous les voyageurs, guerriers, marchands et skjaldmös qui veulent profiter d’un repas de fin de festival bien mérité.',
   banquetNote: 'Pourboire non inclus · Menu sujet à changement sans préavis selon la disponibilité locale des produits.',
@@ -646,7 +648,7 @@ const EN: typeof FR = {
   banquetMeta: 'Seats',
   banquetMetaValue: '50',
   banquetEyebrow: 'Sunday, at the lord’s table',
-  banquetTitle: 'Equinox Banquet',
+  banquetTitle: 'Prince William Banquet',
   banquetSub: 'A teeming three-course table by reservation, with bard musicians at the table.',
   banquetBody: 'Historically reserved for clan chiefs, this banquet is now open to all travellers, warriors, merchants and shieldmaidens who want a well-earned end-of-festival feast.',
   banquetNote: 'Tip not included · Menu subject to change without notice based on local availability.',

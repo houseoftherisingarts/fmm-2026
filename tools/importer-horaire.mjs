@@ -86,7 +86,7 @@ const JOURS = [
       { time: '12h30–13h30', label: 'Spectacle d’Alhambra',                                   where: 'Carrousel' },
       { time: '13h00–14h00', label: 'Conférence : qui sont les Roma, par la Troupe Caravane', where: 'Village paysan' },
       { time: '13h00–14h00', label: 'Tournoi de « boat fight » : combat viking',              where: 'Arène' },
-      { time: '13h30–15h00', label: 'Banquet de l’Équinoxe',                                  where: 'Scène' },
+      { time: '13h30–15h00', label: 'Banquet du Prince William',                                  where: 'Scène' },
       { time: '14h00–15h00', label: 'Finale de joute par l’AMQ',                              where: 'Arène' },
     ],
   },

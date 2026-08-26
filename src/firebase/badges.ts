@@ -73,7 +73,7 @@ export const COLLECTIONS: Collection[] = [
     prix: 'moyen',
     badges: [
       { id: 'banquet',  glyphe: '♛', nomFR: 'Convive du banquet', nomEN: 'Banquet guest',
-        texteFR: 'Vous avez réservé une place au banquet de l’Équinoxe.', texteEN: 'You booked a seat at the Equinox banquet.' },
+        texteFR: 'Vous avez réservé une place au banquet du Prince William.', texteEN: 'You booked a seat at the Prince William banquet.' },
       { id: 'livre',    glyphe: '✎', nomFR: 'Cuisinier de route', nomEN: 'Road cook',
         texteFR: 'Vous avez pris le livre de recettes du festival.', texteEN: 'You picked up the festival recipe book.' },
       { id: 'billets',  glyphe: '✦', nomFR: 'Porteur de billet',  nomEN: 'Ticket holder',

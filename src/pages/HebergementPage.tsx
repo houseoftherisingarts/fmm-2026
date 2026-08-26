@@ -185,6 +185,29 @@ const HebergementPage: React.FC = () => {
       </section>
 
       {/* Tagline footer */}
+      {/* Appel aux hébergeurs : le formulaire (nom, courriel, téléphone,
+          lien, photos, paiement) est tenu par Zeffy; ici, juste la porte.
+          L'ancre sert au lien qu'Alex envoie par courriel. */}
+      <section id="afficher-hebergement" className="relative py-16 md:py-24 overflow-hidden">
+        <SectionFog edges="top" />
+        <Motes className="opacity-40" count={12} />
+        <Reveal className="relative z-10 max-w-2xl mx-auto px-4 md:px-8 text-center">
+          <Home size={28} className="text-brass mx-auto mb-4" />
+          <p className="font-editorial italic text-brass uppercase tracking-[0.3em] text-xs mb-3">{t.hostEyebrow}</p>
+          <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.hostTitle}</h2>
+          <div className="divider-brass w-16 mx-auto mb-6" />
+          <p className="font-editorial text-base md:text-lg text-ivory-soft mb-8 leading-relaxed">{t.hostBody}</p>
+          <a
+            href="https://www.zeffy.com/fr-CA/ticketing/partenaires-hebergement"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition-colors rounded-pill"
+          >
+            {t.hostCta} <ArrowUpRight size={14} />
+          </a>
+        </Reveal>
+      </section>
+
       <section className="py-12 md:py-16">
         <Reveal className="max-w-3xl mx-auto px-4 md:px-8 text-center">
           <p className="font-editorial italic text-ivory-soft text-base md:text-lg">{t.callBody}</p>

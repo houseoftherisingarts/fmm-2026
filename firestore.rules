@@ -658,6 +658,33 @@ service cloud.firestore {
     // passe donc outre ces règles. Personne d'autre ne peut gonfler ni
     // vider le compteur; un admin garde la main pour corriger à la
     // main si un paiement d'essai s'est glissé dans le compte.
+    // ── Concours William J. Walter (maquette /william) ───────────
+    // Inscription publique, création seulement : le document porte le
+    // courriel en identifiant, donc une seconde inscription échoue au
+    // lieu d'écraser la première. Le consentement au partage avec le
+    // commanditaire doit être vrai pour que l'écriture passe. Lecture
+    // réservée à l'équipe, qui remet la liste au commanditaire.
+    match /concoursWJW/{courriel} {
+      // La personne lit sa propre participation (son espace l'affiche);
+      // l'équipe lit tout et pose `gagnant` le jour du tirage.
+      allow read: if isAdmin()
+                  || (signedIn() && request.auth.token.email != null
+                      && request.auth.token.email.lower() == courriel);
+      allow create: if request.resource.data.keys().hasOnly(['nom', 'courriel', 'telephone', 'consentementPartage', 'inscritLe'])
+                    && request.resource.data.courriel is string
+                    && request.resource.data.courriel == courriel
+                    && request.resource.data.courriel.size() > 4
+                    && request.resource.data.courriel.size() < 200
+                    && request.resource.data.nom is string
+                    && request.resource.data.nom.size() > 1
+                    && request.resource.data.nom.size() < 120
+                    && request.resource.data.telephone is string
+                    && request.resource.data.telephone.size() > 6
+                    && request.resource.data.telephone.size() < 40
+                    && request.resource.data.consentementPartage == true;
+      allow update, delete: if isAdmin();
+    }
+
     match /banquetPlaces/{docId} {
       allow read:  if true;
       allow write: if isAdmin();
