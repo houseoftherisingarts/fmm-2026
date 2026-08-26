@@ -371,6 +371,10 @@ const FR = {
   next:           'Suivant',
   book:           'Voir le site',
   callBody:       'Vous ne trouvez pas votre bonheur ? Écrivez-nous à admin@festivalmedievaldemontpellier.org. Nous connaissons tout le monde dans la Petite-Nation.',
+  hostEyebrow:    'Vous hébergez',
+  hostTitle:      'Affichez votre hébergement',
+  hostBody:       'Vous tenez une auberge, un gîte ou un camping dans la Petite-Nation ? Présentez-le aux festivaliers qui cherchent où dormir pendant la fin de semaine. Vous laissez vos coordonnées, le lien de votre hébergement et vos photos, et votre adresse rejoint la liste que voient nos visiteurs.',
+  hostCta:        'Afficher mon hébergement',
 };
 
 const EN: typeof FR = {
@@ -397,6 +401,10 @@ const EN: typeof FR = {
   next:           'Next',
   book:           'Visit their site',
   callBody:       'Can’t find what you’re looking for? Email admin@festivalmedievaldemontpellier.org. We know everyone in Petite-Nation.',
+  hostEyebrow:    'You host',
+  hostTitle:      'List your lodging',
+  hostBody:       'Do you run an inn, a B&B or a campground in Petite-Nation? Show it to the festivalgoers looking for a place to sleep over the weekend. You leave your contact details, your lodging link and your photos, and your address joins the list our visitors see.',
+  hostCta:        'List my lodging',
 };
 
 export default HebergementPage;
