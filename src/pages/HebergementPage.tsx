@@ -186,9 +186,10 @@ const HebergementPage: React.FC = () => {
       </section>
 
       {/* Tagline footer */}
-      {/* Appel aux hébergeurs : le formulaire (nom, courriel, téléphone,
-          lien, photos, paiement) est tenu par Zeffy; ici, juste la porte.
-          L'ancre sert au lien qu'Alex envoie par courriel. */}
+      {/* Appel aux hébergeurs : le formulaire recueille d'abord nom,
+          courriel, téléphone, lien et photos (HebergementHostPanel), puis
+          le bouton « Confirmer et payer » mène au paiement Zeffy. L'ancre
+          sert au lien qu'Alex envoie par courriel. */}
       <section id="afficher-hebergement" className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-40" count={12} />
@@ -198,14 +199,7 @@ const HebergementPage: React.FC = () => {
           <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory mb-4">{t.hostTitle}</h2>
           <div className="divider-brass w-16 mx-auto mb-6" />
           <p className="font-editorial text-base md:text-lg text-ivory-soft mb-8 leading-relaxed">{t.hostBody}</p>
-          <a
-            href="https://www.zeffy.com/fr-CA/ticketing/partenaires-hebergement"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition-colors rounded-pill"
-          >
-            {t.hostCta} <ArrowUpRight size={14} />
-          </a>
+          <HebergementHostPanel t={t} />
         </Reveal>
       </section>
 
