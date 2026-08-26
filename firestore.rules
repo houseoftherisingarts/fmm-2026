@@ -802,6 +802,45 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // ── Hébergeurs partenaires (formulaire public /hebergement) ──────
+    // Un hébergeur (auberge, gîte, camping) laisse ses coordonnées, le
+    // lien de son établissement et ses photos AVANT d'aller au paiement
+    // Zeffy. L'hébergeur n'a pas de compte : la création est donc
+    // publique, mais verrouillée sur la forme exacte du formulaire pour
+    // bloquer les docs-spam arbitraires. Les URLs des photos sont écrites
+    // dans le même create (elles sont téléversées d'abord, sous un id
+    // généré côté client), donc aucune mise à jour publique n'est
+    // nécessaire. Lecture et gestion réservées à l'équipe.
+    //
+    // ponytail: le plafond d'abus est un inconnu qui gonfle la collection
+    // de fausses fiches; les règles Firestore ne bornent pas un débit. Si
+    // cela devait arriver, fermer cette voie (`allow create: if false`) et
+    // passer par une fonction signée. Le contenu de `photos` n'est pas
+    // validé élément par élément (les règles n'itèrent pas une liste) :
+    // borné en taille, lu par l'équipe seulement.
+    match /hebergementsPartenaires/{docId} {
+      allow create: if request.resource.data.keys().hasOnly(
+            ['nom', 'courriel', 'telephone', 'lien', 'photos', 'statut', 'creeLe'])
+        && request.resource.data.nom is string
+        && request.resource.data.nom.size() > 1
+        && request.resource.data.nom.size() < 200
+        && request.resource.data.courriel is string
+        && request.resource.data.courriel.matches('^[^@ ]+@[^@ ]+[.][a-zA-Z]+$')
+        && request.resource.data.courriel.size() < 200
+        && request.resource.data.telephone is string
+        && request.resource.data.telephone.size() > 6
+        && request.resource.data.telephone.size() < 40
+        && request.resource.data.lien is string
+        && request.resource.data.lien.matches('https?://.+')
+        && request.resource.data.lien.size() < 500
+        && request.resource.data.photos is list
+        && request.resource.data.photos.size() > 0
+        && request.resource.data.photos.size() <= 6
+        && request.resource.data.statut == 'attente'
+        && request.resource.data.creeLe is timestamp;
+      allow read, update, delete: if isAdmin();
+    }
+
     // ── Admin CRM internals ──────────────────────────────────────
     // RACI matrix (MatriceRolesSection + PersonProfilePage, admin only).
     match /matriceRoles/{docId} { allow read, write: if isAdmin(); }
