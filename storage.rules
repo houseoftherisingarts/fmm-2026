@@ -54,6 +54,18 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    // ── Hébergeurs partenaires (formulaire public /hebergement) ──
+    // Un hébergeur téléverse ses photos AVANT le paiement, sans compte :
+    // la création est publique, bornée aux images de moins de 8 Mo. Les
+    // fichiers vivent sous `hebergement-partenaires/{id}/{n}.{ext}`, où
+    // l'id est celui du document Firestore généré côté client. Lecture
+    // publique : les photos nourrissent la liste des hébergements.
+    match /hebergement-partenaires/{allPaths=**} {
+      allow read:  if true;
+      allow write: if request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     // ── Vendor-uploaded photos ──────────────────────────────────
     // Each merchant uploads their own booth photos under their uid.
     // Publicly readable so the marketplace can render them; only
