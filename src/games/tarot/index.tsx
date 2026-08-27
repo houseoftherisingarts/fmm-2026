@@ -173,6 +173,15 @@ const TarotPage: React.FC = () => {
       >
         <Motes className="opacity-30" count={14} />
 
+        {/* La pub AdSense, devant tout le reste, au début de chaque
+            tirage : le premier au montage, et chaque « Nouveau tirage ». */}
+        {pubEnAttente && (
+          <PubDebutPartie
+            lang={lang}
+            onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
+          />
+        )}
+
         {/* Le tapis prend toute l'aire. Le choix du tirage, la question,
             les gestes et la lecture se posent dessus. */}
         <div className="absolute inset-0 flex flex-col">
