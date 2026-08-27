@@ -351,7 +351,7 @@ exports.banquetLien = onRequest(
       const NOTRE_MAISON = /^https:\/\/(www\.)?(festivalmedieval\.(web\.app|firebaseapp\.com)|festivalmedievaldemontpellier\.(org|com))(\/|$)/;
       const retourSur = NOTRE_MAISON.test(retour)
         ? retour
-        : 'https://festivalmedieval.web.app/marche';
+        : 'https://festivalmedieval.web.app/nourriture';
 
       const reponse = await fetch('https://connect.squareup.com/v2/online-checkout/payment-links', {
         method: 'POST',
