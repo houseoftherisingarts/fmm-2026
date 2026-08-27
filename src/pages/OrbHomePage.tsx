@@ -36,18 +36,22 @@ const LANDING_IMAGE = '/wix/home/viking-helmet.jpg';
 const LANDING_KEY = '__landing__';
 
 // Curated hero image for each pillar (sampled from /public/wix/<pillar>/).
-// Édition 2026: menu consolidated to the seven top-level pillars. Chevaux is
-// retired; the festival film is no longer a menu item. It now plays as the
-// featured video at the centre of the orb (see FILM_YT_ID below).
+// Édition 2026: Marché et Nourriture, un temps fusionnés dans « Le Village »,
+// sont redevenus deux cercles distincts le 2026-08-27, avec Boissons en
+// nouveau venu juste sous Nourriture; Petite Monnaie a quitté son propre
+// cercle pour vivre dans celui de Commanditaires & Partenaires (Alex : une
+// seule vitrine). Chevaux est retiré; le film du festival n'est plus un
+// item du menu, il joue maintenant au centre de l'orbe (voir FILM_YT_ID).
 const ORB_CHOICES: OrbChoice[] = [
   { key: 'activites',   image: '/wix/home/fire-night.jpg',     imagePosition: 'center 35%' },
   { key: 'marche',      image: '/wix/marche/47376430.jpg' },
+  { key: 'nourriture',  image: '/wix/nourriture/feu-broche-v3.webp', imagePosition: '45% 50%' },
+  { key: 'boissons',    image: '/wix/nourriture/fc0b94ea.jpg', imagePosition: 'center 40%' },
   { key: 'histoire',    image: '/wix/histoire/03b1fe30.jpg' },
   { key: 'mariages',    image: '/wix/mariages/70dcaeae.jpg' },
   { key: 'hebergement', image: '/wix/hebergement/salon-living-room.webp', imagePosition: 'center 55%' },
   { key: 'partenaires', image: '/wix/partenaires/2a2a4608.jpg' },
   { key: 'benevole',    image: '/wix/benevole/4fc431fd.jpg',   imagePosition: 'left center' },
-  { key: 'petite-monnaie', image: '/wix/home/marchand.jpg',    imagePosition: 'center 30%' },
   { key: 'jeux',        image: '/photos/hnefatafl-hero.webp' },
 ];
 
