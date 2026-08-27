@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import CadreJeu from '../../components/jeux/CadreJeu';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Sparkles, RotateCcw, Shuffle, ScrollText, X, BookOpen } from 'lucide-react';
