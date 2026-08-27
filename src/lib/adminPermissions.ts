@@ -79,7 +79,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   // Organisateurs: total access minus the future CA-only tab.
   // For now, until that tab ships, identical to CA.
   organisateur: [
-    'dashboard', 'benevoles', 'equipes', 'marchands', 'activites', 'badges', 'musiciens', 'pupitre', 'matrice', 'horaire',
+    'dashboard', 'benevoles', 'equipes', 'marchands', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social',
     'medias', 'photos', 'photosRecues', 'analytics', 'splash', 'parametres', 'discord', 'bugs', 'dispos', 'invites',
   ],
