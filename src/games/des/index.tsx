@@ -13,6 +13,7 @@ import { useCaravanPage } from '../../lib/useCaravanPage';
 import { addLocale } from '../../lib/locale';
 import SEO from '../../components/SEO';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
+import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import { jeuDes } from './jeuDefiable';
 import { creerTable, type TableDes } from './scene';
 import {
