@@ -147,6 +147,11 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
 // `sansEntete` : la page /william porte déjà « Village Nourriture » dans
 // son héros, alors le chapitre embarqué ne répète pas le titre.
 const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = ({ embedded = false, sansEntete = false }) => {
+  // Ce pilier portait le badge « Ami du village » quand Marché et
+  // Nourriture vivaient sur une seule page (Le Village). Le Village
+  // Nourriture en reste le foyer naturel depuis la scission du
+  // 2026-08-27 : le déclencheur du badge vient donc ici.
+  useBadgeAuBout('village');
   // Le banquet passe par un compte : Alex a vu quatre places vendues
   // sans une seule fiche dans le registre (2026-08-24).
   const { user, openSignIn } = useAuth();
