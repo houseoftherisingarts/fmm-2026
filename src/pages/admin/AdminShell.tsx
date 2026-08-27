@@ -82,6 +82,7 @@ const NAV: NavItem[] = [
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
   { id: 'bar',        label: 'Bar',             icon: Beer,            group: 'Opérations' },
   { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather,         group: 'Opérations' },
+  { id: 'signature',  label: 'Atelier de signature', icon: PenLine,    group: 'Opérations' },
 
   { id: 'commanditaires', label: 'Commanditaires', icon: Landmark,     group: 'Partenaires et deniers' },
   { id: 'finances',   label: 'Finances',        icon: Wallet,          group: 'Partenaires et deniers' },
