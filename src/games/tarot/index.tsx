@@ -6,6 +6,7 @@ import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
+import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import { Motes } from '../../components/marche/effects';
 import { JEU, TIRAGES, type Tirage } from '../../content/tarot';
 import { interpretation, type LameTiree } from './interpretation';

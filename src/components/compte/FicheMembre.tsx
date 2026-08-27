@@ -37,6 +37,7 @@ import ConcoursPanel from './ConcoursPanel';
 import PhotosPanel from './PhotosPanel';
 import PhotosDe from './PhotosDe';
 import Vitrine from './Vitrine';
+import Cloche from './Cloche';
 import BoiteReception from './BoiteReception';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
@@ -297,10 +298,14 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
       <section className="relative caravan-stage bleed-edges pt-28 pb-8 md:pt-32 md:pb-10 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="flex items-start justify-between gap-4">
           <Link to={addLocale(prive ? '/' : '/ordre', lang)}
             className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-8 transition">
             <ArrowLeft size={14} /> {prive ? t.accueil : t.retour}
           </Link>
+            {/* La cloche et les messages, en haut à droite de l'espace. */}
+            {prive && <Cloche uid={uid} lang={lang} />}
+          </div>
 
           <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
             <AvatarUpload

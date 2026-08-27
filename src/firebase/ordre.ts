@@ -88,6 +88,9 @@ export interface Membre {
    *  de src/content/evenementsMedievaux.ts), plus un libre. */
   evenements?: string[];
   evenementsAutre?: string;
+  /** La cloche : dernier regard et pages déjà annoncées. */
+  notifsVuesLe?: unknown;
+  pagesVues?: string[];
   maj?: unknown;
 }
 
