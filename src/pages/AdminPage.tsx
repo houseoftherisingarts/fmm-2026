@@ -50,6 +50,7 @@ const BarSection          = lazy(() => import('./admin/sections/BarSection'));
 const DisposSection       = lazy(() => import('./admin/sections/DisposSection'));
 const MariagesSection     = lazy(() => import('./admin/sections/MariagesSection'));
 const CommanditairesSection = lazy(() => import('./admin/sections/CommanditairesSection'));
+const SignatureSection    = lazy(() => import('./admin/sections/SignatureSection'));
 // Les photos envoyées par le public, à retenir ou à écarter.
 const PhotosRecuesSection = lazy(() => import('../components/admin/PhotosRecues'));
 // Les infolettres aux clients du festival.
