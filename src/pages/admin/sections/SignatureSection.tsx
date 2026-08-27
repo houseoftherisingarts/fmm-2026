@@ -97,18 +97,19 @@ const SignatureSection: React.FC = () => {
     let cancelled = false;
     let renderTask: pdfjsLib.RenderTask | null = null;
     (async () => {
-      const doc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
-      if (cancelled) { void doc.destroy(); return; }
+      const loadingTask = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
+      const doc = await loadingTask.promise;
+      if (cancelled) { void loadingTask.destroy(); return; }
       setNumPages(doc.numPages);
       const idx = Math.min(pageIndex, doc.numPages - 1);
       const page = await doc.getPage(idx + 1);
-      if (cancelled) { void doc.destroy(); return; }
+      if (cancelled) { void loadingTask.destroy(); return; }
       const base = page.getViewport({ scale: 1 });
       const scale = PREVIEW_WIDTH / base.width;
       const viewport = page.getViewport({ scale });
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) { void doc.destroy(); return; }
+      if (!canvas || !ctx) { void loadingTask.destroy(); return; }
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       renderTask = page.render({ canvasContext: ctx, canvas, viewport });
@@ -117,7 +118,7 @@ const SignatureSection: React.FC = () => {
         setPreviewScale(scale);
         setCanvasPx({ w: viewport.width, h: viewport.height });
       }
-      void doc.destroy();
+      void loadingTask.destroy();
     })().catch((e) => {
       if (!cancelled) setError("Ce PDF n'a pas pu être ouvert.");
       console.warn('[signature] aperçu:', e);
