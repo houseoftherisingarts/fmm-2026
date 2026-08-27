@@ -1324,7 +1324,7 @@ const HnefataflPage: React.FC = () => {
               <StartScreen
                 initial={config}
                 strings={s}
-                onBegin={handleBegin}
+                onBegin={(next) => setPubEnAttente(() => () => handleBegin(next))}
                 lang={lang}
                 choix={choix}
                 onChoix={(cle, id) => {
@@ -1334,6 +1334,15 @@ const HnefataflPage: React.FC = () => {
                 }}
               />
             </>
+          )}
+
+          {/* La pub AdSense, devant tout le reste, entre le clic sur
+              « Commencer la partie » et le vrai départ. */}
+          {pubEnAttente && (
+            <PubDebutPartie
+              lang={lang}
+              onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
+            />
           )}
 
           <AnimatePresence>
