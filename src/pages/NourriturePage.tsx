@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, BookOpen, ChevronDown, Clock, Lock, Users, Wine } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useGagnerBadge } from '../contexts/BadgesContext';
+import { useGagnerBadge, useBadgeAuBout } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
