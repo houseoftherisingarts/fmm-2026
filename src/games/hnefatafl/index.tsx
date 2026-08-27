@@ -48,6 +48,7 @@ import {
   type PartieTafl,
 } from '../../firebase/tafl';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
+import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import { jeuTafl } from './jeuDefiable';
 
 type Mode = 'two-player' | 'vs-cpu';
