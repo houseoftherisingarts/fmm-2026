@@ -284,6 +284,15 @@ const PartenairesPage: React.FC = () => {
           </a>
         </Reveal>
       </section>
+
+      {/* ── Chapitre 3 : Petite Monnaie ──────────────────────────
+          Fusionnée ici le 2026-08-27 (Alex : « tu regroupes
+          commanditaire et petite monnaie en une seule page »). Une
+          seule vitrine, un seul bouton sur l'accueil; l'ancien pilier
+          /petite-monnaie redirige vers l'ancre ci-dessous. */}
+      <div id="petite-monnaie">
+        <PetiteMonnaiePage embedded />
+      </div>
     </>
   );
 };
