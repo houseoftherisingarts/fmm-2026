@@ -16,6 +16,7 @@ interface ImportMetaEnv {
   readonly VITE_AUDIO_TRACK_TITLE?: string;
   readonly VITE_ADMIN_EMAILS?: string;
   readonly VITE_ADMIN_DEV_BYPASS?: string;
+  readonly VITE_ADSENSE_SLOT_JEUX?: string;
 }
 
 interface ImportMeta {
