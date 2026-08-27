@@ -25,15 +25,19 @@ const WORDMARK_SRC = '/petite-monnaie/petite-monnaie-wordmark-reverse-1054.png';
 // donc le comptant garde les files fluides; un kiosque à l'entrée
 // échange le comptant contre la Petite Monnaie, acceptée partout au
 // festival et dans plus de 150 commerces de la Petite-Nation.
-const PetiteMonnaiePage: React.FC = () => {
+// `embedded` : depuis le 2026-08-27, cette page vit à la suite de
+// Commanditaires & Partenaires (une seule vitrine, demande d'Alex) plutôt
+// que sur son propre pilier. Embarquée, elle tait son SEO et sa barre de
+// progression : la page qui l'accueille porte déjà les deux.
+const PetiteMonnaiePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
 
   return (
     <>
-      <SEO title={t.seoTitle} description={t.heroIntro} />
-      <ScrollProgress />
+      {!embedded && <SEO title={t.seoTitle} description={t.heroIntro} />}
+      {!embedded && <ScrollProgress />}
 
       {/* ── Hero : texte à gauche, la pièce frappée à droite ── */}
       <section className="relative pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden">
