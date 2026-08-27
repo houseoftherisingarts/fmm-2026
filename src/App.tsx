@@ -445,7 +445,7 @@ const App: React.FC = () => (
                 {/* Legacy slug redirects: old scaffold paths and Wix variants. */}
                 <Route path="/festival-medieval-de-montpellier" element={<Navigate to="/" replace />} />
                 <Route path="/horaire"            element={<Navigate to="/activites" replace />} />
-                <Route path="/banquet"            element={<Navigate to="/marche" replace />} />
+                <Route path="/banquet"            element={<Navigate to="/nourriture" replace />} />
                 <Route path="/benevoles"          element={<Navigate to="/benevole" replace />} />
                 <Route path="/archives"           element={<Navigate to="/histoire" replace />} />
 
