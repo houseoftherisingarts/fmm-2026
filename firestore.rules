@@ -636,8 +636,11 @@ service cloud.firestore {
       allow update: if isAdmin()
                     || (signedIn()
                         && resource.data.uid == request.auth.uid
-                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende', 'visibilite'])
-                        && request.resource.data.visibilite in ['publique', 'privee']);
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende', 'visibilite', 'vedette'])
+                        && request.resource.data.visibilite in ['publique', 'privee']
+                        // Une photo en vedette sur le profil est forcément publique.
+                        && (request.resource.data.get('vedette', false) != true
+                            || request.resource.data.visibilite == 'publique'));
       allow delete: if isAdmin();
     }
 

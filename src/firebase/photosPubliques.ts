@@ -43,6 +43,8 @@ export interface PhotoPublique {
   edition?: number;           // année du festival au moment de l'envoi
   statut: StatutPhoto;
   visibilite?: VisibilitePhoto;   // absent sur les envois d'avant le 27 août = privée
+  /** Mise en vedette sur le profil (Alex, 2026-08-27). Suppose publique. */
+  vedette?: boolean;
   consentement: true;
   consentementLe: Timestamp | null;
   envoyeeLe: Timestamp | null;
@@ -171,6 +173,27 @@ export function suivreMesPhotos(uid: string, cb: (photos: PhotoPublique[]) => vo
 export async function changerVisibilite(id: string, visibilite: VisibilitePhoto): Promise<void> {
   if (!db) return;
   await updateDoc(doc(db, COLL, id), { visibilite });
+}
+
+/** Le propriétaire met une photo en vedette sur son profil (ou l'en retire). */
+export async function changerVedette(id: string, vedette: boolean): Promise<void> {
+  if (!db) return;
+  await updateDoc(doc(db, COLL, id), vedette ? { vedette: true, visibilite: 'publique' } : { vedette: false });
+}
+
+/** Les photos en vedette d'un membre, pour la colonne de son profil. */
+export function suivrePhotosVedette(uid: string, cb: (photos: PhotoPublique[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  const q = query(collection(db, COLL), where('uid', '==', uid), where('vedette', '==', true));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as PhotoPublique));
+      rows.sort((a, b) => toMillis(b.envoyeeLe) - toMillis(a.envoyeeLe));
+      cb(rows);
+    },
+    () => cb([]),
+  );
 }
 
 /** Les photos qu'un membre a rendues publiques, pour sa fiche. */

@@ -57,8 +57,8 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 export type ModeFiche = 'prive' | 'public';
 
-const ONGLETS_PRIVE  = ['profil', 'badges', 'jeux', 'billets', 'photos', 'collection', 'messages'] as const;
-const ONGLETS_PUBLIC = ['profil', 'badges', 'jeux', 'photos', 'collection'] as const;
+const ONGLETS_PRIVE  = ['profil', 'photos', 'badges', 'jeux', 'billets', 'collection', 'messages'] as const;
+const ONGLETS_PUBLIC = ['profil', 'photos', 'badges', 'jeux', 'collection'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -153,6 +153,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   // La vitrine se lit sur le même document, pour soi comme pour un autre.
   const [exposes, setExposes] = useState<string[]>([]);
   useEffect(() => { if (uid) return suivreExposes(uid, setExposes); }, [uid]);
+  // L'aperçu sans compte (?apercu=1, dev seulement) montre une vitrine
+  // témoin pour juger le rendu.
+  const idsVitrine = (import.meta.env.DEV && uid === 'apercu')
+    ? ['photographe', 'benevole', 'tafl', 'banquet', 'visiteur'] : exposes;
 
   const badges = prive ? mesBadges : badgesVus;
   const etatBadges = avancement(badges);
@@ -327,6 +331,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     {LIBELLE_ROLE[r][lang]}
                   </li>
                 ))}
+                {/* Les cinq badges favoris, à côté de la fonction. */}
+                <Vitrine ids={idsVitrine} lang={lang} />
               </ul>
 
               {fiche?.ville && (
@@ -341,8 +347,6 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <Mail size={13} className="text-brass" /> {compte.email}
                 </p>
               )}
-
-              <Vitrine ids={exposes} lang={lang} />
 
               <div className="mt-7 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-9 sm:justify-center md:justify-start">
                 <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
@@ -557,6 +561,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     none={t.vendorNone}
                   />
 
+                  {/* ── Les photos en vedette, choisies dans l'onglet Photos ── */}
+                  <PhotosDe uid={uid} lang={lang} titre={t.photosVedette} vedette
+                            vide={t.photosVedetteVide} />
+
                   {/* ── Le fil entre le marchand et le festival ── */}
                   {vApp && compte && (
                     <div className="glass-light rounded-lg-card p-6 md:p-7">
@@ -610,8 +618,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     </section>
                   )}
                 </div>
+                <div className="lg:col-span-5 space-y-6 md:space-y-8">
+                  <PhotosDe uid={uid} lang={lang} titre={t.photosVedette} vedette />
                 {fiche?.stats && (
-                  <div className="lg:col-span-5">
+                  <div>
                     <section className="rounded-lg-card border border-brass/25 p-7 md:p-8"
                              style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
                       <p className="witcher-stat-label mb-4">{t.aptitudes}</p>
@@ -634,6 +644,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     </section>
                   </div>
                 )}
+                </div>
               </div>
             ))}
 
@@ -840,6 +851,8 @@ const FR = {
   presentation: 'Sa présentation',
   evenements: 'Où le croiser ailleurs',
   sesPhotos: 'Ses photos',
+  photosVedette: 'Photos en vedette',
+  photosVedetteVide: 'Choisissez vos photos en vedette dans l’onglet Photos : elles paraissent ici, pour tous.',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
   aptitudes: 'Ses aptitudes, à sa façon',
   sesBadges: 'Ses badges',
@@ -885,6 +898,8 @@ const EN: typeof FR = {
   presentation: 'Their introduction',
   evenements: 'Where else to meet them',
   sesPhotos: 'Their photos',
+  photosVedette: 'Featured photos',
+  photosVedetteVide: 'Pick your featured photos in the Photos tab: they show here, for everyone.',
   sansDescription: 'This member has not written an introduction yet.',
   aptitudes: 'Their own stats',
   sesBadges: 'Their badges',

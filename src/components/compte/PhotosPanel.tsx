@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Camera, Upload, Check, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Camera, Upload, Check, AlertCircle, Loader2, Eye, EyeOff, Star } from 'lucide-react';
 import {
-  televerserPhoto, suivreMesPhotos, changerVisibilite, TYPES_ACCEPTES, POIDS_MAX_ORIGINAL,
+  televerserPhoto, suivreMesPhotos, changerVisibilite, changerVedette, TYPES_ACCEPTES, POIDS_MAX_ORIGINAL,
   type PhotoPublique, type StatutPhoto, type VisibilitePhoto,
 } from '../../firebase/photosPubliques';
 import { useBadges } from '../../contexts/BadgesContext';
@@ -277,6 +277,23 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                   decoding="async"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
+                {/* En vedette : la photo monte sur le profil, colonne de
+                    droite, et devient publique du même coup. */}
+                <button
+                  type="button"
+                  onClick={() => changerVedette(p.id, !p.vedette)}
+                  aria-pressed={Boolean(p.vedette)}
+                  aria-label={p.vedette ? t.retirerVedette : t.mettreVedette}
+                  title={p.vedette ? t.retirerVedette : t.mettreVedette}
+                  className="absolute top-1.5 left-1.5 flex items-center justify-center w-7 h-7 rounded-full"
+                  style={{
+                    background: p.vedette ? '#D8B05A' : 'rgba(10,2,7,0.78)',
+                    border: `1px solid ${p.vedette ? '#D8B05A' : 'rgba(244,239,227,0.25)'}`,
+                    color: p.vedette ? '#1a050b' : 'rgba(244,239,227,0.6)',
+                  }}
+                >
+                  <Star size={12} fill={p.vedette ? 'currentColor' : 'none'} />
+                </button>
                 <button
                   type="button"
                   onClick={() => changerVisibilite(p.id, p.visibilite === 'publique' ? 'privee' : 'publique')}
@@ -322,6 +339,8 @@ const FR = {
     privee:   'Elle reste entre vous et l’équipe du festival.',
   } as Record<VisibilitePhoto, string>,
   basculer: 'Changer la visibilité',
+  mettreVedette: 'Mettre en vedette sur mon profil',
+  retirerVedette: 'Retirer de la vedette',
   glissezOuChoisissez: 'Glissez vos photos ici, ou cliquez pour les choisir',
   deposezIci: 'Déposez-les ici',
   choisir:    'Choisir des photos',
@@ -349,6 +368,8 @@ const EN: typeof FR = {
     privee:   'It stays between you and the festival team.',
   } as Record<VisibilitePhoto, string>,
   basculer: 'Change visibility',
+  mettreVedette: 'Feature on my profile',
+  retirerVedette: 'Remove from featured',
   glissezOuChoisissez: 'Drag your photos here, or click to choose them',
   deposezIci: 'Drop them here',
   choisir:    'Choose photos',

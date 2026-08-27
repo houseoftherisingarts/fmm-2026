@@ -58,6 +58,8 @@ export const EVENEMENTS_MEDIEVAUX: EvenementMedieval[] = [
   { id: 'dragon-dormant', nom: 'Baronnie de l’Île du Dragon Dormant (SCA)', lieu: 'Montréal', categorie: 'reconstitution', url: 'https://dragondormant.eastkingdom.org/' },
   { id: 'havre-des-glaces', nom: 'Baronnie du Havre des Glaces (SCA)', categorie: 'reconstitution' },
   { id: 'constantinople', nom: 'Le Royaume de Constantinople', categorie: 'reconstitution' },
+  { id: 'hulsborg', nom: 'Hülsborg', categorie: 'reconstitution' },
+  { id: 'vestvegir', nom: 'Vestvegir', categorie: 'reconstitution' },
   // Vikings
   { id: 'urwaz', nom: 'URWAZ', lieu: 'Montréal', categorie: 'viking', url: 'https://www.facebook.com/urwazviking/' },
   { id: 'aegir', nom: 'La Troupe d’Aegir', lieu: 'Saguenay–Lac-Saint-Jean', categorie: 'viking' },

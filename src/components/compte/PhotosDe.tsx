@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Camera } from 'lucide-react';
-import { suivrePhotosPubliquesDe, type PhotoPublique } from '../../firebase/photosPubliques';
+import { suivrePhotosPubliquesDe, suivrePhotosVedette, type PhotoPublique } from '../../firebase/photosPubliques';
 
 // ─── La galerie publique d'un membre ────────────────────────────────
 // Ce qu'un autre membre voit en ouvrant la fiche : seulement les photos
 // que la personne a marquées publiques (Alex, 2026-08-27). La légende
 // se lit en survol et sous la photo.
 
-const PhotosDe: React.FC<{ uid: string; lang: 'FR' | 'EN'; titre: string }> = ({ uid, lang, titre }) => {
+const PhotosDe: React.FC<{
+  uid: string; lang: 'FR' | 'EN'; titre: string;
+  /** Seulement les photos en vedette (colonne du profil). */
+  vedette?: boolean;
+  /** Le mot quand il n'y a rien (sur son propre profil, une invitation). */
+  vide?: string;
+}> = ({ uid, lang, titre, vedette, vide }) => {
   const fr = lang === 'FR';
   const [photos, setPhotos] = useState<PhotoPublique[] | null>(null);
-  useEffect(() => suivrePhotosPubliquesDe(uid, setPhotos), [uid]);
+  useEffect(() => (vedette ? suivrePhotosVedette : suivrePhotosPubliquesDe)(uid, setPhotos), [uid, vedette]);
+  // Sur la fiche d'un autre, une vitrine vide ne s'affiche pas du tout.
+  if (vedette && !vide && photos !== null && photos.length === 0) return null;
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
@@ -27,10 +35,10 @@ const PhotosDe: React.FC<{ uid: string; lang: 'FR' | 'EN'; titre: string }> = ({
         <p className="font-sans text-sm text-ivory-soft/50">{fr ? 'Chargement…' : 'Loading…'}</p>
       ) : photos.length === 0 ? (
         <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
-          {fr ? 'Ce membre n’a pas encore partagé de photo.' : 'This member has not shared a photo yet.'}
+          {vide || (fr ? 'Ce membre n’a pas encore partagé de photo.' : 'This member has not shared a photo yet.')}
         </p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className={`grid grid-cols-2 gap-3 ${vedette ? "sm:grid-cols-3" : "sm:grid-cols-3 md:grid-cols-4"}`}>
           {photos.map((p) => (
             <figure key={p.id} className="group relative aspect-square overflow-hidden rounded-card"
                     style={{ border: '1px solid rgba(244,239,227,0.14)' }}>
