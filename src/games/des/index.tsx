@@ -954,7 +954,7 @@ const DesPage: React.FC = () => {
                     </button>
                   ))}
                 </div>
-                <button type="button" onClick={commencer} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
+                <button type="button" onClick={() => setPubEnAttente(() => commencer)} className="fmm-glass-btn is-primary px-6 py-4" style={{ flexDirection: 'row', gap: '0.6rem' }}>
                   <Dices size={16} className="text-brass" />
                   <span className="fmm-glass-btn-label">{t.commencer}</span>
                 </button>
