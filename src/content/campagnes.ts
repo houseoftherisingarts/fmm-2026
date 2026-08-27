@@ -613,8 +613,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Afin de faciliter les transactions sur le site, il est impératif au festival de trouver une façon de procurer au village le signal des étoiles. En achetant une antenne massive, vous permettrez non seulement au Festival Médiéval de Montpellier, mais aussi à d’autres festivals, de voir le jour et de survivre sur le territoire montagneux de la Petite-Nation.',
-        EN: 'To make transactions possible on the grounds, the festival must find a way to bring the village the signal of the stars. By buying one massive antenna, you will allow not only the Festival Médiéval de Montpellier, but other festivals too, to come to life and survive on the mountainous land of the Petite-Nation.',
+        FR: 'Afin de faciliter les transactions sur le site, il est impératif au festival de trouver une façon de procurer au village le signal des étoiles. En achetant une antenne massive, vous permettrez au Festival Médiéval de Montpellier, et à d’autres festivals après lui, de voir le jour et de survivre sur le territoire montagneux de la Petite-Nation.',
+        EN: 'To make transactions possible on the grounds, the festival must find a way to bring the village the signal of the stars. By buying one massive antenna, you will allow the Festival Médiéval de Montpellier, and other festivals after it, to come to life and survive on the mountainous land of the Petite-Nation.',
       },
       {
         type: 'photo',

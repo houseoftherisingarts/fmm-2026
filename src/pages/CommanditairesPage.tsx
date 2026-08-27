@@ -350,7 +350,7 @@ const FR = {
   intro: 'Votre entreprise peut prendre rang à la cour du Festival Médiéval de Montpellier. Trois plans de commandite, trois rangs de noblesse : plus votre maison s’engage, plus haut flotte sa bannière.',
   whyEyebrow: 'Où va votre or',
   whyTitle: 'Du son, des spectacles, un festival plus grand',
-  whyBody: 'Chaque commandite finance directement la qualité de ce que vivent les visiteurs : une sonorisation professionnelle sur la scène principale, des troupes et des cavaliers de calibre supérieur, des tournois, des combats et des artisans du feu. Vous n’achetez pas une banderole : vous rendez le festival plus grand, aux côtés de la MRC Papineau, du Groupe Gagnon et de la municipalité de Montpellier qui portent déjà l’événement avec nous.',
+  whyBody: 'Chaque commandite finance directement la qualité de ce que vivent les visiteurs : une sonorisation professionnelle sur la scène principale, des troupes et des cavaliers de calibre supérieur, des tournois, des combats et des artisans du feu. Votre or rend le festival plus grand, aux côtés de la MRC Papineau, du Groupe Gagnon et de la municipalité de Montpellier qui portent déjà l’événement avec nous.',
   only: 'Un seul, par édition',
   stats: [
     { value: '3 100', label: 'Festivaliers en 2025' },
@@ -425,7 +425,7 @@ const FR = {
     eyebrow: 'La connexion astrale',
     title: 'Les Magiciens du festival',
     body1: 'Comme tout village dans les montagnes, Montpellier est coupé des ondes du monde extérieur. Pour que la billetterie, les terminaux et la Petite Monnaie respirent pendant le festival, nos magiciens doivent établir la connexion astrale : une antenne massive tournée vers le ciel, qui capte le signal des étoiles et l’apporte jusqu’au village.',
-    body2: 'Chaque don nourrit le sortilège. En portant la lumière, vous permettez non seulement au Festival Médiéval de Montpellier, mais à d’autres festivals de la Petite-Nation, de voir le jour et de survivre en territoire montagneux. Votre nom rejoint le cercle des Magiciens du festival.',
+    body2: 'Chaque don nourrit le sortilège. En portant la lumière, vous permettez au Festival Médiéval de Montpellier, et à d’autres festivals de la Petite-Nation avec lui, de voir le jour et de survivre en territoire montagneux. Votre nom rejoint le cercle des Magiciens du festival.',
     cta: 'Porter la lumière',
   },
   form: {
@@ -447,7 +447,7 @@ const EN = {
   intro: 'Your business can take rank at the court of the Festival Médiéval de Montpellier. Three sponsorship plans, three ranks of nobility: the more your house commits, the higher its banner flies.',
   whyEyebrow: 'Where your gold goes',
   whyTitle: 'Sound, shows, a greater festival',
-  whyBody: 'Every sponsorship directly funds what visitors experience: professional sound on the main stage, higher-calibre troupes and riders, tournaments, combat and fire artisans. You are not buying a banner: you are making the festival greater, alongside MRC Papineau, Groupe Gagnon and the municipality of Montpellier who already carry the event with us.',
+  whyBody: 'Every sponsorship directly funds what visitors experience: professional sound on the main stage, higher-calibre troupes and riders, tournaments, combat and fire artisans. Your gold makes the festival greater, alongside MRC Papineau, Groupe Gagnon and the municipality of Montpellier who already carry the event with us.',
   only: 'One per edition',
   stats: [
     { value: '3,100', label: 'Festival-goers in 2025' },
@@ -522,7 +522,7 @@ const EN = {
     eyebrow: 'The astral connection',
     title: 'Magicians of the festival',
     body1: 'Like every village in the mountains, Montpellier is cut off from the airwaves of the outside world. For ticketing, card terminals and the Petite Monnaie to breathe during the festival, our magicians must establish the astral connection: one massive antenna turned to the sky, catching the signal of the stars and carrying it down to the village.',
-    body2: 'Every gift feeds the spell. By carrying the light, you allow not only the Festival Médiéval de Montpellier but other festivals of the Petite-Nation to come to life and survive in mountainous country. Your name joins the circle of the Magicians of the festival.',
+    body2: 'Every gift feeds the spell. By carrying the light, you allow the Festival Médiéval de Montpellier, and other festivals of the Petite-Nation with it, to come to life and survive in mountainous country. Your name joins the circle of the Magicians of the festival.',
     cta: 'Carry the light',
   },
   form: {

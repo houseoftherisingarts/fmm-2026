@@ -352,7 +352,7 @@ const FR = {
   themeEyebrow: 'Le thème de l’année · 2026', themeTitle: 'Caravanes & Saltimbanques',
   themeLead: 'Après les Vikings, la route continue. Cette année, le FMM rend hommage aux peuples nomades, aux grandes salles de banquet et aux artistes itinérants qui ont donné naissance au cirque.',
   themeBody1: 'Imaginez les caravanes qui s’arrêtent à la tombée du jour, les feux qui s’allument, les tables qui se dressent. Tout autour, les acrobates s’élancent, les jongleurs lancent leurs torches, les conteurs prennent la parole et les musiciens font tourner la ronde. C’est cet esprit que nous célébrons : celui des saltimbanques qui portaient la fête de village en village.',
-  themeBody2: 'Le banquet devient le cœur battant du festival. Comme dans les grandes salles d’autrefois, vous mangez, vous buvez, vous écoutez les bardes, et le spectacle se déroule entre les services. Une expérience à vivre en tablée, au rythme des tambours et des éclats de rire.',
+  themeBody2: 'Le banquet devient le cœur du festival. Comme dans les grandes salles d’autrefois, vous mangez, vous buvez, vous écoutez les bardes, et le spectacle se déroule entre les services. Une expérience à vivre en tablée, au rythme des tambours et des éclats de rire.',
   hookEyebrow: 'Petit détour historique', hookTitle: 'Aux origines du cirque',
   hookLead: 'Le mot « saltimbanque » est plus jeune que le Moyen Âge, mais l’art, lui, est très ancien. Voici quelques repères pour situer d’où vient la fête.',
   timeline: [
@@ -385,7 +385,7 @@ const EN = {
   themeEyebrow: 'This year’s theme · 2026', themeTitle: 'Caravans & Players',
   themeLead: 'After the Vikings, the road goes on. This year FMM pays homage to nomadic peoples, great banquet halls, and the wandering performers who gave birth to the circus.',
   themeBody1: 'Picture the caravans pulling in at dusk, the fires lit, the tables set. All around, acrobats leap, jugglers toss their torches, storytellers take the floor and musicians spin the dance. That is the spirit we celebrate : the players who carried the festival from village to village.',
-  themeBody2: 'The banquet becomes the beating heart of the festival. As in the great halls of old, you eat, you drink, you listen to the bards, and the show unfolds between courses. An experience to share at the table, to the rhythm of drums and bursts of laughter.',
+  themeBody2: 'The banquet becomes the heart of the festival. As in the great halls of old, you eat, you drink, you listen to the bards, and the show unfolds between courses. An experience to share at the table, to the rhythm of drums and bursts of laughter.',
   hookEyebrow: 'A short history', hookTitle: 'The origins of the circus',
   hookLead: 'The word « saltimbanque » is younger than the Middle Ages, but the art itself is ancient. A few landmarks to place where the festivity comes from.',
   timeline: [

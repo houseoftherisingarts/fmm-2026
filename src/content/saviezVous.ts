@@ -642,7 +642,7 @@ export const FAITS: readonly Fait[] = [
     titreFR: 'Les troupes de la Nouvelle-France',
     titreEN: 'The New France troupes',
     texteFR:
-      'Saviez-vous qu’au Québec nous avons plus de 10 troupes de reconstitution de la Nouvelle-France ? Cette année au Festival Médiéval de Montpellier, les Habitants de la Nouvelle-France vont vous instruire sur les différents métiers de nos ancêtres. De plus, La Garde du Lys vous contera la merveilleuse histoire des mousquetaires en Nouvelle-France.',
+      'Saviez-vous qu’au Québec nous avons plus de 10 troupes de reconstitution de la Nouvelle-France ? Cette année au Festival Médiéval de Montpellier, les Habitants de la Nouvelle-France vont vous instruire sur les différents métiers de nos ancêtres. La Garde du Lys vous contera aussi la merveilleuse histoire des mousquetaires en Nouvelle-France.',
     texteEN:
       'Did you know that here in Quebec we have more than 10 New France reenactment troupes? This year at the Festival Médiéval de Montpellier, les Habitants de la Nouvelle-France will teach you about the various trades of our ancestors. La Garde du Lys will also tell you the marvellous story of the musketeers in New France.',
     publication: { date: '2024-08-07', url: 'https://www.facebook.com/104412411953069/posts/515871394151746' },

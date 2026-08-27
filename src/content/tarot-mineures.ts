@@ -229,8 +229,8 @@ const LECTURES: Record<Couleur, Lecture[]> = {
       renverseEN: 'Turning the knife. Reversed, the Three shows resentment kept warm, the wound retold a hundred times, or pain refused recognition that comes out sideways. It asks you to say it once more, then close.',
     },
     {
-      droitFR: 'Quatre épées rangées : le repos du guerrier. La carte parle d’une retraite volontaire, d’un silence nécessaire, d’une convalescence. Elle annonce une pause qui répare, souvent après un conflit. Elle demande de vraiment s’arrêter, pas de faire semblant.',
-      droitEN: 'Four swords laid down: the warrior’s rest. The card speaks of chosen retreat, necessary silence, convalescence. It announces a pause that repairs, usually after a conflict. It asks you to actually stop, not to pretend.',
+      droitFR: 'Quatre épées rangées : le repos du guerrier. La carte parle d’une retraite volontaire, d’un silence nécessaire, d’une convalescence. Elle annonce une pause qui répare, souvent après un conflit. Elle demande de s’arrêter pour de vrai.',
+      droitEN: 'Four swords laid down: the warrior’s rest. The card speaks of chosen retreat, necessary silence, convalescence. It announces a pause that repairs, usually after a conflict. It asks you to stop for real.',
       renverseFR: 'Le repos traîne. Renversé, le Quatre montre l’évitement déguisé en repos, le retrait qui dure trop, ou l’impossibilité de se reposer parce que l’esprit continue de se battre. Il demande de fixer la fin du repos.',
       renverseEN: 'Rest drags on. Reversed, the Four shows avoidance dressed as rest, a withdrawal lasting too long, or an inability to rest because the mind keeps fighting. It asks you to set an end to the rest.',
     },
@@ -243,8 +243,8 @@ const LECTURES: Record<Couleur, Lecture[]> = {
     {
       droitFR: 'Six épées portées à travers l’eau : la traversée. La carte parle d’un départ vers plus calme, d’un déménagement, d’une convalescence qui avance, d’un passage sans éclat mais réel. Elle demande d’accepter de partir avec un peu de bagage seulement.',
       droitEN: 'Six swords carried across the water: the crossing. The card speaks of a move toward calmer ground, a relocation, a recovery under way, a passage without brilliance but real. It asks you to accept leaving with only a little luggage.',
-      renverseFR: 'Le départ est empêché. Renversé, le Six montre qu’on emporte le problème avec soi, qu’un déménagement ne règle rien, ou qu’une aide attendue ne vient pas. Il demande de changer ce qui voyage, pas seulement le lieu.',
-      renverseEN: 'The departure is blocked. Reversed, the Six shows the problem carried along, a move that settles nothing, or expected help that does not come. It asks you to change what travels, not only the place.',
+      renverseFR: 'Le départ est empêché. Renversé, le Six montre qu’on emporte le problème avec soi, qu’un déménagement ne règle rien, ou qu’une aide attendue ne vient pas. Il demande de changer aussi ce qui voyage dans les bagages.',
+      renverseEN: 'The departure is blocked. Reversed, the Six shows the problem carried along, a move that settles nothing, or expected help that does not come. It asks you to change what is in the luggage too.',
     },
     {
       droitFR: 'Sept épées : la ruse. La carte parle de stratégie, de discrétion, de ce qu’on obtient par le côté quand on ne l’aura pas de face. Elle peut être habile et légitime; elle peut aussi désigner quelqu’un qui agit dans votre dos. Elle demande de regarder qui joue, et comment.',

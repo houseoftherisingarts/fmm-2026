@@ -87,11 +87,11 @@ const TOUTES: Annonce[] = [
     bodyFR:
       'Comme tout village dans les montagnes, le village de Montpellier est coupé des ondes du monde extérieur. Il nous faut donc nous tourner vers le ciel pour recevoir la fréquence du dieu de l’argent.\n\n'
       + 'Afin de faciliter les transactions sur le site, il est impératif au festival de trouver une façon de procurer au village le signal des étoiles.\n\n'
-      + 'En achetant une antenne massive, vous permettrez non seulement au festival médiéval de Montpellier mais aussi à d’autres festivals de voir le jour et de survivre sur le territoire montagneux de la Petite Nation.',
+      + 'En achetant une antenne massive, vous permettrez au festival médiéval de Montpellier, et à d’autres festivals après lui, de voir le jour et de survivre sur le territoire montagneux de la Petite Nation.',
     bodyEN:
       'Like every village in the mountains, Montpellier is cut off from the airwaves of the outside world. So we must turn to the sky to receive the frequency of the god of money.\n\n'
       + 'To make transactions possible on the grounds, the festival must find a way to bring the village the signal of the stars.\n\n'
-      + 'By buying one massive antenna, you will allow not only the Festival Médiéval de Montpellier but other festivals too to come to life and survive on the mountainous land of the Petite Nation.',
+      + 'By buying one massive antenna, you will allow the Festival Médiéval de Montpellier, and other festivals after it, to come to life and survive on the mountainous land of the Petite Nation.',
     cta: {
       url:     ZEFFY_LEVEE_URL,
       labelFR: 'Porter la lumière',

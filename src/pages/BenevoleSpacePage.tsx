@@ -160,8 +160,8 @@ const BenevoleSpacePage: React.FC = () => {
       <FullPageStub
         title={lang === 'FR' ? 'Candidature non retenue' : 'Application not retained'}
         body={lang === 'FR'
-          ? "Pour cette édition, votre candidature n'a pas été retenue. Merci pour l'intérêt. N'hésitez pas à postuler de nouveau l'an prochain."
-          : "For this edition, your application was not retained. Thanks for your interest. Feel free to apply again next year."}
+          ? "Pour cette édition, votre candidature n'a pas été retenue. Merci pour l'intérêt. Les candidatures rouvrent l'an prochain."
+          : "For this edition, your application was not retained. Thanks for your interest. Applications open again next year."}
         primary={{ label: lang === 'FR' ? 'Retour' : 'Back', to: addLocale('/', lang) }}
         secondary={{ label: lang === 'FR' ? 'Déconnexion' : 'Sign out', fn: signOut }}
       />

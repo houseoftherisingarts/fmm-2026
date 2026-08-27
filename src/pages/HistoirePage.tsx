@@ -624,13 +624,13 @@ const HistoirePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
 
 const FR = {
   home: 'Accueil', eyebrow: 'Notre histoire', title: '6 ans d’histoire',
-  intro1: 'Fondé en 2021, le FMM a surmonté l’épreuve de naître pendant la pandémie pour, contre toute attente, devenir l’un des plus grands festivals médiévaux du Québec. Une programmation unique et variée, une formule jusqu’ici inexplorée parmi les festivals d’ici.',
+  intro1: 'Fondé en 2021, le FMM a surmonté l’épreuve de naître pendant la pandémie pour, contre toute attente, devenir l’un des plus grands festivals médiévaux du Québec. Une programmation variée, et une formule jusqu’ici inexplorée parmi les festivals d’ici.',
   niEyebrow: 'Une formule unique',
   niTitle: 'Ni G-N, ni reconstitution',
   ni1: 'Le Festival Médiéval de Montpellier est une expérience festive en nature, une activité fort différente d’un GN (jeu de rôle grandeur nature), d’un salon de commerce dans un centre de congrès, ou même d’un événement de reconstitution historique strict.',
   ni2: 'Toutes ces activités offrent une immersion dans le monde médiéval, mais avec des perspectives distinctes. Le GN regroupe des passionnés dans un scénario précis avec des éléments fantastiques. La reconstitution historique se base sur les écrits et vestiges historiques avec un respect extrême de la précision. Le salon de commerce, lui, est souvent en ville pour que les passionnés découvrent et achètent les produits d’artisans.',
   ni3: 'Le FMM tient à se démarquer des autres événements eurocentristes en invitant ses participants à apporter leur héritage. Bien que l’Europe soit sur-représentée dans l’axiome « médiéval », l’époque dite médiévale s’est déroulée partout dans le monde, tous sont bienvenus à exhiber leur culture, qu’ils viennent d’Orient, d’Afrique, d’Amérique ou de toute région dont l’époque médiévale est peu connue du grand public.',
-  galleryEyebrow: 'Archives', photosTitle: 'Archives photos', galleryTitle: 'Plongez dans nos archives', photographerBy: 'Photos par',
+  galleryEyebrow: 'Archives', photosTitle: 'Archives photos', galleryTitle: 'Nos archives', photographerBy: 'Photos par',
   capturesVideo: 'captures d’écran du vidéo',
   galleryLead: 'Six éditions immortalisées par nos photographes. Une sélection, classée selon qui l’a captée.',
   plongezLead: 'Six éditions, et une machine à remonter le temps : revisitez le site du festival tel qu’il était, année après année, puis passez à la salle de projection.',
@@ -642,13 +642,13 @@ const FR = {
 };
 const EN = {
   home: 'Home', eyebrow: 'Our story', title: '6 years of history',
-  intro1: 'Founded in 2021, FMM survived being born during the pandemic to become, against all odds, one of Quebec’s largest medieval festivals. A unique, varied program; a formula previously unexplored among local festivals.',
+  intro1: 'Founded in 2021, FMM survived being born during the pandemic to become, against all odds, one of Quebec’s largest medieval festivals. A varied program, and a formula previously unexplored among local festivals.',
   niEyebrow: 'A unique formula',
   niTitle: 'Neither LARP nor re-enactment',
   ni1: 'Festival Médiéval de Montpellier is a festive experience in nature, a very different activity from a LARP (live-action role-play), a trade show in a convention centre, or even a strict historical re-enactment event.',
   ni2: 'All these offer immersion into the medieval world, but with distinct perspectives. LARP gathers enthusiasts in a specific scenario with fantasy elements. Historical re-enactment is based on writings and historical remains with extreme precision. The trade show, in turn, is usually in the city so enthusiasts can discover and buy artisans’ products.',
   ni3: 'FMM stands apart from other Eurocentric events by inviting participants to bring their own heritage. Though Europe is over-represented in the "medieval" axiom, the medieval era unfolded all across the world, all are welcome to showcase their culture, whether they come from the East, Africa, the Americas, or any region whose medieval era is little known to the general public.',
-  galleryEyebrow: 'Archives', photosTitle: 'Photo archives', galleryTitle: 'Step into the archives', photographerBy: 'Photos by',
+  galleryEyebrow: 'Archives', photosTitle: 'Photo archives', galleryTitle: 'Our archives', photographerBy: 'Photos by',
   capturesVideo: 'stills from the film',
   galleryLead: 'Six editions captured by our photographers. A selection, sorted by who shot it.',
   plongezLead: 'Six editions, and a time machine: revisit the festival site as it was, year after year, then step into the screening room.',

@@ -32,7 +32,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
     title: 'Accueil',
     icon: '🎟️',
     description:
-      "À l'accueil, tu assures une réception chaleureuse du public du festival. Tu es responsable de la vente des billets à l'entrée ou de la validation de ceux achetés en ligne. Tu contribues ainsi à offrir une première expérience positive et fluide à chaque personne.",
+      "À l'accueil, tu assures une réception chaleureuse du public du festival. Tu es responsable de la vente des billets à l'entrée ou de la validation de ceux achetés en ligne. C'est toi qui donnes au public sa première impression du festival.",
     taches: [
       'Accueillir les personnes avec le sourire',
       "Encaisser les paiements des billets d'entrée (argent liquide, carte, etc.)",
@@ -55,7 +55,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
     title: 'Sécurité',
     icon: '🛡️',
     description:
-      "En tant qu'agent·e de sécurité, tu patrouilles sur le site afin d'assurer le bon déroulement de l'événement, dans le respect des règles établies. Tu contribues à maintenir un environnement sûr et convivial pour l'ensemble du public. En cas de situation nécessitant une intervention particulière, tu fais rapidement appel aux personnes ressources désignées.",
+      "En tant qu'agent·e de sécurité, tu patrouilles sur le site afin d'assurer le bon déroulement de l'événement, dans le respect des règles établies. Tu gardes le site sûr pour tout le monde. En cas de situation nécessitant une intervention particulière, tu fais rapidement appel aux personnes ressources désignées.",
     taches: [
       'Patrouiller régulièrement sur le site du festival',
       'Veiller au respect des consignes de sécurité et des règles du site',
@@ -77,7 +77,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
     title: 'Bar / Taverne',
     icon: '🍺',
     description:
-      "La taverne est l'un des lieux les plus animés et festifs du festival ! En tant que barmaid ou barman, tu seras responsable de servir des breuvages (avec ou sans alcool) à nos valeureux invités. Tu contribueras à créer une ambiance chaleureuse, conviviale et… peut-être un peu épique !",
+      "La taverne est l'un des lieux les plus animés et festifs du festival ! En tant que barmaid ou barman, tu seras responsable de servir des breuvages (avec ou sans alcool) à nos valeureux invités. Tu contribueras à créer une ambiance chaleureuse et… peut-être un peu épique !",
     taches: [
       'Servir les consommations (boissons alcoolisées et non-alcoolisées)',
       'Gestion des paiements (liquide, comptant, etc)',
@@ -105,7 +105,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
       'Assurer une présence active en position debout et en déplacement',
     ],
     competences: [
-      "Attitude chaleureuse, énergie positive et sens de l'accueil",
+      "Attitude chaleureuse et sens de l'accueil",
       'Sens de l’orientation et jugement rapide pour fluidifier le trafic',
       "Excellente communication avec l'équipe",
       'Confort à rester debout et à être en mouvement continu',
@@ -125,7 +125,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
       'Vider et remplacer les poubelles',
       'Nettoyer les espaces communs et installations au besoin',
       'Intervenir rapidement en cas de déversement ou saleté importante',
-      'Maintenir un environnement propre, sécuritaire et accueillant',
+      'Garder les lieux propres et sécuritaires',
     ],
     competences: [
       'Autonomie et fiabilité',
@@ -141,7 +141,7 @@ export const BENEVOLE_ROLES: BenevoleRoleSpec[] = [
     title: 'Camping',
     icon: '⛺',
     description:
-      "La personne au camping assure l'accueil et l'orientation des campeur·euses vers les emplacements prévus, tout en veillant au respect des règles du site. Elle contribue à maintenir un environnement sécuritaire, calme et agréable pour l'ensemble des personnes sur le terrain.",
+      "La personne au camping assure l'accueil et l'orientation des campeur·euses vers les emplacements prévus, tout en veillant au respect des règles du site. Elle contribue à maintenir un terrain calme et sécuritaire pour tout le monde.",
     taches: [
       'Accueillir et orienter les campeur·euses vers les emplacements',
       'Vérifier et appliquer les règles du site de camping',
