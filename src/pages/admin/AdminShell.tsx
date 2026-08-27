@@ -33,6 +33,7 @@ export type AdminSectionId =
   | 'mariages'
   | 'commanditaires'
   | 'finances'
+  | 'signature'
   | 'carnet'
   | 'comptes'
   | 'clients'
