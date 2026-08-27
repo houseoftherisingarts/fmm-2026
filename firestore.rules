@@ -778,6 +778,10 @@ service cloud.firestore {
     match /clients/{docId}     { allow read, write: if isAdmin(); }
 
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
+    // Rapports publicitaires (section admin Publicité) : analyses de
+    // campagne Meta, Google Ads, AdSense, journal, déposées par Claude.
+    // L'équipe seulement, en lecture comme en écriture.
+    match /rapports_pubs/{docId} { allow read, write: if isAdmin(); }
     // Team availability polls (Disponibilités : Doodle interne).
     match /teamPolls/{docId}   { allow read, write: if isAdmin(); }
     // Invités : liste des entrées gratuites tenue pour la porte.
