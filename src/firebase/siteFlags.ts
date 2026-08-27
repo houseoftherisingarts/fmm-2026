@@ -40,12 +40,13 @@ export interface SiteFlags {
   // so you can build an unpublished page without exposing it publicly.
   pubActivites:            boolean;
   pubMarche:               boolean;
+  pubNourriture:           boolean;
+  pubBoissons:             boolean;
   pubHistoire:             boolean;
   pubMariages:             boolean;
   pubHebergement:          boolean;
   pubPartenaires:          boolean;
   pubBenevole:             boolean;
-  pubPetiteMonnaie:        boolean;
   // Jeux en ligne : publié par défaut (les jeux existent déjà, sortis de
   // la section Jeunesse le 2026-08-20 à la demande d'Alex).
   pubJeux:                 boolean;
