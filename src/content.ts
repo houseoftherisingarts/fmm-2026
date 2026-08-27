@@ -92,6 +92,7 @@ export const PILLAR_COPY: Record<PillarKey, { FR: PillarCopy; EN: PillarCopy }> 
   groupes:     { FR: { eyebrow: 'Sortie de groupe',     title: 'Groupes',               lead: 'Tarifs spéciaux pour les groupes scolaires, communautaires et corporatifs.' }, EN: { eyebrow: 'Group outing',        title: 'Groups',                lead: 'Special rates for school, community and corporate groups.' } },
   'petite-monnaie': { FR: { eyebrow: 'La monnaie du festival', title: 'Petite Monnaie', lead: 'Le réseau cellulaire est capricieux sur le site : passez au kiosque à l\'entrée, repartez avec votre Petite Monnaie et payez partout au festival.' }, EN: { eyebrow: 'The festival currency', title: 'Petite Monnaie', lead: 'Cell coverage is spotty on site: stop at the entrance kiosk, pick up your Petite Monnaie and pay everywhere at the festival.' } },
   jeux: { FR: { eyebrow: 'La table de jeux', title: 'Jeux en ligne', lead: 'Les jeux médiévaux du festival, jouables en ligne toute l\'année, sur mobile comme au bureau.' }, EN: { eyebrow: 'The games table', title: 'Online Games', lead: 'The festival\'s medieval games, playable online all year round, on mobile and desktop.' } },
+  boissons: { FR: { eyebrow: 'Au comptoir', title: 'Boissons', lead: 'Le menu des boissons du festival se prépare et sera dévoilé bientôt.' }, EN: { eyebrow: 'At the bar', title: 'Drinks', lead: 'The festival\'s drinks menu is coming together and will be revealed soon.' } },
 };
 
 // ─── Home (real homepage, replaces Wix `/festival-medieval-de-montpellier`)
