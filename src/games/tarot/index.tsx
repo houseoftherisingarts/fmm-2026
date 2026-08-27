@@ -326,7 +326,7 @@ const TarotPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => recommencer()}
+              onClick={() => demanderRecommencer()}
               className="fmm-glass-btn px-4 py-2.5 md:px-5 md:py-3.5"
               style={{ flexDirection: 'row', gap: '0.5rem' }}
             >
