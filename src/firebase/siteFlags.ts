@@ -66,27 +66,31 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   // flipped on one by one.
   pubActivites:            false,
   pubMarche:               false,
+  pubNourriture:           false,
+  pubBoissons:             false,
   pubHistoire:             false,
   pubMariages:             false,
   pubHebergement:          false,
   pubPartenaires:          false,
   pubBenevole:             false,
-  pubPetiteMonnaie:        false,
   pubJeux:                 true,
 };
 
 // Maps each top-level pillar to its publication flag + a human label for the
-// admin toggle. Absorbed pillars (nourriture, musique, jeunesse, apprendre,
-// groupes) redirect to a primary and have no flag of their own.
+// admin toggle. Absorbed pillars (musique, jeunesse, apprendre, groupes)
+// redirect to a primary and have no flag of their own. Petite Monnaie is
+// absorbed into Commanditaires & Partenaires (2026-08-27, une seule vitrine) :
+// it publishes with `pubPartenaires`, no flag of its own either.
 export const PILLAR_PUBLISH_FLAGS: { key: PillarKey; flag: keyof SiteFlags; label: string }[] = [
   { key: 'activites',   flag: 'pubActivites',   label: 'Programmation' },
   { key: 'marche',      flag: 'pubMarche',      label: 'Marché' },
+  { key: 'nourriture',  flag: 'pubNourriture',  label: 'Village Nourriture' },
+  { key: 'boissons',    flag: 'pubBoissons',    label: 'Boissons' },
   { key: 'histoire',    flag: 'pubHistoire',    label: 'Histoire & Apprendre' },
   { key: 'mariages',    flag: 'pubMariages',    label: 'Mariages & Groupes' },
   { key: 'hebergement', flag: 'pubHebergement', label: 'Camping & Hébergement' },
   { key: 'partenaires', flag: 'pubPartenaires', label: 'Commanditaires & Partenaires' },
   { key: 'benevole',    flag: 'pubBenevole',    label: 'Devenir Bénévole' },
-  { key: 'petite-monnaie', flag: 'pubPetiteMonnaie', label: 'Petite Monnaie' },
   { key: 'jeux',        flag: 'pubJeux',        label: 'Jeux en ligne' },
 ];
 
