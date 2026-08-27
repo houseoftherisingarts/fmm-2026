@@ -191,7 +191,7 @@ const TarotPage: React.FC = () => {
                 <button
                   key={x.id}
                   type="button"
-                  onClick={() => recommencer(x)}
+                  onClick={() => demanderRecommencer(x)}
                   aria-pressed={tirage.id === x.id}
                   title={fr ? x.texteFR : x.texteEN}
                   className={`px-3.5 py-2 rounded-[15px] border backdrop-blur-md font-sans text-[10px] uppercase tracking-[0.16em] transition-colors duration-200 ${
