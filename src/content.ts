@@ -42,22 +42,28 @@ export interface Pillar {
 }
 
 // Édition 2026 "Caravanes & Saltimbanques": top-level pillars consolidated
-// into merged pages. Programmation (= activités + musique + jeunesse), Le
-// Village (= marché + nourriture), Histoire & Apprendre (= histoire +
-// apprendre), Mariages & Groupes (= mariages + groupes). Chevaux removed.
+// into merged pages. Programmation (= activités + musique + jeunesse),
+// Histoire & Apprendre (= histoire + apprendre), Mariages & Groupes
+// (= mariages + groupes). Chevaux removed. Commanditaires & Partenaires
+// absorbs Petite Monnaie depuis le 2026-08-27 (une seule vitrine, demande
+// d'Alex) : les deux se lisent l'une après l'autre sur /partenaires.
+// Marché et Nourriture, fusionnés un temps dans « Le Village », sont
+// redevenus deux piliers distincts le même jour (Alex : « on redéplace la
+// nourriture à l'extérieur »), et Boissons est un tout nouveau pilier,
+// placé juste après Nourriture, menu à venir.
 // Primary slugs kept so existing links/SEO survive; absorbed slugs redirect
 // (see App.tsx). The absorbed keys still exist in PillarKey + PILLAR_COPY and
 // are rendered as chapters inside the merged page components.
 export const PILLARS: Pillar[] = [
   { key: 'activites',   slug: { FR: '/activites',    EN: '/en/activities' }, label: { FR: 'Programmation',               EN: 'Program' },                 short: { FR: 'Programmation', EN: 'Program' } },
-  { key: 'marche',      slug: { FR: '/marche',       EN: '/en/market' },     label: { FR: 'Marché et nourriture',        EN: 'Market and food' },         short: { FR: 'Marché',       EN: 'Market' } },
+  { key: 'marche',      slug: { FR: '/marche',       EN: '/en/market' },     label: { FR: 'Marché',                      EN: 'Market' },                  short: { FR: 'Marché',       EN: 'Market' } },
+  { key: 'nourriture',  slug: { FR: '/nourriture',   EN: '/en/food' },       label: { FR: 'Village Nourriture',          EN: 'Food Village' },            short: { FR: 'Nourriture',   EN: 'Food' } },
+  { key: 'boissons',    slug: { FR: '/boissons',     EN: '/en/drinks' },     label: { FR: 'Boissons',                    EN: 'Drinks' },                  short: { FR: 'Boissons',     EN: 'Drinks' } },
   { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: 'Histoire & Apprendre',        EN: 'History & Learning' },      short: { FR: 'Histoire et apprendre', EN: 'History & Learning' } },
   { key: 'mariages',    slug: { FR: '/mariages',     EN: '/en/weddings' },   label: { FR: 'Mariages & Groupes',          EN: 'Weddings & Groups' },       short: { FR: 'Mariages & Groupes', EN: 'Weddings & Groups' } },
   { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping & Hébergement', EN: 'Camping & Lodging' } },
   { key: 'partenaires', slug: { FR: '/partenaires',  EN: '/en/partners' },   label: { FR: 'Commanditaires & Partenaires', EN: 'Sponsors & Partners' },    short: { FR: 'Commanditaires', EN: 'Sponsors' } },
   { key: 'benevole',    slug: { FR: '/benevole',     EN: '/en/volunteer' },  label: { FR: 'Devenir Bénévole',            EN: 'Become a Volunteer' },      short: { FR: 'Devenir bénévole', EN: 'Become a volunteer' } },
-  // Slug identique FR/EN : « Petite Monnaie » est un nom de marque.
-  { key: 'petite-monnaie', slug: { FR: '/petite-monnaie', EN: '/en/petite-monnaie' }, label: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' }, short: { FR: 'Petite Monnaie', EN: 'Petite Monnaie' } },
   // Jeux médiévaux jouables en ligne, sortis de la section Jeunesse
   // (demande d'Alex, 2026-08-20) pour vivre dans leur propre onglet.
   { key: 'jeux', slug: { FR: '/jeux-en-ligne', EN: '/en/online-games' }, label: { FR: 'Jeux en ligne', EN: 'Online Games' }, short: { FR: 'Jeux en ligne', EN: 'Online games' } },
