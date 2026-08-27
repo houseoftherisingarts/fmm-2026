@@ -32,7 +32,7 @@ export type PillarKey =
   | 'marche' | 'activites' | 'nourriture' | 'jeunesse' | 'musique'
   | 'chevaux' | 'apprendre' | 'hebergement' | 'partenaires'
   | 'benevole' | 'histoire' | 'mariages' | 'groupes' | 'petite-monnaie'
-  | 'jeux';
+  | 'jeux' | 'boissons';
 
 export interface Pillar {
   key: PillarKey;
