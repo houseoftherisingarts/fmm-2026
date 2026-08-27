@@ -920,7 +920,7 @@ const DesPage: React.FC = () => {
                       <button
                         type="button"
                         disabled={enLigne.joueurs.length < 2}
-                        onClick={() => { void demarrerPartieDes(partieId!); }}
+                        onClick={() => setPubEnAttente(() => () => { void demarrerPartieDes(partieId!); })}
                         className="fmm-glass-btn is-primary px-6 py-3.5 disabled:opacity-40"
                         style={{ flexDirection: 'row', gap: '0.5rem' }}
                       >
