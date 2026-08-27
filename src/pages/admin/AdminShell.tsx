@@ -43,6 +43,7 @@ export type AdminSectionId =
   | 'campagnes'
   | 'newsletter'
   | 'social'
+  | 'pubs'
   | 'medias'
   | 'photos'
   | 'photosRecues'
