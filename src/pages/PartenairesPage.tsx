@@ -77,6 +77,27 @@ const PartenairesPage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
+
+  // L'ancienne page /petite-monnaie redirige ici avec #petite-monnaie
+  // (Alex, 2026-08-27 : les deux se lisent maintenant l'une après
+  // l'autre sur une seule vitrine). La cible bouge pendant que les
+  // photos plus haut se posent, donc on vise à quelques reprises plutôt
+  // qu'une fois, même geste que le retour de paiement du banquet.
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.location.hash !== '#petite-monnaie') return;
+    let precedent = -1;
+    let essais = 10;
+    const tic = window.setInterval(() => {
+      const cible = document.getElementById('petite-monnaie');
+      if (!cible) return;
+      const haut = Math.round(cible.getBoundingClientRect().top + window.scrollY);
+      cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (haut === precedent || --essais <= 0) window.clearInterval(tic);
+      precedent = haut;
+    }, 320);
+    return () => window.clearInterval(tic);
+  }, []);
+
   return (
     <>
       <SEO title={t.title} description={t.intro} />
