@@ -48,7 +48,9 @@ const PartenairesPage  = lazy(() => import('./pages/PartenairesPage'));
 const Partenaires2027Page = lazy(() => import('./pages/Partenaires2027Page'));
 // Merged pillar pages (édition 2026 consolidation).
 const ProgrammationPage    = lazy(() => import('./pages/ProgrammationPage'));
-const LeVillagePage        = lazy(() => import('./pages/LeVillagePage'));
+const MarchePage           = lazy(() => import('./pages/MarchePage'));
+const NourriturePage       = lazy(() => import('./pages/NourriturePage'));
+const BoissonsPage         = lazy(() => import('./pages/BoissonsPage'));
 const WilliamPage          = lazy(() => import('./pages/WilliamPage'));
 const MariagesGroupesPage  = lazy(() => import('./pages/MariagesGroupesPage'));
 const HistoireApprendrePage = lazy(() => import('./pages/HistoireApprendrePage'));
