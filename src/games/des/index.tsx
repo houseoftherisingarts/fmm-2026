@@ -175,6 +175,11 @@ const DesPage: React.FC = () => {
   // La taverne chante dès que la table est dressée.
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
 
+  // La pub AdSense se pose devant le geste qui démarre une partie (en
+  // solo comme en ligne) : le geste réel attend dans `pubEnAttente` et
+  // ne s'exécute qu'au « Continuer » de l'interstitiel.
+  const [pubEnAttente, setPubEnAttente] = useState<(() => void) | null>(null);
+
   // ── Les parures : dés d'os, du festival ou des Inconnus, et la même
   //    famille de choix pour le plateau (Alex, 2026-08-23). Le choix
   //    reste d'une visite à l'autre.
