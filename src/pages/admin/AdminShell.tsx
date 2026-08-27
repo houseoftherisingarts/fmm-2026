@@ -96,6 +96,7 @@ const NAV: NavItem[] = [
   { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Communications' },
   { id: 'social',     label: 'Médias sociaux',  icon: Megaphone,       group: 'Communications' },
   { id: 'discord',    label: 'Discord',         icon: Hash,            group: 'Communications' },
+  { id: 'pubs',       label: 'Publicité',       icon: Target,          group: 'Communications' },
 
   { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon,       group: 'Contenu' },
   { id: 'photos',     label: 'Photos',          icon: Camera,          group: 'Contenu' },
