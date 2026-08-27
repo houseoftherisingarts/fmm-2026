@@ -562,6 +562,15 @@ const DesPage: React.FC = () => {
       >
           <div ref={sceneRef} className="absolute inset-0" />
 
+          {/* La pub AdSense, devant tout le reste, tant qu'une partie
+              vient d'être lancée et n'a pas encore vraiment commencé. */}
+          {pubEnAttente && (
+            <PubDebutPartie
+              lang={lang}
+              onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
+            />
+          )}
+
           {/* Le verdict : au centre de la table, en grand, le temps que
               tout le monde regarde les dés avant qu'un dé s'en aille
               (Alex, 2026-08-23). */}
