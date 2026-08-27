@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {ArrowUpRight, Heart} from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -9,6 +9,7 @@ import { Reveal, Stagger, StaggerItem, ChapterIntro, ScrollProgress } from '../c
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 import { SponsorOffer } from './CommanditairesPage';
+import PetiteMonnaiePage from './PetiteMonnaiePage';
 
 // Featured partners: long-form cards, cloned from the live Wix copy.
 // Chaque partenaire porte SA propre image (demande d'Alex 2026-08-12 :
