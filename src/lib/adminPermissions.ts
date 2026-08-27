@@ -71,7 +71,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
 
   // CA: total access to every existing section (minus role management).
   ca: [
-    'dashboard', 'benevoles', 'equipes', 'marchands', 'activites', 'badges', 'musiciens', 'pupitre', 'matrice', 'horaire',
+    'dashboard', 'benevoles', 'equipes', 'marchands', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social',
     'medias', 'photos', 'photosRecues', 'analytics', 'splash', 'parametres', 'discord', 'bugs', 'dispos', 'invites',
   ],
