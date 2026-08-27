@@ -465,8 +465,11 @@ const App: React.FC = () => (
                     village gustatif reste intact tant qu'Alex n'a pas
                     tranché. */}
                 <Route path="/william"     element={<WilliamPage />} />
-                <Route path="/nourriture"  element={<Navigate to={{ pathname: '/marche', search: window.location.search }} replace />} />
-                <Route path="/en/food"     element={<Navigate to={{ pathname: '/en/market', search: window.location.search }} replace />} />
+                {/* Petite Monnaie a rejoint Commanditaires & Partenaires sur
+                    une seule vitrine (Alex, 2026-08-27) : son ancien pilier
+                    redirige vers l'ancre de son chapitre. */}
+                <Route path="/petite-monnaie"    element={<Navigate to={{ pathname: '/partenaires', hash: '#petite-monnaie' }} replace />} />
+                <Route path="/en/petite-monnaie" element={<Navigate to={{ pathname: '/en/partners', hash: '#petite-monnaie' }} replace />} />
                 <Route path="/groupes"     element={<Navigate to="/mariages" replace />} />
                 <Route path="/groupe"      element={<Navigate to="/mariages" replace />} />
                 <Route path="/en/groups"   element={<Navigate to="/en/weddings" replace />} />
