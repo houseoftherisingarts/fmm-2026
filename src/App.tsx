@@ -82,18 +82,21 @@ const MedievalIntroMobile = lazy(() => import('./components/landing/MedievalIntr
 // Every pillar now has its own custom page. PillarPage shell is kept
 // as a defensive fallback; if any pillar is missing here it'll render
 // the placeholder shell instead of 404-ing.
-// Top-level pillar routes. The four merged primaries point to their merged
-// page; absorbed pillars (nourriture, musique, jeunesse, groupes, apprendre)
-// and the dropped chevaux are no longer in PILLARS, so their old slugs are
-// handled by the redirects further down instead of by pillarRoutes().
-const PetiteMonnaiePage = lazy(() => import('./pages/PetiteMonnaiePage'));
+// Top-level pillar routes. The merged primaries point to their merged
+// page; absorbed pillars (musique, jeunesse, groupes, apprendre) and the
+// dropped chevaux are no longer in PILLARS, so their old slugs are handled
+// by the redirects further down instead of by pillarRoutes(). Petite
+// Monnaie is absorbed too (2026-08-27): it's a chapter inside
+// PartenairesPage now, not its own route; /petite-monnaie redirects to
+// the anchor (see redirects below).
 const JeuxEnLignePage   = lazy(() => import('./pages/JeuxEnLignePage'));
 
 const CUSTOM_PILLARS: Partial<Record<PillarKey, React.LazyExoticComponent<React.FC>>> = {
   activites:   ProgrammationPage,
   jeux:        JeuxEnLignePage,
-  'petite-monnaie': PetiteMonnaiePage,
-  marche:      LeVillagePage,
+  marche:      MarchePage,
+  nourriture:  NourriturePage,
+  boissons:    BoissonsPage,
   histoire:    HistoireApprendrePage,
   mariages:    MariagesGroupesPage,
   benevole:    BenevolePage,
