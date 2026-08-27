@@ -80,6 +80,17 @@ const TarotPage: React.FC = () => {
     setLectureOuverte(true);
   }, [tirage]);
 
+  // La pub AdSense se pose devant chaque début de partie : le geste qui
+  // recommence attend dans `pubEnAttente` et ne s'exécute qu'au
+  // « Continuer » de l'interstitiel.
+  const [pubEnAttente, setPubEnAttente] = useState<(() => void) | null>(null);
+  const demanderRecommencer = (t: Tirage = tirage) => setPubEnAttente(() => () => recommencer(t));
+
+  // Le premier tirage, déjà mélangé au montage, compte lui aussi comme
+  // un début de partie : l'interstitiel s'affiche avant que le tapis ne
+  // devienne jouable, ici sans plus rien à démarrer.
+  useEffect(() => { setPubEnAttente(() => () => {}); }, []);
+
   // Une carte encore sur son dos se retourne. Une carte déjà retournée
   // ouvre son panneau et devient la lecture courante.
   const retourner = (i: number) => {
