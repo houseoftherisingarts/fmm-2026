@@ -84,6 +84,10 @@ export interface Membre {
   amis?: number;
   parties?: number;
   avisPris?: string[];
+  /** Les rendez-vous médiévaux que la personne fréquente (identifiants
+   *  de src/content/evenementsMedievaux.ts), plus un libre. */
+  evenements?: string[];
+  evenementsAutre?: string;
   maj?: unknown;
 }
 

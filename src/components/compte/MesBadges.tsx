@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Pin } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
-import { COLLECTIONS, TOUS_LES_BADGES, avancement, sceauDe } from '../../firebase/badges';
+import {
+  COLLECTIONS, TOUS_LES_BADGES, MAX_EXPOSES, avancement, sceauDe, suivreExposes, definirExposes,
+} from '../../firebase/badges';
 
 // ─── Le livre de collection ──────────────────────────────────────────
 // « Mes badges » (Alex, 2026-08-23). Chaque collection complétée vaut un
@@ -24,6 +28,29 @@ const MesBadges: React.FC<{
   const obtenus = obtenusVus ?? mesBadges;
   const etat = avancement(obtenus);
 
+  // La vitrine : sur son propre livre, chaque badge gagné porte une
+  // épingle; cinq au plus tiennent en tête de la fiche (Alex, 2026-08-27).
+  const { user } = useAuth();
+  const mien = !obtenusVus && Boolean(user?.uid);
+  const [exposes, setExposes] = useState<string[]>([]);
+  useEffect(() => {
+    if (!mien || !user?.uid) return;
+    return suivreExposes(user.uid, setExposes);
+  }, [mien, user?.uid]);
+  const [avis, setAvis] = useState<string | null>(null);
+  const epingler = (id: string) => {
+    if (!user?.uid) return;
+    const deja = exposes.includes(id);
+    if (!deja && exposes.length >= MAX_EXPOSES) {
+      setAvis(fr ? `Cinq badges au plus. Retirez-en un pour en épingler un autre.` : `Five badges at most. Unpin one to pin another.`);
+      window.setTimeout(() => setAvis(null), 2600);
+      return;
+    }
+    const suite = deja ? exposes.filter((x) => x !== id) : [...exposes, id];
+    setExposes(suite);
+    void definirExposes(user.uid, suite).catch(() => { /* hors ligne */ });
+  };
+
   return (
     <section aria-labelledby="badges-title" className="glass-light rounded-lg-card p-7 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-6 pb-2"
@@ -42,6 +69,21 @@ const MesBadges: React.FC<{
           : 'The site can be collected. Each complete collection earns a prize, and whoever gathers them all takes the biggest one. Prizes are revealed before the festival.'}
       </p>
 
+      {mien && (
+        <div className="mb-7 p-4 flex flex-wrap items-center justify-between gap-3"
+             style={{ background: 'rgba(216,176,90,0.06)', border: '1px solid rgba(216,176,90,0.3)' }}>
+          <p className="font-sans text-sm leading-relaxed" style={{ color: 'rgba(244,239,227,0.85)', fontWeight: 300 }}>
+            <Pin size={13} className="inline mr-1.5 -mt-0.5" style={{ color: '#D8B05A' }} />
+            {fr
+              ? 'Épinglez jusqu’à cinq badges : ils paraissent en tête de votre fiche, pour tous.'
+              : 'Pin up to five badges: they show at the top of your card, for everyone.'}
+          </p>
+          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: avis ? '#E08A6E' : '#D8B05A', fontWeight: 300 }}>
+            {avis || `${exposes.length} / ${MAX_EXPOSES}`}
+          </span>
+        </div>
+      )}
+
       <div className="space-y-7">
         {COLLECTIONS.map((c) => {
           const ligne = etat.parCollection.find((x) => x.collection.id === c.id)!;
@@ -59,13 +101,30 @@ const MesBadges: React.FC<{
               <div className="flex flex-wrap gap-3">
                 {c.badges.map((b) => {
                   const eu = obtenus.includes(b.id);
+                  const expose = exposes.includes(b.id);
                   return (
                     <motion.div
                       key={b.id}
                       title={`${fr ? b.nomFR : b.nomEN} · ${fr ? b.texteFR : b.texteEN}`}
                       whileHover={{ y: -2 }}
-                      className="w-[104px] text-center"
+                      className="relative w-[104px] text-center"
                     >
+                      {mien && eu && (
+                        <button
+                          type="button"
+                          onClick={() => epingler(b.id)}
+                          aria-pressed={expose}
+                          aria-label={`${expose ? (fr ? 'Retirer de la vitrine' : 'Unpin') : (fr ? 'Épingler' : 'Pin')} · ${fr ? b.nomFR : b.nomEN}`}
+                          className="absolute -top-1 right-2 z-10 flex items-center justify-center w-6 h-6 rounded-full transition-colors"
+                          style={{
+                            background: expose ? '#D8B05A' : 'rgba(10,2,7,0.8)',
+                            border: `1px solid ${expose ? '#D8B05A' : 'rgba(244,239,227,0.3)'}`,
+                            color: expose ? '#1a050b' : 'rgba(244,239,227,0.6)',
+                          }}
+                        >
+                          <Pin size={11} />
+                        </button>
+                      )}
                       <img
                         src={sceauDe(b.id)} alt="" aria-hidden loading="lazy"
                         className="mx-auto mb-2 w-16 h-16 object-contain"

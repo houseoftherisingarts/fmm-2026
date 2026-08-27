@@ -93,6 +93,8 @@ export const COLLECTIONS: Collection[] = [
         texteFR: 'Vous soutenez le festival de votre nom.', texteEN: 'You back the festival with your name.' },
       { id: 'membre',        glyphe: '♁', nomFR: 'Membre de la table', nomEN: 'Member of the table',
         texteFR: 'Vous avez créé votre compte du festival.', texteEN: 'You created your festival account.' },
+      { id: 'photographe',   glyphe: '◎', nomFR: 'Photographe',     nomEN: 'Photographer',
+        texteFR: 'Vous avez envoyé votre première photo du festival.', texteEN: 'You sent your first festival photo.' },
     ],
   },
   {
@@ -184,6 +186,28 @@ export function suivreBadges(uid: string, cb: (ids: string[]) => void): () => vo
   return onSnapshot(
     doc(db, COL, uid),
     (snap) => cb(snap.exists() ? Object.keys((snap.data().obtenus as object) || {}) : []),
+    () => cb([]),
+  );
+}
+
+// ─── La vitrine ──────────────────────────────────────────────────────
+// Alex, 2026-08-27 : chacun choisit jusqu'à cinq badges à montrer en
+// tête de sa fiche, ceux dont il est fier (photographe, bénévole...).
+// Le champ `exposes` vit sur le même document que `obtenus`; la règle
+// Firestore borne la liste à cinq.
+export const MAX_EXPOSES = 5;
+
+export async function definirExposes(uid: string, ids: string[]): Promise<void> {
+  if (!db) return;
+  const propres = Array.from(new Set(ids.filter((id) => badgeParId(id)))).slice(0, MAX_EXPOSES);
+  await setDoc(doc(db, COL, uid), { exposes: propres }, { merge: true });
+}
+
+export function suivreExposes(uid: string, cb: (ids: string[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  return onSnapshot(
+    doc(db, COL, uid),
+    (snap) => cb(snap.exists() ? ((snap.data().exposes as string[]) || []) : []),
     () => cb([]),
   );
 }

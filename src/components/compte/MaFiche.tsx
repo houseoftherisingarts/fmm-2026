@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Save, Users } from 'lucide-react';
+import { Save, Users, Check } from 'lucide-react';
+import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS, FMM_ID } from '../../content/evenementsMedievaux';
 import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
 import { hueFor } from '../../firebase/publicProfile';
@@ -59,6 +60,8 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     // au-dessus, et la fiche les reçoit de là (Alex, 2026-08-23).
     await publierFiche(user.uid, {
       ville: fiche.ville || '', devise: fiche.devise || '',
+      evenements: fiche.evenements ?? [FMM_ID],
+      evenementsAutre: fiche.evenementsAutre?.trim() || '',
       stats: fiche.stats || STATS_VIDES,
       avatarHue: fiche.avatarHue ?? hueFor(fiche.nom || user.uid),
     }).catch(() => { /* hors ligne */ });
@@ -116,6 +119,58 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           </li>
         ))}
       </ul>
+
+      {/* Le questionnaire : quels autres rendez-vous médiévaux la
+          personne fréquente. Le festival est coché d'office; la liste
+          vit dans src/content/evenementsMedievaux.ts (Alex, 2026-08-27). */}
+      <div className="mb-6 pt-6" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
+        <p className="witcher-stat-label mb-2">{fr ? 'Où vous croiser ailleurs' : 'Where else to meet you'}</p>
+        <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-5">
+          {fr
+            ? 'Quels autres événements médiévaux fréquentez-vous ? Cochez-les : les membres qui vont aux mêmes se retrouveront sur votre fiche.'
+            : 'Which other medieval events do you attend? Tick them: members who go to the same ones will find you on your card.'}
+        </p>
+        <div className="space-y-5">
+          {CATEGORIES_EVENEMENTS.map((cat) => (
+            <div key={cat.id}>
+              <p className="font-sans uppercase tracking-[0.2em] text-[10px] text-brass mb-2">{fr ? cat.nomFR : cat.nomEN}</p>
+              <ul className="flex flex-wrap gap-2">
+                {EVENEMENTS_MEDIEVAUX.filter((e) => e.categorie === cat.id).map((e) => {
+                  const choisis = fiche.evenements ?? [FMM_ID];
+                  const coche = choisis.includes(e.id);
+                  return (
+                    <li key={e.id}>
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={coche}
+                        onClick={() => setFiche({
+                          ...fiche,
+                          evenements: coche ? choisis.filter((x) => x !== e.id) : [...choisis, e.id],
+                        })}
+                        title={e.lieu}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-sans text-xs transition-colors"
+                        style={{
+                          border: `1px solid ${coche ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`,
+                          background: coche ? 'rgba(216,176,90,0.16)' : 'transparent',
+                          color: coche ? '#F4EFE3' : 'rgba(244,239,227,0.6)',
+                        }}
+                      >
+                        {coche && <Check size={11} style={{ color: '#D8B05A' }} />}
+                        {e.nom}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+          <input className={champ} style={champStyle}
+                 value={fiche.evenementsAutre || ''} maxLength={120}
+                 onChange={(e) => setFiche({ ...fiche, evenementsAutre: e.target.value })}
+                 placeholder={fr ? 'Un autre rendez-vous qui manque à la liste ?' : 'Another event missing from the list?'} />
+        </div>
+      </div>
 
       <button type="button" onClick={enregistrer} disabled={etat === 'ecrit'}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brass/50 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory hover:bg-brass/15 transition-colors disabled:opacity-60">

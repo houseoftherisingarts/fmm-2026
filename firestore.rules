@@ -602,9 +602,14 @@ service cloud.firestore {
     // aux autres membres connectés : le contenu n'est qu'une liste
     // d'identifiants, rien de personnel n'y transite (Alex,
     // 2026-08-23).
+    // `exposes` : les badges mis en vitrine sur la fiche, cinq au plus
+    // (Alex, 2026-08-27).
     match /badges/{uid} {
       allow read:  if signedIn();
-      allow write: if isOwner(uid);
+      allow write: if isOwner(uid)
+                   && (!('exposes' in request.resource.data)
+                       || (request.resource.data.exposes is list
+                           && request.resource.data.exposes.size() <= 5));
     }
 
     // ── Photos publiques (envoyées par les membres) ────────────────
@@ -614,18 +619,25 @@ service cloud.firestore {
     // statuts restent visibles seulement du propriétaire et de l'équipe.
     // Seule l'équipe change le statut, l'auteur ne peut pas s'auto-
     // approuver. Suppression réservée à l'équipe (section Photos reçues).
+    // `visibilite` (Alex, 2026-08-27) : 'publique' paraît sur la fiche
+    // du membre pour les autres membres connectés; 'privee' (ou absent,
+    // les envois d'avant) reste entre la personne et l'équipe. L'auteur
+    // peut la changer après coup, avec la légende.
     match /photosPubliques/{docId} {
       allow read:   if resource.data.statut == 'retenue'
                     || isAdmin()
-                    || (signedIn() && resource.data.uid == request.auth.uid);
+                    || (signedIn() && resource.data.uid == request.auth.uid)
+                    || (signedIn() && resource.data.visibilite == 'publique');
       allow create: if signedIn()
                     && request.resource.data.uid == request.auth.uid
                     && request.resource.data.statut == 'attente'
-                    && request.resource.data.consentement == true;
+                    && request.resource.data.consentement == true
+                    && request.resource.data.visibilite in ['publique', 'privee'];
       allow update: if isAdmin()
                     || (signedIn()
                         && resource.data.uid == request.auth.uid
-                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende']));
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende', 'visibilite'])
+                        && request.resource.data.visibilite in ['publique', 'privee']);
       allow delete: if isAdmin();
     }
 

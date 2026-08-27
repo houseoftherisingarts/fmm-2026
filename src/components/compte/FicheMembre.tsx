@@ -9,7 +9,8 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { addLocale } from '../../lib/locale';
-import { avancement, suivreBadges } from '../../firebase/badges';
+import { avancement, suivreBadges, suivreExposes } from '../../firebase/badges';
+import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS } from '../../content/evenementsMedievaux';
 import {
   lireFiche, publierFiche, suivreMesAmities, demanderAmitie, accepterAmitie,
   estAmi, amitieEnAttente, rolesAffiches, LIBELLE_ROLE,
@@ -34,6 +35,8 @@ import MesBadges from './MesBadges';
 import MaFiche from './MaFiche';
 import ConcoursPanel from './ConcoursPanel';
 import PhotosPanel from './PhotosPanel';
+import PhotosDe from './PhotosDe';
+import Vitrine from './Vitrine';
 import BoiteReception from './BoiteReception';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
@@ -55,7 +58,7 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 export type ModeFiche = 'prive' | 'public';
 
 const ONGLETS_PRIVE  = ['profil', 'badges', 'jeux', 'billets', 'photos', 'collection', 'messages'] as const;
-const ONGLETS_PUBLIC = ['profil', 'badges', 'jeux', 'collection'] as const;
+const ONGLETS_PUBLIC = ['profil', 'badges', 'jeux', 'photos', 'collection'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -146,6 +149,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
     if (prive || !uid) return;
     return suivreBadges(uid, setBadgesVus);
   }, [prive, uid]);
+
+  // La vitrine se lit sur le même document, pour soi comme pour un autre.
+  const [exposes, setExposes] = useState<string[]>([]);
+  useEffect(() => { if (uid) return suivreExposes(uid, setExposes); }, [uid]);
 
   const badges = prive ? mesBadges : badgesVus;
   const etatBadges = avancement(badges);
@@ -334,6 +341,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <Mail size={13} className="text-brass" /> {compte.email}
                 </p>
               )}
+
+              <Vitrine ids={exposes} lang={lang} />
 
               <div className="mt-7 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-9 sm:justify-center md:justify-start">
                 <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
@@ -571,6 +580,35 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       {fiche?.devise?.trim() || t.sansDescription}
                     </p>
                   </section>
+                  {/* Les autres rendez-vous médiévaux que la personne
+                      fréquente, groupés par genre (Alex, 2026-08-27). */}
+                  {((fiche?.evenements?.length ?? 0) > 0 || fiche?.evenementsAutre?.trim()) && (
+                    <section className="glass-light rounded-lg-card p-7 md:p-8">
+                      <p className="witcher-stat-label mb-4">{t.evenements}</p>
+                      <div className="space-y-4">
+                        {CATEGORIES_EVENEMENTS.map((cat) => {
+                          const siens = EVENEMENTS_MEDIEVAUX.filter((e) => e.categorie === cat.id && fiche!.evenements!.includes(e.id));
+                          if (!siens.length) return null;
+                          return (
+                            <div key={cat.id}>
+                              <p className="font-sans uppercase tracking-[0.2em] text-[10px] text-brass mb-2">{lang === 'FR' ? cat.nomFR : cat.nomEN}</p>
+                              <ul className="flex flex-wrap gap-2">
+                                {siens.map((e) => (
+                                  <li key={e.id} className="px-3 py-1.5 rounded-full font-sans text-xs text-ivory"
+                                      style={{ border: '1px solid rgba(232,177,74,0.3)', background: 'rgba(232,177,74,0.08)' }}>
+                                    {e.nom}{e.lieu ? <span className="text-ivory-soft/55"> · {e.lieu}</span> : null}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          );
+                        })}
+                        {fiche?.evenementsAutre?.trim() && (
+                          <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{fiche.evenementsAutre}</p>
+                        )}
+                      </div>
+                    </section>
+                  )}
                 </div>
                 {fiche?.stats && (
                   <div className="lg:col-span-5">
@@ -642,8 +680,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
             {/* Les photos qu'une personne envoie aux archives du festival :
                 son affaire à elle, jamais celle d'un visiteur. */}
-            {onglet === 'photos' && prive && compte && (
-              <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+            {onglet === 'photos' && (prive && compte
+              ? <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+              : <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />
             )}
 
             {/* Le courrier du membre, dans son espace (Alex, 2026-08-24). */}
@@ -795,10 +834,12 @@ const FR = {
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Sa fiche', badges: 'Ses badges', jeux: 'Ses parties',
-    billets: 'Billets', photos: 'Photos', collection: 'Sa collection',
+    billets: 'Billets', photos: 'Ses photos', collection: 'Sa collection',
     messages: 'Messages',
   } as Record<Onglet, string>,
   presentation: 'Sa présentation',
+  evenements: 'Où le croiser ailleurs',
+  sesPhotos: 'Ses photos',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
   aptitudes: 'Ses aptitudes, à sa façon',
   sesBadges: 'Ses badges',
@@ -839,9 +880,11 @@ const EN: typeof FR = {
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Their card', badges: 'Their badges', jeux: 'Their games',
-    billets: 'Tickets', photos: 'Photos', collection: 'Their collection',
+    billets: 'Tickets', photos: 'Their photos', collection: 'Their collection',
   } as Record<Onglet, string>,
   presentation: 'Their introduction',
+  evenements: 'Where else to meet them',
+  sesPhotos: 'Their photos',
   sansDescription: 'This member has not written an introduction yet.',
   aptitudes: 'Their own stats',
   sesBadges: 'Their badges',

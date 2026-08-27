@@ -24,6 +24,11 @@ import { db, storage } from '../firebase';
 import { CURRENT_YEAR } from './applications';
 
 export type StatutPhoto = 'attente' | 'retenue' | 'refusee';
+// Alex, 2026-08-27 : la personne choisit à l'envoi si la photo paraît
+// sur sa fiche publique ('publique') ou reste entre elle et l'équipe
+// ('privee'). Le statut de l'équipe (retenue) est une autre chose : il
+// dit si le festival reprend la photo, pas si les membres la voient.
+export type VisibilitePhoto = 'publique' | 'privee';
 
 export interface PhotoPublique {
   id: string;
@@ -37,6 +42,7 @@ export interface PhotoPublique {
   legende?: string;
   edition?: number;           // année du festival au moment de l'envoi
   statut: StatutPhoto;
+  visibilite?: VisibilitePhoto;   // absent sur les envois d'avant le 27 août = privée
   consentement: true;
   consentementLe: Timestamp | null;
   envoyeeLe: Timestamp | null;
@@ -100,6 +106,7 @@ export function televerserPhoto(
   nomMembre: string,
   legende?: string,
   onProgress?: (fraction: number) => void,
+  visibilite: VisibilitePhoto = 'privee',
 ): UploadHandle {
   if (!db || !storage) {
     return { promise: Promise.reject(new Error('Le stockage est indisponible pour le moment.')), cancel: () => {} };
@@ -131,6 +138,7 @@ export function televerserPhoto(
       ...(legende ? { legende } : {}),
       edition: CURRENT_YEAR,
       statut: 'attente' as StatutPhoto,
+      visibilite,
       consentement: true as const,
       consentementLe: serverTimestamp(),
       envoyeeLe: serverTimestamp(),
@@ -155,6 +163,27 @@ export function suivreMesPhotos(uid: string, cb: (photos: PhotoPublique[]) => vo
     },
     // Une règle qui refuse ou un index manquant ne doit pas casser
     // l'espace client : on rend une liste vide.
+    () => cb([]),
+  );
+}
+
+/** Le propriétaire change la visibilité d'une de ses photos. */
+export async function changerVisibilite(id: string, visibilite: VisibilitePhoto): Promise<void> {
+  if (!db) return;
+  await updateDoc(doc(db, COLL, id), { visibilite });
+}
+
+/** Les photos qu'un membre a rendues publiques, pour sa fiche. */
+export function suivrePhotosPubliquesDe(uid: string, cb: (photos: PhotoPublique[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  const q = query(collection(db, COLL), where('uid', '==', uid), where('visibilite', '==', 'publique'));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as PhotoPublique));
+      rows.sort((a, b) => toMillis(b.envoyeeLe) - toMillis(a.envoyeeLe));
+      cb(rows);
+    },
     () => cb([]),
   );
 }

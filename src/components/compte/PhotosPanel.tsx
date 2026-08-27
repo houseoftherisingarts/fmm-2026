@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Camera, Upload, Check, AlertCircle, Loader2 } from 'lucide-react';
+import { Camera, Upload, Check, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import {
-  televerserPhoto, suivreMesPhotos, TYPES_ACCEPTES, POIDS_MAX_ORIGINAL,
-  type PhotoPublique, type StatutPhoto,
+  televerserPhoto, suivreMesPhotos, changerVisibilite, TYPES_ACCEPTES, POIDS_MAX_ORIGINAL,
+  type PhotoPublique, type StatutPhoto, type VisibilitePhoto,
 } from '../../firebase/photosPubliques';
+import { useBadges } from '../../contexts/BadgesContext';
 
 // ─── Panneau « Vos photos » de l'espace compte ──────────────────────
 // Chaque membre peut téléverser ses photos du festival : glisser-déposer
@@ -80,6 +81,10 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
   const [consentement, setConsentement] = useState(false);
   const [credit, setCredit]         = useState(true);
   const [legende, setLegende]       = useState('');
+  // Publique : paraît sur la fiche que les autres membres visitent.
+  // Privée : entre la personne et l'équipe seulement (Alex, 2026-08-27).
+  const [visibilite, setVisibilite] = useState<VisibilitePhoto>('publique');
+  const { gagnerBadge } = useBadges();
   const [survol, setSurvol]         = useState(false);
   const [queue, setQueue]           = useState<FileEnEnvoi[]>([]);
   const [avis, setAvis]             = useState<string | null>(null);
@@ -108,9 +113,9 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
       const nom = credit ? nomMembre : (fr ? 'Anonyme' : 'Anonymous');
       const { promise } = televerserPhoto(file, uid, nom, legende.trim() || undefined, (fraction) => {
         setQueue((q) => q.map((it) => (it.id === id ? { ...it, progres: fraction } : it)));
-      });
+      }, visibilite);
       promise
-        .then(() => setQueue((q) => q.filter((it) => it.id !== id)))
+        .then(() => { setQueue((q) => q.filter((it) => it.id !== id)); gagnerBadge('photographe'); })
         .catch((e) => setQueue((q) => q.map((it) => (
           it.id === id ? { ...it, statut: 'erreur', erreur: e instanceof Error ? e.message : String(e) } : it
         ))));
@@ -162,6 +167,38 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
           className="witcher-input font-sans"
         />
       </label>
+
+      {/* Publique ou privée : le choix se fait avant l'envoi, et se
+          change après coup sur chaque photo. */}
+      <div role="radiogroup" aria-label={t.visibiliteLabel} className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="font-sans uppercase tracking-[0.25em] text-[10px] mr-2" style={{ color: '#D8B05A' }}>
+          {t.visibiliteLabel}
+        </span>
+        {(['publique', 'privee'] as VisibilitePhoto[]).map((v) => {
+          const actif = visibilite === v;
+          const Icone = v === 'publique' ? Eye : EyeOff;
+          return (
+            <button
+              key={v}
+              type="button"
+              role="radio"
+              aria-checked={actif}
+              onClick={() => setVisibilite(v)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
+              style={{
+                border: `1px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.22)'}`,
+                background: actif ? 'rgba(216,176,90,0.16)' : 'transparent',
+                color: actif ? '#F4EFE3' : 'rgba(244,239,227,0.55)',
+              }}
+            >
+              <Icone size={12} /> {t.visibilite[v]}
+            </button>
+          );
+        })}
+        <span className="basis-full font-sans text-xs mt-1" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>
+          {t.visibiliteAide[visibilite]}
+        </span>
+      </div>
 
       <div
         onDragOver={(e) => { e.preventDefault(); setSurvol(true); }}
@@ -240,6 +277,20 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                   decoding="async"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
+                <button
+                  type="button"
+                  onClick={() => changerVisibilite(p.id, p.visibilite === 'publique' ? 'privee' : 'publique')}
+                  aria-label={`${t.basculer} · ${t.visibilite[p.visibilite === 'publique' ? 'publique' : 'privee']}`}
+                  className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-full font-sans uppercase tracking-[0.15em] text-[9px]"
+                  style={{
+                    background: 'rgba(10,2,7,0.78)',
+                    border: `1px solid ${p.visibilite === 'publique' ? '#D8B05A' : 'rgba(244,239,227,0.25)'}`,
+                    color: p.visibilite === 'publique' ? '#D8B05A' : 'rgba(244,239,227,0.6)',
+                  }}
+                >
+                  {p.visibilite === 'publique' ? <Eye size={11} /> : <EyeOff size={11} />}
+                  {t.visibilite[p.visibilite === 'publique' ? 'publique' : 'privee']}
+                </button>
                 <span
                   className="absolute bottom-0 left-0 right-0 px-2 py-1.5 font-sans uppercase tracking-[0.15em] text-[9px] flex items-center justify-between gap-2"
                   style={{ background: 'rgba(10,2,7,0.78)', color: STATUT_COULEUR[p.statut] }}
@@ -264,6 +315,13 @@ const FR = {
   creditText:  'Associer mon nom à mes photos envoyées.',
   legendeLabel: 'Une légende (facultatif)',
   legendePh:    'Où, quand, ce qui se passait',
+  visibiliteLabel: 'Qui la voit',
+  visibilite: { publique: 'Publique', privee: 'Privée' } as Record<VisibilitePhoto, string>,
+  visibiliteAide: {
+    publique: 'Les membres qui ouvrent votre fiche la verront dans votre galerie.',
+    privee:   'Elle reste entre vous et l’équipe du festival.',
+  } as Record<VisibilitePhoto, string>,
+  basculer: 'Changer la visibilité',
   glissezOuChoisissez: 'Glissez vos photos ici, ou cliquez pour les choisir',
   deposezIci: 'Déposez-les ici',
   choisir:    'Choisir des photos',
@@ -284,6 +342,13 @@ const EN: typeof FR = {
   creditText:  'Credit my name on the photos I send.',
   legendeLabel: 'A caption (optional)',
   legendePh:    'Where, when, what was happening',
+  visibiliteLabel: 'Who sees it',
+  visibilite: { publique: 'Public', privee: 'Private' } as Record<VisibilitePhoto, string>,
+  visibiliteAide: {
+    publique: 'Members who open your card will see it in your gallery.',
+    privee:   'It stays between you and the festival team.',
+  } as Record<VisibilitePhoto, string>,
+  basculer: 'Change visibility',
   glissezOuChoisissez: 'Drag your photos here, or click to choose them',
   deposezIci: 'Drop them here',
   choisir:    'Choose photos',
