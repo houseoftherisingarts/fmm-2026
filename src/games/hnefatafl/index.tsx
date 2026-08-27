@@ -1070,6 +1070,10 @@ const HnefataflPage: React.FC = () => {
     regleId: REGLE_DEFAUT,
   });
   const [gameKey, setGameKey] = useState(0);
+  // La pub AdSense se pose devant « Commencer la partie » : le vrai
+  // départ (handleBegin) attend dans `pubEnAttente` et ne s'exécute
+  // qu'au « Continuer » de l'interstitiel.
+  const [pubEnAttente, setPubEnAttente] = useState<(() => void) | null>(null);
   // Ce que le panneau des amis doit savoir du tafl. Mémorisé : le
   // panneau se réabonne à chaque fois que l'adaptateur change.
   const jeuDefi = useMemo(
