@@ -33,9 +33,9 @@ const Pastille: React.FC<{ n: number }> = ({ n }) => (n > 0 ? (
 ) : null);
 
 // Deux visages (Alex, 2026-08-27) : dans l'espace, la cloche et le
-// bouton Messages côte à côte; dans le header, UN seul bouton « Mon
-// espace » qui porte le compteur et ouvre tout : l'espace, les
-// messages, puis la liste de ce qui attend.
+// bouton Messages côte à côte; dans le header, trois boutons séparés à la
+// Facebook : Profil, Notifications (cloche avec compteur), Messagerie
+// (compteur des non lus).
 const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | 'header' }> = ({ uid, lang, variante = 'espace' }) => {
   const fr = lang === 'FR';
   const header = variante === 'header';
@@ -75,51 +75,45 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
   };
 
   const total = etat.notifs.length;
-  const bouton = 'relative inline-flex items-center justify-center w-11 h-11 rounded-full transition-colors';
-  const style = { background: 'rgba(26,5,11,0.55)', border: '1px solid rgba(244,239,227,0.14)', color: 'rgba(244,239,227,0.85)' };
+  const bouton = `relative inline-flex items-center justify-center ${header ? 'w-9 h-9' : 'w-11 h-11'} rounded-full transition-colors`;
+  const style = header
+    ? { background: 'rgba(10, 2, 7, 0.5)', border: '1px solid rgba(232, 177, 74, 0.35)', color: 'var(--color-amber-glow)' }
+    : { background: 'rgba(26,5,11,0.55)', border: '1px solid rgba(244,239,227,0.14)', color: 'rgba(244,239,227,0.85)' };
 
   return (
     <div ref={boite} className="relative flex items-center gap-2">
-      {header ? (
-        <button
-          type="button"
-          onClick={ouvrir}
-          aria-haspopup="true" aria-expanded={ouverte}
-          className="relative inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
-          style={{
-            background: 'rgba(10, 2, 7, 0.5)',
-            border: `1px solid ${ouverte ? 'var(--color-amber-glow)' : 'rgba(232, 177, 74, 0.35)'}`,
-            color: 'var(--color-amber-glow)',
-            boxShadow: ouverte ? '0 0 14px -4px rgba(232, 177, 74, 0.55)' : undefined,
-          }}
-          aria-label={fr ? `Mon espace membre${total ? `, ${total} nouveautés` : ''}` : `My member space${total ? `, ${total} new` : ''}`}
-          title={fr ? 'Mon espace membre' : 'My member space'}
+      {header && (
+        <Link
+          to={addLocale('/compte', lang)}
+          className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
+          style={{ background: 'rgba(10, 2, 7, 0.5)', border: '1px solid rgba(232, 177, 74, 0.35)', color: 'var(--color-amber-glow)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; e.currentTarget.style.boxShadow = '0 0 14px -4px rgba(232, 177, 74, 0.55)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.35)'; e.currentTarget.style.boxShadow = ''; }}
+          aria-label={fr ? 'Mon profil' : 'My profile'} title={fr ? 'Mon profil' : 'My profile'}
         >
-          <UserIcon size={14} />
-          {fr ? 'Mon espace' : 'My space'}
-          <motion.span animate={total ? { rotate: [0, -12, 10, -6, 0] } : { rotate: 0 }}
-                       transition={{ duration: 0.7, ease: 'easeOut' }} className="inline-flex">
-            <Bell size={13} />
-          </motion.span>
-          <Pastille n={total} />
-        </button>
-      ) : (<>
-      <Link to={addLocale('/messages', lang)} className={bouton} style={style}
-            aria-label={fr ? `Messages${etat.messagesNonLus ? `, ${etat.messagesNonLus} non lus` : ''}` : `Messages${etat.messagesNonLus ? `, ${etat.messagesNonLus} unread` : ''}`}
-            title={fr ? 'Mes messages' : 'My messages'}>
-        <MessageCircle size={18} />
-        <Pastille n={etat.messagesNonLus} />
-      </Link>
+          <UserIcon size={14} /> {fr ? 'Profil' : 'Profile'}
+        </Link>
+      )}
+      {/* Comme sur Facebook : Profil, puis Notifications, puis Messagerie,
+          chacun son bouton (Alex, 2026-08-27). */}
       <button type="button" onClick={ouvrir} className={bouton} style={style}
               aria-haspopup="true" aria-expanded={ouverte}
-              aria-label={fr ? `Notifications${total ? `, ${total}` : ''}` : `Notifications${total ? `, ${total}` : ''}`}>
+              aria-label={fr ? `Notifications${total ? `, ${total}` : ''}` : `Notifications${total ? `, ${total}` : ''}`}
+              title={fr ? 'Notifications' : 'Notifications'}>
         <motion.span animate={total ? { rotate: [0, -12, 10, -6, 0] } : { rotate: 0 }}
                      transition={{ duration: 0.7, ease: 'easeOut' }} className="inline-flex">
           <Bell size={18} />
         </motion.span>
         <Pastille n={total} />
       </button>
-      </>)}
+      <>
+      <Link to={addLocale('/messages', lang)} className={bouton} style={style}
+            aria-label={fr ? `Messages${etat.messagesNonLus ? `, ${etat.messagesNonLus} non lus` : ''}` : `Messages${etat.messagesNonLus ? `, ${etat.messagesNonLus} unread` : ''}`}
+            title={fr ? 'Messagerie' : 'Messages'}>
+        <MessageCircle size={18} />
+        <Pastille n={etat.messagesNonLus} />
+      </Link>
+      </>
 
       <AnimatePresence>
         {ouverte && (
@@ -132,23 +126,6 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
             style={{ background: 'rgba(16,4,8,0.96)', border: '1px solid rgba(216,176,90,0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
             role="menu"
           >
-            {header && (
-              <div className="grid grid-cols-2" style={{ borderBottom: '1px solid rgba(244,239,227,0.08)' }}>
-                <Link to={addLocale('/compte', lang)} onClick={() => setOuverte(false)}
-                      className="flex items-center justify-center gap-2 px-3 py-3 font-sans uppercase tracking-[0.18em] text-[10px] text-brass hover:bg-white/5 transition-colors">
-                  <UserIcon size={13} /> {fr ? 'Mon espace' : 'My space'}
-                </Link>
-                <Link to={addLocale('/messages', lang)} onClick={() => setOuverte(false)}
-                      className="relative flex items-center justify-center gap-2 px-3 py-3 font-sans uppercase tracking-[0.18em] text-[10px] text-brass hover:bg-white/5 transition-colors"
-                      style={{ borderLeft: '1px solid rgba(244,239,227,0.08)' }}>
-                  <MessageCircle size={13} /> {fr ? 'Messages' : 'Messages'}
-                  {etat.messagesNonLus > 0 && (
-                    <span className="ml-1 min-w-[18px] h-[18px] px-1 rounded-full inline-flex items-center justify-center font-sans text-[10px] font-semibold"
-                          style={{ background: '#D8B05A', color: '#1a050b' }}>{etat.messagesNonLus}</span>
-                  )}
-                </Link>
-              </div>
-            )}
             <p className="px-4 pt-3.5 pb-2 witcher-stat-label" style={{ borderBottom: '1px solid rgba(244,239,227,0.08)' }}>
               {fr ? 'Ce qui vous attend' : 'What awaits you'}
             </p>
@@ -176,7 +153,7 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
                 })}
               </ul>
             )}
-            {!header && (
+            {(
               <Link to={addLocale('/messages', lang)} onClick={() => setOuverte(false)}
                     className="block px-4 py-3 font-sans uppercase tracking-[0.2em] text-[10px] text-brass hover:bg-white/5 transition-colors"
                     style={{ borderTop: '1px solid rgba(244,239,227,0.08)' }}>
