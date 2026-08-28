@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Search, Save, BadgeCheck } from 'lucide-react';
 import {
-  listerMembres, filtrerMembres, definirRoles,
+  listerMembres, filtrerMembres, definirRoles, definirVerifie,
   ROLES_MEMBRE, LIBELLE_ROLE, rolesAffiches,
   type Membre, type RoleMembre,
 } from '../../../firebase/ordre';
