@@ -2099,7 +2099,11 @@ async function crediter(uid, montant) {
 }
 
 /** Le seul chemin qui RETIRE des Montpellois : pose 'premiere-depense'
- *  à la toute première fois, quel que soit l'achat. */
+ *  à la toute première fois, quel que soit l'achat. C'est aussi le
+ *  seul chemin de tout achat À LA BOUTIQUE (cosmétique, skin, album,
+ *  ambiance — le Souk a sa propre transaction plus bas), donc 'premier-
+ *  achat-boutique' se pose ici même, une seule fois pour tous les
+ *  appelants (Alex, 2026-08-28). */
 async function debiter(uid, montant, extra = {}) {
   const { ref, data } = await assurerBourse(uid);
   const solde = data.solde || 0;
@@ -2107,8 +2111,20 @@ async function debiter(uid, montant, extra = {}) {
   const premiereFois = (data.depense || 0) === 0;
   const soldeApres = solde - montant;
   await ref.set({ solde: soldeApres, depense: (data.depense || 0) + montant, maj: FieldValue.serverTimestamp(), ...extra }, { merge: true });
-  if (premiereFois) await poserBadge(uid, 'premiere-depense');
+  if (premiereFois) {
+    await poserBadge(uid, 'premiere-depense');
+    await poserBadge(uid, 'premier-achat-boutique');
+  }
   return soldeApres;
+}
+
+/** L'audiophile : cinq ambiances ou albums achetés, peu importe le
+ *  mélange (Alex, 2026-08-28). */
+async function verifierAudiophile(uid) {
+  const snap = await db.collection('bourses').doc(uid).get();
+  const data = snap.exists ? snap.data() : {};
+  const total = (data.ambiances || []).length + (data.albums || []).length;
+  if (total >= 5) await poserBadge(uid, 'audiophile');
 }
 
 function tirerRarete() {
