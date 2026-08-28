@@ -102,7 +102,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       {/* Solde */}
       <div className="flex flex-wrap items-center justify-between gap-4 glass-light rounded-lg-card p-5">
         <div className="flex items-center gap-3">
-          <PieceMontpellois size={36} />
+          <PieceMontpellois size={36} image />
           <div>
             <p className="witcher-stat-label">{fr ? 'Vos Montpellois' : 'Your Montpellois'}</p>
             <p className="font-display title-medieval text-2xl text-ivory">{bourse?.solde ?? 10}</p>
