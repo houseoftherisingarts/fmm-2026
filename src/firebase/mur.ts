@@ -222,6 +222,7 @@ export async function retirerDuMur(post: PostMur): Promise<void> {
   if (!db) return;
   await deleteDoc(doc(db, COL, post.id));
   if (post.photoChemin && storage) await deleteObject(ref(storage, post.photoChemin)).catch(() => {});
+  if (post.videoChemin && storage) await deleteObject(ref(storage, post.videoChemin)).catch(() => {});
 }
 
 /** Épingle ou décroche un billet en tête de son fil — l'équipe sur le
