@@ -192,6 +192,11 @@ const CarteObjet: React.FC<{ o: ObjetSouk; lang: 'FR' | 'EN' }> = ({ o, lang }) 
             <Store size={28} />
           </div>
         )}
+        {(o.genre || 'objet') === 'service' && (
+          <span className="absolute top-2 left-2 witcher-stat-label bg-midnight-deep/80 px-2 py-1 rounded-card">
+            {fr ? 'Service' : 'Service'}
+          </span>
+        )}
         {o.statut !== 'disponible' && (
           <span className="absolute top-2 right-2 witcher-stat-label bg-midnight-deep/80 px-2 py-1 rounded-card">
             {o.statut === 'reserve' ? (fr ? 'Réservé' : 'Reserved') : (fr ? 'Vendu' : 'Sold')}
@@ -200,11 +205,15 @@ const CarteObjet: React.FC<{ o: ObjetSouk; lang: 'FR' | 'EN' }> = ({ o, lang }) 
       </div>
       <div className="p-4 flex flex-col gap-2 flex-1">
         <p className="font-display title-medieval text-base text-ivory truncate">{o.titre}</p>
-        <p className="font-sans text-sm text-brass font-semibold flex items-center gap-2 flex-wrap">
-          <span>{o.prix.toFixed(2)} $</span>
-          {o.prixMontpellois != null && (
-            <span className="inline-flex items-center gap-1"><PieceMontpellois size={14} />{o.prixMontpellois}</span>
+        <p className="font-sans text-sm font-semibold flex items-center gap-2 flex-wrap">
+          {estGratuit(o) ? (
+            <span style={{ color: '#8fd6b4' }}>{fr ? 'Gratuit, à donner' : 'Free to a good home'}</span>
+          ) : (
+            <span className="text-brass">{(o.prix ?? 0).toFixed(2)} $</span>
           )}
+          {o.prixMontpellois ? (
+            <span className="inline-flex items-center gap-1 text-brass"><PieceMontpellois size={14} />{o.prixMontpellois}</span>
+          ) : null}
         </p>
         {o.description && <p className="font-editorial text-xs text-ivory-soft leading-relaxed line-clamp-2">{o.description}</p>}
         {erreur && <p className="font-editorial italic text-[10px] text-blush">{erreur}</p>}
