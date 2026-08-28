@@ -290,9 +290,4 @@ const DemandeLigne: React.FC<{
   );
 };
 
-// Keep the Shield import used (guild icon reserved for the list page's
-// card; imported here too so future header art can reuse it without
-// another import pass).
-void Shield;
-
 export default GuildePage;
