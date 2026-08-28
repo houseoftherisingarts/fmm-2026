@@ -17,6 +17,7 @@ import PorteDuJeu from './components/auth/PorteDuJeu';
 import { BadgesProvider } from './contexts/BadgesContext';
 import AnnonceBadge from './components/badges/AnnonceBadge';
 import { usePerfTier } from './lib/usePerfTier';
+import { usePrefsFond } from './lib/usePrefsFond';
 import NavBar from './components/layout/NavBar';
 import ErrorBoundary from './components/layout/ErrorBoundary';
 import PageLoader from './components/layout/PageLoader';
