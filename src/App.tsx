@@ -50,7 +50,6 @@ const Partenaires2027Page = lazy(() => import('./pages/Partenaires2027Page'));
 const ProgrammationPage    = lazy(() => import('./pages/ProgrammationPage'));
 const MarchePage           = lazy(() => import('./pages/MarchePage'));
 const NourriturePage       = lazy(() => import('./pages/NourriturePage'));
-const BoissonsPage         = lazy(() => import('./pages/BoissonsPage'));
 const WilliamPage          = lazy(() => import('./pages/WilliamPage'));
 const MariagesGroupesPage  = lazy(() => import('./pages/MariagesGroupesPage'));
 const HistoireApprendrePage = lazy(() => import('./pages/HistoireApprendrePage'));
@@ -96,7 +95,6 @@ const CUSTOM_PILLARS: Partial<Record<PillarKey, React.LazyExoticComponent<React.
   jeux:        JeuxEnLignePage,
   marche:      MarchePage,
   nourriture:  NourriturePage,
-  boissons:    BoissonsPage,
   histoire:    HistoireApprendrePage,
   mariages:    MariagesGroupesPage,
   benevole:    BenevolePage,
@@ -468,6 +466,8 @@ const App: React.FC = () => (
                 {/* Petite Monnaie a rejoint Commanditaires & Partenaires sur
                     une seule vitrine (Alex, 2026-08-27) : son ancien pilier
                     redirige vers l'ancre de son chapitre. */}
+                <Route path="/boissons"    element={<Navigate to={{ pathname: '/nourriture', hash: '#boissons' }} replace />} />
+                <Route path="/en/drinks"   element={<Navigate to={{ pathname: '/en/food', hash: '#boissons' }} replace />} />
                 <Route path="/petite-monnaie"    element={<Navigate to={{ pathname: '/partenaires', hash: '#petite-monnaie' }} replace />} />
                 <Route path="/en/petite-monnaie" element={<Navigate to={{ pathname: '/en/partners', hash: '#petite-monnaie' }} replace />} />
                 <Route path="/groupes"     element={<Navigate to="/mariages" replace />} />

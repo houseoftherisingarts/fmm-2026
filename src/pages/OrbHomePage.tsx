@@ -46,7 +46,6 @@ const ORB_CHOICES: OrbChoice[] = [
   { key: 'activites',   image: '/wix/home/fire-night.jpg',     imagePosition: 'center 35%' },
   { key: 'marche',      image: '/wix/marche/47376430.jpg' },
   { key: 'nourriture',  image: '/wix/nourriture/feu-broche-v3.webp', imagePosition: '45% 50%' },
-  { key: 'boissons',    image: '/wix/nourriture/fc0b94ea.jpg', imagePosition: 'center 40%' },
   { key: 'histoire',    image: '/wix/histoire/03b1fe30.jpg' },
   { key: 'mariages',    image: '/wix/mariages/70dcaeae.jpg' },
   { key: 'hebergement', image: '/wix/hebergement/salon-living-room.webp', imagePosition: 'center 55%' },

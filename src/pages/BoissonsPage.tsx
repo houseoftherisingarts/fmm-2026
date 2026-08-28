@@ -12,21 +12,21 @@ import { Eyebrow, DisplayTitle, HexPanel, SectionFog, SectionTopRail } from '../
 // l'accueil, sa propre page, même gabarit que les autres piliers (en-tête
 // PageHeader + grammaire visuelle du marché). Pour l'instant, une seule
 // promesse : le menu s'en vient. Le contenu réel arrive plus tard.
-const BoissonsPage: React.FC = () => {
+const BoissonsPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
   const { lang } = useUI();
   const fr = lang === 'FR';
 
   return (
     <>
-      <SEO
+      {!embedded && <SEO
         title={fr ? 'Boissons' : 'Drinks'}
         description={fr
           ? 'Le menu des boissons du festival se prépare et sera dévoilé bientôt.'
           : 'The festival\'s drinks menu is coming together and will be revealed soon.'}
-      />
-      <ScrollProgress />
-      <PageHeader
+      />}
+      {!embedded && <ScrollProgress />}
+      {!embedded && <PageHeader
         eyebrow={fr ? 'Au comptoir' : 'At the bar'}
         titleA={fr ? 'Boissons' : 'Drinks'}
         intro={fr
@@ -34,7 +34,7 @@ const BoissonsPage: React.FC = () => {
           : 'Hypocras, ale and festival refreshments: the full bar menu is coming shortly.'}
         orbImage="/wix/nourriture/fc0b94ea.jpg"
         orbImagePosition="center 40%"
-      />
+      />}
 
       <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
         <SectionFog />

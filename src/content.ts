@@ -57,8 +57,7 @@ export interface Pillar {
 export const PILLARS: Pillar[] = [
   { key: 'activites',   slug: { FR: '/activites',    EN: '/en/activities' }, label: { FR: 'Programmation',               EN: 'Program' },                 short: { FR: 'Programmation', EN: 'Program' } },
   { key: 'marche',      slug: { FR: '/marche',       EN: '/en/market' },     label: { FR: 'Marché',                      EN: 'Market' },                  short: { FR: 'Marché',       EN: 'Market' } },
-  { key: 'nourriture',  slug: { FR: '/nourriture',   EN: '/en/food' },       label: { FR: 'Village Nourriture',          EN: 'Food Village' },            short: { FR: 'Nourriture',   EN: 'Food' } },
-  { key: 'boissons',    slug: { FR: '/boissons',     EN: '/en/drinks' },     label: { FR: 'Boissons',                    EN: 'Drinks' },                  short: { FR: 'Boissons',     EN: 'Drinks' } },
+  { key: 'nourriture',  slug: { FR: '/nourriture',   EN: '/en/food' },       label: { FR: 'Nourriture et boissons',      EN: 'Food and drinks' },         short: { FR: 'Nourriture et boissons', EN: 'Food and drinks' } },
   { key: 'histoire',    slug: { FR: '/histoire',     EN: '/en/history' },    label: { FR: 'Histoire & Apprendre',        EN: 'History & Learning' },      short: { FR: 'Histoire et apprendre', EN: 'History & Learning' } },
   { key: 'mariages',    slug: { FR: '/mariages',     EN: '/en/weddings' },   label: { FR: 'Mariages & Groupes',          EN: 'Weddings & Groups' },       short: { FR: 'Mariages & Groupes', EN: 'Weddings & Groups' } },
   { key: 'hebergement', slug: { FR: '/hebergement',  EN: '/en/lodging' },    label: { FR: 'Camping & Hébergement',       EN: 'Camping & Lodging' },       short: { FR: 'Camping & Hébergement', EN: 'Camping & Lodging' } },

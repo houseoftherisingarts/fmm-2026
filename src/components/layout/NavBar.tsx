@@ -10,6 +10,7 @@ import { isPillarVisible } from '../../firebase/siteFlags';
 import { addLocale, stripLocale } from '../../lib/locale';
 import AudioPlayer from '../AudioPlayer';
 import { HexMark } from '../marche/atmospherics';
+import Cloche from '../compte/Cloche';
 
 // Local dev (VITE_SITE_MODE=live) previews every pillar; production shows only
 // published ones. `npm run deploy` forces placeholder, so prod follows flags.
@@ -216,28 +217,11 @@ const NavBar: React.FC = () => {
                 maintenant son mot : « Connexion » quand personne n'est
                 entré, « Mon espace » une fois la porte franchie. */}
             {user ? (
-              <Link
-                to={addLocale('/compte', lang)}
-                className="hidden sm:inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
-                style={{
-                  background: 'rgba(10, 2, 7, 0.5)',
-                  border: '1px solid rgba(232, 177, 74, 0.35)',
-                  color: 'var(--color-amber-glow)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-amber-glow)';
-                  e.currentTarget.style.boxShadow = '0 0 14px -4px rgba(232, 177, 74, 0.55)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.35)';
-                  e.currentTarget.style.boxShadow = '';
-                }}
-                aria-label={lang === 'FR' ? 'Mon espace membre' : 'My member space'}
-                title={lang === 'FR' ? 'Mon espace membre' : 'My member space'}
-              >
-                <User size={14} />
-                {lang === 'FR' ? 'Mon espace' : 'My space'}
-              </Link>
+              /* Un seul bouton : l'espace, les messages et les
+                 notifications ensemble (Alex, 2026-08-27). */
+              <div className="hidden sm:flex">
+                <Cloche uid={user.uid} lang={lang} variante="header" />
+              </div>
             ) : (
               <button
                 type="button"

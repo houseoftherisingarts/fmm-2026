@@ -146,7 +146,25 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
 
 // `sansEntete` : la page /william porte déjà « Village Nourriture » dans
 // son héros, alors le chapitre embarqué ne répète pas le titre.
+// Boissons vit sur la même page, sous la nourriture (Alex, 2026-08-27 :
+// « un seul bouton Nourriture et boissons, la boisson juste en dessous »).
+import BoissonsPage from './BoissonsPage';
+
 const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = ({ embedded = false, sansEntete = false }) => {
+  // L'ancienne route /boissons arrive ici avec #boissons.
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || window.location.hash !== '#boissons') return;
+    let precedent = -1; let essais = 10;
+    const tic = window.setInterval(() => {
+      const cible = document.getElementById('boissons');
+      if (!cible) return;
+      const haut = Math.round(cible.getBoundingClientRect().top + window.scrollY);
+      cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (haut === precedent || --essais <= 0) window.clearInterval(tic);
+      precedent = haut;
+    }, 320);
+    return () => window.clearInterval(tic);
+  }, []);
   // Ce pilier portait le badge « Ami du village » quand Marché et
   // Nourriture vivaient sur une seule page (Le Village). Le Village
   // Nourriture en reste le foyer naturel depuis la scission du
@@ -567,6 +585,8 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
           </Reveal>
         </div>
       </section>
+      {/* ── Boissons, juste en dessous, même page (Alex, 2026-08-27). */}
+      <div id="boissons"><BoissonsPage embedded /></div>
     </>
   );
 };

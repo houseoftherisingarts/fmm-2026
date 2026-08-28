@@ -41,7 +41,6 @@ export interface SiteFlags {
   pubActivites:            boolean;
   pubMarche:               boolean;
   pubNourriture:           boolean;
-  pubBoissons:             boolean;
   pubHistoire:             boolean;
   pubMariages:             boolean;
   pubHebergement:          boolean;
@@ -67,7 +66,6 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   pubActivites:            false,
   pubMarche:               false,
   pubNourriture:           false,
-  pubBoissons:             false,
   pubHistoire:             false,
   pubMariages:             false,
   pubHebergement:          false,
@@ -85,7 +83,6 @@ export const PILLAR_PUBLISH_FLAGS: { key: PillarKey; flag: keyof SiteFlags; labe
   { key: 'activites',   flag: 'pubActivites',   label: 'Programmation' },
   { key: 'marche',      flag: 'pubMarche',      label: 'Marché' },
   { key: 'nourriture',  flag: 'pubNourriture',  label: 'Village Nourriture' },
-  { key: 'boissons',    flag: 'pubBoissons',    label: 'Boissons' },
   { key: 'histoire',    flag: 'pubHistoire',    label: 'Histoire & Apprendre' },
   { key: 'mariages',    flag: 'pubMariages',    label: 'Mariages & Groupes' },
   { key: 'hebergement', flag: 'pubHebergement', label: 'Camping & Hébergement' },
