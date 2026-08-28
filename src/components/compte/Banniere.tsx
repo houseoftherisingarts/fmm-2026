@@ -150,7 +150,7 @@ const Banniere: React.FC<{
   const video = estVideoUrl(url);
 
   return (
-    <div className={verticale ? 'relative shrink-0 w-full md:w-[220px] h-64 md:h-full' : 'relative my-8 md:my-10 mx-auto max-w-4xl'}>
+    <div className={verticale ? 'relative shrink-0 w-full md:w-[220px] h-64 md:h-full' : 'relative w-full my-8 md:my-10 mx-auto max-w-4xl'}>
       {/* Un cadre mince, comme l'anneau du médaillon, dans le métal du rang
           (Alex, 2026-08-28 : « beaucoup plus subtil et mince »). */}
       <div
