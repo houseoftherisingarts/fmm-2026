@@ -57,6 +57,16 @@ export interface Partage {
   imageUrl?: string;
 }
 
+/** La carte d'aperçu d'un lien collé dans le texte du billet — voir
+ *  chercherApercu(). */
+export interface ApercuLien {
+  url: string;
+  titre?: string;
+  description?: string;
+  image?: string;
+  site?: string;
+}
+
 export interface PostMur {
   id: string;
   uid: string;
@@ -67,6 +77,12 @@ export interface PostMur {
   genre?: GenrePost;
   photoUrl?: string;
   photoChemin?: string;
+  /** La vidéo, réservée aux membres VIP (Alex, 2026-08-28). */
+  videoUrl?: string;
+  videoChemin?: string;
+  /** L'aperçu du premier lien collé dans le texte, calculé une seule
+   *  fois à la publication. */
+  apercu?: ApercuLien;
   /** Présent seulement sur un billet posté depuis le mur d'une guilde
    *  (Alex, 2026-08-27) — voir src/firebase/guildes.ts. */
   guildeId?: string;
