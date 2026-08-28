@@ -106,6 +106,17 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           <div>
             <p className="witcher-stat-label">{fr ? 'Vos Montpellois' : 'Your Montpellois'}</p>
             <p className="font-display title-medieval text-2xl text-ivory">{bourse?.solde ?? 10}</p>
+            {(() => {
+              const { actuel, prochain } = rangFortune(bourse?.gagne ?? 0);
+              return (
+                <p className="font-sans text-[11px] mt-0.5" style={{ color: 'rgba(244,239,227,0.55)' }}>
+                  {actuel ? (fr ? actuel.nomFR : actuel.nomEN) : (fr ? 'Sans rang encore' : 'No rank yet')}
+                  {prochain && (fr
+                    ? ` · encore ${prochain.seuil - (bourse?.gagne ?? 0)} pour « ${prochain.nomFR} »`
+                    : ` · ${prochain.seuil - (bourse?.gagne ?? 0)} more for “${prochain.nomEN}”`)}
+                </p>
+              );
+            })()}
           </div>
         </div>
         <button
