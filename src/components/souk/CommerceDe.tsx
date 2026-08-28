@@ -20,9 +20,9 @@ interface Props {
   editable: boolean;
 }
 
-const EMPTY: Omit<Commerce, 'uid' | 'photos' | 'chemins' | 'complet'> = {
-  nom: '', description: '', categorie: '', site: '', courriel: '', telephone: '', ville: '',
-  facebook: '', instagram: '',
+const EMPTY: Commerce = {
+  uid: '', nom: '', description: '', categorie: '', site: '', courriel: '', telephone: '', ville: '',
+  facebook: '', instagram: '', photos: [], chemins: [], complet: false,
   contact: '', hasParticipatedBefore: undefined, teamSize: '', familyVolunteerInterest: false,
   logoUrl: '', mainPhotoUrl: '', regionOfOrigin: '', firstTimeSource: '', otherQuestions: '',
 };
