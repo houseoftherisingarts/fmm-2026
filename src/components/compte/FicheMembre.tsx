@@ -1240,8 +1240,8 @@ const EN: typeof FR = {
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
-    profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Badges', jeux: 'Games',
-    billets: 'Tickets', messages: 'Inbox', boutique: 'Shop',
+    profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Badges and vault', jeux: 'Games',
+    messages: 'Inbox', boutique: 'Shop',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Badges', jeux: 'Games',
