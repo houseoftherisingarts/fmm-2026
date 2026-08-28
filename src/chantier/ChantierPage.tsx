@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Lock, Shirt, Users } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
+import { Lock, Shirt, Users, Sparkles, Store } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
+import PieceMontpellois from '../components/boutique/PieceMontpellois';
 import Inventaire from './Inventaire';
 import Salon2D from './Salon2D';
 import { AVATAR_VIDE, chargerAvatar, sauverAvatar, type AvatarChantier } from './avatar';
-import { SAC_DEPART } from './objets';
+import { SAC_DEPART, objetParId } from './objets';
+import { suivreMaBourse, type Bourse } from '../firebase/montpellois';
+import { tenterUneTrouvaille } from './trouvailles';
 
 // ─── Le chantier : inventaire + salon 2D ──────────────────────────────
 // Réservé à l'équipe tant que ce n'est pas prêt à publier. `?apercu=1`
