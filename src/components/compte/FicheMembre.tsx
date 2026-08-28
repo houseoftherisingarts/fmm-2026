@@ -4,13 +4,14 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
   HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
-  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug, Newspaper, Tag, Store,
+  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug, Newspaper, Tag, Store, Shield,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { addLocale } from '../../lib/locale';
 import { avancement, suivreBadges, suivreExposes } from '../../firebase/badges';
 import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS } from '../../content/evenementsMedievaux';
+import { listerMesGuildes, type Guilde } from '../../firebase/guildes';
 import {
   lireFiche, publierFiche, suivreMesAmities, demanderAmitie, accepterAmitie,
   estAmi, amitieEnAttente, rolesAffiches, LIBELLE_ROLE,
@@ -161,6 +162,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   // La vitrine se lit sur le même document, pour soi comme pour un autre.
   const [exposes, setExposes] = useState<string[]>([]);
   const [bugOuvert, setBugOuvert] = useState(false);
+  // Les guildes de la personne, pour la pastille bleue sous le nom (Alex, 2026-08-28).
+  const [guildes, setGuildes] = useState<Guilde[]>([]);
+  useEffect(() => { if (uid) void listerMesGuildes(uid).then(setGuildes).catch(() => setGuildes([])); }, [uid]);
   useEffect(() => { if (uid) return suivreExposes(uid, setExposes); }, [uid]);
   // L'aperçu sans compte (?apercu=1, dev seulement) montre une vitrine
   // témoin pour juger le rendu.
@@ -346,6 +350,25 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 ))}
                 {/* Les cinq badges favoris, à côté de la fonction. */}
                 <Vitrine ids={idsVitrine} lang={lang} />
+                {/* La guilde, en bleu; sinon, les portes vers les guildes (Alex, 2026-08-28). */}
+                {guildes.map((g) => (
+                  <li key={g.id}>
+                    <Link to={`${addLocale('/guildes', lang)}/${g.id}`}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-125 transition"
+                          style={{ color: '#9fb0e6', background: 'rgba(120,130,190,0.12)', border: '1px solid rgba(120,130,190,0.4)' }}>
+                      <Shield size={11} /> {g.nom}
+                    </Link>
+                  </li>
+                ))}
+                {prive && (
+                  <li>
+                    <Link to={addLocale('/guildes', lang)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-125 transition"
+                          style={{ color: '#9fb0e6', background: 'rgba(120,130,190,0.08)', border: '1px dashed rgba(120,130,190,0.45)' }}>
+                      <Shield size={11} /> {guildes.length ? t.autreGuilde : t.creerOuRejoindre}
+                    </Link>
+                  </li>
+                )}
               </ul>
 
               {fiche?.ville && (
@@ -482,7 +505,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             role="tablist"
             aria-label={t.onglets}
             onKeyDown={flecher}
-            className="fmm-rail flex items-center gap-1.5 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-3 mb-8"
+            className="flex flex-wrap items-center gap-1.5 pb-3 mb-8"
             style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
           >
             {onglets.map((o) => {
@@ -499,7 +522,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   tabIndex={actif ? 0 : -1}
                   data-active={actif}
                   onClick={() => ouvrir(o)}
-                  className="witcher-tab shrink-0 whitespace-nowrap inline-flex items-center gap-2 rounded-card"
+                  className="witcher-tab inline-flex items-center gap-2 rounded-card"
                 >
                   <Icone size={14} /> {(prive ? t.onglet : t.ongletPublic)[o]}
                 </button>
@@ -908,6 +931,8 @@ const FR = {
   sesPhotos: 'Ses photos',
   photosVedette: 'Photos en vedette',
   signalerBug: 'Signaler un bug',
+  creerOuRejoindre: 'Créer ou rejoindre une guilde',
+  autreGuilde: 'Joindre une autre guilde',
   photosVedetteVide: 'Choisissez vos photos en vedette dans l’onglet Photos : elles paraissent ici, pour tous.',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
   aptitudes: 'Ses aptitudes, à sa façon',
@@ -956,6 +981,8 @@ const EN: typeof FR = {
   sesPhotos: 'Their photos',
   photosVedette: 'Featured photos',
   signalerBug: 'Report a bug',
+  creerOuRejoindre: 'Create or join a guild',
+  autreGuilde: 'Join another guild',
   photosVedetteVide: 'Pick your featured photos in the Photos tab: they show here, for everyone.',
   sansDescription: 'This member has not written an introduction yet.',
   aptitudes: 'Their own stats',

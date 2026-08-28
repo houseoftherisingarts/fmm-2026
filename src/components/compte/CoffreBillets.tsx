@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { addLocale } from '../../lib/locale';
 import { useBadges } from '../../contexts/BadgesContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, Upload, Trash2, ArrowUpRight, FileText } from 'lucide-react';
@@ -142,6 +144,12 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
         <p className="witcher-stat-label mb-4">
           {loading ? t.loading : rows.length > 0 ? t.stored.replace('{n}', String(rows.length)) : t.empty}
         </p>
+        {!loading && rows.length === 0 && (
+          <Link to={addLocale('/billets', lang)}
+                className="inline-flex items-center gap-2 mb-5 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+            <Ticket size={14} /> {t.acheter} <ArrowUpRight size={12} />
+          </Link>
+        )}
         <ul className="space-y-2.5">
           <AnimatePresence initial={false}>
             {rows.map((b) => (
@@ -216,7 +224,8 @@ const FR = {
   uploading:'Dépôt en cours…',
   hint:     'PDF ou image, 10 Mo maximum. Vous pouvez en déposer plusieurs.',
   loading:  'Ouverture du coffre…',
-  empty:    'Le coffre est vide.',
+  empty:    'Toujours pas de billets. Prenez les vôtres à la billetterie.',
+  acheter:  'Acheter mes billets',
   stored:   '{n} au coffre',
   open:     'Ouvrir',
   remove:   'Retirer',
@@ -235,7 +244,8 @@ const EN: typeof FR = {
   uploading:'Uploading…',
   hint:     'PDF or image, 10 MB max. You can add several.',
   loading:  'Opening the vault…',
-  empty:    'The vault is empty.',
+  empty:    'No tickets yet. Get yours at the box office.',
+  acheter:  'Buy my tickets',
   stored:   '{n} in the vault',
   open:     'Open',
   remove:   'Remove',

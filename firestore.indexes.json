@@ -4,24 +4,56 @@
       "collectionGroup": "taflParties",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "joueurs", "arrayConfig": "CONTAINS" },
-        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "joueurs",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "updatedAt",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "dms",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "participantUids", "arrayConfig": "CONTAINS" },
-        { "fieldPath": "lastMessageAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "participantUids",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "lastMessageAt",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "desParties",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "joueurs", "arrayConfig": "CONTAINS" },
-        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "joueurs",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "updatedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "mur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "guildeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "creeLe",
+          "order": "DESCENDING"
+        }
       ]
     }
   ],

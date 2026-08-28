@@ -39,10 +39,6 @@ const METAL: Record<Metal, { bande: string; bandeClair: string; bandeSombre: str
             rivet: 'radial-gradient(circle at 30% 30%, #F4E5B6 0%, #C9A85A 35%, #8C6A1F 75%, #4A3812 100%)', nomFR: 'Or', nomEN: 'Gold' },
 };
 
-const Rivet: React.FC<{ m: typeof METAL.or; className: string }> = ({ m, className }) => (
-  <span aria-hidden className={`absolute w-4 h-4 rounded-full ${className}`}
-        style={{ background: m.rivet, boxShadow: 'inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,240,200,0.7), 0 1px 3px rgba(0,0,0,0.6)' }} />
-);
 
 const Banniere: React.FC<{
   uid: string;
@@ -75,16 +71,17 @@ const Banniere: React.FC<{
   };
 
   return (
-    <div className="relative my-8 md:my-10">
-      {/* Le cadre de la charte, dans le métal du rang. */}
+    <div className="relative my-8 md:my-10 mx-auto max-w-4xl">
+      {/* Un cadre mince, comme l'anneau du médaillon, dans le métal du rang
+          (Alex, 2026-08-28 : « beaucoup plus subtil et mince »). */}
       <div
-        className="relative rounded-[6px] mx-[8px] my-[8px]"
+        className="relative rounded-[16px] p-[3px]"
         style={{
-          boxShadow: `0 0 0 1px ${m.bois}, 0 0 0 6px ${m.bande}, 0 0 0 7px ${m.bois}, 0 30px 90px -28px rgba(0,0,0,0.95)`,
-          backgroundImage: `linear-gradient(180deg, ${m.bandeClair}22, transparent 30%, transparent 70%, ${m.bandeSombre}33)`,
+          background: `linear-gradient(135deg, ${m.bandeClair} 0%, ${m.bande} 40%, ${m.bandeSombre} 70%, ${m.bandeClair} 100%)`,
+          boxShadow: `0 0 0 1px ${m.bois}, 0 0 28px -6px ${m.bande}80, 0 20px 50px -30px rgba(0,0,0,0.9)`,
         }}
       >
-        <div className="relative overflow-hidden rounded-[4px] aspect-[16/5] md:aspect-[16/4]"
+        <div className="relative overflow-hidden rounded-[13px] aspect-[16/5] md:aspect-[16/4]"
              style={{ background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.bandeSombre}55, rgba(10,2,7,0.95))` }}>
           {url ? (
             <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -94,7 +91,6 @@ const Banniere: React.FC<{
             </div>
           )}
           {/* L'écho fin à l'intérieur, comme sur la charte. */}
-          <div aria-hidden className="absolute inset-[10px] pointer-events-none rounded-[2px]" style={{ border: `1px solid ${m.echo}` }} />
           <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
                style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.55), transparent)' }} />
           {editable && (
@@ -110,10 +106,6 @@ const Banniere: React.FC<{
             </button>
           )}
         </div>
-        <Rivet m={m} className="-left-[11px] -top-[11px]" />
-        <Rivet m={m} className="-right-[11px] -top-[11px]" />
-        <Rivet m={m} className="-left-[11px] -bottom-[11px]" />
-        <Rivet m={m} className="-right-[11px] -bottom-[11px]" />
       </div>
       {editable && (
         <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"

@@ -606,12 +606,18 @@ service cloud.firestore {
     // `guildeId` (optionnel) : un billet posté sur le mur d'une guilde
     // n'est accepté que si l'auteur en est membre.
     match /mur/{postId} {
-      allow read:   if signedIn();
+      // Les billets d'une guilde se lisent entre membres de la guilde et
+      // par l'équipe seulement (Alex, 2026-08-28). Le mur général
+      // interroge `guildeId == null`, ce qui rend la règle prouvable.
+      allow read:   if signedIn()
+                    && (resource.data.guildeId == null
+                        || isAdmin()
+                        || request.auth.uid in get(/databases/$(database)/documents/guildes/$(resource.data.guildeId)).data.membres);
       allow create: if signedIn()
                     && request.resource.data.uid == request.auth.uid
                     && request.resource.data.texte is string
                     && request.resource.data.texte.size() <= 2000
-                    && (!('guildeId' in request.resource.data)
+                    && (request.resource.data.guildeId == null
                         || request.auth.uid in get(/databases/$(database)/documents/guildes/$(request.resource.data.guildeId)).data.membres);
       allow update: if false;
       allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);

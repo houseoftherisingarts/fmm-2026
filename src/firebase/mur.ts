@@ -70,7 +70,8 @@ export async function publierSurLeMur(opts: {
     texte,
     genre: opts.genre || 'billet',
     ...(photoUrl ? { photoUrl, photoChemin } : {}),
-    ...(opts.guildeId ? { guildeId: opts.guildeId } : {}),
+    // null (et non absent) : la règle et la requête du mur général filtrent dessus.
+    guildeId: opts.guildeId || null,
     ...(opts.moderateur ? { moderateur: true } : {}),
     creeLe: serverTimestamp(),
   });
@@ -91,7 +92,7 @@ const lire = (d: { id: string; data: () => Record<string, unknown> }): PostMur =
  *  client, pour ne pas exiger d'index composite). */
 export function suivreLeMur(cb: (posts: PostMur[]) => void, max = 100): () => void {
   if (!db) { cb([]); return () => {}; }
-  const q = query(collection(db, COL), orderBy('creeLe', 'desc'), fsLimit(max));
+  const q = query(collection(db, COL), where('guildeId', '==', null), orderBy('creeLe', 'desc'), fsLimit(max));
   return onSnapshot(q, (snap) => cb(snap.docs.map(lire).filter((p) => !p.guildeId)), () => cb([]));
 }
 
@@ -109,7 +110,7 @@ export function suivreLeMurDeGuilde(guildeId: string, cb: (posts: PostMur[]) => 
 /** Le fil d'une personne. */
 export function suivreLeFilDe(uid: string, cb: (posts: PostMur[]) => void): () => void {
   if (!db) { cb([]); return () => {}; }
-  const q = query(collection(db, COL), where('uid', '==', uid));
+  const q = query(collection(db, COL), where('uid', '==', uid), where('guildeId', '==', null));
   return onSnapshot(q, (snap) => {
     const rows = snap.docs.map(lire);
     rows.sort((a, b) => (b.creeLe?.toMillis?.() ?? 0) - (a.creeLe?.toMillis?.() ?? 0));
