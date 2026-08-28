@@ -203,6 +203,7 @@ const MurSocial: React.FC<{
                     <Link to={`${addLocale('/profil', lang)}/${l.post.uid}`} className="font-display text-base text-ivory hover:text-brass transition-colors truncate">
                       {l.post.nom}
                     </Link>
+                    {l.post.verifie && <BadgeVerifie size={15} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
                     {l.post.moderateur && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px] shrink-0"
                             style={{ background: 'rgba(216,176,90,0.16)', border: '1px solid #D8B05A', color: '#D8B05A' }}>
