@@ -160,11 +160,52 @@ async function chercherApercu(url: string): Promise<ApercuLien | undefined> {
   } catch { return undefined; }
 }
 
+/** Dessine une image d'une vidéo à un instant donné, pour servir de
+ *  vignette quand la personne n'en choisit pas une elle-même (Alex,
+ *  2026-08-28). Décodée hors DOM, comme compresserVideo.ts. Ne lève
+ *  jamais : une vignette manquée ne doit pas empêcher de publier. */
+async function extraireVignetteVideo(fichier: File, instantSecondes = 1): Promise<File | undefined> {
+  if (typeof document === 'undefined') return undefined;
+  const video = document.createElement('video');
+  video.src = URL.createObjectURL(fichier);
+  video.muted = true;
+  video.playsInline = true;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      video.onloadedmetadata = () => resolve();
+      video.onerror = () => reject(new Error('vidéo illisible'));
+    });
+    video.currentTime = Math.max(0, Math.min(instantSecondes, (video.duration || instantSecondes) - 0.1));
+    await new Promise<void>((resolve, reject) => {
+      video.onseeked = () => resolve();
+      video.onerror = () => reject(new Error('vidéo illisible'));
+    });
+    const toile = document.createElement('canvas');
+    toile.width = video.videoWidth || 1280;
+    toile.height = video.videoHeight || 720;
+    const pinceau = toile.getContext('2d');
+    if (!pinceau) return undefined;
+    pinceau.drawImage(video, 0, 0, toile.width, toile.height);
+    const blob = await new Promise<Blob | null>((resolve) => toile.toBlob(resolve, 'image/jpeg', 0.85));
+    return blob ? new File([blob], 'vignette.jpg', { type: 'image/jpeg' }) : undefined;
+  } catch {
+    return undefined;
+  } finally {
+    URL.revokeObjectURL(video.src);
+  }
+}
+
 export async function publierSurLeMur(opts: {
   uid: string; nom: string; avatarUrl?: string; avatarHue?: number; texte: string; photo?: File;
   /** Réservée aux membres VIP — le composeur vérifie le statut avant
    *  d'ouvrir le sélecteur, voir src/firebase/sansPub.ts. */
   video?: File;
+  /** Titre et description de la vidéo, façon YouTube. */
+  videoTitre?: string;
+  videoDescription?: string;
+  /** Vignette choisie par la personne; sinon une frame de la vidéo est
+   *  prise automatiquement (voir extraireVignetteVideo). */
+  videoVignette?: File;
   /** Billet d'un membre de l'équipe (badge Admin · Modérateur). */
   moderateur?: boolean;
   /** Recopié depuis la fiche : la coche bleue vérifiée. */
@@ -187,7 +228,7 @@ export async function publierSurLeMur(opts: {
     await uploadBytes(r, blob, { contentType: 'image/webp' });
     photoUrl = await getDownloadURL(r);
   }
-  let videoUrl: string | undefined; let videoChemin: string | undefined;
+  let videoUrl: string | undefined; let videoChemin: string | undefined; let videoVignetteUrl: string | undefined;
   if (opts.video && storage) {
     // La vidéo maigrit avant de partir (Alex, 2026-08-28).
     const { fichier: videoLegere } = await compresserVideo(opts.video);
@@ -196,6 +237,15 @@ export async function publierSurLeMur(opts: {
     const r = ref(storage, videoChemin);
     await uploadBytes(r, videoLegere, { contentType: videoLegere.type });
     videoUrl = await getDownloadURL(r);
+
+    const fichierVignette = opts.videoVignette || await extraireVignetteVideo(videoLegere);
+    if (fichierVignette) {
+      const { blob } = await versWebp(fichierVignette, 1600, 0.85);
+      const cheminVignette = `mur/${opts.uid}/${id}-vignette.webp`;
+      const rv = ref(storage, cheminVignette);
+      await uploadBytes(rv, blob, { contentType: 'image/webp' });
+      videoVignetteUrl = await getDownloadURL(rv);
+    }
   }
   const lien = texte.match(MOTIF_LIEN)?.[0];
   const apercu = lien ? await chercherApercu(lien) : undefined;
@@ -207,6 +257,9 @@ export async function publierSurLeMur(opts: {
     genre: opts.genre || 'billet',
     ...(photoUrl ? { photoUrl, photoChemin } : {}),
     ...(videoUrl ? { videoUrl, videoChemin } : {}),
+    ...(videoVignetteUrl ? { videoVignette: videoVignetteUrl } : {}),
+    ...(videoUrl && opts.videoTitre?.trim() ? { videoTitre: opts.videoTitre.trim().slice(0, LONGUEUR_MAX_TITRE_VIDEO) } : {}),
+    ...(videoUrl && opts.videoDescription?.trim() ? { videoDescription: opts.videoDescription.trim().slice(0, LONGUEUR_MAX_DESCRIPTION_VIDEO) } : {}),
     ...(apercu ? { apercu } : {}),
     // null (et non absent) : la règle et la requête du mur général filtrent dessus.
     guildeId: opts.guildeId || null,
