@@ -60,6 +60,7 @@ import BoiteReception from './BoiteReception';
 import BadgeVerifie from './BadgeVerifie';
 import ReglagesProfil from './ReglagesProfil';
 import EspaceVip from './EspaceVip';
+import AlertesPanel from './AlertesPanel';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
 // derrière lui, donc il arrive à part, quand l'onglet s'ouvre.
