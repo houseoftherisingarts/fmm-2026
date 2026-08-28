@@ -12,7 +12,6 @@ import { Card, Badge, EmptyState } from '../primitives';
 // fait (soumettreCommerceCommeKiosque), côté équipe. « Retirer » efface
 // la fiche et ses photos.
 const CommercesSection: React.FC = () => {
-  const { user } = useAuth();
   const [items, setItems] = useState<Commerce[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
