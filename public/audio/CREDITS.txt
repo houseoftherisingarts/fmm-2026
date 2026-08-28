@@ -30,3 +30,16 @@ https://creativecommons.org/licenses/by/4.0/
 Ambiance nordique du jeu Hnefatafl. Bouton facultatif dans le bandeau
 du plateau, jamais de lecture automatique. L'attribution exigée par la
 licence est portée par l'infobulle du bouton.
+
+────────────────────────────────────────────────────────────
+
+Pippin the Hunchback · Kevin MacLeod (incompetech.com)
+Licence : Creative Commons By Attribution 4.0
+https://creativecommons.org/licenses/by/4.0/
+https://incompetech.com/music/royalty-free/music.html
+
+Ambiance « Le ménestrel », ajoutée le 2026-08-28 pour tester l'achat
+d'une musique en Montpellois : la seule des quatre à ne pas être
+offerte d'office (src/lib/ambiances.ts, BoutiqueMontpellois.tsx).
+L'attribution exigée par la licence est portée dans le panneau
+Musique du profil, à côté de son nom.
