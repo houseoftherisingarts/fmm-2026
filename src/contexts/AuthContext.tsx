@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { declarerMonParrain, codeRetenu, oublierLeCode } from '../firebase/parrainage';
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -200,6 +201,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     openSignIn: () => setOpen(true),
     closeSignIn: () => setOpen(false),
   }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen]);
+
+  // Le parrainage : un compte qui vient de naître avec un code retenu
+  // entre dans la lignée de son parrain, une seule fois (Alex,
+  // 2026-08-28). Un compte ancien qui se reconnecte n'y touche pas.
+  useEffect(() => {
+    const code = codeRetenu();
+    if (!user || !code) return;
+    const neuf = user.metadata?.creationTime === user.metadata?.lastSignInTime;
+    if (!neuf) { oublierLeCode(); return; }
+    void declarerMonParrain(user.uid, user.displayName || '', code)
+      .then(() => oublierLeCode())
+      .catch(() => { /* le prochain passage réessaiera */ });
+  }, [user]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };

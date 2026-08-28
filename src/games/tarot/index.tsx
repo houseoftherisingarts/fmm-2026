@@ -284,6 +284,7 @@ const TarotPage: React.FC = () => {
               (Alex, 2026-08-24). */}
           <div className="relative flex-1 min-h-0 overflow-y-auto px-3 md:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:gap-7">
             <div
+              ref={tapisRef}
               className={`tarot-tapis relative mx-auto my-auto lg:mx-0 rounded-[15px] border border-brass/20 p-3 md:p-7 w-full lg:flex-1 ${
                 tirage.id === 'une' ? 'max-w-[19rem]' : tirage.id === 'trois' ? 'max-w-[46rem]' : 'max-w-[44rem]'
               }`}

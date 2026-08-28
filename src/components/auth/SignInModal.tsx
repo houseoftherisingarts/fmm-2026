@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { retenirLeCode, codeRetenu } from '../../firebase/parrainage';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Check, KeyRound, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -18,6 +19,14 @@ const SignInModal: React.FC = () => {
   const [tab, setTab]   = useState<'password' | 'magic'>('password');
   // Form fields, shared between modes where it makes sense.
   const [displayName, setDisplayName] = useState('');
+  // Le code de parrainage, saisi à l'inscription ou reçu dans le lien
+  // (?parrain=CODE). Il attend dans la session jusqu'à la création du
+  // compte (Alex, 2026-08-28).
+  const [codeParrain, setCodeParrain] = useState(() => {
+    const url = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('parrain') : null;
+    if (url) { retenirLeCode(url); return url.toUpperCase().slice(0, 8); }
+    return codeRetenu();
+  });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -258,6 +267,13 @@ const SignInModal: React.FC = () => {
                 ) : (
                   /* SIGN-UP FORM */
                   <form onSubmit={onSignUp}>
+                    <label className="block font-display title-medieval text-xs text-brass mb-1.5">Code de parrainage</label>
+                    <input type="text" value={codeParrain}
+                      onChange={(e) => { const v = e.target.value.toUpperCase().slice(0, 8); setCodeParrain(v); retenirLeCode(v); }}
+                      placeholder="Le code d’un ami (facultatif)"
+                      autoComplete="off" spellCheck={false}
+                      className="w-full mb-3 bg-midnight-deep/60 border border-ivory-soft/20 px-3.5 py-2.5 text-sm font-sans tracking-[0.3em] text-ivory placeholder:text-stone placeholder:tracking-normal focus:border-brass focus:outline-none rounded-card" />
+
                     <label className="block font-display title-medieval text-xs text-brass mb-1.5">Nom affiché</label>
                     <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Votre nom (optionnel)"
                       autoComplete="name"

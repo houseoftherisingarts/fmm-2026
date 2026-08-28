@@ -118,3 +118,21 @@ export async function monParrain(uid: string): Promise<Parrainage | null> {
   const snap = await getDoc(doc(db, 'parrainages', uid));
   return snap.exists() ? (snap.data() as Parrainage) : null;
 }
+
+// ── Le code retenu pendant l'inscription ─────────────────────────────
+// Le code se saisit AVANT que le compte existe (Alex, 2026-08-28 : « il
+// faut que la personne inscrive son code au moment de se faire un
+// compte »). Il attend donc dans la session du navigateur, et se pose
+// dès que le compte apparaît, quel que soit le chemin pris : mot de
+// passe, Google ou lien magique.
+const CLE_ATTENTE = 'fmm_code_parrain';
+
+export function retenirLeCode(code: string): void {
+  try { sessionStorage.setItem(CLE_ATTENTE, code.trim().toUpperCase()); } catch { /* navigation privée */ }
+}
+export function codeRetenu(): string {
+  try { return sessionStorage.getItem(CLE_ATTENTE) || ''; } catch { return ''; }
+}
+export function oublierLeCode(): void {
+  try { sessionStorage.removeItem(CLE_ATTENTE); } catch { /* rien à faire */ }
+}
