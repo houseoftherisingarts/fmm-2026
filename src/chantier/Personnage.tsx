@@ -214,6 +214,28 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
             <circle cx={CX - 18} cy="42" r="1.6" fill="rgba(244,239,227,0.75)" />
             <circle cx={CX + 18} cy="42" r="1.6" fill="rgba(244,239,227,0.75)" />
           </>}
+          {/* Masque du corbeau (variante 4) : cosmétique pur, un bec crochu. */}
+          {casque.variante === 4 && <>
+            <path d={`M ${CX - 19} 38 A 19 19 0 0 1 ${CX + 19} 38 L ${CX + 15} 50 L ${CX - 15} 50 Z`} fill={casque.couleur} />
+            <path d={`M ${CX - 4} 50 Q ${CX} 60 ${CX + 5} 50 Q ${CX} 55 ${CX - 4} 50 Z`} fill={casque.couleur} stroke="rgba(0,0,0,0.4)" strokeWidth="0.8" />
+            <circle cx={CX - 9} cy="40" r="1.4" fill="rgba(216,176,90,0.85)" />
+            <circle cx={CX + 9} cy="40" r="1.4" fill="rgba(216,176,90,0.85)" />
+          </>}
+          {/* Couronne du Parrain (variante 5) : cosmétique légendaire, une couronne à pointes. */}
+          {casque.variante === 5 && <>
+            <path d={`M ${CX - 18} 34 L ${CX - 12} 22 L ${CX - 6} 32 L ${CX} 18 L ${CX + 6} 32 L ${CX + 12} 22 L ${CX + 18} 34 L ${CX + 16} 42 L ${CX - 16} 42 Z`}
+                  fill={casque.couleur} stroke="rgba(0,0,0,0.4)" strokeWidth="0.8" />
+            <circle cx={CX} cy="30" r="1.8" fill="#5B2E2E" />
+            <circle cx={CX - 12} cy="34" r="1.3" fill="#5B2E2E" />
+            <circle cx={CX + 12} cy="34" r="1.3" fill="#5B2E2E" />
+          </>}
+          {/* Couronne de fleurs (variante 6) : cosmétique, un cercle de petites fleurs. */}
+          {casque.variante === 6 && <>
+            <path d={`M ${CX - 20} 40 A 20 20 0 0 1 ${CX + 20} 40 L ${CX + 15} 44 L ${CX - 15} 44 Z`} fill={casque.couleur} opacity={0.85} />
+            {[-16, -8, 0, 8, 16].map((dx, i) => (
+              <circle key={i} cx={CX + dx} cy={40 - Math.abs(dx) * 0.15} r="2.2" fill={i % 2 === 0 ? '#E9C7D8' : '#F4EFE3'} stroke="rgba(0,0,0,0.25)" strokeWidth="0.5" />
+            ))}
+          </>}
         </Piece>
       )}
 
