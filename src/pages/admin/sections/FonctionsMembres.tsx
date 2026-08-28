@@ -152,6 +152,23 @@ const FonctionsMembres: React.FC = () => {
                       );
                     })}
                   </div>
+                  <div className="flex items-center justify-between gap-3 mb-4 pt-1">
+                    <span className="font-sans text-[11px] uppercase tracking-[0.18em] text-ivory-soft/70 inline-flex items-center gap-1.5">
+                      <BadgeCheck size={13} color="#4c8ef7" fill="#F4EFE3" /> Vérifié
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={!!m.verifie}
+                      disabled={verifBusy === m.uid}
+                      onClick={() => void basculerVerifie(m)}
+                      className="relative w-10 h-5.5 rounded-full transition-colors disabled:opacity-50"
+                      style={{ background: m.verifie ? '#4c8ef7' : 'rgba(244,239,227,0.18)' }}
+                    >
+                      <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+                            style={{ transform: m.verifie ? 'translateX(19px)' : 'translateX(2px)' }} />
+                    </button>
+                  </div>
                   <PrimaryButton type="button" disabled={busy} onClick={() => void enregistrer(m)}>
                     <Save size={14} className="inline mr-1.5 -mt-0.5" />
                     {fait === m.uid ? 'Fonctions à jour' : 'Enregistrer les fonctions'}
