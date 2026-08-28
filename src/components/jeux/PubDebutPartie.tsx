@@ -6,6 +6,7 @@
 // composant ne rend rien et laisse la partie démarrer tout de suite,
 // exactement comme si la pub n'existait pas.
 import React, { useEffect, useState } from 'react';
+import { bumpPubJeuxView } from '../../lib/siteStats';
 
 declare global {
   interface Window {
