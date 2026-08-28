@@ -841,6 +841,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <div className="space-y-6 md:space-y-8">
                     <ReglagesProfil prefs={fiche?.prefs} onChange={majPrefs} lang={lang} />
                     <EspaceVip vip={vip} prefs={fiche?.prefs} onChange={majPrefs} onDevenirVip={allerVersSansPub} lang={lang} />
+                    {compte && <AlertesPanel uid={compte.uid} lang={lang} />}
                     {compte?.email && <ConcoursPanel email={compte.email} />}
                   </div>
                   <div className="space-y-6 md:space-y-8">
