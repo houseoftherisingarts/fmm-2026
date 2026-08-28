@@ -140,7 +140,7 @@ export function televerserPhotosCommerce(uid: string, fichiers: File[]) {
 
 export async function creerObjetSouk(params: {
   uid: string; nom: string; avatarUrl?: string;
-  titre: string; description: string; prix: number; categorie: CategorieSouk;
+  titre: string; description: string; prix: number; prixMontpellois?: number; categorie: CategorieSouk;
   fichiers: File[];
 }): Promise<string> {
   if (!db) throw new Error('Firestore indisponible');
@@ -155,6 +155,7 @@ export async function creerObjetSouk(params: {
     titre: params.titre,
     description: params.description,
     prix: params.prix,
+    prixMontpellois: params.prixMontpellois,
     categorie: params.categorie,
     photos: urls,
     chemins,
@@ -168,7 +169,7 @@ export async function creerObjetSouk(params: {
 
 export async function majObjetSouk(
   id: string,
-  patch: Partial<Pick<ObjetSouk, 'titre' | 'description' | 'prix' | 'categorie' | 'statut'>>,
+  patch: Partial<Pick<ObjetSouk, 'titre' | 'description' | 'prix' | 'prixMontpellois' | 'categorie' | 'statut'>>,
 ): Promise<void> {
   if (!db) throw new Error('Firestore indisponible');
   await updateDoc(doc(db, SOUK_COLL, id), { ...stripUndefined(patch), maj: serverTimestamp() });
