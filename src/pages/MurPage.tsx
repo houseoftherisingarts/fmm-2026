@@ -1,7 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
+import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
