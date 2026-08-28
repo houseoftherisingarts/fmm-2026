@@ -329,7 +329,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                 </button>
                 <button
                   type="button"
-                  onClick={() => changerVisibilite(p.id, p.visibilite === 'publique' ? 'privee' : 'publique')}
+                  onClick={() => { if (p.vedette) { setAvis(t.vedetteReste); return; } void changerVisibilite(p.id, p.visibilite === 'publique' ? 'privee' : 'publique').catch(() => {}); }}
                   aria-label={`${t.basculer} · ${t.visibilite[p.visibilite === 'publique' ? 'publique' : 'privee']}`}
                   className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-full font-sans uppercase tracking-[0.15em] text-[9px]"
                   style={{
@@ -372,6 +372,7 @@ const FR = {
     privee:   'Elle reste entre vous et l’équipe du festival.',
   } as Record<VisibilitePhoto, string>,
   basculer: 'Changer la visibilité',
+  vedetteReste: 'Une photo en vedette reste publique. Retirez-la de la vedette d’abord.',
   mettreVedette: 'Mettre en vedette sur mon profil',
   retirerVedette: 'Retirer de la vedette',
   glissezOuChoisissez: 'Glissez vos photos ici, ou cliquez pour les choisir',
@@ -402,6 +403,7 @@ const EN: typeof FR = {
     privee:   'It stays between you and the festival team.',
   } as Record<VisibilitePhoto, string>,
   basculer: 'Change visibility',
+  vedetteReste: 'A featured photo stays public. Remove it from featured first.',
   mettreVedette: 'Feature on my profile',
   retirerVedette: 'Remove from featured',
   glissezOuChoisissez: 'Drag your photos here, or click to choose them',

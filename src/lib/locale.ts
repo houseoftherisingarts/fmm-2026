@@ -14,6 +14,7 @@ export function getLocaleFromPath(pathname: string): Lang {
 // `/en` prefix. Legacy absorbed slugs (musique, jeunesse, nourriture,
 // apprendre, groupes, chevaux) are included so their EN redirects fire.
 const FR_TO_EN: Record<string, string> = {
+  '/mur': '/wall',
   '/activites': '/activities',
   '/marche/inscription': '/market/registration',
   '/marche': '/market',

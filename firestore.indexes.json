@@ -55,6 +55,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "guildes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "nbMembres",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "nom",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

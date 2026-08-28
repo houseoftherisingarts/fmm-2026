@@ -206,7 +206,10 @@ service cloud.firestore {
                     && request.resource.data.texte.size() <= 2000
                     && request.resource.data.get('genre', 'billet') in ['billet', 'offre', 'demande']
                     // Le badge Admin · Modérateur ne se donne pas soi-même.
-                    && (request.resource.data.get('moderateur', false) != true || isAdmin());
+                    && (request.resource.data.get('moderateur', false) != true || isAdmin())
+                    // La coche bleue sur un billet ne se recopie que si la fiche la porte.
+                    && (request.resource.data.get('verifie', false) != true
+                        || get(/databases/$(database)/documents/membres/$(request.auth.uid)).data.get('verifie', false) == true);
       allow read, update, delete: if isAdmin();
     }
 
