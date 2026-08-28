@@ -73,11 +73,24 @@ export async function retirerDuMur(post: PostMur): Promise<void> {
 const lire = (d: { id: string; data: () => Record<string, unknown> }): PostMur =>
   ({ id: d.id, ...(d.data() as Omit<PostMur, 'id'>) });
 
-/** Tout le mur, les plus récents d'abord. */
+/** Tout le mur, les plus récents d'abord — les billets d'une guilde
+ *  n'y paraissent pas, ils restent sur leur propre mur (filtrage côté
+ *  client, pour ne pas exiger d'index composite). */
 export function suivreLeMur(cb: (posts: PostMur[]) => void, max = 100): () => void {
   if (!db) { cb([]); return () => {}; }
   const q = query(collection(db, COL), orderBy('creeLe', 'desc'), fsLimit(max));
-  return onSnapshot(q, (snap) => cb(snap.docs.map(lire)), () => cb([]));
+  return onSnapshot(q, (snap) => cb(snap.docs.map(lire).filter((p) => !p.guildeId)), () => cb([]));
+}
+
+/** Le mur d'une seule guilde. */
+export function suivreLeMurDeGuilde(guildeId: string, cb: (posts: PostMur[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  const q = query(collection(db, COL), where('guildeId', '==', guildeId));
+  return onSnapshot(q, (snap) => {
+    const rows = snap.docs.map(lire);
+    rows.sort((a, b) => (b.creeLe?.toMillis?.() ?? 0) - (a.creeLe?.toMillis?.() ?? 0));
+    cb(rows);
+  }, () => cb([]));
 }
 
 /** Le fil d'une personne. */
