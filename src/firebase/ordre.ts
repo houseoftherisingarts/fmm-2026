@@ -72,6 +72,11 @@ export interface PrefsMembre {
   animationsFond?: boolean;
   /** Réservé aux VIP (users.sansPub) : le skin du site pour soi. */
   skin?: SkinMembre;
+  /** L'ambiance sonore choisie dans l'onglet Profil (voir
+   *  src/lib/ambiances.ts et MusiquePanel.tsx) : un id d'ambiance du
+   *  festival, ou l'id d'un groupe dont l'album a été acheté. Vide =
+   *  la piste par défaut du lecteur (Alex, 2026-08-28). */
+  musique?: string;
 }
 
 export interface Membre {
