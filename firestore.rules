@@ -597,6 +597,19 @@ service cloud.firestore {
       }
     }
 
+    // ── Le mur social (Alex, 2026-08-27) ─────────────────────────
+    // Tout membre connecté lit le mur et y écrit en son nom. Chacun
+    // retire ses propres billets; l'équipe retire n'importe lequel.
+    match /mur/{postId} {
+      allow read:   if signedIn();
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.texte is string
+                    && request.resource.data.texte.size() <= 2000;
+      allow update: if false;
+      allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+
     // ── Les badges du site ────────────────────────────────────────
     // Chacun écrit les siens. La fiche d'un membre montre ses badges
     // aux autres membres connectés : le contenu n'est qu'une liste

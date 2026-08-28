@@ -59,6 +59,7 @@ const BenevoleProfilePage = lazy(() => import('./pages/admin/BenevoleProfilePage
 const ComptePage       = lazy(() => import('./pages/ComptePage'));
 const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
+const MurPage              = lazy(() => import('./pages/MurPage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
 const AlliancePage        = lazy(() => import('./pages/AlliancePage'));
@@ -410,6 +411,8 @@ const App: React.FC = () => (
                 <Route path="/en/challenge/:id"                 element={<DefiLobbyPage />} />
                 <Route path="/profil/:uid"                      element={<PublicProfilePage />} />
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
+                <Route path="/mur"     element={<MurPage />} />
+                <Route path="/en/wall" element={<MurPage />} />
                 <Route path="/messages"                         element={<MessagesPage />} />
                 <Route path="/messages/:otherUid"               element={<MessagesPage />} />
                 <Route path="/en/messages"                      element={<MessagesPage />} />

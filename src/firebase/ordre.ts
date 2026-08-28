@@ -60,6 +60,8 @@ export interface Membre {
   uid: string;
   nom: string;
   avatarUrl?: string;
+  /** La photo de bannière du profil (users/{uid}/banniere.webp). */
+  banniereUrl?: string;
   avatarHue?: number;
   /** Position et zoom de la photo dans le médaillon rond, en fractions
    *  relatives (0,0 = centrée, zoom 1 = cadrage plein sans recul) pour

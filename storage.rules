@@ -54,6 +54,15 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    // ── Le mur social : la photo d'un billet ─────────────────────
+    match /mur/{uid}/{fileName} {
+      allow read:   if true;
+      allow create: if isOwner(uid)
+        && request.resource.contentType == 'image/webp'
+        && request.resource.size < 15 * 1024 * 1024;
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
     // ── Hébergeurs partenaires (formulaire public /hebergement) ──
     // Un hébergeur téléverse ses photos AVANT le paiement, sans compte :
     // la création est publique, bornée aux images de moins de 8 Mo. Les

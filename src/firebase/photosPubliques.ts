@@ -72,7 +72,7 @@ function toMillis(ts: Timestamp | null | undefined): number {
 
 // Redimensionne dans le navigateur (canevas) vers un blob webp, le côté
 // le plus long borné à maxSide. Même geste que archivesPhotos.toWebp.
-async function versWebp(
+export async function versWebp(
   file: File, maxSide: number, quality: number,
 ): Promise<{ blob: Blob; largeur: number; hauteur: number }> {
   let bmp: ImageBitmap;

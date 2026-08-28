@@ -414,7 +414,6 @@ const Footer: React.FC = () => {
           style={{ color: 'var(--color-bone)', opacity: 0.45 }}
         >
           <span className="inline-flex items-center gap-3">
-            <HexMark className="opacity-70" />
             {t.rights}
           </span>
           <div className="inline-flex items-center gap-5">
@@ -500,7 +499,6 @@ const ColumnHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     className="font-editorial italic uppercase tracking-[0.4em] text-[11px] mb-4 inline-flex items-center gap-2"
     style={{ color: 'var(--color-amber-glow)' }}
   >
-    <HexMark className="opacity-80" />
     {children}
   </p>
 );

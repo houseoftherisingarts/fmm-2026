@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, User, ArrowUpRight } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, ArrowUpRight, Newspaper } from 'lucide-react';
 import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSiteFlags } from '../../contexts/SiteFlagsContext';
@@ -161,32 +161,9 @@ const NavBar: React.FC = () => {
             </span>
           </Link>
 
-          {/* ── Audio player: center ─────────────────────── */}
-          <div className="flex-1 flex justify-center min-w-0">
-            <AudioPlayer />
-          </div>
-
-          {/* ── Right cluster ─────────────────────────────── */}
-          <div className="flex items-center gap-2 md:gap-2.5 shrink-0">
-            {/* Primary CTA: Tickets, always visible on desktop */}
-            <Link
-              to={ticketUrl}
-              className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 font-sans uppercase tracking-[0.28em] text-[10px] font-semibold transition-all hover:scale-[1.03]"
-              style={{
-                color: 'var(--color-velvet-deep)',
-                background:
-                  'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
-                borderRadius: 999,
-                boxShadow:
-                  'inset 0 1px 0 rgba(255, 240, 200, 0.4), 0 6px 18px -6px rgba(216, 155, 58, 0.55)',
-              }}
-            >
-              {lang === 'FR' ? 'Billets' : 'Tickets'}
-            </Link>
-
-            {/* Segmented FR/EN toggle, lifted from SiteHeader */}
+          {/* Le sélecteur de langue, collé au logo (Alex, 2026-08-27). */}
             <div
-              className="hidden sm:inline-flex items-center p-0.5 backdrop-blur-md transition-colors"
+              className="hidden sm:inline-flex ml-3 md:ml-4 items-center p-0.5 backdrop-blur-md transition-colors"
               style={{
                 background: 'rgba(10, 2, 7, 0.5)',
                 border: '1px solid rgba(232, 177, 74, 0.25)',
@@ -211,15 +188,48 @@ const NavBar: React.FC = () => {
               ))}
             </div>
 
+          {/* ── Audio player: center ─────────────────────── */}
+          <div className="flex-1 flex justify-center min-w-0">
+            <AudioPlayer />
+          </div>
+
+          {/* ── Right cluster ─────────────────────────────── */}
+          <div className="flex items-center gap-2 md:gap-2.5 shrink-0">
+            {/* Primary CTA: Tickets, always visible on desktop */}
+            <Link
+              to={ticketUrl}
+              className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 font-sans uppercase tracking-[0.28em] text-[10px] font-semibold transition-all hover:scale-[1.03]"
+              style={{
+                color: 'var(--color-velvet-deep)',
+                background:
+                  'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
+                borderRadius: 999,
+                boxShadow:
+                  'inset 0 1px 0 rgba(255, 240, 200, 0.4), 0 6px 18px -6px rgba(216, 155, 58, 0.55)',
+              }}
+            >
+              {lang === 'FR' ? 'Billets' : 'Tickets'}
+            </Link>
+
+            {/* Segmented FR/EN toggle, lifted from SiteHeader */}
+
             {/* Account / sign-in
                 La pastille ronde avec une silhouette ne disait pas ce
                 qu'elle ouvrait (Alex, 2026-08-22). Le bouton porte
                 maintenant son mot : « Connexion » quand personne n'est
                 entré, « Mon espace » une fois la porte franchie. */}
             {user ? (
-              /* Un seul bouton : l'espace, les messages et les
-                 notifications ensemble (Alex, 2026-08-27). */
-              <div className="hidden sm:flex">
+              /* Mur social, puis Profil, Notifications, Messagerie
+                 (Alex, 2026-08-27). */
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  to={addLocale('/mur', lang)}
+                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
+                  style={{ background: 'rgba(10, 2, 7, 0.5)', border: '1px solid rgba(232, 177, 74, 0.35)', color: 'var(--color-amber-glow)' }}
+                  title={lang === 'FR' ? 'Mur social' : 'Social wall'}
+                >
+                  <Newspaper size={14} /> {lang === 'FR' ? 'Mur social' : 'Social wall'}
+                </Link>
                 <Cloche uid={user.uid} lang={lang} variante="header" />
               </div>
             ) : (

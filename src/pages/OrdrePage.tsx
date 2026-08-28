@@ -16,6 +16,7 @@ import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
 import SalonOrdre from '../components/ordre/SalonOrdre';
+import MurSocial from '../components/mur/MurSocial';
 
 // ─── Les membres de l'Ordre ─────────────────────────────────────────
 // Le registre des gens du festival (Alex, 2026-08-23) : on cherche par
@@ -137,6 +138,11 @@ const OrdrePage: React.FC = () => {
           )}
 
           {/* La place commune du registre, sous la liste des membres. */}
+          {/* Le mur social, en tête du registre (Alex, 2026-08-27). */}
+          <div className="mb-10 md:mb-14 max-w-3xl">
+            <p className="witcher-stat-label mb-4">{fr ? 'Le mur social' : 'The social wall'}</p>
+            <MurSocial lang={lang} />
+          </div>
           <SalonOrdre />
         </div>
       </section>

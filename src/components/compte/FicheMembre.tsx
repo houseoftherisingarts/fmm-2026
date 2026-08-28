@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
   HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
-  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug,
+  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug, Newspaper,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
@@ -39,6 +39,8 @@ import PhotosPanel from './PhotosPanel';
 import PhotosDe from './PhotosDe';
 import Vitrine from './Vitrine';
 import Cloche from './Cloche';
+import Banniere, { metalDe } from './Banniere';
+import MurSocial from '../mur/MurSocial';
 import BugReportModal from '../layout/BugReportModal';
 import BoiteReception from './BoiteReception';
 
@@ -60,12 +62,12 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 export type ModeFiche = 'prive' | 'public';
 
-const ONGLETS_PRIVE  = ['profil', 'photos', 'badges', 'jeux', 'billets', 'collection', 'messages'] as const;
-const ONGLETS_PUBLIC = ['profil', 'photos', 'badges', 'jeux', 'collection'] as const;
+const ONGLETS_PRIVE  = ['profil', 'fil', 'photos', 'badges', 'jeux', 'billets', 'collection', 'messages'] as const;
+const ONGLETS_PUBLIC = ['profil', 'fil', 'photos', 'badges', 'jeux', 'collection'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
-  profil: UserIcon, badges: Award, jeux: Swords, billets: Ticket,
+  profil: UserIcon, fil: Newspaper, badges: Award, jeux: Swords, billets: Ticket,
   photos: Camera, collection: Megaphone, messages: MessageCircle,
 };
 
@@ -309,6 +311,16 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             {/* La cloche et les messages, en haut à droite de l'espace. */}
             {prive && <Cloche uid={uid} lang={lang} />}
           </div>
+
+          {/* La bannière encadrée : le métal suit le rang (Alex, 2026-08-27). */}
+          <Banniere
+            uid={uid}
+            url={fiche?.banniereUrl}
+            metal={metalDe({ roles: fiche?.roles, nbBadges: etatBadges.obtenus, estAdmin: prive && isAdmin })}
+            lang={lang}
+            editable={prive}
+            onChange={(lien) => setFiche((f) => (f ? { ...f, banniereUrl: lien } : f))}
+          />
 
           <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
             <AvatarUpload
@@ -716,6 +728,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
             {/* Les photos qu'une personne envoie aux archives du festival :
                 son affaire à elle, jamais celle d'un visiteur. */}
+            {onglet === 'fil' && (
+              <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
+            )}
+
             {onglet === 'photos' && (prive && compte
               ? <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
               : <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />
@@ -865,12 +881,12 @@ const FR = {
     // Sept onglets avec « mes » partout débordaient à droite et
     // coupaient le dernier (Alex, 2026-08-24). Seul le profil garde son
     // possessif, le reste va droit au but.
-    profil: 'Mon profil', badges: 'Badges', jeux: 'Jeux',
+    profil: 'Mon profil', fil: 'Mon fil', badges: 'Badges', jeux: 'Jeux',
     billets: 'Billets', photos: 'Photos', collection: 'Collection',
     messages: 'Boîte de réception',
   } as Record<Onglet, string>,
   ongletPublic: {
-    profil: 'Sa fiche', badges: 'Ses badges', jeux: 'Ses parties',
+    profil: 'Sa fiche', fil: 'Son fil', badges: 'Ses badges', jeux: 'Ses parties',
     billets: 'Billets', photos: 'Ses photos', collection: 'Sa collection',
     messages: 'Messages',
   } as Record<Onglet, string>,
@@ -914,12 +930,12 @@ const EN: typeof FR = {
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
-    profil: 'My profile', badges: 'Badges', jeux: 'Games',
+    profil: 'My profile', fil: 'My feed', badges: 'Badges', jeux: 'Games',
     billets: 'Tickets', photos: 'Photos', collection: 'Collection',
     messages: 'Inbox',
   } as Record<Onglet, string>,
   ongletPublic: {
-    profil: 'Their card', badges: 'Their badges', jeux: 'Their games',
+    profil: 'Their card', fil: 'Their feed', badges: 'Their badges', jeux: 'Their games',
     billets: 'Tickets', photos: 'Their photos', collection: 'Their collection',
   } as Record<Onglet, string>,
   presentation: 'Their introduction',
