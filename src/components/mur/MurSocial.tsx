@@ -83,6 +83,7 @@ const MurSocial: React.FC<{
         avatarHue: fiche?.avatarHue,
         texte, photo: photo || undefined,
         moderateur: isAdmin,
+        verifie: fiche?.verifie,
         genre,
       });
       setTexte(''); setPhoto(null); setGenre('billet');
