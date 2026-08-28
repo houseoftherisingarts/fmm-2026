@@ -38,6 +38,7 @@ import {
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { versWebp } from './photosPubliques';
+import { compresserVideo } from '../lib/compresserVideo';
 
 // Alex, 2026-08-27 : chaque billet porte un genre. « offre » (service,
 // covoiturage, partage) et « demande » (garde de chien, coup de main)
@@ -179,10 +180,12 @@ export async function publierSurLeMur(opts: {
   }
   let videoUrl: string | undefined; let videoChemin: string | undefined;
   if (opts.video && storage) {
-    const ext = opts.video.type === 'video/webm' ? 'webm' : 'mp4';
+    // La vidéo maigrit avant de partir (Alex, 2026-08-28).
+    const { fichier: videoLegere } = await compresserVideo(opts.video);
+    const ext = videoLegere.type === 'video/webm' ? 'webm' : 'mp4';
     videoChemin = `mur/${opts.uid}/${id}.${ext}`;
     const r = ref(storage, videoChemin);
-    await uploadBytes(r, opts.video, { contentType: opts.video.type });
+    await uploadBytes(r, videoLegere, { contentType: opts.video.type });
     videoUrl = await getDownloadURL(r);
   }
   const lien = texte.match(MOTIF_LIEN)?.[0];
