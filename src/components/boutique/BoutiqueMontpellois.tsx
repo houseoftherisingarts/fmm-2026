@@ -50,6 +50,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const [enCours, setEnCours] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [dejaReclameLocal, setDejaReclameLocal] = useState(false);
+  const [banquetEnRoute, setBanquetEnRoute] = useState(false);
+  const [banquetEchec, setBanquetEchec] = useState(false);
 
   useEffect(() => { if (uid) return suivreMaBourse(uid, setBourse); }, [uid]);
   useEffect(() => { if (uid) return ecouterAvatar(uid, setAvatar); }, [uid]);
@@ -57,11 +59,29 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   useEffect(() => { if (uid) return suivreFiche(uid, (m) => setSkinActuel(m?.prefs?.skin)); }, [uid]);
   useEffect(() => { listGroupes().then((g) => { setGroupes(g); setGroupesCharges(true); }); }, []);
 
-  const possedes = useMemo(() => {
-    if (!avatar) return new Set<string>();
-    const equipes = Object.values(avatar.equipe).filter((id): id is string => !!id);
-    return new Set([...avatar.sac, ...equipes]);
-  }, [avatar]);
+  async function acheterBanquet() {
+    if (!user) return;
+    setBanquetEnRoute(true); setBanquetEchec(false);
+    try {
+      const r = await fetch(LIEN_BANQUET, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          places: 1,
+          uid: user.uid,
+          courriel: user.email || '',
+          nom: user.displayName || '',
+          retour: window.location.origin + window.location.pathname,
+        }),
+      });
+      const d = await r.json();
+      if (!d.url) throw new Error('sans url');
+      window.location.href = d.url;
+    } catch {
+      setBanquetEchec(true);
+      setBanquetEnRoute(false);
+    }
+  }
 
   async function reclamer() {
     setErreur(null); setEnCours('quotidien');
