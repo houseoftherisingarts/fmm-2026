@@ -72,7 +72,7 @@ const CommerceDe: React.FC<Props> = ({ uid, lang, editable }) => {
         uid,
         photos: toutesPhotos,
         chemins: commerce?.chemins || [],
-        complet: estComplet({ nom: form.nom, description: form.description, categorie: form.categorie, photos: toutesPhotos, chemins: [] } as Commerce),
+        complet: estComplet({ nom: form.nom, description: form.description, categorie: form.categorie, photos: toutesPhotos }),
         creeLe: commerce?.creeLe,
       };
       await upsertCommerce(next);
