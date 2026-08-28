@@ -114,6 +114,14 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
             </label>
           </div>
           <label className="block">
+            <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
+              {fr ? 'Prix en Montpellois (facultatif)' : 'Price in Montpellois (optional)'}
+            </span>
+            <input className="witcher-input font-sans" type="number" min={0} step="1" value={form.prixMontpellois}
+                   placeholder={fr ? 'Laissez vide pour vendre seulement en dollars' : 'Leave blank to sell in dollars only'}
+                   onChange={(e) => setForm((p) => ({ ...p, prixMontpellois: e.target.value }))} />
+          </label>
+          <label className="block">
             <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Catégorie' : 'Category'}</span>
             <select className="witcher-input font-sans" value={form.categorie}
                     onChange={(e) => setForm((p) => ({ ...p, categorie: e.target.value as CategorieSouk }))}>
