@@ -13,6 +13,13 @@ export interface AvatarChantier {
   coiffure: number;
   equipe: Partial<Record<Emplacement, string | null>>;
   sac: string[];
+  /** Jusqu'à trois objets montrés publiquement sur la fiche (voir
+   *  VitrineObjets.tsx). Alex, 2026-08-28. */
+  vitrine?: string[];
+  /** Les skins de plateforme achetés en Montpellois ('bleu', 'dore') :
+   *  posé par la Cloud Function acheterCosmetique, jamais par le
+   *  client (Alex, 2026-08-28 — voir src/firebase/montpellois.ts). */
+  skinsDebloques?: string[];
   maj?: unknown;
 }
 
