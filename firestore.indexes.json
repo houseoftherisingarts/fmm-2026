@@ -57,6 +57,20 @@
       ]
     },
     {
+      "collectionGroup": "mur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "guildeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "chaleur",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "guildes",
       "queryScope": "COLLECTION",
       "fields": [
