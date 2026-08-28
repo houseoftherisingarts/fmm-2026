@@ -20,8 +20,8 @@ const Interrupteur: React.FC<{ actif: boolean; onClick: () => void; label: strin
     style={{ background: actif ? '#D8B05A' : 'rgba(244,239,227,0.18)' }}
     aria-label={label}
   >
-    <span className="absolute top-0.5 w-[18px] h-[18px] rounded-full transition-transform"
-          style={{ background: '#F4EFE3', transform: actif ? 'translateX(19px)' : 'translateX(2px)' }} />
+    <span className="absolute left-0 top-0.5 w-[18px] h-[18px] rounded-full transition-transform"
+          style={{ background: '#F4EFE3', transform: actif ? 'translateX(20px)' : 'translateX(2px)' }} />
   </button>
 );
 
