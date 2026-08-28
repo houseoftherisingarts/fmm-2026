@@ -1022,12 +1022,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   {/* La porte de l'équipe, colorée selon le rôle (Alex, 2026-08-28). */}
                   <PorteAdmin lang={lang} />
                   <div id="don-sans-pub"><SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} /></div>
-                  {/* Le parrainage et sa lignée (Alex, 2026-08-28). */}
-                  <ParrainagePanel uid={compte.uid} lang={lang} />
-                  {/* La musique du site, choisie par la personne (Alex, 2026-08-28). */}
-                  {/* La bourse en Montpellois (Alex, 2026-08-28). */}
-                  <BoursePanel uid={compte.uid} lang={lang} prive />
-                  <MusiquePanel uid={compte.uid} lang={lang} />
+                  {/* La bourse, le parrainage et la musique vivent
+                      maintenant dans l'onglet Profil, plus faciles à
+                      trouver (Alex, 2026-08-28). */}
                 </div>
               </div>
             )}
