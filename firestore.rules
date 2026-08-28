@@ -1106,8 +1106,10 @@ service cloud.firestore {
                     && request.resource.data.titre is string
                     && request.resource.data.titre.size() >= 2
                     && request.resource.data.titre.size() <= 80
-                    && request.resource.data.prix is number
-                    && request.resource.data.prix >= 0;
+                    // Le prix en dollars est facultatif (Alex, 2026-08-28) :
+                    // sans prix ni Montpellois, l'objet est donné.
+                    && request.resource.data.get('prix', 0) is number
+                    && request.resource.data.get('prix', 0) >= 0;
       allow update, delete: if isAdmin()
                     || (signedIn() && resource.data.uid == request.auth.uid);
     }

@@ -38,6 +38,10 @@ const MesBadges: React.FC<{
     return suivreExposes(user.uid, setExposes);
   }, [mien, user?.uid]);
   const [avis, setAvis] = useState<string | null>(null);
+  // Le sceau d'un badge tout neuf n'a pas encore été gravé (Alex,
+  // 2026-08-28) : l'image 404 bascule sur le glyphe, plutôt qu'un
+  // cadre cassé.
+  const [sceauxCasses, setSceauxCasses] = useState<Set<string>>(new Set());
   const epingler = (id: string) => {
     if (!user?.uid) return;
     const deja = exposes.includes(id);
