@@ -9,6 +9,7 @@ import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
 import MurSocial from '../components/mur/MurSocial';
+import PubMur from '../components/mur/PubMur';
 
 // ─── Le mur social ───────────────────────────────────────────────────
 // Les billets de tous les membres de l'Ordre et les annonces du
@@ -31,7 +32,8 @@ const MurPage: React.FC = () => {
       />
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 lg:grid lg:grid-cols-12 lg:gap-8 items-start">
+          <div className="lg:col-span-8">
           <div className="mb-5">
             <Link to={addLocale('/guildes', lang)}
                   className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-wider text-ivory-soft hover:text-brass transition">
@@ -51,6 +53,11 @@ const MurPage: React.FC = () => {
               </button>
             </div>
           )}
+          </div>
+          {/* La bannière publicitaire, sur le côté (Alex, 2026-08-27). */}
+          <div className="lg:col-span-4 mt-8 lg:mt-0 lg:sticky lg:top-24">
+            <PubMur lang={lang} />
+          </div>
         </div>
       </section>
     </main>
