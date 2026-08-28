@@ -50,6 +50,8 @@ export async function publierSurLeMur(opts: {
   uid: string; nom: string; avatarUrl?: string; avatarHue?: number; texte: string; photo?: File;
   /** Billet d'un membre de l'équipe (badge Admin · Modérateur). */
   moderateur?: boolean;
+  /** Recopié depuis la fiche : la coche bleue vérifiée. */
+  verifie?: boolean;
   /** Poster sur le mur d'une guilde plutôt que sur le mur général. */
   guildeId?: string;
   genre?: GenrePost;
