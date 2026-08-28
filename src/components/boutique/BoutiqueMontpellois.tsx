@@ -54,8 +54,9 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     setErreur(null); setEnCours('quotidien');
     try {
       await reclamerQuotidien();
+      setDejaReclameLocal(true);
     } catch (e) {
-      setDejaReclame(true);
+      setDejaReclameLocal(true);
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
       setEnCours(null);
