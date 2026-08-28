@@ -19,7 +19,12 @@ import {
   type VendorApp, type VendorStatus,
 } from './applications';
 
-export type CategorieSouk = 'costume' | 'arme' | 'artisanat' | 'livre' | 'decor' | 'autre';
+export type CategorieObjet = 'costume' | 'arme' | 'artisanat' | 'livre' | 'decor' | 'autre';
+/** Alex, 2026-08-28 : « il faudrait que la personne puisse offrir un
+ *  service dans le souk ». Un genre à part, avec ses propres catégories. */
+export type CategorieService = 'coup-de-main' | 'couture' | 'forge' | 'musique' | 'transport' | 'autre';
+export type CategorieSouk = CategorieObjet | CategorieService;
+export type GenreSouk = 'objet' | 'service';
 export type StatutSouk = 'disponible' | 'reserve' | 'vendu';
 
 export interface ObjetSouk {
@@ -29,11 +34,15 @@ export interface ObjetSouk {
   avatarUrl?: string;
   titre: string;
   description: string;
-  prix: number;
+  /** Facultatif (Alex, 2026-08-28) : absent ou à zéro, avec prixMontpellois
+   *  aussi absent ou à zéro, affiche l'étiquette « Gratuit, à donner ». */
+  prix?: number;
   /** Prix en Montpellois, en plus du prix en dollars (Alex, 2026-08-28) :
    *  quand il est posé, un bouton « Acheter en Montpellois » paraît sur
    *  la carte, en plus de la messagerie. */
   prixMontpellois?: number;
+  /** objet (défaut) ou service — Alex, 2026-08-28. */
+  genre?: GenreSouk;
   categorie: CategorieSouk;
   photos: string[];
   chemins: string[];          // chemins Storage, pour la suppression
@@ -41,6 +50,10 @@ export interface ObjetSouk {
   creeLe: Timestamp | null;
   maj: Timestamp | null;
 }
+
+/** Rien à payer : ni dollars ni Montpellois (Alex, 2026-08-28). */
+export const estGratuit = (o: Pick<ObjetSouk, 'prix' | 'prixMontpellois'>): boolean =>
+  !o.prix && !o.prixMontpellois;
 
 // ── Le Commerce : une fiche par membre (docId == uid) ───────────────
 // Reprend les champs de base d'une page Facebook, plus toutes les
