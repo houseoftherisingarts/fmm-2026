@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Image as ImageIcon, Send, Trash2, Loader2, X } from 'lucide-react';
+import { Image as ImageIcon, Send, Loader2, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { addLocale } from '../../lib/locale';
 import { lireFiche } from '../../firebase/ordre';
-import { publierSurLeMur, retirerDuMur, suivreLeMurDeGuilde, LONGUEUR_MAX_POST, type PostMur } from '../../firebase/mur';
+import { lireGuilde } from '../../firebase/guildes';
+import { publierSurLeMur, suivreLeMurDeGuilde, LONGUEUR_MAX_POST, type PostMur } from '../../firebase/mur';
+import BilletCarte from './BilletCarte';
 
 // ─── Le mur d'une guilde ───────────────────────────────────────────
 // Alex, 2026-08-27 : même grammaire visuelle que MurSocial (le mur
