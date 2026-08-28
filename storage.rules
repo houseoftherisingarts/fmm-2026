@@ -54,12 +54,21 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
-    // ── Le mur social : la photo d'un billet ─────────────────────
+    // ── Le mur social : la photo ou la vidéo d'un billet ──────────
+    // La vidéo (Alex, 2026-08-28) part telle quelle, sans passer par
+    // le redimensionnement webp de la photo — d'où les deux types
+    // acceptés et une limite large (60 Mo) propre à la vidéo. Le VIP
+    // qui la débloque se vérifie côté client (composeur du mur); ici,
+    // seul le propriétaire écrit, quel que soit le type.
     match /mur/{uid}/{fileName} {
       allow read:   if true;
       allow create: if isOwner(uid)
-        && request.resource.contentType == 'image/webp'
-        && request.resource.size < 15 * 1024 * 1024;
+        && (
+          (request.resource.contentType == 'image/webp'
+           && request.resource.size < 15 * 1024 * 1024)
+          || (request.resource.contentType in ['video/mp4', 'video/webm']
+              && request.resource.size < 60 * 1024 * 1024)
+        );
       allow delete: if isOwner(uid) || isAdmin();
     }
 
