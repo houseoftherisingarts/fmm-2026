@@ -162,10 +162,10 @@ const FonctionsMembres: React.FC = () => {
                       aria-checked={!!m.verifie}
                       disabled={verifBusy === m.uid}
                       onClick={() => void basculerVerifie(m)}
-                      className="relative w-10 h-5.5 rounded-full transition-colors disabled:opacity-50"
+                      className="relative w-10 h-[22px] rounded-full transition-colors disabled:opacity-50"
                       style={{ background: m.verifie ? '#4c8ef7' : 'rgba(244,239,227,0.18)' }}
                     >
-                      <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+                      <span className="absolute top-0.5 w-[18px] h-[18px] rounded-full bg-white transition-transform"
                             style={{ transform: m.verifie ? 'translateX(19px)' : 'translateX(2px)' }} />
                     </button>
                   </div>
