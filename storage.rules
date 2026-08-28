@@ -142,6 +142,27 @@ service firebase.storage {
       allow read, write: if isAdmin();
     }
 
+    // ── Le Souk : photos des objets mis en vente entre membres ────
+    // Même geste que photos-publiques : redimensionnement navigateur
+    // en webp avant l'envoi. Lecture publique (les cartes affichent la
+    // photo), suppression réservée au propriétaire ou à l'équipe.
+    match /souk/{uid}/{fileName} {
+      allow read:   if true;
+      allow create: if (isOwner(uid) || isAdmin())
+        && request.resource.contentType == 'image/webp'
+        && request.resource.size < 15 * 1024 * 1024;
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // ── Le Commerce : photos de la fiche (jusqu'à 6) ───────────────
+    match /commerces/{uid}/{fileName} {
+      allow read:   if true;
+      allow create: if (isOwner(uid) || isAdmin())
+        && request.resource.contentType == 'image/webp'
+        && request.resource.size < 15 * 1024 * 1024;
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
     // Deny everything else by default.
   }
 }
