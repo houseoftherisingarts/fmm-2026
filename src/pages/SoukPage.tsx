@@ -72,7 +72,7 @@ const SoukPage: React.FC = () => {
         />
 
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="max-w-xl mb-8">
+          <div className="max-w-2xl mb-8">
             <DisclaimerSouk fr={fr} />
           </div>
 
