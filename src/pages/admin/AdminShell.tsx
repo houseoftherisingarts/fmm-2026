@@ -107,6 +107,7 @@ const NAV: NavItem[] = [
   { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles,        group: 'Contenu' },
 
   { id: 'comptes',    label: 'Comptes',         icon: Users,           group: 'Régie' },
+  { id: 'guildes',    label: 'Guildes',         icon: Shield,          group: 'Régie' },
   // Tout ce que le festival a vendu depuis 2023, une personne par
   // ligne, versé par tools/importer-clients.mjs (Alex, 2026-08-24).
   { id: 'clients',    label: 'Clients',         icon: Receipt,         group: 'Régie' },
