@@ -1,14 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CadreJeu from '../../components/jeux/CadreJeu';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Sparkles, RotateCcw, Shuffle, ScrollText, X, BookOpen } from 'lucide-react';
+import { Sparkles, RotateCcw, Shuffle, ScrollText, X, BookOpen, Share2, Loader2, Send } from 'lucide-react';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import { Motes } from '../../components/marche/effects';
 import { JEU, TIRAGES, type Tirage } from '../../content/tarot';
+import { lireFiche } from '../../firebase/ordre';
+import { partagerSurMonFil } from '../../firebase/mur';
 import { interpretation, type LameTiree } from './interpretation';
 import { CaseTirage, CroixCeltique, PanneauSens } from './tapis';
 
