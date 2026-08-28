@@ -227,6 +227,42 @@ export function suivrePhotosVedette(uid: string, cb: (photos: PhotoPublique[]) =
   );
 }
 
+/** Le propriétaire enregistre la liste complète des personnes
+ *  identifiées sur sa photo (remplace la liste précédente). */
+export async function identifierPersonnes(photoId: string, personnes: PersonnePhoto[]): Promise<void> {
+  if (!db) return;
+  await updateDoc(doc(db, COLL, photoId), {
+    personnes,
+    personnesUids: personnes.map((p) => p.uid),
+  });
+}
+
+/** La personne identifiée retire seulement son propre repère : on lui
+ *  passe la liste actuelle (venue de la photo ouverte), on filtre son
+ *  uid, et on écrit les deux champs jumeaux ensemble. */
+export async function seRetirerDUnePhoto(photoId: string, personnes: PersonnePhoto[], uid: string): Promise<void> {
+  if (!db) return;
+  const restantes = personnes.filter((p) => p.uid !== uid);
+  await updateDoc(doc(db, COLL, photoId), {
+    personnes: restantes,
+    personnesUids: restantes.map((p) => p.uid),
+  });
+}
+
+/** Les photos publiques où quelqu'un a identifié ce membre. */
+export function suivrePhotosOuJeSuis(uid: string, cb: (photos: PhotoPublique[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  const q = query(collection(db, COLL), where('personnesUids', 'array-contains', uid));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as PhotoPublique));
+      cb(trierGrille(rows));
+    },
+    () => cb([]),
+  );
+}
+
 /** Les photos qu'un membre a rendues publiques, pour sa fiche. */
 export function suivrePhotosPubliquesDe(uid: string, cb: (photos: PhotoPublique[]) => void): () => void {
   if (!db) { cb([]); return () => {}; }
