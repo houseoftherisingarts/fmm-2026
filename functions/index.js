@@ -2138,19 +2138,25 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
   const uid = requete.auth && requete.auth.uid;
   if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour réclamer votre pièce du jour.');
   const ref = db.collection('bourses').doc(uid);
-  const { solde, gagneAvant, gagneApres } = await db.runTransaction(async (tx) => {
+  const { solde, gagneAvant, gagneApres, suite } = await db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const data = snap.exists ? snap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
     const aujourdhui = new Date().toISOString().slice(0, 10);
+    const hier = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
     const dernier = data.dernierQuotidien && data.dernierQuotidien.toDate ? data.dernierQuotidien.toDate().toISOString().slice(0, 10) : null;
     if (dernier === aujourdhui) throw new HttpsError('failed-precondition', 'Déjà réclamée aujourd’hui.');
+    // La suite (Alex, 2026-08-28, badge 'quotidien-sept') : elle continue
+    // si la dernière réclamation datait d'hier, elle repart à un jour
+    // sinon (premier jour, ou un jour sauté).
+    const suite = dernier === hier ? (data.quotidienSuite || 0) + 1 : 1;
     const gagneAvant = data.gagne || 0;
     const gagneApres = gagneAvant + GAIN_QUOTIDIEN;
     const solde = (data.solde || 0) + GAIN_QUOTIDIEN;
-    tx.set(ref, { solde, gagne: gagneApres, dernierQuotidien: FieldValue.serverTimestamp(), maj: FieldValue.serverTimestamp() }, { merge: true });
-    return { solde, gagneAvant, gagneApres };
+    tx.set(ref, { solde, gagne: gagneApres, dernierQuotidien: FieldValue.serverTimestamp(), quotidienSuite: suite, maj: FieldValue.serverTimestamp() }, { merge: true });
+    return { solde, gagneAvant, gagneApres, suite };
   });
   await verifierRangsFortune(uid, gagneAvant, gagneApres); // ponytail : hors transaction, badge cosmétique
+  if (suite >= 7) await poserBadge(uid, 'quotidien-sept');
   return { solde };
 });
 
