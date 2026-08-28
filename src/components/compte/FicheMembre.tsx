@@ -1060,22 +1060,6 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </section>
             ))}
 
-            {onglet === 'billets' && prive && compte && (
-              <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
-                <div className="lg:col-span-7"><CoffreBillets uid={compte.uid} lang={lang} /></div>
-                <div className="lg:col-span-5">
-                  <SoutienPanel lang={lang} userEmail={compte.email || ''} userName={nom} />
-                  {/* Le don « sans publicité à vie » (Alex, 2026-08-27). */}
-                  {/* La porte de l'équipe, colorée selon le rôle (Alex, 2026-08-28). */}
-                  <PorteAdmin lang={lang} />
-                  <div id="don-sans-pub"><SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} /></div>
-                  {/* La bourse, le parrainage et la musique vivent
-                      maintenant dans l'onglet Profil, plus faciles à
-                      trouver (Alex, 2026-08-28). */}
-                </div>
-              </div>
-            )}
-
             {/* Les photos qu'une personne envoie aux archives du festival :
                 son affaire à elle, jamais celle d'un visiteur. */}
             {/* Le Souk et le Commerce de la personne (Alex, 2026-08-27). */}
