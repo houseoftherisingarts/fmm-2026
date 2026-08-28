@@ -119,24 +119,22 @@ const ChantierPage: React.FC = () => {
                     <Users size={13} className="inline mr-2 -mt-0.5" />{fr ? 'Salon' : 'Common room'}
                   </button>
                 </div>
-                {!apercu && (
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold">
-                      <PieceMontpellois size={16} />{bourse?.solde ?? 10}
-                    </span>
-                    <button type="button" onClick={tenterTrouvaille} disabled={tirage !== 'attente'}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[11px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
-                      <Sparkles size={13} />
-                      {tirage === 'en-cours' ? (fr ? 'Le sort tourne…' : 'Fate turns…') : (fr ? 'Tenter une trouvaille' : 'Try a find')}
-                    </button>
-                    <Link to={addLocale('/boutique', lang)}
-                          className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans uppercase tracking-wider text-[11px] font-semibold transition rounded-card">
-                      <Store size={13} />{fr ? 'Boutique' : 'Shop'}
-                    </Link>
-                  </div>
-                )}
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold">
+                    <PieceMontpellois size={16} />{bourse?.solde ?? 10}
+                  </span>
+                  <button type="button" onClick={tenterTrouvaille} disabled={apercu || tirage !== 'attente'}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[11px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                    <Sparkles size={13} />
+                    {tirage === 'en-cours' ? (fr ? 'Le sort tourne…' : 'Fate turns…') : (fr ? 'Tenter une trouvaille' : 'Try a find')}
+                  </button>
+                  <Link to={addLocale('/boutique', lang)}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans uppercase tracking-wider text-[11px] font-semibold transition rounded-card">
+                    <Store size={13} />{fr ? 'Boutique' : 'Shop'}
+                  </Link>
+                </div>
               </div>
-              {messageTirage && !apercu && (
+              {messageTirage && (
                 <p className="font-editorial italic text-sm text-ivory-soft mb-6 -mt-4">{messageTirage}</p>
               )}
               {onglet === 'inventaire' ? (
