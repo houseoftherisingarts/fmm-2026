@@ -68,7 +68,6 @@ const SoukPage             = lazy(() => import('./pages/SoukPage'));
 // src/pages/.
 const ChantierPage         = lazy(() => import('./chantier/ChantierPage'));
 const VotesBancEssai       = lazy(() => import('./chantier/VotesBancEssai'));
-const BoutiquePage_TEMP_VERIF = lazy(() => import('./pages/BoutiquePage'));
 const GuildesPage          = lazy(() => import('./pages/GuildesPage'));
 const GuildePage           = lazy(() => import('./pages/GuildePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
