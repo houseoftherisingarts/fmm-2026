@@ -3,7 +3,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { Camera, Loader2, Move, Crop, Check, X } from 'lucide-react';
 import { storage } from '../../firebase';
-import { publierFiche, type RoleMembre, type PositionBanniere, type PrefsMembre } from '../../firebase/ordre';
+import { publierFiche, type RoleMembre, type PrefsMembre } from '../../firebase/ordre';
 import { versWebp } from '../../firebase/photosPubliques';
 
 // ─── La bannière du profil ───────────────────────────────────────────
