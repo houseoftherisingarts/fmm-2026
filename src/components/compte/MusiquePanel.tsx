@@ -56,7 +56,7 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
               role="radio"
               aria-checked={actif}
               onClick={() => definirPref(uid, 'musique', a.id)}
-              className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-card transition text-left"
+              className="w-full flex flex-col gap-0.5 px-4 py-2.5 rounded-card transition text-left"
               style={{
                 background: actif ? 'rgba(216,176,90,0.14)' : 'transparent',
                 border: `1px solid ${actif ? 'rgba(216,176,90,0.5)' : 'rgba(244,239,227,0.18)'}`,
@@ -65,7 +65,9 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
               <span className="font-sans text-sm" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
                 {fr ? a.titreFR : a.titreEN}
               </span>
-              <span className="font-editorial italic text-[10px] text-ivory-soft/50 truncate max-w-[160px]">{a.credit}</span>
+              {/* L'attribution exacte de la licence Creative Commons, en
+                  entier, jamais coupée (Alex, 2026-08-28). */}
+              <span className="font-editorial italic text-[10px] text-ivory-soft/50 break-words">{a.credit}</span>
             </button>
           );
         })}
