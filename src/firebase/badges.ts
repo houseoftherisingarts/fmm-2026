@@ -97,6 +97,8 @@ export const COLLECTIONS: Collection[] = [
         texteFR: 'Vous avez créé votre compte du festival.', texteEN: 'You created your festival account.' },
       { id: 'photographe',   glyphe: '◎', nomFR: 'Photographe',     nomEN: 'Photographer',
         texteFR: 'Vous avez envoyé votre première photo du festival.', texteEN: 'You sent your first festival photo.' },
+      { id: 'profil-complet', glyphe: '⚚', nomFR: 'Fiche au grand complet', nomEN: 'Complete record',
+        texteFR: 'Nom, ville, description, portrait et bannière : votre fiche ne manque de rien.', texteEN: 'Name, town, description, portrait and banner: nothing missing from your record.' },
     ],
   },
   {
