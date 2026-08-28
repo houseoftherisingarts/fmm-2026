@@ -94,6 +94,10 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
   // suit la main tout de suite; Firestore reçoit la liste au lâcher.
   const [traine, setTraine] = useState<string | null>(null);
   const [survolId, setSurvolId] = useState<string | null>(null);
+  // La visionneuse : ouverte en cliquant une vignette, ferme la
+  // grille pour identifier des personnes (Alex, 2026-08-28).
+  const [ouvertId, setOuvertId] = useState<string | null>(null);
+  const ouverte = photos.find((p) => p.id === ouvertId) ?? null;
   const deposer = (cibleId: string) => {
     if (!traine || traine === cibleId) { setTraine(null); setSurvolId(null); return; }
     const ids = photos.map((p) => p.id);
