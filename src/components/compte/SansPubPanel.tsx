@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { ShieldOff, Heart, Loader2, Check, Coins } from 'lucide-react';
 import { ouvrirLienSansPub, suivreSansPub, DONS_PROPOSES } from '../../firebase/sansPub';
 
-// ─── « Enlevez les publicités pour toujours » ────────────────────────
-// Alex, 2026-08-27 : un don unique de 10 à 100 $ au festival, et le
-// compte ne voit plus jamais de publicité. Le paiement passe par Square
-// (lien créé par la fonction sansPubLien), le webhook marque le compte.
+// ─── « Retirer les publicités, paiement unique » ─────────────────────
+// Alex, 2026-08-27 : un paiement unique de 10 à 100 $ au festival, et
+// le compte ne voit plus jamais de publicité. Le paiement passe par
+// Square (lien créé par la fonction sansPubLien), le webhook marque le
+// compte. Alex, 2026-08-28 : plus un seul mot « don » dans ce panneau,
+// à sa demande.
 const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN' }> = ({ uid, courriel, lang }) => {
   const fr = lang === 'FR';
   const [sansPub, setSansPub] = useState<boolean | null>(null);
