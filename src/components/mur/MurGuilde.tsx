@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image as ImageIcon, Send, Loader2, X } from 'lucide-react';
+import { Image as ImageIcon, Send, Loader2, X, Video } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { lireFiche } from '../../firebase/ordre';
 import { lireGuilde } from '../../firebase/guildes';
 import { publierSurLeMur, suivreLeMurDeGuilde, LONGUEUR_MAX_POST, type PostMur } from '../../firebase/mur';
+import { suivreSansPub } from '../../firebase/sansPub';
 import BilletCarte from './BilletCarte';
+
+const TAILLE_MAX_VIDEO = 60 * 1024 * 1024;
 
 // ─── Le mur d'une guilde ───────────────────────────────────────────
 // Alex, 2026-08-27 : même grammaire visuelle que MurSocial (le mur
