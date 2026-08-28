@@ -9,6 +9,7 @@
 // jetons du design system (--color-bone, --color-brass, etc).
 
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CadreJeu from '../../components/jeux/CadreJeu';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -1032,10 +1033,11 @@ const HnefataflPage: React.FC = () => {
   // l'espace client. La page suit le document, rejoue les coups de
   // l'autre et pousse les miens (Alex, 2026-08-23).
   const { user } = useAuth();
-  const partieId = useMemo(
-    () => new URLSearchParams(window.location.search).get('partie'),
-    [],
-  );
+  // Lu par le routeur, pas figé au premier rendu : un deuxième lien
+  // ?partie= sur la même route ouvre bien la nouvelle partie
+  // (vérification du 2026-08-27).
+  const [params] = useSearchParams();
+  const partieId = params.get('partie');
   const [partie, setPartie] = useState<PartieTafl | null>(null);
   const canvasRef = useRef<CanvasHandle>(null);
   const appliques = useRef(0);
@@ -1047,6 +1049,8 @@ const HnefataflPage: React.FC = () => {
   }, [partie, user]);
 
   const [gameStarted, setGameStarted] = useState(false);
+  // Nouvelle partie dans l'URL : on repart de zéro.
+  useEffect(() => { setGameStarted(false); setPartie(null); appliques.current = 0; }, [partieId]);
   // Le minuteur du coup (Alex, 2026-08-27) : le temps restant se relit
   // chaque minute; écoulé sur le tour de l'autre, je peux réclamer.
   const [tic, setTic] = useState(0);

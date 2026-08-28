@@ -139,7 +139,7 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
                   const Icone = ICONE[n.genre];
                   return (
                     <li key={n.id}>
-                      <Link to={addLocale(n.lien[lang], lang)} role="menuitem" onClick={() => setOuverte(false)}
+                      <Link to={n.lien[lang]} role="menuitem" onClick={() => setOuverte(false)}
                             className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors">
                         <span className="witcher-tile shrink-0" style={{ width: 34, height: 34 }}>
                           <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Icone size={13} /></span>

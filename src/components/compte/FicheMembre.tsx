@@ -31,6 +31,7 @@ import CoffreBillets from './CoffreBillets';
 import SoutienPanel from './SoutienPanel';
 import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
+import DefisTafl from './DefisTafl';
 import MesBadges from './MesBadges';
 import MaFiche from './MaFiche';
 import ConcoursPanel from './ConcoursPanel';
@@ -677,6 +678,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
             {onglet === 'jeux' && (prive ? (
               <div className="space-y-6 md:space-y-8">
+                {/* Les défis reçus, envoyés et les parties en cours : la
+                    vue persistante qui manquait (vérification du 27 août). */}
+                <DefisTafl lang={lang} />
                 <SalonDesJeux lang={lang} />
               </div>
             ) : (

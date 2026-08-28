@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CadreJeu from '../../components/jeux/CadreJeu';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -78,10 +79,11 @@ const DesPage: React.FC = () => {
   // /jeux/des?partie=<id> ouvre la partie lancée depuis le panneau des
   // amis. La page suit le document, scelle sa main chez elle et pousse
   // ses annonces (Alex, 2026-08-23).
-  const partieId = useMemo(
-    () => new URLSearchParams(window.location.search).get('partie'),
-    [],
-  );
+  // Lu par le routeur, pas figé au premier rendu : un deuxième lien
+  // ?partie= sur la même route ouvre bien la nouvelle partie
+  // (vérification du 2026-08-27).
+  const [params] = useSearchParams();
+  const partieId = params.get('partie');
   const [enLigne, setEnLigne] = useState<PartieDes | null>(null);
   const [maMain, setMaMain] = useState<Face[]>([]);
   const [mainsLevees, setMainsLevees] = useState<Record<string, Face[]>>({});
