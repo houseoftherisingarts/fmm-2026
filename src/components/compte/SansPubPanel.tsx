@@ -73,7 +73,7 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
           <button type="button" onClick={payer} disabled={envoi}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
             {envoi ? <Loader2 size={14} className="animate-spin" /> : <Heart size={14} />}
-            {fr ? `Soutenir le festival · ${montant} $` : `Support the festival · $${montant}`}
+            {fr ? `Retirer les publicités, paiement unique · ${montant} $` : `Remove the ads, one-time payment · $${montant}`}
           </button>
           {/* La monnaie locale de la Petite Nation (Alex, 2026-08-28) :
               le chemin est annoncé, le paiement ouvrira plus tard. */}
