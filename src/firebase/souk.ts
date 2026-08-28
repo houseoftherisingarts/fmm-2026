@@ -153,7 +153,8 @@ export function televerserPhotosCommerce(uid: string, fichiers: File[]) {
 
 export async function creerObjetSouk(params: {
   uid: string; nom: string; avatarUrl?: string;
-  titre: string; description: string; prix: number; prixMontpellois?: number; categorie: CategorieSouk;
+  titre: string; description: string; prix?: number; prixMontpellois?: number;
+  genre?: GenreSouk; categorie: CategorieSouk;
   fichiers: File[];
 }): Promise<string> {
   if (!db) throw new Error('Firestore indisponible');
@@ -167,8 +168,12 @@ export async function creerObjetSouk(params: {
     avatarUrl: params.avatarUrl,
     titre: params.titre,
     description: params.description,
-    prix: params.prix,
+    // La règle Firestore exige encore `prix is number` à la création
+    // (voir firestore.rules) : 0 tient lieu d'« aucun prix » en attendant
+    // qu'elle tolère l'absence du champ (Alex, 2026-08-28).
+    prix: params.prix ?? 0,
     prixMontpellois: params.prixMontpellois,
+    genre: params.genre || 'objet',
     categorie: params.categorie,
     photos: urls,
     chemins,
