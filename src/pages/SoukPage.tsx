@@ -7,11 +7,12 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
-import MesObjets from '../components/souk/MesObjets';
+import MesObjets, { DisclaimerSouk } from '../components/souk/MesObjets';
 import PieceMontpellois from '../components/boutique/PieceMontpellois';
 import { acheterAuSouk } from '../firebase/montpellois';
 import {
-  listerSouk, listerCommercesRuelle, type ObjetSouk, type CategorieSouk, type Commerce,
+  listerSouk, listerCommercesRuelle, estGratuit,
+  type ObjetSouk, type CategorieSouk, type GenreSouk, type Commerce,
 } from '../firebase/souk';
 
 // ─── /souk · La foire usagée ──────────────────────────────────────────
@@ -21,10 +22,17 @@ import {
 // mettre un objet en vente, puis les commerces non officiels de la
 // ruelle (créés par les membres, jamais approuvés par le festival tant
 // qu'ils ne sont pas promus en kiosque).
-const CATEGORIES: CategorieSouk[] = ['costume', 'arme', 'artisanat', 'livre', 'decor', 'autre'];
+const CATEGORIES_OBJET: CategorieSouk[] = ['costume', 'arme', 'artisanat', 'livre', 'decor', 'autre'];
+const CATEGORIES_SERVICE: CategorieSouk[] = ['coup-de-main', 'couture', 'forge', 'musique', 'transport', 'autre'];
 const CAT_LABEL: Record<'FR' | 'EN', Record<CategorieSouk, string>> = {
-  FR: { costume: 'Costume', arme: 'Arme', artisanat: 'Artisanat', livre: 'Livre', decor: 'Décor', autre: 'Autre' },
-  EN: { costume: 'Costume', arme: 'Weapon', artisanat: 'Craft', livre: 'Book', decor: 'Decor', autre: 'Other' },
+  FR: {
+    costume: 'Costume', arme: 'Arme', artisanat: 'Artisanat', livre: 'Livre', decor: 'Décor', autre: 'Autre',
+    'coup-de-main': 'Coup de main', couture: 'Couture', forge: 'Forge', musique: 'Musique', transport: 'Transport',
+  },
+  EN: {
+    costume: 'Costume', arme: 'Weapon', artisanat: 'Craft', livre: 'Book', decor: 'Decor', autre: 'Other',
+    'coup-de-main': 'Helping hand', couture: 'Sewing', forge: 'Blacksmithing', musique: 'Music', transport: 'Transport',
+  },
 };
 
 const SoukPage: React.FC = () => {
