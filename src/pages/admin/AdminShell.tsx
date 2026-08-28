@@ -67,7 +67,7 @@ interface NavItem {
   group: string;
 }
 
-const NAV: NavItem[] = [
+export const NAV: NavItem[] = [
   { id: 'dashboard',  label: 'Tableau de bord', icon: LayoutDashboard, group: 'Vue d’ensemble' },
 
   { id: 'benevoles',  label: 'Bénévoles',       icon: HandHeart,       group: 'Bénévoles' },
