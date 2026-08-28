@@ -178,6 +178,7 @@ const TarotPage: React.FC = () => {
         {pubEnAttente && (
           <PubDebutPartie
             lang={lang}
+            jeu="tarot"
             onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
           />
         )}
