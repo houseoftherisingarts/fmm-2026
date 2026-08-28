@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useBadges } from '../../contexts/BadgesContext';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Send, Megaphone, Loader2, X, Video } from 'lucide-react';
+import { Image as ImageIcon, Send, Megaphone, Loader2, X, Video, ImagePlus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { lireFiche } from '../../firebase/ordre';
-import { publierSurLeMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST, type PostMur, type GenrePost } from '../../firebase/mur';
+import {
+  publierSurLeMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST,
+  LONGUEUR_MAX_TITRE_VIDEO, LONGUEUR_MAX_DESCRIPTION_VIDEO, type PostMur, type GenrePost,
+} from '../../firebase/mur';
 import { suivreSansPub } from '../../firebase/sansPub';
 import { ANNONCES } from '../../content/annonces';
 import BilletCarte from './BilletCarte';
