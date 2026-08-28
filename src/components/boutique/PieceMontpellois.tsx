@@ -28,7 +28,6 @@ const PieceMontpellois: React.FC<Props> = ({ size = 20, image = false, className
       />
     );
   }
-  const r = size / 2;
   return (
     <svg viewBox="0 0 40 40" width={size} height={size} role="img" aria-label="Montpellois" className={className}>
       <defs>
