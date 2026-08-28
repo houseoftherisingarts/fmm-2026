@@ -335,7 +335,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                 </button>
                 <button
                   type="button"
-                  onClick={() => { if (p.vedette) { setAvis(t.vedetteReste); return; } void changerVisibilite(p.id, p.visibilite === 'publique' ? 'privee' : 'publique').catch(() => {}); }}
+                  onClick={(e) => { e.stopPropagation(); if (p.vedette) { setAvis(t.vedetteReste); return; } void changerVisibilite(p.id, p.visibilite === 'publique' ? 'privee' : 'publique').catch(() => {}); }}
                   aria-label={`${t.basculer} · ${t.visibilite[p.visibilite === 'publique' ? 'publique' : 'privee']}`}
                   className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-full font-sans uppercase tracking-[0.15em] text-[9px]"
                   style={{
