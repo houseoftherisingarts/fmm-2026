@@ -65,6 +65,20 @@ const MurSocial: React.FC<{
     return () => URL.revokeObjectURL(u);
   }, [photo]);
 
+  // La vidéo, réservée aux membres VIP (le don « sans publicité »,
+  // Alex, 2026-08-28) — pour la bande passante.
+  const [estVip, setEstVip] = useState(false);
+  useEffect(() => (user ? suivreSansPub(user.uid, setEstVip) : undefined), [user]);
+  const [video, setVideo] = useState<File | null>(null);
+  const [apercuVideo, setApercuVideo] = useState<string | null>(null);
+  const [erreurVideo, setErreurVideo] = useState<string | null>(null);
+  const fichierVideo = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!video) { setApercuVideo(null); return; }
+    const u = URL.createObjectURL(video); setApercuVideo(u);
+    return () => URL.revokeObjectURL(u);
+  }, [video]);
+
   const publier = async () => {
     if (!user) return;
     setEnvoi(true); setErreur(null);
@@ -75,12 +89,12 @@ const MurSocial: React.FC<{
         nom: fiche?.nom || user.displayName || (fr ? 'Un inconnu' : 'A stranger'),
         avatarUrl: fiche?.avatarUrl || user.photoURL || undefined,
         avatarHue: fiche?.avatarHue,
-        texte, photo: photo || undefined,
+        texte, photo: photo || undefined, video: video || undefined,
         moderateur: isAdmin,
         verifie: fiche?.verifie,
         genre,
       });
-      setTexte(''); setPhoto(null); setGenre('billet');
+      setTexte(''); setPhoto(null); setVideo(null); setGenre('billet');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally { setEnvoi(false); }
