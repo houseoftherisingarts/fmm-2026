@@ -21,6 +21,12 @@ export const SOLDE_DEPART = 10;
 export const GAIN_PAR_BADGE = 5;
 /** Ce que rapporte la pièce du jour (reclamerQuotidien). */
 export const GAIN_QUOTIDIEN = 1;
+/** Le prix des skins de plateforme, gratuits pour un compte VIP
+ *  (users.sansPub) — doit rester en phase avec le même nom de
+ *  constante côté fonction serveur. */
+export const PRIX_SKIN: Record<'bleu' | 'dore', number> = { bleu: 20, dore: 40 };
+/** Le prix d'un album, tant qu'Alex n'a pas fixé un prix par groupe. */
+export const PRIX_ALBUM = 30;
 
 export interface Bourse {
   solde: number;
