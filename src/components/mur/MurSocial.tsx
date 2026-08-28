@@ -84,6 +84,20 @@ const MurSocial: React.FC<{
     return () => URL.revokeObjectURL(u);
   }, [video]);
 
+  // Titre, description et vignette de la vidéo, façon YouTube (Alex,
+  // 2026-08-28). Sans vignette choisie, publierSurLeMur en prend une
+  // automatiquement dans la vidéo.
+  const [videoTitre, setVideoTitre] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
+  const [videoVignette, setVideoVignette] = useState<File | null>(null);
+  const [apercuVignette, setApercuVignette] = useState<string | null>(null);
+  const fichierVignette = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!videoVignette) { setApercuVignette(null); return; }
+    const u = URL.createObjectURL(videoVignette); setApercuVignette(u);
+    return () => URL.revokeObjectURL(u);
+  }, [videoVignette]);
+
   const publier = async () => {
     if (!user) return;
     setEnvoi(true); setErreur(null);
