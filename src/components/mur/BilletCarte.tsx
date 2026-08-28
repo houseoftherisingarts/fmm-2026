@@ -112,7 +112,7 @@ const LigneCommentaire: React.FC<{
           <Link to={`${addLocale('/profil', lang)}/${c.uid}`} className="font-display text-[13px] text-ivory hover:text-brass transition-colors">
             {c.nom}
           </Link>
-          {c.verifie && <BadgeVerifie size={12} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
+          {c.verifie && <BadgeVerifie size={18} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
           <span className="font-sans text-[10px] text-ivory-soft/45">{quandTexte(c.creeLe?.toMillis?.() ?? Date.now(), fr)}</span>
         </div>
         <p className="font-editorial text-[13px] text-ivory leading-relaxed whitespace-pre-line mt-0.5">{c.texte}</p>
@@ -239,7 +239,7 @@ const BilletCarte: React.FC<{
             <Link to={`${addLocale('/profil', lang)}/${post.uid}`} className="font-display text-base text-ivory hover:text-brass transition-colors truncate">
               {post.nom}
             </Link>
-            {post.verifie && <BadgeVerifie size={15} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
+            {post.verifie && <BadgeVerifie size={22} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
             {post.moderateur && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px] shrink-0"
                     style={{ background: 'rgba(216,176,90,0.16)', border: '1px solid #D8B05A', color: '#D8B05A' }}>

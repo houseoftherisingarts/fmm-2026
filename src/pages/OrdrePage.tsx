@@ -210,7 +210,7 @@ const CarteMembre: React.FC<{
                   className="block font-display title-medieval text-lg text-ivory hover:text-brass transition-colors truncate">
               {m.nom || (fr ? 'Un inconnu' : 'A stranger')}
             </Link>
-            {m.verifie && <BadgeVerifie size={15} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
+            {m.verifie && <BadgeVerifie size={22} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
           </span>
           {m.ville && <span className="block font-sans text-[11px] text-ivory-soft/55 truncate">{m.ville}</span>}
         </div>

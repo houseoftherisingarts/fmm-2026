@@ -504,7 +504,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     <div className="flex-1 min-w-0 w-full">
                       <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words inline-flex items-center gap-2 md:gap-3 flex-wrap justify-center md:justify-start">
                         <span>{nom}</span>
-                        {fiche?.verifie && <BadgeVerifie size={18} titre={t.membreVerifie} />}
+                        {fiche?.verifie && <BadgeVerifie size={40} titre={t.membreVerifie} />}
                       </h1>
 
                       {/* Les fonctions portées au festival, en pastilles. */}
