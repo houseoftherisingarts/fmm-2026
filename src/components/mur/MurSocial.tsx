@@ -155,77 +155,44 @@ const MurSocial: React.FC<{
         <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
           {uid ? (fr ? 'Rien sur ce fil pour le moment.' : 'Nothing on this feed yet.') : (fr ? 'Le mur est encore vide. Soyez la première voix.' : 'The wall is still empty. Be the first voice.')}
         </p>
-      ) : lignes.map((l, i) => (
+      ) : lignes.map((l, i) => l.genre === 'annonce' ? (
         <motion.article
-          key={l.genre === 'post' ? l.post.id : `annonce-${l.annonce.id}`}
+          key={`annonce-${l.annonce.id}`}
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="rounded-lg-card p-5 md:p-6"
-          style={l.genre === 'annonce'
-            ? { background: 'rgba(216,176,90,0.07)', border: '1px solid rgba(216,176,90,0.35)' }
-            : { background: TEINTE_GENRE[l.post.genre || 'billet'].fond, border: `1px solid ${TEINTE_GENRE[l.post.genre || 'billet'].bord}` }}
+          style={{ background: 'rgba(216,176,90,0.07)', border: '1px solid rgba(216,176,90,0.35)' }}
         >
-          {l.genre === 'annonce' ? (
-            <>
-              <div className="flex items-center gap-3 mb-3">
-                <span className="witcher-tile shrink-0" style={{ width: 40, height: 40 }}>
-                  <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Megaphone size={14} /></span>
-                </span>
-                <div className="min-w-0">
-                  <p className="font-display text-base text-ivory truncate">{fr ? 'Annonce du festival' : 'Festival notice'}</p>
-                  <p className="font-sans text-[11px] text-ivory-soft/55">{quandTexte(l.quand, fr)}</p>
-                </div>
-              </div>
-              <h3 className="font-display title-medieval text-lg text-ivory mb-2">{fr ? l.annonce.titleFR : l.annonce.titleEN}</h3>
-              <p className="font-editorial text-sm text-ivory-soft leading-relaxed whitespace-pre-line">{fr ? l.annonce.bodyFR : l.annonce.bodyEN}</p>
-              {l.annonce.cta?.url && (
-                <a href={l.annonce.cta.url} target="_blank" rel="noreferrer"
-                   className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
-                  {fr ? l.annonce.cta.labelFR : l.annonce.cta.labelEN}
-                </a>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-3 mb-3">
-                <Link to={`${addLocale('/profil', lang)}/${l.post.uid}`}><Medaillon nom={l.post.nom} url={l.post.avatarUrl} hue={l.post.avatarHue} /></Link>
-                <div className="min-w-0 flex-1">
-                  <span className="flex items-center gap-2 min-w-0">
-                    <Link to={`${addLocale('/profil', lang)}/${l.post.uid}`} className="font-display text-base text-ivory hover:text-brass transition-colors truncate">
-                      {l.post.nom}
-                    </Link>
-                    {l.post.verifie && <BadgeVerifie size={15} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
-                    {l.post.moderateur && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px] shrink-0"
-                            style={{ background: 'rgba(216,176,90,0.16)', border: '1px solid #D8B05A', color: '#D8B05A' }}>
-                        <ShieldCheck size={10} /> {fr ? 'Admin · Modérateur' : 'Admin · Moderator'}
-                      </span>
-                    )}
-                  </span>
-                  <p className="font-sans text-[11px] text-ivory-soft/55">
-                    {quandTexte(l.quand, fr)}
-                    {(l.post.genre || 'billet') !== 'billet' && (
-                      <span className="ml-2 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px]"
-                            style={{ border: `1px solid ${TEINTE_GENRE[l.post.genre!].accent}`, color: TEINTE_GENRE[l.post.genre!].accent }}>
-                        {fr ? TEINTE_GENRE[l.post.genre!].nomFR : TEINTE_GENRE[l.post.genre!].nomEN}
-                      </span>
-                    )}
-                  </p>
-                </div>
-                {user && (user.uid === l.post.uid || isAdmin) && (
-                  <button type="button" onClick={() => { void retirerDuMur(l.post); }} aria-label={fr ? 'Retirer' : 'Remove'}
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-ivory-soft/50 hover:text-[#E08A6E] transition-colors">
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-              {l.post.texte && <p className="font-editorial text-[15px] text-ivory leading-relaxed whitespace-pre-line">{l.post.texte}</p>}
-              {l.post.photoUrl && (
-                <img src={l.post.photoUrl} alt="" loading="lazy" className="mt-4 w-full max-h-[32rem] object-cover rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
-              )}
-            </>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="witcher-tile shrink-0" style={{ width: 40, height: 40 }}>
+              <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Megaphone size={14} /></span>
+            </span>
+            <div className="min-w-0">
+              <p className="font-display text-base text-ivory truncate">{fr ? 'Annonce du festival' : 'Festival notice'}</p>
+              <p className="font-sans text-[11px] text-ivory-soft/55">{quandTexte(l.quand, fr)}</p>
+            </div>
+          </div>
+          <h3 className="font-display title-medieval text-lg text-ivory mb-2">{fr ? l.annonce.titleFR : l.annonce.titleEN}</h3>
+          <p className="font-editorial text-sm text-ivory-soft leading-relaxed whitespace-pre-line">{fr ? l.annonce.bodyFR : l.annonce.bodyEN}</p>
+          {l.annonce.cta?.url && (
+            <a href={l.annonce.cta.url} target="_blank" rel="noreferrer"
+               className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
+              {fr ? l.annonce.cta.labelFR : l.annonce.cta.labelEN}
+            </a>
           )}
         </motion.article>
+      ) : (
+        <BilletCarte
+          key={l.post.id}
+          lang={lang}
+          post={l.post}
+          delaiIndex={i}
+          fond={TEINTE_GENRE[l.post.genre || 'billet'].fond}
+          bord={TEINTE_GENRE[l.post.genre || 'billet'].bord}
+          genreBadge={(l.post.genre || 'billet') !== 'billet' ? { texte: fr ? TEINTE_GENRE[l.post.genre!].nomFR : TEINTE_GENRE[l.post.genre!].nomEN, couleur: TEINTE_GENRE[l.post.genre!].accent } : undefined}
+          peutEpingler={isAdmin}
+          bandeauEpingle={fr ? 'Épinglé par l’équipe' : 'Pinned by the team'}
+        />
       ))}
     </div>
   );
