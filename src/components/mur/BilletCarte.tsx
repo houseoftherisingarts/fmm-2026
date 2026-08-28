@@ -3,7 +3,7 @@ import { useBadges } from '../../contexts/BadgesContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Trash2, ShieldCheck, MessageCircle, Share2, Pin, PinOff, Send, Loader2, ExternalLink,
+  Trash2, ShieldCheck, MessageCircle, Share2, Pin, PinOff, Send, Loader2, ExternalLink, Play, Video as VideoIcon,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
