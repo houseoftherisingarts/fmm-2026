@@ -196,6 +196,7 @@ const AdminPage: React.FC = () => {
       case 'benevoles':  return <BenevolesSection  fetchAll={fetchBenevoles} updateOne={updateBenevole} />;
       case 'equipes':    return <EquipesSection    devBypass={DEV_BYPASS} />;
       case 'marchands':  return <MarchandsSection  fetchAll={fetchVendors}   updateOne={updateVendor} />;
+      case 'commerces':  return <CommercesSection />;
       case 'musiciens':  return <MusiquesSection   fetchAll={fetchMusicians} updateOne={updateMusician} />;
       case 'activites':  return <ActivitesSection />;
       case 'badges':     return <BadgesSection />;
