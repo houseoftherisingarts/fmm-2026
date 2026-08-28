@@ -21,12 +21,19 @@ import { tenterUneTrouvaille } from './trouvailles';
 // (dev seulement) montre un personnage témoin sans Firebase, pour la
 // vérification visuelle (Alex, 2026-08-27).
 
+// Le témoin porte plusieurs trouvailles nouvelles (Alex, 2026-08-28) :
+// la couronne du Parrain, la cape étoilée, l'épée de lune, les bottes
+// ailées — pour vérifier leurs couches SVG d'un coup d'œil.
 const TEMOIN: AvatarChantier = {
   corps: 'B',
   peau: 1,
   coiffure: 2,
-  equipe: { tete: 'casque_heaume', torse: 'torse_plates', cape: 'cape_ordre', mainDroite: 'baton', mainGauche: 'bouclier_fer', jambes: 'jambes_mailles', pieds: 'bottes_ferrees', amulette: 'amulette_lievre', anneau: 'anneau_brume' },
-  sac: SAC_DEPART,
+  equipe: {
+    tete: 'casque_couronne_parrain', torse: 'torse_troubadour', cape: 'cape_etoilee',
+    mainDroite: 'epee_lune', mainGauche: 'bouclier_fer', jambes: 'jambes_mailles',
+    pieds: 'bottes_ailees', amulette: 'amulette_oeil', anneau: 'anneau_brume',
+  },
+  sac: [...SAC_DEPART, 'casque_corbeau', 'couronne_fleurs', 'epee_errant', 'cape_benevole'],
 };
 
 const ChantierPage: React.FC = () => {
