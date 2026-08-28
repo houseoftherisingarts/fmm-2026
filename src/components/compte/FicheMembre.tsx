@@ -415,89 +415,141 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             {prive && <Cloche uid={uid} lang={lang} />}
           </div>
 
-          <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
-            <AvatarUpload
-              uid={uid}
-              email={compte?.email || ''}
-              displayName={nom}
-              lang={lang}
-              avatarUrl={photo}
-              onChange={setAvatarUrl}
-              lecture={!prive}
-            />
+          {(() => {
+            const posBanniere = fiche?.prefs?.positionBanniere || 'bas';
+            const metal = metalDe({ roles: fiche?.roles, nbBadges: etatBadges.obtenus, estAdmin: prive && isAdmin });
+            const banniereProps = {
+              uid, url: fiche?.banniereUrl, metal, lang,
+              editable: prive,
+              onChange: (lien: string) => setFiche((f) => (f ? { ...f, banniereUrl: lien } : f)),
+              vip,
+              prefs: fiche?.prefs,
+              onPrefsChange: majPrefs,
+              onCommencerDeplacement: prive ? () => setEnDeplacement(true) : undefined,
+            };
+            return (
+              <div className={posBanniere === 'droite' ? 'flex flex-col md:flex-row gap-8 md:gap-10 md:items-stretch' : 'flex flex-col gap-8'}>
+                {posBanniere === 'haut' && <Banniere {...banniereProps} variante="horizontale" />}
 
-            <div className="flex-1 min-w-0 w-full">
-              <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words">
-                {nom}
-              </h1>
+                <div className={posBanniere === 'droite' ? 'relative flex-1 min-w-0' : 'relative'}>
+                  <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
+                    <AvatarUpload
+                      uid={uid}
+                      email={compte?.email || ''}
+                      displayName={nom}
+                      lang={lang}
+                      avatarUrl={photo}
+                      onChange={setAvatarUrl}
+                      lecture={!prive}
+                    />
 
-              {/* Les fonctions portées au festival, en pastilles. */}
-              <ul className="mt-3 flex flex-wrap items-center justify-center md:justify-start gap-1.5">
-                {fonctions.map((r) => (
-                  <li key={r}
-                    className="inline-flex items-center px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px]"
-                    style={{
-                      color: '#D8B05A',
-                      background: 'rgba(216,176,90,0.10)',
-                      border: '1px solid rgba(216,176,90,0.32)',
-                    }}>
-                    {LIBELLE_ROLE[r][lang]}
-                  </li>
-                ))}
-                {/* Les cinq badges favoris, à côté de la fonction. */}
-                <Vitrine ids={idsVitrine} lang={lang} />
-                {/* La guilde, en bleu; sinon, les portes vers les guildes (Alex, 2026-08-28). */}
-                {guildes.map((g) => (
-                  <li key={g.id}>
-                    <Link to={`${addLocale('/guildes', lang)}/${g.id}`}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-125 transition"
-                          style={{ color: '#9fb0e6', background: 'rgba(120,130,190,0.12)', border: '1px solid rgba(120,130,190,0.4)' }}>
-                      <Shield size={11} /> {g.nom}
-                    </Link>
-                  </li>
-                ))}
-                {prive && (
-                  <li>
-                    <Link to={addLocale('/guildes', lang)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-125 transition"
-                          style={{ color: '#9fb0e6', background: 'rgba(120,130,190,0.08)', border: '1px dashed rgba(120,130,190,0.45)' }}>
-                      <Shield size={11} /> {guildes.length ? t.autreGuilde : t.creerOuRejoindre}
-                    </Link>
-                  </li>
-                )}
-              </ul>
+                    <div className="flex-1 min-w-0 w-full">
+                      <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words inline-flex items-center gap-2 md:gap-3 flex-wrap justify-center md:justify-start">
+                        <span>{nom}</span>
+                        {fiche?.verifie && <BadgeVerifie size={18} titre={t.membreVerifie} />}
+                      </h1>
 
-              {fiche?.ville && (
-                <p className="font-sans text-xs mt-3 flex items-center justify-center md:justify-start gap-2"
-                   style={{ color: 'rgba(244,239,227,0.5)' }}>
-                  <MapPin size={13} className="text-brass" /> {fiche.ville}
-                </p>
-              )}
-              {prive && compte?.email && (
-                <p className="font-sans text-xs mt-2 flex items-center justify-center md:justify-start gap-2"
-                   style={{ color: 'rgba(244,239,227,0.5)' }}>
-                  <Mail size={13} className="text-brass" /> {compte.email}
-                </p>
-              )}
+                      {/* Les fonctions portées au festival, en pastilles. */}
+                      <ul className="mt-3 flex flex-wrap items-center justify-center md:justify-start gap-1.5">
+                        {fonctions.map((r) => (
+                          <li key={r}
+                            className="inline-flex items-center px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px]"
+                            style={{
+                              color: '#D8B05A',
+                              background: 'rgba(216,176,90,0.10)',
+                              border: '1px solid rgba(216,176,90,0.32)',
+                            }}>
+                            {LIBELLE_ROLE[r][lang]}
+                          </li>
+                        ))}
+                        {/* Les cinq badges favoris, à côté de la fonction. */}
+                        <Vitrine ids={idsVitrine} lang={lang} />
+                        {/* La guilde, en bleu; sinon, les portes vers les guildes (Alex, 2026-08-28). */}
+                        {guildes.map((g) => (
+                          <li key={g.id}>
+                            <Link to={`${addLocale('/guildes', lang)}/${g.id}`}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-125 transition"
+                                  style={{ color: '#9fb0e6', background: 'rgba(120,130,190,0.12)', border: '1px solid rgba(120,130,190,0.4)' }}>
+                              <Shield size={11} /> {g.nom}
+                            </Link>
+                          </li>
+                        ))}
+                        {prive && (
+                          <li>
+                            <Link to={addLocale('/guildes', lang)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-125 transition"
+                                  style={{ color: '#9fb0e6', background: 'rgba(120,130,190,0.08)', border: '1px dashed rgba(120,130,190,0.45)' }}>
+                              <Shield size={11} /> {guildes.length ? t.autreGuilde : t.creerOuRejoindre}
+                            </Link>
+                          </li>
+                        )}
+                        {/* VIP (partout) ou l'invitation à le devenir (privé seulement). */}
+                        {vip ? (
+                          <li className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px]"
+                              style={{ color: '#241505', background: 'linear-gradient(135deg, #F4E5B6, #D8B05A)', border: '1px solid rgba(216,176,90,0.6)' }}>
+                            <Crown size={11} /> VIP
+                          </li>
+                        ) : prive && (
+                          <li>
+                            <button type="button" onClick={allerVersSansPub}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-110 transition"
+                                    style={{ color: '#241505', background: 'linear-gradient(135deg, #F4E5B6, #D8B05A)', border: '1px solid rgba(216,176,90,0.6)' }}>
+                              <Sparkles size={11} /> {t.upgrade}
+                            </button>
+                          </li>
+                        )}
+                      </ul>
 
-              <div className="mt-7 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-9 sm:justify-center md:justify-start">
-                <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
-                <Chiffre n={nbAmis}    label={t.statAmis}    onClick={() => ouvrir('profil')} />
-                <Chiffre n={nbParties} label={t.statParties} onClick={() => ouvrir('jeux')} />
-                <Chiffre n={avisPris.length} label={t.statAvis} onClick={() => ouvrir('collection')} />
+                      {fiche?.ville && (
+                        <p className="font-sans text-xs mt-3 flex items-center justify-center md:justify-start gap-2"
+                           style={{ color: 'rgba(244,239,227,0.5)' }}>
+                          <MapPin size={13} className="text-brass" /> {fiche.ville}
+                        </p>
+                      )}
+                      {prive && compte?.email && (
+                        <p className="font-sans text-xs mt-2 flex items-center justify-center md:justify-start gap-2"
+                           style={{ color: 'rgba(244,239,227,0.5)' }}>
+                          <Mail size={13} className="text-brass" /> {compte.email}
+                        </p>
+                      )}
+
+                      <div className="mt-7 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-9 sm:justify-center md:justify-start">
+                        <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
+                        <Chiffre n={nbAmis}    label={t.statAmis}    onClick={() => ouvrir('profil')} />
+                        <Chiffre n={nbParties} label={t.statParties} onClick={() => ouvrir('jeux')} />
+                        <Chiffre n={avisPris.length} label={t.statAvis} onClick={() => ouvrir('badges')} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Les trois zones de dépôt, montrées seulement pendant qu'on
+                      saisit la bannière (Alex, 2026-08-28). */}
+                  {prive && enDeplacement && (
+                    <>
+                      <div ref={zoneHautRef}
+                           className="absolute inset-x-0 bottom-full mb-3 h-28 md:h-32 rounded-2xl border-2 border-dashed flex items-center justify-center z-30 pointer-events-none transition-colors"
+                           style={{ borderColor: zoneSurvolee === 'haut' ? '#D8B05A' : 'rgba(216,176,90,0.4)', background: zoneSurvolee === 'haut' ? 'rgba(216,176,90,0.16)' : 'rgba(10,2,7,0.6)' }}>
+                        <Plus size={28} style={{ color: '#D8B05A' }} />
+                      </div>
+                      <div ref={zoneBasRef}
+                           className="absolute inset-x-0 top-full mt-3 h-28 md:h-32 rounded-2xl border-2 border-dashed flex items-center justify-center z-30 pointer-events-none transition-colors"
+                           style={{ borderColor: zoneSurvolee === 'bas' ? '#D8B05A' : 'rgba(216,176,90,0.4)', background: zoneSurvolee === 'bas' ? 'rgba(216,176,90,0.16)' : 'rgba(10,2,7,0.6)' }}>
+                        <Plus size={28} style={{ color: '#D8B05A' }} />
+                      </div>
+                      <div ref={zoneDroiteRef}
+                           className="hidden md:flex absolute top-0 bottom-0 left-full ml-3 w-[220px] rounded-2xl border-2 border-dashed items-center justify-center z-30 pointer-events-none transition-colors"
+                           style={{ borderColor: zoneSurvolee === 'droite' ? '#D8B05A' : 'rgba(216,176,90,0.4)', background: zoneSurvolee === 'droite' ? 'rgba(216,176,90,0.16)' : 'rgba(10,2,7,0.6)' }}>
+                        <Plus size={28} style={{ color: '#D8B05A' }} />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {posBanniere === 'droite' && <Banniere {...banniereProps} variante="verticale" />}
+                {posBanniere === 'bas' && <Banniere {...banniereProps} variante="horizontale" />}
               </div>
-            </div>
-          </div>
-
-          {/* La bannière encadrée : le métal suit le rang (Alex, 2026-08-27; sous le nom depuis le 28). */}
-          <Banniere
-            uid={uid}
-            url={fiche?.banniereUrl}
-            metal={metalDe({ roles: fiche?.roles, nbBadges: etatBadges.obtenus, estAdmin: prive && isAdmin })}
-            lang={lang}
-            editable={prive}
-            onChange={(lien) => setFiche((f) => (f ? { ...f, banniereUrl: lien } : f))}
-          />
+            );
+          })()}
 
           {/* ── La bande d'actions ──
               En mode public, la personne qui regarde peut écrire au

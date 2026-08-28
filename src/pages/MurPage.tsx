@@ -10,6 +10,7 @@ import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
 import MurSocial from '../components/mur/MurSocial';
 import PubMur from '../components/mur/PubMur';
+import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 
 // ─── Le mur social ───────────────────────────────────────────────────
 // Les billets de tous les membres de l'Ordre et les annonces du
@@ -51,12 +52,17 @@ const MurPage: React.FC = () => {
               <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-start">
                 <div>
                   <p className="witcher-stat-label mb-3">{fr ? 'Le fil' : 'The feed'}</p>
-                  <MurSocial lang={lang} filtre="billets" avecComposeur={false} />
+                  <MurSocial lang={lang} filtre="billets" avecComposeur={false} avecAnnonces={false} />
                 </div>
                 <div className="mt-8 lg:mt-0">
                   <p className="witcher-stat-label mb-3">{fr ? 'Offres et demandes' : 'Offers and requests'}</p>
                   <MurSocial lang={lang} filtre="offres" avecComposeur={false} avecAnnonces={false} />
                 </div>
+              </div>
+              {/* Les annonces du festival, au bas, sur le babillard Witcher
+                  (Alex, 2026-08-28 : sinon personne ne les lit). */}
+              <div className="mt-12">
+                <AnnoncesPanel lang={lang} />
               </div>
             </>
           ) : (

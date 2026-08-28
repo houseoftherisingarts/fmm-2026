@@ -17,6 +17,7 @@ import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
 import SalonOrdre from '../components/ordre/SalonOrdre';
 import MurSocial from '../components/mur/MurSocial';
+import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 import BadgeVerifie from '../components/compte/BadgeVerifie';
 
 // ─── Les membres de l'Ordre ─────────────────────────────────────────
@@ -142,9 +143,13 @@ const OrdrePage: React.FC = () => {
           {/* Le mur social, en tête du registre (Alex, 2026-08-27). */}
           <div className="mb-10 md:mb-14 max-w-3xl">
             <p className="witcher-stat-label mb-4">{fr ? 'Le mur social' : 'The social wall'}</p>
-            <MurSocial lang={lang} />
+            <MurSocial lang={lang} avecAnnonces={false} />
           </div>
           <SalonOrdre />
+          {/* Le babillard des annonces, au bas du registre (Alex, 2026-08-28). */}
+          <div className="mt-14 max-w-4xl">
+            <AnnoncesPanel lang={lang} />
+          </div>
         </div>
       </section>
     </>
