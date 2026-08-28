@@ -1002,5 +1002,22 @@ service cloud.firestore {
       allow create, update: if isOwner(uid) || isAdmin();
       allow delete:         if isOwner(uid) || isAdmin();
     }
+
+    // ── Chantier : inventaire du personnage + salon 2D ─────────────
+    // Page non publiée (/chantier, gatée isAdmin côté client), mais les
+    // règles restent réelles dès maintenant. Un document par membre,
+    // lecture aux comptes connectés, écriture réservée au propriétaire
+    // (Alex, 2026-08-27).
+    match /avatars/{uid} {
+      allow read:                  if signedIn();
+      allow create, update, delete: if isOwner(uid) || isAdmin();
+    }
+    // Présence dans le salon : la personne écrit sa propre position et
+    // son message, tout le monde connecté les lit. Expiration après deux
+    // minutes gérée côté client sur le champ `maj` (Alex, 2026-08-27).
+    match /salon2d/{uid} {
+      allow read:                  if signedIn();
+      allow create, update, delete: if isOwner(uid) || isAdmin();
+    }
   }
 }
