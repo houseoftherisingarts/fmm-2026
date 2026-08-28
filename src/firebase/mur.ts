@@ -37,6 +37,8 @@ export const LONGUEUR_MAX_POST = 2000;
 
 export async function publierSurLeMur(opts: {
   uid: string; nom: string; avatarUrl?: string; avatarHue?: number; texte: string; photo?: File;
+  /** Poster sur le mur d'une guilde plutôt que sur le mur général. */
+  guildeId?: string;
 }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
   const texte = opts.texte.trim().slice(0, LONGUEUR_MAX_POST);
@@ -56,6 +58,7 @@ export async function publierSurLeMur(opts: {
     avatarHue: opts.avatarHue ?? 0,
     texte,
     ...(photoUrl ? { photoUrl, photoChemin } : {}),
+    ...(opts.guildeId ? { guildeId: opts.guildeId } : {}),
     creeLe: serverTimestamp(),
   });
   return id;
