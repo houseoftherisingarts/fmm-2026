@@ -155,6 +155,10 @@ export interface Membre {
    *  ne paraissent que dans l'admin. Comme les fonctions, la règle
    *  Firestore réserve le champ à l'équipe (Alex, 2026-08-24). */
   tags?: string[];
+  /** Fiche créée d'office depuis les exports du festival (Alex,
+   *  2026-08-28). Le drapeau tombe dès que la personne réclame son
+   *  compte en se connectant pour de vrai. */
+  importe?: boolean;
   /** Le badge bleu vérifié : décerné par l'équipe seulement (kiosques,
    *  administrateurs, artisans reconnus). Alex, 2026-08-28. */
   verifie?: boolean;

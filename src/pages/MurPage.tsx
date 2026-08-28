@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import { Shield , Users} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -37,10 +37,15 @@ const MurPage: React.FC = () => {
             puis deux colonnes égales, le fil à gauche, offres et demandes à droite. */}
         <div className="relative z-10 w-full px-4 md:px-8">
           <div>
-          <div className="mb-6">
+          <div className="mb-6 flex flex-wrap gap-3">
             <Link to={addLocale('/guildes', lang)}
                   className="inline-flex items-center gap-3 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-[0.2em] text-sm font-semibold hover:bg-brass-soft transition rounded-card">
               <Shield size={18} /> {fr ? 'Voir les guildes et les clans' : 'See the guilds and clans'}
+            </Link>
+            <Link to={addLocale('/ordre', lang)}
+                  className="inline-flex items-center gap-3 px-8 py-4 font-sans uppercase tracking-[0.2em] text-sm font-semibold transition rounded-card"
+                  style={{ border: '1px solid rgba(216,176,90,0.45)', color: '#D8B05A' }}>
+              <Users size={18} /> {fr ? 'Voir les membres de l’Ordre' : 'See the members of the Order'}
             </Link>
           </div>
           {user ? (

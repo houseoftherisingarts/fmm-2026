@@ -204,6 +204,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     closeSignIn: () => setOpen(false),
   }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen]);
 
+  // Une fiche importée se réclame à la première vraie connexion : le
+  // petit « i » du registre disparaît alors (Alex, 2026-08-28).
+  useEffect(() => {
+    if (!user) return;
+    void publierFiche(user.uid, { importe: false }).catch(() => { /* hors ligne */ });
+  }, [user]);
+
   // Les éditions cochées à l'inscription rejoignent la fiche, et deux
   // années valent le badge du vétéran (Alex, 2026-08-28).
   useEffect(() => {

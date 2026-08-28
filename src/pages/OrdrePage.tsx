@@ -29,7 +29,7 @@ const OrdrePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const fr = lang === 'FR';
-  const { user, openSignIn } = useAuth();
+  const { user, openSignIn, isAdmin } = useAuth();
 
   const [membres, setMembres] = useState<Membre[]>([]);
   const [liens, setLiens] = useState<Amitie[]>([]);
@@ -127,14 +127,40 @@ const OrdrePage: React.FC = () => {
                     : (fr ? 'Le registre est encore vide. Vous y serez dès votre première visite de l’espace membre.' : 'The roll is still empty. You will appear on your first visit to the member space.')}
                 </p>
               ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {visibles.map((m) => (
-                    <CarteMembre
-                      key={m.uid} m={m} fr={fr} lang={lang}
-                      moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens}
-                    />
-                  ))}
-                </div>
+                <>
+                  {/* Deux sections pour l'équipe : les membres qui se sont
+                      inscrits eux-mêmes, puis les fiches importées des
+                      exports du festival (Alex, 2026-08-28). */}
+                  {isAdmin ? (
+                    <>
+                      <p className="witcher-stat-label mb-3">
+                        {fr ? 'Inscrits eux-mêmes' : 'Signed up themselves'} · {visibles.filter((m) => !m.importe).length}
+                      </p>
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                        {visibles.filter((m) => !m.importe).map((m) => (
+                          <CarteMembre key={m.uid} m={m} fr={fr} lang={lang}
+                            moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens} />
+                        ))}
+                      </div>
+                      <p className="witcher-stat-label mb-3">
+                        {fr ? 'Fiches importées, jamais réclamées' : 'Imported cards, never claimed'} · {visibles.filter((m) => m.importe).length}
+                      </p>
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {visibles.filter((m) => m.importe).map((m) => (
+                          <CarteMembre key={m.uid} m={m} fr={fr} lang={lang}
+                            moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens} />
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {visibles.map((m) => (
+                        <CarteMembre key={m.uid} m={m} fr={fr} lang={lang}
+                          moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens} />
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -159,6 +185,7 @@ const OrdrePage: React.FC = () => {
 const CarteMembre: React.FC<{
   m: Membre; fr: boolean; lang: 'FR' | 'EN'; moi: string; monNom: string; liens: Amitie[];
 }> = ({ m, fr, lang, moi, monNom, liens }) => {
+  const { isAdmin } = useAuth();
   // Le défi (Alex, 2026-08-27) : depuis la carte, on choisit le jeu,
   // la partie s'ouvre dans l'attente de l'autre, et le lien mène au
   // plateau. Deux jeux se jouent à deux : Hnefatafl et les dés.
@@ -193,8 +220,17 @@ const CarteMembre: React.FC<{
   };
 
   return (
-    <article className="rounded-lg-card border border-brass/25 p-6 flex flex-col"
+    <article className="relative rounded-lg-card border border-brass/25 p-6 flex flex-col"
              style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+      {/* Le « i » de la fiche importée, visible de l'équipe seulement.
+          Il disparaît dès que la personne réclame son compte. */}
+      {isAdmin && m.importe && (
+        <span title={fr ? 'Fiche importée, jamais réclamée' : 'Imported card, never claimed'}
+              className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center font-display text-xs"
+              style={{ background: 'rgba(120,130,190,0.18)', border: '1px solid rgba(150,170,220,0.6)', color: '#9fb0e6' }}>
+          i
+        </span>
+      )}
       <div className="flex items-center gap-4 mb-4">
         <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-brass/30"
              style={{ background: `hsl(${m.avatarHue ?? 30} 40% 22%)` }}>
