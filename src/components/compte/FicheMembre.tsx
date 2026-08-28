@@ -1091,27 +1091,25 @@ const FR = {
   ecrire: 'Écrire à ce membre', ajouterAmi: 'Ajouter comme ami',
   demandeEnvoyee: 'Demande envoyée', accepterAmi: 'Accepter l’amitié', dejaAmi: 'Ami',
   onglets: 'Les sections de la fiche', retour: 'Retour',
+  // Alex, 2026-08-28 : Profil absorbe le fil et les photos, Badges
+  // absorbe la collection. Plus de possessif nulle part : les mots
+  // tiennent sur une ligne, en bureau comme en mobile.
   onglet: {
-    // Sept onglets avec « mes » partout débordaient à droite et
-    // coupaient le dernier (Alex, 2026-08-24). Seul le profil garde son
-    // possessif, le reste va droit au but.
-    profil: 'Mon profil', fil: 'Mon fil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
-    billets: 'Billets', photos: 'Photos', collection: 'Collection',
-    messages: 'Boîte de réception',
+    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
+    billets: 'Billets', messages: 'Boîte de réception',
   } as Record<Onglet, string>,
   ongletPublic: {
-    profil: 'Sa fiche', fil: 'Son fil', souk: 'Son souk', commerce: 'Son commerce', badges: 'Ses badges', jeux: 'Ses parties',
-    billets: 'Billets', photos: 'Ses photos', collection: 'Sa collection',
-    messages: 'Messages',
+    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
   } as Record<Onglet, string>,
   presentation: 'Sa présentation',
   evenements: 'Où le croiser ailleurs',
   sesPhotos: 'Ses photos',
+  filDeLaPersonne: 'Le fil',
   photosVedette: 'Photos en vedette',
   signalerBug: 'Signaler un bug',
   creerOuRejoindre: 'Créer ou rejoindre une guilde',
   autreGuilde: 'Joindre une autre guilde',
-  photosVedetteVide: 'Choisissez vos photos en vedette dans l’onglet Photos : elles paraissent ici, pour tous.',
+  photosVedetteVide: 'Choisissez vos photos en vedette plus bas dans l’onglet Profil : elles paraissent ici, pour tous.',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
   aptitudes: 'Ses aptitudes, à sa façon',
   sesBadges: 'Ses badges',
@@ -1132,6 +1130,11 @@ const FR = {
   vendorApplyQuick: 'Postuler comme marchand',
   vendorManageKiosk: 'Gérer mon kiosque',
   vendorNone: 'Aucune inscription kiosque pour le moment.',
+  musicianEyebrow: 'Application groupe de musique', musicianTitle: 'Inscrire mon groupe',
+  musicianApply: 'S’inscrire', musicianEdit: 'Voir / modifier mon inscription',
+  musicianNone: 'Aucune inscription de groupe pour le moment.',
+  membreVerifie: 'Membre vérifié', upgrade: 'Devenir VIP',
+  verifierMembre: 'Vérifier ce membre', retirerVerification: 'Retirer la vérification',
 };
 
 const EN: typeof FR = {
