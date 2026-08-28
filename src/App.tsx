@@ -302,6 +302,10 @@ const Footing: React.FC = () => {
 // manquait sur toute page qui n'appelle pas useCaravanPage().
 // Maintenant : partout, sauf l'admin (tableau de bord) et l'accueil-orbe
 // (qui porte déjà sa propre flamme).
+// Les réglages de fond d'une personne (animer le fond, skin VIP)
+// suivent le compte sur tout le site (Alex, 2026-08-28).
+const PrefsFondWatcher: React.FC = () => { usePrefsFond(); return null; };
+
 const GlobalFireBackdrop: React.FC = () => {
   const { pathname } = useLocation();
   const { lite } = usePerfTier();
