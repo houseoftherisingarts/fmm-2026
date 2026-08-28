@@ -87,6 +87,13 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
             fill={cape.couleur} opacity={0.92}
           />
           <line x1={100} y1={SHOULDER_Y + 6} x2={100} y2="244" stroke="rgba(0,0,0,0.3)" strokeWidth="1.5" />
+          {/* Cape étoilée (variante 4) : un semis de petites étoiles sur le tissu de nuit. */}
+          {cape.variante === 4 && [
+            [86, 100], [116, 92], [100, 130], [78, 160], [124, 170], [100, 210],
+          ].map(([sx, sy], i) => (
+            <path key={i} d={`M ${sx} ${sy - 2.4} L ${sx + 0.9} ${sy - 0.6} L ${sx + 2.4} ${sy} L ${sx + 0.9} ${sy + 0.6} L ${sx} ${sy + 2.4} L ${sx - 0.9} ${sy + 0.6} L ${sx - 2.4} ${sy} L ${sx - 0.9} ${sy - 0.6} Z`}
+                  fill="rgba(244,239,227,0.75)" />
+          ))}
         </Piece>
       )}
 
