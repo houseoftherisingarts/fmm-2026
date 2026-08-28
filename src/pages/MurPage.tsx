@@ -36,10 +36,10 @@ const MurPage: React.FC = () => {
             puis deux colonnes égales, le fil à gauche, offres et demandes à droite. */}
         <div className="relative z-10 w-full px-4 md:px-8">
           <div>
-          <div className="mb-5">
+          <div className="mb-6">
             <Link to={addLocale('/guildes', lang)}
-                  className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-wider text-ivory-soft hover:text-brass transition">
-              <Shield size={13} /> {fr ? 'Voir les guildes' : 'See the guilds'}
+                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+              <Shield size={15} /> {fr ? 'Voir les guildes' : 'See the guilds'}
             </Link>
           </div>
           {user ? (

@@ -18,7 +18,9 @@ import {
   query, orderBy, where, arrayUnion, arrayRemove, increment, serverTimestamp,
   type Timestamp,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
+import { ref as refStockage, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { versWebp } from './photosPubliques';
 
 export interface Guilde {
   id: string;
@@ -120,7 +122,7 @@ export async function quitterGuilde(id: string, uid: string): Promise<void> {
 }
 
 /** Réservé à l'équipe ou à un admin de la guilde (voir firestore.rules). */
-export async function modifierGuilde(id: string, patch: { nom?: string; description?: string }): Promise<void> {
+export async function modifierGuilde(id: string, patch: { nom?: string; description?: string; blason?: string }): Promise<void> {
   if (!db) return;
   const data: Record<string, unknown> = { maj: serverTimestamp() };
   if (patch.nom !== undefined) data.nom = patch.nom.trim().slice(0, LONGUEUR_NOM_MAX);
@@ -139,4 +141,17 @@ export async function listerMesGuildes(uid: string): Promise<Guilde[]> {
   if (!db) return [];
   const snap = await getDocs(query(collection(db, COL), where('membres', 'array-contains', uid)));
   return snap.docs.map(lire);
+}
+
+/** L'admin de la guilde (ou l'équipe) change le blason : la photo est
+ *  redimensionnée côté navigateur et rangée sous guildes/{id}/blason.webp
+ *  (Alex, 2026-08-28 : « changer la photo de guilde »). */
+export async function changerBlason(id: string, fichier: File): Promise<string> {
+  if (!db || !storage) throw new Error('Le stockage est indisponible pour le moment.');
+  const { blob } = await versWebp(fichier, 1200, 0.85);
+  const r = refStockage(storage, `guildes/${id}/blason.webp`);
+  await uploadBytes(r, blob, { contentType: 'image/webp' });
+  const url = `${await getDownloadURL(r)}&v=${Date.now()}`;
+  await modifierGuilde(id, { blason: url });
+  return url;
 }

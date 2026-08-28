@@ -141,9 +141,15 @@ const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> 
 
   return (
     <div className="glass-light rounded-lg-card p-5 md:p-6 flex items-center gap-4">
-      <span className="witcher-tile shrink-0" style={{ width: 48, height: 48 }}>
-        <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Shield size={18} /></span>
-      </span>
+      {guilde.blason ? (
+        <span className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-brass/40">
+          <img src={guilde.blason} alt="" className="w-full h-full object-cover" loading="lazy" />
+        </span>
+      ) : (
+        <span className="witcher-tile shrink-0" style={{ width: 48, height: 48 }}>
+          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Shield size={18} /></span>
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <h3 className="font-display title-medieval text-lg text-ivory truncate">{guilde.nom}</h3>
         {guilde.description && (

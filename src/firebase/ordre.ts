@@ -79,6 +79,17 @@ export interface Membre {
    *  ne paraissent que dans l'admin. Comme les fonctions, la règle
    *  Firestore réserve le champ à l'équipe (Alex, 2026-08-24). */
   tags?: string[];
+  /** Le badge bleu vérifié : décerné par l'équipe seulement (kiosques,
+   *  administrateurs, artisans reconnus). Alex, 2026-08-28. */
+  verifie?: boolean;
+  /** VIP = un don « sans publicité à vie » (users/{uid}.sansPub). Ce
+   *  champ n'est qu'une COPIE que la personne se pose elle-même en
+   *  visitant son espace : users/{uid} n'est lisible que par son
+   *  propriétaire, donc la fiche publique porte la copie pour que les
+   *  autres membres voient le VIP (Alex, 2026-08-28). */
+  vip?: boolean;
+  /** Les réglages personnels du profil : bannière, fond animé, skin. */
+  prefs?: PrefsMembre;
   // Les trois chiffres du bandeau que personne d'autre ne peut aller
   // lire à la source : les amitiés, les parties et les avis dorment
   // dans des collections fermées. La personne les recopie ici en

@@ -63,6 +63,17 @@ service firebase.storage {
       allow delete: if isOwner(uid) || isAdmin();
     }
 
+    // ── Le blason d'une guilde ─────────────────────────────────
+    // Écrit par un admin de la guilde (lu dans Firestore) ou l'équipe.
+    match /guildes/{guildeId}/blason.webp {
+      allow read:  if true;
+      allow write: if signedIn()
+        && (isAdmin()
+            || request.auth.uid in firestore.get(/databases/(default)/documents/guildes/$(guildeId)).data.admins)
+        && (request.resource == null
+            || (request.resource.contentType == 'image/webp' && request.resource.size < 6 * 1024 * 1024));
+    }
+
     // ── Hébergeurs partenaires (formulaire public /hebergement) ──
     // Un hébergeur téléverse ses photos AVANT le paiement, sans compte :
     // la création est publique, bornée aux images de moins de 8 Mo. Les

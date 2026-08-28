@@ -326,15 +326,17 @@ service cloud.firestore {
       allow create: if isAdmin()
                     || (isOwner(uid)
                         && !('roles' in request.resource.data)
-                        && !('tags'  in request.resource.data));
+                        && !('tags'  in request.resource.data)
+                        && !('verifie' in request.resource.data));
       // `tags` suit exactement le sort de `roles` : les étiquettes de
       // groupe (viking, marchand du dimanche, municipalité) servent à
       // former les listes d'envoi de l'équipe, et personne ne se les
       // attribue tout seul (Alex, 2026-08-24).
       allow update: if isAdmin()
                     || (isOwner(uid)
+                        // `verifie` (le badge bleu, Alex 2026-08-28) suit le même sort.
                         && !request.resource.data.diff(resource.data).affectedKeys()
-                              .hasAny(['roles', 'tags']));
+                              .hasAny(['roles', 'tags', 'verifie']));
       allow delete: if isAdmin();
     }
 

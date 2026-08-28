@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Users, Check, X, Pencil, Trash2, Save, LogOut, Loader2 } from 'lucide-react';
+import { Users, Check, X, Pencil, Trash2, Save, LogOut, Loader2, Camera } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -12,6 +12,7 @@ import { lireFiche, type Membre } from '../firebase/ordre';
 import {
   suivreGuilde, accepterMembre, refuserMembre, quitterGuilde,
   modifierGuilde, supprimerGuilde, LONGUEUR_NOM_MAX, type Guilde,
+  changerBlason,
 } from '../firebase/guildes';
 import MurGuilde from '../components/mur/MurGuilde';
 
@@ -128,6 +129,14 @@ const GuildePage: React.FC = () => {
   const estMembre = guilde.membres.includes(user.uid);
   const estAdminGuilde = guilde.admins.includes(user.uid);
   const peutGerer = isAdmin || estAdminGuilde;
+  // Le blason (Alex, 2026-08-28).
+  const [blasonEnvoi, setBlasonEnvoi] = useState(false);
+  const fichierBlason = useRef<HTMLInputElement>(null);
+  const choisirBlason = async (f: File | undefined) => {
+    if (!f) return;
+    setBlasonEnvoi(true);
+    try { await changerBlason(guilde.id, f); } finally { setBlasonEnvoi(false); }
+  };
 
   return (
     <main className="min-h-screen text-ivory">
@@ -141,6 +150,29 @@ const GuildePage: React.FC = () => {
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 space-y-6">
+
+          {/* ── Le blason, en tête ── */}
+          {(guilde.blason || peutGerer) && (
+            <div className="flex items-center gap-4">
+              <span className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden shrink-0 border border-brass/40 flex items-center justify-center"
+                    style={{ background: 'rgba(26,5,11,0.6)', boxShadow: '0 0 28px -8px rgba(216,176,90,0.5)' }}>
+                {guilde.blason
+                  ? <img src={guilde.blason} alt="" className="w-full h-full object-cover" />
+                  : <Users size={28} className="text-brass" />}
+              </span>
+              {peutGerer && (
+                <>
+                  <button type="button" onClick={() => fichierBlason.current?.click()} disabled={blasonEnvoi}
+                          className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50">
+                    {blasonEnvoi ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
+                    {guilde.blason ? (fr ? 'Changer la photo de la guilde' : 'Change the guild photo') : (fr ? 'Ajouter une photo de guilde' : 'Add a guild photo')}
+                  </button>
+                  <input ref={fichierBlason} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
+                         onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
+                </>
+              )}
+            </div>
+          )}
 
           {/* ── Gestion (admin de la guilde ou équipe) ── */}
           {peutGerer && (
