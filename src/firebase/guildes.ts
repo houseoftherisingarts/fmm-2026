@@ -125,7 +125,7 @@ export async function modifierGuilde(id: string, patch: { nom?: string; descript
   const data: Record<string, unknown> = { maj: serverTimestamp() };
   if (patch.nom !== undefined) data.nom = patch.nom.trim().slice(0, LONGUEUR_NOM_MAX);
   if (patch.description !== undefined) data.description = patch.description.trim().slice(0, LONGUEUR_DESCRIPTION_MAX);
-  await updateDoc(doc(db, COL, id), data);
+  await updateDoc(doc(db, COL, id), data as never);
 }
 
 /** Réservé à l'équipe ou à un admin de la guilde. */
