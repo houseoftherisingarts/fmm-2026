@@ -1866,3 +1866,96 @@ exports.murCommentaireCompte = onDocumentWritten(
     );
   },
 );
+
+// ─── L'aperçu d'un lien partagé sur le mur ──────────────────────────
+// Alex, 2026-08-28 : « quand les gens partagent des liens à l'extérieur,
+// il faut que ça génère un aperçu ». Le navigateur ne peut pas lire les
+// métadonnées d'un site tiers — le partage d'origine croisée le bloque
+// — alors cette fonction va les chercher à sa place : elle récupère la
+// page et en tire les balises Open Graph, avec un repli sur <title> et
+// la meta description quand le site n'en a pas.
+//
+// Bornée pour ne jamais devenir une porte vers un réseau privé : http(s)
+// seulement, jamais une adresse locale, quinze secondes de délai, la
+// réponse tronquée à 512 ko, et le même garde-fou de débit (TROP_D_APPELS,
+// défini plus haut) que banquetLien et sansPubLien.
+const ADRESSE_PRIVEE_APERCU = /^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.0\.0\.0|\[?::1\]?)/i;
+const TAILLE_MAX_APERCU = 512 * 1024;
+
+function extraireMeta(html, motif) {
+  const m = html.match(motif);
+  return m ? m[1].trim() : undefined;
+}
+
+/** og:xxx s'écrit property="og:xxx" ou name="og:xxx", contenu avant ou
+ *  après selon l'ordre des attributs — les deux passent. */
+function extraireOg(html, propriete) {
+  const motifs = [
+    new RegExp(`<meta[^>]+property=["']og:${propriete}["'][^>]+content=["']([^"']*)["']`, 'i'),
+    new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:${propriete}["']`, 'i'),
+  ];
+  for (const motif of motifs) {
+    const r = extraireMeta(html, motif);
+    if (r) return r;
+  }
+  return undefined;
+}
+
+exports.apercuLien = onRequest(
+  {
+    region: 'us-central1',
+    memory: '256MiB',
+    cors: [
+      /festivalmedieval\.web\.app$/,
+      /festivalmedieval\.firebaseapp\.com$/,
+      /festivalmedievaldemontpellier\.(org|com)$/,
+      /localhost:\d+$/,
+    ],
+  },
+  async (req, res) => {
+    try {
+      const ip = String(req.headers['x-forwarded-for'] || req.ip || 'inconnu').split(',')[0].trim();
+      if (TROP_D_APPELS(ip)) { res.status(429).json({ erreur: 'trop de demandes' }); return; }
+
+      const brute = String((req.body && req.body.url) || req.query.url || '');
+      let cible;
+      try { cible = new URL(brute); } catch { res.status(400).json({ erreur: 'adresse invalide' }); return; }
+      if (!['http:', 'https:'].includes(cible.protocol) || ADRESSE_PRIVEE_APERCU.test(cible.hostname)) {
+        res.status(400).json({ erreur: 'adresse refusée' });
+        return;
+      }
+
+      const controleur = new AbortController();
+      const delai = setTimeout(() => controleur.abort(), 15000);
+      let html = '';
+      try {
+        const reponse = await fetch(cible.toString(), {
+          signal: controleur.signal,
+          redirect: 'follow',
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FMMApercu/1.0; +https://festivalmedievaldemontpellier.org)' },
+        });
+        const brut = Buffer.from(await reponse.arrayBuffer());
+        html = brut.subarray(0, TAILLE_MAX_APERCU).toString('utf8');
+      } finally {
+        clearTimeout(delai);
+      }
+
+      let image = extraireOg(html, 'image');
+      if (image) {
+        try { image = new URL(image, cible).toString(); } catch { image = undefined; }
+      }
+
+      res.json({
+        url: cible.toString(),
+        titre: extraireOg(html, 'title') || extraireMeta(html, /<title[^>]*>([^<]*)<\/title>/i),
+        description: extraireOg(html, 'description')
+          || extraireMeta(html, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i),
+        image,
+        site: extraireOg(html, 'site_name') || cible.hostname.replace(/^www\./, ''),
+      });
+    } catch (err) {
+      logger.error('[apercuLien] échec', err);
+      res.status(500).json({ erreur: 'aperçu indisponible' });
+    }
+  },
+);
