@@ -7,6 +7,7 @@ import { addLocale } from '../../lib/locale';
 import { lireFiche } from '../../firebase/ordre';
 import { publierSurLeMur, retirerDuMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST, type PostMur, type GenrePost } from '../../firebase/mur';
 import { ANNONCES } from '../../content/annonces';
+import BadgeVerifie from '../compte/BadgeVerifie';
 
 // ─── Le mur social ───────────────────────────────────────────────────
 // Alex, 2026-08-27 : les billets de tous les membres de l'Ordre, en
