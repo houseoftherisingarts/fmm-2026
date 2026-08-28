@@ -725,6 +725,42 @@ body.fmm-caravan-page .fmm-fire-backdrop,
 /* La flamme reste : c'est l'ambiance du site, et elle n'entraîne ni
    parallaxe ni détournement de défilement. Décision d'Alex 2026-08-02. */
 
+/* ── Fond animé, éteint sur demande ──────────────────────────────
+   Réglage personnel (prefs.animationsFond, panneau Réglages de mon
+   profil) : posé en classe sur <html> par usePrefsFond.ts. Éteint les
+   couches décoratives de braises, flammes et particules, jamais les
+   transitions d'interface (Alex, 2026-08-28). */
+html.sans-animations-fond .brume,
+html.sans-animations-fond .fmm-fx-canvas,
+html.sans-animations-fond .fire-bed,
+html.sans-animations-fond .embers,
+html.sans-animations-fond .fmm-fire-backdrop {
+  display: none;
+}
+
+/* ── Skins VIP ────────────────────────────────────────────────────
+   Réservé aux comptes sans-publicité (Espace VIP). « Rouge » est la
+   palette d'origine et n'a pas besoin d'override. Même technique que
+   .fmm-caravan-page et [data-admin-skin="parchment"] plus haut : on
+   redéfinit les jetons de couleur, toutes les classes Tailwind qui
+   les lisent (bg-brass, text-brass…) suivent automatiquement. */
+html.skin-bleu {
+  --color-velvet:        #0B1A2E;
+  --color-velvet-deep:   #060D18;
+  --color-amber-glow:    #9FC4E8;
+  --color-brass:         #6E93B8;
+  --color-brass-soft:    #8FB3D6;
+  --color-copper:        #4A6B8A;
+}
+html.skin-dore {
+  --color-velvet:        #3A2412;
+  --color-velvet-deep:   #22140A;
+  --color-amber-glow:    #F2D08A;
+  --color-brass:         #D4AF6A;
+  --color-brass-soft:    #E8C989;
+  --color-copper:        #C6873A;
+}
+
 /* ── Admin : registre Thronebreaker ────────────────────────────────
    Refondu 2026-08-23 à partir des trois planches de personnages de
    Thronebreaker (Meve, Demavend, Brouver Hoog), mesurées au pixel
