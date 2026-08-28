@@ -48,9 +48,34 @@ const PhotosDe: React.FC<{
       ) : (
         <div className="grid grid-cols-3 gap-[3px] md:gap-1">
           {photos.map((p) => (
-            <figure key={p.id} className="group relative aspect-square overflow-hidden">
+            <figure
+              key={p.id} onClick={() => setOuvertId(p.id)}
+              className="group relative aspect-square overflow-hidden cursor-pointer"
+            >
               <img src={p.url} alt={p.legende || ''} loading="lazy" decoding="async"
                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+              {/* Les repères des personnes identifiées, seulement au
+                  survol (Alex, 2026-08-28). Un point tombé hors du
+                  recadrage carré de la vignette ne s'affiche pas. */}
+              {(p.personnes ?? []).length > 0 && (
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {p.personnes!.map((pers) => {
+                    const pos = mapDansCadre(pers.x, pers.y, p.largeur, p.hauteur, 1, 1);
+                    if (!pos) return null;
+                    return (
+                      <span key={pers.uid} className="absolute flex flex-col items-center gap-0.5"
+                            style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}>
+                        <span className="block w-2 h-2 rounded-[2px] border"
+                              style={{ borderColor: '#D8B05A', background: 'rgba(216,176,90,0.25)' }} />
+                        <span className="px-1 py-0.5 rounded-full font-sans uppercase tracking-[0.1em] text-[8px] whitespace-nowrap"
+                              style={{ background: 'rgba(10,2,7,0.85)', color: '#F4EFE3' }}>
+                          {pers.nom}
+                        </span>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
               {p.legende && (
                 <figcaption className="absolute bottom-0 left-0 right-0 px-3 py-2 font-sans text-[11px] leading-snug"
                             style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.85), transparent)', color: 'rgba(244,239,227,0.85)' }}>
@@ -60,6 +85,9 @@ const PhotosDe: React.FC<{
             </figure>
           ))}
         </div>
+      )}
+      {ouverte && (
+        <VisionneusePhoto photo={ouverte} lang={lang} onClose={() => setOuvertId(null)} moi={moi} proprietaire={false} />
       )}
     </section>
   );
