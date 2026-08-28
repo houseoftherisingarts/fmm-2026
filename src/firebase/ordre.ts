@@ -77,7 +77,57 @@ export interface PrefsMembre {
    *  festival, ou l'id d'un groupe dont l'album a été acheté. Vide =
    *  la piste par défaut du lecteur (Alex, 2026-08-28). */
   musique?: string;
+  /** Les alertes courriel que la personne accepte de recevoir : tout
+   *  est vrai par défaut (drapeau absent = vrai), elle décoche ce
+   *  qu'elle ne veut plus, à la Facebook. Voir AlertesPanel.tsx et
+   *  ALERTES_ESSENTIELLES ci-dessous (Alex, 2026-08-28). */
+  alertes?: AlertesMembre;
 }
+
+/** Chaque drapeau vaut vrai quand il est absent : seule une valeur
+ *  `false` explicite éteint une alerte. `essentielles` n'existe pas
+ *  ici, volontairement : rien ne l'éteint jamais (voir
+ *  ALERTES_ESSENTIELLES, la note en tête d'AlertesPanel.tsx, et le
+ *  rapport de livraison pour la ligne à ajouter dans
+ *  `messagerieDeMasse`, functions/index.js).
+ */
+export interface AlertesMembre {
+  /** Un membre m'écrit en message privé. */
+  messages?: boolean;
+  /** Quelqu'un répond sous mon billet du mur. */
+  commentaires?: boolean;
+  /** Quelqu'un m'écrit avec l'arobase. */
+  mentions?: boolean;
+  /** Demande et acceptation d'amitié. */
+  amities?: boolean;
+  /** Défi reçu, à mon tour de jouer. */
+  defis?: boolean;
+  /** Un badge est gagné. */
+  badges?: boolean;
+  /** Activité de mes guildes. */
+  guildes?: boolean;
+  /** Les billets du mur social. */
+  mur?: boolean;
+  /** Les publications de l'équipe (babillard). */
+  annonces?: boolean;
+  /** Une réponse à mon objet du Souk. */
+  souk?: boolean;
+  /** Programmation, rappels avant l'édition. */
+  festival?: boolean;
+  /** La lettre du festival. */
+  infolettre?: boolean;
+}
+
+/** Les trois familles d'AlertesPanel.tsx, dans l'ordre d'affichage. */
+export const FAMILLES_ALERTES: { titreFR: string; titreEN: string; cles: (keyof AlertesMembre)[] }[] = [
+  { titreFR: 'Ce qui me concerne', titreEN: 'What concerns me', cles: ['messages', 'commentaires', 'mentions', 'amities', 'defis'] },
+  { titreFR: 'La vie du site', titreEN: 'Life on the site', cles: ['badges', 'guildes', 'mur', 'annonces', 'souk'] },
+  { titreFR: 'Le festival', titreEN: 'The festival', cles: ['festival', 'infolettre'] },
+];
+
+/** Vrai par défaut : seul `false` explicite éteint une alerte. */
+export const alerteActive = (alertes: AlertesMembre | undefined, cle: keyof AlertesMembre): boolean =>
+  alertes?.[cle] !== false;
 
 export interface Membre {
   uid: string;
