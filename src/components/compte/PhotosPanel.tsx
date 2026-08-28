@@ -5,6 +5,7 @@ import {
   type PhotoPublique, type StatutPhoto, type VisibilitePhoto,
 } from '../../firebase/photosPubliques';
 import { useBadges } from '../../contexts/BadgesContext';
+import VisionneusePhoto from './VisionneusePhoto';
 
 // ─── Panneau « Vos photos » de l'espace compte ──────────────────────
 // Chaque membre peut téléverser ses photos du festival : glisser-déposer
