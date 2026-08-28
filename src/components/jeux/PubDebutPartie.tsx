@@ -19,12 +19,15 @@ const DELAI_MS = 3000;
 
 interface Props {
   lang: 'FR' | 'EN';
+  /** Le jeu qui affiche cette pub, pour la répartition par jeu dans
+   *  l'admin (siteStats/AAAA-MM-JJ.pubJeuxParJeu). */
+  jeu: 'des' | 'hnefatafl' | 'tarot';
   /** Ce qui démarre réellement la partie, une fois la pub passée (ou
    *  tout de suite, si aucun bloc n'est encore configuré). */
   onContinuer: () => void;
 }
 
-const PubDebutPartie: React.FC<Props> = ({ lang, onContinuer }) => {
+const PubDebutPartie: React.FC<Props> = ({ lang, jeu, onContinuer }) => {
   const fr = lang === 'FR';
   const slot = import.meta.env.VITE_ADSENSE_SLOT_JEUX;
   const [pret, setPret] = useState(false);
