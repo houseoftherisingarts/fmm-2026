@@ -275,6 +275,17 @@ export async function lireFiche(uid: string): Promise<Membre | null> {
   return snap.exists() ? (snap.data() as Membre) : null;
 }
 
+/** La fiche en direct, pour les réglages qui doivent suivre le compte
+ *  sur toutes les pages (fond animé, skin). */
+export function suivreFiche(uid: string, cb: (m: Membre | null) => void): () => void {
+  if (!db) { cb(null); return () => {}; }
+  return onSnapshot(
+    doc(db, MEMBRES, uid),
+    (snap) => cb(snap.exists() ? (snap.data() as Membre) : null),
+    () => cb(null),
+  );
+}
+
 /** Toute la salle, par ordre alphabétique. La recherche se fait ensuite
  *  dans le navigateur : le registre du festival tient largement. */
 export async function listerMembres(max = 300): Promise<Membre[]> {
