@@ -84,19 +84,21 @@ export type ModeFiche = 'prive' | 'public';
 // Alex, 2026-08-28 : « Profil » absorbe le fil et les photos, « Badges »
 // absorbe la collection. Les anciens paramètres d'URL restent valides,
 // voir REDIRECTIONS_ONGLET plus bas.
-const ONGLETS_PRIVE  = ['profil', 'souk', 'commerce', 'badges', 'jeux', 'billets', 'messages', 'boutique'] as const;
+const ONGLETS_PRIVE  = ['profil', 'souk', 'commerce', 'badges', 'jeux', 'messages', 'boutique'] as const;
 const ONGLETS_PUBLIC = ['profil', 'souk', 'commerce', 'badges', 'jeux'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
-  profil: UserIcon, souk: Tag, commerce: Store, badges: Award, jeux: Swords, billets: Ticket,
+  profil: UserIcon, souk: Tag, commerce: Store, badges: Award, jeux: Swords,
   messages: MessageCircle, boutique: ShoppingBag,
 };
 
 // Les anciens onglets fusionnés (et l'ancien nom de « collection »)
 // mènent vers le bon onglet, pour que les liens déjà envoyés restent bons.
+// Billets a rejoint Badges le 2026-08-28 : le coffre à billets et le
+// soutien y vivent maintenant, sous les badges et le coffre.
 const REDIRECTIONS_ONGLET: Record<string, Onglet> = {
-  caravane: 'badges', collection: 'badges', fil: 'profil', photos: 'profil',
+  caravane: 'badges', collection: 'badges', fil: 'profil', photos: 'profil', billets: 'badges',
 };
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
