@@ -97,6 +97,7 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
         description: form.description.trim(),
         prix,
         prixMontpellois,
+        genre: form.genre,
         categorie: form.categorie,
         fichiers: photos,
       });
