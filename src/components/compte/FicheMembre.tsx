@@ -263,9 +263,22 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
   // ── Les réglages personnels (prefs) : un seul point d'écriture,
   //    utilisé par Réglages, la bannière et l'Espace VIP.
+  //
+  // Alex, 2026-08-28 : c'était la cause exacte des interrupteurs
+  // brisés. `publierFiche(uid, { prefs: patch })` passe par un
+  // setDoc+merge, qui REMPLACE tout le sous-objet `prefs` par le
+  // seul `patch` reçu au lieu de le compléter (le même piège que le
+  // commentaire de `definirPref` documente déjà). Chaque clic sur un
+  // interrupteur effaçait donc en silence tous les autres réglages
+  // (skin, position, musique…) dans Firestore, et `usePrefsFond`
+  // (qui écoute le document, pas cet état local) les voyait revenir
+  // à leur valeur par défaut au premier réglage suivant. On écrit
+  // maintenant chaque clé en chemin pointé, comme `definirPref`.
   const majPrefs = (patch: Partial<PrefsMembre>) => {
     setFiche((f) => (f ? { ...f, prefs: { ...f.prefs, ...patch } } : f));
-    void publierFiche(uid, { prefs: patch }).catch(() => { /* hors ligne */ });
+    for (const cle of Object.keys(patch) as (keyof PrefsMembre)[]) {
+      void definirPref(uid, cle, patch[cle]).catch(() => { /* hors ligne */ });
+    }
   };
   const allerVersSansPub = () => {
     ouvrir('billets');
