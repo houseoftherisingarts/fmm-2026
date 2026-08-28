@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Coins } from 'lucide-react';
 import { addLocale } from '../../lib/locale';
+import { useAuth } from '../../contexts/AuthContext';
 import { suivreObjetsDe, type ObjetSouk } from '../../firebase/souk';
+import { acheterAuSouk } from '../../firebase/montpellois';
+import PieceMontpellois from '../boutique/PieceMontpellois';
 import MesObjets from './MesObjets';
 
 // ─── SoukDe : l'onglet « Souk » d'une fiche membre ───────────────────
