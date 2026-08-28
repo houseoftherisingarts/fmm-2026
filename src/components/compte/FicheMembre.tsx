@@ -705,8 +705,20 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
             {onglet === 'profil' && (prive ? (
-              <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
-                <div className="lg:col-span-5 space-y-6 md:space-y-8">
+              // Alex, 2026-08-28 : disposition revue à plat, dans l'ordre
+              // d'importance qu'Alex a dicté (infos+bourse, fil, photos,
+              // candidatures, fiche de l'Ordre, réglages). Deux colonnes
+              // inégales (5/7) empilaient tout dans la colonne étroite
+              // pendant que la large restait courte : ça creusait le grand
+              // vide à droite qu'il signale, et enterrait MaFiche (longue)
+              // en tête de colonne. Ici, chaque section est pleine largeur
+              // ou une grille de cartes de même hauteur (jamais deux
+              // colonnes de contenus de longueurs très différentes), donc
+              // rien ne peut plus laisser un trou. Sur mobile, tout
+              // s'empile déjà dans cet ordre : aucune règle séparée à
+              // écrire.
+              <div className="space-y-8 md:space-y-10">
+                <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
                   <form onSubmit={enregistrerProfil} className="glass-light rounded-lg-card p-7 md:p-8">
                     <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs mb-2">
                       <UserIcon size={12} className="inline mr-1.5 -mt-0.5" />{t.profileEyebrow}
@@ -732,20 +744,23 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       <p className="text-xs font-editorial text-brass mt-3 text-center">{t.saved}</p>
                     )}
                   </form>
-                  {/* La participation au concours du commanditaire, quand il y en a une. */}
-                  {compte?.email && <ConcoursPanel email={compte.email} />}
-                  <MaFiche lang={lang} />
-                  {/* Les réglages personnels : bannière, parallaxe, fond animé (Alex, 2026-08-28). */}
-                  <ReglagesProfil prefs={fiche?.prefs} onChange={majPrefs} lang={lang} />
-                  <EspaceVip vip={vip} prefs={fiche?.prefs} onChange={majPrefs} onDevenirVip={allerVersSansPub} lang={lang} />
-                  {/* Le dé de la vie reste dans l'espace de la personne :
-                      il n'a rien à faire sur la fiche d'un autre. */}
-                  <Suspense fallback={null}>
-                    <DeDeLaVie lang={lang} />
-                  </Suspense>
+                  {compte && <BoursePanel uid={compte.uid} lang={lang} prive />}
                 </div>
 
-                <div className="lg:col-span-7 space-y-6 md:space-y-8">
+                <div>
+                  <p className="witcher-stat-label mb-4">{t.filDeLaPersonne}</p>
+                  <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
+                </div>
+
+                {compte && (
+                  <div className="space-y-6 md:space-y-8">
+                    <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+                    {/* Les photos où quelqu'un d'autre m'a identifié (Alex, 2026-08-28). */}
+                    <PhotosAvecMoi uid={compte.uid} nom={nom} lang={lang} />
+                  </div>
+                )}
+
+                <div className="grid md:grid-cols-3 gap-6 md:gap-8 items-start">
                   <ApplicationCard
                     icon={HandHeart}
                     eyebrow={t.benevoleEyebrow}
@@ -787,23 +802,42 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     statusTone={(s) => STATUS_LABEL[s].tone}
                     none={t.musicianNone}
                   />
+                </div>
 
-                  {/* ── Les photos en vedette, choisies dans l'onglet Photos ── */}
-                  <PhotosDe uid={uid} lang={lang} titre={t.photosVedette} vedette
-                            vide={t.photosVedetteVide} />
+                {/* ── Le fil entre le marchand et le festival ── */}
+                {vApp && compte && (
+                  <div className="glass-light rounded-lg-card p-6 md:p-7">
+                    <MessageThread
+                      vendorUid={compte.uid}
+                      currentUid={compte.uid}
+                      currentName={nom}
+                      currentRole="vendor"
+                      lang={lang}
+                    />
+                  </div>
+                )}
 
-                  {/* ── Le fil entre le marchand et le festival ── */}
-                  {vApp && compte && (
-                    <div className="glass-light rounded-lg-card p-6 md:p-7">
-                      <MessageThread
-                        vendorUid={compte.uid}
-                        currentUid={compte.uid}
-                        currentName={nom}
-                        currentRole="vendor"
-                        lang={lang}
-                      />
-                    </div>
-                  )}
+                {/* La fiche de l'Ordre et son questionnaire : plus basse,
+                    elle n'occupe plus toute la colonne de gauche. */}
+                <MaFiche lang={lang} />
+
+                {/* Réglages, musique, parrainage et le reste : des
+                    cartes de même gabarit, deux par ligne sur bureau. */}
+                <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+                  <div className="space-y-6 md:space-y-8">
+                    <ReglagesProfil prefs={fiche?.prefs} onChange={majPrefs} lang={lang} />
+                    <EspaceVip vip={vip} prefs={fiche?.prefs} onChange={majPrefs} onDevenirVip={allerVersSansPub} lang={lang} />
+                    {compte?.email && <ConcoursPanel email={compte.email} />}
+                  </div>
+                  <div className="space-y-6 md:space-y-8">
+                    {compte && <MusiquePanel uid={compte.uid} lang={lang} />}
+                    {compte && <ParrainagePanel uid={compte.uid} lang={lang} />}
+                    {/* Le dé de la vie reste dans l'espace de la personne :
+                        il n'a rien à faire sur la fiche d'un autre. */}
+                    <Suspense fallback={null}>
+                      <DeDeLaVie lang={lang} />
+                    </Suspense>
+                  </div>
                 </div>
               </div>
             ) : (
