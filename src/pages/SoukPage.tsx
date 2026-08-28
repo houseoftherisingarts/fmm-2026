@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquare, Store } from 'lucide-react';
+import { MessageSquare, Store, Coins } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -8,6 +8,8 @@ import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import MesObjets from '../components/souk/MesObjets';
+import PieceMontpellois from '../components/boutique/PieceMontpellois';
+import { acheterAuSouk } from '../firebase/montpellois';
 import {
   listerSouk, listerCommercesRuelle, type ObjetSouk, type CategorieSouk, type Commerce,
 } from '../firebase/souk';
