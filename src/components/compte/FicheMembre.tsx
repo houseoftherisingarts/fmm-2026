@@ -10,7 +10,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { addLocale } from '../../lib/locale';
-import { avancement, suivreBadges, suivreExposes } from '../../firebase/badges';
+import { avancement, gagner, suivreBadges, suivreExposes } from '../../firebase/badges';
 import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS } from '../../content/evenementsMedievaux';
 import { listerMesGuildes, type Guilde } from '../../firebase/guildes';
 import {
