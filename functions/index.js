@@ -2298,6 +2298,24 @@ exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
   return { solde: resultat.solde, filId };
 });
 
+// Un objet du Souk qui passe à 'vendu' : le badge du vendeur, qu'il
+// soit passé par acheterAuSouk (paiement en Montpellois) ou par un
+// arrangement en dehors du site que le vendeur marque lui-même
+// (majObjetSouk, src/firebase/souk.ts — territoire d'un autre agent,
+// mais toute écriture retombe ici quel que soit le chemin emprunté).
+// Prix et prixMontpellois absents ou à zéro = objet donné, pas vendu
+// (même règle qu'estGratuit côté client). Alex, 2026-08-28.
+exports.soukVenduBadge = onDocumentWritten(
+  { document: 'souk/{id}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const avant = (event.data && event.data.before && event.data.before.exists) ? event.data.before.data() : null;
+    const apres = (event.data && event.data.after && event.data.after.exists) ? event.data.after.data() : null;
+    if (!apres || apres.statut !== 'vendu' || (avant && avant.statut === 'vendu')) return;
+    const gratuit = !apres.prix && !apres.prixMontpellois;
+    await poserBadge(apres.uid, gratuit ? 'souk-donne' : 'souk-vendu');
+  },
+);
+
 // Gain de Montpellois par badge + objet lié à un badge, dans la même
 // fonction (Alex l'a demandé) : réagit à TOUT écrit sur badges/{uid},
 // y compris ceux posés par poserBadge() elle-même (fortune, premiere-
