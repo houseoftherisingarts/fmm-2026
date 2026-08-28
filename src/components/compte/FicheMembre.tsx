@@ -199,27 +199,109 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   const [enregistrement, setEnregistrement] = useState(false);
   const [bApp, setBApp] = useState<BenevoleApp | null>(null);
   const [vApp, setVApp] = useState<VendorApp | null>(null);
+  const [mApp, setMApp] = useState<MusicianApp | null>(null);
   const [loadingApps, setLoadingApps] = useState(false);
 
   useEffect(() => {
-    if (!prive || !compte) { setBApp(null); setVApp(null); return; }
+    if (!prive || !compte) { setBApp(null); setVApp(null); setMApp(null); return; }
     let vivant = true;
     setLoadingApps(true);
     (async () => {
-      const [p, b, v] = await Promise.all([
+      const [p, b, v, mus] = await Promise.all([
         getUserProfile(compte.uid),
         getBenevoleApp(compte.uid),
         getVendorApp(compte.uid),  // l'année en cours par défaut
+        getMusicianApp(compte.uid),
       ]);
       if (!vivant) return;
       setNomForm(p?.displayName || compte.displayName || '');
       setPhone(p?.phone || '');
       setAvatarUrl(p?.avatarUrl || undefined);
-      setBApp(b); setVApp(v);
+      setBApp(b); setVApp(v); setMApp(mus);
       setLoadingApps(false);
     })();
     return () => { vivant = false; };
   }, [prive, compte]);
+
+  // ── VIP : un don sans-publicité à vie (users/{uid}.sansPub) ──
+  const [sansPub, setSansPub] = useState(false);
+  useEffect(() => {
+    if (!prive || !compte) { setSansPub(false); return; }
+    return suivreSansPub(compte.uid, setSansPub);
+  }, [prive, compte]);
+  // `users` n'est lisible que par son propriétaire : la personne recopie
+  // elle-même le VIP sur sa fiche publique en le constatant ici.
+  useEffect(() => {
+    if (!prive || !uid || chargement || !fiche) return;
+    if (sansPub && !fiche.vip) {
+      setFiche((f) => (f ? { ...f, vip: true } : f));
+      void publierFiche(uid, { vip: true }).catch(() => { /* hors ligne */ });
+    }
+  }, [prive, uid, chargement, sansPub, fiche]);
+  const vip = prive ? sansPub : !!fiche?.vip;
+
+  // ── Les réglages personnels (prefs) : un seul point d'écriture,
+  //    utilisé par Réglages, la bannière et l'Espace VIP.
+  const majPrefs = (patch: Partial<PrefsMembre>) => {
+    setFiche((f) => (f ? { ...f, prefs: { ...f.prefs, ...patch } } : f));
+    void publierFiche(uid, { prefs: patch }).catch(() => { /* hors ligne */ });
+  };
+  const allerVersSansPub = () => {
+    ouvrir('billets');
+    setTimeout(() => document.getElementById('don-sans-pub')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  };
+
+  // ── Le badge bleu vérifié : décerné par l'équipe depuis la fiche
+  //    publique du membre (Alex, 2026-08-28). ──
+  const [verifBusy, setVerifBusy] = useState(false);
+  const basculerVerifieAdmin = async () => {
+    if (!fiche) return;
+    setVerifBusy(true);
+    try {
+      const v = !fiche.verifie;
+      await definirVerifie(uid, v);
+      setFiche((f) => (f ? { ...f, verifie: v } : f));
+    } finally { setVerifBusy(false); }
+  };
+
+  // ── Déplacer la bannière par glisser-déposer : trois zones de dépôt
+  //    qui débordent du cadre de la bannière, tenues par la fiche
+  //    (Alex, 2026-08-28). ──
+  const zoneHautRef = useRef<HTMLDivElement>(null);
+  const zoneBasRef = useRef<HTMLDivElement>(null);
+  const zoneDroiteRef = useRef<HTMLDivElement>(null);
+  const [enDeplacement, setEnDeplacement] = useState(false);
+  const [zoneSurvolee, setZoneSurvolee] = useState<PositionBanniere | null>(null);
+  const zoneSurvoleeRef = useRef<PositionBanniere | null>(null);
+
+  useEffect(() => {
+    if (!enDeplacement) return;
+    const zones: [PositionBanniere, React.RefObject<HTMLDivElement>][] = [
+      ['haut', zoneHautRef], ['bas', zoneBasRef], ['droite', zoneDroiteRef],
+    ];
+    const surPointeur = (e: PointerEvent) => {
+      let trouvee: PositionBanniere | null = null;
+      for (const [pos, ref] of zones) {
+        const r = ref.current?.getBoundingClientRect();
+        if (r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { trouvee = pos; break; }
+      }
+      zoneSurvoleeRef.current = trouvee;
+      setZoneSurvolee(trouvee);
+    };
+    const surRelache = () => {
+      setEnDeplacement(false);
+      if (zoneSurvoleeRef.current) majPrefs({ positionBanniere: zoneSurvoleeRef.current });
+      zoneSurvoleeRef.current = null;
+      setZoneSurvolee(null);
+    };
+    window.addEventListener('pointermove', surPointeur);
+    window.addEventListener('pointerup', surRelache);
+    return () => {
+      window.removeEventListener('pointermove', surPointeur);
+      window.removeEventListener('pointerup', surRelache);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enDeplacement]);
 
   // ── Le nom et les chiffres remontent dans la fiche publique ──
   // Sans ça, la page publique retomberait sur une vieille copie du nom,
