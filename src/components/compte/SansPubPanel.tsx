@@ -26,7 +26,9 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-5 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
-        <span className="witcher-stat-label inline-flex items-center gap-2"><ShieldOff size={13} /> {fr ? 'Sans publicité' : 'Ad-free'}</span>
+        <span className="witcher-stat-label inline-flex items-center gap-2">
+          <ShieldOff size={13} /> {fr ? 'Retirer les publicités, paiement unique' : 'Remove the ads, one-time payment'}
+        </span>
         {sansPub && (
           <span className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.18em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
             <Check size={12} /> {fr ? 'Compte sans publicité, à vie' : 'Ad-free account, for life'}
