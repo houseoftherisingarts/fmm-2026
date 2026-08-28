@@ -12,22 +12,6 @@ import BilletCarte from './BilletCarte';
 // festival. MurSocial ne prend pas de prop `guildeId`, d'où ce
 // composant séparé plutôt qu'une modification du fichier partagé.
 
-const quandTexte = (ms: number, fr: boolean): string => {
-  const d = new Date(ms);
-  const ecart = Date.now() - ms;
-  if (ecart < 60_000) return fr ? 'à l’instant' : 'just now';
-  if (ecart < 3_600_000) return `${Math.floor(ecart / 60_000)} min`;
-  if (ecart < 86_400_000) return `${Math.floor(ecart / 3_600_000)} h`;
-  return d.toLocaleDateString(fr ? 'fr-CA' : 'en-CA', { day: 'numeric', month: 'long', year: 'numeric' });
-};
-
-const Medaillon: React.FC<{ nom: string; url?: string; hue?: number }> = ({ nom, url, hue }) => (
-  <span className="w-11 h-11 rounded-full overflow-hidden shrink-0 border border-brass/30 flex items-center justify-center font-display text-lg text-ivory/85"
-        style={{ background: `hsl(${hue ?? 30} 40% 22%)` }}>
-    {url ? <img src={url} alt="" className="w-full h-full object-cover" /> : (nom || '?').slice(0, 1).toUpperCase()}
-  </span>
-);
-
 const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boolean }> = ({
   lang, guildeId, peutEcrire,
 }) => {
@@ -35,6 +19,11 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
   const { user, isAdmin } = useAuth();
   const [posts, setPosts] = useState<PostMur[]>([]);
   useEffect(() => suivreLeMurDeGuilde(guildeId, setPosts), [guildeId]);
+
+  // L'admin de la guilde peut épingler, comme l'équipe (Alex, 2026-08-28).
+  const [adminsGuilde, setAdminsGuilde] = useState<string[]>([]);
+  useEffect(() => { void lireGuilde(guildeId).then((g) => setAdminsGuilde(g?.admins || [])); }, [guildeId]);
+  const peutEpingler = isAdmin || (!!user && adminsGuilde.includes(user.uid));
 
   // Le composeur
   const [texte, setTexte] = useState('');
