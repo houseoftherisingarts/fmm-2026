@@ -981,8 +981,25 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 {prive
                   ? <MesBadges lang={lang} />
                   : <MesBadges lang={lang} obtenus={badgesVus} titre={t.sesBadges} />}
+                {/* Le coffre : les skins, ambiances et albums achetés,
+                    équipés d'un clic (Alex, 2026-08-28). */}
+                {prive && compte && <div id="coffre"><Coffre uid={compte.uid} lang={lang} /></div>}
                 {prive ? (
-                  <AnnoncesPanel lang={lang} />
+                  <>
+                    {/* Billets a rejoint Badges : le coffre à billets et
+                        le soutien descendent sous les badges et le
+                        coffre (Alex, 2026-08-28). */}
+                    {compte && (
+                      <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
+                        <div className="lg:col-span-7"><CoffreBillets uid={compte.uid} lang={lang} /></div>
+                        <div className="lg:col-span-5">
+                          <SoutienPanel lang={lang} userEmail={compte.email || ''} userName={nom} />
+                          <PorteAdmin lang={lang} />
+                        </div>
+                      </div>
+                    )}
+                    <AnnoncesPanel lang={lang} />
+                  </>
                 ) : (
                   <section className="glass-light rounded-lg-card p-7 md:p-8">
                     <div className="flex items-center justify-between gap-4 mb-6 pb-2"
