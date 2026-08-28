@@ -415,6 +415,10 @@ const App: React.FC = () => (
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
                 <Route path="/mur"     element={<MurPage />} />
                 <Route path="/en/wall" element={<MurPage />} />
+                <Route path="/guildes"           element={<GuildesPage />} />
+                <Route path="/en/guilds"         element={<GuildesPage />} />
+                <Route path="/guildes/:id"       element={<GuildePage />} />
+                <Route path="/en/guilds/:id"     element={<GuildePage />} />
                 <Route path="/messages"                         element={<MessagesPage />} />
                 <Route path="/messages/:otherUid"               element={<MessagesPage />} />
                 <Route path="/en/messages"                      element={<MessagesPage />} />
