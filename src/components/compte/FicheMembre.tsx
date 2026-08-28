@@ -896,8 +896,13 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
                 </div>
                 {prive && compte
-                  ? <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
-                {prive && compte && <PhotosAvecMoi uid={compte.uid} nom={nom} lang={lang} />}
+                  ? (
+                    <>
+                      <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+                      {/* Les photos où quelqu'un d'autre m'a identifié (Alex, 2026-08-28). */}
+                      <PhotosAvecMoi uid={compte.uid} nom={nom} lang={lang} />
+                    </>
+                  )
                   : <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />}
               </div>
             )}
