@@ -556,6 +556,58 @@ const TarotPage: React.FC = () => {
             </motion.aside>
           )}
         </AnimatePresence>
+
+        {/* ── Partager le tirage : la capture, un mot, un envoi ──────── */}
+        <AnimatePresence>
+          {(capture || erreurPartage) && (
+            <motion.aside
+              key="partage"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute left-1/2 -translate-x-1/2 bottom-24 z-40 w-[min(26rem,calc(100%-1.5rem))] max-h-[70%] overflow-y-auto rounded-[15px] border border-white/15 bg-black/70 backdrop-blur-xl p-5"
+            >
+              <button
+                type="button"
+                onClick={fermerPartage}
+                aria-label={t.fermer}
+                className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
+              >
+                <X size={15} />
+              </button>
+              <p className="font-display title-medieval text-lg text-ivory mb-3">
+                {fr ? 'Partager mon tirage' : 'Share my spread'}
+              </p>
+              {erreurPartage && (
+                <p className="mb-3 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurPartage}</p>
+              )}
+              {capture && (
+                <>
+                  <img src={capture.url} alt="" className="w-full rounded-card mb-3" style={{ border: '1px solid rgba(244,239,227,0.14)' }} />
+                  <textarea
+                    value={motPartage}
+                    onChange={(e) => setMotPartage(e.target.value)}
+                    rows={2}
+                    className="w-full px-3 py-2.5 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
+                    style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+                  />
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => { void confirmerPartage(); }}
+                      disabled={envoiPartage}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50"
+                    >
+                      {envoiPartage ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+                      {fr ? 'Publier sur mon fil' : 'Post to my feed'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.aside>
+          )}
+        </AnimatePresence>
       </CadreJeu>
     </>
   );
