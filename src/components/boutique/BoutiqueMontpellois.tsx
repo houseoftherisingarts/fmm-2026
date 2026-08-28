@@ -34,6 +34,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const [sansPub, setSansPub] = useState(false);
   const [skinActuel, setSkinActuel] = useState<SkinMembre | undefined>();
   const [groupes, setGroupes] = useState<GroupeMusical[]>([]);
+  const [groupesCharges, setGroupesCharges] = useState(false);
   const [enCours, setEnCours] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [dejaReclameLocal, setDejaReclameLocal] = useState(false);
