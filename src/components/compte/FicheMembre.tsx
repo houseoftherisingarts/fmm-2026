@@ -72,13 +72,22 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 export type ModeFiche = 'prive' | 'public';
 
-const ONGLETS_PRIVE  = ['profil', 'fil', 'photos', 'souk', 'commerce', 'badges', 'jeux', 'billets', 'collection', 'messages'] as const;
-const ONGLETS_PUBLIC = ['profil', 'fil', 'photos', 'souk', 'commerce', 'badges', 'jeux', 'collection'] as const;
+// Alex, 2026-08-28 : « Profil » absorbe le fil et les photos, « Badges »
+// absorbe la collection. Les anciens paramètres d'URL restent valides,
+// voir REDIRECTIONS_ONGLET plus bas.
+const ONGLETS_PRIVE  = ['profil', 'souk', 'commerce', 'badges', 'jeux', 'billets', 'messages'] as const;
+const ONGLETS_PUBLIC = ['profil', 'souk', 'commerce', 'badges', 'jeux'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
-  profil: UserIcon, fil: Newspaper, souk: Tag, commerce: Store, badges: Award, jeux: Swords, billets: Ticket,
-  photos: Camera, collection: Megaphone, messages: MessageCircle,
+  profil: UserIcon, souk: Tag, commerce: Store, badges: Award, jeux: Swords, billets: Ticket,
+  messages: MessageCircle,
+};
+
+// Les anciens onglets fusionnés (et l'ancien nom de « collection »)
+// mènent vers le bon onglet, pour que les liens déjà envoyés restent bons.
+const REDIRECTIONS_ONGLET: Record<string, Onglet> = {
+  caravane: 'badges', collection: 'badges', fil: 'profil', photos: 'profil',
 };
 
 const STATUS_LABEL: Record<AppStatus | VendorStatus, { fr: string; en: string; tone: string }> = {
