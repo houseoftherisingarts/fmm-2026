@@ -141,6 +141,21 @@ const GrilleObjets: React.FC<{ lang: 'FR' | 'EN'; uid: string }> = ({ lang, uid 
 
 const CarteObjet: React.FC<{ o: ObjetSouk; lang: 'FR' | 'EN' }> = ({ o, lang }) => {
   const fr = lang === 'FR';
+  const { user } = useAuth();
+  const [enCours, setEnCours] = useState(false);
+  const [erreur, setErreur] = useState<string | null>(null);
+
+  async function acheter() {
+    setErreur(null); setEnCours(true);
+    try {
+      await acheterAuSouk(o.id);
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : String(e));
+    } finally {
+      setEnCours(false);
+    }
+  }
+
   return (
     <div className="glass-light rounded-lg-card overflow-hidden flex flex-col" style={{ border: '1px solid rgba(216, 176, 90, 0.18)' }}>
       <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
@@ -159,18 +174,32 @@ const CarteObjet: React.FC<{ o: ObjetSouk; lang: 'FR' | 'EN' }> = ({ o, lang }) 
       </div>
       <div className="p-4 flex flex-col gap-2 flex-1">
         <p className="font-display title-medieval text-base text-ivory truncate">{o.titre}</p>
-        <p className="font-sans text-sm text-brass font-semibold">{o.prix.toFixed(2)} $</p>
+        <p className="font-sans text-sm text-brass font-semibold flex items-center gap-2 flex-wrap">
+          <span>{o.prix.toFixed(2)} $</span>
+          {o.prixMontpellois != null && (
+            <span className="inline-flex items-center gap-1"><PieceMontpellois size={14} />{o.prixMontpellois}</span>
+          )}
+        </p>
         {o.description && <p className="font-editorial text-xs text-ivory-soft leading-relaxed line-clamp-2">{o.description}</p>}
+        {erreur && <p className="font-editorial italic text-[10px] text-blush">{erreur}</p>}
         <div className="mt-auto pt-3 flex items-center justify-between gap-2">
           <Link to={addLocale(`/profil/${o.uid}`, lang)} className="font-sans text-xs text-ivory-soft hover:text-brass transition truncate">
             {o.nom}
           </Link>
-          <Link
-            to={addLocale(`/messages/${o.uid}`, lang)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card shrink-0"
-          >
-            <MessageSquare size={12} /> {fr ? 'Écrire' : 'Message'}
-          </Link>
+          <div className="flex items-center gap-2 shrink-0">
+            {o.prixMontpellois != null && user && user.uid !== o.uid && o.statut === 'disponible' && (
+              <button type="button" onClick={acheter} disabled={enCours}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-brass/50 text-brass hover:bg-brass/10 font-sans uppercase tracking-wider text-[10px] font-semibold transition rounded-card disabled:opacity-50">
+                <Coins size={12} /> {fr ? 'Montpellois' : 'Montpellois'}
+              </button>
+            )}
+            <Link
+              to={addLocale(`/messages/${o.uid}`, lang)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card"
+            >
+              <MessageSquare size={12} /> {fr ? 'Écrire' : 'Message'}
+            </Link>
+          </div>
         </div>
       </div>
     </div>
