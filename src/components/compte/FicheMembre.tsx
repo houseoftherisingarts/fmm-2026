@@ -1278,7 +1278,7 @@ const EN: typeof FR = {
   musicianEyebrow: 'Music group application', musicianTitle: 'Register my band',
   musicianApply: 'Apply', musicianEdit: 'View / edit my application',
   musicianNone: 'No band application yet.',
-  membreVerifie: 'Verified member', upgrade: 'Become VIP',
+  membreVerifie: 'Verified member', upgrade: 'Become VIP', personnaliser: 'Customize',
   verifierMembre: 'Verify this member', retirerVerification: 'Remove verification',
 };
 
