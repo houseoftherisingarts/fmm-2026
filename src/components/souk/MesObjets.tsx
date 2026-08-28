@@ -66,10 +66,20 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    const prix = Number(form.prix.replace(',', '.'));
-    if (!form.titre.trim() || !Number.isFinite(prix) || prix < 0) {
-      setError(fr ? 'Un titre et un prix valide sont requis.' : 'A title and a valid price are required.');
+    if (!form.titre.trim()) {
+      setError(fr ? 'Un titre est requis.' : 'A title is required.');
       return;
+    }
+    // Le prix est facultatif : vide veut dire aucun prix en dollars,
+    // pas zéro dollar (Alex, 2026-08-28).
+    const prixBrut = form.prix.trim();
+    let prix: number | undefined;
+    if (prixBrut) {
+      prix = Number(prixBrut.replace(',', '.'));
+      if (!Number.isFinite(prix) || prix < 0) {
+        setError(fr ? 'Le prix n’est pas valide.' : 'The price is not valid.');
+        return;
+      }
     }
     const prixMontpelloisBrut = form.prixMontpellois.trim();
     const prixMontpellois = prixMontpelloisBrut ? Number(prixMontpelloisBrut) : undefined;
