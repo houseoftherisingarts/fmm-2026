@@ -416,6 +416,8 @@ const App: React.FC = () => (
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
                 <Route path="/mur"     element={<MurPage />} />
                 <Route path="/en/wall" element={<MurPage />} />
+                <Route path="/souk"    element={<SoukPage />} />
+                <Route path="/en/souk" element={<SoukPage />} />
                 <Route path="/guildes"           element={<GuildesPage />} />
                 <Route path="/en/guilds"         element={<GuildesPage />} />
                 <Route path="/guildes/:id"       element={<GuildePage />} />
