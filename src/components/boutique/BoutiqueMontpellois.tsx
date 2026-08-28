@@ -203,6 +203,46 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         </div>
       </section>
 
+      {/* Ambiances (voir src/lib/ambiances.ts) : les trois du festival
+          sont déjà offertes à tous dans le panneau Musique, seules
+          celles marquées `gratuite: false` s'achètent ici (Alex,
+          2026-08-28). Une piste à ce jour, « Le ménestrel », posée en
+          test. */}
+      <section>
+        <p className="witcher-stat-label mb-2"><Music size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Les ambiances' : 'Ambiences'}</p>
+        <p className="font-editorial italic text-xs text-ivory-soft/60 mb-4">
+          {fr ? 'Une musique de plus pour l’onglet Profil, à choisir dans le panneau Musique une fois achetée.' : 'One more track for the Profile tab, pick it in the Music panel once bought.'}
+        </p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {AMBIANCES.filter((a) => !a.gratuite).map((a) => {
+            const possedee = (bourse?.ambiances || []).includes(a.id);
+            return (
+              <div key={a.id} className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(244,239,227,0.05)', border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                    <Music size={22} style={{ color: '#D8B05A' }} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? a.titreFR : a.titreEN}</p>
+                    <p className="font-editorial italic text-[10px] text-ivory-soft/50 truncate">{a.credit}</p>
+                  </div>
+                </div>
+                <div className="mt-auto flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold">
+                    <PieceMontpellois size={16} />{PRIX_AMBIANCE}
+                  </span>
+                  <button type="button" disabled={possedee || enCours === `ambiance_${a.id}` || !uid}
+                          onClick={() => acheterUneAmbiance(a.id)}
+                          className="px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
+                    {possedee ? (fr ? 'À vous' : 'Yours') : (fr ? 'Acheter' : 'Buy')}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {/* Albums des groupes */}
       <section>
         <p className="witcher-stat-label mb-2"><Disc3 size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Les albums' : 'Albums'}</p>
