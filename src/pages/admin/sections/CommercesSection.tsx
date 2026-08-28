@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ExternalLink, Sparkles, Trash2 } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
 import {
   listerTousLesCommerces, deleteCommerce, soumettreCommerceCommeKiosque,
   type Commerce,
