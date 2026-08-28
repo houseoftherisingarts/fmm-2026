@@ -124,6 +124,11 @@ export const acheterAuSouk = (objetSoukId: string) =>
 export const acheterAlbum = (groupeId: string) =>
   appeler<{ groupeId: string }, { solde: number }>('acheterAlbum')({ groupeId });
 
+/** Achète une ambiance de la boutique (src/lib/ambiances.ts, celles
+ *  marquées `gratuite: false`), sur le patron exact d'acheterAlbum. */
+export const acheterAmbiance = (ambianceId: string) =>
+  appeler<{ ambianceId: string }, { solde: number }>('acheterAmbiance')({ ambianceId });
+
 
 /** La bourse s'ouvre ou se referme aux regards des autres membres
  *  (Alex, 2026-08-28). Le badge du paon vient avec l'ouverture. */
