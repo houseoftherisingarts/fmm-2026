@@ -2298,6 +2298,20 @@ exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
   return { solde: resultat.solde, filId };
 });
 
+// Un défi de tafl gagné (src/firebase/tafl.ts, taflParties) : le badge
+// du camp vainqueur, à la première partie finie par une victoire
+// (Alex, 2026-08-28).
+exports.defiGagneBadge = onDocumentWritten(
+  { document: 'taflParties/{id}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const avant = (event.data && event.data.before && event.data.before.exists) ? event.data.before.data() : null;
+    const apres = (event.data && event.data.after && event.data.after.exists) ? event.data.after.data() : null;
+    if (!apres || apres.statut !== 'fini' || !apres.gagnant || (avant && avant.statut === 'fini')) return;
+    const vainqueurUid = apres.camps && apres.camps[apres.gagnant];
+    if (vainqueurUid) await poserBadge(vainqueurUid, 'defi-gagne');
+  },
+);
+
 // Une guilde fondée (src/firebase/guildes.ts, creerGuilde) : le badge
 // du fondateur, posé ici plutôt que dans guildes.ts pour rester dans
 // les fichiers qui m'appartiennent (Alex, 2026-08-28).
