@@ -61,6 +61,11 @@ const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const MurPage              = lazy(() => import('./pages/MurPage'));
 const SoukPage             = lazy(() => import('./pages/SoukPage'));
+// Le chantier : inventaire du personnage + salon 2D, réservé à l'équipe
+// tant que ce n'est pas publié (Alex, 2026-08-27, dictée « inventaire
+// Witcher/Diablo + Blablaland »). Sous src/chantier/, jamais dans
+// src/pages/.
+const ChantierPage         = lazy(() => import('./chantier/ChantierPage'));
 const GuildesPage          = lazy(() => import('./pages/GuildesPage'));
 const GuildePage           = lazy(() => import('./pages/GuildePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
