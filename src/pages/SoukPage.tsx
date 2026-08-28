@@ -105,21 +105,26 @@ const GrilleObjets: React.FC<{ lang: 'FR' | 'EN'; uid: string }> = ({ lang, uid 
   const fr = lang === 'FR';
   const [objets, setObjets] = useState<ObjetSouk[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtre, setFiltre] = useState<CategorieSouk | 'all'>('all');
+  const [filtreGenre, setFiltreGenre] = useState<GenreSouk | 'all'>('all');
+  const [filtreCat, setFiltreCat] = useState<CategorieSouk | 'all'>('all');
   const [vendreOuvert, setVendreOuvert] = useState(false);
 
   useEffect(() => { listerSouk().then((rows) => { setObjets(rows); setLoading(false); }); }, []);
 
-  const filtres = useMemo(() => objets.filter((o) => filtre === 'all' || o.categorie === filtre), [objets, filtre]);
+  const filtres = useMemo(() => objets.filter((o) =>
+    (filtreGenre === 'all' || (o.genre || 'objet') === filtreGenre)
+    && (filtreCat === 'all' || o.categorie === filtreCat),
+  ), [objets, filtreGenre, filtreCat]);
+
+  const categoriesVisibles = filtreGenre === 'service' ? CATEGORIES_SERVICE : CATEGORIES_OBJET;
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
+      <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
-          <FiltreBouton actif={filtre === 'all'} onClick={() => setFiltre('all')} label={fr ? 'Tous' : 'All'} />
-          {CATEGORIES.map((c) => (
-            <FiltreBouton key={c} actif={filtre === c} onClick={() => setFiltre(c)} label={CAT_LABEL[lang][c]} />
-          ))}
+          <FiltreBouton actif={filtreGenre === 'all'} onClick={() => { setFiltreGenre('all'); setFiltreCat('all'); }} label={fr ? 'Tous' : 'All'} />
+          <FiltreBouton actif={filtreGenre === 'objet'} onClick={() => { setFiltreGenre('objet'); setFiltreCat('all'); }} label={fr ? 'Objets' : 'Items'} />
+          <FiltreBouton actif={filtreGenre === 'service'} onClick={() => { setFiltreGenre('service'); setFiltreCat('all'); }} label={fr ? 'Services' : 'Services'} />
         </div>
         <button
           type="button"
