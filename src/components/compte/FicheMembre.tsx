@@ -118,9 +118,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   //    retour arrière du navigateur fonctionne comme partout ailleurs.
   const onglets: readonly Onglet[] = prive ? ONGLETS_PRIVE : ONGLETS_PUBLIC;
   const [params, setParams] = useSearchParams();
-  // `caravane` est l'ancien nom de la collection : un lien déjà partagé
-  // ouvre encore le bon panneau.
-  const demande = params.get('onglet') === 'caravane' ? 'collection' : (params.get('onglet') || '');
+  const brutOnglet = params.get('onglet') || '';
+  const demande = REDIRECTIONS_ONGLET[brutOnglet] || brutOnglet;
   const onglet: Onglet = (onglets as readonly string[]).includes(demande) ? (demande as Onglet) : 'profil';
   const ouvrir = (o: Onglet) => {
     const p = new URLSearchParams(params);
