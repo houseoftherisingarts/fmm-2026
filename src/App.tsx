@@ -366,6 +366,7 @@ const App: React.FC = () => (
         <BadgesProvider>
           <ScrollToTop />
           <LocaleSync />
+          <PrefsFondWatcher />
           <AnalyticsPageViews />
           <Chrome />
           {/* Global fire backdrop: only mounted while <body> carries
