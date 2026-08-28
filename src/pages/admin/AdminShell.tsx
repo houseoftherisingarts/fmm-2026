@@ -23,6 +23,7 @@ export type AdminSectionId =
   | 'equipes'
   | 'guildes'
   | 'marchands'
+  | 'commerces'
   | 'activites'
   | 'badges'
   | 'musiciens'
