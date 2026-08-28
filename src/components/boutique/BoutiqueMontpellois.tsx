@@ -1,30 +1,40 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Gem, Palette, Disc3, Gift, Music } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { suivreSansPub } from '../../firebase/sansPub';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
-import { OBJETS_BOUTIQUE, COULEUR_RARETE } from '../../chantier/objets';
 import {
   suivreMaBourse, acheterCosmetique, acheterAmbiance, reclamerQuotidien, rangFortune,
   PRIX_SKIN, PRIX_ALBUM, PRIX_AMBIANCE, type Bourse,
 } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
+import { lienBilletterie } from '../../lib/billetterie';
 import PieceMontpellois from './PieceMontpellois';
+import SansPubPanel from '../compte/SansPubPanel';
 
-// ─── BoutiqueMontpellois : la grille des cosmétiques achetables ──────
-// Alex, 2026-08-28 : le solde en tête, les objets de boutique
-// (objets.ts, source: 'boutique'), les trois skins de la plateforme
-// (gratuits VIP), puis les albums des groupes — encore « à venir ».
+// ─── BoutiqueMontpellois : la boutique du profil ─────────────────────
+// Alex, 2026-08-28 : le solde en tête, puis les vraies places
+// (billet du festival, billet du banquet, livre de recettes — en
+// dollars, jamais en Montpellois), le paiement « sans publicité »,
+// et enfin les skins et ambiances qui s'achètent en Montpellois.
+// Les cosmétiques de l'inventaire (masque du corbeau, couronne de
+// fleurs, cape étoilée) sont retirés de la vente : ils restent dans
+// le catalogue de chantier/objets.ts, juste plus vendus ici.
 
-const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: string }> = {
+export const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: string }> = {
   rouge: { FR: 'Rouge d’origine', EN: 'Original red', couleur: '#8B2E2E' },
   bleu:  { FR: 'Bleu et argent',  EN: 'Blue and silver', couleur: '#8FAFD0' },
   vert:  { FR: 'Vert de forêt',   EN: 'Forest green',    couleur: '#7FA982' },
   dore:  { FR: 'Doré du festin',  EN: 'Festival gold',  couleur: '#D8B05A' },
 };
 const SKINS_ACHETABLES: Array<'bleu' | 'dore'> = ['bleu', 'dore'];
+
+// Le même appel que le banquet de Nourriture (src/pages/NourriturePage.tsx) :
+// une place, le même lien de secours si la fonction serveur tombe.
+const LIEN_BANQUET = 'https://us-central1-festivalmedieval.cloudfunctions.net/banquetLien';
+const SQUARE_BANQUET = 'https://square.link/u/g0UOU5L3'; // 65 $ + taxes = 74,73 $
 
 const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
