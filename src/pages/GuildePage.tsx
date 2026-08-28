@@ -13,7 +13,7 @@ import { lireFiche, type Membre } from '../firebase/ordre';
 import {
   suivreGuilde, accepterMembre, refuserMembre, quitterGuilde,
   modifierGuilde, supprimerGuilde, LONGUEUR_NOM_MAX, type Guilde,
-  changerBlason,
+  changerBlason, changerBanniereGuilde, motDeLaForme, FORMES_GUILDE, type FormeGuilde,
 } from '../firebase/guildes';
 import MurGuilde from '../components/mur/MurGuilde';
 
@@ -138,6 +138,13 @@ const GuildePage: React.FC = () => {
   const peutGerer = isAdmin || estAdminGuilde;
   // Le blason (Alex, 2026-08-28).
   const [blasonEnvoi, setBlasonEnvoi] = useState(false);
+  const [banniereEnvoi, setBanniereEnvoi] = useState(false);
+  const fichierBanniere = useRef<HTMLInputElement>(null);
+  const choisirBanniere = async (f: File | undefined) => {
+    if (!f) return;
+    setBanniereEnvoi(true);
+    try { await changerBanniereGuilde(guilde.id, f); } finally { setBanniereEnvoi(false); }
+  };
   const fichierBlason = useRef<HTMLInputElement>(null);
   const choisirBlason = async (f: File | undefined) => {
     if (!f) return;
@@ -157,6 +164,32 @@ const GuildePage: React.FC = () => {
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 space-y-6">
+
+          {/* ── La bannière de la guilde (Alex, 2026-08-28) ── */}
+          {(guilde.banniereUrl || peutGerer) && (
+            <div className="relative rounded-[16px] p-[3px]"
+                 style={{ background: 'linear-gradient(135deg, #F4E5B6 0%, var(--color-brass) 40%, #8C6A1F 70%, #F4E5B6 100%)',
+                          boxShadow: '0 0 0 1px rgba(60,30,8,0.85), 0 20px 50px -30px rgba(0,0,0,0.9)' }}>
+              <div className="relative overflow-hidden rounded-[13px] aspect-[16/5]"
+                   style={{ background: guilde.banniereUrl ? undefined : 'url(/textures/black-linen.png), rgba(10,2,7,0.9)' }}>
+                {guilde.banniereUrl && <img src={guilde.banniereUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+                     style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.6), transparent)' }} />
+                {peutGerer && (
+                  <>
+                    <button type="button" onClick={() => fichierBanniere.current?.click()} disabled={banniereEnvoi}
+                            className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px]"
+                            style={{ background: 'rgba(10,2,7,0.75)', border: '1px solid rgba(244,239,227,0.25)', color: 'rgba(244,239,227,0.9)' }}>
+                      {banniereEnvoi ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                      {guilde.banniereUrl ? (fr ? 'Changer la bannière' : 'Change the banner') : (fr ? 'Ajouter une bannière' : 'Add a banner')}
+                    </button>
+                    <input ref={fichierBanniere} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
+                           onChange={(e) => { void choisirBanniere(e.target.files?.[0]); e.target.value = ''; }} />
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* ── Le blason, en tête ── */}
           {(guilde.blason || peutGerer) && (

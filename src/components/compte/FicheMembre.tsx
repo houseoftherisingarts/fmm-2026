@@ -45,6 +45,7 @@ import MaFiche from './MaFiche';
 import ConcoursPanel from './ConcoursPanel';
 import PhotosPanel from './PhotosPanel';
 import PhotosDe from './PhotosDe';
+import PhotosAvecMoi from './PhotosAvecMoi';
 import Vitrine from './Vitrine';
 import Cloche from './Cloche';
 import Banniere, { metalDe } from './Banniere';
@@ -896,6 +897,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 </div>
                 {prive && compte
                   ? <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+                {prive && compte && <PhotosAvecMoi uid={compte.uid} nom={nom} lang={lang} />}
                   : <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />}
               </div>
             )}
