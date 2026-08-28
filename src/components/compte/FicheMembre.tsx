@@ -14,7 +14,7 @@ import { avancement, suivreBadges, suivreExposes } from '../../firebase/badges';
 import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS } from '../../content/evenementsMedievaux';
 import { listerMesGuildes, type Guilde } from '../../firebase/guildes';
 import {
-  lireFiche, publierFiche, suivreMesAmities, demanderAmitie, accepterAmitie,
+  lireFiche, publierFiche, definirPref, suivreMesAmities, demanderAmitie, accepterAmitie,
   estAmi, amitieEnAttente, rolesAffiches, LIBELLE_ROLE, definirVerifie,
   type Amitie, type Membre, type PrefsMembre, type PositionBanniere,
 } from '../../firebase/ordre';
