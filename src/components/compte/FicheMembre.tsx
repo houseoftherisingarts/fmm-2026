@@ -142,6 +142,20 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   useEffect(() => {
     let vivant = true;
     setChargement(true);
+    // L'aperçu sans compte (?apercu=1, dev seulement) : une fiche témoin
+    // pour vérifier à l'écran les trois positions de bannière et le
+    // badge vérifié, sans passer par Firestore (?position=haut|bas|droite).
+    if (import.meta.env.DEV && uid === 'apercu') {
+      const pos = (new URLSearchParams(window.location.search).get('position') as PositionBanniere) || 'bas';
+      setFiche({
+        uid: 'apercu', nom: 'Dame Aperçu', verifie: true, vip: true,
+        banniereUrl: '/wix/home/scene-cinematic.jpg',
+        roles: ['membre'],
+        prefs: { positionBanniere: pos, parallaxe: true, animationsFond: true, cadrage: { x: 50, y: 50 } },
+      });
+      setChargement(false);
+      return () => { vivant = false; };
+    }
     lireFiche(uid)
       .then((m) => { if (vivant) { setFiche(m); setChargement(false); } })
       .catch(() => { if (vivant) setChargement(false); });
