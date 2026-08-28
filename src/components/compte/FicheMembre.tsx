@@ -724,6 +724,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   {/* La participation au concours du commanditaire, quand il y en a une. */}
                   {compte?.email && <ConcoursPanel email={compte.email} />}
                   <MaFiche lang={lang} />
+                  {/* Les réglages personnels : bannière, parallaxe, fond animé (Alex, 2026-08-28). */}
+                  <ReglagesProfil prefs={fiche?.prefs} onChange={majPrefs} lang={lang} />
+                  <EspaceVip vip={vip} prefs={fiche?.prefs} onChange={majPrefs} onDevenirVip={allerVersSansPub} lang={lang} />
                   {/* Le dé de la vie reste dans l'espace de la personne :
                       il n'a rien à faire sur la fiche d'un autre. */}
                   <Suspense fallback={null}>
@@ -759,6 +762,19 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     statusLabel={(s) => STATUS_LABEL[s][lang === 'FR' ? 'fr' : 'en']}
                     statusTone={(s) => STATUS_LABEL[s].tone}
                     none={t.vendorNone}
+                  />
+                  <ApplicationCard
+                    icon={Music}
+                    eyebrow={t.musicianEyebrow}
+                    title={t.musicianTitle}
+                    loading={loadingApps}
+                    app={mApp}
+                    ctaApply={t.musicianApply}
+                    ctaEdit={t.musicianEdit}
+                    href={addLocale('/musique/inscription', lang)}
+                    statusLabel={(s) => STATUS_LABEL[s][lang === 'FR' ? 'fr' : 'en']}
+                    statusTone={(s) => STATUS_LABEL[s].tone}
+                    none={t.musicianNone}
                   />
 
                   {/* ── Les photos en vedette, choisies dans l'onglet Photos ── */}
