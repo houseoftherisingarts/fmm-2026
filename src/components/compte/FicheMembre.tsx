@@ -315,16 +315,6 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             {prive && <Cloche uid={uid} lang={lang} />}
           </div>
 
-          {/* La bannière encadrée : le métal suit le rang (Alex, 2026-08-27). */}
-          <Banniere
-            uid={uid}
-            url={fiche?.banniereUrl}
-            metal={metalDe({ roles: fiche?.roles, nbBadges: etatBadges.obtenus, estAdmin: prive && isAdmin })}
-            lang={lang}
-            editable={prive}
-            onChange={(lien) => setFiche((f) => (f ? { ...f, banniereUrl: lien } : f))}
-          />
-
           <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
             <AvatarUpload
               uid={uid}
@@ -379,6 +369,16 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </div>
             </div>
           </div>
+
+          {/* La bannière encadrée : le métal suit le rang (Alex, 2026-08-27; sous le nom depuis le 28). */}
+          <Banniere
+            uid={uid}
+            url={fiche?.banniereUrl}
+            metal={metalDe({ roles: fiche?.roles, nbBadges: etatBadges.obtenus, estAdmin: prive && isAdmin })}
+            lang={lang}
+            editable={prive}
+            onChange={(lien) => setFiche((f) => (f ? { ...f, banniereUrl: lien } : f))}
+          />
 
           {/* ── La bande d'actions ──
               En mode public, la personne qui regarde peut écrire au

@@ -27,27 +27,21 @@ export function metalDe(opts: { roles?: RoleMembre[]; nbBadges: number; estAdmin
   return 'bronze';
 }
 
-const METAL: Record<Metal, { clair: string; moyen: string; sombre: string; reflet: string; nomFR: string; nomEN: string }> = {
-  bronze: { clair: '#d9a066', moyen: '#9c5f2c', sombre: '#4a2a12', reflet: '#f3c99a', nomFR: 'Bronze', nomEN: 'Bronze' },
-  argent: { clair: '#eef0f3', moyen: '#a3a9b3', sombre: '#4f555e', reflet: '#ffffff', nomFR: 'Argent', nomEN: 'Silver' },
-  or:     { clair: '#f6dc8a', moyen: '#c9962e', sombre: '#6b4a0f', reflet: '#fff4c2', nomFR: 'Or', nomEN: 'Gold' },
+// Les couleurs suivent le cadre de la charte (`.charter-frame` et
+// `.charter-rivet` dans index.css) : bande de métal épaisse entre deux
+// traits de bois sombre, écho fin à l'intérieur, rivets bombés aux coins.
+const METAL: Record<Metal, { bande: string; bandeClair: string; bandeSombre: string; echo: string; bois: string; rivet: string; nomFR: string; nomEN: string }> = {
+  bronze: { bande: '#9C6A32', bandeClair: '#D9A066', bandeSombre: '#5A3714', echo: 'rgba(160,110,50,0.55)', bois: 'rgba(40,20,6,0.9)',
+            rivet: 'radial-gradient(circle at 30% 30%, #F1C99A 0%, #B7783C 35%, #6B4218 75%, #33200A 100%)', nomFR: 'Bronze', nomEN: 'Bronze' },
+  argent: { bande: '#B9BFC8', bandeClair: '#EEF1F5', bandeSombre: '#6E757F', echo: 'rgba(200,205,215,0.55)', bois: 'rgba(30,30,36,0.9)',
+            rivet: 'radial-gradient(circle at 30% 30%, #FFFFFF 0%, #C9CFD8 35%, #7A828C 75%, #3C4149 100%)', nomFR: 'Argent', nomEN: 'Silver' },
+  or:     { bande: 'var(--color-brass)', bandeClair: '#F4E5B6', bandeSombre: '#8C6A1F', echo: 'rgba(140,106,31,0.55)', bois: 'rgba(60,30,8,0.85)',
+            rivet: 'radial-gradient(circle at 30% 30%, #F4E5B6 0%, #C9A85A 35%, #8C6A1F 75%, #4A3812 100%)', nomFR: 'Or', nomEN: 'Gold' },
 };
 
-const Coin: React.FC<{ m: typeof METAL.bronze; className: string }> = ({ m, className }) => (
-  <svg viewBox="0 0 64 64" className={`absolute w-10 h-10 md:w-14 md:h-14 ${className}`} aria-hidden>
-    <defs>
-      <linearGradient id={`g-${m.moyen.slice(1)}`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor={m.reflet} />
-        <stop offset="0.45" stopColor={m.clair} />
-        <stop offset="1" stopColor={m.sombre} />
-      </linearGradient>
-    </defs>
-    <path d="M2 62 C2 30 30 2 62 2 L62 12 C36 12 12 36 12 62 Z" fill={`url(#g-${m.moyen.slice(1)})`} stroke={m.sombre} strokeWidth="1" />
-    <path d="M10 54 C14 30 30 14 54 10" fill="none" stroke={m.reflet} strokeWidth="1.2" opacity="0.7" />
-    <circle cx="18" cy="46" r="4.5" fill={m.clair} stroke={m.sombre} strokeWidth="1" />
-    <circle cx="18" cy="46" r="1.6" fill={m.sombre} />
-    <path d="M26 26 l6 -6 l6 6 l-6 6 z" fill={m.reflet} stroke={m.sombre} strokeWidth="0.8" />
-  </svg>
+const Rivet: React.FC<{ m: typeof METAL.or; className: string }> = ({ m, className }) => (
+  <span aria-hidden className={`absolute w-4 h-4 rounded-full ${className}`}
+        style={{ background: m.rivet, boxShadow: 'inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,240,200,0.7), 0 1px 3px rgba(0,0,0,0.6)' }} />
 );
 
 const Banniere: React.FC<{
@@ -81,22 +75,17 @@ const Banniere: React.FC<{
   };
 
   return (
-    <div className="relative mb-8 md:mb-10">
-      {/* Le cadre : métal brossé en couches, biseau intérieur. */}
+    <div className="relative my-8 md:my-10">
+      {/* Le cadre de la charte, dans le métal du rang. */}
       <div
-        className="relative rounded-[18px] p-[6px] md:p-[8px]"
+        className="relative rounded-[6px] mx-[8px] my-[8px]"
         style={{
-          background: `linear-gradient(135deg, ${m.reflet} 0%, ${m.clair} 18%, ${m.moyen} 42%, ${m.sombre} 60%, ${m.clair} 82%, ${m.reflet} 100%)`,
-          boxShadow: `0 18px 50px rgba(0,0,0,0.55), 0 0 0 1px ${m.sombre}, inset 0 0 0 1px ${m.reflet}55`,
+          boxShadow: `0 0 0 1px ${m.bois}, 0 0 0 6px ${m.bande}, 0 0 0 7px ${m.bois}, 0 30px 90px -28px rgba(0,0,0,0.95)`,
+          backgroundImage: `linear-gradient(180deg, ${m.bandeClair}22, transparent 30%, transparent 70%, ${m.bandeSombre}33)`,
         }}
       >
-        <div
-          className="relative rounded-[13px] overflow-hidden aspect-[16/5] md:aspect-[16/4]"
-          style={{
-            boxShadow: `inset 0 0 0 2px ${m.sombre}, inset 0 0 28px rgba(0,0,0,0.6)`,
-            background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.sombre}66, rgba(10,2,7,0.95))`,
-          }}
-        >
+        <div className="relative overflow-hidden rounded-[4px] aspect-[16/5] md:aspect-[16/4]"
+             style={{ background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.bandeSombre}55, rgba(10,2,7,0.95))` }}>
           {url ? (
             <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
@@ -104,7 +93,8 @@ const Banniere: React.FC<{
               <img src="/site/montpellier-armoirie.png" alt="" className="h-[70%] object-contain opacity-30" />
             </div>
           )}
-          {/* Un voile en bas pour que le nom respire quand la photo est claire. */}
+          {/* L'écho fin à l'intérieur, comme sur la charte. */}
+          <div aria-hidden className="absolute inset-[10px] pointer-events-none rounded-[2px]" style={{ border: `1px solid ${m.echo}` }} />
           <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
                style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.55), transparent)' }} />
           {editable && (
@@ -120,16 +110,11 @@ const Banniere: React.FC<{
             </button>
           )}
         </div>
-        <Coin m={m} className="left-0 top-0" />
-        <Coin m={m} className="right-0 top-0 rotate-90" />
-        <Coin m={m} className="right-0 bottom-0 rotate-180" />
-        <Coin m={m} className="left-0 bottom-0 -rotate-90" />
+        <Rivet m={m} className="-left-[11px] -top-[11px]" />
+        <Rivet m={m} className="-right-[11px] -top-[11px]" />
+        <Rivet m={m} className="-left-[11px] -bottom-[11px]" />
+        <Rivet m={m} className="-right-[11px] -bottom-[11px]" />
       </div>
-      {/* Le rang, en petit sous le cadre. */}
-      <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full font-sans uppercase tracking-[0.22em] text-[9px]"
-            style={{ background: 'rgba(10,2,7,0.9)', border: `1px solid ${m.moyen}`, color: m.clair }}>
-        {fr ? `Cadre ${m.nomFR.toLowerCase()}` : `${m.nomEN} frame`}
-      </span>
       {editable && (
         <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
                onChange={(e) => { void choisir(e.target.files?.[0]); e.target.value = ''; }} />

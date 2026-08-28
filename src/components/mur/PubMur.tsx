@@ -27,7 +27,7 @@ const PubMur: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   return (
     <aside className="rounded-lg-card p-3" style={{ background: 'rgba(26,5,11,0.45)', border: '1px solid rgba(244,239,227,0.1)' }}>
       <span className="witcher-stat-label block mb-2">{fr ? 'Publicité' : 'Advertisement'}</span>
-      <ins className="adsbygoogle" style={{ display: 'block', width: '100%', minHeight: 250 }}
+      <ins className="adsbygoogle" style={{ display: 'block', width: '100%', minHeight: 120 }}
            data-ad-client={CLIENT_ADSENSE} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true" />
     </aside>
   );

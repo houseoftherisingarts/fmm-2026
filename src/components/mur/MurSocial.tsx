@@ -37,7 +37,7 @@ const Medaillon: React.FC<{ nom: string; url?: string; hue?: number }> = ({ nom,
 // Les teintes des genres : un léger glissement de ton dans la palette
 // du site, jamais des couleurs franches (Alex, 2026-08-27).
 export const TEINTE_GENRE: Record<GenrePost, { fond: string; bord: string; accent: string; nomFR: string; nomEN: string }> = {
-  billet:  { fond: 'rgba(38, 30, 52, 0.45)',  bord: 'rgba(120, 130, 190, 0.32)', accent: '#9fb0e6', nomFR: 'Billet',  nomEN: 'Post' },
+  billet:  { fond: 'rgba(38, 30, 52, 0.45)',  bord: 'rgba(120, 130, 190, 0.32)', accent: '#9fb0e6', nomFR: 'Post',    nomEN: 'Post' },
   offre:   { fond: 'rgba(22, 44, 34, 0.45)',  bord: 'rgba(110, 170, 130, 0.35)', accent: '#8fd6b4', nomFR: 'Offre',   nomEN: 'Offer' },
   demande: { fond: 'rgba(56, 22, 26, 0.45)',  bord: 'rgba(200, 110, 100, 0.35)', accent: '#e08a6e', nomFR: 'Demande', nomEN: 'Request' },
 };
@@ -46,8 +46,10 @@ const MurSocial: React.FC<{
   lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: boolean; avecComposeur?: boolean;
   /** 'tout' (défaut), 'billets' (colonne de gauche) ou 'offres' (offres et demandes, colonne de droite). */
   filtre?: 'tout' | 'billets' | 'offres';
+  /** Ne rend que le composeur (le mur en pleine largeur le pose au-dessus des colonnes). */
+  seulementComposeur?: boolean;
 }> = ({
-  lang, uid, avecAnnonces = true, avecComposeur = true, filtre = 'tout',
+  lang, uid, avecAnnonces = true, avecComposeur = true, filtre = 'tout', seulementComposeur = false,
 }) => {
   const fr = lang === 'FR';
   const { user, isAdmin } = useAuth();
@@ -135,7 +137,7 @@ const MurSocial: React.FC<{
               );
             })}
             <span className="font-sans text-[10px] text-ivory-soft/45 ml-1">
-              {fr ? 'Offres et demandes paraissent dans la colonne de droite.' : 'Offers and requests show in the right column.'}
+              {fr ? 'Les offres et les demandes paraissent dans la colonne de droite.' : 'Offers and requests show in the right column.'}
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
@@ -156,7 +158,7 @@ const MurSocial: React.FC<{
         </section>
       )}
 
-      {lignes.length === 0 ? (
+      {seulementComposeur ? null : lignes.length === 0 ? (
         <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
           {uid ? (fr ? 'Rien sur ce fil pour le moment.' : 'Nothing on this feed yet.') : (fr ? 'Le mur est encore vide. Soyez la première voix.' : 'The wall is still empty. Be the first voice.')}
         </p>
