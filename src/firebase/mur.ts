@@ -117,6 +117,8 @@ export interface PostMur {
 const COL = 'mur';
 export const LONGUEUR_MAX_POST = 2000;
 export const LONGUEUR_MAX_COMMENTAIRE = 1000;
+export const LONGUEUR_MAX_TITRE_VIDEO = 100;
+export const LONGUEUR_MAX_DESCRIPTION_VIDEO = 500;
 
 // ── La chaleur : le ballon d'hélium ─────────────────────────────────
 // Formule « hot » de Reddit, FIGÉE au moment de l'écriture : elle ne
