@@ -36,7 +36,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const [groupes, setGroupes] = useState<GroupeMusical[]>([]);
   const [enCours, setEnCours] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [dejaReclame, setDejaReclame] = useState(false);
+  const [dejaReclameLocal, setDejaReclameLocal] = useState(false);
 
   useEffect(() => { if (uid) return suivreMaBourse(uid, setBourse); }, [uid]);
   useEffect(() => { if (uid) return ecouterAvatar(uid, setAvatar); }, [uid]);
