@@ -2209,6 +2209,25 @@ exports.acheterAlbum = onCall({ region: 'us-central1' }, async (requete) => {
   return { solde };
 });
 
+// Alex, 2026-08-28 : sur le patron exact d'acheterAlbum, pour tester
+// l'achat d'une ambiance en Montpellois (voir src/lib/ambiances.ts).
+exports.acheterAmbiance = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter.');
+  const ambianceId = String((requete.data || {}).ambianceId || '');
+  if (!AMBIANCES_ACHETABLES.includes(ambianceId)) throw new HttpsError('invalid-argument', 'Ambiance inconnue.');
+  const { data: bourse } = await assurerBourse(uid);
+  if ((bourse.ambiances || []).includes(ambianceId)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
+  const premiereFoisBoutique = (bourse.depense || 0) === 0;
+  const solde = await debiter(uid, PRIX_AMBIANCE, { ambiances: FieldValue.arrayUnion(ambianceId) });
+  if (premiereFoisBoutique) await poserBadge(uid, 'premier-achat-boutique');
+  // L'audiophile : cinq ambiances ou albums achetés d'affilée (Alex, 2026-08-28).
+  const boursApres = await db.collection('bourses').doc(uid).get();
+  const total = ((boursApres.data().ambiances || []).length) + ((boursApres.data().albums || []).length);
+  if (total >= 5) await poserBadge(uid, 'audiophile');
+  return { solde };
+});
+
 exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
   const acheteurUid = requete.auth && requete.auth.uid;
   if (!acheteurUid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter.');
