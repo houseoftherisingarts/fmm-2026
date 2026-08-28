@@ -1784,3 +1784,85 @@ exports.pixel = onRequest(
     return res.status(200).end(ouv.PIXEL_GIF);
   },
 );
+
+// ─── Le mur social : voter façon Reddit ─────────────────────────────
+//
+// Alex, 2026-08-28 : le client n'écrit JAMAIS un compteur. Il écrit
+// seulement son propre vote (mur/{postId}/votes/{voterUid} et son
+// jumeau sous un commentaire), et ces trois fonctions recalculent
+// pour/contre/score/chaleur — et nbCommentaires — à sa place. C'est ce
+// qui ferme la faille de triche : personne ne peut forger un score en
+// écrivant directement le billet, la règle Firestore le lui refuse.
+//
+// « chaleur » est le ballon d'hélium. FORMULE JUMELLE de
+// calculerChaleur() dans src/firebase/mur.ts (et de sa copie dans
+// tools/migrer-chaleur.mjs) : si l'une des trois change, les deux
+// autres doivent suivre, sinon le tri du mur et celui de la migration
+// divergent en silence.
+const { onDocumentWritten } = require('firebase-functions/v2/firestore');
+
+const DEMI_VIE_CHALEUR = 45_000; // 12,5 heures — jumeau de DEMI_VIE_CHALEUR dans src/firebase/mur.ts.
+
+function calculerChaleur(score, creeLeMs) {
+  const secondes = creeLeMs / 1000;
+  return Math.log10(Math.max(Math.abs(score), 1)) * Math.sign(score) + secondes / DEMI_VIE_CHALEUR;
+}
+
+/**
+ * Relit le vote avant/après l'écriture, en tire le delta (création,
+ * changement de camp, ou suppression du vote), et recalcule
+ * pour/contre/score/chaleur du document visé (billet ou commentaire)
+ * dans une transaction — pour rester exact même si deux votes
+ * arrivent dans la même seconde.
+ */
+async function traiterVote(event, docRef) {
+  const avant = event.data && event.data.before && event.data.before.exists ? event.data.before.data() : null;
+  const apres = event.data && event.data.after && event.data.after.exists ? event.data.after.data() : null;
+  const valAvant = avant && (avant.valeur === 1 || avant.valeur === -1) ? avant.valeur : 0;
+  const valApres = apres && (apres.valeur === 1 || apres.valeur === -1) ? apres.valeur : 0;
+  if (valAvant === valApres) return;
+
+  const deltaPour = (valApres === 1 ? 1 : 0) - (valAvant === 1 ? 1 : 0);
+  const deltaContre = (valApres === -1 ? 1 : 0) - (valAvant === -1 ? 1 : 0);
+
+  await db.runTransaction(async (t) => {
+    const snap = await t.get(docRef);
+    if (!snap.exists) return; // le billet ou le commentaire a été retiré entretemps
+    const data = snap.data();
+    const pour = (data.pour || 0) + deltaPour;
+    const contre = (data.contre || 0) + deltaContre;
+    const score = pour - contre;
+    const creeLeMs = data.creeLe && data.creeLe.toMillis ? data.creeLe.toMillis() : Date.now();
+    t.update(docRef, { pour, contre, score, chaleur: calculerChaleur(score, creeLeMs) });
+  });
+}
+
+exports.murVoteBillet = onDocumentWritten(
+  { document: 'mur/{postId}/votes/{voterUid}', region: 'us-central1', memory: '256MiB' },
+  (event) => traiterVote(event, db.collection('mur').doc(event.params.postId)),
+);
+
+exports.murVoteCommentaire = onDocumentWritten(
+  { document: 'mur/{postId}/commentaires/{cid}/votes/{voterUid}', region: 'us-central1', memory: '256MiB' },
+  (event) => traiterVote(
+    event,
+    db.collection('mur').doc(event.params.postId).collection('commentaires').doc(event.params.cid),
+  ),
+);
+
+/** Maintient nbCommentaires sur le billet : +1 à la création d'un
+ *  commentaire, -1 à sa suppression. Une simple modification de texte
+ *  ne touche à rien (existait avant == existe après). */
+exports.murCommentaireCompte = onDocumentWritten(
+  { document: 'mur/{postId}/commentaires/{cid}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const existaitAvant = !!(event.data && event.data.before && event.data.before.exists);
+    const existeApres = !!(event.data && event.data.after && event.data.after.exists);
+    if (existaitAvant === existeApres) return;
+    const delta = existeApres ? 1 : -1;
+    await db.collection('mur').doc(event.params.postId).set(
+      { nbCommentaires: FieldValue.increment(delta) },
+      { merge: true },
+    );
+  },
+);
