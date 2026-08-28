@@ -16,7 +16,8 @@ interface Props { uid: string; nom: string; lang: 'FR' | 'EN' }
 
 const PhotosAvecMoi: React.FC<Props> = ({ uid, nom, lang }) => {
   const fr = lang === 'FR';
-  const photos = useFirestoreListener(suivrePhotosOuJeSuis, uid);
+  const [photos, setPhotos] = useState<PhotoPublique[] | null>(null);
+  useEffect(() => suivrePhotosOuJeSuis(uid, setPhotos), [uid]);
   const [ouvertId, setOuvertId] = useState<string | null>(null);
   const ouverte = photos?.find((p) => p.id === ouvertId) ?? null;
 
