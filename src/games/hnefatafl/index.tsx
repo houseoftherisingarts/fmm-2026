@@ -1341,6 +1341,7 @@ const HnefataflPage: React.FC = () => {
           {pubEnAttente && (
             <PubDebutPartie
               lang={lang}
+              jeu="hnefatafl"
               onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
             />
           )}
