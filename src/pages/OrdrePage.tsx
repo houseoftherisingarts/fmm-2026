@@ -200,10 +200,13 @@ const CarteMembre: React.FC<{
               </span>}
         </div>
         <div className="min-w-0">
-          <Link to={`${addLocale('/profil', lang)}/${m.uid}`}
-                className="block font-display title-medieval text-lg text-ivory hover:text-brass transition-colors truncate">
-            {m.nom || (fr ? 'Un inconnu' : 'A stranger')}
-          </Link>
+          <span className="flex items-center gap-1.5 min-w-0">
+            <Link to={`${addLocale('/profil', lang)}/${m.uid}`}
+                  className="block font-display title-medieval text-lg text-ivory hover:text-brass transition-colors truncate">
+              {m.nom || (fr ? 'Un inconnu' : 'A stranger')}
+            </Link>
+            {m.verifie && <BadgeVerifie size={15} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
+          </span>
           {m.ville && <span className="block font-sans text-[11px] text-ivory-soft/55 truncate">{m.ville}</span>}
         </div>
       </div>
