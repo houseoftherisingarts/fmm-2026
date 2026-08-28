@@ -133,6 +133,21 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
 
       {showForm && (
         <form onSubmit={onSubmit} className="glass-light rounded-lg-card p-5 md:p-6 space-y-4">
+          <DisclaimerSouk fr={fr} />
+          <label className="block">
+            <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Genre' : 'Kind'}</span>
+            <div className="flex gap-2">
+              {(['objet', 'service'] as GenreSouk[]).map((g) => (
+                <button key={g} type="button"
+                        onClick={() => setForm((p) => ({ ...p, genre: g, categorie: 'autre' }))}
+                        className={`px-4 py-2 rounded-card font-sans text-xs uppercase tracking-wider transition border ${
+                          form.genre === g ? 'bg-brass/20 border-brass text-brass' : 'border-ivory-soft/20 text-ivory-soft hover:border-brass/50 hover:text-brass'
+                        }`}>
+                  {g === 'objet' ? (fr ? 'Objet' : 'Item') : (fr ? 'Service' : 'Service')}
+                </button>
+              ))}
+            </div>
+          </label>
           <div className="grid sm:grid-cols-2 gap-4">
             <label className="block">
               <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Titre' : 'Title'}</span>
@@ -140,9 +155,12 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
                      onChange={(e) => setForm((p) => ({ ...p, titre: e.target.value }))} required />
             </label>
             <label className="block">
-              <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Prix (CAD)' : 'Price (CAD)'}</span>
+              <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
+                {fr ? 'Prix (CAD, facultatif)' : 'Price (CAD, optional)'}
+              </span>
               <input className="witcher-input font-sans" type="number" min={0} step="0.01" value={form.prix}
-                     onChange={(e) => setForm((p) => ({ ...p, prix: e.target.value }))} required />
+                     placeholder={fr ? 'Laissez vide pour donner' : 'Leave blank to give away'}
+                     onChange={(e) => setForm((p) => ({ ...p, prix: e.target.value }))} />
             </label>
           </div>
           <label className="block">
@@ -157,7 +175,9 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
             <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Catégorie' : 'Category'}</span>
             <select className="witcher-input font-sans" value={form.categorie}
                     onChange={(e) => setForm((p) => ({ ...p, categorie: e.target.value as CategorieSouk }))}>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{CAT_LABEL[lang][c]}</option>)}
+              {(form.genre === 'service' ? CATEGORIES_SERVICE : CATEGORIES_OBJET).map((c) => (
+                <option key={c} value={c}>{CAT_LABEL[lang][c]}</option>
+              ))}
             </select>
           </label>
           <label className="block">
