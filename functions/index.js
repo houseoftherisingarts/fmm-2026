@@ -2298,6 +2298,17 @@ exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
   return { solde: resultat.solde, filId };
 });
 
+// Une guilde fondée (src/firebase/guildes.ts, creerGuilde) : le badge
+// du fondateur, posé ici plutôt que dans guildes.ts pour rester dans
+// les fichiers qui m'appartiennent (Alex, 2026-08-28).
+exports.guildeFondeeBadge = onDocumentCreated(
+  { document: 'guildes/{id}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const data = event.data && event.data.data();
+    if (data && data.creePar) await poserBadge(data.creePar, 'guilde-fondee');
+  },
+);
+
 // Une amitié qui devient réciproque : le badge des deux côtés, peu
 // importe qui a cliqué « accepter » (src/firebase/ordre.ts,
 // accepterAmitie). Une requête de comptage donne aussi le badge des
