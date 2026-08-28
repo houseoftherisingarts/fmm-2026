@@ -43,7 +43,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   useEffect(() => { if (uid) return ecouterAvatar(uid, setAvatar); }, [uid]);
   useEffect(() => { if (uid) return suivreSansPub(uid, setSansPub); }, [uid]);
   useEffect(() => { if (uid) return suivreFiche(uid, (m) => setSkinActuel(m?.prefs?.skin)); }, [uid]);
-  useEffect(() => { listGroupes().then(setGroupes); }, []);
+  useEffect(() => { listGroupes().then((g) => { setGroupes(g); setGroupesCharges(true); }); }, []);
 
   const possedes = useMemo(() => {
     if (!avatar) return new Set<string>();
