@@ -65,6 +65,8 @@ export const COLLECTIONS: Collection[] = [
         texteFR: 'Vous avez tiré la croix celtique en entier.', texteEN: 'You laid the full Celtic cross.' },
       { id: 'des',          glyphe: '⚄', nomFR: 'Beau menteur',   nomEN: 'Fine liar',
         texteFR: 'Vous avez gagné une manche aux dés du menteur.', texteEN: 'You won a round at liar’s dice.' },
+      { id: 'defi-gagne',   glyphe: '♞', nomFR: 'Défi remporté',  nomEN: 'Challenge won',
+        texteFR: 'Vous avez gagné un défi de tafl lancé contre vous ou par vous.', texteEN: 'You won a tafl challenge, thrown or received.' },
     ],
   },
   {
