@@ -21,6 +21,10 @@ const PhotosDe: React.FC<{
   const fr = lang === 'FR';
   const [photos, setPhotos] = useState<PhotoPublique[] | null>(null);
   useEffect(() => (vedette ? suivrePhotosVedette : suivrePhotosPubliquesDe)(uid, setPhotos), [uid, vedette]);
+  const { user } = useAuth();
+  const moi = user ? { uid: user.uid, nom: user.displayName || '' } : null;
+  const [ouvertId, setOuvertId] = useState<string | null>(null);
+  const ouverte = photos?.find((p) => p.id === ouvertId) ?? null;
   // Sur la fiche d'un autre, une vitrine vide ne s'affiche pas du tout.
   if (vedette && !vide && photos !== null && photos.length === 0) return null;
 
