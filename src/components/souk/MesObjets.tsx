@@ -50,6 +50,12 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
       setError(fr ? 'Un titre et un prix valide sont requis.' : 'A title and a valid price are required.');
       return;
     }
+    const prixMontpelloisBrut = form.prixMontpellois.trim();
+    const prixMontpellois = prixMontpelloisBrut ? Number(prixMontpelloisBrut) : undefined;
+    if (prixMontpellois !== undefined && (!Number.isFinite(prixMontpellois) || prixMontpellois < 0)) {
+      setError(fr ? 'Le prix en Montpellois n’est pas valide.' : 'The Montpellois price is not valid.');
+      return;
+    }
     setBusy(true); setError(null);
     try {
       await creerObjetSouk({
@@ -59,6 +65,7 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
         titre: form.titre.trim(),
         description: form.description.trim(),
         prix,
+        prixMontpellois,
         categorie: form.categorie,
         fichiers: photos,
       });
