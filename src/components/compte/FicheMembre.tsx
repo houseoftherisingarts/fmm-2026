@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
   HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
-  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug, Newspaper,
+  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug, Newspaper, Tag, Store,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
@@ -42,6 +42,8 @@ import Vitrine from './Vitrine';
 import Cloche from './Cloche';
 import Banniere, { metalDe } from './Banniere';
 import MurSocial from '../mur/MurSocial';
+import SoukDe from '../souk/SoukDe';
+import CommerceDe from '../souk/CommerceDe';
 import BugReportModal from '../layout/BugReportModal';
 import BoiteReception from './BoiteReception';
 
@@ -63,12 +65,12 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 
 export type ModeFiche = 'prive' | 'public';
 
-const ONGLETS_PRIVE  = ['profil', 'fil', 'photos', 'badges', 'jeux', 'billets', 'collection', 'messages'] as const;
-const ONGLETS_PUBLIC = ['profil', 'fil', 'photos', 'badges', 'jeux', 'collection'] as const;
+const ONGLETS_PRIVE  = ['profil', 'fil', 'photos', 'souk', 'commerce', 'badges', 'jeux', 'billets', 'collection', 'messages'] as const;
+const ONGLETS_PUBLIC = ['profil', 'fil', 'photos', 'souk', 'commerce', 'badges', 'jeux', 'collection'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
-  profil: UserIcon, fil: Newspaper, badges: Award, jeux: Swords, billets: Ticket,
+  profil: UserIcon, fil: Newspaper, souk: Tag, commerce: Store, badges: Award, jeux: Swords, billets: Ticket,
   photos: Camera, collection: Megaphone, messages: MessageCircle,
 };
 
@@ -731,6 +733,14 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
             {/* Les photos qu'une personne envoie aux archives du festival :
                 son affaire à elle, jamais celle d'un visiteur. */}
+            {/* Le Souk et le Commerce de la personne (Alex, 2026-08-27). */}
+            {onglet === 'souk' && (
+              <SoukDe uid={uid} lang={lang} editable={prive} />
+            )}
+            {onglet === 'commerce' && (
+              <CommerceDe uid={uid} lang={lang} editable={prive} />
+            )}
+
             {onglet === 'fil' && (
               <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
             )}
@@ -884,12 +894,12 @@ const FR = {
     // Sept onglets avec « mes » partout débordaient à droite et
     // coupaient le dernier (Alex, 2026-08-24). Seul le profil garde son
     // possessif, le reste va droit au but.
-    profil: 'Mon profil', fil: 'Mon fil', badges: 'Badges', jeux: 'Jeux',
+    profil: 'Mon profil', fil: 'Mon fil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
     billets: 'Billets', photos: 'Photos', collection: 'Collection',
     messages: 'Boîte de réception',
   } as Record<Onglet, string>,
   ongletPublic: {
-    profil: 'Sa fiche', fil: 'Son fil', badges: 'Ses badges', jeux: 'Ses parties',
+    profil: 'Sa fiche', fil: 'Son fil', souk: 'Son souk', commerce: 'Son commerce', badges: 'Ses badges', jeux: 'Ses parties',
     billets: 'Billets', photos: 'Ses photos', collection: 'Sa collection',
     messages: 'Messages',
   } as Record<Onglet, string>,
@@ -933,12 +943,12 @@ const EN: typeof FR = {
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
-    profil: 'My profile', fil: 'My feed', badges: 'Badges', jeux: 'Games',
+    profil: 'My profile', fil: 'My feed', souk: 'Souk', commerce: 'Business', badges: 'Badges', jeux: 'Games',
     billets: 'Tickets', photos: 'Photos', collection: 'Collection',
     messages: 'Inbox',
   } as Record<Onglet, string>,
   ongletPublic: {
-    profil: 'Their card', fil: 'Their feed', badges: 'Their badges', jeux: 'Their games',
+    profil: 'Their card', fil: 'Their feed', souk: 'Their souk', commerce: 'Their business', badges: 'Their badges', jeux: 'Their games',
     billets: 'Tickets', photos: 'Their photos', collection: 'Their collection',
   } as Record<Onglet, string>,
   presentation: 'Their introduction',

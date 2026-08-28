@@ -35,9 +35,8 @@ const SoukPage: React.FC = () => {
     <main className="min-h-screen text-ivory">
       <SEO title={fr ? 'Le Souk · la foire usagée' : 'The Souk · secondhand fair'} noindex />
       <PageHeader
-        eyebrow={fr ? 'L’Ordre' : 'The Order'}
+        eyebrow={fr ? 'L’Ordre · la foire usagée' : 'The Order · secondhand fair'}
         titleA={fr ? 'Le Souk' : 'The Souk'}
-        titleB={fr ? 'la foire usagée' : 'secondhand fair'}
         intro={fr
           ? 'La ruelle où les membres revendent ce qu’ils ne portent plus : costumes, armes, artisanat, livres et décor. Écrivez au vendeur par la messagerie du site.'
           : 'The back alley where members resell what they no longer use: costumes, weapons, crafts, books and decor. Message the seller through the site’s inbox.'}
