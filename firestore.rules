@@ -203,7 +203,9 @@ service cloud.firestore {
       allow create: if signedIn()
                     && request.resource.data.parUid == request.auth.uid
                     && request.resource.data.texte is string
-                    && request.resource.data.texte.size() <= 2000;
+                    && request.resource.data.texte.size() <= 2000
+                    // Le badge Admin · Modérateur ne se donne pas soi-même.
+                    && (request.resource.data.get('moderateur', false) != true || isAdmin());
       allow read, update, delete: if isAdmin();
     }
 

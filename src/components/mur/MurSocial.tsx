@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Send, Trash2, Megaphone, Loader2, X } from 'lucide-react';
+import { Image as ImageIcon, Send, Trash2, Megaphone, Loader2, X, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
 import { lireFiche } from '../../firebase/ordre';
@@ -66,6 +66,7 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
         avatarUrl: fiche?.avatarUrl || user.photoURL || undefined,
         avatarHue: fiche?.avatarHue,
         texte, photo: photo || undefined,
+        moderateur: isAdmin,
       });
       setTexte(''); setPhoto(null);
     } catch (e) {
@@ -159,9 +160,17 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
               <div className="flex items-center gap-3 mb-3">
                 <Link to={`${addLocale('/profil', lang)}/${l.post.uid}`}><Medaillon nom={l.post.nom} url={l.post.avatarUrl} hue={l.post.avatarHue} /></Link>
                 <div className="min-w-0 flex-1">
-                  <Link to={`${addLocale('/profil', lang)}/${l.post.uid}`} className="font-display text-base text-ivory hover:text-brass transition-colors truncate block">
-                    {l.post.nom}
-                  </Link>
+                  <span className="flex items-center gap-2 min-w-0">
+                    <Link to={`${addLocale('/profil', lang)}/${l.post.uid}`} className="font-display text-base text-ivory hover:text-brass transition-colors truncate">
+                      {l.post.nom}
+                    </Link>
+                    {l.post.moderateur && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px] shrink-0"
+                            style={{ background: 'rgba(216,176,90,0.16)', border: '1px solid #D8B05A', color: '#D8B05A' }}>
+                        <ShieldCheck size={10} /> {fr ? 'Admin · Modérateur' : 'Admin · Moderator'}
+                      </span>
+                    )}
+                  </span>
                   <p className="font-sans text-[11px] text-ivory-soft/55">{quandTexte(l.quand, fr)}</p>
                 </div>
                 {user && (user.uid === l.post.uid || isAdmin) && (

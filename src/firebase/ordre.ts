@@ -43,7 +43,7 @@ export const LIBELLE_ROLE: Record<RoleMembre, { FR: string; EN: string }> = {
   artisan:        { FR: 'Artisan',        EN: 'Artisan'       },
   musicien:       { FR: 'Musicien',       EN: 'Musician'      },
   securite:       { FR: 'Sécurité',       EN: 'Security'      },
-  administrateur: { FR: 'Administrateur', EN: 'Administrator' },
+  administrateur: { FR: 'Admin · Modérateur', EN: 'Admin · Moderator' },
   tresorier:      { FR: 'Trésorier',      EN: 'Treasurer'     },
   secretaire:     { FR: 'Secrétaire',     EN: 'Secretary'     },
   commanditaire:  { FR: 'Commanditaire',  EN: 'Sponsor'       },

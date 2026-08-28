@@ -29,6 +29,8 @@ export interface PostMur {
   /** Présent seulement sur un billet posté depuis le mur d'une guilde
    *  (Alex, 2026-08-27) — voir src/firebase/guildes.ts. */
   guildeId?: string;
+  /** Porte le badge Admin · Modérateur. */
+  moderateur?: boolean;
   creeLe: Timestamp | null;
 }
 
@@ -37,6 +39,8 @@ export const LONGUEUR_MAX_POST = 2000;
 
 export async function publierSurLeMur(opts: {
   uid: string; nom: string; avatarUrl?: string; avatarHue?: number; texte: string; photo?: File;
+  /** Billet d'un membre de l'équipe (badge Admin · Modérateur). */
+  moderateur?: boolean;
   /** Poster sur le mur d'une guilde plutôt que sur le mur général. */
   guildeId?: string;
 }): Promise<string> {
@@ -59,6 +63,7 @@ export async function publierSurLeMur(opts: {
     texte,
     ...(photoUrl ? { photoUrl, photoChemin } : {}),
     ...(opts.guildeId ? { guildeId: opts.guildeId } : {}),
+    ...(opts.moderateur ? { moderateur: true } : {}),
     creeLe: serverTimestamp(),
   });
   return id;
