@@ -567,6 +567,7 @@ const DesPage: React.FC = () => {
           {pubEnAttente && (
             <PubDebutPartie
               lang={lang}
+              jeu="des"
               onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
             />
           )}
