@@ -35,6 +35,8 @@ import CoffreBillets from './CoffreBillets';
 import SoutienPanel from './SoutienPanel';
 import SansPubPanel from './SansPubPanel';
 import ParrainagePanel from './ParrainagePanel';
+import PorteAdmin from './PorteAdmin';
+import DonnerRoleAdmin from './DonnerRoleAdmin';
 import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import DefisTafl from './DefisTafl';
@@ -819,6 +821,11 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       {fiche?.devise?.trim() || t.sansDescription}
                     </p>
                   </section>
+                  {/* L'équipe ouvre les portes de l'admin à ce membre
+                      (Alex, 2026-08-28). */}
+                  {isAdmin && !prive && (
+                    <DonnerRoleAdmin uid={uid} nom={nom} lang={lang} />
+                  )}
                   {/* Les autres rendez-vous médiévaux que la personne
                       fréquente, groupés par genre (Alex, 2026-08-27). */}
                   {((fiche?.evenements?.length ?? 0) > 0 || fiche?.evenementsAutre?.trim()) && (
@@ -982,6 +989,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 <div className="lg:col-span-5">
                   <SoutienPanel lang={lang} userEmail={compte.email || ''} userName={nom} />
                   {/* Le don « sans publicité à vie » (Alex, 2026-08-27). */}
+                  {/* La porte de l'équipe, colorée selon le rôle (Alex, 2026-08-28). */}
+                  <PorteAdmin lang={lang} />
                   <div id="don-sans-pub"><SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} /></div>
                   {/* Le parrainage et sa lignée (Alex, 2026-08-28). */}
                   <ParrainagePanel uid={compte.uid} lang={lang} />
