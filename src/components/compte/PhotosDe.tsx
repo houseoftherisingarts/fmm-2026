@@ -38,10 +38,9 @@ const PhotosDe: React.FC<{
           {vide || (fr ? 'Ce membre n’a pas encore partagé de photo.' : 'This member has not shared a photo yet.')}
         </p>
       ) : (
-        <div className={`grid grid-cols-2 gap-3 ${vedette ? "sm:grid-cols-3" : "sm:grid-cols-3 md:grid-cols-4"}`}>
+        <div className="grid grid-cols-3 gap-[3px] md:gap-1">
           {photos.map((p) => (
-            <figure key={p.id} className="group relative aspect-square overflow-hidden rounded-card"
-                    style={{ border: '1px solid rgba(244,239,227,0.14)' }}>
+            <figure key={p.id} className="group relative aspect-square overflow-hidden">
               <img src={p.url} alt={p.legende || ''} loading="lazy" decoding="async"
                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
               {p.legende && (

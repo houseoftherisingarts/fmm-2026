@@ -45,6 +45,8 @@ export interface PhotoPublique {
   visibilite?: VisibilitePhoto;   // absent sur les envois d'avant le 27 août = privée
   /** Mise en vedette sur le profil (Alex, 2026-08-27). Suppose publique. */
   vedette?: boolean;
+  /** La place dans la grille, choisie par glisser-déposer (petit = en tête). */
+  ordre?: number;
   consentement: true;
   consentementLe: Timestamp | null;
   envoyeeLe: Timestamp | null;
@@ -153,6 +155,21 @@ export function televerserPhoto(
 }
 
 /** Les photos d'un membre, en direct, les plus récentes en premier. */
+/** L'ordre de la grille : la place choisie d'abord, puis les plus récentes. */
+export function trierGrille(rows: PhotoPublique[]): PhotoPublique[] {
+  return [...rows].sort((a, b) => {
+    const oa = a.ordre ?? Number.MAX_SAFE_INTEGER, ob = b.ordre ?? Number.MAX_SAFE_INTEGER;
+    if (oa !== ob) return oa - ob;
+    return toMillis(b.envoyeeLe) - toMillis(a.envoyeeLe);
+  });
+}
+
+/** Le propriétaire réordonne sa grille : une écriture par photo déplacée. */
+export async function reordonnerPhotos(ids: string[]): Promise<void> {
+  if (!db) return;
+  await Promise.all(ids.map((id, i) => updateDoc(doc(db!, COLL, id), { ordre: i })));
+}
+
 export function suivreMesPhotos(uid: string, cb: (photos: PhotoPublique[]) => void): () => void {
   if (!db) { cb([]); return () => {}; }
   const q = query(collection(db, COLL), where('uid', '==', uid));
@@ -160,8 +177,7 @@ export function suivreMesPhotos(uid: string, cb: (photos: PhotoPublique[]) => vo
     q,
     (snap) => {
       const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as PhotoPublique));
-      rows.sort((a, b) => toMillis(b.envoyeeLe) - toMillis(a.envoyeeLe));
-      cb(rows);
+      cb(trierGrille(rows));
     },
     // Une règle qui refuse ou un index manquant ne doit pas casser
     // l'espace client : on rend une liste vide.
@@ -189,8 +205,7 @@ export function suivrePhotosVedette(uid: string, cb: (photos: PhotoPublique[]) =
     q,
     (snap) => {
       const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as PhotoPublique));
-      rows.sort((a, b) => toMillis(b.envoyeeLe) - toMillis(a.envoyeeLe));
-      cb(rows);
+      cb(trierGrille(rows));
     },
     () => cb([]),
   );
@@ -204,8 +219,7 @@ export function suivrePhotosPubliquesDe(uid: string, cb: (photos: PhotoPublique[
     q,
     (snap) => {
       const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as PhotoPublique));
-      rows.sort((a, b) => toMillis(b.envoyeeLe) - toMillis(a.envoyeeLe));
-      cb(rows);
+      cb(trierGrille(rows));
     },
     () => cb([]),
   );

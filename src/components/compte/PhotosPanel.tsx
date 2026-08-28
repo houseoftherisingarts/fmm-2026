@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Camera, Upload, Check, AlertCircle, Loader2, Eye, EyeOff, Star } from 'lucide-react';
 import {
-  televerserPhoto, suivreMesPhotos, changerVisibilite, changerVedette, TYPES_ACCEPTES, POIDS_MAX_ORIGINAL,
+  televerserPhoto, suivreMesPhotos, changerVisibilite, changerVedette, reordonnerPhotos, TYPES_ACCEPTES, POIDS_MAX_ORIGINAL,
   type PhotoPublique, type StatutPhoto, type VisibilitePhoto,
 } from '../../firebase/photosPubliques';
 import { useBadges } from '../../contexts/BadgesContext';
@@ -88,6 +88,21 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
   const [survol, setSurvol]         = useState(false);
   const [queue, setQueue]           = useState<FileEnEnvoi[]>([]);
   const [avis, setAvis]             = useState<string | null>(null);
+  // La grille se réorganise en glissant une photo sur une autre
+  // (Alex, 2026-08-27 : « comme la grille Instagram »). L'ordre local
+  // suit la main tout de suite; Firestore reçoit la liste au lâcher.
+  const [traine, setTraine] = useState<string | null>(null);
+  const [survolId, setSurvolId] = useState<string | null>(null);
+  const deposer = (cibleId: string) => {
+    if (!traine || traine === cibleId) { setTraine(null); setSurvolId(null); return; }
+    const ids = photos.map((p) => p.id);
+    const de = ids.indexOf(traine), a = ids.indexOf(cibleId);
+    if (de < 0 || a < 0) return;
+    ids.splice(a, 0, ids.splice(de, 1)[0]);
+    setPhotos((prev) => ids.map((id) => prev.find((p) => p.id === id)!).map((p, i) => ({ ...p, ordre: i })));
+    setTraine(null); setSurvolId(null);
+    void reordonnerPhotos(ids).catch(() => { /* hors ligne */ });
+  };
 
   useEffect(() => {
     const unsub = suivreMesPhotos(uid, (p) => { setPhotos(p); setLoading(false); });
@@ -261,15 +276,33 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
       )}
 
       <div className="mt-8">
-        <p className="witcher-stat-label mb-3">{t.envoyeesTitre}</p>
+        <p className="witcher-stat-label mb-1">{t.envoyeesTitre}</p>
+        {photos.length > 1 && (
+          <p className="font-sans text-xs mb-3" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>{t.reorganiser}</p>
+        )}
         {loading ? (
           <p className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>{t.chargement}</p>
         ) : photos.length === 0 ? (
           <p className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>{t.aucune}</p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 gap-[3px] md:gap-1">
             {photos.map((p) => (
-              <div key={p.id} className="relative aspect-square overflow-hidden" style={{ border: '1px solid rgba(244,239,227,0.14)' }}>
+              <div
+                key={p.id}
+                draggable
+                onDragStart={() => setTraine(p.id)}
+                onDragOver={(e) => { e.preventDefault(); if (survolId !== p.id) setSurvolId(p.id); }}
+                onDragLeave={() => setSurvolId((v) => (v === p.id ? null : v))}
+                onDrop={(e) => { e.preventDefault(); deposer(p.id); }}
+                onDragEnd={() => { setTraine(null); setSurvolId(null); }}
+                className="relative aspect-square overflow-hidden cursor-grab active:cursor-grabbing transition-transform"
+                style={{
+                  outline: survolId === p.id && traine && traine !== p.id ? '2px solid #D8B05A' : 'none',
+                  outlineOffset: -2,
+                  opacity: traine === p.id ? 0.45 : 1,
+                  transform: survolId === p.id && traine && traine !== p.id ? 'scale(0.96)' : undefined,
+                }}
+              >
                 <img
                   src={p.url}
                   alt={p.legende || ''}
@@ -344,7 +377,8 @@ const FR = {
   glissezOuChoisissez: 'Glissez vos photos ici, ou cliquez pour les choisir',
   deposezIci: 'Déposez-les ici',
   choisir:    'Choisir des photos',
-  envoyeesTitre: 'Vos envois',
+  envoyeesTitre: 'Votre grille',
+  reorganiser: 'Glissez une photo sur une autre pour réorganiser votre grille.',
   chargement: 'Chargement…',
   aucune:     'Aucune photo envoyée pour le moment.',
   errConsent: 'Cochez d’abord la case ci-dessus : c’est ce qui nous autorise à recevoir vos photos.',
@@ -373,7 +407,8 @@ const EN: typeof FR = {
   glissezOuChoisissez: 'Drag your photos here, or click to choose them',
   deposezIci: 'Drop them here',
   choisir:    'Choose photos',
-  envoyeesTitre: 'Your submissions',
+  envoyeesTitre: 'Your grid',
+  reorganiser: 'Drag a photo onto another to rearrange your grid.',
   chargement: 'Loading…',
   aucune:     'No photos sent yet.',
   errConsent: 'Check the box above first: that is what lets us receive your photos.',
