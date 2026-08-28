@@ -21,6 +21,7 @@ export type AdminSectionId =
   | 'dashboard'
   | 'benevoles'
   | 'equipes'
+  | 'guildes'
   | 'marchands'
   | 'activites'
   | 'badges'
