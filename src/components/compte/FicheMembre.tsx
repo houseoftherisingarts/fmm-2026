@@ -916,22 +916,17 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             ))}
 
             {/* ── Le fil de la personne, puis ses photos : le Profil absorbe
-                les anciens onglets Fil et Photos (Alex, 2026-08-28). ── */}
-            {onglet === 'profil' && (
+                les anciens onglets Fil et Photos (Alex, 2026-08-28). Côté
+                privé, ce bloc vit maintenant plus haut, dans l'ordre
+                d'importance dicté par Alex : voir la branche `prive`
+                ci-dessus. Ici, seulement la vue publique. ── */}
+            {onglet === 'profil' && !prive && (
               <div className="mt-8 md:mt-10 space-y-6 md:space-y-8">
                 <div>
                   <p className="witcher-stat-label mb-4">{t.filDeLaPersonne}</p>
                   <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
                 </div>
-                {prive && compte
-                  ? (
-                    <>
-                      <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
-                      {/* Les photos où quelqu'un d'autre m'a identifié (Alex, 2026-08-28). */}
-                      <PhotosAvecMoi uid={compte.uid} nom={nom} lang={lang} />
-                    </>
-                  )
-                  : <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />}
+                <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />
               </div>
             )}
 
