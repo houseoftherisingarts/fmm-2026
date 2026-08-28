@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { UI } from '../content';
 import { annoncerLecture, ecouterExclusivite } from '../lib/audioExclusif';
+import { suivreFiche } from '../firebase/ordre';
+import { ambianceParId } from '../lib/ambiances';
 
 // Musique d'ambiance du thème « Caravanes et Saltimbanques ».
 // Piste : Master of the Feast de Kevin MacLeod, CC BY
