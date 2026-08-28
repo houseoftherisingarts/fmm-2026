@@ -171,6 +171,14 @@ export async function definirRoles(uid: string, roles: RoleMembre[]): Promise<vo
   await setDoc(doc(db, MEMBRES, uid), { uid, roles, maj: serverTimestamp() }, { merge: true });
 }
 
+/** Décerner ou retirer la coche bleue vérifiée. Réservé à l'équipe :
+ *  kiosques, administrateurs, artisans reconnus, à sa discrétion
+ *  (Alex, 2026-08-28). */
+export async function definirVerifie(uid: string, verifie: boolean): Promise<void> {
+  if (!db) return;
+  await setDoc(doc(db, MEMBRES, uid), { uid, verifie, maj: serverTimestamp() }, { merge: true });
+}
+
 /** Attribuer les étiquettes d'un membre. Réservé à l'équipe, comme
  *  les fonctions. Une étiquette vide se retire de la fiche. */
 export async function definirTags(uid: string, tags: string[]): Promise<void> {
