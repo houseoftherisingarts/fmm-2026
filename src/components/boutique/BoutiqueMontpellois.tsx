@@ -77,6 +77,13 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     }
   }
 
+  async function acheterUneAmbiance(id: string) {
+    setErreur(null); setEnCours(`ambiance_${id}`);
+    try { await acheterAmbiance(id); }
+    catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
+    finally { setEnCours(null); }
+  }
+
   async function acheterSkin(skin: SkinMembre) {
     if (!uid) return;
     setErreur(null); setEnCours(`skin_${skin}`);
