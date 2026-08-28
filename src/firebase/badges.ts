@@ -91,6 +91,8 @@ export const COLLECTIONS: Collection[] = [
         texteFR: 'Vous avez demandé un kiosque au marché.', texteEN: 'You asked for a stall at the market.' },
       { id: 'commanditaire', glyphe: '❖', nomFR: 'Commanditaire',   nomEN: 'Sponsor',
         texteFR: 'Vous soutenez le festival de votre nom.', texteEN: 'You back the festival with your name.' },
+      { id: 'veteran',       glyphe: '⚜', nomFR: 'Vétéran du festival', nomEN: 'Festival veteran',
+        texteFR: 'Vous étiez là au moins deux années.', texteEN: 'You were there at least two years.' },
       { id: 'membre',        glyphe: '♁', nomFR: 'Membre de la table', nomEN: 'Member of the table',
         texteFR: 'Vous avez créé votre compte du festival.', texteEN: 'You created your festival account.' },
       { id: 'photographe',   glyphe: '◎', nomFR: 'Photographe',     nomEN: 'Photographer',

@@ -91,6 +91,9 @@ export interface Membre {
    *  tenir à toute taille d'affichage (AvatarUpload, 2026-08-23). */
   cadrage?: { x: number; y: number; zoom: number };
   ville?: string;
+  /** Les éditions où la personne était présente (Alex, 2026-08-28).
+   *  Deux années valent le badge du vétéran. */
+  anneesPresence?: number[];
   /** La description que la personne écrit sur elle-même. */
   devise?: string;
   stats?: StatsMembre;
@@ -434,4 +437,24 @@ export async function direAuSalon(mot: Omit<MotSalon, 'id' | 'ecritLe'>): Promis
 export async function retirerDuSalon(motId: string): Promise<void> {
   if (!db) return;
   await deleteDoc(doc(db, SALON, motId));
+}
+
+
+// ── Les éditions du festival ─────────────────────────────────────────
+// Alex, 2026-08-28 : à l'inscription, la personne coche les années où
+// elle était là. Deux années lui valent le badge du vétéran.
+export const EDITIONS_FESTIVAL = [2022, 2023, 2024, 2025, 2026];
+export const ANNEES_POUR_VETERAN = 2;
+
+const CLE_ANNEES = 'fmm_annees_presence';
+
+/** Retenu pendant l'inscription, posé dès que le compte existe. */
+export function retenirLesAnnees(annees: number[]): void {
+  try { sessionStorage.setItem(CLE_ANNEES, JSON.stringify(annees)); } catch { /* navigation privée */ }
+}
+export function anneesRetenues(): number[] {
+  try { return JSON.parse(sessionStorage.getItem(CLE_ANNEES) || '[]') as number[]; } catch { return []; }
+}
+export function oublierLesAnnees(): void {
+  try { sessionStorage.removeItem(CLE_ANNEES); } catch { /* rien à faire */ }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -8,12 +9,16 @@ import BoutiqueMontpellois from '../components/boutique/BoutiqueMontpellois';
 
 // ─── /boutique · La boutique en Montpellois ───────────────────────────
 // Routes /boutique et /en/shop posées par Alex dans App.tsx (composant :
-// BoutiquePage). Alex, 2026-08-28.
+// BoutiquePage). `?apercu=1` (dev seulement) saute le mur de connexion
+// pour la vérification visuelle, même patron que ChantierPage.
+// Alex, 2026-08-28.
 const BoutiquePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const fr = lang === 'FR';
   const { user, openSignIn } = useAuth();
+  const location = useLocation();
+  const apercu = import.meta.env.DEV && new URLSearchParams(location.search).get('apercu') === '1';
 
   return (
     <main className="min-h-screen text-ivory">
