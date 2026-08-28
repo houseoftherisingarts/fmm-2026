@@ -114,7 +114,10 @@ const FonctionsMembres: React.FC = () => {
                 className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
               >
                 <span className="min-w-0">
-                  <span className="block font-display text-base text-ivory truncate">{m.nom || 'Sans nom'}</span>
+                  <span className="flex items-center gap-1.5 min-w-0">
+                    <span className="font-display text-base text-ivory truncate">{m.nom || 'Sans nom'}</span>
+                    {m.verifie && <BadgeCheck size={14} className="shrink-0" color="#4c8ef7" fill="#F4EFE3" />}
+                  </span>
                   <span className="block font-sans text-[11px] uppercase tracking-[0.18em] text-ivory-soft/55 truncate">
                     {rolesAffiches(m.roles).map((r) => LIBELLE_ROLE[r].FR).join(' · ')}
                   </span>
