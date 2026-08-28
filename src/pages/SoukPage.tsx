@@ -72,6 +72,10 @@ const SoukPage: React.FC = () => {
         />
 
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="max-w-xl mb-8">
+            <DisclaimerSouk fr={fr} />
+          </div>
+
           {!user ? (
             <div className="glass-light rounded-lg-card p-8 text-center max-w-xl mx-auto">
               <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-5">
