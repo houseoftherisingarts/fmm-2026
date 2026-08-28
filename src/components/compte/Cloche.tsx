@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, MessageCircle, Award, Users, Sparkles, User as UserIcon } from 'lucide-react';
+import { Bell, MessageCircle, Award, Users, Sparkles, Swords, Dices, User as UserIcon } from 'lucide-react';
 import { suivreNotifications, marquerNotifsVues, type EtatNotifs, type GenreNotif } from '../../firebase/notifications';
 import { addLocale } from '../../lib/locale';
 
@@ -12,7 +12,7 @@ import { addLocale } from '../../lib/locale';
 // à côté, avec son propre compteur, pour aller droit à la boîte.
 
 const ICONE: Record<GenreNotif, React.ComponentType<{ size?: number }>> = {
-  message: MessageCircle, amitie: Users, badge: Award, page: Sparkles,
+  message: MessageCircle, amitie: Users, badge: Award, page: Sparkles, defi: Swords, tour: Dices,
 };
 
 const TEMOIN: EtatNotifs = {

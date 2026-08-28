@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
   HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
-  Megaphone, MessageCircle, MapPin, Dices, Check, Camera,
+  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
@@ -38,6 +38,7 @@ import PhotosPanel from './PhotosPanel';
 import PhotosDe from './PhotosDe';
 import Vitrine from './Vitrine';
 import Cloche from './Cloche';
+import BugReportModal from '../layout/BugReportModal';
 import BoiteReception from './BoiteReception';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
@@ -153,6 +154,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
   // La vitrine se lit sur le même document, pour soi comme pour un autre.
   const [exposes, setExposes] = useState<string[]>([]);
+  const [bugOuvert, setBugOuvert] = useState(false);
   useEffect(() => { if (uid) return suivreExposes(uid, setExposes); }, [uid]);
   // L'aperçu sans compte (?apercu=1, dev seulement) montre une vitrine
   // témoin pour juger le rendu.
@@ -653,6 +655,20 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </div>
             ))}
 
+            {/* ── Sous le profil, pour tout le monde (Alex, 2026-08-27) :
+                signaler un bug, puis le babillard des annonces. */}
+            {onglet === 'profil' && (
+              <div className="mt-8 md:mt-10 space-y-6 md:space-y-8">
+                <div className="flex justify-end">
+                  <button type="button" onClick={() => setBugOuvert(true)}
+                          className="inline-flex items-center gap-2 px-4 py-2 border border-stone text-ivory-soft hover:border-brass hover:text-brass font-sans text-xs uppercase tracking-wider transition rounded-card">
+                    <Bug size={13} /> {t.signalerBug}
+                  </button>
+                </div>
+                <AnnoncesPanel lang={lang} />
+              </div>
+            )}
+
             {onglet === 'badges' && (
               prive
                 ? <MesBadges lang={lang} />
@@ -739,6 +755,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
           </motion.div>
         </div>
       </section>
+      <BugReportModal open={bugOuvert} onClose={() => setBugOuvert(false)} />
     </main>
   );
 };
@@ -857,6 +874,7 @@ const FR = {
   evenements: 'Où le croiser ailleurs',
   sesPhotos: 'Ses photos',
   photosVedette: 'Photos en vedette',
+  signalerBug: 'Signaler un bug',
   photosVedetteVide: 'Choisissez vos photos en vedette dans l’onglet Photos : elles paraissent ici, pour tous.',
   sansDescription: 'Ce membre n’a pas encore écrit sa présentation.',
   aptitudes: 'Ses aptitudes, à sa façon',
@@ -904,6 +922,7 @@ const EN: typeof FR = {
   evenements: 'Where else to meet them',
   sesPhotos: 'Their photos',
   photosVedette: 'Featured photos',
+  signalerBug: 'Report a bug',
   photosVedetteVide: 'Pick your featured photos in the Photos tab: they show here, for everyone.',
   sansDescription: 'This member has not written an introduction yet.',
   aptitudes: 'Their own stats',

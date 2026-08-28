@@ -45,6 +45,7 @@ import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
+  repondreAuDefi, reclamerForfait, tempsRestant, formatDelai,
   type PartieTafl,
 } from '../../firebase/tafl';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
@@ -1046,6 +1047,16 @@ const HnefataflPage: React.FC = () => {
   }, [partie, user]);
 
   const [gameStarted, setGameStarted] = useState(false);
+  // Le minuteur du coup (Alex, 2026-08-27) : le temps restant se relit
+  // chaque minute; écoulé sur le tour de l'autre, je peux réclamer.
+  const [tic, setTic] = useState(0);
+  useEffect(() => {
+    if (!partie?.echeance || partie.statut !== 'encours') return;
+    const t = window.setInterval(() => setTic((n) => n + 1), 30_000);
+    return () => window.clearInterval(t);
+  }, [partie?.echeance, partie?.statut]);
+  const restant = partie ? tempsRestant(partie) : null;
+  void tic;
   // Aperçu de développement seulement : `?apercu=1&auto=1` ouvre la
   // partie sans passer par l'écran de choix, pour capturer la table.
   useEffect(() => {
@@ -1250,6 +1261,7 @@ const HnefataflPage: React.FC = () => {
                     coupEnTexte(fr, fc, tr, tc),
                     tourSuivant,
                     gagnant,
+                    partie?.delaiMs,
                   );
                 },
               } : null}
@@ -1442,6 +1454,50 @@ const HnefataflPage: React.FC = () => {
           </span>
         </div>
 
+        {/* ── Le défi en attente : accepter, refuser, ou patienter ── */}
+        {partie && user && (partie.statut === 'defi' || partie.statut === 'refuse') && (
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-[min(24rem,calc(100%-2rem))] rounded-[15px] border border-brass/40 bg-black/70 backdrop-blur-md px-6 py-6 text-center">
+            <p className="font-sans uppercase tracking-[0.25em] text-[10px] text-brass mb-2">
+              {lang === 'FR' ? 'Défi' : 'Challenge'}
+            </p>
+            <p className="font-display text-lg text-ivory mb-2">
+              {partie.statut === 'refuse'
+                ? (lang === 'FR' ? 'Ce défi a été refusé.' : 'This challenge was declined.')
+                : partie.lancePar === user.uid
+                  ? (lang === 'FR'
+                      ? `Défi envoyé à ${partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—'}`
+                      : `Challenge sent to ${partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—'}`)
+                  : (lang === 'FR'
+                      ? `${partie.noms[partie.lancePar] ?? '—'} vous défie`
+                      : `${partie.noms[partie.lancePar] ?? '—'} challenges you`)}
+            </p>
+            {partie.statut === 'defi' && partie.lancePar === user.uid && (
+              <p className="font-sans text-xs text-ivory-soft/70">
+                {lang === 'FR'
+                  ? 'La table se dresse dès que la personne accepte. Vous pouvez revenir plus tard : la partie vous attendra dans vos notifications.'
+                  : 'The table is set as soon as they accept. You can come back later: the game will wait in your notifications.'}
+              </p>
+            )}
+            {partie.statut === 'defi' && partie.lancePar !== user.uid && (
+              <div className="mt-4 flex items-center justify-center gap-2">
+                <button type="button" onClick={() => { void repondreAuDefi(partie.id, true, partie.delaiMs); }}
+                        className="px-5 py-2.5 rounded-[15px] bg-brass text-midnight-deep font-sans uppercase tracking-[0.18em] text-[10px] font-semibold hover:bg-brass-soft transition-colors">
+                  {lang === 'FR' ? 'Accepter' : 'Accept'}
+                </button>
+                <button type="button" onClick={() => { void repondreAuDefi(partie.id, false); }}
+                        className="px-5 py-2.5 rounded-[15px] border border-white/20 text-ivory-soft hover:text-ivory font-sans uppercase tracking-[0.18em] text-[10px] transition-colors">
+                  {lang === 'FR' ? 'Refuser' : 'Decline'}
+                </button>
+              </div>
+            )}
+            {partie.delaiMs ? (
+              <p className="mt-3 font-sans text-[10px] uppercase tracking-[0.18em] text-ivory-soft/55">
+                {lang === 'FR' ? `Minuteur : ${formatDelai(partie.delaiMs, true)} par coup` : `Timer: ${formatDelai(partie.delaiMs, false)} per move`}
+              </p>
+            ) : null}
+          </div>
+        )}
+
         {/* ── La partie en ligne : contre qui, quel camp, à qui de jouer ── */}
         {partie && monCamp && (
           <div className="absolute left-3 md:left-6 top-16 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-3">
@@ -1462,6 +1518,26 @@ const HnefataflPage: React.FC = () => {
                     : (lang === 'FR' ? 'En attente de l’autre' : 'Waiting for them')}
               </span>
             </span>
+            {partie.statut === 'encours' && restant !== null && (
+              restant <= 0 && partie.tour !== monCamp ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!partieId || !user) return;
+                    const perdant = partie.camps[partie.tour];
+                    void reclamerForfait(partieId, perdant, monCamp);
+                  }}
+                  className="shrink-0 px-3 py-2 rounded-[15px] bg-brass text-midnight-deep font-sans text-[9px] uppercase tracking-[0.18em] font-semibold hover:bg-brass-soft transition-colors"
+                >
+                  {lang === 'FR' ? 'Temps écoulé · réclamer' : 'Time is up · claim'}
+                </button>
+              ) : (
+                <span className="shrink-0 font-sans text-[9px] uppercase tracking-[0.18em]"
+                      style={{ color: restant < 3_600_000 ? '#E08A6E' : 'rgba(244,239,227,0.6)' }}>
+                  ⏳ {formatDelai(restant, lang === 'FR')}
+                </span>
+              )
+            )}
             {partie.statut === 'encours' && (
               <button
                 type="button"

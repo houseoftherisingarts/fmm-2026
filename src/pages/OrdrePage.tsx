@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, UserPlus, Check, Clock, Users, Swords, Dices, ArrowUpRight } from 'lucide-react';
-import { lancerDefi } from '../firebase/tafl';
+import { lancerDefi, DELAIS_DEFI } from '../firebase/tafl';
 import { lancerDefiDes } from '../firebase/desParties';
 import { REGLE_DEFAUT } from '../games/hnefatafl/gameLogic';
 import { useAuth } from '../contexts/AuthContext';
@@ -153,12 +153,13 @@ const CarteMembre: React.FC<{
   const [choixDefi, setChoixDefi] = useState(false);
   const [defiEnCours, setDefiEnCours] = useState<'tafl' | 'des' | null>(null);
   const [partieLancee, setPartieLancee] = useState<{ jeu: 'tafl' | 'des'; id: string } | null>(null);
+  const [delaiMs, setDelaiMs] = useState(0);
   const lancer = async (jeu: 'tafl' | 'des') => {
     setDefiEnCours(jeu);
     try {
       const nomCible = m.nom || (fr ? 'Un inconnu' : 'A stranger');
       const id = jeu === 'tafl'
-        ? await lancerDefi({ moiUid: moi, moiNom: monNom, cibleUid: m.uid, cibleNom: nomCible, regleId: REGLE_DEFAUT, monCamp: 'attacker' })
+        ? await lancerDefi({ moiUid: moi, moiNom: monNom, cibleUid: m.uid, cibleNom: nomCible, regleId: REGLE_DEFAUT, monCamp: 'attacker', delaiMs })
         : await lancerDefiDes({ moiUid: moi, moiNom: monNom, cibleUid: m.uid, cibleNom: nomCible });
       setPartieLancee({ jeu, id });
       setChoixDefi(false);
@@ -242,6 +243,17 @@ const CarteMembre: React.FC<{
                   className="px-3 py-2 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2 disabled:opacity-60">
             <Dices size={12} /> {fr ? 'Les dés' : 'Dice'}
           </button>
+          {/* Le minuteur (Hnefatafl) : qui ne joue pas à temps cède la partie. */}
+          <div className="basis-full flex flex-wrap items-center gap-1.5 mt-1">
+            <span className="font-sans uppercase tracking-[0.2em] text-[9px] text-ivory-soft/55 mr-1">{fr ? 'Minuteur Hnefatafl' : 'Hnefatafl timer'}</span>
+            {DELAIS_DEFI.map((d) => (
+              <button key={d.ms} type="button" onClick={() => setDelaiMs(d.ms)} aria-pressed={delaiMs === d.ms}
+                      className="px-2.5 py-1 rounded-full font-sans text-[9px] uppercase tracking-[0.14em] transition-colors"
+                      style={{ border: `1px solid ${delaiMs === d.ms ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, color: delaiMs === d.ms ? '#F4EFE3' : 'rgba(244,239,227,0.55)', background: delaiMs === d.ms ? 'rgba(216,176,90,0.16)' : 'transparent' }}>
+                {fr ? d.FR : d.EN}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </article>

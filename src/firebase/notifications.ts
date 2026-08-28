@@ -20,7 +20,7 @@ import { PILLARS } from '../content';
 import { PILLAR_PUBLISH_FLAGS, subscribeSiteFlags, isPillarPublished } from './siteFlags';
 import { badgeParId } from './badges';
 
-export type GenreNotif = 'message' | 'amitie' | 'badge' | 'page';
+export type GenreNotif = 'message' | 'amitie' | 'badge' | 'page' | 'defi' | 'tour';
 
 export interface Notif {
   id: string;
@@ -52,6 +52,8 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
   let amities: Notif[] = [];
   let badgesObtenus: Record<string, Timestamp | null> = {};
   let flagsOk: string[] = [];
+  let parties: Notif[] = [];
+  let partiesDes: Notif[] = [];
 
   const publier = () => {
     const badges: Notif[] = Object.entries(badgesObtenus)
@@ -74,7 +76,7 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
           lien: { FR: p?.slug.FR ?? '/', EN: p?.slug.EN ?? '/en' },
         };
       });
-    const notifs = [...messages, ...amities, ...badges, ...pages].sort((a, b) => b.quand - a.quand);
+    const notifs = [...messages, ...amities, ...parties, ...partiesDes, ...badges, ...pages].sort((a, b) => b.quand - a.quand);
     cb({ notifs, messagesNonLus: nonLus });
   };
 
@@ -117,6 +119,42 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
           titre: { FR: 'Quelqu’un vous demande en ami', EN: 'Someone sent you a friend request' },
           lien: { FR: `/profil/${a.de}`, EN: `/en/profile/${a.de}` },
         }));
+      publier();
+    }, () => {}),
+
+    // Les parties : un défi reçu, puis chaque fois que c'est à moi de
+    // jouer (Alex, 2026-08-27 : tour par tour, la personne est prévenue).
+    onSnapshot(query(collection(base, 'taflParties'), where('joueurs', 'array-contains', uid)), (snap) => {
+      parties = [];
+      snap.docs.forEach((d) => {
+        const p = d.data();
+        const autre = ((p.joueurs as string[]) || []).find((x) => x !== uid) || '';
+        const nom = (p.noms as Record<string, string> | undefined)?.[autre] || '';
+        const lien = { FR: `/jeunesse/hnefatafl?partie=${d.id}`, EN: `/en/youth/hnefatafl?partie=${d.id}` };
+        const quand = ms(p.updatedAt as Timestamp | undefined);
+        if (p.statut === 'defi' && p.lancePar !== uid) {
+          parties.push({ id: `defi-${d.id}`, genre: 'defi', quand, lien,
+            titre: { FR: `${nom || 'Quelqu’un'} vous défie au Hnefatafl`, EN: `${nom || 'Someone'} challenges you at Hnefatafl` } });
+        } else if (p.statut === 'encours' && (p.camps as Record<string, string> | undefined)?.[String(p.tour)] === uid) {
+          parties.push({ id: `tour-${d.id}`, genre: 'tour', quand, lien,
+            titre: { FR: `À vous de jouer contre ${nom || '—'} (Hnefatafl)`, EN: `Your move against ${nom || '—'} (Hnefatafl)` } });
+        }
+      });
+      publier();
+    }, () => {}),
+
+    onSnapshot(query(collection(base, 'desParties'), where('joueurs', 'array-contains', uid)), (snap) => {
+      partiesDes = [];
+      snap.docs.forEach((d) => {
+        const p = d.data();
+        const autre = ((p.joueurs as string[]) || []).find((x) => x !== uid) || '';
+        const nom = (p.noms as Record<string, string> | undefined)?.[autre] || '';
+        if (p.statut === 'defi' && p.lancePar !== uid) {
+          partiesDes.push({ id: `defi-des-${d.id}`, genre: 'defi', quand: ms(p.updatedAt as Timestamp | undefined),
+            lien: { FR: `/jeux/des?partie=${d.id}`, EN: `/en/games/dice?partie=${d.id}` },
+            titre: { FR: `${nom || 'Quelqu’un'} vous défie aux dés`, EN: `${nom || 'Someone'} challenges you at dice` } });
+        }
+      });
       publier();
     }, () => {}),
 

@@ -266,7 +266,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 <div className="flex flex-wrap gap-2">
                   <Link
                     to={lienPartie(p.id)}
-                    onClick={() => { void repondreAuDefi(p.id, true); }}
+                    onClick={() => { void repondreAuDefi(p.id, true, p.delaiMs); }}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-card bg-brass text-midnight-deep font-sans text-[10px] uppercase tracking-[0.18em] font-semibold hover:bg-brass-soft transition-colors"
                   >
                     <Check size={12} /> {fr ? 'Accepter et jouer' : 'Accept and play'}

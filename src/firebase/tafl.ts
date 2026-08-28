@@ -12,7 +12,7 @@
 
 import {
   collection, doc, addDoc, getDoc, setDoc, deleteDoc, updateDoc, query, where,
-  onSnapshot, orderBy, serverTimestamp, type Timestamp,
+  onSnapshot, orderBy, serverTimestamp, Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -37,6 +37,13 @@ export interface PartieTafl {
   gagnant?:  CampTafl | null;
   /** Le camp qui a abandonné, s'il y a lieu. */
   abandon?:  string | null;
+  /** Le minuteur choisi au défi (Alex, 2026-08-27) : chaque coup doit
+   *  tomber avant `echeance`, sinon l'autre réclame la partie. Absent ou
+   *  nul : pas de limite. */
+  delaiMs?:  number | null;
+  echeance?: Timestamp | null;
+  /** La partie s'est finie par forfait sur le minuteur. */
+  forfait?:  boolean;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 }
@@ -60,6 +67,8 @@ export async function lancerDefi(opts: {
   regleId: string;
   /** Le camp que JE prends; l'autre prend le camp opposé. */
   monCamp: CampTafl;
+  /** Temps accordé à chaque coup, en millisecondes; 0 ou absent = sans limite. */
+  delaiMs?: number;
 }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
   const autre: CampTafl = opts.monCamp === 'attacker' ? 'defender' : 'attacker';
@@ -75,11 +84,17 @@ export async function lancerDefi(opts: {
     tour: 'attacker' as CampTafl,
     gagnant: null,
     abandon: null,
+    delaiMs: opts.delaiMs || null,
+    echeance: null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
   return ref.id;
 }
+
+/** L'échéance du prochain coup, d'après le délai de la partie. */
+const echeanceSuivante = (delaiMs?: number | null) =>
+  delaiMs ? Timestamp.fromMillis(Date.now() + delaiMs) : null;
 
 /**
  * Ouvre un défi par lien, sans destinataire.
@@ -133,10 +148,12 @@ export async function rejoindreDefiParLien(
   return 'ok';
 }
 
-export async function repondreAuDefi(id: string, accepte: boolean): Promise<void> {
+export async function repondreAuDefi(id: string, accepte: boolean, delaiMs?: number | null): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {
     statut: accepte ? 'encours' : 'refuse',
+    // Le sablier du premier coup part à l'acceptation.
+    ...(accepte ? { echeance: echeanceSuivante(delaiMs) } : {}),
     updatedAt: serverTimestamp(),
   });
 }
@@ -157,11 +174,13 @@ export async function jouerCoup(
   coup: string,
   tourSuivant: CampTafl,
   gagnant: CampTafl | null = null,
+  delaiMs?: number | null,
 ): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {
     coups: [...coupsAvant, coup],
     tour: tourSuivant,
+    echeance: gagnant ? null : echeanceSuivante(delaiMs),
     ...(gagnant ? { statut: 'fini' as StatutPartie, gagnant } : {}),
     updatedAt: serverTimestamp(),
   });
@@ -175,6 +194,39 @@ export async function abandonner(id: string, uid: string, campGagnant: CampTafl)
     abandon: uid,
     updatedAt: serverTimestamp(),
   });
+}
+
+/** Le minuteur est écoulé sur le tour de l'autre : je réclame la partie. */
+export async function reclamerForfait(id: string, uidPerdant: string, campGagnant: CampTafl): Promise<void> {
+  if (!db) throw new Error('Firestore non configuré');
+  await updateDoc(doc(db, COL, id), {
+    statut: 'fini' as StatutPartie,
+    gagnant: campGagnant,
+    abandon: uidPerdant,
+    forfait: true,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/** Les délais proposés au défi. */
+export const DELAIS_DEFI: Array<{ ms: number; FR: string; EN: string }> = [
+  { ms: 0,                 FR: 'Sans limite', EN: 'No limit' },
+  { ms: 60 * 60 * 1000,    FR: '1 heure par coup', EN: '1 hour per move' },
+  { ms: 24 * 60 * 60 * 1000, FR: '24 heures par coup', EN: '24 hours per move' },
+  { ms: 3 * 24 * 60 * 60 * 1000, FR: '3 jours par coup', EN: '3 days per move' },
+];
+
+export function tempsRestant(p: Pick<PartieTafl, 'echeance' | 'statut'>): number | null {
+  if (p.statut !== 'encours' || !p.echeance) return null;
+  return p.echeance.toMillis() - Date.now();
+}
+
+export function formatDelai(ms: number, fr: boolean): string {
+  if (ms <= 0) return fr ? 'écoulé' : 'expired';
+  const h = Math.floor(ms / 3_600_000), m = Math.floor((ms % 3_600_000) / 60_000);
+  if (h >= 48) return fr ? `${Math.floor(h / 24)} j` : `${Math.floor(h / 24)} d`;
+  if (h >= 1) return `${h} h ${m.toString().padStart(2, '0')}`;
+  return `${m} min`;
 }
 
 export async function lirePartie(id: string): Promise<PartieTafl | null> {
