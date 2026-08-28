@@ -26,6 +26,9 @@ export interface PostMur {
   texte: string;
   photoUrl?: string;
   photoChemin?: string;
+  /** Présent seulement sur un billet posté depuis le mur d'une guilde
+   *  (Alex, 2026-08-27) — voir src/firebase/guildes.ts. */
+  guildeId?: string;
   creeLe: Timestamp | null;
 }
 
