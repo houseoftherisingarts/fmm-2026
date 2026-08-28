@@ -276,6 +276,16 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
             <rect x={handR.x - 2} y={handR.y - 76} width="4" height="76" rx="2" fill="#4A3420" />
             <circle cx={handR.x} cy={handR.y - 78} r="5" fill={armeD.couleur} />
           </>}
+          {/* Épée de lune (variante 4) : lame courbe, un joyau serti au pommeau. */}
+          {armeD.variante === 4 && <>
+            <path d={`M ${handR.x} ${handR.y - 12} Q ${handR.x + 14} ${handR.y - 45} ${handR.x + 3} ${handR.y - 72}`}
+                  fill="none" stroke="url(#metal)" strokeWidth="4.5" strokeLinecap="round" />
+            <path d={`M ${handR.x} ${handR.y - 12} Q ${handR.x + 14} ${handR.y - 45} ${handR.x + 3} ${handR.y - 72}`}
+                  fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="0.8" />
+            <rect x={handR.x - 9} y={handR.y - 12} width="18" height="4" rx="1" fill={armeD.couleur} />
+            <rect x={handR.x - 2.5} y={handR.y - 10} width="5" height="12" rx="1.5" fill={armeD.couleur} />
+            <circle cx={handR.x} cy={handR.y + 3} r="2.2" fill="#B9C6E0" stroke="rgba(0,0,0,0.4)" strokeWidth="0.5" />
+          </>}
         </Piece>
       )}
     </svg>
