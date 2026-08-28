@@ -11,7 +11,7 @@ import { BadgeCheck } from 'lucide-react';
 // du verre du site (Alex, 2026-08-28 : « plus gros, en semi-
 // transparence, plus glassmorphism »).
 const BadgeVerifie: React.FC<{ size?: number; className?: string; titre?: string }> = ({
-  size = 26, className = '', titre,
+  size = 34, className = '', titre,
 }) => (
   <span
     aria-label={titre}

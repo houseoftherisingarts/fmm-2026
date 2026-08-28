@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Camera, Trash2, Crop, Check, RotateCcw, ZoomIn, ZoomOut, Eye} from 'lucide-react';
+import { Camera, Crop, Check, RotateCcw, ZoomIn, ZoomOut, Eye } from 'lucide-react';
 import { storage } from '../../firebase';
 import { upsertUserProfile } from '../../firebase/applications';
 import { lireFiche, publierFiche, type Membre } from '../../firebase/ordre';
@@ -164,15 +164,6 @@ const AvatarUpload: React.FC<{
     }
   }, [uid, email, displayName, onChange, t]);
 
-  const remove = async () => {
-    setBusy(true); setErr(null);
-    try {
-      await upsertUserProfile({ uid, email, displayName, avatarUrl: '' });
-      onChange(undefined);
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
-    } finally { setBusy(false); }
-  };
 
   const ouvrirCadrage = () => { setBrouillon(cadrage ?? CADRAGE_ORIGINE); setEditing(true); };
   const revenirOrigine = () => { setBrouillon(cadrage ?? CADRAGE_ORIGINE); setEditing(false); };
@@ -475,16 +466,7 @@ const AvatarUpload: React.FC<{
             </button>
           </div>
         </div>
-      ) : avatarUrl ? (
-        <button
-          type="button"
-          onClick={remove}
-          className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.2em] text-[10px] opacity-60 hover:opacity-100 transition"
-          style={{ color: '#E08A6E' }}
-        >
-          <Trash2 size={12} /> {t.remove}
-        </button>
-      ) : (
+      ) : avatarUrl ? null : (
         <p className="font-sans text-xs text-center max-w-[15rem]" style={{ color: 'rgba(244,239,227,0.42)', fontWeight: 300 }}>
           {t.hint}
         </p>

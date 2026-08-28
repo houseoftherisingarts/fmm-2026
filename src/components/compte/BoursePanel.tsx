@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Loader2, Store, Gift } from 'lucide-react';
+import { Loader2, Store, Gift } from 'lucide-react';
 import { addLocale } from '../../lib/locale';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
@@ -71,18 +71,29 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
       {prive && (
         <>
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <button type="button" onClick={basculer} disabled={envoi}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] transition-colors disabled:opacity-50"
+            <label className="inline-flex items-center gap-3 cursor-pointer select-none">
+              <input type="checkbox" className="sr-only" checked={Boolean(bourse?.publique)}
+                     onChange={basculer} disabled={envoi} />
+              <span aria-hidden className="relative w-11 h-6 rounded-full transition-colors shrink-0"
                     style={{
-                      border: `1px solid ${bourse?.publique ? '#D8B05A' : 'rgba(244,239,227,0.22)'}`,
-                      background: bourse?.publique ? 'rgba(216,176,90,0.16)' : 'transparent',
-                      color: bourse?.publique ? '#F4EFE3' : 'rgba(244,239,227,0.7)',
+                      background: bourse?.publique ? 'rgba(216,176,90,0.45)' : 'rgba(244,239,227,0.14)',
+                      border: `1px solid ${bourse?.publique ? '#D8B05A' : 'rgba(244,239,227,0.25)'}`,
                     }}>
-              {envoi ? <Loader2 size={12} className="animate-spin" /> : bourse?.publique ? <Eye size={12} /> : <EyeOff size={12} />}
-              {bourse?.publique
-                ? (fr ? 'Bourse ouverte à tous' : 'Purse open to all')
-                : (fr ? 'Bourse gardée pour vous' : 'Purse kept to yourself')}
-            </button>
+                <span className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full transition-all"
+                      style={{
+                        left: bourse?.publique ? 'calc(100% - 1.25rem)' : '0.25rem',
+                        background: bourse?.publique ? '#F4EFE3' : 'rgba(244,239,227,0.6)',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                      }} />
+              </span>
+              <span className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.85)', fontWeight: 300 }}>
+                {envoi
+                  ? (fr ? 'Un instant…' : 'One moment…')
+                  : bourse?.publique
+                    ? (fr ? 'Ma bourse est publique' : 'My purse is public')
+                    : (fr ? 'Ma bourse est privée' : 'My purse is private')}
+              </span>
+            </label>
 
             <button type="button" onClick={reclamer} disabled={quotidien}
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/80 hover:text-brass transition-colors disabled:opacity-50"
