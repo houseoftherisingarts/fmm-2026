@@ -12,7 +12,7 @@ import { suivreFiche, type SkinMembre } from '../firebase/ordre';
 import { useAuth } from '../contexts/AuthContext';
 
 const CLE = 'fmm.prefsFond';
-const SKINS: SkinMembre[] = ['bleu', 'dore'];
+const SKINS: SkinMembre[] = ['bleu', 'vert', 'dore'];
 
 interface PrefsFond {
   animationsFond?: boolean;

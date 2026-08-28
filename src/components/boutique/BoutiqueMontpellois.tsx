@@ -19,7 +19,8 @@ import PieceMontpellois from './PieceMontpellois';
 
 const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: string }> = {
   rouge: { FR: 'Rouge d’origine', EN: 'Original red', couleur: '#8B2E2E' },
-  bleu:  { FR: 'Bleu de nuit',    EN: 'Night blue',    couleur: '#2E4A8B' },
+  bleu:  { FR: 'Bleu et argent',  EN: 'Blue and silver', couleur: '#8FAFD0' },
+  vert:  { FR: 'Vert de forêt',   EN: 'Forest green',    couleur: '#7FA982' },
   dore:  { FR: 'Doré du festin',  EN: 'Festival gold',  couleur: '#D8B05A' },
 };
 const SKINS_ACHETABLES: Array<'bleu' | 'dore'> = ['bleu', 'dore'];

@@ -24,7 +24,9 @@ export const GAIN_QUOTIDIEN = 1;
 /** Le prix des skins de plateforme, gratuits pour un compte VIP
  *  (users.sansPub) — doit rester en phase avec le même nom de
  *  constante côté fonction serveur. */
-export const PRIX_SKIN: Record<'bleu' | 'dore', number> = { bleu: 20, dore: 40 };
+// Le barème d'Alex (2026-08-28) : le bleu est offert, le vert vaut une
+// pièce, le doré reste la parure la plus rare.
+export const PRIX_SKIN: Record<'bleu' | 'vert' | 'dore', number> = { bleu: 0, vert: 1, dore: 5 };
 /** Le prix d'un album, tant qu'Alex n'a pas fixé un prix par groupe. */
 export const PRIX_ALBUM = 30;
 
@@ -67,6 +69,8 @@ export interface Bourse {
   /** Les groupes musicaux dont l'album a été acheté (voir Musique du
    *  profil) : leurs pistes deviennent des ambiances possibles. */
   albums?: string[];
+  /** La bourse est ouverte aux regards des autres membres (Alex, 2026-08-28). */
+  publique?: boolean;
   maj?: unknown;
 }
 
@@ -98,7 +102,7 @@ export const reclamerQuotidien = () => appeler<Record<string, never>, { solde: n
 
 /** Achète un cosmétique de boutique : un objet du catalogue
  *  (source: 'boutique', voir objets.ts) ou un skin de plateforme
- *  ('skin_bleu' / 'skin_dore'). */
+ *  ('skin_bleu', 'skin_vert' ou 'skin_dore'). */
 export const acheterCosmetique = (objetId: string) =>
   appeler<{ objetId: string }, { solde: number }>('acheterCosmetique')({ objetId });
 

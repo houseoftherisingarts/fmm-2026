@@ -36,6 +36,8 @@ import SoutienPanel from './SoutienPanel';
 import SansPubPanel from './SansPubPanel';
 import ParrainagePanel from './ParrainagePanel';
 import MusiquePanel from './MusiquePanel';
+import BoursePanel from './BoursePanel';
+import BoutiqueMontpellois from '../boutique/BoutiqueMontpellois';
 import PorteAdmin from './PorteAdmin';
 import DonnerRoleAdmin from './DonnerRoleAdmin';
 import AvatarUpload from './AvatarUpload';
@@ -80,13 +82,13 @@ export type ModeFiche = 'prive' | 'public';
 // Alex, 2026-08-28 : « Profil » absorbe le fil et les photos, « Badges »
 // absorbe la collection. Les anciens paramètres d'URL restent valides,
 // voir REDIRECTIONS_ONGLET plus bas.
-const ONGLETS_PRIVE  = ['profil', 'souk', 'commerce', 'badges', 'jeux', 'billets', 'messages'] as const;
+const ONGLETS_PRIVE  = ['profil', 'souk', 'commerce', 'badges', 'jeux', 'billets', 'messages', 'boutique'] as const;
 const ONGLETS_PUBLIC = ['profil', 'souk', 'commerce', 'badges', 'jeux'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
   profil: UserIcon, souk: Tag, commerce: Store, badges: Award, jeux: Swords, billets: Ticket,
-  messages: MessageCircle,
+  messages: MessageCircle, boutique: ShoppingBag,
 };
 
 // Les anciens onglets fusionnés (et l'ancien nom de « collection »)
@@ -800,6 +802,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       {fiche?.devise?.trim() || t.sansDescription}
                     </p>
                   </section>
+                  <BoursePanel uid={uid} lang={lang} prive={false} />
                   {/* L'équipe ouvre les portes de l'admin à ce membre
                       (Alex, 2026-08-28). */}
                   {isAdmin && !prive && (
@@ -980,6 +983,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   {/* Le parrainage et sa lignée (Alex, 2026-08-28). */}
                   <ParrainagePanel uid={compte.uid} lang={lang} />
                   {/* La musique du site, choisie par la personne (Alex, 2026-08-28). */}
+                  {/* La bourse en Montpellois (Alex, 2026-08-28). */}
+                  <BoursePanel uid={compte.uid} lang={lang} prive />
                   <MusiquePanel uid={compte.uid} lang={lang} />
                 </div>
               </div>
@@ -988,6 +993,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             {/* Les photos qu'une personne envoie aux archives du festival :
                 son affaire à elle, jamais celle d'un visiteur. */}
             {/* Le Souk et le Commerce de la personne (Alex, 2026-08-27). */}
+            {onglet === 'boutique' && prive && compte && (
+              <BoutiqueMontpellois lang={lang} />
+            )}
+
             {onglet === 'souk' && (
               <SoukDe uid={uid} lang={lang} editable={prive} />
             )}

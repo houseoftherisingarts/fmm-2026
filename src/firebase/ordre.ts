@@ -60,7 +60,7 @@ export function rolesAffiches(roles?: RoleMembre[]): RoleMembre[] {
  *  au-dessus du portrait, ou en colonne verticale à droite. */
 export type PositionBanniere = 'haut' | 'bas' | 'droite';
 /** Le skin choisi par un membre VIP (rouge = la palette d'origine). */
-export type SkinMembre = 'rouge' | 'bleu' | 'dore';
+export type SkinMembre = 'rouge' | 'bleu' | 'vert' | 'dore';
 
 export interface PrefsMembre {
   /** La bannière glisse doucement au défilement. Défaut vrai. */

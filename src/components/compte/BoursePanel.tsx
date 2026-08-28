@@ -26,7 +26,7 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
   // Sur la fiche de quelqu'un d'autre, une bourse fermée ne se montre pas.
   if (!prive && (!bourse || !bourse.publique)) return null;
 
-  const rang = bourse ? rangFortune(bourse.gagne || 0) : null;
+  const rang = bourse ? rangFortune(bourse.gagne || 0).actuel : null;
 
   const basculer = async () => {
     setEnvoi(true); setMessage(null);

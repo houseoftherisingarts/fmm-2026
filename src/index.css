@@ -744,13 +744,27 @@ html.sans-animations-fond .fmm-fire-backdrop {
    .fmm-caravan-page et [data-admin-skin="parchment"] plus haut : on
    redéfinit les jetons de couleur, toutes les classes Tailwind qui
    les lisent (bg-brass, text-brass…) suivent automatiquement. */
+/* Bleu et argent (Alex, 2026-08-28) : tout ce qui était or devient
+   bleuté, et l'accent tire vers l'argent poli. */
 html.skin-bleu {
-  --color-velvet:        #0B1A2E;
-  --color-velvet-deep:   #060D18;
-  --color-amber-glow:    #9FC4E8;
-  --color-brass:         #6E93B8;
-  --color-brass-soft:    #8FB3D6;
-  --color-copper:        #4A6B8A;
+  --color-velvet:        #0C1B30;
+  --color-velvet-deep:   #050C17;
+  --color-amber-glow:    #CFE0F2;
+  --color-brass:         #8FAFD0;
+  --color-brass-soft:    #B6CDE6;
+  --color-copper:        #5C7EA6;
+  --color-mustard:       #A8C4E0;
+}
+/* Vert de forêt et vieil étain (Alex, 2026-08-28), le skin à un
+   Montpellois. */
+html.skin-vert {
+  --color-velvet:        #10241A;
+  --color-velvet-deep:   #08150F;
+  --color-amber-glow:    #C9E3C2;
+  --color-brass:         #7FA982;
+  --color-brass-soft:    #A3C6A2;
+  --color-copper:        #4E7550;
+  --color-mustard:       #96BE96;
 }
 html.skin-dore {
   --color-velvet:        #3A2412;
