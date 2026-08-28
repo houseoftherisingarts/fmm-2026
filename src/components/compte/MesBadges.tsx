@@ -129,13 +129,28 @@ const MesBadges: React.FC<{
                           <Pin size={11} />
                         </button>
                       )}
-                      <img
-                        src={sceauDe(b.id)} alt="" aria-hidden loading="lazy"
-                        className="mx-auto mb-2 w-16 h-16 object-contain"
-                        style={eu
-                          ? { filter: 'drop-shadow(0 0 14px rgba(232,177,74,0.28))' }
-                          : { filter: 'grayscale(1) brightness(0.42)', opacity: 0.75 }}
-                      />
+                      {sceauxCasses.has(b.id) ? (
+                        <span
+                          aria-hidden
+                          className="mx-auto mb-2 w-16 h-16 flex items-center justify-center text-3xl rounded-full"
+                          style={{
+                            border: `1px solid ${eu ? 'rgba(232,177,74,0.4)' : 'rgba(244,239,227,0.18)'}`,
+                            color: eu ? '#D8B05A' : 'rgba(244,239,227,0.35)',
+                            filter: eu ? 'drop-shadow(0 0 10px rgba(232,177,74,0.22))' : 'none',
+                          }}
+                        >
+                          {b.glyphe}
+                        </span>
+                      ) : (
+                        <img
+                          src={sceauDe(b.id)} alt="" aria-hidden loading="lazy"
+                          onError={() => setSceauxCasses((s) => new Set(s).add(b.id))}
+                          className="mx-auto mb-2 w-16 h-16 object-contain"
+                          style={eu
+                            ? { filter: 'drop-shadow(0 0 14px rgba(232,177,74,0.28))' }
+                            : { filter: 'grayscale(1) brightness(0.42)', opacity: 0.75 }}
+                        />
+                      )}
                       <span className="block font-sans text-[10px] leading-tight"
                             style={{ color: eu ? 'rgba(244,239,227,0.8)' : 'rgba(244,239,227,0.35)' }}>
                         {fr ? b.nomFR : b.nomEN}
