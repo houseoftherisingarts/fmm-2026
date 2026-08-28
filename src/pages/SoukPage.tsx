@@ -135,6 +135,15 @@ const GrilleObjets: React.FC<{ lang: 'FR' | 'EN'; uid: string }> = ({ lang, uid 
         </button>
       </div>
 
+      {filtreGenre !== 'all' && (
+        <div className="flex items-center gap-2 flex-wrap mb-8">
+          <FiltreBouton actif={filtreCat === 'all'} onClick={() => setFiltreCat('all')} label={fr ? 'Toutes les catégories' : 'All categories'} />
+          {categoriesVisibles.map((c) => (
+            <FiltreBouton key={c} actif={filtreCat === c} onClick={() => setFiltreCat(c)} label={CAT_LABEL[lang][c]} />
+          ))}
+        </div>
+      )}
+
       {vendreOuvert && (
         <div className="mb-10 glass-light rounded-lg-card p-1">
           <MesObjets uid={uid} lang={lang} />
