@@ -1186,8 +1186,8 @@ const FR = {
   // absorbe la collection. Plus de possessif nulle part : les mots
   // tiennent sur une ligne, en bureau comme en mobile.
   onglet: {
-    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
-    billets: 'Billets', messages: 'Boîte de réception', boutique: 'Boutique',
+    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges et coffre', jeux: 'Jeux',
+    messages: 'Boîte de réception', boutique: 'Boutique',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
