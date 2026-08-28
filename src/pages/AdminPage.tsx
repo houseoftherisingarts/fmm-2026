@@ -39,6 +39,7 @@ const DashboardSection    = lazy(() => import('./admin/sections/DashboardSection
 const BenevolesSection    = lazy(() => import('./admin/sections/BenevolesSection'));
 const EquipesSection      = lazy(() => import('./admin/sections/EquipesSection'));
 const MarchandsSection    = lazy(() => import('./admin/sections/MarchandsSection'));
+const CommercesSection    = lazy(() => import('./admin/sections/CommercesSection'));
 const MusiquesSection     = lazy(() => import('./admin/sections/MusiquesSection'));
 const ActivitesSection    = lazy(() => import('./admin/sections/ActivitesSection'));
 const BadgesSection       = lazy(() => import('./admin/sections/BadgesSection'));
