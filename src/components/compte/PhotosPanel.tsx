@@ -320,7 +320,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                     droite, et devient publique du même coup. */}
                 <button
                   type="button"
-                  onClick={() => changerVedette(p.id, !p.vedette)}
+                  onClick={(e) => { e.stopPropagation(); changerVedette(p.id, !p.vedette); }}
                   aria-pressed={Boolean(p.vedette)}
                   aria-label={p.vedette ? t.retirerVedette : t.mettreVedette}
                   title={p.vedette ? t.retirerVedette : t.mettreVedette}
