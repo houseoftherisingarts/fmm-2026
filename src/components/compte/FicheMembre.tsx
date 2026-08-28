@@ -261,6 +261,19 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   }, [prive, uid, chargement, sansPub, fiche]);
   const vip = prive ? sansPub : !!fiche?.vip;
 
+  // Deux badges qui se constatent plutôt qu'ils ne se déclenchent : la
+  // bannière et le portrait posés ensemble, puis le profil au grand
+  // complet (nom, ville, description, portrait, bannière). Vérifiés à
+  // chaque chargement de la fiche; `gagner` ignore un badge déjà posé
+  // (Alex, 2026-08-28).
+  useEffect(() => {
+    if (!prive || !uid || chargement || !fiche) return;
+    if (fiche.banniereUrl && avatarUrl) void gagner('banniere-et-portrait', uid);
+    if (fiche.nom?.trim() && fiche.ville?.trim() && fiche.devise?.trim() && fiche.banniereUrl && avatarUrl) {
+      void gagner('profil-complet', uid);
+    }
+  }, [prive, uid, chargement, fiche, avatarUrl]);
+
   // ── Les réglages personnels (prefs) : un seul point d'écriture,
   //    utilisé par Réglages, la bannière et l'Espace VIP.
   //
