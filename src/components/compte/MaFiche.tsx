@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { Link } from 'react-router-dom';
 import { Save, Users, Check } from 'lucide-react';
 import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS, FMM_ID } from '../../content/evenementsMedievaux';
@@ -7,6 +8,7 @@ import { addLocale } from '../../lib/locale';
 import { hueFor } from '../../firebase/publicProfile';
 import {
   lireFiche, publierFiche, STATS_VIDES, type Membre, type StatsMembre,
+  EDITIONS_FESTIVAL, ANNEES_POUR_VETERAN,
 } from '../../firebase/ordre';
 
 // ─── Ma fiche de l'Ordre ────────────────────────────────────────────
@@ -26,6 +28,7 @@ const CHAMPS: Array<[keyof StatsMembre, string, string]> = [
 const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
   const { user } = useAuth();
+  const { gagnerBadge } = useBadges();
   const [fiche, setFiche] = useState<Membre | null>(null);
   const [etat, setEtat] = useState<'lecture' | 'idle' | 'ecrit' | 'ok'>('lecture');
 
@@ -60,11 +63,13 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     // au-dessus, et la fiche les reçoit de là (Alex, 2026-08-23).
     await publierFiche(user.uid, {
       ville: fiche.ville || '', devise: fiche.devise || '',
+      anneesPresence: fiche.anneesPresence || [],
       evenements: fiche.evenements ?? [FMM_ID],
       evenementsAutre: fiche.evenementsAutre?.trim() || '',
       stats: fiche.stats || STATS_VIDES,
       avatarHue: fiche.avatarHue ?? hueFor(fiche.nom || user.uid),
     }).catch(() => { /* hors ligne */ });
+    if ((fiche.anneesPresence || []).length >= ANNEES_POUR_VETERAN) gagnerBadge('veteran');
     setEtat('ok');
     window.setTimeout(() => setEtat('idle'), 2200);
   };
@@ -119,6 +124,32 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           </li>
         ))}
       </ul>
+
+      {/* Les éditions où la personne était présente (Alex, 2026-08-28). */}
+      <div className="mb-6">
+        <p className="witcher-stat-label mb-2">{fr ? 'Vous étiez là en…' : 'You were there in…'}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {EDITIONS_FESTIVAL.map((an) => {
+            const coche = (fiche.anneesPresence || []).includes(an);
+            return (
+              <button key={an} type="button" role="checkbox" aria-checked={coche}
+                onClick={() => setFiche({
+                  ...fiche,
+                  anneesPresence: coche
+                    ? (fiche.anneesPresence || []).filter((x) => x !== an)
+                    : [...(fiche.anneesPresence || []), an],
+                })}
+                className="px-3 py-1.5 rounded-full font-sans text-[11px] tracking-[0.14em] transition-colors"
+                style={{ border: `1px solid ${coche ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: coche ? 'rgba(216,176,90,0.16)' : 'transparent', color: coche ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                {an}
+              </button>
+            );
+          })}
+        </div>
+        <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(244,239,227,0.45)' }}>
+          {fr ? 'Deux éditions vous valent le badge du vétéran.' : 'Two editions earn you the veteran badge.'}
+        </p>
+      </div>
 
       {/* Le questionnaire : quels autres rendez-vous médiévaux la
           personne fréquente. Le festival est coché d'office; la liste
