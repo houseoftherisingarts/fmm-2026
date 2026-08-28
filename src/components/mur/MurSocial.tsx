@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Send, Trash2, Megaphone, Loader2, X, ShieldCheck, BadgeCheck } from 'lucide-react';
+import { Image as ImageIcon, Send, Trash2, Megaphone, Loader2, X, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
 import { lireFiche } from '../../firebase/ordre';
