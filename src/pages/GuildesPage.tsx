@@ -11,6 +11,7 @@ import { addLocale } from '../lib/locale';
 import {
   creerGuilde, demanderAdhesion, retirerDemande, suivreGuildes,
   LONGUEUR_NOM_MAX, type Guilde,
+  FORMES_GUILDE, motDeLaForme, type FormeGuilde,
 } from '../firebase/guildes';
 
 // ─── Les guildes ───────────────────────────────────────────────────
@@ -29,6 +30,7 @@ const GuildesPage: React.FC = () => {
   const [ouvert, setOuvert] = useState(false);
   const [nom, setNom] = useState('');
   const [description, setDescription] = useState('');
+  const [forme, setForme] = useState<FormeGuilde>('guilde');
   const [creation, setCreation] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -37,7 +39,7 @@ const GuildesPage: React.FC = () => {
     if (!user) return;
     setCreation(true); setErreur(null);
     try {
-      const id = await creerGuilde({ uid: user.uid, nom, description });
+      const id = await creerGuilde({ uid: user.uid, nom, description, forme });
       navigate(`${addLocale('/guildes', lang)}/${id}`);
     } catch (err) {
       setErreur(err instanceof Error ? err.message : String(err));
@@ -77,23 +79,41 @@ const GuildesPage: React.FC = () => {
                 </p>
                 <button type="button" onClick={() => setOuvert((v) => !v)}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-                  <Plus size={13} /> {fr ? 'Fonder une guilde' : 'Found a guild'}
+                  <Plus size={13} /> {fr ? 'Fonder' : 'Found'}
                 </button>
               </div>
 
               {ouvert && (
                 <form onSubmit={fonder} className="glass-light rounded-lg-card p-5 md:p-6 space-y-3">
+                  <div>
+                    <span className="block witcher-stat-label mb-1.5">{fr ? 'Quel mot vous ressemble ?' : 'Which word suits you?'}</span>
+                    <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={fr ? 'La forme du groupe' : 'The kind of group'}>
+                      {FORMES_GUILDE.map((f) => {
+                        const actif = forme === f.id;
+                        return (
+                          <button key={f.id} type="button" role="radio" aria-checked={actif} onClick={() => setForme(f.id)}
+                            className="px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
+                            style={{ border: `1px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: actif ? 'rgba(216,176,90,0.16)' : 'transparent', color: actif ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                            {fr ? f.FR : f.EN}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(244,239,227,0.45)' }}>
+                      {fr ? 'Le mot change, le fonctionnement reste le même.' : 'The word changes, everything else stays the same.'}
+                    </p>
+                  </div>
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
                     <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))} required autoFocus
-                      placeholder={fr ? 'Le nom de la guilde' : 'The guild’s name'}
+                      placeholder={fr ? `Le nom ${['clan','ordre'].includes(forme) ? 'du' : 'de la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `The ${motDeLaForme(forme, 'EN').toLowerCase()}’s name`}
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40"
                       style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
                   </label>
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
                     <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
-                      placeholder={fr ? 'Ce qui rassemble la guilde' : 'What brings the guild together'}
+                      placeholder={fr ? `Ce qui rassemble ${['clan','ordre'].includes(forme) ? 'le' : 'la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `What brings the ${motDeLaForme(forme, 'EN').toLowerCase()} together`}
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 resize-y"
                       style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
                   </label>
@@ -152,6 +172,9 @@ const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> 
       )}
       <div className="min-w-0 flex-1">
         <h3 className="font-display title-medieval text-lg text-ivory truncate">{guilde.nom}</h3>
+        <span className="inline-block font-sans uppercase tracking-[0.2em] text-[9px] mb-0.5" style={{ color: '#D8B05A' }}>
+          {motDeLaForme(guilde.forme, lang)}
+        </span>
         {guilde.description && (
           <p className="font-editorial text-sm text-ivory-soft leading-relaxed line-clamp-2 mt-0.5">{guilde.description}</p>
         )}
