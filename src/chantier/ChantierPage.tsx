@@ -65,6 +65,9 @@ const ChantierPage: React.FC = () => {
       } else if (objetId) {
         const o = objetParId(objetId);
         setMessageTirage(fr ? `Une trouvaille ! ${o?.nom.FR ?? objetId} rejoint votre sac.` : `A find! ${o?.nom.EN ?? objetId} joins your bag.`);
+        // Le sac vient de bouger côté serveur : on relit l'avatar pour
+        // que le nouvel objet paraisse tout de suite dans le sac.
+        if (user) void chargerAvatar(user.uid).then(setAvatar);
       } else {
         setMessageTirage(fr ? 'Rien cette fois. Le sort sera meilleur demain.' : 'Nothing this time. Better luck tomorrow.');
       }
