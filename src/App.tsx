@@ -433,6 +433,10 @@ const App: React.FC = () => (
                     Gaté isAdmin à l'intérieur de la page elle-même. */}
                 <Route path="/chantier"    element={<ChantierPage />} />
                 <Route path="/en/chantier" element={<ChantierPage />} />
+                {/* Banc d'essai voter/commenter/partager (Alex, 2026-08-28) :
+                    même gate ?apercu=1, jamais publié tel quel. */}
+                <Route path="/chantier/votes"    element={<VotesBancEssai />} />
+                <Route path="/en/chantier/votes" element={<VotesBancEssai />} />
                 <Route path="/souk"    element={<SoukPage />} />
                 <Route path="/en/souk" element={<SoukPage />} />
                 <Route path="/guildes"           element={<GuildesPage />} />
