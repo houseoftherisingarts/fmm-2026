@@ -66,9 +66,10 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
           <rect width="6" height="6" fill="transparent" />
           <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(0,0,0,0.35)" strokeWidth="1.4" />
         </pattern>
-        <pattern id="mailgrid" width="7" height="7" patternUnits="userSpaceOnUse">
-          <rect width="7" height="7" fill="transparent" />
-          <circle cx="1.2" cy="1.2" r="1" fill="rgba(0,0,0,0.30)" />
+        <pattern id="mailgrid" width="8" height="8" patternUnits="userSpaceOnUse">
+          <rect width="8" height="8" fill="transparent" />
+          <circle cx="1" cy="1" r="0.65" fill="rgba(0,0,0,0.4)" />
+          <circle cx="5" cy="5" r="0.65" fill="rgba(0,0,0,0.4)" />
         </pattern>
         <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="rgba(255,255,255,0.55)" />
