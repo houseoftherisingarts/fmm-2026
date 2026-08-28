@@ -864,6 +864,20 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </div>
             ))}
 
+            {/* ── Le fil de la personne, puis ses photos : le Profil absorbe
+                les anciens onglets Fil et Photos (Alex, 2026-08-28). ── */}
+            {onglet === 'profil' && (
+              <div className="mt-8 md:mt-10 space-y-6 md:space-y-8">
+                <div>
+                  <p className="witcher-stat-label mb-4">{t.filDeLaPersonne}</p>
+                  <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
+                </div>
+                {prive && compte
+                  ? <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
+                  : <PhotosDe uid={uid} lang={lang} titre={t.sesPhotos} />}
+              </div>
+            )}
+
             {/* ── Sous le profil, pour tout le monde (Alex, 2026-08-27) :
                 signaler un bug, puis le babillard des annonces. */}
             {onglet === 'profil' && (
