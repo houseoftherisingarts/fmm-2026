@@ -2025,6 +2025,10 @@ const GAIN_PAR_BADGE = 5;
 const GAIN_QUOTIDIEN = 1;
 const PRIX_SKIN = { bleu: 20, dore: 40 };
 const PRIX_ALBUM = 30;
+// Alex, 2026-08-28 : les ambiances achetables de src/lib/ambiances.ts
+// (celles marquées `gratuite: false`) — un seul palier pour l'instant.
+const PRIX_AMBIANCE = 1;
+const AMBIANCES_ACHETABLES = ['menestrel'];
 
 const RANGS_FORTUNE = [
   { seuil: 100,        badgeId: 'fortune-100' },
