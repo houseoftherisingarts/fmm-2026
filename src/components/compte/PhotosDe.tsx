@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Camera } from 'lucide-react';
 import { suivrePhotosPubliquesDe, suivrePhotosVedette, type PhotoPublique } from '../../firebase/photosPubliques';
+import { useAuth } from '../../contexts/AuthContext';
+import VisionneusePhoto, { mapDansCadre } from './VisionneusePhoto';
 
 // ─── La galerie publique d'un membre ────────────────────────────────
 // Ce qu'un autre membre voit en ouvrant la fiche : seulement les photos
 // que la personne a marquées publiques (Alex, 2026-08-27). La légende
-// se lit en survol et sous la photo.
+// se lit en survol et sous la photo. Un clic ouvre la visionneuse en
+// grand ; les personnes identifiées y paraissent, avec un bouton pour
+// se retirer soi-même (Alex, 2026-08-28).
 
 const PhotosDe: React.FC<{
   uid: string; lang: 'FR' | 'EN'; titre: string;
