@@ -33,7 +33,7 @@ const BoutiquePage: React.FC = () => {
       />
       <section className="relative bleed-edges pt-4 pb-24 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          {!user ? (
+          {!user && !apercu ? (
             <div className="glass-light rounded-lg-card p-8 text-center max-w-xl mx-auto">
               <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-5">
                 {fr ? 'La boutique se visite entre membres. Connectez-vous pour voir votre bourse.' : 'The shop is for members only. Sign in to see your purse.'}
