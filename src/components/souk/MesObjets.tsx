@@ -6,6 +6,7 @@ import {
   creerObjetSouk, majObjetSouk, supprimerObjetSouk, suivreObjetsDe,
   MAX_PHOTOS_OBJET, type ObjetSouk, type CategorieSouk, type StatutSouk,
 } from '../../firebase/souk';
+import PieceMontpellois from '../boutique/PieceMontpellois';
 import PhotosPicker from './PhotosPicker';
 
 // ─── MesObjets : le formulaire d'ajout + la liste de ses objets ─────
