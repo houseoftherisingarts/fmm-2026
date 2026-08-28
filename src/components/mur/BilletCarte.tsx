@@ -281,8 +281,8 @@ const BilletCarte: React.FC<{
         <img src={post.photoUrl} alt="" loading="lazy" className="mt-4 w-full max-h-[32rem] object-cover rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
       )}
       {post.videoUrl && (
-        <video controls playsInline preload="metadata" src={post.videoUrl}
-               className="mt-4 w-full max-h-[32rem] rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
+        <VideoBillet fr={fr} url={post.videoUrl} vignette={post.videoVignette}
+                     titre={post.videoTitre} description={post.videoDescription} />
       )}
 
       {/* L'aperçu du premier lien collé dans le texte (Alex, 2026-08-28). */}
