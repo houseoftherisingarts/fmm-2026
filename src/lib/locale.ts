@@ -42,6 +42,7 @@ const FR_TO_EN: Record<string, string> = {
   '/politique-de-confidentialite': '/privacy',
   '/groupes': '/groups',
   '/chevaux': '/horses',
+  '/guildes': '/guilds',
 };
 
 const EN_TO_FR: Record<string, string> = Object.fromEntries(
