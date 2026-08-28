@@ -967,7 +967,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 <div className="lg:col-span-5">
                   <SoutienPanel lang={lang} userEmail={compte.email || ''} userName={nom} />
                   {/* Le don « sans publicité à vie » (Alex, 2026-08-27). */}
-                  <SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} />
+                  <div id="don-sans-pub"><SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} /></div>
                 </div>
               </div>
             )}
