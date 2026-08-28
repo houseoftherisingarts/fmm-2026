@@ -73,6 +73,9 @@ export interface Bourse {
   /** Les groupes musicaux dont l'album a été acheté (voir Musique du
    *  profil) : leurs pistes deviennent des ambiances possibles. */
   albums?: string[];
+  /** Les ambiances de src/lib/ambiances.ts achetées à la boutique
+   *  (celles marquées `gratuite: false`) — Alex, 2026-08-28. */
+  ambiances?: string[];
   /** La bourse est ouverte aux regards des autres membres (Alex, 2026-08-28). */
   publique?: boolean;
   maj?: unknown;
