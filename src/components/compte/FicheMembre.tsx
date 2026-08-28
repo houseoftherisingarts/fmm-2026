@@ -33,7 +33,6 @@ import MessageThread from '../vendor/MessageThread';
 import AnnoncesPanel from './AnnoncesPanel';
 import CoffreBillets from './CoffreBillets';
 import SoutienPanel from './SoutienPanel';
-import SansPubPanel from './SansPubPanel';
 import ParrainagePanel from './ParrainagePanel';
 import MusiquePanel from './MusiquePanel';
 import BoursePanel from './BoursePanel';
