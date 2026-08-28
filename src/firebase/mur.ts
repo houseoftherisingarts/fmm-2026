@@ -78,6 +78,7 @@ export async function publierSurLeMur(opts: {
     // null (et non absent) : la règle et la requête du mur général filtrent dessus.
     guildeId: opts.guildeId || null,
     ...(opts.moderateur ? { moderateur: true } : {}),
+    ...(opts.verifie ? { verifie: true } : {}),
     creeLe: serverTimestamp(),
   });
   return id;
