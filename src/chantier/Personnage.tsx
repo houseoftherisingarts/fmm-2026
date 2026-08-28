@@ -171,6 +171,8 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
       {amulette && (
         <Piece rarete={amulette.rarete}>
           <polygon points="100,96 105,104 100,112 95,104" fill={amulette.couleur} stroke="rgba(0,0,0,0.35)" />
+          {/* Amulette de l'œil (variante 2) : une pupille gravée au centre. */}
+          {amulette.variante === 2 && <circle cx="100" cy="104" r="1.8" fill="rgba(244,239,227,0.85)" />}
         </Piece>
       )}
 
