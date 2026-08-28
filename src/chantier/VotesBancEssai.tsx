@@ -160,6 +160,13 @@ const VotesBancEssai: React.FC = () => {
             </p>
           </div>
         </article>
+
+        {/* ── Le billet vidéo, façon YouTube ────────────────────────── */}
+        <BilletCarte
+          lang="FR" post={BILLET_VIDEO} delaiIndex={0}
+          fond="rgba(38, 30, 52, 0.45)" bord="rgba(120, 130, 190, 0.32)"
+          peutEpingler={false} bandeauEpingle=""
+        />
       </div>
     </main>
   );
