@@ -4,7 +4,7 @@
 // une fiche de commerce non officielle (l'équivalent d'une page
 // Facebook, jamais approuvée par le festival tant qu'elle n'est pas
 // promue en kiosque). Storage : souk/{uid}/{id}-{n}.webp et
-// commerces/{uid}/{n}.webp — même geste de redimensionnement que
+// commerces/{uid}/{n}.webp, même geste de redimensionnement que
 // photosPubliques.ts (canevas → webp, côté navigateur, avant l'envoi).
 
 import {
