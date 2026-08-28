@@ -37,6 +37,9 @@ export interface PostMur {
   guildeId?: string;
   /** Porte le badge Admin · Modérateur. */
   moderateur?: boolean;
+  /** La coche bleue vérifiée, recopiée depuis la fiche au moment de la
+   *  publication (Alex, 2026-08-28). */
+  verifie?: boolean;
   creeLe: Timestamp | null;
 }
 
