@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image as ImageIcon, Send, Loader2, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { lireFiche } from '../../firebase/ordre';
