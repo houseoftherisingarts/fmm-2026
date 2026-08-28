@@ -298,8 +298,14 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
     }
   };
   const allerVersSansPub = () => {
-    ouvrir('billets');
+    // Le paiement « sans publicité » vit maintenant dans la boutique
+    // (Alex, 2026-08-28), plus dans l'ancien onglet Billets.
+    ouvrir('boutique');
     setTimeout(() => document.getElementById('don-sans-pub')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  };
+  const allerVersCoffre = () => {
+    ouvrir('badges');
+    setTimeout(() => document.getElementById('coffre')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
 
   // ── Le badge bleu vérifié : décerné par l'équipe depuis la fiche
