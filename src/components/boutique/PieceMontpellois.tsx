@@ -54,7 +54,7 @@ const PieceMontpellois: React.FC<Props> = ({ size = 20, image = false, className
         d="M 12 26 L 12 14 L 16 14 L 20 21 L 24 14 L 28 14 L 28 26 L 24.5 26 L 24.5 19 L 21 26 L 19 26 L 15.5 19 L 15.5 26 Z"
         fill="url(#piece-relief)" stroke="rgba(0,0,0,0.4)" strokeWidth="0.6"
       />
-      <circle cx="20" cy="20" r={r > 0 ? 18.5 : 18.5} fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
+      <circle cx="20" cy="20" r="18.5" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" />
     </svg>
   );
 };
