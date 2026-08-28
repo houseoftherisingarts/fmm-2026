@@ -2298,6 +2298,24 @@ exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
   return { solde: resultat.solde, filId };
 });
 
+// Une amitié qui devient réciproque : le badge des deux côtés, peu
+// importe qui a cliqué « accepter » (src/firebase/ordre.ts,
+// accepterAmitie). Une requête de comptage donne aussi le badge des
+// dix amitiés, sans dupliquer la logique côté client (Alex, 2026-08-28).
+exports.amitieBadge = onDocumentWritten(
+  { document: 'amities/{id}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const avant = (event.data && event.data.before && event.data.before.exists) ? event.data.before.data() : null;
+    const apres = (event.data && event.data.after && event.data.after.exists) ? event.data.after.data() : null;
+    if (!apres || apres.statut !== 'amis' || (avant && avant.statut === 'amis')) return;
+    for (const uid of apres.paire || []) {
+      await poserBadge(uid, 'amitie-1');
+      const compte = await db.collection('amities').where('paire', 'array-contains', uid).where('statut', '==', 'amis').count().get();
+      if (compte.data().count >= 10) await poserBadge(uid, 'amis-dix');
+    }
+  },
+);
+
 // Un objet du Souk qui passe à 'vendu' : le badge du vendeur, qu'il
 // soit passé par acheterAuSouk (paiement en Montpellois) ou par un
 // arrangement en dehors du site que le vendeur marque lui-même
