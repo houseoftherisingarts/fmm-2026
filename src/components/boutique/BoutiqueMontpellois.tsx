@@ -161,39 +161,79 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
       {erreur && <p className="font-editorial italic text-xs text-blush">{erreur}</p>}
 
-      {/* Cosmétiques */}
+      {/* La billetterie et la table : les vraies places, en dollars,
+          jamais en Montpellois (Alex, 2026-08-28). */}
       <section>
-        <p className="witcher-stat-label mb-4"><Gem size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Cosmétiques' : 'Cosmetics'}</p>
+        <p className="witcher-stat-label mb-4"><Ticket size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'La billetterie et la table' : 'Tickets and the table'}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {OBJETS_BOUTIQUE.map((o) => {
-            const aDeja = possedes.has(o.id);
-            return (
-              <div key={o.id} className="glass-light rounded-lg-card p-4 flex flex-col gap-3" style={{ border: `1px solid ${COULEUR_RARETE[o.rarete]}55` }}>
-                <div className="flex items-center gap-3">
-                  <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center"
-                        style={{ background: 'rgba(244,239,227,0.05)', border: `1.5px solid ${COULEUR_RARETE[o.rarete]}` }}>
-                    <span style={{ width: 30, height: 30, borderRadius: 6, background: o.couleur }} />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? o.nom.FR : o.nom.EN}</p>
-                    <p className="font-sans text-[10px] uppercase tracking-widest" style={{ color: COULEUR_RARETE[o.rarete] }}>{o.rarete}</p>
-                  </div>
-                </div>
-                <div className="mt-auto flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold">
-                    <PieceMontpellois size={16} />{o.prix}
-                  </span>
-                  <button type="button" disabled={aDeja || enCours === o.id || !uid}
-                          onClick={() => acheterObjet(o.id)}
-                          className="px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
-                    {aDeja ? (fr ? 'À vous' : 'Yours') : (fr ? 'Acheter' : 'Buy')}
-                  </button>
-                </div>
+          {/* Billet du festival : la campagne membre, cinq dollars de
+              moins que la campagne publique (voir src/lib/billetterie.ts). */}
+          <div className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(244,239,227,0.05)', border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                <Ticket size={22} style={{ color: '#D8B05A' }} />
+              </span>
+              <div className="min-w-0">
+                <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? 'Billet du festival' : 'Festival ticket'}</p>
+                <p className="font-editorial italic text-[10px] text-ivory-soft/50">{fr ? 'Votre place pour les trois jours' : 'Your pass for the three days'}</p>
               </div>
-            );
-          })}
+            </div>
+            <a href={lienBilletterie(true)} target="_blank" rel="noopener noreferrer"
+               className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card">
+              {fr ? 'Voir les billets' : 'See tickets'} <ArrowUpRight size={11} />
+            </a>
+          </div>
+
+          {/* Billet du banquet : même appel serveur que la page
+              Nourriture (LIEN_BANQUET), une place à la fois. */}
+          <div className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(244,239,227,0.05)', border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                <UtensilsCrossed size={22} style={{ color: '#D8B05A' }} />
+              </span>
+              <div className="min-w-0">
+                <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? 'Billet du banquet' : 'Banquet ticket'}</p>
+                <p className="font-sans text-sm text-brass font-semibold mt-0.5">74,73 $</p>
+              </div>
+            </div>
+            <button type="button" disabled={banquetEnRoute || !uid} onClick={acheterBanquet}
+                    className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
+              {banquetEnRoute ? <Loader2 size={12} className="animate-spin" /> : (fr ? 'Réserver ma place' : 'Book my seat')}
+            </button>
+            {banquetEchec && (
+              <p className="font-editorial text-[11px] text-blush">
+                {fr ? 'Le lien direct : ' : 'Direct link: '}
+                <a href={import.meta.env.VITE_SQUARE_BANQUET_URL || SQUARE_BANQUET} target="_blank" rel="noopener noreferrer" className="underline text-brass">
+                  {fr ? 'payer le banquet' : 'pay for the banquet'}
+                </a>
+              </p>
+            )}
+          </div>
+
+          {/* Livre de recettes : pas encore en vente (voir GRIMOIRE_EN_VENTE,
+              src/pages/NourriturePage.tsx), même patron « à venir » que les
+              albums plus bas. */}
+          <div className="glass-light rounded-lg-card overflow-hidden flex flex-col relative">
+            <span className="absolute top-2 right-2 z-10 witcher-stat-label bg-midnight-deep/85 px-2 py-1 rounded-card">
+              {fr ? 'À venir' : 'Coming soon'}
+            </span>
+            <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
+              <img src="/grimoire/couverture-livre-recettes.webp" alt="" loading="lazy" className="w-full h-full object-cover opacity-70" />
+            </div>
+            <div className="p-4 flex flex-col gap-2">
+              <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><BookOpen size={13} className="text-brass shrink-0" />{fr ? 'Livre de recettes du festival' : 'Festival recipe book'}</p>
+              <span className="font-sans text-sm text-brass font-semibold">9 $ + taxes</span>
+              <button type="button" disabled
+                      className="mt-1 px-3.5 py-1.5 bg-brass/40 text-midnight-deep/70 font-sans uppercase tracking-wider text-[10px] font-semibold rounded-card cursor-not-allowed">
+                {fr ? 'Acheter' : 'Buy'}
+              </button>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* Retirer les publicités, paiement unique (déplacé du profil, Alex, 2026-08-28). */}
+      {uid && <div id="don-sans-pub"><SansPubPanel uid={uid} courriel={user?.email || undefined} lang={lang} /></div>}
 
       {/* Skins de la plateforme */}
       <section>
