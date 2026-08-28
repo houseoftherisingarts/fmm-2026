@@ -6,7 +6,7 @@ import { suivreSansPub } from '../../firebase/sansPub';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { OBJETS_BOUTIQUE, COULEUR_RARETE } from '../../chantier/objets';
 import {
-  suivreMaBourse, acheterCosmetique, reclamerQuotidien,
+  suivreMaBourse, acheterCosmetique, reclamerQuotidien, rangFortune,
   PRIX_SKIN, PRIX_ALBUM, type Bourse,
 } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
