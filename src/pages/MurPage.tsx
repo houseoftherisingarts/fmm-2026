@@ -32,6 +32,12 @@ const MurPage: React.FC = () => {
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
+          <div className="mb-5">
+            <Link to={addLocale('/guildes', lang)}
+                  className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-wider text-ivory-soft hover:text-brass transition">
+              <Shield size={13} /> {fr ? 'Voir les guildes' : 'See the guilds'}
+            </Link>
+          </div>
           {user ? (
             <MurSocial lang={lang} />
           ) : (
