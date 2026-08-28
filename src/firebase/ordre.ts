@@ -141,6 +141,18 @@ export async function publierFiche(uid: string, fiche: Partial<Membre>): Promise
   await setDoc(doc(db, MEMBRES, uid), { uid, ...fiche, maj: serverTimestamp() }, { merge: true });
 }
 
+/** Écrit UNE SEULE clé de `prefs`, en chemin pointé : un setDoc+merge
+ *  sur `{ prefs: { musique: id } }` remplacerait tout le sous-objet
+ *  (skin, animationsFond…) au lieu de le compléter. Le document doit
+ *  déjà exister (toujours vrai après la première connexion — voir
+ *  assurerFiche). Alex, 2026-08-28. */
+export async function definirPref<K extends keyof PrefsMembre>(
+  uid: string, cle: K, valeur: PrefsMembre[K],
+): Promise<void> {
+  if (!db) return;
+  await updateDoc(doc(db, MEMBRES, uid), { [`prefs.${cle}`]: valeur, maj: serverTimestamp() });
+}
+
 /** La fiche d'entrée au registre, posée à la première connexion, quel
  *  que soit le chemin emprunté : Google, mot de passe, ou le lien reçu
  *  après une inscription à l'infolettre. Une fiche déjà là reste
