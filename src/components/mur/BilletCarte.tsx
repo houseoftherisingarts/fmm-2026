@@ -49,8 +49,7 @@ const LigneCommentaire: React.FC<{
 
   const voterIci = (valeur: 1 | -1 | 0) => {
     if (!user) return;
-    void voter, // (garde le linter tranquille : voter() du billet n'est pas réutilisé ici)
-    voterCommentaire(postId, c.id, user.uid, user.displayName || (fr ? 'Un inconnu' : 'A stranger'), valeur);
+    void voterCommentaire(postId, c.id, user.uid, user.displayName || (fr ? 'Un inconnu' : 'A stranger'), valeur);
   };
 
   const peutSupprimer = !!user && (isAdmin || user.uid === c.uid || user.uid === postAuteurUid);
