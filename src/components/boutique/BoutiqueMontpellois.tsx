@@ -1,15 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Gem, Palette, Disc3, Gift } from 'lucide-react';
+import { Gem, Palette, Disc3, Gift, Music } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { suivreSansPub } from '../../firebase/sansPub';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { OBJETS_BOUTIQUE, COULEUR_RARETE } from '../../chantier/objets';
 import {
-  suivreMaBourse, acheterCosmetique, reclamerQuotidien, rangFortune,
-  PRIX_SKIN, PRIX_ALBUM, type Bourse,
+  suivreMaBourse, acheterCosmetique, acheterAmbiance, reclamerQuotidien, rangFortune,
+  PRIX_SKIN, PRIX_ALBUM, PRIX_AMBIANCE, type Bourse,
 } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
+import { AMBIANCES } from '../../lib/ambiances';
 import PieceMontpellois from './PieceMontpellois';
 
 // ─── BoutiqueMontpellois : la grille des cosmétiques achetables ──────
