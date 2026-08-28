@@ -727,6 +727,15 @@ service cloud.firestore {
       allow delete: if isAdmin() || request.auth.uid in resource.data.admins;
     }
 
+    // ── La bourse en Montpellois (Alex, 2026-08-28) ──────────────
+    // Le solde ne s'écrit QUE depuis les fonctions serveur, qui passent
+    // par la clé d'administration : un navigateur qui pourrait écrire
+    // ici s'offrirait un milliard de Montpellois.
+    match /bourses/{uid} {
+      allow read:  if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
     // ── Le parrainage (Alex, 2026-08-28) ─────────────────────────
     // La table d'unicité des codes : chacun réserve le sien, personne
     // ne réécrit celui d'un autre.

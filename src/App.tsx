@@ -61,6 +61,7 @@ const ComptePage       = lazy(() => import('./pages/ComptePage'));
 const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const MurPage              = lazy(() => import('./pages/MurPage'));
+const BoutiquePage         = lazy(() => import('./pages/BoutiquePage'));
 const SoukPage             = lazy(() => import('./pages/SoukPage'));
 // Le chantier : inventaire du personnage + salon 2D, réservé à l'équipe
 // tant que ce n'est pas publié (Alex, 2026-08-27, dictée « inventaire
@@ -426,6 +427,8 @@ const App: React.FC = () => (
                 <Route path="/en/challenge/:id"                 element={<DefiLobbyPage />} />
                 <Route path="/profil/:uid"                      element={<PublicProfilePage />} />
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
+                <Route path="/boutique" element={<BoutiquePage />} />
+                <Route path="/en/shop"  element={<BoutiquePage />} />
                 <Route path="/mur"     element={<MurPage />} />
                 <Route path="/en/wall" element={<MurPage />} />
                 {/* Chantier : slug identique dans les deux langues, pas

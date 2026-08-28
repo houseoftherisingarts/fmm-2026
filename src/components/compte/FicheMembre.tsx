@@ -35,6 +35,7 @@ import CoffreBillets from './CoffreBillets';
 import SoutienPanel from './SoutienPanel';
 import SansPubPanel from './SansPubPanel';
 import ParrainagePanel from './ParrainagePanel';
+import MusiquePanel from './MusiquePanel';
 import PorteAdmin from './PorteAdmin';
 import DonnerRoleAdmin from './DonnerRoleAdmin';
 import AvatarUpload from './AvatarUpload';
@@ -1001,6 +1002,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <div id="don-sans-pub"><SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} /></div>
                   {/* Le parrainage et sa lignée (Alex, 2026-08-28). */}
                   <ParrainagePanel uid={compte.uid} lang={lang} />
+                  {/* La musique du site, choisie par la personne (Alex, 2026-08-28). */}
+                  <MusiquePanel uid={compte.uid} lang={lang} />
                 </div>
               </div>
             )}

@@ -2018,3 +2018,274 @@ exports.apercuLien = onRequest(
     }
   },
 );
+
+// ── Montpellois : la monnaie du site (Alex, 2026-08-28) ──────────────
+const SOLDE_DEPART = 10;
+const GAIN_PAR_BADGE = 5;
+const GAIN_QUOTIDIEN = 1;
+const PRIX_SKIN = { bleu: 20, dore: 40 };
+const PRIX_ALBUM = 30;
+
+const RANGS_FORTUNE = [
+  { seuil: 100,        badgeId: 'fortune-100' },
+  { seuil: 1000,       badgeId: 'fortune-1000' },
+  { seuil: 10000,      badgeId: 'fortune-10000' },
+  { seuil: 100000,     badgeId: 'fortune-100000' },
+  { seuil: 1000000,    badgeId: 'fortune-1000000' },
+  { seuil: 1000000000, badgeId: 'fortune-1000000000' },
+];
+
+// Sous-ensemble de src/chantier/objets.ts nécessaire côté serveur.
+// À TENIR EN PHASE si le catalogue bouge.
+const CATALOGUE_BOUTIQUE = [
+  { id: 'casque_corbeau', prix: 15 },
+  { id: 'couronne_fleurs', prix: 12 },
+  { id: 'cape_etoilee', prix: 25 },
+];
+const CATALOGUE_TROUVAILLE = [
+  { id: 'casque_cuir', rarete: 'commune' }, { id: 'jambes_cuir', rarete: 'commune' },
+  { id: 'bottes_cuir', rarete: 'commune' }, { id: 'bouclier_bois', rarete: 'commune' },
+  { id: 'casque_mailles', rarete: 'rare' }, { id: 'torse_mailles', rarete: 'rare' },
+  { id: 'torse_troubadour', rarete: 'rare' }, { id: 'jambes_mailles', rarete: 'rare' },
+  { id: 'bottes_ferrees', rarete: 'rare' }, { id: 'hache', rarete: 'rare' },
+  { id: 'epee_errant', rarete: 'rare' }, { id: 'bouclier_fer', rarete: 'rare' },
+  { id: 'cape_ordre', rarete: 'rare' }, { id: 'amulette_lievre', rarete: 'rare' },
+  { id: 'anneau_brume', rarete: 'rare' },
+  { id: 'casque_heaume', rarete: 'legendaire' }, { id: 'torse_plates', rarete: 'legendaire' },
+  { id: 'bottes_ailees', rarete: 'legendaire' }, { id: 'epee_lune', rarete: 'legendaire' },
+];
+const OBJET_PAR_BADGE = {
+  'le-parrain': 'casque_couronne_parrain',
+  benevole: 'cape_benevole',
+  photographe: 'amulette_oeil',
+};
+
+async function assurerBourse(uid) {
+  const ref = db.collection('bourses').doc(uid);
+  const snap = await ref.get();
+  if (snap.exists) return { ref, data: snap.data() };
+  const vide = { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0, dernierQuotidien: null, albums: [], maj: FieldValue.serverTimestamp() };
+  await ref.set(vide);
+  return { ref, data: vide };
+}
+
+async function poserBadge(uid, badgeId) {
+  const ref = db.collection('badges').doc(uid);
+  const snap = await ref.get();
+  const obtenus = (snap.exists ? snap.data().obtenus : {}) || {};
+  if (obtenus[badgeId]) return;
+  await ref.set({ obtenus: { ...obtenus, [badgeId]: FieldValue.serverTimestamp() } }, { merge: true });
+}
+
+async function verifierRangsFortune(uid, gagneAvant, gagneApres) {
+  for (const rang of RANGS_FORTUNE) {
+    if (gagneAvant < rang.seuil && gagneApres >= rang.seuil) await poserBadge(uid, rang.badgeId);
+  }
+}
+
+/** Le seul chemin qui AJOUTE des Montpellois. */
+async function crediter(uid, montant) {
+  const { ref, data } = await assurerBourse(uid);
+  const gagneAvant = data.gagne || 0;
+  const gagneApres = gagneAvant + montant;
+  const soldeApres = (data.solde || 0) + montant;
+  await ref.set({ solde: soldeApres, gagne: gagneApres, maj: FieldValue.serverTimestamp() }, { merge: true });
+  await verifierRangsFortune(uid, gagneAvant, gagneApres);
+  return soldeApres;
+}
+
+/** Le seul chemin qui RETIRE des Montpellois : pose 'premiere-depense'
+ *  à la toute première fois, quel que soit l'achat. */
+async function debiter(uid, montant, extra = {}) {
+  const { ref, data } = await assurerBourse(uid);
+  const solde = data.solde || 0;
+  if (solde < montant) throw new HttpsError('failed-precondition', 'Pas assez de Montpellois.');
+  const premiereFois = (data.depense || 0) === 0;
+  const soldeApres = solde - montant;
+  await ref.set({ solde: soldeApres, depense: (data.depense || 0) + montant, maj: FieldValue.serverTimestamp(), ...extra }, { merge: true });
+  if (premiereFois) await poserBadge(uid, 'premiere-depense');
+  return soldeApres;
+}
+
+function tirerRarete() {
+  const r = Math.random() * 100;
+  if (r < 5) return 'legendaire';
+  if (r < 30) return 'rare';
+  return 'commune';
+}
+
+exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour réclamer votre pièce du jour.');
+  const ref = db.collection('bourses').doc(uid);
+  const { solde, gagneAvant, gagneApres } = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const data = snap.exists ? snap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
+    const aujourdhui = new Date().toISOString().slice(0, 10);
+    const dernier = data.dernierQuotidien && data.dernierQuotidien.toDate ? data.dernierQuotidien.toDate().toISOString().slice(0, 10) : null;
+    if (dernier === aujourdhui) throw new HttpsError('failed-precondition', 'Déjà réclamée aujourd’hui.');
+    const gagneAvant = data.gagne || 0;
+    const gagneApres = gagneAvant + GAIN_QUOTIDIEN;
+    const solde = (data.solde || 0) + GAIN_QUOTIDIEN;
+    tx.set(ref, { solde, gagne: gagneApres, dernierQuotidien: FieldValue.serverTimestamp(), maj: FieldValue.serverTimestamp() }, { merge: true });
+    return { solde, gagneAvant, gagneApres };
+  });
+  await verifierRangsFortune(uid, gagneAvant, gagneApres); // ponytail : hors transaction, badge cosmétique
+  return { solde };
+});
+
+exports.tenterUneTrouvaille = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour tenter votre chance.');
+  const ref = db.collection('avatars').doc(uid);
+  const snap = await ref.get();
+  const avatar = snap.exists ? snap.data() : { sac: [], equipe: {} };
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const dernier = avatar.dernierTirage && avatar.dernierTirage.toDate ? avatar.dernierTirage.toDate().toISOString().slice(0, 10) : null;
+  if (dernier === aujourdhui) return { objetId: null, dejaFaiteAujourdhui: true };
+
+  const possedes = new Set([...(avatar.sac || []), ...Object.values(avatar.equipe || {}).filter(Boolean)]);
+  const rarete = tirerRarete();
+  let pool = CATALOGUE_TROUVAILLE.filter((o) => o.rarete === rarete && !possedes.has(o.id));
+  if (pool.length === 0) pool = CATALOGUE_TROUVAILLE.filter((o) => !possedes.has(o.id));
+  if (pool.length === 0) {
+    await ref.set({ dernierTirage: FieldValue.serverTimestamp() }, { merge: true });
+    return { objetId: null, dejaFaiteAujourdhui: false };
+  }
+  const objet = pool[Math.floor(Math.random() * pool.length)];
+  await ref.set({
+    sac: FieldValue.arrayUnion(objet.id), dernierTirage: FieldValue.serverTimestamp(),
+    ...(snap.exists ? {} : { corps: 'A', peau: 0, coiffure: 0, equipe: {} }),
+  }, { merge: true });
+  return { objetId: objet.id, dejaFaiteAujourdhui: false };
+});
+
+exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter.');
+  const objetId = String((requete.data || {}).objetId || '');
+
+  if (objetId.startsWith('skin_')) {
+    const skin = objetId.slice(5);
+    if (!PRIX_SKIN[skin]) throw new HttpsError('invalid-argument', 'Skin inconnu.');
+    const userSnap = await db.collection('users').doc(uid).get();
+    const vip = !!(userSnap.exists && userSnap.data().sansPub);
+    const avatarRef = db.collection('avatars').doc(uid);
+    const avatarSnap = await avatarRef.get();
+    const deja = avatarSnap.exists && (avatarSnap.data().skinsDebloques || []).includes(skin);
+    if (deja) throw new HttpsError('failed-precondition', 'Déjà à vous.');
+    let solde;
+    if (vip) { const b = await assurerBourse(uid); solde = b.data.solde; }
+    else solde = await debiter(uid, PRIX_SKIN[skin]);
+    await avatarRef.set({ skinsDebloques: FieldValue.arrayUnion(skin) }, { merge: true });
+    return { solde };
+  }
+
+  const objet = CATALOGUE_BOUTIQUE.find((o) => o.id === objetId);
+  if (!objet) throw new HttpsError('invalid-argument', 'Objet inconnu.');
+  const avatarRef = db.collection('avatars').doc(uid);
+  const avatarSnap = await avatarRef.get();
+  const avatar = avatarSnap.exists ? avatarSnap.data() : { sac: [], equipe: {} };
+  const possede = (avatar.sac || []).includes(objetId) || Object.values(avatar.equipe || {}).includes(objetId);
+  if (possede) throw new HttpsError('failed-precondition', 'Déjà à vous.');
+  const solde = await debiter(uid, objet.prix);
+  await avatarRef.set({ sac: FieldValue.arrayUnion(objetId) }, { merge: true });
+  return { solde };
+});
+
+exports.acheterAlbum = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter.');
+  const groupeId = String((requete.data || {}).groupeId || '');
+  const groupeSnap = await db.collection('groupesMusicaux').doc(groupeId).get();
+  if (!groupeSnap.exists) throw new HttpsError('invalid-argument', 'Groupe inconnu.');
+  const { data: bourse } = await assurerBourse(uid);
+  if ((bourse.albums || []).includes(groupeId)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
+  const solde = await debiter(uid, PRIX_ALBUM, { albums: FieldValue.arrayUnion(groupeId) });
+  return { solde };
+});
+
+exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
+  const acheteurUid = requete.auth && requete.auth.uid;
+  if (!acheteurUid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter.');
+  const objetSoukId = String((requete.data || {}).objetSoukId || '');
+  const soukRef = db.collection('souk').doc(objetSoukId);
+  const acheteurRef = db.collection('bourses').doc(acheteurUid);
+
+  const resultat = await db.runTransaction(async (tx) => {
+    const soukSnap = await tx.get(soukRef);
+    if (!soukSnap.exists) throw new HttpsError('not-found', 'Cet objet n’existe plus.');
+    const objet = soukSnap.data();
+    if (objet.statut !== 'disponible') throw new HttpsError('failed-precondition', 'Cet objet n’est plus disponible.');
+    if (!objet.prixMontpellois) throw new HttpsError('failed-precondition', 'Cet objet ne se vend pas en Montpellois.');
+    if (objet.uid === acheteurUid) throw new HttpsError('failed-precondition', 'Vous ne pouvez pas vous acheter vous-même.');
+    const vendeurRef = db.collection('bourses').doc(objet.uid);
+    const [acheteurSnap, vendeurSnap] = await Promise.all([tx.get(acheteurRef), tx.get(vendeurRef)]);
+    const acheteurData = acheteurSnap.exists ? acheteurSnap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
+    const vendeurData = vendeurSnap.exists ? vendeurSnap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
+    if ((acheteurData.solde || 0) < objet.prixMontpellois) throw new HttpsError('failed-precondition', 'Pas assez de Montpellois.');
+
+    const prix = objet.prixMontpellois;
+    const premiereFois = (acheteurData.depense || 0) === 0;
+    const soldeAcheteurApres = (acheteurData.solde || 0) - prix;
+    const gagneVendeurAvant = vendeurData.gagne || 0;
+    const gagneVendeurApres = gagneVendeurAvant + prix;
+
+    tx.set(acheteurRef, { solde: soldeAcheteurApres, depense: (acheteurData.depense || 0) + prix, maj: FieldValue.serverTimestamp() }, { merge: true });
+    tx.set(vendeurRef, { solde: (vendeurData.solde || 0) + prix, gagne: gagneVendeurApres, maj: FieldValue.serverTimestamp() }, { merge: true });
+    tx.set(soukRef, { statut: 'vendu', maj: FieldValue.serverTimestamp() }, { merge: true });
+
+    return { solde: soldeAcheteurApres, vendeurUid: objet.uid, titre: objet.titre, prix, premiereFois, gagneVendeurAvant, gagneVendeurApres };
+  });
+
+  if (resultat.premiereFois) await poserBadge(acheteurUid, 'premiere-depense');
+  await verifierRangsFortune(resultat.vendeurUid, resultat.gagneVendeurAvant, resultat.gagneVendeurApres);
+
+  // Ouvre le fil de messagerie (même patron que ensureThread côté client, src/firebase/dms.ts)
+  const [acheteurMembre, vendeurMembre] = await Promise.all([
+    db.collection('membres').doc(acheteurUid).get(),
+    db.collection('membres').doc(resultat.vendeurUid).get(),
+  ]);
+  const nomAcheteur = (acheteurMembre.exists && acheteurMembre.data().nom) || 'Un membre';
+  const nomVendeur  = (vendeurMembre.exists && vendeurMembre.data().nom) || 'Un membre';
+  const filId = [acheteurUid, resultat.vendeurUid].sort().join('__');
+  const filRef = db.collection('dms').doc(filId);
+  await filRef.set({
+    participantUids: [acheteurUid, resultat.vendeurUid].sort(),
+    participantNames: { [acheteurUid]: nomAcheteur, [resultat.vendeurUid]: nomVendeur },
+  }, { merge: true });
+  await filRef.collection('messages').add({
+    senderUid: acheteurUid, senderName: nomAcheteur,
+    body: `${nomAcheteur} a acheté « ${resultat.titre} » pour ${resultat.prix} Montpellois.`,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
+  return { solde: resultat.solde, filId };
+});
+
+// Gain de Montpellois par badge + objet lié à un badge, dans la même
+// fonction (Alex l'a demandé) : réagit à TOUT écrit sur badges/{uid},
+// y compris ceux posés par poserBadge() elle-même (fortune, premiere-
+// depense) — c'est voulu, gagner un badge de rang donne aussi sa
+// piécette.
+exports.badgeMontpelloisEtTrouvaille = onDocumentWritten(
+  { document: 'badges/{uid}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const uid = event.params.uid;
+    const avant = (event.data && event.data.before && event.data.before.exists) ? (event.data.before.data().obtenus || {}) : {};
+    const apres = (event.data && event.data.after && event.data.after.exists) ? (event.data.after.data().obtenus || {}) : {};
+    const nouveaux = Object.keys(apres).filter((id) => !avant[id]);
+    for (const badgeId of nouveaux) {
+      // Un badge de fortune vient d'un gain : le recréditer ferait
+      // tourner la fonction en rond (Alex, 2026-08-28).
+      if (badgeId.startsWith('fortune-') || badgeId === 'premiere-depense') {
+        const objetSeul = OBJET_PAR_BADGE[badgeId];
+        if (objetSeul) await db.collection('avatars').doc(uid).set({ sac: FieldValue.arrayUnion(objetSeul) }, { merge: true });
+        continue;
+      }
+      await crediter(uid, GAIN_PAR_BADGE);
+      const objetId = OBJET_PAR_BADGE[badgeId];
+      if (objetId) await db.collection('avatars').doc(uid).set({ sac: FieldValue.arrayUnion(objetId) }, { merge: true });
+    }
+  },
+);
