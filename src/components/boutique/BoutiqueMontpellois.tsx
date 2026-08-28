@@ -88,6 +88,14 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
   const skinsDebloques = avatar?.skinsDebloques || [];
 
+  // La date de la dernière réclamation dit déjà si c'est fait pour
+  // aujourd'hui, sans attendre un clic raté (Alex, 2026-08-28).
+  const dejaReclame = useMemo(() => {
+    const d = bourse?.dernierQuotidien;
+    const date = d && typeof (d as { toDate?: () => Date }).toDate === 'function' ? (d as { toDate: () => Date }).toDate() : null;
+    return dejaReclameLocal || (!!date && date.toDateString() === new Date().toDateString());
+  }, [bourse, dejaReclameLocal]);
+
   return (
     <div className="space-y-10">
       {/* Solde */}
