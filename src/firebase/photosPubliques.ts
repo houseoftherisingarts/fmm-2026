@@ -30,6 +30,12 @@ export type StatutPhoto = 'attente' | 'retenue' | 'refusee';
 // dit si le festival reprend la photo, pas si les membres la voient.
 export type VisibilitePhoto = 'publique' | 'privee';
 
+/** Un repère posé sur une photo : qui, et à quel endroit (Alex,
+ *  2026-08-28). x et y en pourcentage de la largeur et de la hauteur
+ *  DE LA PHOTO (0 à 100), pas du cadre qui l'affiche — voir la note
+ *  dans VisionneusePhoto.tsx pour le recadrage sur une vignette. */
+export interface PersonnePhoto { uid: string; nom: string; x: number; y: number }
+
 export interface PhotoPublique {
   id: string;
   uid: string;
@@ -47,6 +53,16 @@ export interface PhotoPublique {
   vedette?: boolean;
   /** La place dans la grille, choisie par glisser-déposer (petit = en tête). */
   ordre?: number;
+  /** Les personnes identifiées sur la photo (Alex, 2026-08-28). Le
+   *  propriétaire seul écrit la liste complète ; une personne
+   *  identifiée peut seulement s'en retirer (voir seRetirerDUnePhoto
+   *  et la règle Firestore). */
+  personnes?: PersonnePhoto[];
+  /** Même liste, aplatie sur les uid : Firestore ne sait pas
+   *  interroger un tableau d'objets, donc ce champ tient l'index
+   *  array-contains pour suivrePhotosOuJeSuis. Maintenu en même temps
+   *  que `personnes`, jamais écrit seul. */
+  personnesUids?: string[];
   consentement: true;
   consentementLe: Timestamp | null;
   envoyeeLe: Timestamp | null;
