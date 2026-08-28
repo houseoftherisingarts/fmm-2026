@@ -1224,7 +1224,7 @@ const FR = {
   musicianEyebrow: 'Application groupe de musique', musicianTitle: 'Inscrire mon groupe',
   musicianApply: 'S’inscrire', musicianEdit: 'Voir / modifier mon inscription',
   musicianNone: 'Aucune inscription de groupe pour le moment.',
-  membreVerifie: 'Membre vérifié', upgrade: 'Devenir VIP',
+  membreVerifie: 'Membre vérifié', upgrade: 'Devenir VIP', personnaliser: 'Personnaliser',
   verifierMembre: 'Vérifier ce membre', retirerVerification: 'Retirer la vérification',
 };
 
