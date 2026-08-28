@@ -44,6 +44,7 @@ import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import DefisTafl from './DefisTafl';
 import MesBadges from './MesBadges';
+import Coffre from './Coffre';
 import MaFiche from './MaFiche';
 import ConcoursPanel from './ConcoursPanel';
 import PhotosPanel from './PhotosPanel';
