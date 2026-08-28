@@ -39,8 +39,8 @@ const MurPage: React.FC = () => {
           <div>
           <div className="mb-6">
             <Link to={addLocale('/guildes', lang)}
-                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-              <Shield size={15} /> {fr ? 'Voir les guildes' : 'See the guilds'}
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-[0.2em] text-sm font-semibold hover:bg-brass-soft transition rounded-card">
+              <Shield size={18} /> {fr ? 'Voir les guildes et les clans' : 'See the guilds and clans'}
             </Link>
           </div>
           {user ? (

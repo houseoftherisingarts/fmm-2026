@@ -11,6 +11,7 @@ import { addLocale, stripLocale } from '../../lib/locale';
 import AudioPlayer from '../AudioPlayer';
 import { HexMark } from '../marche/atmospherics';
 import Cloche from '../compte/Cloche';
+import PorteBilletterie from '../billets/PorteBilletterie';
 
 // Local dev (VITE_SITE_MODE=live) previews every pillar; production shows only
 // published ones. `npm run deploy` forces placeholder, so prod follows flags.
@@ -132,6 +133,14 @@ const NavBar: React.FC = () => {
 
   // La billetterie passe par notre page de cartes, qui presente les
   // formules et renvoie ensuite vers Zeffy. Publiee le 2026-08-03.
+  // La porte de la billetterie : le visiteur sans compte voit d'abord
+  // l'offre des cinq dollars (Alex, 2026-08-28).
+  const [porteBillets, setPorteBillets] = useState(false);
+  const surBillets = (e: React.MouseEvent) => {
+    if (user) return;               // déjà membre : le bouton d'aujourd'hui
+    e.preventDefault();
+    setPorteBillets(true);
+  };
   const ticketUrl = addLocale('/billets', lang);
 
   return (
@@ -198,6 +207,7 @@ const NavBar: React.FC = () => {
             {/* Primary CTA: Tickets, always visible on desktop */}
             <Link
               to={ticketUrl}
+              onClick={surBillets}
               className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 font-sans uppercase tracking-[0.28em] text-[10px] font-semibold transition-all hover:scale-[1.03]"
               style={{
                 color: 'var(--color-velvet-deep)',
@@ -478,6 +488,7 @@ const NavBar: React.FC = () => {
                 initial="hidden"
                 animate="shown"
                 to={ticketUrl}
+                onClick={surBillets}
                 className="group relative inline-flex items-center gap-3 px-8 py-3.5 font-sans uppercase tracking-[0.28em] text-[11px] font-semibold overflow-hidden"
                 style={{
                   color: 'var(--color-velvet-deep)',
@@ -495,6 +506,7 @@ const NavBar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <PorteBilletterie ouvert={porteBillets} onFermer={() => setPorteBillets(false)} lang={lang} />
     </>
   );
 };
