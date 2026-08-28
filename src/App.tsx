@@ -30,7 +30,7 @@ const SignInModal   = lazy(() => import('./components/auth/SignInModal'));
 
 import { logPageView } from './firebase';
 import { trackPixelPageView } from './lib/metaPixel';
-import { bumpPageView } from './lib/siteStats';
+import { bumpPageView, bumpSessionSource } from './lib/siteStats';
 import { getLocaleFromPath } from './lib/locale';
 import { PILLARS, type PillarKey } from './content';
 import { isPillarVisible, type SiteFlags } from './firebase/siteFlags';
