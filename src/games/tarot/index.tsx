@@ -51,6 +51,7 @@ const TarotPage: React.FC = () => {
   const { lang } = useUI();
   const fr = lang === 'FR';
   const reduce = useReducedMotion();
+  const { user } = useAuth();
 
   const [tirage, setTirage] = useState<Tirage>(TIRAGES[1]);
   const [paquet, setPaquet] = useState<LameTiree[]>(() => melanger());
@@ -62,6 +63,16 @@ const TarotPage: React.FC = () => {
   // rétrécissent jamais : ils passent par-dessus, et se referment.
   const [reglesOuvertes, setReglesOuvertes] = useState(false);
   const [lectureOuverte, setLectureOuverte] = useState(true);
+
+  // Partager le tirage sur son fil (Alex, 2026-08-28) : une capture du
+  // tapis, un mot pré-rempli qu'on peut changer, puis un billet sur le
+  // mur avec partage.genre = 'tarot'.
+  const tapisRef = useRef<HTMLDivElement>(null);
+  const [capture, setCapture] = useState<{ blob: Blob; url: string } | null>(null);
+  const [motPartage, setMotPartage] = useState('');
+  const [chargeCapture, setChargeCapture] = useState(false);
+  const [envoiPartage, setEnvoiPartage] = useState(false);
+  const [erreurPartage, setErreurPartage] = useState<string | null>(null);
 
   // Le tapis, place par place : une place vide reste sur son dos.
   const tirees = useMemo<Array<LameTiree | undefined>>(
