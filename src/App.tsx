@@ -441,6 +441,8 @@ const App: React.FC = () => (
                     même gate ?apercu=1, jamais publié tel quel. */}
                 <Route path="/chantier/votes"    element={<VotesBancEssai />} />
                 <Route path="/en/chantier/votes" element={<VotesBancEssai />} />
+                <Route path="/chantier/souk"    element={<SoukBancEssai />} />
+                <Route path="/en/chantier/souk" element={<SoukBancEssai />} />
                 <Route path="/souk"    element={<SoukPage />} />
                 <Route path="/en/souk" element={<SoukPage />} />
                 <Route path="/guildes"           element={<GuildesPage />} />
