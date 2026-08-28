@@ -35,6 +35,7 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
   useEffect(() => { listGroupes().then(setGroupes); }, []);
 
   const albumsPossedes = groupes.filter((g) => (bourse?.albums || []).includes(g.id));
+  const ambiancesProposees = AMBIANCES.filter((a) => a.gratuite || (bourse?.ambiances || []).includes(a.id));
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
