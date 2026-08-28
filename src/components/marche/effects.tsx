@@ -311,7 +311,7 @@ export const BubbleCanvas: React.FC<{
     <canvas
       ref={ref}
       aria-hidden
-      className={`absolute inset-0 pointer-events-none w-full h-full ${className}`}
+      className={`fmm-fx-canvas absolute inset-0 pointer-events-none w-full h-full ${className}`}
     />
   );
 };
@@ -437,7 +437,7 @@ export const Motes: React.FC<{
     <canvas
       ref={ref}
       aria-hidden
-      className={`absolute inset-0 pointer-events-none w-full h-full ${className}`}
+      className={`fmm-fx-canvas absolute inset-0 pointer-events-none w-full h-full ${className}`}
     />
   );
 };
