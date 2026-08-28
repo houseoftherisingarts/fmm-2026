@@ -219,7 +219,7 @@ const AdminPage: React.FC = () => {
       case 'pubs':       return <PubliciteSection />;
       case 'medias':     return <MediasSection     devBypass={DEV_BYPASS} />;
       case 'photos':     return <PhotosSection     devBypass={DEV_BYPASS} />;
-      case 'analytics':  return <AnalyticsSection  devBypass={DEV_BYPASS} />;
+      case 'analytics':  return <AnalyticsSection  onNavigate={setSection} devBypass={DEV_BYPASS} />;
       case 'splash':     return <SplashSection />;
       case 'parametres': return <ParametresSection flags={flags as unknown as Record<string, unknown>} setFlag={setFlag as any} />;
       case 'discord':    return <DiscordSection    devBypass={DEV_BYPASS} />;
