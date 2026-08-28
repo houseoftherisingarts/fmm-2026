@@ -27,7 +27,7 @@ const STATUT_LABEL: Record<'FR' | 'EN', Record<StatutSouk, string>> = {
   EN: { disponible: 'Available', reserve: 'Reserved', vendu: 'Sold' },
 };
 
-const EMPTY = { titre: '', description: '', prix: '', categorie: 'autre' as CategorieSouk };
+const EMPTY = { titre: '', description: '', prix: '', prixMontpellois: '', categorie: 'autre' as CategorieSouk };
 
 const MesObjets: React.FC<Props> = ({ uid, lang }) => {
   const fr = lang === 'FR';
