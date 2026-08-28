@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, UserPlus, Check, Clock, Users } from 'lucide-react';
+import { Search, UserPlus, Check, Clock, Users, Swords, Dices, ArrowUpRight } from 'lucide-react';
+import { lancerDefi } from '../firebase/tafl';
+import { lancerDefiDes } from '../firebase/desParties';
+import { REGLE_DEFAUT } from '../games/hnefatafl/gameLogic';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -125,7 +128,7 @@ const OrdrePage: React.FC = () => {
                   {visibles.map((m) => (
                     <CarteMembre
                       key={m.uid} m={m} fr={fr} lang={lang}
-                      moi={user.uid} liens={liens}
+                      moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens}
                     />
                   ))}
                 </div>
@@ -142,8 +145,27 @@ const OrdrePage: React.FC = () => {
 };
 
 const CarteMembre: React.FC<{
-  m: Membre; fr: boolean; lang: 'FR' | 'EN'; moi: string; liens: Amitie[];
-}> = ({ m, fr, lang, moi, liens }) => {
+  m: Membre; fr: boolean; lang: 'FR' | 'EN'; moi: string; monNom: string; liens: Amitie[];
+}> = ({ m, fr, lang, moi, monNom, liens }) => {
+  // Le défi (Alex, 2026-08-27) : depuis la carte, on choisit le jeu,
+  // la partie s'ouvre dans l'attente de l'autre, et le lien mène au
+  // plateau. Deux jeux se jouent à deux : Hnefatafl et les dés.
+  const [choixDefi, setChoixDefi] = useState(false);
+  const [defiEnCours, setDefiEnCours] = useState<'tafl' | 'des' | null>(null);
+  const [partieLancee, setPartieLancee] = useState<{ jeu: 'tafl' | 'des'; id: string } | null>(null);
+  const lancer = async (jeu: 'tafl' | 'des') => {
+    setDefiEnCours(jeu);
+    try {
+      const nomCible = m.nom || (fr ? 'Un inconnu' : 'A stranger');
+      const id = jeu === 'tafl'
+        ? await lancerDefi({ moiUid: moi, moiNom: monNom, cibleUid: m.uid, cibleNom: nomCible, regleId: REGLE_DEFAUT, monCamp: 'attacker' })
+        : await lancerDefiDes({ moiUid: moi, moiNom: monNom, cibleUid: m.uid, cibleNom: nomCible });
+      setPartieLancee({ jeu, id });
+      setChoixDefi(false);
+    } finally { setDefiEnCours(null); }
+  };
+  const lienPartie = (p: { jeu: 'tafl' | 'des'; id: string }) =>
+    `${addLocale(p.jeu === 'tafl' ? '/jeunesse/hnefatafl' : '/jeux/des', lang)}?partie=${p.id}`;
   const ami = estAmi(liens, moi, m.uid);
   const attente = amitieEnAttente(liens, moi, m.uid);
   const aMoiDeRepondre = attente && attente.de !== moi;
@@ -192,9 +214,36 @@ const CarteMembre: React.FC<{
         </button>
         <Link to={`${addLocale('/profil', lang)}/${m.uid}`}
               className="px-4 py-2.5 rounded-card border border-brass/25 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory-soft/80 hover:border-brass/60 transition-colors">
-          {fr ? 'Sa fiche' : 'Their card'}
+          {fr ? 'Profil' : 'Profile'}
         </Link>
+        {m.uid !== moi && (
+          partieLancee ? (
+            <Link to={lienPartie(partieLancee)}
+                  className="px-4 py-2.5 rounded-card bg-brass text-midnight-deep font-sans text-[10px] uppercase tracking-[0.16em] font-semibold hover:bg-brass-soft transition-colors inline-flex items-center gap-2">
+              {partieLancee.jeu === 'tafl' ? <Swords size={12} /> : <Dices size={12} />}
+              {fr ? 'Défi lancé · ouvrir' : 'Challenge sent · open'} <ArrowUpRight size={11} />
+            </Link>
+          ) : (
+            <button type="button" onClick={() => setChoixDefi((v) => !v)} aria-expanded={choixDefi}
+                    className="px-4 py-2.5 rounded-card border border-brass/25 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory-soft/80 hover:border-brass/60 transition-colors inline-flex items-center gap-2">
+              <Swords size={12} /> {fr ? 'Défi' : 'Challenge'}
+            </button>
+          )
+        )}
       </div>
+      {choixDefi && !partieLancee && (
+        <div className="mt-3 pt-3 flex flex-wrap items-center gap-2" style={{ borderTop: '1px solid rgba(244,239,227,0.10)' }}>
+          <span className="font-sans uppercase tracking-[0.2em] text-[10px] text-brass mr-1">{fr ? 'Quel jeu ?' : 'Which game?'}</span>
+          <button type="button" onClick={() => lancer('tafl')} disabled={defiEnCours !== null}
+                  className="px-3 py-2 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2 disabled:opacity-60">
+            <Swords size={12} /> Hnefatafl
+          </button>
+          <button type="button" onClick={() => lancer('des')} disabled={defiEnCours !== null}
+                  className="px-3 py-2 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2 disabled:opacity-60">
+            <Dices size={12} /> {fr ? 'Les dés' : 'Dice'}
+          </button>
+        </div>
+      )}
     </article>
   );
 };
