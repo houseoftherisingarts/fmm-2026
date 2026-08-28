@@ -90,11 +90,23 @@ const MurSocial: React.FC<{
       if (filtre === 'offres') return g !== 'billet';
       return true;
     };
-    const l: Ligne[] = posts.filter(garder).map((p) => ({ genre: 'post', quand: p.creeLe?.toMillis?.() ?? Date.now(), post: p }));
-    if (avecAnnonces && !uid) {
-      ANNONCES.forEach((a) => l.push({ genre: 'annonce', quand: new Date(a.date).getTime(), annonce: a }));
+    // Le tri du fil suit la chaleur (le serveur l'a déjà rangée, épinglés
+    // en tête) : les billets gardent l'ordre reçu de `posts`, jamais
+    // reclassés par date. Seules les annonces s'intercalent par date, en
+    // fusion stable qui ne fait jamais passer un billet devant un autre
+    // (Alex, 2026-08-28).
+    const billets: Ligne[] = posts.filter(garder).map((p) => ({ genre: 'post', quand: p.creeLe?.toMillis?.() ?? Date.now(), post: p }));
+    if (!avecAnnonces || uid) return billets;
+    const annonces = ANNONCES.map((a) => ({ genre: 'annonce' as const, quand: new Date(a.date).getTime(), annonce: a }))
+      .sort((a, b) => b.quand - a.quand);
+    const resultat: Ligne[] = [];
+    let i = 0;
+    for (const annonce of annonces) {
+      while (i < billets.length && billets[i].quand > annonce.quand) { resultat.push(billets[i]); i++; }
+      resultat.push(annonce);
     }
-    return l.sort((a, b) => b.quand - a.quand);
+    while (i < billets.length) { resultat.push(billets[i]); i++; }
+    return resultat;
   }, [posts, avecAnnonces, uid, filtre]);
 
   const peutEcrire = avecComposeur && user && (!uid || uid === user.uid);
