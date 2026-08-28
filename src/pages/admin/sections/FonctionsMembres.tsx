@@ -22,6 +22,7 @@ const FonctionsMembres: React.FC = () => {
   const [busy, setBusy]       = useState(false);
   const [erreur, setErreur]   = useState<string | null>(null);
   const [fait, setFait]       = useState<string | null>(null);
+  const [verifBusy, setVerifBusy] = useState<string | null>(null);
 
   useEffect(() => {
     listerMembres()
