@@ -40,6 +40,55 @@ const Medaillon: React.FC<{ nom: string; url?: string; hue?: number; taille?: nu
   </span>
 );
 
+/** Une vidéo façon YouTube (Alex, 2026-08-28) : vignette + bouton de
+ *  lecture au centre tant que personne n'a cliqué, titre en dessous,
+ *  description repliée sous « Voir plus ». Jamais de lecture
+ *  automatique : le clic remplace la vignette par la vidéo. */
+const VideoBillet: React.FC<{
+  fr: boolean; url: string; vignette?: string; titre?: string; description?: string;
+}> = ({ fr, url, vignette, titre, description }) => {
+  const [ouverte, setOuverte] = useState(false);
+  const [voirPlus, setVoirPlus] = useState(false);
+
+  return (
+    <div className="mt-4">
+      {ouverte ? (
+        <video controls playsInline autoPlay src={url}
+               className="w-full max-h-[32rem] rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
+      ) : (
+        <button type="button" onClick={() => setOuverte(true)} aria-label={fr ? 'Lire la vidéo' : 'Play video'}
+                className="relative block w-full rounded-card overflow-hidden group"
+                style={{ border: '1px solid rgba(244,239,227,0.12)' }}>
+          {vignette ? (
+            <img src={vignette} alt="" loading="lazy" className="w-full max-h-[32rem] object-cover" />
+          ) : (
+            <div className="w-full aspect-video flex items-center justify-center bg-midnight-deep/60">
+              <VideoIcon size={28} className="text-ivory-soft/30" />
+            </div>
+          )}
+          <span className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/35 transition-colors">
+            <span className="w-14 h-14 rounded-full flex items-center justify-center bg-brass text-midnight-deep">
+              <Play size={22} fill="currentColor" />
+            </span>
+          </span>
+        </button>
+      )}
+      {titre && <p className="mt-2 font-display text-sm text-ivory">{titre}</p>}
+      {description && (
+        <div className="mt-1">
+          <p className={`font-editorial text-[13px] text-ivory-soft leading-relaxed whitespace-pre-line ${voirPlus ? '' : 'line-clamp-2'}`}>
+            {description}
+          </p>
+          <button type="button" onClick={() => setVoirPlus((v) => !v)}
+                  className="mt-1 font-sans text-[11px] uppercase tracking-wider text-brass hover:text-brass-soft transition-colors">
+            {voirPlus ? (fr ? 'Voir moins' : 'Show less') : (fr ? 'Voir plus' : 'See more')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 /** Une ligne de commentaire : son propre vote, sa propre suppression. */
 const LigneCommentaire: React.FC<{
   fr: boolean; lang: 'FR' | 'EN'; postId: string; postAuteurUid: string; c: CommentaireMur;
