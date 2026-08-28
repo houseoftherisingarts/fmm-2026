@@ -185,7 +185,7 @@ export async function publierSurLeMur(opts: {
     const ext = videoLegere.type === 'video/webm' ? 'webm' : 'mp4';
     videoChemin = `mur/${opts.uid}/${id}.${ext}`;
     const r = ref(storage, videoChemin);
-    await uploadBytes(r, videoLegere, { contentType: opts.video.type });
+    await uploadBytes(r, videoLegere, { contentType: videoLegere.type });
     videoUrl = await getDownloadURL(r);
   }
   const lien = texte.match(MOTIF_LIEN)?.[0];
