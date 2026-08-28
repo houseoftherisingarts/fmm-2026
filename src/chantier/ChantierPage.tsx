@@ -39,6 +39,9 @@ const ChantierPage: React.FC = () => {
 
   const [onglet, setOnglet] = useState<'inventaire' | 'salon'>('inventaire');
   const [avatar, setAvatar] = useState<AvatarChantier>(apercu ? TEMOIN : AVATAR_VIDE);
+  const [bourse, setBourse] = useState<Bourse | null>(null);
+  const [tirage, setTirage] = useState<'attente' | 'en-cours' | 'fait'>('attente');
+  const [messageTirage, setMessageTirage] = useState<string | null>(null);
 
   useEffect(() => {
     if (apercu || !user) return;
@@ -46,6 +49,31 @@ const ChantierPage: React.FC = () => {
     void chargerAvatar(user.uid).then((a) => { if (vivant) setAvatar(a); });
     return () => { vivant = false; };
   }, [apercu, user]);
+
+  useEffect(() => {
+    if (apercu || !user) return;
+    return suivreMaBourse(user.uid, setBourse);
+  }, [apercu, user]);
+
+  async function tenterTrouvaille() {
+    if (apercu) return;
+    setTirage('en-cours');
+    try {
+      const { objetId, dejaFaiteAujourdhui } = await tenterUneTrouvaille();
+      if (dejaFaiteAujourdhui) {
+        setMessageTirage(fr ? 'Déjà tenté aujourd’hui. Revenez demain.' : 'Already tried today. Come back tomorrow.');
+      } else if (objetId) {
+        const o = objetParId(objetId);
+        setMessageTirage(fr ? `Une trouvaille ! ${o?.nom.FR ?? objetId} rejoint votre sac.` : `A find! ${o?.nom.EN ?? objetId} joins your bag.`);
+      } else {
+        setMessageTirage(fr ? 'Rien cette fois. Le sort sera meilleur demain.' : 'Nothing this time. Better luck tomorrow.');
+      }
+    } catch (e) {
+      setMessageTirage(e instanceof Error ? e.message : String(e));
+    } finally {
+      setTirage('fait');
+    }
+  }
 
   function surChangement(a: AvatarChantier) {
     setAvatar(a);
