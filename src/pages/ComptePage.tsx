@@ -93,13 +93,23 @@ const ComptePage: React.FC = () => {
     );
   }
 
+  const bancPhotos = import.meta.env.DEV
+    && new URLSearchParams(window.location.search).get('bancPhotos') === '1';
+
   return (
-    <FicheMembre
-      mode="prive"
-      uid={user.uid}
-      lang={lang}
-      compte={{ uid: user.uid, email: user.email, displayName: user.displayName }}
-    />
+    <>
+      <FicheMembre
+        mode="prive"
+        uid={user.uid}
+        lang={lang}
+        compte={{ uid: user.uid, email: user.email, displayName: user.displayName }}
+      />
+      {bancPhotos && (
+        <div className="max-w-4xl mx-auto px-4 md:px-8 pb-16">
+          <BancPhotos />
+        </div>
+      )}
+    </>
   );
 };
 
