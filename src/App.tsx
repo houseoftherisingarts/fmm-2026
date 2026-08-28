@@ -60,6 +60,8 @@ const ComptePage       = lazy(() => import('./pages/ComptePage'));
 const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const MurPage              = lazy(() => import('./pages/MurPage'));
+const GuildesPage          = lazy(() => import('./pages/GuildesPage'));
+const GuildePage           = lazy(() => import('./pages/GuildePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
 const AlliancePage        = lazy(() => import('./pages/AlliancePage'));
