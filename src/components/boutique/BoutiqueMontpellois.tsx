@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
