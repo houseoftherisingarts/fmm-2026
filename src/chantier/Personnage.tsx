@@ -279,6 +279,8 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
           {/* Épée de lune (variante 4) : lame courbe, un joyau serti au pommeau. */}
           {armeD.variante === 4 && <>
             <path d={`M ${handR.x} ${handR.y - 12} Q ${handR.x + 14} ${handR.y - 45} ${handR.x + 3} ${handR.y - 72}`}
+                  fill="none" stroke={armeD.couleur} strokeWidth="4.5" strokeLinecap="round" />
+            <path d={`M ${handR.x} ${handR.y - 12} Q ${handR.x + 14} ${handR.y - 45} ${handR.x + 3} ${handR.y - 72}`}
                   fill="none" stroke="url(#metal)" strokeWidth="4.5" strokeLinecap="round" />
             <path d={`M ${handR.x} ${handR.y - 12} Q ${handR.x + 14} ${handR.y - 45} ${handR.x + 3} ${handR.y - 72}`}
                   fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="0.8" />
