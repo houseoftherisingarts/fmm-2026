@@ -1157,7 +1157,7 @@ const FR = {
   // tiennent sur une ligne, en bureau comme en mobile.
   onglet: {
     profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
-    billets: 'Billets', messages: 'Boîte de réception',
+    billets: 'Billets', messages: 'Boîte de réception', boutique: 'Boutique',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges', jeux: 'Jeux',
@@ -1211,7 +1211,7 @@ const EN: typeof FR = {
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
     profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Badges', jeux: 'Games',
-    billets: 'Tickets', messages: 'Inbox',
+    billets: 'Tickets', messages: 'Inbox', boutique: 'Shop',
   } as Record<Onglet, string>,
   ongletPublic: {
     profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Badges', jeux: 'Games',

@@ -81,6 +81,13 @@ export interface PostMur {
   /** La vidéo, réservée aux membres VIP (Alex, 2026-08-28). */
   videoUrl?: string;
   videoChemin?: string;
+  /** Façon YouTube (Alex, 2026-08-28) : titre, description et vignette
+   *  d'une vidéo jointe. La vignette est choisie par la personne, sinon
+   *  une frame de la vidéo est prise automatiquement à la publication —
+   *  voir extraireVignetteVideo() plus bas. */
+  videoTitre?: string;
+  videoDescription?: string;
+  videoVignette?: string;
   /** L'aperçu du premier lien collé dans le texte, calculé une seule
    *  fois à la publication. */
   apercu?: ApercuLien;
