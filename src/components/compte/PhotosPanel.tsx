@@ -300,6 +300,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                 onDragLeave={() => setSurvolId((v) => (v === p.id ? null : v))}
                 onDrop={(e) => { e.preventDefault(); deposer(p.id); }}
                 onDragEnd={() => { setTraine(null); setSurvolId(null); }}
+                onClick={() => setOuvertId(p.id)}
                 className="relative aspect-square overflow-hidden cursor-grab active:cursor-grabbing transition-transform"
                 style={{
                   outline: survolId === p.id && traine && traine !== p.id ? '2px solid #D8B05A' : 'none',
