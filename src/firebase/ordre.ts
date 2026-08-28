@@ -56,6 +56,24 @@ export function rolesAffiches(roles?: RoleMembre[]): RoleMembre[] {
   return ['membre', ...autres];
 }
 
+/** Position de la bannière du bandeau : sous le nom (comme avant),
+ *  au-dessus du portrait, ou en colonne verticale à droite. */
+export type PositionBanniere = 'haut' | 'bas' | 'droite';
+/** Le skin choisi par un membre VIP (rouge = la palette d'origine). */
+export type SkinMembre = 'rouge' | 'bleu' | 'dore';
+
+export interface PrefsMembre {
+  /** La bannière glisse doucement au défilement. Défaut vrai. */
+  parallaxe?: boolean;
+  positionBanniere?: PositionBanniere;
+  /** Le cadrage de la photo dans la bannière, en pourcentage (0..100). */
+  cadrage?: { x: number; y: number };
+  /** Les couches de braises/flammes/particules du site. Défaut vrai. */
+  animationsFond?: boolean;
+  /** Réservé aux VIP (users.sansPub) : le skin du site pour soi. */
+  skin?: SkinMembre;
+}
+
 export interface Membre {
   uid: string;
   nom: string;
