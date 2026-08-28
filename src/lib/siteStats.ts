@@ -96,7 +96,7 @@ export async function getDailyStats(days: number): Promise<DayStats[]> {
   const out: DayStats[] = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86_400_000);
-    out.push({ day: dayId(d), total: 0, pages: {} });
+    out.push({ day: dayId(d), total: 0, pages: {}, sources: {}, pubJeux: 0, pubJeuxParJeu: {} });
   }
   if (!db) return out;
   await Promise.all(out.map(async (row) => {
@@ -106,6 +106,9 @@ export async function getDailyStats(days: number): Promise<DayStats[]> {
         const data = snap.data() as Partial<DayStats>;
         row.total = typeof data.total === 'number' ? data.total : 0;
         row.pages = (data.pages as Record<string, number>) || {};
+        row.sources = (data.sources as Record<string, number>) || {};
+        row.pubJeux = typeof data.pubJeux === 'number' ? data.pubJeux : 0;
+        row.pubJeuxParJeu = (data.pubJeuxParJeu as Record<string, number>) || {};
       }
     } catch { /* jour manquant = zéros */ }
   }));
