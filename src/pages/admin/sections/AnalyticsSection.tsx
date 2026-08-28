@@ -101,6 +101,25 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass, onNavigate }) => {
 
   const max = Math.max(...visitors14d, 1);
 
+  // Attribution par source (utm_source), agrégée sur les 14 jours.
+  const sourceTotals: Record<string, number> = { google: 0, facebook: 0, direct: 0, autre: 0 };
+  for (const d of daily) {
+    for (const [src, n] of Object.entries(d.sources || {})) {
+      sourceTotals[src in sourceTotals ? src : 'autre'] += n;
+    }
+  }
+  const sourceGrandTotal = Object.values(sourceTotals).reduce((a, b) => a + b, 0);
+
+  // Publicité AdSense dans les jeux, agrégée sur les 14 jours.
+  const pubJeuxTotal = daily.reduce((a, d) => a + (d.pubJeux || 0), 0);
+  const pubJeuxParJeu: Record<string, number> = {};
+  for (const d of daily) {
+    for (const [jeu, n] of Object.entries(d.pubJeuxParJeu || {})) {
+      pubJeuxParJeu[jeu] = (pubJeuxParJeu[jeu] || 0) + n;
+    }
+  }
+  const pubJeuxEntries = Object.entries(pubJeuxParJeu).sort((a, b) => b[1] - a[1]);
+
   return (
     <div className="space-y-6">
       {/* Quick stats */}
