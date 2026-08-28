@@ -85,8 +85,41 @@ const MarchePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
       <AtelierHall   lang={lang} vendors={premium} copy={c.atelier} />
       <MarketSquare  lang={lang} vendors={marche}  copy={c.market} />
       <MerchantPact  lang={lang} copy={c.pact} />
+      <SoukTeaser    lang={lang} />
       <SealedScroll  lang={lang} vendors={digital} copy={c.sealed} />
     </>
+  );
+};
+
+// ─── SoukTeaser : lien discret vers /souk ────────────────────────────
+// Une quatrième porte, plus discrète que les trois autres : la foire
+// usagée entre membres. Même grammaire que le reste de la page
+// (eyebrow, filet, glass-light), sans concurrencer les CTA du marché
+// officiel.
+const SoukTeaser: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
+  const fr = lang === 'FR';
+  return (
+    <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden py-12 md:py-16">
+      <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8">
+        <Link
+          to={addLocale('/souk', lang)}
+          className="glass-light rounded-lg-card p-6 md:p-7 flex items-center justify-between gap-4 flex-wrap hover:border-brass/40 transition group"
+          style={{ border: '1px solid rgba(216, 176, 90, 0.16)' }}
+        >
+          <span>
+            <span className="font-sans uppercase tracking-[0.4em] text-[10px] mb-1.5 block" style={{ color: '#D8B05A' }}>
+              {fr ? 'Entre membres' : 'Members only'}
+            </span>
+            <span className="font-display text-xl md:text-2xl" style={{ color: 'var(--color-bone)', fontWeight: 400 }}>
+              {fr ? 'La ruelle du Souk' : 'The Souk’s back alley'}
+            </span>
+          </span>
+          <span className="font-sans text-xs uppercase tracking-wider text-brass inline-flex items-center gap-2 group-hover:gap-3 transition-all shrink-0">
+            {fr ? 'Visiter la ruelle' : 'Visit the alley'} →
+          </span>
+        </Link>
+      </div>
+    </section>
   );
 };
 
