@@ -17,6 +17,7 @@ import Brume from '../components/Brume';
 import PageHeader from '../components/layout/PageHeader';
 import SalonOrdre from '../components/ordre/SalonOrdre';
 import MurSocial from '../components/mur/MurSocial';
+import BadgeVerifie from '../components/compte/BadgeVerifie';
 
 // ─── Les membres de l'Ordre ─────────────────────────────────────────
 // Le registre des gens du festival (Alex, 2026-08-23) : on cherche par
