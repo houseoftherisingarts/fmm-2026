@@ -892,10 +892,44 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </div>
             )}
 
+            {/* Badges absorbe l'ancienne Collection : les avis décrochés
+                paraissent sous les badges (Alex, 2026-08-28). */}
             {onglet === 'badges' && (
-              prive
-                ? <MesBadges lang={lang} />
-                : <MesBadges lang={lang} obtenus={badgesVus} titre={t.sesBadges} />
+              <div className="space-y-6 md:space-y-8">
+                {prive
+                  ? <MesBadges lang={lang} />
+                  : <MesBadges lang={lang} obtenus={badgesVus} titre={t.sesBadges} />}
+                {prive ? (
+                  <AnnoncesPanel lang={lang} />
+                ) : (
+                  <section className="glass-light rounded-lg-card p-7 md:p-8">
+                    <div className="flex items-center justify-between gap-4 mb-6 pb-2"
+                         style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+                      <span className="witcher-stat-label">{t.saCollection}</span>
+                      <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+                        {avisPris.length} / {ANNONCES.length}
+                      </span>
+                    </div>
+                    {avisPris.length > 0 ? (
+                      <ul className="space-y-3">
+                        {ANNONCES.filter((a) => avisPris.includes(a.id)).map((a) => (
+                          <li key={a.id} className="font-editorial text-sm text-ivory-soft flex items-start gap-2.5">
+                            <Check size={14} className="text-brass shrink-0 mt-0.5" />
+                            <span>
+                              <span className="text-ivory">{lang === 'FR' ? a.titleFR : a.titleEN}</span>
+                              <span className="block text-[13px] text-ivory-soft/70">
+                                {(lang === 'FR' ? a.bodyFR : a.bodyEN).split('\n\n')[0].slice(0, 120)}
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{t.collectionVide}</p>
+                    )}
+                  </section>
+                )}
+              </div>
             )}
 
             {onglet === 'jeux' && (prive ? (
