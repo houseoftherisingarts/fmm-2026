@@ -58,6 +58,7 @@ const CampagnesSection    = lazy(() => import('./admin/sections/CampagnesSection
 const FinancesSection     = lazy(() => import('./admin/sections/FinancesSection'));
 const CarnetContactsSection = lazy(() => import('./admin/sections/CarnetContactsSection'));
 const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection'));
+const GuildesSection      = lazy(() => import('./admin/sections/GuildesSection'));
 const ClientsSection      = lazy(() => import('./admin/sections/ClientsSection'));
 const InvitesSection      = lazy(() => import('./admin/sections/InvitesSection'));
 const MessagesSection     = lazy(() => import('./admin/sections/MessagesSection'));
