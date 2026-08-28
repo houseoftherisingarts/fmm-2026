@@ -154,7 +154,7 @@ const Banniere: React.FC<{
       {/* Un cadre mince, comme l'anneau du médaillon, dans le métal du rang
           (Alex, 2026-08-28 : « beaucoup plus subtil et mince »). */}
       <div
-        className={`relative h-full rounded-[16px] p-[3px]`}
+        className={`relative rounded-[16px] p-[3px] ${verticale ? 'h-full' : ''}`}
         style={{
           background: `linear-gradient(135deg, ${m.bandeClair} 0%, ${m.bande} 40%, ${m.bandeSombre} 70%, ${m.bandeClair} 100%)`,
           boxShadow: `0 0 0 1px ${m.bois}, 0 0 28px -6px ${m.bande}80, 0 20px 50px -30px rgba(0,0,0,0.9)`,
