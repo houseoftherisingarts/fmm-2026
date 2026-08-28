@@ -119,6 +119,33 @@ const VotesBancEssai: React.FC = () => {
             </div>
           </div>
         </article>
+
+        {/* ── L'aperçu d'un lien collé dans le texte ──────────────── */}
+        <article className="rounded-lg-card p-5 md:p-6" style={{ background: 'rgba(38, 30, 52, 0.45)', border: '1px solid rgba(120, 130, 190, 0.32)' }}>
+          <p className="font-editorial text-[15px] text-ivory leading-relaxed mb-4">
+            Le journal en parle très bien : https://www.ledroit.com/festival-medieval-montpellier
+          </p>
+          <a href="#apercu-demo" onClick={(e) => e.preventDefault()}
+             className="flex gap-3 rounded-card overflow-hidden hover:opacity-90 transition-opacity"
+             style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(244,239,227,0.14)' }}>
+            <span className="w-28 h-28 shrink-0 flex items-center justify-center font-display text-ivory-soft/40 text-xs"
+                  style={{ background: 'rgba(216,176,90,0.12)' }}>image</span>
+            <div className="min-w-0 py-3 pr-3 flex flex-col justify-center">
+              <p className="font-sans uppercase tracking-[0.16em] text-[9px] text-ivory-soft/50 mb-1">ledroit.com</p>
+              <p className="font-display text-sm text-ivory truncate">Le Festival Médiéval de Montpellier revient en force</p>
+              <p className="font-editorial text-[12px] text-ivory-soft/70 leading-snug line-clamp-2 mt-0.5">
+                Trois jours de fête, treize piliers, un village complet reconstitué pour l’édition 2026.
+              </p>
+            </div>
+          </a>
+
+          {/* ── La vidéo, réservée aux membres VIP ──────────────────── */}
+          <div className="mt-5 pt-4 border-t border-white/10">
+            <p className="font-sans text-xs" style={{ color: '#E08A6E' }}>
+              La vidéo est réservée aux membres VIP. Votre don retire les publicités et ouvre la vidéo.
+            </p>
+          </div>
+        </article>
       </div>
     </main>
   );
