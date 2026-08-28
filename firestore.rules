@@ -623,9 +623,70 @@ service cloud.firestore {
                     && request.resource.data.texte is string
                     && request.resource.data.texte.size() <= 2000
                     && (request.resource.data.guildeId == null
-                        || request.auth.uid in get(/databases/$(database)/documents/guildes/$(request.resource.data.guildeId)).data.membres);
-      allow update: if false;
+                        || request.auth.uid in get(/databases/$(database)/documents/guildes/$(request.resource.data.guildeId)).data.membres)
+                    // Le ballon d'hélium (Alex, 2026-08-28) : le client pose
+                    // les compteurs à zéro seulement, jamais un chiffre.
+                    // La fonction serveur seule les fait bouger ensuite.
+                    && request.resource.data.get('pour', 0) == 0
+                    && request.resource.data.get('contre', 0) == 0
+                    && request.resource.data.get('score', 0) == 0
+                    && request.resource.data.get('nbCommentaires', 0) == 0
+                    && request.resource.data.chaleur is number;
+      // L'épinglage (Alex, 2026-08-28) : une exception étroite à « rien
+      // ne se met à jour », qui n'ouvre QUE ces deux champs, et
+      // seulement à qui a le droit d'épingler ce billet précis. Les
+      // compteurs de votes restent la propriété exclusive de la
+      // fonction serveur, qui contourne ces règles (Admin SDK).
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['epingle', 'epingleLe'])
+                    && (
+                      // Le mur général : l'équipe du festival.
+                      (resource.data.guildeId == null && isAdmin())
+                      // Le mur d'une guilde : l'admin de cette guilde, ou l'équipe.
+                      || (resource.data.guildeId != null
+                          && (isAdmin()
+                              || request.auth.uid in get(/databases/$(database)/documents/guildes/$(resource.data.guildeId)).data.admins))
+                    );
       allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+
+      // Le vote sur un billet : chacun n'écrit que son propre vote, et
+      // la fonction serveur murVoteBillet recalcule les compteurs sur
+      // le billet à partir de tous les votes.
+      match /votes/{voterUid} {
+        allow read:   if signedIn();
+        allow create, update: if signedIn()
+                              && request.auth.uid == voterUid
+                              && request.resource.data.valeur in [1, -1];
+        allow delete: if isAdmin() || (signedIn() && request.auth.uid == voterUid);
+      }
+
+      // Les commentaires, votés eux aussi comme sur Reddit.
+      match /commentaires/{cid} {
+        allow read:   if signedIn();
+        allow create: if signedIn()
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.texte is string
+                      && request.resource.data.texte.size() > 0
+                      && request.resource.data.texte.size() <= 1000
+                      && request.resource.data.get('pour', 0) == 0
+                      && request.resource.data.get('contre', 0) == 0
+                      && request.resource.data.get('score', 0) == 0
+                      // La coche bleue sur un commentaire ne se recopie que
+                      // si la fiche la porte (même patron que /signalements).
+                      && (request.resource.data.get('verifie', false) != true
+                          || get(/databases/$(database)/documents/membres/$(request.auth.uid)).data.get('verifie', false) == true);
+        allow update: if false;
+        allow delete: if isAdmin()
+                      || (signedIn() && resource.data.uid == request.auth.uid)
+                      || (signedIn() && get(/databases/$(database)/documents/mur/$(postId)).data.uid == request.auth.uid);
+
+        match /votes/{voterUid} {
+          allow read:   if signedIn();
+          allow create, update: if signedIn()
+                                && request.auth.uid == voterUid
+                                && request.resource.data.valeur in [1, -1];
+          allow delete: if isAdmin() || (signedIn() && request.auth.uid == voterUid);
+        }
+      }
     }
 
     // ── Les guildes : sous-groupes fondés par les membres ─────────
