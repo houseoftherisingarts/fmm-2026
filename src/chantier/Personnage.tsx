@@ -121,6 +121,13 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
             <circle cx={100 - m.hip + 3} cy={FOOT_Y - 4} r="1.6" fill="rgba(244,239,227,0.7)" />
             <circle cx={100 + m.hip - 3} cy={FOOT_Y - 4} r="1.6" fill="rgba(244,239,227,0.7)" />
           </>}
+          {/* Bottes ailées (variante 3) : une petite paire d'ailes à chaque talon. */}
+          {pieds.variante === 3 && <>
+            <path d={`M ${100 - m.hip - 3} ${FOOT_Y - 2} q -10 -6 -14 -14 q 8 1 12 5 q 4 -6 3 -12 q 5 5 4 13 q 6 -3 10 -1 q -8 6 -15 9 Z`}
+                  fill={pieds.couleur} stroke="rgba(0,0,0,0.35)" strokeWidth="0.8" />
+            <path d={`M ${100 + m.hip + 3} ${FOOT_Y - 2} q 10 -6 14 -14 q -8 1 -12 5 q -4 -6 -3 -12 q -5 5 -4 13 q -6 -3 -10 -1 q 8 6 15 9 Z`}
+                  fill={pieds.couleur} stroke="rgba(0,0,0,0.35)" strokeWidth="0.8" />
+          </>}
           <line x1={100 - m.hip + 1} y1={FOOT_Y - 5} x2={100 - m.hip + 15} y2={FOOT_Y - 5} stroke="rgba(0,0,0,0.4)" strokeWidth="1.4" />
           <line x1={100 + m.hip - 1} y1={FOOT_Y - 5} x2={100 + m.hip - 15} y2={FOOT_Y - 5} stroke="rgba(0,0,0,0.4)" strokeWidth="1.4" />
         </Piece>
