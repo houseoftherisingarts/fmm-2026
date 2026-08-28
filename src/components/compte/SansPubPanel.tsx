@@ -38,8 +38,8 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
       {sansPub ? (
         <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
           {fr
-            ? 'Merci. Votre don soutient le festival, et ce compte ne verra plus jamais de publicité.'
-            : 'Thank you. Your gift supports the festival, and this account will never see an ad again.'}
+            ? 'Merci. Ce paiement soutient le festival, et ce compte ne verra plus jamais de publicité.'
+            : 'Thank you. This payment supports the festival, and this account will never see an ad again.'}
         </p>
       ) : (
         <>
