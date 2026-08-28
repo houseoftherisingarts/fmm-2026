@@ -623,6 +623,12 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 <Link to={addLocale('/ordre', lang)} className={cta}>
                   <Users size={14} /> {t.registre}
                 </Link>
+                {/* Ouvre l'onglet Badges et descend jusqu'au coffre :
+                    c'est là qu'on change de skin, de musique, etc.
+                    (Alex, 2026-08-28). */}
+                <button type="button" onClick={allerVersCoffre} className={secondair}>
+                  <Palette size={14} /> {t.personnaliser}
+                </button>
                 {bApp?.status === 'accepted' && (
                   <Link to={addLocale('/espace-benevole', lang)} className={secondair}>
                     <HandHeart size={14} /> {t.benevoleOpenSpace} <ArrowUpRight size={12} />
