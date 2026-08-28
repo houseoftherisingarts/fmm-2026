@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Send, Trash2, Megaphone, Loader2, X, ShieldCheck } from 'lucide-react';
+import { Image as ImageIcon, Send, Megaphone, Loader2, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { addLocale } from '../../lib/locale';
 import { lireFiche } from '../../firebase/ordre';
-import { publierSurLeMur, retirerDuMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST, type PostMur, type GenrePost } from '../../firebase/mur';
+import { publierSurLeMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST, type PostMur, type GenrePost } from '../../firebase/mur';
 import { ANNONCES } from '../../content/annonces';
-import BadgeVerifie from '../compte/BadgeVerifie';
+import BilletCarte from './BilletCarte';
 
 // ─── Le mur social ───────────────────────────────────────────────────
 // Alex, 2026-08-27 : les billets de tous les membres de l'Ordre, en
