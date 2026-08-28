@@ -3,9 +3,9 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
-  HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords, Ticket,
+  HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords,
   MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield,
-  Sparkles, Crown, BadgeCheck, Plus, Music,
+  Sparkles, Crown, BadgeCheck, Plus, Music, Palette,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
