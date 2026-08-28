@@ -29,6 +29,10 @@ export const GAIN_QUOTIDIEN = 1;
 export const PRIX_SKIN: Record<'bleu' | 'vert' | 'dore', number> = { bleu: 0, vert: 1, dore: 5 };
 /** Le prix d'un album, tant qu'Alex n'a pas fixé un prix par groupe. */
 export const PRIX_ALBUM = 30;
+/** Le prix d'une ambiance de la boutique (voir src/lib/ambiances.ts,
+ *  celles marquées `gratuite: false`) — un seul palier pour l'instant,
+ *  c'est un test (Alex, 2026-08-28). */
+export const PRIX_AMBIANCE = 1;
 
 // ── Les rangs de fortune (badges 'fortune' de badges.ts) ─────────────
 // Alex, 2026-08-28 : posés sur le TOTAL GAGNÉ à vie (bourse.gagne),
