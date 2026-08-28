@@ -439,8 +439,6 @@ const App: React.FC = () => (
                 <Route path="/en/chantier/votes" element={<VotesBancEssai />} />
                 <Route path="/souk"    element={<SoukPage />} />
                 <Route path="/en/souk" element={<SoukPage />} />
-                {/* TEMP_VERIF : capture Playwright seulement, Alex pose la vraie route */}
-                <Route path="/__temp_boutique_verif" element={<BoutiquePage_TEMP_VERIF />} />
                 <Route path="/guildes"           element={<GuildesPage />} />
                 <Route path="/en/guilds"         element={<GuildesPage />} />
                 <Route path="/guildes/:id"       element={<GuildePage />} />
