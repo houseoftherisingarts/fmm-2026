@@ -165,8 +165,8 @@ const FonctionsMembres: React.FC = () => {
                       className="relative w-10 h-[22px] rounded-full transition-colors disabled:opacity-50"
                       style={{ background: m.verifie ? '#4c8ef7' : 'rgba(244,239,227,0.18)' }}
                     >
-                      <span className="absolute top-0.5 w-[18px] h-[18px] rounded-full bg-white transition-transform"
-                            style={{ transform: m.verifie ? 'translateX(19px)' : 'translateX(2px)' }} />
+                      <span className="absolute left-0 top-0.5 w-[18px] h-[18px] rounded-full bg-white transition-transform"
+                            style={{ transform: m.verifie ? 'translateX(20px)' : 'translateX(2px)' }} />
                     </button>
                   </div>
                   <PrimaryButton type="button" disabled={busy} onClick={() => void enregistrer(m)}>
