@@ -147,6 +147,15 @@ const MurSocial: React.FC<{
                       style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
             </div>
           )}
+          {apercuVideo && (
+            <div className="relative mt-3 inline-block">
+              <video src={apercuVideo} className="max-h-56 rounded-card" controls />
+              <button type="button" onClick={() => setVideo(null)} aria-label={fr ? 'Retirer la vidéo' : 'Remove video'}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
+            </div>
+          )}
+          {erreurVideo && <p className="mt-2 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurVideo}</p>}
           <div className="mt-3 flex flex-wrap items-center gap-1.5" role="radiogroup" aria-label={fr ? 'Genre du billet' : 'Post kind'}>
             {(['billet', 'offre', 'demande'] as GenrePost[]).map((g) => {
               const tg = TEINTE_GENRE[g]; const actif = genre === g;
