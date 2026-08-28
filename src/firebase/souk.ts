@@ -30,6 +30,10 @@ export interface ObjetSouk {
   titre: string;
   description: string;
   prix: number;
+  /** Prix en Montpellois, en plus du prix en dollars (Alex, 2026-08-28) :
+   *  quand il est posé, un bouton « Acheter en Montpellois » paraît sur
+   *  la carte, en plus de la messagerie. */
+  prixMontpellois?: number;
   categorie: CategorieSouk;
   photos: string[];
   chemins: string[];          // chemins Storage, pour la suppression
