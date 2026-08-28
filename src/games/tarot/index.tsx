@@ -117,6 +117,54 @@ const TarotPage: React.FC = () => {
   const survoler = (i: number) => { if (revelees.includes(i)) setPanneau(i); };
   const quitter = () => setPanneau(null);
 
+  // Capture le tapis en image, prépare le mot pré-rempli, et ouvre le
+  // petit panneau de partage. html2canvas est chargé à la demande pour
+  // ne jamais peser sur le jeu quand personne ne partage.
+  const ouvrirPartage = async () => {
+    if (!tapisRef.current) return;
+    setErreurPartage(null);
+    setChargeCapture(true);
+    try {
+      const { default: html2canvas } = await import('html2canvas');
+      const canvas = await html2canvas(tapisRef.current, { backgroundColor: '#0a0305', useCORS: true });
+      const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('capture vide');
+      setCapture({ blob, url: URL.createObjectURL(blob) });
+      setMotPartage(fr ? `Voici mon tirage : ${tirage.nomFR}.` : `Here is my spread: ${tirage.nomEN}.`);
+    } catch {
+      setErreurPartage(fr ? 'La capture du tirage a échoué. Réessayez.' : 'The spread capture failed. Try again.');
+    } finally {
+      setChargeCapture(false);
+    }
+  };
+
+  const fermerPartage = () => {
+    if (capture) URL.revokeObjectURL(capture.url);
+    setCapture(null);
+  };
+
+  const confirmerPartage = async () => {
+    if (!user || !capture) return;
+    setEnvoiPartage(true);
+    try {
+      const fiche = await lireFiche(user.uid).catch(() => null);
+      await partagerSurMonFil({
+        uid: user.uid,
+        nom: fiche?.nom || user.displayName || (fr ? 'Un inconnu' : 'A stranger'),
+        avatarUrl: fiche?.avatarUrl || user.photoURL || undefined,
+        avatarHue: fiche?.avatarHue,
+        texte: motPartage,
+        photo: new File([capture.blob], `tirage-${tirage.id}.png`, { type: 'image/png' }),
+        partage: { genre: 'tarot', titre: fr ? tirage.nomFR : tirage.nomEN },
+      });
+      fermerPartage(); setMotPartage('');
+    } catch (e) {
+      setErreurPartage(e instanceof Error ? e.message : String(e));
+    } finally {
+      setEnvoiPartage(false);
+    }
+  };
+
   const piocher = () => {
     const suivante = tirage.positions.findIndex((_p, i) => !revelees.includes(i));
     if (suivante >= 0) retourner(suivante);
