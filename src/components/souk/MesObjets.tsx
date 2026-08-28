@@ -3,8 +3,8 @@ import { useBadges } from '../../contexts/BadgesContext';
 import { Trash2, Plus, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  creerObjetSouk, majObjetSouk, supprimerObjetSouk, suivreObjetsDe,
-  MAX_PHOTOS_OBJET, type ObjetSouk, type CategorieSouk, type StatutSouk,
+  creerObjetSouk, majObjetSouk, supprimerObjetSouk, suivreObjetsDe, estGratuit,
+  MAX_PHOTOS_OBJET, type ObjetSouk, type CategorieSouk, type GenreSouk, type StatutSouk,
 } from '../../firebase/souk';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import PhotosPicker from './PhotosPicker';
@@ -17,17 +17,38 @@ interface Props {
   lang: 'FR' | 'EN';
 }
 
-const CATEGORIES: CategorieSouk[] = ['costume', 'arme', 'artisanat', 'livre', 'decor', 'autre'];
+const CATEGORIES_OBJET: CategorieSouk[] = ['costume', 'arme', 'artisanat', 'livre', 'decor', 'autre'];
+const CATEGORIES_SERVICE: CategorieSouk[] = ['coup-de-main', 'couture', 'forge', 'musique', 'transport', 'autre'];
 const CAT_LABEL: Record<'FR' | 'EN', Record<CategorieSouk, string>> = {
-  FR: { costume: 'Costume', arme: 'Arme', artisanat: 'Artisanat', livre: 'Livre', decor: 'Décor', autre: 'Autre' },
-  EN: { costume: 'Costume', arme: 'Weapon', artisanat: 'Craft', livre: 'Book', decor: 'Decor', autre: 'Other' },
+  FR: {
+    costume: 'Costume', arme: 'Arme', artisanat: 'Artisanat', livre: 'Livre', decor: 'Décor', autre: 'Autre',
+    'coup-de-main': 'Coup de main', couture: 'Couture', forge: 'Forge', musique: 'Musique', transport: 'Transport',
+  },
+  EN: {
+    costume: 'Costume', arme: 'Weapon', artisanat: 'Craft', livre: 'Book', decor: 'Decor', autre: 'Other',
+    'coup-de-main': 'Helping hand', couture: 'Sewing', forge: 'Blacksmithing', musique: 'Music', transport: 'Transport',
+  },
 };
 const STATUT_LABEL: Record<'FR' | 'EN', Record<StatutSouk, string>> = {
   FR: { disponible: 'Disponible', reserve: 'Réservé', vendu: 'Vendu' },
   EN: { disponible: 'Available', reserve: 'Reserved', vendu: 'Sold' },
 };
 
-const EMPTY = { titre: '', description: '', prix: '', prixMontpellois: '', categorie: 'autre' as CategorieSouk };
+const EMPTY = {
+  titre: '', description: '', prix: '', prixMontpellois: '',
+  genre: 'objet' as GenreSouk, categorie: 'autre' as CategorieSouk,
+};
+
+/** L'encadré de courtoisie, en tête du formulaire (Alex, 2026-08-28) :
+ *  deux phrases, pas un pavé juridique. Partagé avec SoukPage.tsx. */
+export const DisclaimerSouk: React.FC<{ fr: boolean }> = ({ fr }) => (
+  <p className="font-sans text-[11px] text-ivory-soft/60 leading-relaxed rounded-card px-3.5 py-2.5"
+     style={{ border: '1px solid rgba(244,239,227,0.12)', background: 'rgba(0,0,0,0.18)' }}>
+    {fr
+      ? 'Le Festival médiéval de Montpellier et Médiéval Petite Nation ne sont pas responsables des ventes conclues dans le Souk. C’est un espace de courtoisie offert de membre à membre, sans aucune modération des objets ou des services par l’équipe.'
+      : 'The Montpellier Medieval Festival and Médiéval Petite Nation are not responsible for sales made in the Souk. It is a space of courtesy offered from member to member, with no moderation of items or services by the team.'}
+  </p>
+);
 
 const MesObjets: React.FC<Props> = ({ uid, lang }) => {
   const fr = lang === 'FR';
