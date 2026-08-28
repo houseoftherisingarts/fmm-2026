@@ -180,6 +180,45 @@ const MurSocial: React.FC<{
             </div>
           )}
           {erreurVideo && <p className="mt-2 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurVideo}</p>}
+
+          {/* Titre, description et vignette de la vidéo, façon YouTube (Alex, 2026-08-28). */}
+          {video && (
+            <div className="mt-3 space-y-2">
+              <input
+                value={videoTitre} onChange={(e) => setVideoTitre(e.target.value.slice(0, LONGUEUR_MAX_TITRE_VIDEO))}
+                placeholder={fr ? 'Titre de la vidéo (facultatif)' : 'Video title (optional)'}
+                className="w-full px-3 py-2 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
+                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(244,239,227,0.14)' }}
+              />
+              <textarea
+                value={videoDescription} onChange={(e) => setVideoDescription(e.target.value.slice(0, LONGUEUR_MAX_DESCRIPTION_VIDEO))}
+                rows={2}
+                placeholder={fr ? 'Description de la vidéo (facultatif)' : 'Video description (optional)'}
+                className="w-full px-3 py-2 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
+                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(244,239,227,0.14)' }}
+              />
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => fichierVignette.current?.click()}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
+                        style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                  <ImagePlus size={13} /> {fr ? 'Vignette' : 'Thumbnail'}
+                </button>
+                <input ref={fichierVignette} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only"
+                       onChange={(e) => { setVideoVignette(e.target.files?.[0] || null); e.target.value = ''; }} />
+                <span className="font-sans text-[10px] text-ivory-soft/45">
+                  {fr ? 'Sans choix, une image de la vidéo est prise automatiquement.' : 'Without a choice, an image is taken from the video automatically.'}
+                </span>
+              </div>
+              {apercuVignette && (
+                <div className="relative inline-block">
+                  <img src={apercuVignette} alt="" className="max-h-28 rounded-card object-cover" />
+                  <button type="button" onClick={() => setVideoVignette(null)} aria-label={fr ? 'Retirer la vignette' : 'Remove thumbnail'}
+                          className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={11} /></button>
+                </div>
+              )}
+            </div>
+          )}
           <div className="mt-3 flex flex-wrap items-center gap-1.5" role="radiogroup" aria-label={fr ? 'Genre du billet' : 'Post kind'}>
             {(['billet', 'offre', 'demande'] as GenrePost[]).map((g) => {
               const tg = TEINTE_GENRE[g]; const actif = genre === g;
