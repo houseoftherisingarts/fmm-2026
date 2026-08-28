@@ -13,6 +13,11 @@ import { AMBIANCES } from '../../lib/ambiances';
 // pointé (definirPref) pour ne jamais écraser les autres réglages de
 // `prefs`. Branché par un autre agent sur l'onglet Profil (props
 // exactes : uid, lang).
+//
+// Une quatrième ambiance (« Le ménestrel ») s'achète maintenant à la
+// boutique pour 1 Montpellois (BoutiqueMontpellois.tsx) : ce panneau
+// ne la propose qu'une fois possédée (bourse.ambiances), les trois
+// premières restant offertes à tous (Ambiance.gratuite).
 
 interface Props {
   uid: string;
