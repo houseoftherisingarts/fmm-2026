@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { publierFiche, anneesRetenues, oublierLesAnnees, ANNEES_POUR_VETERAN } from '../firebase/ordre';
+import { gagner as gagnerUnBadge } from '../firebase/badges';
 import { declarerMonParrain, codeRetenu, oublierLeCode } from '../firebase/parrainage';
 import {
   GoogleAuthProvider,
@@ -201,6 +203,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     openSignIn: () => setOpen(true),
     closeSignIn: () => setOpen(false),
   }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen]);
+
+  // Les éditions cochées à l'inscription rejoignent la fiche, et deux
+  // années valent le badge du vétéran (Alex, 2026-08-28).
+  useEffect(() => {
+    const annees = anneesRetenues();
+    if (!user || annees.length === 0) return;
+    void publierFiche(user.uid, { anneesPresence: annees })
+      .then(async () => {
+        if (annees.length >= ANNEES_POUR_VETERAN) await gagnerUnBadge('veteran', user.uid);
+        oublierLesAnnees();
+      })
+      .catch(() => { /* le prochain passage réessaiera */ });
+  }, [user]);
 
   // Le parrainage : un compte qui vient de naître avec un code retenu
   // entre dans la lignée de son parrain, une seule fois (Alex,

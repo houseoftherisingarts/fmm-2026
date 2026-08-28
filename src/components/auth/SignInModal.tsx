@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { EDITIONS_FESTIVAL, retenirLesAnnees, anneesRetenues } from '../../firebase/ordre';
 import { retenirLeCode, codeRetenu } from '../../firebase/parrainage';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Check, KeyRound, Eye, EyeOff, UserPlus } from 'lucide-react';
@@ -22,6 +23,18 @@ const SignInModal: React.FC = () => {
   // Le code de parrainage, saisi à l'inscription ou reçu dans le lien
   // (?parrain=CODE). Il attend dans la session jusqu'à la création du
   // compte (Alex, 2026-08-28).
+  // Les éditions où la personne était présente (Alex, 2026-08-28) :
+  // cochées à l'inscription, elles valent le badge du vétéran à partir
+  // de deux.
+  const [annees, setAnnees] = useState<number[]>(() => anneesRetenues());
+  const basculerAnnee = (an: number) => {
+    setAnnees((liste) => {
+      const suite = liste.includes(an) ? liste.filter((x) => x !== an) : [...liste, an];
+      retenirLesAnnees(suite);
+      return suite;
+    });
+  };
+
   const [codeParrain, setCodeParrain] = useState(() => {
     const url = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('parrain') : null;
     if (url) { retenirLeCode(url); return url.toUpperCase().slice(0, 8); }
@@ -267,6 +280,20 @@ const SignInModal: React.FC = () => {
                 ) : (
                   /* SIGN-UP FORM */
                   <form onSubmit={onSignUp}>
+                    <span className="block font-display title-medieval text-xs text-brass mb-1.5">Vous étiez là en…</span>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {EDITIONS_FESTIVAL.map((an) => {
+                        const coche = annees.includes(an);
+                        return (
+                          <button key={an} type="button" role="checkbox" aria-checked={coche} onClick={() => basculerAnnee(an)}
+                            className="px-3 py-1.5 rounded-full font-sans text-[11px] tracking-[0.14em] transition-colors"
+                            style={{ border: `1px solid ${coche ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: coche ? 'rgba(216,176,90,0.16)' : 'transparent', color: coche ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                            {an}
+                          </button>
+                        );
+                      })}
+                    </div>
+
                     <label className="block font-display title-medieval text-xs text-brass mb-1.5">Code de parrainage</label>
                     <input type="text" value={codeParrain}
                       onChange={(e) => { const v = e.target.value.toUpperCase().slice(0, 8); setCodeParrain(v); retenirLeCode(v); }}
