@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { useNavigate } from 'react-router-dom';
 import { Globe, Facebook, Instagram, Mail, Phone, MapPin, Upload, Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -29,6 +30,7 @@ const EMPTY: Commerce = {
 
 const CommerceDe: React.FC<Props> = ({ uid, lang, editable }) => {
   const fr = lang === 'FR';
+  const { gagnerBadge } = useBadges();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [commerce, setCommerce] = useState<Commerce | null>(null);
@@ -76,6 +78,7 @@ const CommerceDe: React.FC<Props> = ({ uid, lang, editable }) => {
         creeLe: commerce?.creeLe,
       };
       await upsertCommerce(next);
+      gagnerBadge('commerce');
       setCommerce(next);
       setPhotos(toutesPhotos);
       setNouvelles([]);

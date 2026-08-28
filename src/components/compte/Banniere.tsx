@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { Camera, Loader2, Move, Crop, Check, X } from 'lucide-react';
@@ -73,6 +74,7 @@ const Banniere: React.FC<{
 }> = ({ uid, url, metal, lang, editable, onChange, vip, variante = 'horizontale', prefs, onPrefsChange, onCommencerDeplacement }) => {
   const fr = lang === 'FR';
   const m = METAL[metal];
+  const { gagnerBadge } = useBadges();
   const input = useRef<HTMLInputElement>(null);
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -139,6 +141,7 @@ const Banniere: React.FC<{
       await uploadBytes(r, blob, { contentType });
       const lien = `${await getDownloadURL(r)}&v=${Date.now()}`;
       await publierFiche(uid, { banniereUrl: lien });
+      gagnerBadge('banniere');
       onChange?.(lien);
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));

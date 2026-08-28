@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { Trash2, Plus, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -30,6 +31,7 @@ const EMPTY = { titre: '', description: '', prix: '', categorie: 'autre' as Cate
 const MesObjets: React.FC<Props> = ({ uid, lang }) => {
   const fr = lang === 'FR';
   const { user } = useAuth();
+  const { gagnerBadge } = useBadges();
   const [objets, setObjets] = useState<ObjetSouk[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY);
@@ -59,6 +61,7 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
         categorie: form.categorie,
         fichiers: photos,
       });
+      gagnerBadge('souk');
       setForm(EMPTY); setPhotos([]); setShowForm(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));

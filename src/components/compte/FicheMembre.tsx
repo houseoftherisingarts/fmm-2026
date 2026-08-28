@@ -34,6 +34,7 @@ import AnnoncesPanel from './AnnoncesPanel';
 import CoffreBillets from './CoffreBillets';
 import SoutienPanel from './SoutienPanel';
 import SansPubPanel from './SansPubPanel';
+import ParrainagePanel from './ParrainagePanel';
 import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import DefisTafl from './DefisTafl';
@@ -982,6 +983,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   <SoutienPanel lang={lang} userEmail={compte.email || ''} userName={nom} />
                   {/* Le don « sans publicité à vie » (Alex, 2026-08-27). */}
                   <div id="don-sans-pub"><SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} /></div>
+                  {/* Le parrainage et sa lignée (Alex, 2026-08-28). */}
+                  <ParrainagePanel uid={compte.uid} lang={lang} />
                 </div>
               </div>
             )}

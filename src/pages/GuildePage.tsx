@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useBadges } from '../contexts/BadgesContext';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Users, Check, X, Pencil, Trash2, Save, LogOut, Loader2, Camera } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -128,6 +129,12 @@ const GuildePage: React.FC = () => {
 
   const estMembre = guilde.membres.includes(user.uid);
   const estAdminGuilde = guilde.admins.includes(user.uid);
+  // Le badge de la guilde tombe dès que la personne s'y voit membre
+  // (Alex, 2026-08-28).
+  const { gagnerBadge } = useBadges();
+  useEffect(() => {
+    if (user && guilde.membres.includes(user.uid)) gagnerBadge('guilde');
+  }, [user, guilde.membres, gagnerBadge]);
   const peutGerer = isAdmin || estAdminGuilde;
   // Le blason (Alex, 2026-08-28).
   const [blasonEnvoi, setBlasonEnvoi] = useState(false);
