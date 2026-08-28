@@ -276,7 +276,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
   useEffect(() => {
     if (!enDeplacement) return;
-    const zones: [PositionBanniere, React.RefObject<HTMLDivElement>][] = [
+    const zones: [PositionBanniere, React.RefObject<HTMLDivElement | null>][] = [
       ['haut', zoneHautRef], ['bas', zoneBasRef], ['droite', zoneDroiteRef],
     ];
     const surPointeur = (e: PointerEvent) => {
