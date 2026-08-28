@@ -156,9 +156,11 @@ const GuildePage: React.FC = () => {
     <main className="min-h-screen text-ivory">
       <SEO title={guilde.nom} noindex />
       <PageHeader
-        eyebrow={fr ? 'Guilde' : 'Guild'}
+        eyebrow={motDeLaForme(guilde.forme, lang)}
         titleA={guilde.nom}
-        intro={guilde.description || (fr ? 'Une guilde de l’Ordre.' : 'A guild of the Order.')}
+        intro={guilde.description || (fr
+          ? `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'Un' : 'Une'} ${motDeLaForme(guilde.forme, 'FR').toLowerCase()} de l’Ordre.`
+          : `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'A' : 'A'} ${motDeLaForme(guilde.forme, 'EN').toLowerCase()} of the Order.`)}
         orbImage="/histoire/archives/lievre/2022-e9ed2ea5.webp"
       />
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
@@ -219,6 +221,22 @@ const GuildePage: React.FC = () => {
             <section className="glass-light rounded-lg-card p-5 md:p-6 space-y-4">
               {editEnCours ? (
                 <div className="space-y-3">
+                  <div>
+                    <span className="block witcher-stat-label mb-1.5">{fr ? 'La forme du groupe' : 'The kind of group'}</span>
+                    <div className="flex flex-wrap gap-1.5 mb-3" role="radiogroup">
+                      {FORMES_GUILDE.map((f) => {
+                        const actif = (guilde.forme || 'guilde') === f.id;
+                        return (
+                          <button key={f.id} type="button" role="radio" aria-checked={actif}
+                            onClick={() => { void modifierGuilde(guilde.id, { forme: f.id as FormeGuilde }); }}
+                            className="px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
+                            style={{ border: `1px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: actif ? 'rgba(216,176,90,0.16)' : 'transparent', color: actif ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                            {fr ? f.FR : f.EN}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
                     <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))}
