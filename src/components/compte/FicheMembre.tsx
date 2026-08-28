@@ -638,6 +638,12 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     <UserIcon size={14} /> {t.retourEspace}
                   </Link>
                 )}
+                {/* Décerner ou retirer le badge bleu : réservé à l'équipe (Alex, 2026-08-28). */}
+                {isAdmin && (
+                  <button type="button" onClick={() => void basculerVerifieAdmin()} disabled={verifBusy} className={`${discret} disabled:opacity-50`}>
+                    <BadgeCheck size={14} /> {fiche?.verifie ? t.retirerVerification : t.verifierMembre}
+                  </button>
+                )}
               </>
             )}
           </div>
