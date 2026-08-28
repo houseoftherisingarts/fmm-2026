@@ -200,8 +200,10 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         <p className="font-editorial italic text-xs text-ivory-soft/60 mb-4">
           {fr ? 'Achetez l’album d’un groupe : ses musiques deviennent une ambiance possible du site, dans votre espace.' : 'Buy a band’s album: its music becomes a possible site ambience in your space.'}
         </p>
-        {groupes.length === 0 ? (
+        {!groupesCharges ? (
           <p className="font-editorial italic text-sm text-ivory-soft">{fr ? 'Chargement…' : 'Loading…'}</p>
+        ) : groupes.length === 0 ? (
+          <p className="font-editorial italic text-sm text-ivory-soft">{fr ? 'Aucun groupe pour le moment.' : 'No bands yet.'}</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {groupes.map((g) => (
