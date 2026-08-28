@@ -228,6 +228,26 @@ const BilletCarte: React.FC<{
       {post.photoUrl && (
         <img src={post.photoUrl} alt="" loading="lazy" className="mt-4 w-full max-h-[32rem] object-cover rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
       )}
+      {post.videoUrl && (
+        <video controls playsInline preload="metadata" src={post.videoUrl}
+               className="mt-4 w-full max-h-[32rem] rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
+      )}
+
+      {/* L'aperçu du premier lien collé dans le texte (Alex, 2026-08-28). */}
+      {post.apercu && (post.apercu.titre || post.apercu.description || post.apercu.image) && (
+        <a href={post.apercu.url} target="_blank" rel="noreferrer"
+           className="mt-4 flex gap-3 rounded-card overflow-hidden hover:opacity-90 transition-opacity"
+           style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(244,239,227,0.14)' }}>
+          {post.apercu.image && (
+            <img src={post.apercu.image} alt="" loading="lazy" className="w-28 h-28 object-cover shrink-0" />
+          )}
+          <div className="min-w-0 py-3 pr-3 flex flex-col justify-center">
+            {post.apercu.site && <p className="font-sans uppercase tracking-[0.16em] text-[9px] text-ivory-soft/50 mb-1">{post.apercu.site}</p>}
+            {post.apercu.titre && <p className="font-display text-sm text-ivory truncate">{post.apercu.titre}</p>}
+            {post.apercu.description && <p className="font-editorial text-[12px] text-ivory-soft/70 leading-snug line-clamp-2 mt-0.5">{post.apercu.description}</p>}
+          </div>
+        </a>
+      )}
 
       {/* La carte citée d'un partage (Alex, 2026-08-28). */}
       {post.partage && (
