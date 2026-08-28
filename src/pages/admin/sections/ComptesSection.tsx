@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Mail, Phone, Languages, Download, HandHeart, ShoppingBag } from 'lucide-react';
+import { Users, Mail, Phone, Languages, Download, HandHeart, ShoppingBag, Ticket, Loader2 } from 'lucide-react';
 import { Card, Badge, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
-import { listUsers, type AppUser } from '../../../firebase/users';
+import { listUsers, importerComptesZeffy, type AppUser, type ResultatImportZeffy } from '../../../firebase/users';
 import { mockUsers } from '../../../firebase/mockData';
 import FonctionsMembres from './FonctionsMembres';
 
@@ -9,7 +9,23 @@ interface Props { devBypass: boolean }
 
 const ComptesSection: React.FC<Props> = ({ devBypass }) => {
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'benevole' | 'vendor' | 'visitor'>('all');
+  const [filter, setFilter] = useState<'all' | 'benevole' | 'vendor' | 'visitor' | 'importe'>('all');
+  // La caste importée de Zeffy (Alex, 2026-08-27) : un compte par
+  // courriel du registre des clients, créé d'office, récupéré par la
+  // personne quand elle se connecte avec ce courriel.
+  const [importEnCours, setImportEnCours] = useState(false);
+  const [importResultat, setImportResultat] = useState<ResultatImportZeffy | string | null>(null);
+  const lancerImport = async () => {
+    setImportEnCours(true); setImportResultat(null);
+    try {
+      const r = await importerComptesZeffy();
+      setImportResultat(r);
+      const frais = await listUsers();
+      setItems(frais);
+    } catch (e) {
+      setImportResultat(e instanceof Error ? e.message : String(e));
+    } finally { setImportEnCours(false); }
+  };
   const [items,  setItems]  = useState<AppUser[]>([]);
   const [error,  setError]  = useState<string | null>(null);
 
@@ -39,7 +55,8 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
       filter === 'all' ||
       (filter === 'benevole' && u.hasBenevoleApp) ||
       (filter === 'vendor'   && u.hasVendorApp) ||
-      (filter === 'visitor'  && !u.hasBenevoleApp && !u.hasVendorApp);
+      (filter === 'visitor'  && !u.hasBenevoleApp && !u.hasVendorApp) ||
+      (filter === 'importe'  && u.origine === 'zeffy');
     return matchSearch && matchFilter;
   });
 
@@ -74,6 +91,7 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
             ['benevole', 'Bénévoles'],
             ['vendor',   'Marchands'],
             ['visitor',  'Visiteurs'],
+            ['importe',  'Importés de Zeffy'],
           ] as const).map(([k, label]) => (
             <button key={k} onClick={() => setFilter(k)}
               className={`px-3 py-1.5 font-sans uppercase tracking-wider rounded-card text-xs transition ${filter === k ? 'bg-brass text-midnight-deep' : 'border border-ivory-soft/20 text-ivory-soft hover:border-brass hover:text-brass'}`}>
@@ -81,8 +99,22 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
             </button>
           ))}
           <GhostButton onClick={exportCsv}><Download size={12} /> CSV</GhostButton>
+          <GhostButton onClick={lancerImport} disabled={importEnCours}>
+            {importEnCours ? <Loader2 size={12} className="animate-spin" /> : <Ticket size={12} />}
+            {importEnCours ? 'Import en cours…' : 'Créer les comptes Zeffy'}
+          </GhostButton>
         </div>
       </div>
+
+      {importResultat && (
+        <Card className="p-4">
+          <p className="font-sans text-xs text-ivory-soft">
+            {typeof importResultat === 'string'
+              ? importResultat
+              : `${importResultat.courriels} courriels lus dans le registre des clients · ${importResultat.crees} comptes créés · ${importResultat.existants} existaient déjà · ${importResultat.fiches} fiches mises à jour${importResultat.erreurs ? ` · ${importResultat.erreurs} refusés (voir les journaux)` : ''}.`}
+          </p>
+        </Card>
+      )}
 
       {filtered.length === 0 ? (
         <Card><EmptyState icon={Users}>Aucun compte ne correspond.</EmptyState></Card>
@@ -108,7 +140,8 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
               <div className="md:col-span-2 flex flex-wrap gap-1.5">
                 {u.hasBenevoleApp && <Badge tone="info"><HandHeart size={10} className="inline mr-1 -mt-0.5" />Bénévole</Badge>}
                 {u.hasVendorApp   && <Badge tone="info"><ShoppingBag size={10} className="inline mr-1 -mt-0.5" />Marchand</Badge>}
-                {!u.hasBenevoleApp && !u.hasVendorApp && <Badge>Visiteur</Badge>}
+                {u.origine === 'zeffy' && <Badge tone="info"><Ticket size={10} className="inline mr-1 -mt-0.5" />Importé</Badge>}
+                {!u.hasBenevoleApp && !u.hasVendorApp && u.origine !== 'zeffy' && <Badge>Visiteur</Badge>}
               </div>
               <div className="md:col-span-2 text-right">
                 <p className="font-editorial italic text-xs text-ivory-soft/60">Inscrit le</p>

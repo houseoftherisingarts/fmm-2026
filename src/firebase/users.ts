@@ -21,6 +21,8 @@ export interface AppUser {
   hasBenevoleApp: boolean;
   hasVendorApp:   boolean;
   createdAt?:     Timestamp | unknown;
+  /** Compte créé d'office depuis les exports Zeffy (Alex, 2026-08-27). */
+  origine?:       'zeffy';
 }
 
 const COL = 'users';
@@ -43,10 +45,28 @@ export async function listUsers(pageSize = 500): Promise<AppUser[]> {
       displayName:    String(data.displayName ?? ''),
       phone:          data.phone ? String(data.phone) : undefined,
       lang:           data.lang  ? String(data.lang)  : undefined,
+      origine:        data.origine === 'zeffy' ? 'zeffy' : undefined,
       // flags array written by addUserFlag: derive booleans from it
       hasBenevoleApp: Array.isArray(data.flags) ? (data.flags as string[]).includes('benevole') : false,
       hasVendorApp:   Array.isArray(data.flags) ? (data.flags as string[]).includes('vendor')   : false,
       createdAt:      data.createdAt ?? null,
     };
   });
+}
+
+// ── L'import des comptes Zeffy ────────────────────────────────────────
+// Appelle la Cloud Function `importerComptesZeffy` (équipe seulement) :
+// un compte par courriel du registre des clients, rejouable.
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { firebaseApp } from '../firebase';
+
+export interface ResultatImportZeffy {
+  courriels: number; crees: number; existants: number; fiches: number; erreurs: number;
+}
+
+export async function importerComptesZeffy(): Promise<ResultatImportZeffy> {
+  if (!firebaseApp) throw new Error('Firebase n’est pas configuré');
+  const appeler = httpsCallable<Record<string, never>, ResultatImportZeffy>(getFunctions(firebaseApp, 'us-central1'), 'importerComptesZeffy');
+  const { data } = await appeler({});
+  return data;
 }

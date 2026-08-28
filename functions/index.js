@@ -859,6 +859,97 @@ async function expedierLettre({ transport, cle, campagneId, sujet, html, texte, 
   return { envoyes, echecs, adressesEchouees, derniere };
 }
 
+// ─── Les comptes importés de Zeffy ───────────────────────────────────
+// Alex, 2026-08-27 : « tous les gens qui se sont inscrits sur Zeffy
+// doivent avoir un compte par défaut; quand ils s'inscrivent, ils
+// récupèrent le compte ». Le registre des clients (/clients, versé par
+// tools/importer-clients.mjs) donne les courriels. Pour chacun : un
+// compte Firebase Auth s'il n'existe pas déjà, une fiche users/{uid}
+// marquée `origine: 'zeffy'`, et une entrée membres/{uid} avec
+// l'étiquette « importé » pour que la messagerie de masse et le registre
+// de l'Ordre les voient. La fusion se fait toute seule : Firebase Auth
+// tient une seule identité par courriel, donc la personne qui arrive
+// par Google ou par lien magique tombe sur ce compte, et le formulaire
+// mot de passe la renvoie au lien magique quand le courriel existe déjà.
+// Rejouable sans dégât : rien n'est recréé, rien n'est écrasé.
+const IMPORT_PAR_LOT = 400;
+
+exports.importerComptesZeffy = onCall(
+  { region: 'us-central1', memory: '512MiB', timeoutSeconds: 540 },
+  async (requete) => {
+    const auth = requete.auth;
+    const courriel = auth && auth.token && auth.token.email
+      ? String(auth.token.email).toLowerCase()
+      : null;
+    if (!courriel || !COURRIELS_ADMIN.includes(courriel)) {
+      throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
+    }
+
+    const snap = await db.collection('clients').get();
+    const parCourriel = new Map();
+    for (const d of snap.docs) {
+      const c = d.data();
+      const mail = String(c.courriel || '').trim().toLowerCase();
+      if (!mail || !mail.includes('@') || c.statut === 'annule') continue;
+      const nom = String(c.nom || '').trim();
+      const deja = parCourriel.get(mail);
+      if (!deja || (!deja.nom && nom)) parCourriel.set(mail, { nom: nom || (deja && deja.nom) || '' });
+    }
+
+    let crees = 0, existants = 0, fiches = 0, erreurs = 0;
+    const teinte = (nom) => { let h = 0; for (const ch of nom) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
+    let lot = db.batch(); let dansLot = 0;
+    const pousser = async () => { if (dansLot) { await lot.commit(); lot = db.batch(); dansLot = 0; } };
+
+    for (const [mail, { nom }] of parCourriel) {
+      let user;
+      try {
+        user = await admin.auth().getUserByEmail(mail);
+        existants++;
+      } catch (e) {
+        if (e && e.code === 'auth/user-not-found') {
+          try {
+            user = await admin.auth().createUser({ email: mail, displayName: nom || undefined });
+            crees++;
+          } catch (e2) {
+            erreurs++;
+            logger.warn('[zeffy] création refusée', { mail, erreur: String(e2 && e2.message) });
+            continue;
+          }
+        } else {
+          erreurs++;
+          logger.warn('[zeffy] lecture refusée', { mail, erreur: String(e && e.message) });
+          continue;
+        }
+      }
+      const uid = user.uid;
+      const nomFinal = nom || user.displayName || mail.split('@')[0];
+      lot.set(db.collection('users').doc(uid), {
+        email: mail,
+        displayName: nomFinal,
+        origine: 'zeffy',
+        importe: true,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      }, { merge: true });
+      lot.set(db.collection('membres').doc(uid), {
+        uid,
+        nom: nomFinal,
+        avatarHue: teinte(nomFinal),
+        tags: FieldValue.arrayUnion('importé'),
+        maj: FieldValue.serverTimestamp(),
+      }, { merge: true });
+      fiches++;
+      dansLot += 2;
+      if (dansLot >= IMPORT_PAR_LOT) await pousser();
+    }
+    await pousser();
+
+    logger.info('[zeffy] import terminé', { courriels: parCourriel.size, crees, existants, fiches, erreurs });
+    return { courriels: parCourriel.size, crees, existants, fiches, erreurs };
+  },
+);
+
 exports.envoyerCampagne = onCall(
   {
     region: 'us-central1',
