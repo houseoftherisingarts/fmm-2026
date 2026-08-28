@@ -113,7 +113,7 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px] items-start">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr_300px] items-start">
       {/* ── Aptitudes, à gauche ── */}
       <section className="rounded-lg-card border border-brass/25 p-6" style={{ background: 'rgba(26,5,11,0.45)' }}>
         <p className="witcher-stat-label mb-4">{fr ? 'Aptitudes' : 'Abilities'}</p>
