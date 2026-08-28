@@ -104,33 +104,16 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
           {fr ? 'Rien sur ce mur pour le moment.' : 'Nothing on this wall yet.'}
         </p>
       ) : lignes.map((post, i) => (
-        <motion.article
+        <BilletCarte
           key={post.id}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="rounded-lg-card p-5 md:p-6"
-          style={{ background: 'rgba(26, 5, 11, 0.45)', border: '1px solid rgba(232,177,74,0.2)' }}
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <Link to={`${addLocale('/profil', lang)}/${post.uid}`}><Medaillon nom={post.nom} url={post.avatarUrl} hue={post.avatarHue} /></Link>
-            <div className="min-w-0 flex-1">
-              <Link to={`${addLocale('/profil', lang)}/${post.uid}`} className="font-display text-base text-ivory hover:text-brass transition-colors truncate block">
-                {post.nom}
-              </Link>
-              <p className="font-sans text-[11px] text-ivory-soft/55">{quandTexte(post.creeLe?.toMillis?.() ?? Date.now(), fr)}</p>
-            </div>
-            {user && (user.uid === post.uid || isAdmin) && (
-              <button type="button" onClick={() => { void retirerDuMur(post); }} aria-label={fr ? 'Retirer' : 'Remove'}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-ivory-soft/50 hover:text-[#E08A6E] transition-colors">
-                <Trash2 size={14} />
-              </button>
-            )}
-          </div>
-          {post.texte && <p className="font-editorial text-[15px] text-ivory leading-relaxed whitespace-pre-line">{post.texte}</p>}
-          {post.photoUrl && (
-            <img src={post.photoUrl} alt="" loading="lazy" className="mt-4 w-full max-h-[32rem] object-cover rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
-          )}
-        </motion.article>
+          lang={lang}
+          post={post}
+          delaiIndex={i}
+          fond="rgba(26, 5, 11, 0.45)"
+          bord="rgba(232,177,74,0.2)"
+          peutEpingler={peutEpingler}
+          bandeauEpingle={fr ? 'Épinglé dans la guilde' : 'Pinned in the guild'}
+        />
       ))}
     </div>
   );
