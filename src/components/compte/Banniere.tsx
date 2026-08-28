@@ -162,7 +162,7 @@ const Banniere: React.FC<{
       >
         <div
           ref={cadreRef}
-          className={`relative overflow-hidden rounded-[13px] h-full ${verticale ? 'aspect-[3/5]' : 'aspect-[16/5] md:aspect-[16/4]'}`}
+          className={`relative overflow-hidden rounded-[13px] ${verticale ? 'h-full aspect-[3/5]' : 'aspect-[16/5] md:aspect-[16/4]'}`}
           style={{ background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.bandeSombre}55, rgba(10,2,7,0.95))` }}
           onPointerDown={ajustage ? surPointerDown : undefined}
           onPointerMove={ajustage ? surPointerMove : undefined}
