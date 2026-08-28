@@ -55,3 +55,12 @@ export async function sauverAvatar(uid: string, avatar: AvatarChantier): Promise
   if (!db) return;
   await setDoc(doc(db, COLLECTION, uid), { ...avatar, maj: serverTimestamp() }, { merge: true });
 }
+
+export const MAX_VITRINE = 3;
+
+/** Choisit les objets montrés publiquement, jusqu'à trois (voir
+ *  VitrineObjets.tsx, geste du propriétaire seulement). */
+export async function definirVitrine(uid: string, ids: string[]): Promise<void> {
+  if (!db) return;
+  await setDoc(doc(db, COLLECTION, uid), { vitrine: ids.slice(0, MAX_VITRINE), maj: serverTimestamp() }, { merge: true });
+}
