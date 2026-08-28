@@ -359,6 +359,12 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
           </div>
         )}
       </div>
+      {ouverte && (
+        <VisionneusePhoto
+          photo={ouverte} lang={lang} onClose={() => setOuvertId(null)}
+          moi={{ uid, nom: nomMembre }} proprietaire
+        />
+      )}
     </section>
   );
 };
