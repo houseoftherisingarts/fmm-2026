@@ -77,6 +77,9 @@ const NAV: NavItem[] = [
   { id: 'badges',     label: 'Babillard et badges', icon: Award,       group: 'Bénévoles' },
 
   { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag,     group: 'Participants' },
+  // La ruelle du Souk : commerces non officiels créés par les membres,
+  // pas encore promus en kiosque (Alex, 2026-08-27).
+  { id: 'commerces',  label: 'Commerces de la ruelle', icon: Store,    group: 'Participants' },
   { id: 'activites',  label: 'Activités',       icon: Swords,          group: 'Participants' },
   { id: 'musiciens',  label: 'Musique',         icon: Music,           group: 'Participants' },
   { id: 'mariages',   label: 'Mariages',        icon: Heart,           group: 'Participants' },
