@@ -22,6 +22,14 @@
 //                                                       contre, score, chaleur,
 //                                                       creeLe, ... }
 //   mur/{postId}/commentaires/{cid}/votes/{voterUid}  { valeur, nom, majLe }
+//
+// Alex, 2026-08-28 : un lien collé dans le texte se transforme en carte
+// d'aperçu (image, titre, description, domaine) — la fonction serveur
+// apercuLien va chercher les métadonnées Open Graph que le navigateur
+// ne peut pas lire lui-même sur un site tiers. La vidéo, elle, est
+// réservée aux membres VIP (le don « sans publicité » de sansPub.ts) :
+// c'est le composeur qui vérifie le statut avant d'ouvrir le sélecteur
+// de fichier, ici on ne fait que la téléverser et la ranger.
 
 import {
   collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, query, orderBy, limit as fsLimit,

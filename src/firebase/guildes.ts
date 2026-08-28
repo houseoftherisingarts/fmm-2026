@@ -22,11 +22,37 @@ import { db, storage } from '../firebase';
 import { ref as refStockage, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { versWebp } from './photosPubliques';
 
+// Alex, 2026-08-28 : « ils peuvent choisir si c'est une guilde, un clan
+// ou d'autres formulations; c'est la même chose, seulement tagué
+// différemment ». Les vikings fonderont des clans, les chevaliers des
+// guildes, et le reste suit.
+export type FormeGuilde = 'guilde' | 'clan' | 'compagnie' | 'confrerie' | 'troupe' | 'maisonnee' | 'ordre';
+
+export const FORMES_GUILDE: Array<{ id: FormeGuilde; FR: string; EN: string; articleFR: string }> = [
+  { id: 'guilde',    FR: 'Guilde',     EN: 'Guild',       articleFR: 'une' },
+  { id: 'clan',      FR: 'Clan',       EN: 'Clan',        articleFR: 'un'  },
+  { id: 'compagnie', FR: 'Compagnie',  EN: 'Company',     articleFR: 'une' },
+  { id: 'confrerie', FR: 'Confrérie',  EN: 'Brotherhood', articleFR: 'une' },
+  { id: 'troupe',    FR: 'Troupe',     EN: 'Troupe',      articleFR: 'une' },
+  { id: 'maisonnee', FR: 'Maisonnée',  EN: 'Household',   articleFR: 'une' },
+  { id: 'ordre',     FR: 'Ordre',      EN: 'Order',       articleFR: 'un'  },
+];
+
+/** Le mot que cette guilde s'est donné, dans la langue de la page. */
+export const motDeLaForme = (forme: FormeGuilde | undefined, lang: 'FR' | 'EN'): string => {
+  const f = FORMES_GUILDE.find((x) => x.id === (forme || 'guilde')) || FORMES_GUILDE[0];
+  return lang === 'FR' ? f.FR : f.EN;
+};
+
 export interface Guilde {
   id: string;
   nom: string;
   description: string;
+  /** Le mot choisi à la fondation; absent veut dire « guilde ». */
+  forme?: FormeGuilde;
   blason?: string;
+  /** La bannière large de la guilde (guildes/{id}/banniere.webp). */
+  banniereUrl?: string;
   creePar: string;
   admins: string[];
   membres: string[];
@@ -44,7 +70,7 @@ export const LONGUEUR_DESCRIPTION_MAX = 1000;
 const lire = (d: { id: string; data: () => Record<string, unknown> }): Guilde =>
   ({ id: d.id, ...(d.data() as Omit<Guilde, 'id'>) });
 
-export async function creerGuilde(opts: { uid: string; nom: string; description: string }): Promise<string> {
+export async function creerGuilde(opts: { uid: string; nom: string; description: string; forme?: FormeGuilde }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
   const nom = opts.nom.trim().slice(0, LONGUEUR_NOM_MAX);
   if (nom.length < LONGUEUR_NOM_MIN) throw new Error('Le nom de la guilde est trop court.');
@@ -52,6 +78,7 @@ export async function creerGuilde(opts: { uid: string; nom: string; description:
   const id = doc(collection(db, COL)).id;
   await setDoc(doc(db, COL, id), {
     nom, description,
+    forme: opts.forme || 'guilde',
     creePar: opts.uid,
     admins: [opts.uid],
     membres: [opts.uid],
@@ -122,7 +149,7 @@ export async function quitterGuilde(id: string, uid: string): Promise<void> {
 }
 
 /** Réservé à l'équipe ou à un admin de la guilde (voir firestore.rules). */
-export async function modifierGuilde(id: string, patch: { nom?: string; description?: string; blason?: string }): Promise<void> {
+export async function modifierGuilde(id: string, patch: { nom?: string; description?: string; blason?: string; banniereUrl?: string; forme?: FormeGuilde }): Promise<void> {
   if (!db) return;
   const data: Record<string, unknown> = { maj: serverTimestamp() };
   if (patch.nom !== undefined) data.nom = patch.nom.trim().slice(0, LONGUEUR_NOM_MAX);
@@ -146,6 +173,17 @@ export async function listerMesGuildes(uid: string): Promise<Guilde[]> {
 /** L'admin de la guilde (ou l'équipe) change le blason : la photo est
  *  redimensionnée côté navigateur et rangée sous guildes/{id}/blason.webp
  *  (Alex, 2026-08-28 : « changer la photo de guilde »). */
+/** La bannière large de la guilde, posée par un de ses admins. */
+export async function changerBanniereGuilde(id: string, fichier: File): Promise<string> {
+  if (!db || !storage) throw new Error('Le stockage est indisponible pour le moment.');
+  const { blob } = await versWebp(fichier, 1800, 0.85);
+  const r = refStockage(storage, `guildes/${id}/banniere.webp`);
+  await uploadBytes(r, blob, { contentType: 'image/webp' });
+  const url = `${await getDownloadURL(r)}&v=${Date.now()}`;
+  await modifierGuilde(id, { banniereUrl: url });
+  return url;
+}
+
 export async function changerBlason(id: string, fichier: File): Promise<string> {
   if (!db || !storage) throw new Error('Le stockage est indisponible pour le moment.');
   const { blob } = await versWebp(fichier, 1200, 0.85);
