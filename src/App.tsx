@@ -421,6 +421,11 @@ const App: React.FC = () => (
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
                 <Route path="/mur"     element={<MurPage />} />
                 <Route path="/en/wall" element={<MurPage />} />
+                {/* Chantier : slug identique dans les deux langues, pas
+                    d'entrée dans locale.ts (comme /contact, /messages).
+                    Gaté isAdmin à l'intérieur de la page elle-même. */}
+                <Route path="/chantier"    element={<ChantierPage />} />
+                <Route path="/en/chantier" element={<ChantierPage />} />
                 <Route path="/souk"    element={<SoukPage />} />
                 <Route path="/en/souk" element={<SoukPage />} />
                 <Route path="/guildes"           element={<GuildesPage />} />
