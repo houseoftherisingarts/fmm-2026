@@ -179,8 +179,33 @@ const MurSocial: React.FC<{
             </button>
             <input ref={fichier} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
                    onChange={(e) => { setPhoto(e.target.files?.[0] || null); e.target.value = ''; }} />
+            {/* La vidéo est réservée aux membres VIP, pour la bande passante (Alex, 2026-08-28). */}
+            <button type="button"
+                    onClick={() => {
+                      if (!estVip) {
+                        setErreurVideo(fr
+                          ? 'La vidéo est réservée aux membres VIP. Votre don retire les publicités et ouvre la vidéo.'
+                          : 'Video is reserved for VIP members. Your donation removes ads and unlocks video.');
+                        return;
+                      }
+                      fichierVideo.current?.click();
+                    }}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
+                    style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+              <Video size={13} /> {fr ? 'Vidéo' : 'Video'}
+            </button>
+            <input ref={fichierVideo} type="file" accept="video/mp4,video/webm" className="sr-only"
+                   onChange={(e) => {
+                     const f = e.target.files?.[0] || null; e.target.value = '';
+                     if (!f) return;
+                     if (f.size > TAILLE_MAX_VIDEO) {
+                       setErreurVideo(fr ? 'La vidéo dépasse 60 Mo.' : 'The video is over 60 MB.');
+                       return;
+                     }
+                     setErreurVideo(null); setVideo(f);
+                   }} />
             <span className="ml-auto font-sans text-[10px] text-ivory-soft/45">{texte.length}/{LONGUEUR_MAX_POST}</span>
-            <button type="button" onClick={publier} disabled={envoi || (!texte.trim() && !photo)}
+            <button type="button" onClick={publier} disabled={envoi || (!texte.trim() && !photo && !video)}
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
               {envoi ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />} {fr ? 'Publier' : 'Post'}
             </button>
