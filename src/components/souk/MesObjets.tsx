@@ -159,7 +159,12 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-display title-medieval text-sm text-ivory truncate">{o.titre}</p>
-                <p className="font-sans text-xs text-brass mb-2">{o.prix.toFixed(2)} $</p>
+                <p className="font-sans text-xs text-brass mb-2 flex items-center gap-2 flex-wrap">
+                  <span>{o.prix.toFixed(2)} $</span>
+                  {o.prixMontpellois != null && (
+                    <span className="inline-flex items-center gap-1"><PieceMontpellois size={12} />{o.prixMontpellois}</span>
+                  )}
+                </p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <select
                     value={o.statut}
