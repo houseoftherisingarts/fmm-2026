@@ -22,6 +22,10 @@ const AnnonceBadge: React.FC = () => {
   const { lang } = useUI();
   const { openSignIn } = useAuth();
   const fr = lang === 'FR';
+  // Le sceau d'un badge tout neuf n'a pas encore été gravé (Alex,
+  // 2026-08-28) : l'image 404 bascule sur le glyphe.
+  const [sceauCasse, setSceauCasse] = useState(false);
+  useEffect(() => { setSceauCasse(false); }, [annonce?.badge.id]);
 
   useEffect(() => {
     if (!annonce) return;
