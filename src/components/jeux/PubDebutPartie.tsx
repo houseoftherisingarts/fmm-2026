@@ -50,8 +50,10 @@ const PubDebutPartie: React.FC<Props> = ({ lang, jeu, onContinuer }) => {
       /* Un bloqueur de pub ou un compte pas encore approuvé ne doit
          jamais empêcher la partie de démarrer. */
     }
+    bumpPubJeuxView(jeu);
     const id = window.setTimeout(() => setPret(true), DELAI_MS);
     return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slot]);
 
   if (!slot) return null;
