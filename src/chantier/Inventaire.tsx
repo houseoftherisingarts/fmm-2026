@@ -191,20 +191,31 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
         </div>
       </section>
 
-      {/* ── Le mannequin, encadré des cases ── */}
+      {/* ── Le mannequin, encadré des cases ──
+          Desktop : les deux colonnes de losanges flanquent le
+          personnage, comme Witcher/Diablo. Mobile : un losange de 88px
+          ne tient pas cinq fois sur un écran de téléphone, donc le
+          personnage passe en premier (`order-1`) et les dix cases se
+          rangent dessous en grille compacte (`order-2`), les colonnes
+          flanquantes ne s'affichant qu'à partir de `lg`
+          (Alex, 2026-08-27, correctif d'affichage mobile). */}
       <section className="rounded-lg-card border border-brass/20 py-8 px-4" style={{ background: 'rgba(8,20,36,0.4)' }}>
-        <div className="flex items-center justify-center gap-4 md:gap-8">
-          <div className="flex flex-col gap-6 shrink-0">
+        <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-center lg:gap-8">
+          <div className="hidden lg:flex flex-col gap-6 shrink-0 lg:order-1">
             {colonneGauche.map((e) => <Case key={e} emplacement={e} />)}
           </div>
           <div
+            className="order-1 lg:order-2"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); const p = lire(e); if (p) versSac(p); }}
           >
-            <Personnage corps={avatar.corps} peau={avatar.peau} coiffure={avatar.coiffure} equipe={avatar.equipe} size={300} />
+            <Personnage corps={avatar.corps} peau={avatar.peau} coiffure={avatar.coiffure} equipe={avatar.equipe} size={220} />
           </div>
-          <div className="flex flex-col gap-6 shrink-0">
+          <div className="hidden lg:flex flex-col gap-6 shrink-0 lg:order-3">
             {colonneDroite.map((e) => <Case key={e} emplacement={e} />)}
+          </div>
+          <div className="grid grid-cols-5 gap-2.5 order-2 lg:hidden max-w-xs">
+            {EMPLACEMENTS.map((e) => <Case key={e} emplacement={e} compact />)}
           </div>
         </div>
       </section>
