@@ -112,3 +112,23 @@ export const acheterAuSouk = (objetSoukId: string) =>
  *  affichés « à venir » tant qu'Alex n'ouvre pas la vente. */
 export const acheterAlbum = (groupeId: string) =>
   appeler<{ groupeId: string }, { solde: number }>('acheterAlbum')({ groupeId });
+
+
+/** La bourse s'ouvre ou se referme aux regards des autres membres
+ *  (Alex, 2026-08-28). Le badge du paon vient avec l'ouverture. */
+export async function basculerBoursePublique(publique: boolean): Promise<{ publique: boolean }> {
+  if (!firebaseApp) throw new Error('Firebase n’est pas configuré');
+  const appeler = httpsCallable<{ publique: boolean }, { publique: boolean }>(
+    getFunctions(firebaseApp, 'us-central1'), 'boursePubliqueBascule',
+  );
+  const { data } = await appeler({ publique });
+  return data;
+}
+
+/** La bourse de quelqu'un d'autre, quand elle est ouverte. */
+export function suivreBourseDe(uid: string, cb: (bourse: { solde: number; gagne: number; publique?: boolean } | null) => void): () => void {
+  if (!db) { cb(null); return () => {}; }
+  return onSnapshot(doc(db, COLLECTION, uid),
+    (snap) => cb(snap.exists() ? (snap.data() as { solde: number; gagne: number; publique?: boolean }) : null),
+    () => cb(null));
+}

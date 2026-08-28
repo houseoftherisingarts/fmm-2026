@@ -2289,3 +2289,17 @@ exports.badgeMontpelloisEtTrouvaille = onDocumentWritten(
     }
   },
 );
+
+// ── La bourse publique (Alex, 2026-08-28) ────────────────────────────
+// « La personne peut choisir si elle met sa bourse publique ou privée.
+// Quand elle la montre, elle gagne un badge rigolo. » Le drapeau passe
+// par ici parce que la bourse ne s'écrit jamais depuis le navigateur.
+exports.boursePubliqueBascule = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous d’abord.');
+  const publique = !!(requete.data || {}).publique;
+  const { ref } = await assurerBourse(uid);
+  await ref.set({ publique, maj: FieldValue.serverTimestamp() }, { merge: true });
+  if (publique) await poserBadge(uid, 'paon');
+  return { publique };
+});

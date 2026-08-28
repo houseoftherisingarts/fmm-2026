@@ -732,7 +732,9 @@ service cloud.firestore {
     // par la clé d'administration : un navigateur qui pourrait écrire
     // ici s'offrirait un milliard de Montpellois.
     match /bourses/{uid} {
-      allow read:  if isOwner(uid) || isAdmin();
+      // Une bourse rendue publique se lit par les autres membres.
+      allow read:  if isOwner(uid) || isAdmin()
+                   || (signedIn() && resource.data.get('publique', false) == true);
       allow write: if false;
     }
 

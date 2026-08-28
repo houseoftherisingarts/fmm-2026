@@ -127,6 +127,8 @@ export const COLLECTIONS: Collection[] = [
     nomFR: 'La bourse du Montpellois', nomEN: 'The Montpellois purse',
     prix: 'grand',
     badges: [
+      { id: 'paon',             glyphe: '❦', nomFR: 'Paon de la cour',   nomEN: 'Peacock of the court',
+        texteFR: 'Votre bourse est ouverte à tous les regards. Que nul n’ignore votre fortune.', texteEN: 'Your purse is open for all to see. Let no one ignore your fortune.' },
       { id: 'premiere-depense', glyphe: '◈', nomFR: 'Premier écu dépensé', nomEN: 'First coin spent',
         texteFR: 'Vous avez dépensé votre premier Montpellois.', texteEN: 'You spent your first Montpellois.' },
       { id: 'fortune-100',      glyphe: '❂', nomFR: 'Bourse garnie',   nomEN: 'Full purse',

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Camera, Trash2, Crop, Check, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { Camera, Trash2, Crop, Check, RotateCcw, ZoomIn, ZoomOut, Eye} from 'lucide-react';
 import { storage } from '../../firebase';
 import { upsertUserProfile } from '../../firebase/applications';
 import { lireFiche, publierFiche, type Membre } from '../../firebase/ordre';
@@ -84,7 +85,10 @@ const AvatarUpload: React.FC<{
   onChange: (url: string | undefined) => void;
   /** Sur la fiche de quelqu'un d'autre : la photo se regarde, rien de plus. */
   lecture?: boolean;
-}> = ({ uid, email, displayName, lang, avatarUrl, onChange, lecture = false }) => {
+  /** L'adresse de la fiche publique : une pastille à l'oeil s'ouvre au
+   *  centre, sous le médaillon (Alex, 2026-08-28). */
+  lienProfilPublic?: string;
+}> = ({ uid, email, displayName, lang, avatarUrl, onChange, lecture = false, lienProfilPublic }) => {
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
   const [busy, setBusy] = useState(false);
@@ -367,6 +371,26 @@ const AvatarUpload: React.FC<{
               <Camera size={18} />
             </label>
 
+            {/* Pastille de l'oeil, au centre sous le médaillon : elle
+                ouvre la fiche telle que les autres la voient (Alex,
+                2026-08-28). */}
+            {lienProfilPublic && (
+              <Link
+                to={lienProfilPublic}
+                title={t.voirPublic}
+                aria-label={t.voirPublic}
+                className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center transition hover:brightness-125"
+                style={{
+                  background: 'rgba(10,2,7,0.85)',
+                  border: '1px solid rgba(216,176,90,0.7)',
+                  color: '#D8B05A',
+                  boxShadow: '0 8px 20px -10px rgba(0,0,0,0.95)',
+                }}
+              >
+                <Eye size={18} />
+              </Link>
+            )}
+
             {/* Pastille de cadrage, en miroir, seulement s'il y a une
                 photo à recadrer. */}
             {avatarUrl && (
@@ -473,6 +497,7 @@ const AvatarUpload: React.FC<{
 const FR = {
   label:  'Photo de profil',
   add:    'Ajouter une photo',
+  voirPublic: 'Voir mon profil public',
   change: 'Changer la photo',
   remove: 'Retirer',
   hint:   'Ajoutez votre portrait, le cadrage se fait tout seul.',
@@ -491,6 +516,7 @@ const FR = {
 const EN: typeof FR = {
   label:  'Profile photo',
   add:    'Add a photo',
+  voirPublic: 'View my public profile',
   change: 'Change photo',
   remove: 'Remove',
   hint:   'Add your portrait, the cropping happens on its own.',

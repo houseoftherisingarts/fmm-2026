@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
-  HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
+  HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords, Ticket,
   MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield,
   Sparkles, Crown, BadgeCheck, Plus, Music,
 } from 'lucide-react';
@@ -460,7 +460,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       avatarUrl={photo}
                       onChange={setAvatarUrl}
                       lecture={!prive}
-                    />
+                                  lienProfilPublic={prive ? `${addLocale('/profil', lang)}/${uid}` : undefined}
+/>
 
                     <div className="flex-1 min-w-0 w-full">
                       <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words inline-flex items-center gap-2 md:gap-3 flex-wrap justify-center md:justify-start">
@@ -577,41 +578,17 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
             {prive ? (
               <>
-                {bApp?.status === 'accepted' ? (
-                  <>
-                    <Link to={addLocale('/espace-benevole', lang)} className={cta}>
-                      <HandHeart size={14} /> {t.benevoleOpenSpace} <ArrowUpRight size={12} />
-                    </Link>
-                    <Link to={`${addLocale('/profil', lang)}/${uid}`} className={secondair}>
-                      <Eye size={14} /> {t.voirProfil}
-                    </Link>
-                    <Link to={addLocale('/communaute', lang)} className={discret}>
-                      <Users size={14} /> {t.communaute}
-                    </Link>
-                    <Link to={addLocale('/messages', lang)} className={discret}>
-                      <MessageCircle size={14} /> {t.messages}
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    {/* L'ordre demandé par Alex le 2026-08-23 : le profil
-                        public, le registre juste à côté, puis les deux
-                        candidatures, et l'espace admin tout à la fin. */}
-                    <Link to={`${addLocale('/profil', lang)}/${uid}`} className={cta}>
-                      <Eye size={14} /> {t.voirProfil} <ArrowUpRight size={12} />
-                    </Link>
-                    <Link to={addLocale('/ordre', lang)} className={discret}>
-                      <Users size={14} /> {t.registre}
-                    </Link>
-                    <Link to={addLocale('/benevole', lang)} className={secondair}>
-                      <HandHeart size={14} /> {t.benevoleTitle}
-                    </Link>
-                    <Link to={addLocale('/marche/inscription', lang)}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-amber-300/45 text-amber-200 hover:bg-amber-300/10 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
-                      <ShoppingBag size={14} />
-                      {vApp && vApp.status === 'accepted' ? t.vendorManageKiosk : t.vendorApplyQuick}
-                    </Link>
-                  </>
+                {/* Alex, 2026-08-28 : la bande ne garde que le registre et
+                    la porte de l'équipe. Le profil public s'ouvre par la
+                    pastille à l'oeil sous le portrait, et les deux
+                    candidatures vivent maintenant dans l'onglet Profil. */}
+                <Link to={addLocale('/ordre', lang)} className={cta}>
+                  <Users size={14} /> {t.registre}
+                </Link>
+                {bApp?.status === 'accepted' && (
+                  <Link to={addLocale('/espace-benevole', lang)} className={secondair}>
+                    <HandHeart size={14} /> {t.benevoleOpenSpace} <ArrowUpRight size={12} />
+                  </Link>
                 )}
 
                 {/* Visible seulement pour les courriels autorisés : useAuth()

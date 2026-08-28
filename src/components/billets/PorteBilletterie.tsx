@@ -17,7 +17,12 @@ const PorteBilletterie: React.FC<{
   lang: 'FR' | 'EN';
 }> = ({ ouvert, onFermer, lang }) => {
   const fr = lang === 'FR';
-  const { openSignIn } = useAuth();
+  const { user, openSignIn } = useAuth();
+  // Le compte vient d'être créé pendant que la porte était ouverte :
+  // la porte change de visage et offre le passage vers la campagne des
+  // membres (Alex, 2026-08-28).
+  const [attendaitCompte, setAttendaitCompte] = React.useState(false);
+  const compteFrais = attendaitCompte && Boolean(user);
 
   const continuerSansCompte = () => {
     onFermer();
@@ -25,8 +30,13 @@ const PorteBilletterie: React.FC<{
   };
 
   const creerUnCompte = () => {
-    onFermer();
+    setAttendaitCompte(true);
     openSignIn();
+  };
+
+  const versMesBillets = () => {
+    onFermer();
+    window.location.href = lienBilletterie(true);
   };
 
   if (typeof document === 'undefined') return null;
@@ -64,26 +74,46 @@ const PorteBilletterie: React.FC<{
             </span>
 
             <p className="witcher-stat-label mb-2">{fr ? 'La billetterie' : 'The box office'}</p>
-            <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-4">
-              {fr ? `Prenez vos billets à ${RABAIS_MEMBRE} $ de moins` : `Get your tickets ${RABAIS_MEMBRE} dollars cheaper`}
-            </h2>
-            <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed mb-7">
-              {fr
-                ? `Vous partez vers notre billetterie Zeffy. Les membres du festival paient ${RABAIS_MEMBRE} $ de moins par billet, et le compte se crée en une minute.`
-                : `You are heading to our Zeffy box office. Festival members pay ${RABAIS_MEMBRE} dollars less per ticket, and the account takes a minute to create.`}
-            </p>
 
-            <div className="flex flex-col gap-2.5">
-              <button type="button" onClick={creerUnCompte}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-                <UserPlus size={15} /> {fr ? `Créer mon compte et garder ${RABAIS_MEMBRE} $ par billet` : `Create my account and keep ${RABAIS_MEMBRE} dollars per ticket`}
-              </button>
-              <button type="button" onClick={continuerSansCompte}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 font-sans uppercase tracking-wider text-xs text-ivory-soft/70 hover:text-ivory transition rounded-card"
-                      style={{ border: '1px solid rgba(244,239,227,0.18)' }}>
-                {fr ? 'Continuer sans compte' : 'Continue without an account'} <ArrowUpRight size={13} />
-              </button>
-            </div>
+            {compteFrais ? (
+              <>
+                <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-4">
+                  {fr ? 'Votre compte est ouvert' : 'Your account is open'}
+                </h2>
+                <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed mb-7">
+                  {fr
+                    ? `Le rabais de ${RABAIS_MEMBRE} $ par billet vous suit dès maintenant.`
+                    : `The ${RABAIS_MEMBRE} dollar discount per ticket follows you from now on.`}
+                </p>
+                <button type="button" onClick={versMesBillets}
+                        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+                  <Ticket size={15} /> {fr ? 'Continuer vers mes billets' : 'Continue to my tickets'} <ArrowUpRight size={13} />
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-4">
+                  {fr ? `Économisez ${RABAIS_MEMBRE} $ en devenant membre` : `Save ${RABAIS_MEMBRE} dollars by becoming a member`}
+                </h2>
+                <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed mb-7">
+                  {fr
+                    ? `Faites-vous un profil, et chaque billet vous coûte ${RABAIS_MEMBRE} $ de moins. Le compte se crée en une minute.`
+                    : `Create a profile, and every ticket costs you ${RABAIS_MEMBRE} dollars less. The account takes a minute.`}
+                </p>
+
+                <div className="flex flex-col gap-2.5">
+                  <button type="button" onClick={creerUnCompte}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+                    <UserPlus size={15} /> {fr ? 'Oui, je me fais un profil' : 'Yes, create my profile'}
+                  </button>
+                  <button type="button" onClick={continuerSansCompte}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 font-sans uppercase tracking-wider text-xs text-ivory-soft/70 hover:text-ivory transition rounded-card"
+                          style={{ border: '1px solid rgba(244,239,227,0.18)' }}>
+                    {fr ? `Non merci, je paie ${RABAIS_MEMBRE} $ de plus` : `No thanks, I pay ${RABAIS_MEMBRE} dollars more`} <ArrowUpRight size={13} />
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
