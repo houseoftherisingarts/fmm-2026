@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tag } from 'lucide-react';
 import { suivrePhotosOuJeSuis, type PhotoPublique } from '../../firebase/photosPubliques';
-import { useFirestoreListener } from '../../lib/useFirestoreListener';
 import VisionneusePhoto from './VisionneusePhoto';
 
 // ─── Photos où je suis identifié ─────────────────────────────────────
