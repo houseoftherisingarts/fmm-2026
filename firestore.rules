@@ -973,5 +973,33 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
       allow create: if isAdmin() || isBugReportMail();
     }
+
+    // ── Le Souk : petite place de marché entre membres ────────────
+    // Chacun revend ses objets usagés (costume, arme, artisanat, livre,
+    // décor, autre). Lecture ouverte aux membres connectés (les
+    // intéressés écrivent au vendeur par la messagerie); la fiche reste
+    // la propriété de son auteur, l'équipe peut intervenir en secours.
+    match /souk/{docId} {
+      allow read:   if signedIn();
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.titre is string
+                    && request.resource.data.titre.size() >= 2
+                    && request.resource.data.titre.size() <= 80
+                    && request.resource.data.prix is number
+                    && request.resource.data.prix >= 0;
+      allow update, delete: if isAdmin()
+                    || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+
+    // ── Le Commerce : une fiche par membre (docId == uid) ──────────
+    // L'équivalent d'une page Facebook, non officielle tant qu'elle
+    // n'est pas promue en kiosque (voir /vendors). Le propriétaire
+    // écrit sa propre fiche; l'équipe peut la corriger ou la retirer.
+    match /commerces/{uid} {
+      allow read:           if signedIn();
+      allow create, update: if isOwner(uid) || isAdmin();
+      allow delete:         if isOwner(uid) || isAdmin();
+    }
   }
 }
