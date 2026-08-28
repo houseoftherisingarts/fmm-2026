@@ -727,6 +727,31 @@ service cloud.firestore {
       allow delete: if isAdmin() || request.auth.uid in resource.data.admins;
     }
 
+    // ── Le parrainage (Alex, 2026-08-28) ─────────────────────────
+    // La table d'unicité des codes : chacun réserve le sien, personne
+    // ne réécrit celui d'un autre.
+    match /codesParrain/{code} {
+      allow read:   if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Le lien de parrainage porte l'identifiant du filleul : une seule
+    // fois dans sa vie, et jamais sur soi-même. Le compteur de filleuls
+    // et les récompenses viennent de la fonction serveur, qui contourne
+    // les règles; le navigateur n'y touche pas.
+    match /parrainages/{filleulUid} {
+      allow read:   if signedIn() && (request.auth.uid == filleulUid
+                                      || request.auth.uid == resource.data.parrainUid
+                                      || isAdmin());
+      allow create: if signedIn()
+                    && request.auth.uid == filleulUid
+                    && request.resource.data.parrainUid is string
+                    && request.resource.data.parrainUid != request.auth.uid
+                    && request.resource.data.filleulUid == filleulUid;
+      allow update, delete: if isAdmin();
+    }
+
     // ── Les badges du site ────────────────────────────────────────
     // Chacun écrit les siens. La fiche d'un membre montre ses badges
     // aux autres membres connectés : le contenu n'est qu'une liste
@@ -766,11 +791,22 @@ service cloud.firestore {
       allow update: if isAdmin()
                     || (signedIn()
                         && resource.data.uid == request.auth.uid
-                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende', 'visibilite', 'vedette', 'ordre'])
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['legende', 'visibilite', 'vedette', 'ordre', 'personnes', 'personnesUids'])
                         && request.resource.data.visibilite in ['publique', 'privee']
                         // Une photo en vedette sur le profil est forcément publique.
                         && (request.resource.data.get('vedette', false) != true
-                            || request.resource.data.visibilite == 'publique'));
+                            || request.resource.data.visibilite == 'publique'))
+                    // Une personne identifiée retire son propre repère (Alex,
+                    // 2026-08-28) : son uid disparaît, la liste raccourcit
+                    // d'exactement un, et rien d'autre n'est ajouté.
+                    || (signedIn()
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['personnes', 'personnesUids'])
+                        && resource.data.get('personnesUids', []).hasAll([request.auth.uid])
+                        && !request.resource.data.get('personnesUids', []).hasAny([request.auth.uid])
+                        && request.resource.data.get('personnesUids', []).hasOnly(resource.data.get('personnesUids', []))
+                        && request.resource.data.personnesUids.size() == resource.data.get('personnesUids', []).size() - 1
+                        && request.resource.data.get('personnes', []).hasOnly(resource.data.get('personnes', []))
+                        && request.resource.data.personnes.size() == resource.data.get('personnes', []).size() - 1);
       allow delete: if isAdmin();
     }
 

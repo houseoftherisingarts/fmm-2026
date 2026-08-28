@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { motion } from 'framer-motion';
 import { Image as ImageIcon, Send, Megaphone, Loader2, X, Video } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -48,6 +49,7 @@ const MurSocial: React.FC<{
 }) => {
   const fr = lang === 'FR';
   const { user, isAdmin } = useAuth();
+  const { gagnerBadge } = useBadges();
   const [posts, setPosts] = useState<PostMur[]>([]);
   useEffect(() => (uid ? suivreLeFilDe(uid, setPosts) : suivreLeMur(setPosts)), [uid]);
 
@@ -94,6 +96,7 @@ const MurSocial: React.FC<{
         verifie: fiche?.verifie,
         genre,
       });
+      gagnerBadge('mur-premier');
       setTexte(''); setPhoto(null); setVideo(null); setGenre('billet');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));

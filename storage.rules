@@ -74,6 +74,17 @@ service firebase.storage {
 
     // ── Le blason d'une guilde ─────────────────────────────────
     // Écrit par un admin de la guilde (lu dans Firestore) ou l'équipe.
+    // La bannière large de la guilde (Alex, 2026-08-28), même droit que
+    // le blason : un admin de la guilde, ou l'équipe.
+    match /guildes/{guildeId}/banniere.webp {
+      allow read:  if true;
+      allow write: if signedIn()
+        && (isAdmin()
+            || request.auth.uid in firestore.get(/databases/(default)/documents/guildes/$(guildeId)).data.admins)
+        && (request.resource == null
+            || (request.resource.contentType == 'image/webp' && request.resource.size < 8 * 1024 * 1024));
+    }
+
     match /guildes/{guildeId}/blason.webp {
       allow read:  if true;
       allow write: if signedIn()

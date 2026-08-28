@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldOff, Heart, Loader2, Check } from 'lucide-react';
+import { ShieldOff, Heart, Loader2, Check, Coins } from 'lucide-react';
 import { ouvrirLienSansPub, suivreSansPub, DONS_PROPOSES } from '../../firebase/sansPub';
 
 // ─── « Enlevez les publicités pour toujours » ────────────────────────
@@ -71,6 +71,20 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
             {envoi ? <Loader2 size={14} className="animate-spin" /> : <Heart size={14} />}
             {fr ? `Soutenir le festival · ${montant} $` : `Support the festival · $${montant}`}
           </button>
+          {/* La monnaie locale de la Petite Nation (Alex, 2026-08-28) :
+              le chemin est annoncé, le paiement ouvrira plus tard. */}
+          <div className="mt-4">
+            <button type="button" disabled
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card font-sans uppercase tracking-wider text-xs cursor-not-allowed"
+                    style={{ border: '1px dashed rgba(216,176,90,0.45)', color: 'rgba(244,239,227,0.6)', background: 'rgba(216,176,90,0.06)' }}>
+              <Coins size={14} style={{ color: '#D8B05A' }} />
+              {fr ? 'Payer mon espace VIP en petite monnaie' : 'Pay for my VIP space in local currency'}
+            </button>
+            <p className="font-sans text-[10px] mt-1.5 uppercase tracking-[0.2em]" style={{ color: '#D8B05A' }}>
+              {fr ? 'À venir bientôt' : 'Coming soon'}
+            </p>
+          </div>
+
           {erreur && <p className="mt-3 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}
         </>
       )}

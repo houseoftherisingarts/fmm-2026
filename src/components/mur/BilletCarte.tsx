@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useBadges } from '../../contexts/BadgesContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -98,6 +99,7 @@ const BilletCarte: React.FC<{
 }> = ({ lang, post, delaiIndex, fond, bord, genreBadge, peutEpingler, bandeauEpingle }) => {
   const fr = lang === 'FR';
   const { user, isAdmin } = useAuth();
+  const { gagnerBadge } = useBadges();
 
   const [monVote, setMonVote] = useState<1 | -1 | 0>(0);
   useEffect(() => (user ? suivreMonVote(post.id, user.uid, setMonVote) : undefined), [post.id, user]);
@@ -130,6 +132,7 @@ const BilletCarte: React.FC<{
         texte: texteComment,
         verifie: fiche?.verifie,
       });
+      gagnerBadge('commentaire');
       setTexteComment('');
     } finally { setEnvoiComment(false); }
   };

@@ -502,6 +502,65 @@ exports.sansPubLien = onRequest(
   },
 );
 
+
+// ─── Le parrainage : le compte des filleuls et ses récompenses ───────
+// Alex, 2026-08-28 : le badge au premier filleul, « Le Parrain » à
+// cinq, le compte VIP à dix, un billet du festival à vingt. Le compteur
+// vit ici et nulle part ailleurs : écrit depuis le navigateur, il
+// s'offrirait un billet gratuit en quelques clics.
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+
+exports.parrainageFilleul = onDocumentCreated(
+  { document: 'parrainages/{filleulUid}', region: 'us-central1', memory: '256MiB' },
+  async (evenement) => {
+    const lien = evenement.data && evenement.data.data();
+    if (!lien) return;
+    const parrainUid = String(lien.parrainUid || '');
+    const filleulUid = String(evenement.params.filleulUid || '');
+    if (!parrainUid || !filleulUid || parrainUid === filleulUid) return;
+
+    const fiche = db.collection('users').doc(parrainUid);
+    const total = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(fiche);
+      const avant = Number((snap.exists && snap.data().filleuls) || 0);
+      const apres = avant + 1;
+      const paquet = {
+        filleuls: apres,
+        filleulsMajLe: FieldValue.serverTimestamp(),
+      };
+      // Dix filleuls ouvrent le compte VIP, à vie, exactement comme le
+      // don « sans publicité ».
+      if (apres >= 10) { paquet.sansPub = true; paquet.sansPubRaison = 'parrainage'; }
+      // Vingt filleuls valent un billet du festival : l'équipe le voit
+      // dans l'admin et le remet, rien ne s'émet tout seul.
+      if (apres >= 20) { paquet.billetOffert = true; }
+      tx.set(fiche, paquet, { merge: true });
+      return apres;
+    });
+
+    // Les badges du parrainage, posés sur le même document que les
+    // autres (badges/{uid}.obtenus).
+    const gagnes = {};
+    if (total >= 1)  gagnes['obtenus.parrain'] = FieldValue.serverTimestamp();
+    if (total >= 5)  gagnes['obtenus.le-parrain'] = FieldValue.serverTimestamp();
+    if (Object.keys(gagnes).length) {
+      const refBadges = db.collection('badges').doc(parrainUid);
+      const dejaSnap = await refBadges.get();
+      const deja = (dejaSnap.exists && dejaSnap.data().obtenus) || {};
+      const aPoser = {};
+      for (const cle of Object.keys(gagnes)) {
+        const id = cle.split('.')[1];
+        if (!deja[id]) aPoser[cle] = gagnes[cle];
+      }
+      if (Object.keys(aPoser).length) {
+        await refBadges.set({ obtenus: {} }, { merge: true });
+        await refBadges.update(aPoser);
+      }
+    }
+    logger.info('[parrainage] filleul compté', { parrainUid, filleulUid, total });
+  },
+);
+
 // ─── La messagerie de l'équipe vers les membres ──────────────────────
 // Alex, 2026-08-24 : depuis l'espace admin, l'équipe écrit dans la
 // boîte de réception d'une poignée de membres cochés, ou de tout le
