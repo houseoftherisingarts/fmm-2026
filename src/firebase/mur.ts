@@ -288,6 +288,9 @@ export async function retirerDuMur(post: PostMur): Promise<void> {
   await deleteDoc(doc(db, COL, post.id));
   if (post.photoChemin && storage) await deleteObject(ref(storage, post.photoChemin)).catch(() => {});
   if (post.videoChemin && storage) await deleteObject(ref(storage, post.videoChemin)).catch(() => {});
+  // La vignette suit toujours ce chemin (voir publierSurLeMur) : pas
+  // besoin d'un champ de plus pour la retrouver (Alex, 2026-08-28).
+  if (post.videoVignette && storage) await deleteObject(ref(storage, `mur/${post.uid}/${post.id}-vignette.webp`)).catch(() => {});
 }
 
 /** Épingle ou décroche un billet en tête de son fil — l'équipe sur le

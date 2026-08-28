@@ -214,10 +214,12 @@ for (const [frPath, enPath, def] of PAIRS) {
     if (d.jsonLd) {
       html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(d.jsonLd)}</script>\n</head>`);
     }
-    // Contenu citable DANS #root : visible pour tout lecteur sans JS,
-    // remplacé par l'app React au mount (même HTML pour humains et robots).
-    const content = `<div id="root"><div style="max-width:720px;margin:0 auto;padding:48px 24px;font-family:Georgia,serif;color:#f4efe3;background:#0b0508"><h1 style="font-size:1.6rem;line-height:1.2">${d.h1}</h1>${d.body}<p><a href="${ROOT_URL}/billets" style="color:#e8b14a">Billets / Tickets</a> · <a href="${ROOT_URL}/activites" style="color:#e8b14a">Programmation / Program</a> · <a href="${ROOT_URL}/contact" style="color:#e8b14a">Contact</a></p></div></div>`;
-    html = html.replace('<div id="root"></div>', content);
+    // Contenu citable, dans un <noscript> (Alex, 2026-08-28) : posé DANS
+    // #root, il clignotait une fraction de seconde à chaque chargement,
+    // le temps que React prenne la place. Les robots qui n'exécutent pas
+    // le script le lisent toujours, et l'oeil humain ne le voit jamais.
+    const citable = `<noscript><div style="max-width:720px;margin:0 auto;padding:48px 24px;font-family:Georgia,serif;color:#f4efe3;background:#0b0508"><h1 style="font-size:1.6rem;line-height:1.2">${d.h1}</h1>${d.body}<p><a href="${ROOT_URL}/billets" style="color:#e8b14a">Billets / Tickets</a> · <a href="${ROOT_URL}/activites" style="color:#e8b14a">Programmation / Program</a> · <a href="${ROOT_URL}/contact" style="color:#e8b14a">Contact</a></p></div></noscript>`;
+    html = html.replace('<div id="root"></div>', `<div id="root"></div>${citable}`);
 
     if (path === '/') { writeFileSync(join(root, 'dist/index.html'), html); }
     else {
