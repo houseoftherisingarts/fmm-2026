@@ -13,7 +13,7 @@ import {
   COLLECTIONS, avancement, badgeParId, badgesLocaux, collectionDuBadge,
   gagner, reclamerLesLocaux, suivreBadges, type Badge, type Collection,
 } from '../firebase/badges';
-import { sonnerBadge, sonnerFanfare } from '../lib/fanfare';
+import { sonnerBadge, sonnerFanfare, preparerLeSon } from '../lib/fanfare';
 
 export interface AnnonceBadge {
   badge: Badge;
@@ -48,6 +48,10 @@ export const BadgesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     void reclamerLesLocaux(user.uid).then(() => setLocaux(badgesLocaux()));
     return stop;
   }, [user?.uid]);
+
+  // Le son se prépare au premier geste, pour qu'un badge gagné plus tard
+  // sonne sans que personne ait à l'autoriser (Alex, 2026-08-28).
+  useEffect(() => { preparerLeSon(); }, []);
 
   const obtenus = useMemo(
     () => Array.from(new Set([...distants, ...locaux])),
