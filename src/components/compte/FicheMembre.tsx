@@ -74,7 +74,8 @@ const DeDeLaVie = lazy(() => import('../ordre/DeDeLaVie'));
 //
 // Ce que le mode public retire : le dé de la vie, les boutons qui ne
 // regardent que la personne (candidature, registre, kiosque, réglages,
-// déconnexion), l'onglet des billets et tout ce qui touche à l'argent.
+// déconnexion), le coffre à billets, le soutien et tout ce qui touche
+// à l'argent.
 // Ce qui reste : la photo, le nom, les fonctions, la description, les
 // badges, les amis, les parties et les avis décrochés, en lecture seule.
 
