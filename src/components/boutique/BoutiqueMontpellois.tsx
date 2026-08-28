@@ -22,7 +22,7 @@ const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: string }>
   bleu:  { FR: 'Bleu de nuit',    EN: 'Night blue',    couleur: '#2E4A8B' },
   dore:  { FR: 'Doré du festin',  EN: 'Festival gold',  couleur: '#D8B05A' },
 };
-const SKINS_ACHETABLES: SkinMembre[] = ['bleu', 'dore'];
+const SKINS_ACHETABLES: Array<'bleu' | 'dore'> = ['bleu', 'dore'];
 
 const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
