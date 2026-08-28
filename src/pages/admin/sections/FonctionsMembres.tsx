@@ -47,6 +47,19 @@ const FonctionsMembres: React.FC = () => {
     setFait(null);
   };
 
+  const basculerVerifie = async (m: Membre) => {
+    setVerifBusy(m.uid); setErreur(null);
+    try {
+      const verifie = !m.verifie;
+      await definirVerifie(m.uid, verifie);
+      setMembres((liste) => liste.map((x) => (x.uid === m.uid ? { ...x, verifie } : x)));
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : String(e));
+    } finally {
+      setVerifBusy(null);
+    }
+  };
+
   const enregistrer = async (m: Membre) => {
     setBusy(true); setErreur(null);
     try {
