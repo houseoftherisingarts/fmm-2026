@@ -29,6 +29,7 @@ import MessageThread from '../vendor/MessageThread';
 import AnnoncesPanel from './AnnoncesPanel';
 import CoffreBillets from './CoffreBillets';
 import SoutienPanel from './SoutienPanel';
+import SansPubPanel from './SansPubPanel';
 import AvatarUpload from './AvatarUpload';
 import SalonDesJeux from './SalonDesJeux';
 import DefisTafl from './DefisTafl';
@@ -722,6 +723,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 <div className="lg:col-span-7"><CoffreBillets uid={compte.uid} lang={lang} /></div>
                 <div className="lg:col-span-5">
                   <SoutienPanel lang={lang} userEmail={compte.email || ''} userName={nom} />
+                  {/* Le don « sans publicité à vie » (Alex, 2026-08-27). */}
+                  <SansPubPanel uid={compte.uid} courriel={compte.email || undefined} lang={lang} />
                 </div>
               </div>
             )}

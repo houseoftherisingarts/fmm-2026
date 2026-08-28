@@ -17,6 +17,7 @@ interface ImportMetaEnv {
   readonly VITE_ADMIN_EMAILS?: string;
   readonly VITE_ADMIN_DEV_BYPASS?: string;
   readonly VITE_ADSENSE_SLOT_JEUX?: string;
+  readonly VITE_ADSENSE_SLOT_MUR?: string;
 }
 
 interface ImportMeta {

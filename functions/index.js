@@ -65,6 +65,7 @@ const ARTICLES_LIVRE = ['grimoire', 'livre de recettes'];
 // commandes de banquet passent donc ici, et c'est là que se compte le
 // nombre de places vendues.
 const ARTICLE_BANQUET = 'banquet';
+const ARTICLE_SANS_PUB = 'sans publicité';
 const COMPTEUR_BANQUET = 'banquetPlaces/compteur';
 
 /**
@@ -204,6 +205,24 @@ exports.squareGrimoire = onRequest(
           await lot.commit();
           logger.info('Places de banquet comptées', { paymentId, places });
           return res.status(200).send('banquet compté');
+        }
+        // Le don « sans publicité à vie » (Alex, 2026-08-27) : l'uid
+        // voyage dans les métadonnées de la commande, et le compte est
+        // marqué pour toujours. Rien d'autre n'est écrit sur la personne.
+        if (articles.includes(ARTICLE_SANS_PUB)) {
+          const uidDon = String((commande.metadata && commande.metadata.uid) || '').slice(0, 128);
+          if (uidDon) {
+            const lot = db.batch();
+            lot.set(db.collection('users').doc(uidDon), {
+              sansPub: true,
+              sansPubLe: admin.firestore.FieldValue.serverTimestamp(),
+              sansPubPaymentId: paymentId,
+            }, { merge: true });
+            lot.set(ref, { statut: 'sans-pub', uid: uidDon, orderId: paiement.order_id }, { merge: true });
+            await lot.commit();
+            logger.info('Compte marqué sans publicité', { paymentId, uid: uidDon });
+            return res.status(200).send('sans pub');
+          }
         }
         await ref.set({ statut: 'ignoré', articles }, { merge: true });
         return res.status(200).send('ni livre ni banquet');
@@ -404,6 +423,81 @@ exports.banquetLien = onRequest(
     } catch (err) {
       logger.error('[banquet] échec', err);
       res.status(500).json({ erreur: 'paiement indisponible' });
+    }
+  },
+);
+
+
+// ─── Le don « sans publicité à vie » ─────────────────────────────────
+// Alex, 2026-08-27 : depuis son profil, la personne soutient le festival
+// d'un don unique (10 à 100 $) et son compte ne voit plus jamais de
+// publicité. Même mécanique que le banquet : un lien de paiement Square,
+// puis le webhook squareGrimoire marque users/{uid}.sansPub = true.
+const DON_MIN = 1000, DON_MAX = 10000; // en cents
+exports.sansPubLien = onRequest(
+  {
+    secrets: [SQUARE_ACCESS_TOKEN],
+    region: 'us-central1',
+    cors: [
+      /festivalmedieval\.web\.app$/,
+      /festivalmedieval\.firebaseapp\.com$/,
+      /festivalmedievaldemontpellier\.(org|com)$/,
+      /localhost:\d+$/,
+    ],
+  },
+  async (req, res) => {
+    try {
+      const ip = String(req.headers['x-forwarded-for'] || req.ip || 'inconnu').split(',')[0].trim();
+      if (TROP_D_APPELS(ip)) { res.status(429).json({ erreur: 'trop de demandes' }); return; }
+      const uid = String((req.body && req.body.uid) || '').slice(0, 128);
+      if (!uid) { res.status(401).json({ erreur: 'compte requis' }); return; }
+      const dollars = Math.round(Number((req.body && req.body.montant) || 0));
+      const montant = Math.min(DON_MAX, Math.max(DON_MIN, dollars * 100));
+      const courriel = String((req.body && req.body.courriel) || '').slice(0, 160);
+      const retour = String((req.body && req.body.retour) || 'https://www.festivalmedievaldemontpellier.org/compte');
+      const NOTRE_MAISON = /^https:\/\/(www\.)?(festivalmedieval\.(web\.app|firebaseapp\.com)|festivalmedievaldemontpellier\.(org|com))(\/|$)/;
+      const retourSur = NOTRE_MAISON.test(retour) ? retour : 'https://www.festivalmedievaldemontpellier.org/compte';
+
+      const reponse = await fetch('https://connect.squareup.com/v2/online-checkout/payment-links', {
+        method: 'POST',
+        headers: {
+          'Square-Version': '2025-01-23',
+          Authorization: `Bearer ${SQUARE_ACCESS_TOKEN.value()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idempotency_key: crypto.randomUUID(),
+          description: `Don · sans publicité à vie · FMM · compte ${uid}${courriel ? ` · ${courriel}` : ''}`,
+          order: {
+            location_id: LOCATION_FMM,
+            metadata: { uid, genre: 'sans-pub' },
+            line_items: [
+              {
+                name: 'Don au festival · Sans publicité à vie',
+                quantity: '1',
+                base_price_money: { amount: montant, currency: 'CAD' },
+              },
+            ],
+          },
+          checkout_options: {
+            allow_tipping: false,
+            ask_for_shipping_address: false,
+            redirect_url: `${retourSur}${retourSur.includes('?') ? '&' : '?'}sansPub=merci`,
+            accepted_payment_methods: { apple_pay: true, google_pay: true, cash_app_pay: true, afterpay_clearpay: false },
+          },
+        }),
+      });
+      const data = await reponse.json();
+      const url = data && data.payment_link && data.payment_link.url;
+      if (!url) {
+        logger.error('[sans-pub] Square a refusé', data);
+        res.status(502).json({ erreur: 'paiement indisponible' });
+        return;
+      }
+      res.status(200).json({ url });
+    } catch (e) {
+      logger.error('[sans-pub] erreur', e);
+      res.status(500).json({ erreur: 'erreur interne' });
     }
   },
 );
