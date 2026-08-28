@@ -93,7 +93,7 @@ export const CATALOGUE: Objet[] = [
   { id: 'cape_voyageur', nom: { FR: 'Cape du voyageur', EN: "Traveller's cape" }, emplacement: 'cape', bonus: { chance: 1 }, rarete: 'commune', couleur: '#5B2E2E', variante: 1, source: 'depart' },
   { id: 'cape_ordre', nom: { FR: "Cape de l'Ordre", EN: "Cape of the Order" }, emplacement: 'cape', bonus: { chance: 2, verve: 1 }, rarete: 'rare', couleur: '#3A2E5B', variante: 2, source: 'trouvaille' },
   { id: 'cape_benevole', nom: { FR: 'Cape du bénévole', EN: "Volunteer's cape" }, emplacement: 'cape', bonus: { endurance: 2, verve: 1 }, rarete: 'rare', couleur: '#4A6B4A', variante: 3, source: 'badge', badgeId: 'benevole' },
-  { id: 'cape_etoilee', nom: { FR: 'Cape étoilée', EN: 'Starlit cape' }, emplacement: 'cape', bonus: {}, rarete: 'legendaire', couleur: '#241B4A', variante: 4, source: 'boutique', prix: 25 },
+  { id: 'cape_etoilee', nom: { FR: 'Cape étoilée', EN: 'Starlit cape' }, emplacement: 'cape', bonus: {}, rarete: 'legendaire', couleur: '#453390', variante: 4, source: 'boutique', prix: 25 },
   // Amulette
   { id: 'amulette_lievre', nom: { FR: 'Amulette du lièvre', EN: 'Hare amulet' }, emplacement: 'amulette', bonus: { chance: 2 }, rarete: 'rare', couleur: '#D8B05A', variante: 1, source: 'trouvaille' },
   { id: 'amulette_oeil', nom: { FR: "Amulette de l'œil", EN: 'Amulet of the eye' }, emplacement: 'amulette', bonus: { ruse: 1, chance: 2 }, rarete: 'rare', couleur: '#5B3A6B', variante: 2, source: 'badge', badgeId: 'photographe' },
