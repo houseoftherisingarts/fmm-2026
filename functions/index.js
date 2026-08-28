@@ -2222,6 +2222,7 @@ exports.acheterAlbum = onCall({ region: 'us-central1' }, async (requete) => {
   const { data: bourse } = await assurerBourse(uid);
   if ((bourse.albums || []).includes(groupeId)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
   const solde = await debiter(uid, PRIX_ALBUM, { albums: FieldValue.arrayUnion(groupeId) });
+  await verifierAudiophile(uid);
   return { solde };
 });
 
