@@ -26,10 +26,31 @@ const REPLI_TITLE = 'Master of the Feast · Kevin MacLeod';
 // out to the theme track on Spotify.
 const AudioPlayer: React.FC = () => {
   const { lang } = useUI();
-  const url   = import.meta.env.VITE_AUDIO_TRACK_URL;
-  const title = import.meta.env.VITE_AUDIO_TRACK_TITLE || REPLI_TITLE;
+  const fr = lang === 'FR';
+  const { user } = useAuth();
+  const [ambianceId, setAmbianceId] = useState<string | undefined>();
+
+  // La préférence de la personne connectée (onglet Profil, Musique).
+  // Vide → repli sur la piste par défaut du festival, offerte à tous.
+  useEffect(() => {
+    if (!user) { setAmbianceId(undefined); return; }
+    return suivreFiche(user.uid, (m) => setAmbianceId(m?.prefs?.musique));
+  }, [user]);
+
+  const ambiance = ambianceParId(ambianceId);
+  const url   = ambiance?.fichier || import.meta.env.VITE_AUDIO_TRACK_URL;
+  const title = ambiance ? `${fr ? ambiance.titreFR : ambiance.titreEN} · ${ambiance.credit}` : (import.meta.env.VITE_AUDIO_TRACK_TITLE || REPLI_TITLE);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
+
+  // La piste a changé sous les pieds du lecteur (choix d'ambiance) :
+  // on relance proprement plutôt que de laisser <audio src> couper net.
+  useEffect(() => {
+    if (audioRef.current && playing) {
+      audioRef.current.load();
+      audioRef.current.play().catch(() => setPlaying(false));
+    }
+  }, [url]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!audioRef.current) return;
