@@ -132,8 +132,29 @@ export function calculerChaleur(score: number, creeLeMs: number): number {
   return Math.log10(Math.max(Math.abs(score), 1)) * Math.sign(score) + secondes / DEMI_VIE_CHALEUR;
 }
 
+// Le premier http(s) collé dans un texte — un seul aperçu par billet,
+// comme sur Facebook ou Discord.
+const MOTIF_LIEN = /https?:\/\/\S+/;
+const LIEN_APERCU = 'https://us-central1-festivalmedieval.cloudfunctions.net/apercuLien';
+
+/** Va chercher les métadonnées Open Graph d'un lien côté serveur (le
+ *  navigateur ne peut pas les lire lui-même sur un site tiers). Ne
+ *  lève jamais : un aperçu manqué ne doit pas empêcher de publier. */
+async function chercherApercu(url: string): Promise<ApercuLien | undefined> {
+  try {
+    const r = await fetch(LIEN_APERCU, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }),
+    });
+    if (!r.ok) return undefined;
+    return (await r.json()) as ApercuLien;
+  } catch { return undefined; }
+}
+
 export async function publierSurLeMur(opts: {
   uid: string; nom: string; avatarUrl?: string; avatarHue?: number; texte: string; photo?: File;
+  /** Réservée aux membres VIP — le composeur vérifie le statut avant
+   *  d'ouvrir le sélecteur, voir src/firebase/sansPub.ts. */
+  video?: File;
   /** Billet d'un membre de l'équipe (badge Admin · Modérateur). */
   moderateur?: boolean;
   /** Recopié depuis la fiche : la coche bleue vérifiée. */
@@ -146,7 +167,7 @@ export async function publierSurLeMur(opts: {
 }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
   const texte = opts.texte.trim().slice(0, LONGUEUR_MAX_POST);
-  if (!texte && !opts.photo && !opts.partage) throw new Error('Rien à publier.');
+  if (!texte && !opts.photo && !opts.video && !opts.partage) throw new Error('Rien à publier.');
   const id = doc(collection(db, COL)).id;
   let photoUrl: string | undefined; let photoChemin: string | undefined;
   if (opts.photo && storage) {
@@ -156,6 +177,16 @@ export async function publierSurLeMur(opts: {
     await uploadBytes(r, blob, { contentType: 'image/webp' });
     photoUrl = await getDownloadURL(r);
   }
+  let videoUrl: string | undefined; let videoChemin: string | undefined;
+  if (opts.video && storage) {
+    const ext = opts.video.type === 'video/webm' ? 'webm' : 'mp4';
+    videoChemin = `mur/${opts.uid}/${id}.${ext}`;
+    const r = ref(storage, videoChemin);
+    await uploadBytes(r, opts.video, { contentType: opts.video.type });
+    videoUrl = await getDownloadURL(r);
+  }
+  const lien = texte.match(MOTIF_LIEN)?.[0];
+  const apercu = lien ? await chercherApercu(lien) : undefined;
   await setDoc(doc(db, COL, id), {
     uid: opts.uid, nom: opts.nom,
     ...(opts.avatarUrl ? { avatarUrl: opts.avatarUrl } : {}),
@@ -163,6 +194,8 @@ export async function publierSurLeMur(opts: {
     texte,
     genre: opts.genre || 'billet',
     ...(photoUrl ? { photoUrl, photoChemin } : {}),
+    ...(videoUrl ? { videoUrl, videoChemin } : {}),
+    ...(apercu ? { apercu } : {}),
     // null (et non absent) : la règle et la requête du mur général filtrent dessus.
     guildeId: opts.guildeId || null,
     ...(opts.moderateur ? { moderateur: true } : {}),
