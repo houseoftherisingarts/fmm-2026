@@ -211,6 +211,7 @@ const AdminPage: React.FC = () => {
       case 'finances':   return <FinancesSection />;
       case 'carnet':     return <CarnetContactsSection />;
       case 'comptes':    return <ComptesSection    devBypass={DEV_BYPASS} />;
+      case 'guildes':    return <GuildesSection />;
       case 'clients':    return <ClientsSection />;
       case 'invites':    return <InvitesSection />;
       case 'messages':   return <MessagesSection   devBypass={DEV_BYPASS} />;
