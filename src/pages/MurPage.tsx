@@ -32,8 +32,8 @@ const MurPage: React.FC = () => {
       />
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
-        <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 lg:grid lg:grid-cols-12 lg:gap-8 items-start">
-          <div className="lg:col-span-8">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 lg:grid lg:grid-cols-12 lg:gap-8 items-start">
+          <div className="lg:col-span-9">
           <div className="mb-5">
             <Link to={addLocale('/guildes', lang)}
                   className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-wider text-ivory-soft hover:text-brass transition">
@@ -41,7 +41,17 @@ const MurPage: React.FC = () => {
             </Link>
           </div>
           {user ? (
-            <MurSocial lang={lang} />
+            <div className="lg:grid lg:grid-cols-12 lg:gap-6 items-start">
+              {/* À gauche : tout le reste. À droite : offres et demandes (Alex, 2026-08-27). */}
+              <div className="lg:col-span-7">
+                <p className="witcher-stat-label mb-3">{fr ? 'Le fil' : 'The feed'}</p>
+                <MurSocial lang={lang} filtre="billets" />
+              </div>
+              <div className="lg:col-span-5 mt-8 lg:mt-0">
+                <p className="witcher-stat-label mb-3">{fr ? 'Offres et demandes' : 'Offers and requests'}</p>
+                <MurSocial lang={lang} filtre="offres" avecComposeur={false} avecAnnonces={false} />
+              </div>
+            </div>
           ) : (
             <div className="glass-light rounded-lg-card p-8 text-center">
               <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-5">
@@ -55,7 +65,7 @@ const MurPage: React.FC = () => {
           )}
           </div>
           {/* La bannière publicitaire, sur le côté (Alex, 2026-08-27). */}
-          <div className="lg:col-span-4 mt-8 lg:mt-0 lg:sticky lg:top-24">
+          <div className="lg:col-span-3 mt-8 lg:mt-0 lg:sticky lg:top-24">
             <PubMur lang={lang} />
           </div>
         </div>

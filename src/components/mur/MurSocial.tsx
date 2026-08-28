@@ -5,7 +5,7 @@ import { Image as ImageIcon, Send, Trash2, Megaphone, Loader2, X, ShieldCheck } 
 import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
 import { lireFiche } from '../../firebase/ordre';
-import { publierSurLeMur, retirerDuMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST, type PostMur } from '../../firebase/mur';
+import { publierSurLeMur, retirerDuMur, suivreLeMur, suivreLeFilDe, LONGUEUR_MAX_POST, type PostMur, type GenrePost } from '../../firebase/mur';
 import { ANNONCES } from '../../content/annonces';
 
 // ─── Le mur social ───────────────────────────────────────────────────
@@ -34,8 +34,20 @@ const Medaillon: React.FC<{ nom: string; url?: string; hue?: number }> = ({ nom,
   </span>
 );
 
-const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: boolean; avecComposeur?: boolean }> = ({
-  lang, uid, avecAnnonces = true, avecComposeur = true,
+// Les teintes des genres : un léger glissement de ton dans la palette
+// du site, jamais des couleurs franches (Alex, 2026-08-27).
+export const TEINTE_GENRE: Record<GenrePost, { fond: string; bord: string; accent: string; nomFR: string; nomEN: string }> = {
+  billet:  { fond: 'rgba(38, 30, 52, 0.45)',  bord: 'rgba(120, 130, 190, 0.32)', accent: '#9fb0e6', nomFR: 'Billet',  nomEN: 'Post' },
+  offre:   { fond: 'rgba(22, 44, 34, 0.45)',  bord: 'rgba(110, 170, 130, 0.35)', accent: '#8fd6b4', nomFR: 'Offre',   nomEN: 'Offer' },
+  demande: { fond: 'rgba(56, 22, 26, 0.45)',  bord: 'rgba(200, 110, 100, 0.35)', accent: '#e08a6e', nomFR: 'Demande', nomEN: 'Request' },
+};
+
+const MurSocial: React.FC<{
+  lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: boolean; avecComposeur?: boolean;
+  /** 'tout' (défaut), 'billets' (colonne de gauche) ou 'offres' (offres et demandes, colonne de droite). */
+  filtre?: 'tout' | 'billets' | 'offres';
+}> = ({
+  lang, uid, avecAnnonces = true, avecComposeur = true, filtre = 'tout',
 }) => {
   const fr = lang === 'FR';
   const { user, isAdmin } = useAuth();
@@ -44,6 +56,7 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
 
   // Le composeur
   const [texte, setTexte] = useState('');
+  const [genre, setGenre] = useState<GenrePost>('billet');
   const [photo, setPhoto] = useState<File | null>(null);
   const [apercu, setApercu] = useState<string | null>(null);
   const [envoi, setEnvoi] = useState(false);
@@ -67,20 +80,27 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
         avatarHue: fiche?.avatarHue,
         texte, photo: photo || undefined,
         moderateur: isAdmin,
+        genre,
       });
-      setTexte(''); setPhoto(null);
+      setTexte(''); setPhoto(null); setGenre('billet');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally { setEnvoi(false); }
   };
 
   const lignes = useMemo<Ligne[]>(() => {
-    const l: Ligne[] = posts.map((p) => ({ genre: 'post', quand: p.creeLe?.toMillis?.() ?? Date.now(), post: p }));
+    const garder = (p: PostMur) => {
+      const g = p.genre || 'billet';
+      if (filtre === 'billets') return g === 'billet';
+      if (filtre === 'offres') return g !== 'billet';
+      return true;
+    };
+    const l: Ligne[] = posts.filter(garder).map((p) => ({ genre: 'post', quand: p.creeLe?.toMillis?.() ?? Date.now(), post: p }));
     if (avecAnnonces && !uid) {
       ANNONCES.forEach((a) => l.push({ genre: 'annonce', quand: new Date(a.date).getTime(), annonce: a }));
     }
     return l.sort((a, b) => b.quand - a.quand);
-  }, [posts, avecAnnonces, uid]);
+  }, [posts, avecAnnonces, uid, filtre]);
 
   const peutEcrire = avecComposeur && user && (!uid || uid === user.uid);
 
@@ -103,6 +123,21 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
                       style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
             </div>
           )}
+          <div className="mt-3 flex flex-wrap items-center gap-1.5" role="radiogroup" aria-label={fr ? 'Genre du billet' : 'Post kind'}>
+            {(['billet', 'offre', 'demande'] as GenrePost[]).map((g) => {
+              const tg = TEINTE_GENRE[g]; const actif = genre === g;
+              return (
+                <button key={g} type="button" role="radio" aria-checked={actif} onClick={() => setGenre(g)}
+                        className="px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
+                        style={{ border: `1px solid ${actif ? tg.accent : 'rgba(244,239,227,0.18)'}`, background: actif ? tg.fond : 'transparent', color: actif ? tg.accent : 'rgba(244,239,227,0.55)' }}>
+                  {fr ? tg.nomFR : tg.nomEN}
+                </button>
+              );
+            })}
+            <span className="font-sans text-[10px] text-ivory-soft/45 ml-1">
+              {fr ? 'Offres et demandes paraissent dans la colonne de droite.' : 'Offers and requests show in the right column.'}
+            </span>
+          </div>
           <div className="mt-3 flex items-center justify-between gap-3">
             <button type="button" onClick={() => fichier.current?.click()}
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
@@ -133,7 +168,7 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
           className="rounded-lg-card p-5 md:p-6"
           style={l.genre === 'annonce'
             ? { background: 'rgba(216,176,90,0.07)', border: '1px solid rgba(216,176,90,0.35)' }
-            : { background: 'rgba(26, 5, 11, 0.45)', border: '1px solid rgba(232,177,74,0.2)' }}
+            : { background: TEINTE_GENRE[l.post.genre || 'billet'].fond, border: `1px solid ${TEINTE_GENRE[l.post.genre || 'billet'].bord}` }}
         >
           {l.genre === 'annonce' ? (
             <>
@@ -171,7 +206,15 @@ const MurSocial: React.FC<{ lang: 'FR' | 'EN'; uid?: string; avecAnnonces?: bool
                       </span>
                     )}
                   </span>
-                  <p className="font-sans text-[11px] text-ivory-soft/55">{quandTexte(l.quand, fr)}</p>
+                  <p className="font-sans text-[11px] text-ivory-soft/55">
+                    {quandTexte(l.quand, fr)}
+                    {(l.post.genre || 'billet') !== 'billet' && (
+                      <span className="ml-2 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px]"
+                            style={{ border: `1px solid ${TEINTE_GENRE[l.post.genre!].accent}`, color: TEINTE_GENRE[l.post.genre!].accent }}>
+                        {fr ? TEINTE_GENRE[l.post.genre!].nomFR : TEINTE_GENRE[l.post.genre!].nomEN}
+                      </span>
+                    )}
+                  </p>
                 </div>
                 {user && (user.uid === l.post.uid || isAdmin) && (
                   <button type="button" onClick={() => { void retirerDuMur(l.post); }} aria-label={fr ? 'Retirer' : 'Remove'}

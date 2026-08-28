@@ -17,6 +17,11 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { db, storage } from '../firebase';
 import { versWebp } from './photosPubliques';
 
+// Alex, 2026-08-27 : chaque billet porte un genre. « offre » (service,
+// covoiturage, partage) et « demande » (garde de chien, coup de main)
+// vont dans la colonne de droite; « billet » est tout le reste.
+export type GenrePost = 'billet' | 'offre' | 'demande';
+
 export interface PostMur {
   id: string;
   uid: string;
@@ -24,6 +29,7 @@ export interface PostMur {
   avatarUrl?: string;
   avatarHue?: number;
   texte: string;
+  genre?: GenrePost;
   photoUrl?: string;
   photoChemin?: string;
   /** Présent seulement sur un billet posté depuis le mur d'une guilde
@@ -43,6 +49,7 @@ export async function publierSurLeMur(opts: {
   moderateur?: boolean;
   /** Poster sur le mur d'une guilde plutôt que sur le mur général. */
   guildeId?: string;
+  genre?: GenrePost;
 }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
   const texte = opts.texte.trim().slice(0, LONGUEUR_MAX_POST);
@@ -61,6 +68,7 @@ export async function publierSurLeMur(opts: {
     ...(opts.avatarUrl ? { avatarUrl: opts.avatarUrl } : {}),
     avatarHue: opts.avatarHue ?? 0,
     texte,
+    genre: opts.genre || 'billet',
     ...(photoUrl ? { photoUrl, photoChemin } : {}),
     ...(opts.guildeId ? { guildeId: opts.guildeId } : {}),
     ...(opts.moderateur ? { moderateur: true } : {}),
