@@ -83,22 +83,40 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
   const colonneGauche: Emplacement[] = EMPLACEMENTS.slice(0, 5);
   const colonneDroite: Emplacement[] = EMPLACEMENTS.slice(5, 10);
 
-  const Case: React.FC<{ emplacement: Emplacement }> = ({ emplacement }) => {
+  // Deux rendus pour la même case : le losange Witcher (desktop, où il
+  // y a la place d'encadrer le mannequin) et un carré compact (mobile,
+  // en grille sous le personnage — un losange de 88px ne tient pas cinq
+  // fois sur un écran de téléphone). Même logique de dépose des deux
+  // côtés (Alex, 2026-08-27, correctif d'affichage mobile).
+  const Case: React.FC<{ emplacement: Emplacement; compact?: boolean }> = ({ emplacement, compact }) => {
     const id = avatar.equipe[emplacement];
     const objet = objetParId(id);
+    const dragProps = {
+      draggable: !!objet,
+      onDragStart: (e: React.DragEvent) => objet && ecrire({ id: objet.id, from: emplacement }, e),
+      onDragOver: (e: React.DragEvent) => { e.preventDefault(); setSurvole(emplacement); },
+      onDragLeave: () => setSurvole((s) => (s === emplacement ? null : s)),
+      onDrop: (e: React.DragEvent) => { e.preventDefault(); setSurvole(null); const p = lire(e); if (p) equiper(emplacement, p); },
+      title: objet ? (fr ? objet.nom.FR : objet.nom.EN) : LIBELLE_EMPLACEMENT[emplacement][lang],
+    };
+    if (compact) {
+      return (
+        <div className="flex flex-col items-center gap-1">
+          <div {...dragProps} className="w-12 h-12 rounded-md flex items-center justify-center cursor-pointer transition"
+               style={{
+                 background: survole === emplacement ? 'rgba(216,176,90,0.22)' : 'rgba(244,239,227,0.05)',
+                 border: `1px solid ${objet ? COULEUR_RARETE[objet.rarete] : 'rgba(244,239,227,0.14)'}`,
+               }}>
+            {objet && <span style={{ width: 20, height: 20, borderRadius: 4, background: objet.couleur }} />}
+          </div>
+          <span className="witcher-stat-label text-[7px] text-center leading-tight">{LIBELLE_EMPLACEMENT[emplacement][lang]}</span>
+        </div>
+      );
+    }
     return (
       <div className="flex flex-col items-center gap-1.5">
-        <span
-          className="witcher-tile cursor-pointer"
-          data-active={!!objet}
-          draggable={!!objet}
-          onDragStart={(e) => objet && ecrire({ id: objet.id, from: emplacement }, e)}
-          onDragOver={(e) => { e.preventDefault(); setSurvole(emplacement); }}
-          onDragLeave={() => setSurvole((s) => (s === emplacement ? null : s))}
-          onDrop={(e) => { e.preventDefault(); setSurvole(null); const p = lire(e); if (p) equiper(emplacement, p); }}
-          style={survole === emplacement ? { background: 'rgba(216,176,90,0.22)', borderColor: '#D8B05A' } : undefined}
-          title={objet ? (fr ? objet.nom.FR : objet.nom.EN) : LIBELLE_EMPLACEMENT[emplacement][lang]}
-        >
+        <span {...dragProps} className="witcher-tile cursor-pointer" data-active={!!objet}
+              style={survole === emplacement ? { background: 'rgba(216,176,90,0.22)', borderColor: '#D8B05A' } : undefined}>
           <span className="witcher-tile-inner">
             {objet ? (
               <span style={{ width: 22, height: 22, borderRadius: 5, background: objet.couleur, border: `1.5px solid ${COULEUR_RARETE[objet.rarete]}` }} />
