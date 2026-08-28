@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { mapDansCadre } from './VisionneusePhoto';
-import VisionneusePhoto from './VisionneusePhoto';
+import VisionneusePhoto, { mapDansCadre } from './VisionneusePhoto';
 import type { PhotoPublique } from '../../firebase/photosPubliques';
 
 // ─── Banc d'essai des repères de photos ─────────────────────────────
