@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Eye, Users, MousePointerClick, ExternalLink } from 'lucide-react';
+import { BarChart3, Eye, Users, MousePointerClick, ExternalLink, Target } from 'lucide-react';
 import { Card } from '../primitives';
 import { mockSubs, mockUsers } from '../../../firebase/mockData';
 import { mockListBenevoles, mockListVendors } from '../../../firebase/mockApplications';
@@ -7,11 +7,19 @@ import { listBenevoles, listVendors } from '../../../firebase/applications';
 import { listSubs } from '../../../firebase/newsletter';
 import { listUsers } from '../../../firebase/users';
 import { getDailyStats, slugToPath, type DayStats } from '../../../lib/siteStats';
+import type { AdminSectionId } from '../AdminShell';
 import { useEffect, useState } from 'react';
 
-interface Props { devBypass: boolean }
+interface Props { devBypass: boolean; onNavigate: (s: AdminSectionId) => void }
 
-const AnalyticsSection: React.FC<Props> = ({ devBypass }) => {
+const SOURCE_LABELS: Record<string, string> = {
+  google: 'Google', facebook: 'Facebook', direct: 'Direct', autre: 'Autre',
+};
+const JEU_LABELS: Record<string, string> = {
+  des: 'Dés', hnefatafl: 'Hnefatafl', tarot: 'Tarot',
+};
+
+const AnalyticsSection: React.FC<Props> = ({ devBypass, onNavigate }) => {
   const [bCount, setBCount]       = useState(0);
   const [vCount, setVCount]       = useState(0);
   const [usersCount, setUsersCount] = useState(0);
