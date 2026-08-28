@@ -50,8 +50,8 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
           )}
           <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-5">
             {fr
-              ? 'Enlevez les publicités pour toujours en soutenant le festival médiéval d’un don unique. Vous choisissez le montant, de 10 à 100 dollars, et ce compte n’en verra plus jamais.'
-              : 'Remove ads forever by supporting the medieval festival with a one-time gift. You choose the amount, from 10 to 100 dollars, and this account will never see one again.'}
+              ? 'Retirez les publicités pour toujours en soutenant le festival médiéval d’un paiement unique. Vous choisissez le montant, de 10 à 100 dollars, et ce compte n’en verra plus jamais.'
+              : 'Remove ads forever by supporting the medieval festival with a one-time payment. You choose the amount, from 10 to 100 dollars, and this account will never see one again.'}
           </p>
           <div className="flex flex-wrap items-center gap-2 mb-5">
             {DONS_PROPOSES.map((d) => (
