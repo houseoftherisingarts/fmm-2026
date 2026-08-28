@@ -8,6 +8,9 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import FicheMembre from '../components/compte/FicheMembre';
+// Banc d'essai des repères de photos, dev seulement (?bancPhotos=1) :
+// à retirer une fois la vérification visuelle faite (Alex, 2026-08-28).
+import BancPhotos from '../components/compte/BancPhotos';
 
 // ─── Mon espace ──────────────────────────────────────────────────────
 // La page ne garde plus que la porte : le pitch et la connexion pour
