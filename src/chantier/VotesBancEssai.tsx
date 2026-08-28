@@ -2,6 +2,20 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Lock, MessageCircle, Pin, Share2, ShieldCheck } from 'lucide-react';
 import VoteBar from '../components/mur/VoteBar';
+import BilletCarte from '../components/mur/BilletCarte';
+import type { PostMur } from '../firebase/mur';
+
+const BILLET_VIDEO: PostMur = {
+  id: 'demo-video', uid: 'demo-uid-video', nom: 'Morgane la Sage', avatarHue: 30,
+  texte: 'Le montage du grand chapiteau, en accéléré — trois heures en deux minutes.',
+  genre: 'billet',
+  videoUrl: '/orb/festival-orbe.mp4',
+  videoVignette: '/orb/caravan.webp',
+  videoTitre: 'Le montage du chapiteau, en accéléré',
+  videoDescription: 'Douze bénévoles, trois heures, un mât central qui refuse de coopérer jusqu’à la toute fin. La suite du chantier suit demain, avec les bannières et les guirlandes.',
+  pour: 9, contre: 0, score: 9, nbCommentaires: 0,
+  creeLe: null,
+};
 
 // ─── Banc d'essai : voter, commenter, partager ───────────────────────
 // Alex, 2026-08-28 : vérification visuelle de la barre de vote, de la
