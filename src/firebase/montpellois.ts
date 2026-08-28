@@ -28,6 +28,37 @@ export const PRIX_SKIN: Record<'bleu' | 'dore', number> = { bleu: 20, dore: 40 }
 /** Le prix d'un album, tant qu'Alex n'a pas fixé un prix par groupe. */
 export const PRIX_ALBUM = 30;
 
+// ── Les rangs de fortune (badges 'fortune' de badges.ts) ─────────────
+// Alex, 2026-08-28 : posés sur le TOTAL GAGNÉ à vie (bourse.gagne),
+// jamais sur le solde courant — dépenser ne doit jamais faire perdre
+// un rang déjà mérité. Même forme que PALIERS_PARRAINAGE
+// (parrainage.ts), pour que ParrainagePanel et un futur panneau de
+// bourse se ressemblent.
+export const RANGS_FORTUNE = [
+  { seuil: 100,         badgeId: 'fortune-100',        nomFR: 'Bourse garnie',      nomEN: 'Full purse' },
+  { seuil: 1000,        badgeId: 'fortune-1000',       nomFR: 'Coffre de marchand', nomEN: "Merchant's chest" },
+  { seuil: 10000,       badgeId: 'fortune-10000',      nomFR: 'Trésor de seigneur', nomEN: "Lord's treasure" },
+  { seuil: 100000,      badgeId: 'fortune-100000',     nomFR: 'Rançon de prince',   nomEN: "Prince's ransom" },
+  { seuil: 1000000,     badgeId: 'fortune-1000000',    nomFR: 'Fortune royale',     nomEN: 'Royal fortune' },
+  { seuil: 1000000000,  badgeId: 'fortune-1000000000', nomFR: 'Milliardaire musqué', nomEN: 'Musked billionaire' },
+] as const;
+
+/** Le rang atteint et le prochain, pour l'affichage (boutique, futur
+ *  panneau de bourse) — le même calcul que la Cloud Function, en
+ *  lecture seule côté client. */
+export function rangFortune(gagne: number): {
+  actuel: (typeof RANGS_FORTUNE)[number] | null;
+  prochain: (typeof RANGS_FORTUNE)[number] | null;
+} {
+  let actuel: (typeof RANGS_FORTUNE)[number] | null = null;
+  let prochain: (typeof RANGS_FORTUNE)[number] | null = null;
+  for (const r of RANGS_FORTUNE) {
+    if (gagne >= r.seuil) actuel = r;
+    else { prochain = r; break; }
+  }
+  return { actuel, prochain };
+}
+
 export interface Bourse {
   solde: number;
   gagne: number;
