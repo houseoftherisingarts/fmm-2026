@@ -109,12 +109,16 @@ const MurSocial: React.FC<{
         avatarUrl: fiche?.avatarUrl || user.photoURL || undefined,
         avatarHue: fiche?.avatarHue,
         texte, photo: photo || undefined, video: video || undefined,
+        videoTitre: video ? videoTitre : undefined,
+        videoDescription: video ? videoDescription : undefined,
+        videoVignette: video ? videoVignette || undefined : undefined,
         moderateur: isAdmin,
         verifie: fiche?.verifie,
         genre,
       });
       gagnerBadge('mur-premier');
       setTexte(''); setPhoto(null); setVideo(null); setGenre('billet');
+      setVideoTitre(''); setVideoDescription(''); setVideoVignette(null);
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally { setEnvoi(false); }
