@@ -57,10 +57,9 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
     } finally { setEnvoi(false); }
   };
 
-  const lignes = useMemo(
-    () => [...posts].sort((a, b) => (b.creeLe?.toMillis?.() ?? 0) - (a.creeLe?.toMillis?.() ?? 0)),
-    [posts],
-  );
+  // posts arrive déjà rangés par suivreLeMurDeGuilde (chaleur, épinglés
+  // en tête) : ne pas les reclasser ici (Alex, 2026-08-28).
+  const lignes = posts;
 
   return (
     <div className="space-y-5">
