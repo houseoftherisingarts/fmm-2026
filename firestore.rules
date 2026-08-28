@@ -600,14 +600,56 @@ service cloud.firestore {
     // ── Le mur social (Alex, 2026-08-27) ─────────────────────────
     // Tout membre connecté lit le mur et y écrit en son nom. Chacun
     // retire ses propres billets; l'équipe retire n'importe lequel.
+    // `guildeId` (optionnel) : un billet posté sur le mur d'une guilde
+    // n'est accepté que si l'auteur en est membre.
     match /mur/{postId} {
       allow read:   if signedIn();
       allow create: if signedIn()
                     && request.resource.data.uid == request.auth.uid
                     && request.resource.data.texte is string
-                    && request.resource.data.texte.size() <= 2000;
+                    && request.resource.data.texte.size() <= 2000
+                    && (!('guildeId' in request.resource.data)
+                        || request.auth.uid in get(/databases/$(database)/documents/guildes/$(request.resource.data.guildeId)).data.membres);
       allow update: if false;
       allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+
+    // ── Les guildes : sous-groupes fondés par les membres ─────────
+    // N'importe quel membre de l'Ordre fonde sa guilde et en devient
+    // l'unique admin. Les autres demandent à joindre; l'admin de la
+    // guilde (le fondateur) accepte ou refuse. L'équipe du festival
+    // garde la main pour modifier ou détruire n'importe quelle guilde
+    // depuis l'espace admin (Alex, 2026-08-27).
+    match /guildes/{id} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+                    && request.resource.data.creePar == request.auth.uid
+                    && request.resource.data.admins == [request.auth.uid]
+                    && request.resource.data.membres == [request.auth.uid]
+                    && request.resource.data.demandes.size() == 0
+                    && request.resource.data.nom is string
+                    && request.resource.data.nom.size() >= 2
+                    && request.resource.data.nom.size() <= 60;
+
+      // L'équipe fait tout. L'admin de la guilde fait tout sauf
+      // changer qui l'a fondée. N'importe quel membre connecté ne
+      // peut que se demander lui-même (rejoindre / annuler sa
+      // demande) ou se retirer lui-même (quitter) : jamais bouger la
+      // ligne d'un autre.
+      allow update: if isAdmin()
+                    || (request.auth.uid in resource.data.admins
+                        && request.resource.data.creePar == resource.data.creePar)
+                    || (signedIn()
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['demandes', 'maj'])
+                        && request.resource.data.demandes.removeAll(resource.data.demandes).hasOnly([request.auth.uid])
+                        && resource.data.demandes.removeAll(request.resource.data.demandes).hasOnly([request.auth.uid]))
+                    || (signedIn()
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['membres', 'nbMembres', 'maj'])
+                        && request.resource.data.membres.removeAll(resource.data.membres).size() == 0
+                        && resource.data.membres.removeAll(request.resource.data.membres).hasOnly([request.auth.uid]));
+
+      allow delete: if isAdmin() || request.auth.uid in resource.data.admins;
     }
 
     // ── Les badges du site ────────────────────────────────────────
