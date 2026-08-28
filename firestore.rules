@@ -752,7 +752,7 @@ service cloud.firestore {
     // aux trois champs du compteur; lecture réservée aux admins.
     match /siteStats/{day} {
       allow read: if isAdmin();
-      allow create, update: if request.resource.data.keys().hasOnly(['total', 'pages', 'updatedAt']);
+      allow create, update: if request.resource.data.keys().hasOnly(['total', 'pages', 'sources', 'pubJeux', 'pubJeuxParJeu', 'updatedAt']);
       allow delete: if isAdmin();
     }
     // Finances (section admin Finances) : budget, comptes, répartition,
