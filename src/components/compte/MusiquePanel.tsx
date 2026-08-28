@@ -100,8 +100,8 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
 
       <p className="font-editorial italic text-xs text-ivory-soft/50 mt-5">
         {fr
-          ? 'D’autres ambiances s’ajoutent en achetant l’album d’un groupe à la boutique.'
-          : 'More ambiences arrive by buying a band’s album at the shop.'}
+          ? 'D’autres ambiances s’ajoutent en achetant une ambiance ou l’album d’un groupe à la boutique.'
+          : 'More ambiences arrive by buying an ambience or a band’s album at the shop.'}
       </p>
     </section>
   );
