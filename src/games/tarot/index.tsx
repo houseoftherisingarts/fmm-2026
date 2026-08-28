@@ -417,6 +417,18 @@ const TarotPage: React.FC = () => {
               {reglesOuvertes ? t.cacherRegles : t.afficherRegles}
             </button>
 
+            {fini && user && (
+              <button
+                type="button"
+                onClick={() => { void ouvrirPartage(); }}
+                disabled={chargeCapture}
+                className="inline-flex items-center gap-2 px-4 py-2.5 md:py-3 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200 disabled:opacity-50"
+              >
+                {chargeCapture ? <Loader2 size={13} className="text-brass animate-spin" /> : <Share2 size={13} className="text-brass" />}
+                {fr ? 'Partager mon tirage' : 'Share my spread'}
+              </button>
+            )}
+
             {aLire && !lectureOuverte && (
               <button
                 type="button"
