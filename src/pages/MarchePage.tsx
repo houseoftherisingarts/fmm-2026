@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useBadgeAuBout } from '../contexts/BadgesContext';
 import { useUI } from '../contexts/AppContext';
 import SEO from '../components/SEO';
