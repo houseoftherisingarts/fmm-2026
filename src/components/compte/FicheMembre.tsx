@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
   HandHeart, AlertCircle, ShieldCheck, Users, Eye, Award, Swords, Ticket,
-  Megaphone, MessageCircle, MapPin, Dices, Check, Camera, Bug, Newspaper, Tag, Store, Shield,
+  MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield,
+  Sparkles, Crown, BadgeCheck, Plus, Music,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
@@ -14,8 +15,8 @@ import { EVENEMENTS_MEDIEVAUX, CATEGORIES_EVENEMENTS } from '../../content/evene
 import { listerMesGuildes, type Guilde } from '../../firebase/guildes';
 import {
   lireFiche, publierFiche, suivreMesAmities, demanderAmitie, accepterAmitie,
-  estAmi, amitieEnAttente, rolesAffiches, LIBELLE_ROLE,
-  type Amitie, type Membre,
+  estAmi, amitieEnAttente, rolesAffiches, LIBELLE_ROLE, definirVerifie,
+  type Amitie, type Membre, type PrefsMembre, type PositionBanniere,
 } from '../../firebase/ordre';
 import { suivreMesParties } from '../../firebase/tafl';
 import { suivreMesAvis } from '../../firebase/avis';
@@ -24,6 +25,8 @@ import {
   getUserProfile, upsertUserProfile, getBenevoleApp, getVendorApp,
   type AppStatus, type VendorStatus, type BenevoleApp, type VendorApp,
 } from '../../firebase/applications';
+import { getMusicianApp, type MusicianApp } from '../../firebase/musicians';
+import { suivreSansPub } from '../../firebase/sansPub';
 import SEO from '../SEO';
 import Brume from '../Brume';
 import MessageThread from '../vendor/MessageThread';
@@ -47,6 +50,9 @@ import SoukDe from '../souk/SoukDe';
 import CommerceDe from '../souk/CommerceDe';
 import BugReportModal from '../layout/BugReportModal';
 import BoiteReception from './BoiteReception';
+import BadgeVerifie from './BadgeVerifie';
+import ReglagesProfil from './ReglagesProfil';
+import EspaceVip from './EspaceVip';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
 // derrière lui, donc il arrive à part, quand l'onglet s'ouvre.
