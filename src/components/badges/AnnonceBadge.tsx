@@ -68,8 +68,15 @@ const AnnonceBadge: React.FC = () => {
               animate={{ rotate: 0, scale: 1 }}
               transition={{ type: 'spring', stiffness: 180, damping: 14, delay: 0.08 }}
             >
-              <img src={sceauDe(annonce.badge.id)} alt="" aria-hidden
-                   className="w-full h-full object-contain" />
+              {sceauCasse ? (
+                <span aria-hidden className="w-full h-full flex items-center justify-center text-6xl" style={{ color: '#D8B05A' }}>
+                  {annonce.badge.glyphe}
+                </span>
+              ) : (
+                <img src={sceauDe(annonce.badge.id)} alt="" aria-hidden
+                     onError={() => setSceauCasse(true)}
+                     className="w-full h-full object-contain" />
+              )}
             </motion.div>
 
             <p className="font-sans uppercase tracking-[0.28em] text-[10px] text-ivory-soft/60 mb-2">
