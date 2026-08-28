@@ -176,6 +176,60 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass, onNavigate }) => {
           <p className="font-editorial italic text-sm text-ivory-soft/60">Les premières visites rempliront ce palmarès d'ici quelques heures.</p>
         )}
       </Card>
+
+      {/* Publicité : attribution par source + affichages dans les jeux */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-display title-medieval text-sm text-brass uppercase tracking-widest">Publicité · 14 derniers jours</h3>
+          <button onClick={() => onNavigate('pubs')}
+            className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-ivory-soft hover:text-brass transition font-sans">
+            Rapports <Target size={10} />
+          </button>
+        </div>
+
+        <h4 className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft mb-3">Visites par source</h4>
+        {sourceGrandTotal > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {Object.entries(sourceTotals).map(([src, n]) => (
+              <div key={src} className="rounded-card border border-ivory-soft/10 bg-midnight-deep/40 p-4">
+                <p className="font-display title-medieval text-xl text-ivory tabular-nums">{n.toLocaleString('fr-CA')}</p>
+                <p className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft mt-1">{SOURCE_LABELS[src]}</p>
+                <p className="font-sans text-[10px] text-ivory-soft/50 mt-0.5">{sourceGrandTotal ? Math.round((n / sourceGrandTotal) * 100) : 0}%</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="font-editorial italic text-sm text-ivory-soft/60 mb-6">Aucune visite avec source identifiée sur la période.</p>
+        )}
+
+        <h4 className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft mb-3">Pub AdSense dans les jeux</h4>
+        {pubJeuxTotal > 0 ? (
+          <>
+            <p className="font-display title-medieval text-2xl text-ivory tabular-nums mb-3">
+              {pubJeuxTotal.toLocaleString('fr-CA')}{' '}
+              <span className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft align-middle">affichages</span>
+            </p>
+            <ul className="space-y-2">
+              {pubJeuxEntries.map(([jeu, n]) => {
+                const pct = pubJeuxTotal ? Math.round((n / pubJeuxTotal) * 100) : 0;
+                return (
+                  <li key={jeu}>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="font-sans text-ivory">{JEU_LABELS[jeu] || jeu}</span>
+                      <span className="font-display title-medieval text-brass tabular-nums text-xs">{n.toLocaleString('fr-CA')} · {pct}%</span>
+                    </div>
+                    <div className="h-1.5 bg-ivory-soft/10 rounded-full overflow-hidden">
+                      <div className="h-full bg-brass" style={{ width: `${pct}%` }} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        ) : (
+          <p className="font-editorial italic text-sm text-ivory-soft/60">Aucun affichage tant que le bloc AdSense des jeux n'est pas approuvé.</p>
+        )}
+      </Card>
     </div>
   );
 };
