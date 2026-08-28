@@ -29,9 +29,23 @@ const SoukDe: React.FC<Props> = ({ uid, lang, editable }) => {
 };
 
 const VitrineLectureSeule: React.FC<{ uid: string; lang: 'FR' | 'EN'; fr: boolean }> = ({ uid, lang, fr }) => {
+  const { user } = useAuth();
   const [objets, setObjets] = useState<ObjetSouk[]>([]);
+  const [enCours, setEnCours] = useState<string | null>(null);
+  const [erreur, setErreur] = useState<string | null>(null);
 
   useEffect(() => suivreObjetsDe(uid, setObjets), [uid]);
+
+  async function acheter(id: string) {
+    setErreur(null); setEnCours(id);
+    try {
+      await acheterAuSouk(id);
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : String(e));
+    } finally {
+      setEnCours(null);
+    }
+  }
 
   const enVente = objets.filter((o) => o.statut !== 'vendu');
   if (enVente.length === 0) {
@@ -44,6 +58,7 @@ const VitrineLectureSeule: React.FC<{ uid: string; lang: 'FR' | 'EN'; fr: boolea
 
   return (
     <div className="space-y-4">
+      {erreur && <p className="font-editorial italic text-xs text-blush">{erreur}</p>}
       <div className="grid sm:grid-cols-2 gap-4">
         {enVente.map((o) => (
           <div key={o.id} className="glass-light rounded-lg-card p-4 flex gap-3">
@@ -52,9 +67,20 @@ const VitrineLectureSeule: React.FC<{ uid: string; lang: 'FR' | 'EN'; fr: boolea
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-display title-medieval text-sm text-ivory truncate">{o.titre}</p>
-              <p className="font-sans text-xs text-brass">{o.prix.toFixed(2)} $</p>
+              <p className="font-sans text-xs text-brass flex items-center gap-2 flex-wrap">
+                <span>{o.prix.toFixed(2)} $</span>
+                {o.prixMontpellois != null && (
+                  <span className="inline-flex items-center gap-1"><PieceMontpellois size={12} />{o.prixMontpellois}</span>
+                )}
+              </p>
               {o.statut === 'reserve' && (
                 <span className="witcher-stat-label">{fr ? 'Réservé' : 'Reserved'}</span>
+              )}
+              {o.prixMontpellois != null && user && user.uid !== o.uid && o.statut === 'disponible' && (
+                <button type="button" onClick={() => acheter(o.id)} disabled={enCours === o.id}
+                        className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                  <Coins size={11} /> {fr ? 'Acheter en Montpellois' : 'Buy in Montpellois'}
+                </button>
               )}
             </div>
           </div>
