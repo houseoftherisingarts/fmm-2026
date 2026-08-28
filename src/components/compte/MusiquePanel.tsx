@@ -47,7 +47,7 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
       </h2>
 
       <div className="space-y-2">
-        {AMBIANCES.map((a) => {
+        {ambiancesProposees.map((a) => {
           const actif = !choix ? a.id === 'festin' : choix === a.id;
           return (
             <button
