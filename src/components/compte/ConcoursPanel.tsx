@@ -58,8 +58,8 @@ const ConcoursPanel: React.FC<{ email: string }> = ({ email }) => {
                   Vous êtes dans le chapeau.
                 </p>
                 <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">
-                  Le tirage a lieu le lundi 28 septembre. Le résultat s’affiche ici même,
-                  dans votre espace.
+                  Le tirage a lieu le dimanche 27 septembre au matin. Le résultat s’affiche
+                  ici même, dans votre espace.
                 </p>
               </>
             )}
