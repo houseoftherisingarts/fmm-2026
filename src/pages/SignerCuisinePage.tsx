@@ -29,7 +29,7 @@ const LecteurEntente: React.FC = () => {
     let vivant = true;
     (async () => {
       try {
-        const doc = await pdfjsLib.getDocument(PDF_URL).promise;
+        const doc = await pdfjsLib.getDocument({ url: PDF_URL }).promise;
         if (!vivant || !boiteRef.current) return;
         const largeur = boiteRef.current.clientWidth;
         for (let n = 1; n <= doc.numPages; n++) {
