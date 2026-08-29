@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocument, rgb } from 'pdf-lib';
+import * as pdfjsLib from 'pdfjs-dist';
+import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { BookOpen, Check, Eraser, PenLine, Share2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 // ─── Signer l'entente de cuisine, au doigt, sur son téléphone ───────
 // Bâti en pleine réunion des cuisiniers (Alex, 29 août) : le lien se
