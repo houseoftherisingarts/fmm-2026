@@ -131,7 +131,7 @@ const ConcoursWJW: React.FC = () => {
                       Je comprends que mon courriel et mon téléphone servent à me joindre
                       pour la remise des prix, et j’accepte qu’ils soient remis à
                       William J. Walter pour recevoir ses nouvelles et ses offres
-                      publicitaires, ainsi que celles du festival.
+                      publicitaires, ainsi que celles du festival ou de ses partenaires.
                     </span>
                   </label>
 
