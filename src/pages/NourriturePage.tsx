@@ -148,7 +148,6 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
 // son héros, alors le chapitre embarqué ne répète pas le titre.
 // Boissons vit sur la même page, sous la nourriture (Alex, 2026-08-27 :
 // « un seul bouton Nourriture et boissons, la boisson juste en dessous »).
-import BoissonsPage from './BoissonsPage';
 
 const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = ({ embedded = false, sansEntete = false }) => {
   // L'ancienne route /boissons arrive ici avec #boissons.

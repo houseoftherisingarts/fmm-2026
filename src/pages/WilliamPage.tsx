@@ -6,6 +6,7 @@ import BanniereWJW from '../components/william/BanniereWJW';
 import BoutiquesProchesWJW from '../components/william/BoutiquesProchesWJW';
 import ConcoursWJW from '../components/william/ConcoursWJW';
 import NourriturePage from './NourriturePage';
+import BoissonsPage from './BoissonsPage';
 
 // ─── Le Village Nourriture, présenté par William J. Walter ──────────
 // Commandite acceptée le 2026-08-29 : cette version est la vraie page
