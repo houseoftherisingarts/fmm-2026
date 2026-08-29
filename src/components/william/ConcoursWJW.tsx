@@ -128,8 +128,10 @@ const ConcoursWJW: React.FC = () => {
                     <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)}
                       className="mt-1 shrink-0 accent-[#E8B14A]" />
                     <span className="font-editorial text-[15px] text-ivory-soft leading-snug">
-                      Je souhaite recevoir des nouvelles du festival et de William J. Walter,
-                      et j’accepte que mes coordonnées soient remises à William J. Walter.
+                      Je comprends que mon courriel et mon téléphone servent à me joindre
+                      pour la remise des prix, et j’accepte qu’ils soient remis à
+                      William J. Walter pour recevoir ses nouvelles et ses offres
+                      publicitaires, ainsi que celles du festival.
                     </span>
                   </label>
 
