@@ -107,7 +107,9 @@ const CUSTOM_PILLARS: Partial<Record<PillarKey, React.LazyExoticComponent<React.
   activites:   ProgrammationPage,
   jeux:        JeuxEnLignePage,
   marche:      MarchePage,
-  nourriture:  NourriturePage,
+  // Commandite William J. Walter acceptée (2026-08-29) : la version
+  // présentée par WJW devient la vraie page du Village Nourriture.
+  nourriture:  WilliamPage,
   histoire:    HistoireApprendrePage,
   mariages:    MariagesGroupesPage,
   benevole:    BenevolePage,
