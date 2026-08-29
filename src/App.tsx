@@ -51,6 +51,7 @@ const Partenaires2027Page = lazy(() => import('./pages/Partenaires2027Page'));
 const ProgrammationPage    = lazy(() => import('./pages/ProgrammationPage'));
 const MarchePage           = lazy(() => import('./pages/MarchePage'));
 const WilliamPage          = lazy(() => import('./pages/WilliamPage'));
+const SignerCuisinePage    = lazy(() => import('./pages/SignerCuisinePage'));
 const MariagesGroupesPage  = lazy(() => import('./pages/MariagesGroupesPage'));
 const HistoireApprendrePage = lazy(() => import('./pages/HistoireApprendrePage'));
 const AdminPage        = lazy(() => import('./pages/AdminPage'));
@@ -503,6 +504,9 @@ const App: React.FC = () => (
                     la règle de la branche unique et redirige vers la
                     vraie page, pour que le lien envoyé à Xavier vive. */}
                 <Route path="/william"     element={<Navigate to="/nourriture" replace />} />
+                {/* Signature au doigt de l'entente des cuisiniers,
+                    partagée par lien Messenger. Hors menus. */}
+                <Route path="/signer-cuisine" element={<SignerCuisinePage />} />
                 {/* Petite Monnaie a rejoint Commanditaires & Partenaires sur
                     une seule vitrine (Alex, 2026-08-27) : son ancien pilier
                     redirige vers l'ancre de son chapitre. */}
