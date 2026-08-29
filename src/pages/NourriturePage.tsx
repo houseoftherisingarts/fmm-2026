@@ -598,8 +598,9 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
           </Reveal>
         </div>
       </section>
-      {/* ── Boissons, juste en dessous, même page (Alex, 2026-08-27). */}
-      <div id="boissons"><BoissonsPage embedded /></div>
+      {/* Le Village Boissons a quitté ce fichier : il vit maintenant dans
+          WilliamPage, APRÈS les boutiques WJW, parce qu'il est une entité
+          hors de l'ensemble William (Alex, 29 août). */}
     </>
   );
 };
