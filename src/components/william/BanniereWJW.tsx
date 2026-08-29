@@ -40,31 +40,34 @@ const BanniereWJW: React.FC = () => {
         }}
       />
 
-      <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-16 md:pt-24 pb-4 md:pb-6 grid gap-x-12 gap-y-12 items-center lg:grid-cols-[1.05fr_1fr]">
-        {/* L'enseigne, en trois temps : la maison, le geste, le village. */}
-        <div className="min-w-0 text-center lg:text-left lg:pr-6">
-          <motion.img
-            {...fondu(reduit, 0.1)}
-            src="/partenaires/wjw-logo-bone.svg"
-            alt="William J. Walter, saucissier"
-            className="mx-auto lg:mx-0 w-[min(88vw,30rem)]"
-            style={{ filter: 'drop-shadow(0 0 34px rgba(232, 177, 74, .26))' }}
-          />
+      {/* La maison d'abord, en pleine largeur : le logo occupe toute la
+          bande, « présente » le suit, centrés au-dessus du reste
+          (Alex, 29 août, v3). */}
+      <div className="relative z-10 max-w-screen-xl mx-auto px-5 md:px-10 pt-16 md:pt-24 text-center">
+        <motion.img
+          {...fondu(reduit, 0.1)}
+          src="/partenaires/wjw-logo-bone.svg"
+          alt="William J. Walter, saucissier"
+          className="mx-auto w-[min(94vw,70rem)]"
+          style={{ filter: 'drop-shadow(0 0 34px rgba(232, 177, 74, .26))' }}
+        />
 
-          <motion.div {...fondu(reduit, 0.65)} className="flex justify-center lg:justify-start my-7 md:my-9">
-            <Eyebrow tone="amber" className="inline-flex items-center gap-4">
-              <span aria-hidden className="h-px w-10 md:w-16" style={{ background: 'var(--color-amber-glow)' }} />
-              présente
-              <span aria-hidden className="h-px w-10 md:w-16" style={{ background: 'var(--color-amber-glow)' }} />
-            </Eyebrow>
-          </motion.div>
+        <motion.div {...fondu(reduit, 0.65)} className="flex justify-center mt-8 md:mt-10">
+          <Eyebrow tone="amber" className="inline-flex items-center gap-4">
+            <span aria-hidden className="h-px w-10 md:w-16" style={{ background: 'var(--color-amber-glow)' }} />
+            présente
+            <span aria-hidden className="h-px w-10 md:w-16" style={{ background: 'var(--color-amber-glow)' }} />
+          </Eyebrow>
+        </motion.div>
+      </div>
 
-          <motion.div {...fondu(reduit, 1.15)}>
-            <DisplayTitle size="xl" glow>
-              Village Nourriture
-            </DisplayTitle>
-          </motion.div>
-        </div>
+      {/* Puis le village : le titre à gauche, le grand cercle à droite. */}
+      <div className="relative z-10 max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-10 md:pt-14 pb-4 md:pb-6 grid gap-x-12 gap-y-12 items-center lg:grid-cols-[1.05fr_1fr]">
+        <motion.div {...fondu(reduit, 1.15)} className="min-w-0 text-center lg:text-left lg:pr-6">
+          <DisplayTitle size="xl" glow>
+            Village Nourriture
+          </DisplayTitle>
+        </motion.div>
 
         {/* Le grand cercle canon du site, photo réelle des grillades. */}
         <motion.div
