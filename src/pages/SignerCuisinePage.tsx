@@ -208,6 +208,8 @@ const SignerCuisinePage: React.FC = () => {
           Lire l'entente de prestation
         </a>
 
+        <LecteurEntente />
+
         <GildedFrame tone="amber" active className="block">
           <div className="caravan-glass p-6 space-y-5">
             <div>
