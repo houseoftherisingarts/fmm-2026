@@ -32,9 +32,58 @@ const BoissonsPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
         intro={fr
           ? 'Hypocras, bière et rafraîchissements du festival : le menu complet du comptoir arrive sous peu.'
           : 'Hypocras, ale and festival refreshments: the full bar menu is coming shortly.'}
-        orbImage="/wix/nourriture/fc0b94ea.jpg"
-        orbImagePosition="center 40%"
+        orbImage="/wix/nourriture/boissons-orbe.webp"
+        orbImagePosition="center 55%"
       />}
+
+      {/* En mode embarqué (page du Village Nourriture), le bar annonce
+          son entité : le Village Boissons n'est pas le Village
+          Nourriture, il le côtoie. Son propre grand cercle, en miroir
+          (l'orbe à gauche), pour que la frontière se voie (Alex,
+          29 août). */}
+      {embedded && (
+        <div className="relative max-w-screen-2xl mx-auto px-5 md:px-10 lg:px-14 pt-20 md:pt-28 grid gap-x-12 gap-y-10 items-center lg:grid-cols-[1fr_1.05fr]">
+          <div className="relative w-full max-w-[240px] sm:max-w-[300px] md:max-w-[380px] lg:max-w-[420px] aspect-square justify-self-center lg:justify-self-start lg:order-1"
+            role="img"
+            aria-label={fr ? 'Chopes d\'ambre et tonneaux au comptoir du festival' : 'Amber tankards and barrels at the festival bar'}
+          >
+            <div
+              aria-hidden
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                background:
+                  'radial-gradient(circle at 50% 50%, rgba(184, 106, 42, 0.32), rgba(176, 141, 58, 0.18) 40%, transparent 65%)',
+                filter: 'blur(55px)',
+              }}
+            />
+            <div className="orb-shell relative aspect-square w-full rounded-full overflow-hidden">
+              <div
+                className="absolute inset-0 fmm-orb-img-active"
+                style={{
+                  backgroundImage: 'url(/wix/nourriture/boissons-orbe.webp)',
+                  backgroundPosition: 'center 55%',
+                  backgroundSize: 'cover',
+                }}
+              />
+              <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none fmm-orb-shine" />
+            </div>
+          </div>
+          <div className="min-w-0 text-center lg:text-left lg:order-2 lg:pl-6">
+            <Eyebrow tone="amber" className="mb-5 inline-flex items-center gap-3">
+              <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
+              {fr ? 'Une autre maison, à côté' : 'Another house, next door'}
+            </Eyebrow>
+            <DisplayTitle size="xl" glow className="mb-5">
+              {fr ? 'Village Boissons' : 'Drinks Village'}
+            </DisplayTitle>
+            <p className="font-editorial text-base md:text-lg text-[var(--color-bone)]/80 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              {fr
+                ? 'Le bar du festival est sa propre maison : il voisine le Village Nourriture sans lui appartenir. Hypocras, bière et rafraîchissements se servent à son comptoir.'
+                : 'The festival bar is its own house: it sits beside the Food Village without belonging to it. Hypocras, ale and refreshments are served at its counter.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       <section className="relative caravan-stage bleed-edges fmm-perf-section text-[var(--color-bone)] overflow-hidden">
         <SectionFog />
