@@ -569,14 +569,14 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                         {t.grimoireBientot}
                       </span>
                     )}
-                    <a
-                      href="/grimoire/apercu-livre-recettes-v3.pdf"
-                      target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft hover:text-[var(--color-amber-glow)] transition"
-                    >
+                    {/* 🔒 Le feuilletage est fermé lui aussi : le livre se
+                        termine et ne se montre pas encore (Alex, 29 août).
+                        Le PDF d'aperçu reste sur le serveur; il suffira de
+                        remettre le lien pour rouvrir le feuilletage. */}
+                    <span className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft/60">
                       <BookOpen size={14} />
                       {t.grimoirePreview}
-                    </a>
+                    </span>
                   </div>
                   <p className="font-editorial text-xs text-ivory-soft/70 mt-5">{t.grimoireNote}</p>
                 </div>
