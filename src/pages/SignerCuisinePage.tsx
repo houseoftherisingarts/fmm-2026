@@ -18,6 +18,59 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 const PDF_URL = '/contrats/entente-cuisine-2026.pdf';
 
+// ── L'entente elle-même, rendue page par page dans la page web ──────
+// Le cuisinier doit VOIR ce qu'il signe avant de signer (Alex, 29 août).
+// pdfjs dessine chaque page du PDF sur un canvas empilé, pleine largeur.
+const LecteurEntente: React.FC = () => {
+  const boiteRef = useRef<HTMLDivElement>(null);
+  const [etat, setEtat] = useState<'charge' | 'ok' | 'erreur'>('charge');
+
+  useEffect(() => {
+    let vivant = true;
+    (async () => {
+      try {
+        const doc = await pdfjsLib.getDocument(PDF_URL).promise;
+        if (!vivant || !boiteRef.current) return;
+        const largeur = boiteRef.current.clientWidth;
+        for (let n = 1; n <= doc.numPages; n++) {
+          const page = await doc.getPage(n);
+          if (!vivant || !boiteRef.current) return;
+          const v1 = page.getViewport({ scale: 1 });
+          // x2 : page nette sur écran de téléphone
+          const viewport = page.getViewport({ scale: (largeur / v1.width) * 2 });
+          const c = document.createElement('canvas');
+          c.width = viewport.width;
+          c.height = viewport.height;
+          c.style.width = '100%';
+          c.style.display = 'block';
+          boiteRef.current.appendChild(c);
+          await page.render({ canvasContext: c.getContext('2d')!, canvas: c, viewport }).promise;
+        }
+        if (vivant) setEtat('ok');
+      } catch {
+        if (vivant) setEtat('erreur');
+      }
+    })();
+    return () => { vivant = false; };
+  }, []);
+
+  return (
+    <div className="mb-8">
+      <div className="rounded-[15px] overflow-hidden" style={{ border: '1px solid rgba(232, 177, 74, 0.35)' }}>
+        <div ref={boiteRef} className="max-h-[65vh] overflow-y-auto bg-white" />
+      </div>
+      {etat === 'charge' && (
+        <p className="font-editorial text-sm text-ivory-soft mt-3">L'entente se charge sous vos yeux.</p>
+      )}
+      {etat === 'erreur' && (
+        <p className="font-editorial text-sm mt-3" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>
+          L'aperçu n'a pas pu se charger : le bouton « Lire l'entente de prestation » ci-dessus ouvre le document complet.
+        </p>
+      )}
+    </div>
+  );
+};
+
 const SignerCuisinePage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [nom, setNom] = useState('');
