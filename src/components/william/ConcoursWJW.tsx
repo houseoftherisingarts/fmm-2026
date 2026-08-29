@@ -66,7 +66,8 @@ const ConcoursWJW: React.FC = () => {
               </DisplayTitle>
               <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-7">
                 Trois prix sont tirés le lundi qui suit le festival, parmi les gens qui
-                se seront inscrits sur le site ou au comptoir du village.
+                se seront inscrits ici même, sur le site web. C'est la seule porte
+                d'entrée du tirage.
               </p>
               <ul className="space-y-4">
                 {PRIX_CONCOURS_WJW.map((p, i) => (
