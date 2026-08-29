@@ -36,6 +36,11 @@ const WilliamPage: React.FC = () => {
 
       <ConcoursWJW />
       <BoutiquesProchesWJW />
+
+      {/* Le Village Boissons ferme la page, APRÈS les boutiques : le bar
+          est sa propre entité, hors de l'ensemble William (Alex, 29 août).
+          L'ancre #boissons continue de servir l'ancienne route /boissons. */}
+      <div id="boissons"><BoissonsPage embedded /></div>
     </>
   );
 };
