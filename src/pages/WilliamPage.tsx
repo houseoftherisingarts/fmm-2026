@@ -7,19 +7,14 @@ import BoutiquesProchesWJW from '../components/william/BoutiquesProchesWJW';
 import ConcoursWJW from '../components/william/ConcoursWJW';
 import NourriturePage from './NourriturePage';
 
-// ─── La page du commanditaire, en maquette ──────────────────────────
-// Copie de la page Nourriture, coiffée de la bannière William J. Walter
-// et suivie des boutiques de l'Outaouais. Elle vit sur son propre slug,
-// `/william`, pour être montrée au commanditaire sans rien changer au
-// site public. Rien ne remplace la vraie page tant qu'Alex n'a pas
-// tranché (règle de la branche unique : une page d'essai est un slug,
-// jamais une branche).
+// ─── Le Village Nourriture, présenté par William J. Walter ──────────
+// Commandite acceptée le 2026-08-29 : cette version est la vraie page
+// du pilier Nourriture (servie sur /nourriture; /william y redirige).
+// La page Nourriture, coiffée de la bannière William J. Walter, suivie
+// du concours William et des boutiques de l'Outaouais.
 //
 // Le contenu du milieu vient de NourriturePage en mode embarqué : le
-// menu, le banquet et le livre de recettes restent la source unique,
-// donc la maquette ne peut pas dériver du vrai site.
-//
-// Cette page est volontairement absente des menus et du plan du site.
+// menu, le banquet et le livre de recettes restent la source unique.
 
 const WilliamPage: React.FC = () => {
   useCaravanPage();
