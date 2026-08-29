@@ -153,12 +153,14 @@ const ConcoursWJW: React.FC = () => {
                       rend la liste remise au commanditaire utilisable. */}
                   <p className="font-editorial text-[13px] md:text-sm text-ivory-soft/80 leading-relaxed pt-3 max-w-prose">
                     Règlement. Concours ouvert aux résidents du Québec de 18 ans et plus, du
-                    1er au 27 septembre 2026. Une inscription par personne. Trois prix tirés au
-                    hasard le 28 septembre parmi les inscriptions valides, et remis sans achat
-                    requis. Les coordonnées recueillies sont partagées avec William J. Walter,
-                    qui peut vous écrire; chaque envoi porte un lien pour vous retirer. Le
-                    Festival Médiéval de Montpellier et William J. Walter ne vendent jamais
-                    cette liste.
+                    1er au 27 septembre 2026. Une inscription par personne, sur le site web du
+                    festival uniquement. Trois prix tirés au hasard le 28 septembre parmi les
+                    inscriptions valides, et remis sans achat requis. Les personnes gagnantes
+                    sont jointes par le courriel et le téléphone donnés ici; c'est à cela
+                    qu'ils servent d'abord. Ces coordonnées sont aussi partagées avec
+                    William J. Walter à des fins publicitaires, et chaque envoi porte un lien
+                    pour vous retirer. Le Festival Médiéval de Montpellier et William J. Walter
+                    ne vendent jamais cette liste.
                   </p>
                 </form>
               )}
