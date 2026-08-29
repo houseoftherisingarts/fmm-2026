@@ -500,11 +500,10 @@ const App: React.FC = () => (
                     ?banquet=1 des boutons du banquet. La version anglaise
                     la perdait en chemin, donc un lecteur anglophone
                     arrivait sur un chapitre replié (Alex, 2026-08-23). */}
-                {/* Maquette de commandite montrée à William J. Walter.
-                    Slug à part, hors menus et hors plan du site : le vrai
-                    village gustatif reste intact tant qu'Alex n'a pas
-                    tranché. */}
-                <Route path="/william"     element={<WilliamPage />} />
+                {/* Commandite acceptée : l'ancien slug de maquette suit
+                    la règle de la branche unique et redirige vers la
+                    vraie page, pour que le lien envoyé à Xavier vive. */}
+                <Route path="/william"     element={<Navigate to="/nourriture" replace />} />
                 {/* Petite Monnaie a rejoint Commanditaires & Partenaires sur
                     une seule vitrine (Alex, 2026-08-27) : son ancien pilier
                     redirige vers l'ancre de son chapitre. */}
