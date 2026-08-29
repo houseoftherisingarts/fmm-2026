@@ -470,8 +470,8 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                 pas de cadre doré : la taverne reste la seule rupture. */}
             <div className="lg:col-span-5 min-w-0">
               <img
-                src="/wix/nourriture/wjw-plateau-table.webp"
-                alt="Plateau de dégustation de saucisses grillées, vu de haut"
+                src="/wix/nourriture/nourriture-table-p.webp"
+                alt="Saucisses artisanales sur planche de bois, avec pain et cornichons"
                 decoding="async"
                 loading="lazy"
                 className="w-full rounded-[15px] object-cover"
