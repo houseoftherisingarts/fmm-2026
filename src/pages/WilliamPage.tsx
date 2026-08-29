@@ -23,8 +23,7 @@ const WilliamPage: React.FC = () => {
     <>
       <SEO
         title="Le Village Nourriture présenté par William J. Walter"
-        description="Maquette de commandite : le village gustatif du Festival Médiéval de Montpellier, présenté par William J. Walter."
-        noindex
+        description="Le village gustatif du Festival Médiéval de Montpellier, présenté par William J. Walter : le menu des tentes, le banquet et le concours William."
       />
       <ScrollProgress />
 
