@@ -466,9 +466,22 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                 {t.kioskLead}
               </p>
             </header>
-            <p className="lg:col-span-5 font-sans uppercase tracking-[0.3em] text-[10px] leading-loose text-right hidden lg:block" style={{ color: 'rgba(244,239,227,0.45)' }}>
-              {t.kioskAside}
-            </p>
+            {/* Le plateau de dégustation : la grillade WJW en pleine
+                lumière au-dessus du menu (Alex, 29 août). Coins 15px,
+                pas de cadre doré : la taverne reste la seule rupture. */}
+            <div className="lg:col-span-5 min-w-0">
+              <img
+                src="/wix/nourriture/wjw-plateau-table.webp"
+                alt="Plateau de dégustation de saucisses grillées, vu de haut"
+                decoding="async"
+                loading="lazy"
+                className="w-full rounded-[15px] object-cover"
+                style={{ aspectRatio: '4/3', boxShadow: '0 18px 44px rgba(0,0,0,.5)' }}
+              />
+              <p className="font-sans uppercase tracking-[0.3em] text-[10px] leading-loose text-right mt-3 hidden lg:block" style={{ color: 'rgba(244,239,227,0.45)' }}>
+                {t.kioskAside}
+              </p>
+            </div>
           </div>
 
           {/* Le tableau : colonnes de journal, comme un menu papier qui se
