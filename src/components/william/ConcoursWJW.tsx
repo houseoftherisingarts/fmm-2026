@@ -100,8 +100,8 @@ const ConcoursWJW: React.FC = () => {
                   <p className="font-display title-medieval text-2xl text-ivory mb-3">Votre participation est dans votre espace.</p>
                   <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed max-w-prose">
                     {user
-                      ? 'Elle vous attend dans votre espace, en haut à droite. Le gagnant y sera annoncé le lundi 28 septembre.'
-                      : 'Un lien de connexion vient de partir vers votre courriel : il ouvre votre espace au Festival Médiéval. Cliquez ensuite sur Connexion, en haut à droite, pour voir si vous êtes l’heureux gagnant. Le gagnant y sera annoncé le lundi 28 septembre.'}
+                      ? 'Elle vous attend dans votre espace, en haut à droite. Le gagnant y sera annoncé le dimanche 27 septembre au matin.'
+                      : 'Un lien de connexion vient de partir vers votre courriel : il ouvre votre espace au Festival Médiéval. Cliquez ensuite sur Connexion, en haut à droite, pour voir si vous êtes l’heureux gagnant. Le gagnant y sera annoncé le dimanche 27 septembre au matin.'}
                   </p>
                 </div>
               ) : (
@@ -154,9 +154,10 @@ const ConcoursWJW: React.FC = () => {
                       rend la liste remise au commanditaire utilisable. */}
                   <p className="font-editorial text-[13px] md:text-sm text-ivory-soft/80 leading-relaxed pt-3 max-w-prose">
                     Règlement. Concours ouvert aux résidents du Québec de 18 ans et plus, du
-                    1er au 27 septembre 2026. Une inscription par personne, sur le site web du
-                    festival uniquement. Trois prix tirés au hasard le 28 septembre parmi les
-                    inscriptions valides, et remis sans achat requis. Les personnes gagnantes
+                    1er au 26 septembre 2026, 23 h 59. Une inscription par personne, sur le
+                    site web du festival uniquement. Trois prix tirés au hasard le dimanche
+                    27 septembre au matin parmi les inscriptions valides, et remis sans achat
+                    requis. Les personnes gagnantes
                     sont jointes par le courriel et le téléphone donnés ici; c'est à cela
                     qu'ils servent d'abord. Ces coordonnées sont aussi partagées avec
                     William J. Walter à des fins publicitaires, et chaque envoi porte un lien
