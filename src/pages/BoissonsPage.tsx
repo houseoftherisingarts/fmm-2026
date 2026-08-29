@@ -120,8 +120,8 @@ const BoissonsPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
               <HexPanel size="lg" active className="fmm-shimmer">
                 <div className="relative h-[clamp(340px,40vw,520px)] overflow-hidden">
                   <img
-                    src="/wix/nourriture/fc0b94ea.jpg"
-                    alt={fr ? 'Chopes levées sur une table du festival' : 'Mugs raised on a festival table'}
+                    src="/wix/nourriture/boissons-comptoir.webp"
+                    alt={fr ? 'Chopes d\'ambre alignées au comptoir du festival' : 'Amber tankards lined up at the festival bar'}
                     decoding="async"
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover fmm-kenburns"
