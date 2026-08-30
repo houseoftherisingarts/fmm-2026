@@ -2134,11 +2134,28 @@ function tirerRarete() {
   return 'commune';
 }
 
+// ── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
+// Chaque visite quotidienne réclame la récompense du jour de la roue :
+// jour 1 = 5 Montpellois, jour 2 = 10, jour 3 = pièces de la Garde
+// royale (hnefatafl), jour 4 = dos royal (tarot), jour 5 = 15, jour 6
+// = 20, jour 7 = une seconde chance au concours William J. Walter.
+// Passé le jour 7, la roue recommence. Un jour sauté remet au jour 1.
+// Doit rester en phase avec RECOMPENSES_QUOTIDIEN (src/firebase/montpellois.ts).
+const ROUE_QUOTIDIENNE = [
+  { montpellois: 5 },
+  { montpellois: 10 },
+  { taflPieces: 'garde' },
+  { dosTarot: 'royal' },
+  { montpellois: 15 },
+  { montpellois: 20 },
+  { chanceWJW: 1 },
+];
+
 exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) => {
   const uid = requete.auth && requete.auth.uid;
-  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour réclamer votre pièce du jour.');
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour réclamer votre récompense du jour.');
   const ref = db.collection('bourses').doc(uid);
-  const { solde, gagneAvant, gagneApres, suite } = await db.runTransaction(async (tx) => {
+  const { solde, gagneAvant, gagneApres, suite, jour } = await db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const data = snap.exists ? snap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
     const aujourdhui = new Date().toISOString().slice(0, 10);
@@ -2149,15 +2166,22 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
     // si la dernière réclamation datait d'hier, elle repart à un jour
     // sinon (premier jour, ou un jour sauté).
     const suite = dernier === hier ? (data.quotidienSuite || 0) + 1 : 1;
+    const jour = ((suite - 1) % 7) + 1;
+    const don = ROUE_QUOTIDIENNE[jour - 1];
+    const gain = don.montpellois || 0;
     const gagneAvant = data.gagne || 0;
-    const gagneApres = gagneAvant + GAIN_QUOTIDIEN;
-    const solde = (data.solde || 0) + GAIN_QUOTIDIEN;
-    tx.set(ref, { solde, gagne: gagneApres, dernierQuotidien: FieldValue.serverTimestamp(), quotidienSuite: suite, maj: FieldValue.serverTimestamp() }, { merge: true });
-    return { solde, gagneAvant, gagneApres, suite };
+    const gagneApres = gagneAvant + gain;
+    const solde = (data.solde || 0) + gain;
+    const maj = { solde, gagne: gagneApres, dernierQuotidien: FieldValue.serverTimestamp(), quotidienSuite: suite, maj: FieldValue.serverTimestamp() };
+    if (don.taflPieces) maj.taflPieces = FieldValue.arrayUnion(don.taflPieces);
+    if (don.dosTarot) maj.dosTarot = FieldValue.arrayUnion(don.dosTarot);
+    if (don.chanceWJW) maj.chancesWJW = FieldValue.increment(don.chanceWJW);
+    tx.set(ref, maj, { merge: true });
+    return { solde, gagneAvant, gagneApres, suite, jour };
   });
   await verifierRangsFortune(uid, gagneAvant, gagneApres); // ponytail : hors transaction, badge cosmétique
   if (suite >= 7) await poserBadge(uid, 'quotidien-sept');
-  return { solde };
+  return { solde, suite, jour };
 });
 
 exports.tenterUneTrouvaille = onCall({ region: 'us-central1' }, async (requete) => {
