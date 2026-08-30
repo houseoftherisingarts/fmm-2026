@@ -22,7 +22,9 @@ const WelcomePage: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const cd = useCountdown(`${SITE.dates.start}T10:00:00-04:00`);
-  const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
+  const { user } = useAuth();
+  const ticketUrl = lienBilletterie(Boolean(user));
+  const surBillets = (e: React.MouseEvent) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); };
 
   // Days-until vs days-from-launch progress bar: shows festival's
   // approach. Anchor is "today" minus 365 (one year out) → 0%, festival
