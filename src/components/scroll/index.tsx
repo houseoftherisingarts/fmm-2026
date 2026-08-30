@@ -292,7 +292,7 @@ export const ChapterIntro: React.FC<{
         </StaggerItem>
       )}
       <StaggerItem>
-        <h2 className="font-display title-medieval text-3xl md:text-5xl text-ivory leading-[1.05]">
+        <h2 className="font-display title-medieval text-2xl sm:text-3xl md:text-5xl text-ivory leading-[1.05]">
           {title}
         </h2>
       </StaggerItem>
