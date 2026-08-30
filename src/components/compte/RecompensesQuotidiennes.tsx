@@ -34,23 +34,40 @@ function resteAvantDemain(): string {
   return `${String(h).padStart(2, '0')} h ${String(m).padStart(2, '0')} min`;
 }
 
+// Les trésors se montrent avec les vrais objets du site : la pièce de
+// Montpellois, le dos de carte du tarot relevé à l'or, les teintes du
+// jeu de la Garde royale, le blason de William J. Walter.
 const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande }) => {
-  const taille = grande ? 40 : 26;
+  const taille = grande ? 68 : 48;
   if (type === 'montpellois') return <PieceMontpellois size={taille} image />;
-  if (type === 'taflPieces') return <Swords size={taille} style={{ color: '#D8B05A' }} />;
-  if (type === 'chanceWJW') return <Gift size={taille} style={{ color: '#D8B05A' }} />;
-  // Le dos de carte : une petite carte dorée dessinée, pas un glyphe.
+  if (type === 'chanceWJW') {
+    return <img src="/partenaires/wjw-logo-bone.svg" alt="" aria-hidden style={{ height: taille * 0.9, width: 'auto', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.6))' }} />;
+  }
+  if (type === 'taflPieces') {
+    // Trois pièces tournées, comme sur le plateau : assaillant sombre,
+    // défenseur d'ivoire, roi d'or couronné.
+    const d = taille * 0.46;
+    const piece = (fond: string, decal: number, roi = false) => (
+      <span key={fond} aria-hidden className="absolute rounded-full flex items-center justify-center"
+            style={{ width: d, height: d, left: decal, bottom: roi ? d * 0.35 : 0, background: fond,
+                     boxShadow: '0 3px 8px rgba(0,0,0,0.65), inset 0 -3px 5px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.25)',
+                     border: '1px solid rgba(244,239,227,0.25)' }}>
+        {roi && <Crown size={d * 0.5} style={{ color: '#3a2c14' }} />}
+      </span>
+    );
+    return (
+      <span className="relative block" style={{ width: taille * 1.15, height: taille * 0.85 }}>
+        {piece('linear-gradient(160deg,#5a4520,#3a2c14)', 0)}
+        {piece('linear-gradient(160deg,#f4ecd8,#cfc1a0)', d * 1.45)}
+        {piece('linear-gradient(160deg,#ecc978,#b8902f)', d * 0.72, true)}
+      </span>
+    );
+  }
+  // Le dos royal : le vrai dos du tarot, relevé à l'or.
   return (
-    <span
-      aria-hidden
-      className="block rounded-[3px]"
-      style={{
-        width: taille * 0.68, height: taille,
-        background: 'linear-gradient(160deg, #8a6a24 0%, #D8B05A 45%, #7a5a1e 100%)',
-        border: '1px solid rgba(244,239,227,0.5)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.6)',
-      }}
-    />
+    <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="rounded-[4px] object-cover"
+         style={{ height: taille, width: taille * 0.62, filter: FILTRE_DOS_ROYAL,
+                  border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }} />
   );
 };
 
