@@ -561,10 +561,10 @@ const OrbHomePage: React.FC = () => {
   const onConfirm = () => {
     if (isLanding) {
       setConfirming(true);
-      // Landing → open external Zeffy ticket purchase in a NEW tab (keep the
-      // site open in the current one).
+      // Landing → billetterie : la personne connectée file sur Zeffy membre
+      // dans un nouvel onglet; sans compte, la porte au rabais s'ouvre.
       setTimeout(() => {
-        window.open(ticketUrl, '_blank', 'noopener,noreferrer');
+        ouvrirBilletterie(Boolean(user));
         setConfirming(false);
       }, 600);
       return;
