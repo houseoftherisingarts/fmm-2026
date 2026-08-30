@@ -16,6 +16,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import PorteDuJeu from './components/auth/PorteDuJeu';
 import { BadgesProvider } from './contexts/BadgesContext';
 import AnnonceBadge from './components/badges/AnnonceBadge';
+import RecompensesQuotidiennes from './components/compte/RecompensesQuotidiennes';
 import { usePerfTier } from './lib/usePerfTier';
 import { usePrefsFond } from './lib/usePrefsFond';
 import NavBar from './components/layout/NavBar';
