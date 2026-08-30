@@ -10,6 +10,8 @@ import { Eyebrow, DisplayTitle, SectionFog, SectionTopRail } from '../components
 import {
   BILLETS, displayAmount, formatAmount, showBeforeTax, carteFond, type Billet,
 } from '../content/billets';
+import { useAuth } from '../contexts/AuthContext';
+import { lienBilletterie, ouvrirBilletterie, RABAIS_MEMBRE } from '../lib/billetterie';
 
 // ─── Billetterie ────────────────────────────────────────────────────
 // Une main de cartes plutôt qu'une liste. Chaque billet est une carte
