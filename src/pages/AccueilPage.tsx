@@ -65,7 +65,7 @@ const AccueilPage: React.FC = () => {
               <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-6">
                 {t.hero.subtitle}
               </p>
-              <a href={ticketUrl} target="_blank" rel="noopener noreferrer"
+              <a href={ticketUrl} onClick={surBillets} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
                 {t.hero.primaryCta} <ArrowUpRight size={14} />
               </a>
