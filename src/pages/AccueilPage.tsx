@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Download } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
+import { lienBilletterie, ouvrirBilletterie } from '../lib/billetterie';
 import { PILLAR_BY_KEY, SITE, SPONSORS } from '../content';
 import { useCountdown } from '../lib/useCountdown';
 import { addLocale } from '../lib/locale';
