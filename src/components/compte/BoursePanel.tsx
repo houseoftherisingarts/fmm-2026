@@ -18,7 +18,6 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
   const fr = lang === 'FR';
   const [bourse, setBourse] = useState<Bourse | null>(null);
   const [envoi, setEnvoi] = useState(false);
-  const [quotidien, setQuotidien] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => (prive ? suivreMaBourse(uid, setBourse) : suivreBourseDe(uid, setBourse as (b: unknown) => void)), [uid, prive]);
