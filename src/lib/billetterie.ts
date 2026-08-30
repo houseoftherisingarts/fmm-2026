@@ -17,10 +17,25 @@
 
 export const RABAIS_MEMBRE = 5;
 
+/** Tous les boutons « billets » du site passent par ce nom d'événement :
+    la porte (PorteBilletterieGlobale, montée une fois dans App) l'écoute. */
+export const EVENEMENT_PORTE = 'fmm:porte-billets';
+
 export function lienBilletterie(connecte: boolean): string {
   const membre = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
   const publique = import.meta.env.VITE_ZEFFY_TICKET_URL_PUBLIC || membre;
   return connecte ? membre : publique;
+}
+
+/** Le geste unique de tout bouton « billets » : la personne connectée file
+    sur la campagne membre; la personne sans compte voit d'abord la porte
+    qui lui offre les cinq dollars de rabais. */
+export function ouvrirBilletterie(connecte: boolean): void {
+  if (connecte) {
+    window.open(lienBilletterie(true), '_blank', 'noopener,noreferrer');
+  } else {
+    window.dispatchEvent(new Event(EVENEMENT_PORTE));
+  }
 }
 
 /** Le prix affiché sur le site : majoré tant que la personne n'a pas de compte. */
