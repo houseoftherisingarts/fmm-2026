@@ -5,6 +5,8 @@ import {
   Hammer, Music2, UtensilsCrossed, Tent, Trees, Sword, ChevronDown,
 } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
+import { lienBilletterie, ouvrirBilletterie } from '../lib/billetterie';
 import { SITE, PILLARS } from '../content';
 import { useCountdown } from '../lib/useCountdown';
 import { addLocale } from '../lib/locale';
