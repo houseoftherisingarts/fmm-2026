@@ -7,6 +7,7 @@ import { useSiteFlags } from '../contexts/SiteFlagsContext';
 import { SITE, PILLARS, PILLAR_COPY, type PillarKey } from '../content';
 import { isPillarVisible } from '../firebase/siteFlags';
 import { addLocale } from '../lib/locale';
+import { ouvrirBilletterie } from '../lib/billetterie';
 import { useCountdown } from '../lib/useCountdown';
 import { usePerfTier } from '../lib/usePerfTier';
 import SEO from '../components/SEO';
