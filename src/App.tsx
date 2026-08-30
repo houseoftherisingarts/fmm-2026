@@ -550,6 +550,9 @@ const App: React.FC = () => (
           {/* L'annonce d'un badge se pose au centre de l'écran, par-dessus
               tout le reste. Un seul exemplaire pour tout le site. */}
           <AnnonceBadge />
+          {/* La roue des sept jours : la récompense de la visite
+              quotidienne tombe d'elle-même, avec la fanfare. */}
+          <RecompensesQuotidiennes />
         </BadgesProvider>
         </BrowserRouter>
         </AuthProvider>
