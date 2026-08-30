@@ -505,7 +505,6 @@ const NavBar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <PorteBilletterie ouvert={porteBillets} onFermer={() => setPorteBillets(false)} lang={lang} />
     </>
   );
 };
