@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Check, Music, Palette, Disc3, Gift } from 'lucide-react';
+import { Check, Music, Palette, Disc3, Gift, Lock, Swords } from 'lucide-react';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
-import { lireChoix, ecrireChoix } from '../../games/hnefatafl/assets';
+import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix } from '../../games/hnefatafl/assets';
 import { CLE_DOS_TAROT, dosRoyalEquipe, FILTRE_DOS_ROYAL } from '../../games/tarot/dos';
 import { suivreMaBourse, type Bourse } from '../../firebase/montpellois';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
@@ -45,12 +45,16 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
   // Les trésors de la roue des sept jours. Leur « équipement » vit dans
   // le navigateur, comme le reste des choix des jeux (lireChoix du
   // hnefatafl, CLE_DOS_TAROT du tarot).
-  const gardeGagnee = (bourse?.taflPieces || []).includes('garde');
   const dosRoyalGagne = (bourse?.dosTarot || []).includes('royal');
   const chancesWJW = bourse?.chancesWJW || 0;
-  const [gardeEquipee, setGardeEquipee] = useState(() => lireChoix().pieces === 'garde');
+  const [choixJeu, setChoixJeu] = useState(() => lireChoix());
   const [dosRoyal, setDosRoyal] = useState(() => dosRoyalEquipe());
-  const equiperGarde = () => { ecrireChoix(lireChoix().plateau, 'garde'); setGardeEquipee(true); };
+  const equiperPlateau = (id: string) => { ecrireChoix(id, choixJeu.pieces); setChoixJeu({ plateau: id, pieces: choixJeu.pieces }); };
+  const equiperPieces = (id: string) => { ecrireChoix(choixJeu.plateau, id); setChoixJeu({ plateau: choixJeu.plateau, pieces: id }); };
+  // Un jeu 'recompense' se joue seulement s'il est gagné; un jeu
+  // 'bientot' s'annonce sans se choisir; un jeu 'disponible' est à tous.
+  const jeuOuvert = (statut: string, id: string, gagnes: string[]) =>
+    statut === 'disponible' || (statut === 'recompense' && gagnes.includes(id));
   const basculerDosRoyal = () => {
     const suivant = !dosRoyal;
     try { if (suivant) localStorage.setItem(CLE_DOS_TAROT, 'royal'); else localStorage.removeItem(CLE_DOS_TAROT); } catch { /* navigation privée */ }
@@ -120,62 +124,119 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
         </div>
       </div>
 
-      {/* Les trésors de la roue des sept jours, seulement s'il y en a */}
-      {(gardeGagnee || dosRoyalGagne || chancesWJW > 0) && (
+      {/* Les récompenses quotidiennes : le compte des secondes chances au
+          concours. Les skins gagnés se rangent avec les autres, dans
+          « Vos jeux » (Alex, 2026-08-30). */}
+      {chancesWJW > 0 && (
         <div className="mb-7">
           <p className="witcher-stat-label mb-3"><Gift size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Récompenses quotidiennes' : 'Daily rewards'}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {gardeGagnee && (
-              <button type="button" onClick={equiperGarde} aria-pressed={gardeEquipee}
-                      className="rounded-card p-3 flex items-center gap-3 text-left transition"
-                      style={carte(gardeEquipee)}>
-                <span className="w-10 h-10 shrink-0 rounded-md" style={{ background: 'linear-gradient(150deg, #e8dcc0 0%, #d8b05a 55%, #3a2c14 100%)', border: '1.5px solid rgba(244,239,227,0.25)' }} />
-                <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-sm truncate" style={{ color: gardeEquipee ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
-                    {fr ? 'La Garde royale' : 'The Royal Guard'}
-                  </span>
-                  <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>Hnefatafl</span>
+            <div className="rounded-card p-3 flex items-center gap-3" style={carte(true)}>
+              <span className="w-10 h-10 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(216,176,90,0.14)', border: '1.5px solid rgba(244,239,227,0.25)', color: '#D8B05A' }}>
+                <Gift size={18} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-sans text-sm" style={{ color: '#D8B05A' }}>
+                  {fr
+                    ? `${chancesWJW} seconde${chancesWJW > 1 ? 's' : ''} chance${chancesWJW > 1 ? 's' : ''}`
+                    : `${chancesWJW} second chance${chancesWJW > 1 ? 's' : ''}`}
                 </span>
-                {gardeEquipee && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
-              </button>
-            )}
-            {dosRoyalGagne && (
-              <button type="button" onClick={basculerDosRoyal} aria-pressed={dosRoyal}
-                      className="rounded-card p-3 flex items-center gap-3 text-left transition"
-                      style={carte(dosRoyal)}>
-                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
-                  <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover"
-                       style={{ filter: FILTRE_DOS_ROYAL }} />
+                <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                  {fr ? 'Concours William J. Walter' : 'William J. Walter draw'}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
-                    {fr ? 'Le dos royal' : 'The royal back'}
-                  </span>
-                  <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>Tarot</span>
-                </span>
-                {dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
-              </button>
-            )}
-            {chancesWJW > 0 && (
-              <div className="rounded-card p-3 flex items-center gap-3" style={carte(true)}>
-                <span className="w-10 h-10 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(216,176,90,0.14)', border: '1.5px solid rgba(244,239,227,0.25)', color: '#D8B05A' }}>
-                  <Gift size={18} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-sm" style={{ color: '#D8B05A' }}>
-                    {fr
-                      ? `${chancesWJW} seconde${chancesWJW > 1 ? 's' : ''} chance${chancesWJW > 1 ? 's' : ''}`
-                      : `${chancesWJW} second chance${chancesWJW > 1 ? 's' : ''}`}
-                  </span>
-                  <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
-                    {fr ? 'Concours William J. Walter' : 'William J. Walter draw'}
-                  </span>
-                </span>
-              </div>
-            )}
+              </span>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Vos jeux : tout ce qui habille les jeux, offert, gagné ou à
+          venir, équipé d'un clic (Alex, 2026-08-30). Les choix vivent
+          dans le navigateur, comme dans le lobby du hnefatafl. */}
+      <div className="mb-7">
+        <p className="witcher-stat-label mb-1"><Swords size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Vos jeux' : 'Your games'}</p>
+        <p className="font-sans text-[11px] mb-4" style={{ color: 'rgba(244,239,227,0.5)' }}>
+          {fr ? 'Plateaux et pièces du hnefatafl, dos de carte du tarot. Ce qui est verrouillé se gagne ou s’en vient.' : 'Hnefatafl boards and pieces, tarot card backs. What is locked is earned or on its way.'}
+        </p>
+
+        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Plateaux du hnefatafl' : 'Hnefatafl boards'}</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
+          {BOARD_SETS.map((b) => {
+            const ouvert = jeuOuvert(b.statut, b.id, []);
+            const actif = choixJeu.plateau === b.id;
+            return (
+              <button key={b.id} type="button" disabled={!ouvert} onClick={() => equiperPlateau(b.id)} aria-pressed={actif}
+                      title={fr ? b.texteFR : b.texteEN}
+                      className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={carte(actif)}>
+                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: 'rgba(0,0,0,0.4)' }}>
+                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
+                  {!ouvert && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? 'Bientôt' : 'Soon'}</span>}
+                </span>
+                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Pièces du hnefatafl' : 'Hnefatafl pieces'}</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
+          {PIECE_SETS.map((b) => {
+            const ouvert = jeuOuvert(b.statut, b.id, bourse?.taflPieces || []);
+            const actif = choixJeu.pieces === b.id;
+            return (
+              <button key={b.id} type="button" disabled={!ouvert} onClick={() => equiperPieces(b.id)} aria-pressed={actif}
+                      title={fr ? b.texteFR : b.texteEN}
+                      className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={carte(actif)}>
+                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center"
+                      style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: b.id === 'garde' ? 'linear-gradient(150deg, #e8dcc0 0%, #d8b05a 55%, #3a2c14 100%)' : 'rgba(0,0,0,0.4)' }}>
+                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: b.id === 'garde' ? '#3a2c14' : 'rgba(216,176,90,0.6)' }} />)}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
+                  {!ouvert && (
+                    <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                      {b.statut === 'recompense' ? (fr ? 'Récompense quotidienne · jour 3' : 'Daily reward · day 3') : (fr ? 'Bientôt' : 'Soon')}
+                    </span>
+                  )}
+                </span>
+                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Dos de carte du tarot' : 'Tarot card backs'}</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <button type="button" onClick={() => { if (dosRoyal) basculerDosRoyal(); }} aria-pressed={!dosRoyal}
+                  className="rounded-card p-3 flex items-center gap-3 text-left transition" style={carte(!dosRoyal)}>
+            <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
+              <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover" />
+            </span>
+            <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: !dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+              {fr ? 'Le dos du festival' : 'The festival back'}
+            </span>
+            {!dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+          </button>
+          <button type="button" disabled={!dosRoyalGagne} onClick={() => { if (!dosRoyal) basculerDosRoyal(); }} aria-pressed={dosRoyal}
+                  className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed" style={carte(dosRoyal)}>
+            <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
+              {dosRoyalGagne
+                ? <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover" style={{ filter: FILTRE_DOS_ROYAL }} />
+                : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? 'Le dos royal' : 'The royal back'}</span>
+              {!dosRoyalGagne && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? 'Récompense quotidienne · jour 4' : 'Daily reward · day 4'}</span>}
+            </span>
+            {dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+          </button>
+        </div>
+      </div>
 
       {/* Albums, seulement s'il y en a */}
       {albumsPossedes.length > 0 && (

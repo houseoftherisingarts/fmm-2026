@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, User, ArrowUpRight, Newspaper } from 'lucide-react';
+import { Menu, X, User, ArrowUpRight, Newspaper } from 'lucide-react';
+import PieceMontpellois from '../boutique/PieceMontpellois';
+import { suivreMaBourse } from '../../firebase/montpellois';
 import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSiteFlags } from '../../contexts/SiteFlagsContext';
@@ -104,6 +106,11 @@ const NavBar: React.FC = () => {
   // anyway via PillarGate, but don't advertise a link that dead-ends).
   const visiblePillars = PILLARS.filter((p) => isPillarVisible(flags, p.key, PREVIEW_ALL));
   const { user, openSignIn } = useAuth();
+  const [solde, setSolde] = useState<number | null>(null);
+  useEffect(() => {
+    if (!user?.uid) { setSolde(null); return; }
+    return suivreMaBourse(user.uid, (b) => setSolde(b.solde ?? 0));
+  }, [user?.uid]);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -267,17 +274,21 @@ const NavBar: React.FC = () => {
               </button>
             )}
 
-            {/* Cart icon */}
+            {/* La bourse : la pièce de Montpellois et le solde, à la
+                place du panier qui ne menait nulle part (Alex, 2026-08-30).
+                Un clic ouvre la boutique; sans compte, la connexion. */}
             <button
               type="button"
-              className="hidden sm:inline-flex items-center justify-center w-9 h-9 transition-colors"
-              style={{ color: 'rgba(244, 239, 227, 0.55)' }}
+              onClick={() => (user ? navigate(addLocale('/boutique', lang)) : openSignIn())}
+              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full transition-colors"
+              style={{ color: 'rgba(244, 239, 227, 0.8)', border: '1px solid rgba(232, 177, 74, 0.28)' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-amber-glow)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(244, 239, 227, 0.55)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(244, 239, 227, 0.8)'; }}
               aria-label={UI[lang].cart}
               title={UI[lang].cart}
             >
-              <ShoppingBag size={15} />
+              <PieceMontpellois size={18} image />
+              {user && <span className="font-sans text-xs tabular-nums">{solde ?? '·'}</span>}
             </button>
 
             {/* Menu: diamond hover marker */}

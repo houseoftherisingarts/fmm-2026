@@ -1,12 +1,7 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag,
-  HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords,
-  MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield,
-  Sparkles, Crown, BadgeCheck, Plus, Music, Palette,
-} from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords, MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield, Sparkles, Crown, BadgeCheck, Plus, Music, Palette, Ticket, Newspaper } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { addLocale } from '../../lib/locale';
@@ -40,8 +35,10 @@ import BoutiqueMontpellois from '../boutique/BoutiqueMontpellois';
 import PorteAdmin from './PorteAdmin';
 import DonnerRoleAdmin from './DonnerRoleAdmin';
 import AvatarUpload from './AvatarUpload';
-import SalonDesJeux from './SalonDesJeux';
-import DefisTafl from './DefisTafl';
+import Repliable from './Repliable';
+import PieceMontpellois from '../boutique/PieceMontpellois';
+import { suivreMaBourse } from '../../firebase/montpellois';
+import { TableDeJeux } from '../../pages/JeuxEnLignePage';
 import MesBadges from './MesBadges';
 import Coffre from './Coffre';
 import MaFiche from './MaFiche';
@@ -121,6 +118,13 @@ interface Props {
 }
 
 const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
+  const fr = lang === 'FR';
+  // Le solde, pour l'en-tête « Ma bourse » de l'onglet Badges et coffre.
+  const [solde, setSolde] = useState<number | null>(null);
+  useEffect(() => {
+    if (!compte?.uid) { setSolde(null); return; }
+    return suivreMaBourse(compte.uid, (b) => setSolde(b.solde ?? 0));
+  }, [compte?.uid]);
   const prive = mode === 'prive';
   const t = lang === 'FR' ? FR : EN;
   const { user: visiteur, isAdmin, signOut } = useAuth();
@@ -773,7 +777,6 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       <p className="text-xs font-editorial text-brass mt-3 text-center">{t.saved}</p>
                     )}
                   </form>
-                  {compte && <BoursePanel uid={compte.uid} lang={lang} prive />}
                 </div>
 
                 <div>
@@ -978,18 +981,30 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 paraissent sous les badges (Alex, 2026-08-28). */}
             {onglet === 'badges' && (
               <div className="space-y-6 md:space-y-8">
-                {prive
-                  ? <MesBadges lang={lang} />
-                  : <MesBadges lang={lang} obtenus={badgesVus} titre={t.sesBadges} />}
-                {/* Le coffre : les skins, ambiances et albums achetés,
-                    équipés d'un clic (Alex, 2026-08-28). */}
-                {prive && compte && <div id="coffre"><Coffre uid={compte.uid} lang={lang} /></div>}
-                {prive ? (
+                {prive && compte ? (
                   <>
+                    {/* Le solde en tête, comme un compte de banque, avec la
+                        bourse complète repliée dessous (Alex, 2026-08-30). */}
+                    <Repliable id="bourse" titre={fr ? 'Ma bourse' : 'My purse'}
+                               icone={<PieceMontpellois size={16} />}
+                               resume={<span className="inline-flex items-center gap-2"><PieceMontpellois size={16} image />{solde ?? 0} Montpellois</span>}>
+                      <BoursePanel uid={compte.uid} lang={lang} prive />
+                    </Repliable>
+                    <Repliable id="badges" titre={fr ? 'Mes badges' : 'My badges'} icone={<Award size={16} />}
+                               resume={`${etatBadges.obtenus} / ${etatBadges.total}`}>
+                      <MesBadges lang={lang} />
+                    </Repliable>
+                    {/* Le coffre : les skins, ambiances et albums, équipés
+                        d'un clic (Alex, 2026-08-28). */}
+                    <div id="coffre">
+                      <Repliable id="coffre" titre={fr ? 'Le coffre' : 'The vault'} icone={<Palette size={16} />}>
+                        <Coffre uid={compte.uid} lang={lang} />
+                      </Repliable>
+                    </div>
                     {/* Billets a rejoint Badges : le coffre à billets et
                         le soutien descendent sous les badges et le
                         coffre (Alex, 2026-08-28). */}
-                    {compte && (
+                    <Repliable id="billets" titre={fr ? 'Billets et soutien' : 'Tickets and support'} icone={<Ticket size={16} />}>
                       <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
                         <div className="lg:col-span-7"><CoffreBillets uid={compte.uid} lang={lang} /></div>
                         <div className="lg:col-span-5">
@@ -997,10 +1012,14 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                           <PorteAdmin lang={lang} />
                         </div>
                       </div>
-                    )}
-                    <AnnoncesPanel lang={lang} />
+                    </Repliable>
+                    <Repliable id="annonces" titre={fr ? 'Le babillard' : 'The notice board'} icone={<Newspaper size={16} />} ouvertParDefaut={false}>
+                      <AnnoncesPanel lang={lang} />
+                    </Repliable>
                   </>
                 ) : (
+                  <>
+                    <MesBadges lang={lang} obtenus={badgesVus} titre={t.sesBadges} />
                   <section className="glass-light rounded-lg-card p-7 md:p-8">
                     <div className="flex items-center justify-between gap-4 mb-6 pb-2"
                          style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
@@ -1027,16 +1046,17 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{t.collectionVide}</p>
                     )}
                   </section>
+                  </>
                 )}
               </div>
             )}
 
             {onglet === 'jeux' && (prive ? (
               <div className="space-y-6 md:space-y-8">
-                {/* Les défis reçus, envoyés et les parties en cours : la
-                    vue persistante qui manquait (vérification du 27 août). */}
-                <DefisTafl lang={lang} />
-                <SalonDesJeux lang={lang} />
+                {/* La même table de jeux que la page publique : les défis
+                    se lancent dans le jeu lui-même, plus besoin d'une
+                    vitrine à part (Alex, 2026-08-30). */}
+                <TableDeJeux />
               </div>
             ) : (
               <section className="glass-light rounded-lg-card p-7 md:p-8">

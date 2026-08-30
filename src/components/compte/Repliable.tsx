@@ -35,13 +35,13 @@ const Repliable: React.FC<Props> = ({ id, titre, icone, resume, ouvertParDefaut 
   };
 
   return (
-    <section className="glass-light rounded-lg-card overflow-hidden">
+    <section className="space-y-3">
       <button
         type="button"
         onClick={basculer}
         aria-expanded={ouvert}
         aria-controls={`replie-${id}`}
-        className="w-full flex items-center gap-4 px-6 md:px-8 py-4 md:py-5 text-left transition-colors hover:bg-white/[0.03]"
+        className="glass-light rounded-lg-card w-full flex items-center gap-4 px-5 md:px-6 py-3 md:py-3.5 text-left transition-colors hover:bg-white/[0.04]"
       >
         {icone && (
           <span className="witcher-tile shrink-0" style={{ width: 40, height: 40 }}>
@@ -68,7 +68,7 @@ const Repliable: React.FC<Props> = ({ id, titre, icone, resume, ouvertParDefaut 
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-6 md:px-8 pb-7 md:pb-8">{children}</div>
+            <div className="space-y-6 md:space-y-8">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
