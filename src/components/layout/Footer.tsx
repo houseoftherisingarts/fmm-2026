@@ -188,6 +188,7 @@ const Footer: React.FC = () => {
                 </p>
               )}
               <ChevronButton
+                type="button"
                 onClick={() => ouvrirBilletterie(Boolean(user))}
                 variant="gold"
               >
