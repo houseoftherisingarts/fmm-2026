@@ -29,6 +29,19 @@ const ConcoursWJW: React.FC = () => {
     border: `1px solid ${vide && etat === 'erreur' ? 'rgba(224, 138, 122, 0.55)' : 'rgba(232, 177, 74, 0.35)'}`,
   });
 
+  // Connecté : un clic suffit, le serveur prend le nom de la fiche et le
+  // courriel du compte (Alex, 2026-08-30). Le téléphone reste facultatif,
+  // il sert à joindre la personne si elle gagne.
+  const participerAvecCompte = async () => {
+    setEtat('envoi');
+    try {
+      await participerConcoursAvecCompte(telephone);
+      setEtat('merci');
+    } catch {
+      setEtat('erreur');
+    }
+  };
+
   const envoyer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!consent || !nom.trim() || !courriel.trim() || !telephone.trim()) { setEtat('erreur'); return; }
