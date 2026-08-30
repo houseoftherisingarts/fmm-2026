@@ -110,7 +110,7 @@ const PorteBilletterie: React.FC<{
                   <button type="button" onClick={continuerSansCompte}
                           className="inline-flex items-center justify-center gap-2 px-6 py-3 font-sans uppercase tracking-wider text-xs text-ivory-soft/70 hover:text-ivory transition rounded-card"
                           style={{ border: '1px solid rgba(244,239,227,0.18)' }}>
-                    {fr ? `Non merci, je paie ${RABAIS_MEMBRE} $ de plus` : `No thanks, I pay ${RABAIS_MEMBRE} dollars more`} <ArrowUpRight size={13} />
+                    {fr ? 'Non merci, je paie le plein prix' : 'No thanks, I pay full price'} <ArrowUpRight size={13} />
                   </button>
                 </div>
               </>
