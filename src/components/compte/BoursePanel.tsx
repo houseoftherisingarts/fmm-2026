@@ -89,11 +89,11 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
               </span>
             </label>
 
-            <button type="button" onClick={reclamer} disabled={quotidien}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/80 hover:text-brass transition-colors disabled:opacity-50"
+            <button type="button" onClick={reclamer}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/80 hover:text-brass transition-colors"
                     style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
-              {quotidien ? <Loader2 size={12} className="animate-spin" /> : <Gift size={12} />}
-              {fr ? 'Ma pièce du jour' : 'My coin of the day'}
+              <Gift size={12} />
+              {fr ? 'Ma récompense du jour' : 'My daily reward'}
             </button>
 
             <Link to={addLocale('/boutique', lang)}
