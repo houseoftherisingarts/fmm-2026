@@ -233,7 +233,7 @@ const AccueilPage: React.FC = () => {
             <p className="font-editorial italic uppercase tracking-[0.3em] text-xs mb-3" style={{ color: 'var(--color-mist-deep)' }}>
               {t.editorial.eyebrow}
             </p>
-            <h2 className="font-display title-medieval text-3xl md:text-5xl mb-6" style={{ color: 'var(--color-midnight-deep)' }}>
+            <h2 className="font-display title-medieval text-2xl sm:text-3xl md:text-5xl mb-6" style={{ color: 'var(--color-midnight-deep)' }}>
               {t.editorial.title}
             </h2>
             <Link to={addLocale('/apprendre', lang)}
