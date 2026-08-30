@@ -266,7 +266,7 @@ const Carte: React.FC<{
                 className="font-sans text-[10px] block mt-1.5"
                 style={{ color: 'rgba(244,239,227,0.38)', fontWeight: 300 }}
               >
-                {formatAmount(billet.zeffyAmount, lang)} {t.auPaiement}
+                {formatAmount(billet.zeffyAmount + surcharge, lang)} {t.auPaiement}
               </span>
             )}
           </div>
