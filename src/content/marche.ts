@@ -147,8 +147,9 @@ export const PREMIUM_VENDORS: MarcheKiosk[] = [
 
 /* ─── Marché: interactive kiosk grid ────────────────────────────────
    Un kiosque qui revient garde sa fiche et cumule ses `years`.
-   Sans `image`, la grille montre la photo générique du marché : à
-   remplacer dès que l'artisan envoie la sienne (admin › Marchands). */
+   Sans photo trouvée, la tuile porte le blason du festival
+   (`/marche/2026/_fmm.webp`) : à remplacer dès que l'artisan envoie la
+   sienne (admin › Marchands). Décision d'Alex, 30 août 2026. */
 export const MARCHE_VENDORS: MarcheKiosk[] = [
   {
     id: 'panassor',
@@ -222,6 +223,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'emielie-evilnut',
     name: 'éMielie Créations & Evilnut Créations',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'Emilie Guertin Lavictoire',
     email: 'contact@emielie-evilnut.example.ca',
     category: 'Créations',
@@ -248,6 +250,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'la-bohemienne',
     name: 'La Bohémienne',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'Marie Claude Seney',
     email: 'contact@la-bohemienne.example.ca',
     category: 'Créations',
@@ -260,6 +263,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'etalon-pierre-lune',
     name: 'L’Étalon Pierre de Lune',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'Stephanie Corbin',
     email: 'contact@etalon-pierre-lune.example.ca',
     category: 'Bijoux & Pierres',
@@ -488,6 +492,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'raven-vinland',
     name: 'Raven from Vinland',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'François Chaput',
     email: 'contact@raven-vinland.example.ca',
     category: 'Créations',
@@ -516,6 +521,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'creations-eau-lo',
     name: 'Les Créations de l’eau lo',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'Karine Pascale Poirier',
     email: 'contact@creations-eau-lo.example.ca',
     category: 'Créations',
@@ -548,6 +554,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'guylaine-periard',
     name: 'Guylaine Periard',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'Guylaine Periard',
     email: 'contact@guylaine-periard.example.ca',
     category: 'Créations',
@@ -594,6 +601,7 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     id: 'belles-trouvailles',
     name: 'Les belles trouvailles',
     tier: 'marche',
+    image: '/marche/2026/_fmm.webp',
     contact: 'Jovette Matte',
     email: 'contact@belles-trouvailles.example.ca',
     category: 'Créations',
