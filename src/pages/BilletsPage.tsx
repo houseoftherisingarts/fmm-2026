@@ -104,7 +104,8 @@ const Section: React.FC<{
 // ─── Deck · la main de cartes ───────────────────────────────────────
 const Deck: React.FC<{
   billets: Billet[]; lang: 'FR' | 'EN'; t: typeof FR; href: string;
-}> = ({ billets, lang, t, href }) => (
+  surcharge?: number; porte?: boolean;
+}> = ({ billets, lang, t, href, surcharge = 0, porte = false }) => (
   <ul
     className={`grid grid-cols-2 gap-5 md:gap-7 items-stretch mx-auto ${
       billets.length >= 3 ? 'md:grid-cols-3 max-w-5xl' : 'max-w-3xl'
