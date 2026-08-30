@@ -88,10 +88,128 @@ const ANNEES: Annee[] = [
   },
 ];
 
+
+/** La console des jeux (le rail des années, façon menu de Gwent). La page
+ *  publique et l'onglet Jeux du profil affichent la même table : le
+ *  profil n'a plus de vitrine à part (Alex, 2026-08-30). */
+export const TableDeJeux: React.FC = () => {
+  const { lang } = useUI();
+  const { user, openSignIn } = useAuth();
+  const fr = lang === 'FR';
+  const t = fr ? FR : EN;
+  return (
+      <div className="fmm-console rounded-lg-card overflow-hidden">
+        {/* Barre haute de la console : le nom de la table et le
+            décompte, comme la barre de Gwent. */}
+        <div className="flex items-center justify-between gap-4 px-5 md:px-7 py-3.5 border-b border-brass/20"
+             style={{ background: 'linear-gradient(180deg, rgba(232,177,74,0.07), rgba(10,4,6,0))' }}>
+          <span className="inline-flex items-center gap-3 font-display title-medieval uppercase tracking-[0.32em] text-[11px] md:text-xs"
+                style={{ color: 'var(--color-amber-glow)' }}>
+            <span aria-hidden className="w-1.5 h-1.5 rotate-45 bg-brass" />
+            {fr ? 'La table de jeux' : 'The games table'}
+          </span>
+          <span className="font-sans uppercase tracking-[0.24em] text-[10px] text-ivory-soft/55">
+            {ANNEES.filter((a) => a.href).length} / {ANNEES.length} {fr ? 'ouvertes' : 'open'}
+          </span>
+        </div>
+        <div className="p-4 md:p-7">
+      <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5" stagger={0.08}>
+        {ANNEES.map((a) => {
+          const scellee = !a.href;
+          const carte = (
+            <div
+              className={`fmm-annee-carte relative h-full overflow-hidden rounded-lg-card border transition-transform duration-300 ${
+                scellee ? 'border-brass/15' : 'border-brass/35 hover:-translate-y-1'
+              }`}
+            >
+              <div className="relative h-56 md:h-64 overflow-hidden" style={{ background: 'rgba(8,3,5,0.85)' }}>
+                <img
+                  src={a.image}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-contain"
+                  style={scellee ? { filter: 'grayscale(0.85) brightness(0.5)' } : undefined}
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, rgba(10,4,6,0.15) 0%, rgba(10,4,6,0.55) 55%, rgba(10,4,6,0.95) 100%)',
+                  }}
+                />
+                <span className="absolute top-3 left-4 font-display title-medieval text-3xl md:text-4xl"
+                      style={{ color: 'rgba(232,177,74,0.55)' }}>
+                  {a.chiffre}
+                </span>
+                {scellee && (
+                  <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brass/35 bg-black/70 font-sans uppercase tracking-[0.18em] text-[9px] text-ivory-soft/75 whitespace-nowrap">
+                    <Lock size={10} /> {t.scelle}
+                  </span>
+                )}
+              </div>
+
+              <div className="p-6 md:p-7">
+                <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
+                  {fr ? a.nomFR : a.nomEN}
+                </h3>
+                {a.jeuFR && (
+                  <p className="font-sans uppercase tracking-[0.24em] text-[10px] mb-3"
+                     style={{ color: 'var(--color-amber-glow)' }}>
+                    {fr ? a.jeuFR : a.jeuEN}
+                  </p>
+                )}
+                <div className="divider-brass w-14 mb-4" />
+                <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
+                  {fr ? a.texteFR : a.texteEN}
+                </p>
+                {!scellee && (
+                  <span className="mt-5 inline-flex items-center gap-2 font-sans uppercase tracking-widest text-xs font-semibold text-brass">
+                    {user ? t.jouer : t.connecter} <ArrowUpRight size={14} />
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+
+          return (
+            <StaggerItem key={a.id} as="div" className="h-full">
+              {a.href ? (
+                user ? (
+                  <Link to={fr ? a.href.fr : a.href.en} className="block h-full">{carte}</Link>
+                ) : (
+                  // Jouer demande un compte du festival : c'est ce
+                  // compte qui porte les défis et les parties en
+                  // ligne (Alex, 2026-08-23).
+                  <button type="button" onClick={openSignIn} className="block h-full w-full text-left">
+                    {carte}
+                  </button>
+                )
+              ) : (
+                <div className="h-full opacity-70 cursor-not-allowed" aria-disabled>{carte}</div>
+              )}
+            </StaggerItem>
+          );
+        })}
+      </Stagger>
+        </div>
+        {/* Pied de console : la ligne d'aide, comme sur la manette. */}
+        <div className="px-5 md:px-7 py-3 border-t border-brass/20 bg-black/30 flex flex-wrap items-center gap-x-6 gap-y-1">
+          <span className="font-sans uppercase tracking-[0.24em] text-[9px] text-ivory-soft/60">
+            <span className="text-brass">◇</span> {fr ? 'Choisir une année' : 'Pick a year'}
+          </span>
+          <span className="font-sans uppercase tracking-[0.24em] text-[9px] text-ivory-soft/40">
+            <span className="text-brass/60">◇</span> {fr ? 'Les années scellées s’ouvrent une par édition' : 'Sealed years open one per edition'}
+          </span>
+        </div>
+      </div>
+  );
+};
+
 const JeuxEnLignePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
-  const { user, openSignIn } = useAuth();
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
 
@@ -112,112 +230,7 @@ const JeuxEnLignePage: React.FC = () => {
           {/* Le rail des années : une console de jeu, comme le menu de
               Gwent (référence donnée par Alex, 2026-08-23). Les tuiles
               défilent à l'horizontale, la vignette se voit en entier. */}
-          <div className="fmm-console rounded-lg-card overflow-hidden">
-            {/* Barre haute de la console : le nom de la table et le
-                décompte, comme la barre de Gwent. */}
-            <div className="flex items-center justify-between gap-4 px-5 md:px-7 py-3.5 border-b border-brass/20"
-                 style={{ background: 'linear-gradient(180deg, rgba(232,177,74,0.07), rgba(10,4,6,0))' }}>
-              <span className="inline-flex items-center gap-3 font-display title-medieval uppercase tracking-[0.32em] text-[11px] md:text-xs"
-                    style={{ color: 'var(--color-amber-glow)' }}>
-                <span aria-hidden className="w-1.5 h-1.5 rotate-45 bg-brass" />
-                {fr ? 'La table de jeux' : 'The games table'}
-              </span>
-              <span className="font-sans uppercase tracking-[0.24em] text-[10px] text-ivory-soft/55">
-                {ANNEES.filter((a) => a.href).length} / {ANNEES.length} {fr ? 'ouvertes' : 'open'}
-              </span>
-            </div>
-            <div className="p-4 md:p-7">
-          <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5" stagger={0.08}>
-            {ANNEES.map((a) => {
-              const scellee = !a.href;
-              const carte = (
-                <div
-                  className={`fmm-annee-carte relative h-full overflow-hidden rounded-lg-card border transition-transform duration-300 ${
-                    scellee ? 'border-brass/15' : 'border-brass/35 hover:-translate-y-1'
-                  }`}
-                >
-                  <div className="relative h-56 md:h-64 overflow-hidden" style={{ background: 'rgba(8,3,5,0.85)' }}>
-                    <img
-                      src={a.image}
-                      alt=""
-                      aria-hidden
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-contain"
-                      style={scellee ? { filter: 'grayscale(0.85) brightness(0.5)' } : undefined}
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute inset-0"
-                      style={{
-                        background:
-                          'linear-gradient(180deg, rgba(10,4,6,0.15) 0%, rgba(10,4,6,0.55) 55%, rgba(10,4,6,0.95) 100%)',
-                      }}
-                    />
-                    <span className="absolute top-3 left-4 font-display title-medieval text-3xl md:text-4xl"
-                          style={{ color: 'rgba(232,177,74,0.55)' }}>
-                      {a.chiffre}
-                    </span>
-                    {scellee && (
-                      <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brass/35 bg-black/70 font-sans uppercase tracking-[0.18em] text-[9px] text-ivory-soft/75 whitespace-nowrap">
-                        <Lock size={10} /> {t.scelle}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="p-6 md:p-7">
-                    <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
-                      {fr ? a.nomFR : a.nomEN}
-                    </h3>
-                    {a.jeuFR && (
-                      <p className="font-sans uppercase tracking-[0.24em] text-[10px] mb-3"
-                         style={{ color: 'var(--color-amber-glow)' }}>
-                        {fr ? a.jeuFR : a.jeuEN}
-                      </p>
-                    )}
-                    <div className="divider-brass w-14 mb-4" />
-                    <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
-                      {fr ? a.texteFR : a.texteEN}
-                    </p>
-                    {!scellee && (
-                      <span className="mt-5 inline-flex items-center gap-2 font-sans uppercase tracking-widest text-xs font-semibold text-brass">
-                        {user ? t.jouer : t.connecter} <ArrowUpRight size={14} />
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-
-              return (
-                <StaggerItem key={a.id} as="div" className="h-full">
-                  {a.href ? (
-                    user ? (
-                      <Link to={fr ? a.href.fr : a.href.en} className="block h-full">{carte}</Link>
-                    ) : (
-                      // Jouer demande un compte du festival : c'est ce
-                      // compte qui porte les défis et les parties en
-                      // ligne (Alex, 2026-08-23).
-                      <button type="button" onClick={openSignIn} className="block h-full w-full text-left">
-                        {carte}
-                      </button>
-                    )
-                  ) : (
-                    <div className="h-full opacity-70 cursor-not-allowed" aria-disabled>{carte}</div>
-                  )}
-                </StaggerItem>
-              );
-            })}
-          </Stagger>
-            </div>
-            {/* Pied de console : la ligne d'aide, comme sur la manette. */}
-            <div className="px-5 md:px-7 py-3 border-t border-brass/20 bg-black/30 flex flex-wrap items-center gap-x-6 gap-y-1">
-              <span className="font-sans uppercase tracking-[0.24em] text-[9px] text-ivory-soft/60">
-                <span className="text-brass">◇</span> {fr ? 'Choisir une année' : 'Pick a year'}
-              </span>
-              <span className="font-sans uppercase tracking-[0.24em] text-[9px] text-ivory-soft/40">
-                <span className="text-brass/60">◇</span> {fr ? 'Les années scellées s’ouvrent une par édition' : 'Sealed years open one per edition'}
-              </span>
-            </div>
-          </div>
+          <TableDeJeux />
 
           <p className="font-editorial text-sm md:text-base text-ivory-soft/70 mt-8 max-w-2xl">
             {t.pied}
