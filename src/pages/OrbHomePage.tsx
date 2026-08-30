@@ -270,7 +270,7 @@ const PropRow: React.FC<PropRowProps> = ({ label, value, onChange, step, fine, m
 // logo→countdown→film) stays throughout.
 const OrbHomePage: React.FC = () => {
   const { lang } = useUI();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const { flags: siteFlags } = useSiteFlags();
   // A menu choice is visible when previewing all (local dev) or once its
   // pillar's publication flag is on. `presale` (teaser) = nothing visible.
