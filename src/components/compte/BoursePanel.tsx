@@ -35,15 +35,9 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
     finally { setEnvoi(false); }
   };
 
-  const reclamer = async () => {
-    setQuotidien(true); setMessage(null);
-    try {
-      await reclamerQuotidien();
-      setMessage(fr ? 'Votre pièce du jour est dans la bourse.' : 'Your coin of the day is in the purse.');
-    } catch (e) {
-      setMessage(e instanceof Error ? e.message : String(e));
-    } finally { setQuotidien(false); }
-  };
+  // La roue des sept jours (RecompensesQuotidiennes, montée dans App)
+  // fait la réclamation elle-même : le bouton ne fait que la rouvrir.
+  const reclamer = () => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'));
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
