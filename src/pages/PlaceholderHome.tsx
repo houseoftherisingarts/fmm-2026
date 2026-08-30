@@ -58,7 +58,8 @@ const PlaceholderHome: React.FC = () => {
               {lang === 'FR' ? 'Site internet de retour en mai.' : 'Website returns in May.'}
             </p>
             <a
-              href={import.meta.env.VITE_ZEFFY_TICKET_URL || '#'}
+              href={lienBilletterie(Boolean(user))}
+              onClick={surBillets}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-7 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold hover:bg-brass-soft transition rounded-card"
