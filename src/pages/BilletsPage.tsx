@@ -282,7 +282,11 @@ const Carte: React.FC<{
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Sans compte : la porte d'abord, qui offre le rabais membre.
+              if (porte) { e.preventDefault(); ouvrirBilletterie(false); }
+            }}
             className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 font-sans uppercase tracking-[0.26em] text-[10px] transition-transform hover:scale-[1.02]"
             style={{
               color: '#1a050b',
