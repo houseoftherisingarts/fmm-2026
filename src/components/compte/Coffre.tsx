@@ -40,6 +40,21 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
 
   const albumsPossedes = groupes.filter((g) => (bourse?.albums || []).includes(g.id));
 
+  // Les trésors de la roue des sept jours. Leur « équipement » vit dans
+  // le navigateur, comme le reste des choix des jeux (lireChoix du
+  // hnefatafl, CLE_DOS_TAROT du tarot).
+  const gardeGagnee = (bourse?.taflPieces || []).includes('garde');
+  const dosRoyalGagne = (bourse?.dosTarot || []).includes('royal');
+  const chancesWJW = bourse?.chancesWJW || 0;
+  const [gardeEquipee, setGardeEquipee] = useState(() => lireChoix().pieces === 'garde');
+  const [dosRoyal, setDosRoyal] = useState(() => dosRoyalEquipe());
+  const equiperGarde = () => { ecrireChoix(lireChoix().plateau, 'garde'); setGardeEquipee(true); };
+  const basculerDosRoyal = () => {
+    const suivant = !dosRoyal;
+    try { if (suivant) localStorage.setItem(CLE_DOS_TAROT, 'royal'); else localStorage.removeItem(CLE_DOS_TAROT); } catch { /* navigation privée */ }
+    setDosRoyal(suivant);
+  };
+
   const carte = (actif: boolean) => ({
     background: actif ? 'rgba(216,176,90,0.14)' : 'transparent',
     border: `1px solid ${actif ? 'rgba(216,176,90,0.6)' : 'rgba(244,239,227,0.18)'}`,
