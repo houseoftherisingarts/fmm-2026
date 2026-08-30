@@ -44,6 +44,7 @@ import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type Pie
 import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { suivreMaBourse } from '../../firebase/montpellois';
 import {
   suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
   repondreAuDefi, reclamerForfait, tempsRestant, formatDelai,
