@@ -27,6 +27,8 @@ import PageLoader from './components/layout/PageLoader';
 // Footer is below-the-fold on every route. Lazy = no entry-bundle hit.
 const Footer        = lazy(() => import('./components/layout/Footer'));
 const ConsentBanner = lazy(() => import('./components/layout/ConsentBanner'));
+const PorteBilletterieGlobale = lazy(() =>
+  import('./components/billets/PorteBilletterie').then((m) => ({ default: m.PorteBilletterieGlobale })));
 const SignInModal   = lazy(() => import('./components/auth/SignInModal'));
 
 import { logPageView } from './firebase';
