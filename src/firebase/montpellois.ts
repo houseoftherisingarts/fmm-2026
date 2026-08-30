@@ -109,6 +109,11 @@ export interface Bourse {
   ambiances?: string[];
   /** La bourse est ouverte aux regards des autres membres (Alex, 2026-08-28). */
   publique?: boolean;
+  /** La roue des sept jours : jours d'affilée, et trésors gagnés. */
+  quotidienSuite?: number;
+  taflPieces?: string[];
+  dosTarot?: string[];
+  chancesWJW?: number;
   maj?: unknown;
 }
 
