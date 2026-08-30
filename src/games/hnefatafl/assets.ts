@@ -144,6 +144,16 @@ export const PIECE_SETS: PieceSet[] = [
     teintes: { assaillant: 0x7b2018, defenseur: 0xd9c49a, roi: 0xc9a227 },
   },
   {
+    id: 'garde',
+    statut: 'recompense',
+    nomFR: 'La Garde royale',
+    nomEN: 'The Royal Guard',
+    texteFR: 'Or et ivoire, la parure des fid\u00e8les : elle se gagne au troisi\u00e8me jour de visite d\u2019affil\u00e9e, et ne s\u2019ach\u00e8te nulle part.',
+    texteEN: 'Gold and ivory, the livery of the faithful: earned on the third daily visit in a row, and sold nowhere.',
+    vignette: '',
+    teintes: { assaillant: 0x3a2c14, defenseur: 0xe8dcc0, roi: 0xd8b05a },
+  },
+  {
     id: 'bientot',
     statut: 'bientot',
     nomFR: 'D\u2019autres troupes',
