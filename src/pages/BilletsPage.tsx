@@ -121,7 +121,8 @@ const Deck: React.FC<{
 
 const Carte: React.FC<{
   billet: Billet; lang: 'FR' | 'EN'; t: typeof FR; href: string; index: number;
-}> = ({ billet, lang, t, href, index }) => {
+  surcharge?: number; porte?: boolean;
+}> = ({ billet, lang, t, href, index, surcharge = 0, porte = false }) => {
   const fr = lang === 'FR';
   const [flipped, setFlipped] = useState(false);
 
