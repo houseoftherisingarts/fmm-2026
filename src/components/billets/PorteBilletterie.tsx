@@ -123,4 +123,21 @@ const PorteBilletterie: React.FC<{
   );
 };
 
+// ─── La porte globale ────────────────────────────────────────────────
+// Montée UNE fois dans App, sur toutes les routes (la NavBar est absente
+// des accueils immersifs). N'importe quel bouton « billets » l'ouvre en
+// passant par ouvrirBilletterie() de lib/billetterie.
+export const PorteBilletterieGlobale: React.FC = () => {
+  const { lang } = useUI();
+  const [ouvert, setOuvert] = React.useState(false);
+
+  React.useEffect(() => {
+    const ouvrir = () => setOuvert(true);
+    window.addEventListener(EVENEMENT_PORTE, ouvrir);
+    return () => window.removeEventListener(EVENEMENT_PORTE, ouvrir);
+  }, []);
+
+  return <PorteBilletterie ouvert={ouvert} onFermer={() => setOuvert(false)} lang={lang} />;
+};
+
 export default PorteBilletterie;
