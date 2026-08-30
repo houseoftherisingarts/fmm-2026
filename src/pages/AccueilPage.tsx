@@ -27,7 +27,11 @@ const AccueilPage: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const cd = useCountdown(`${SITE.dates.start}T10:00:00-04:00`);
-  const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
+  const { user } = useAuth();
+  // Le bouton public mène à la campagne majorée; la porte offre le rabais
+  // membre. Le lien direct membre ne se donne qu'aux personnes connectées.
+  const surBillets = (e: React.MouseEvent) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); };
+  const ticketUrl = lienBilletterie(Boolean(user));
 
   return (
     <>
