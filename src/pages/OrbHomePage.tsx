@@ -298,7 +298,6 @@ const OrbHomePage: React.FC = () => {
   const [confirming, setConfirming] = useState(false);
   // Featured 2026 film: opens in a centred lightbox over the orb.
   const [showFilm, setShowFilm] = useState(false);
-  const ticketUrl = import.meta.env.VITE_ZEFFY_TICKET_URL || '#';
   // NOTE: countdown lives inside <LiveCountdown> below, isolated so
   // its 1 s ticks don't re-render the whole orb tree.
   const countdownTarget = `${SITE.dates.start}T10:00:00-04:00`;
