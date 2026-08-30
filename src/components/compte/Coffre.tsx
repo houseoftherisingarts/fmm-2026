@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Check, Music, Palette, Disc3, Gift } from 'lucide-react';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { lireChoix, ecrireChoix } from '../../games/hnefatafl/assets';
-import { CLE_DOS_TAROT, dosRoyalEquipe } from '../../games/tarot/tapis';
+import { CLE_DOS_TAROT, dosRoyalEquipe, FILTRE_DOS_ROYAL } from '../../games/tarot/dos';
 import { suivreMaBourse, type Bourse } from '../../firebase/montpellois';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
@@ -145,7 +145,7 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       style={carte(dosRoyal)}>
                 <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
                   <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover"
-                       style={{ filter: 'sepia(0.9) saturate(1.6) hue-rotate(-12deg) brightness(1.08)' }} />
+                       style={{ filter: FILTRE_DOS_ROYAL }} />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Tirage } from '../../content/tarot';
 import { resume, type LameTiree } from './interpretation';
+import { dosRoyalEquipe, FILTRE_DOS_ROYAL } from './dos';
 
 // ─── Le tapis du tarot ──────────────────────────────────────────────
 // Tout ce qui se pose sur le drap : la case d'une carte, le panneau de
@@ -59,12 +60,6 @@ export const PanneauSens: React.FC<{
     )}
   </motion.div>
 );
-
-/** Le dos de carte équipé, gardé dans le navigateur (Coffre.tsx l'écrit). */
-export const CLE_DOS_TAROT = 'fmm.tarot.dos';
-export function dosRoyalEquipe(): boolean {
-  try { return localStorage.getItem(CLE_DOS_TAROT) === 'royal'; } catch { return false; }
-}
 
 // ─── Une case du tapis ──────────────────────────────────────────────
 // La case reste cliquable même sur son dos : c'est le clic qui
@@ -126,7 +121,7 @@ const CarteSeule: React.FC<{
             className="absolute inset-0 w-full h-full object-cover"
             // Le dos royal (roue des sept jours, jour 4) : le même dessin,
             // relevé à l'or, équipé depuis le coffre du profil.
-            style={dosRoyalEquipe() ? { filter: 'sepia(0.9) saturate(1.6) hue-rotate(-12deg) brightness(1.08)' } : undefined}
+            style={dosRoyalEquipe() ? { filter: FILTRE_DOS_ROYAL } : undefined}
           />
         )}
       </AnimatePresence>

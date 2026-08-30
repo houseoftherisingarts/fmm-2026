@@ -126,7 +126,14 @@ const RecompensesQuotidiennes: React.FC = () => {
     try { sessionStorage.setItem('fmm.recompense.vue', dateISO()); } catch { /* tant pis */ }
   };
 
-  if (!user?.uid) return null;
+  // Aperçu de développement sans compte : /?roue=3 ouvre le panneau au
+  // jour 3, pour régler le visuel (jamais en production).
+  const apercu = import.meta.env.DEV ? Number(new URLSearchParams(window.location.search).get('roue')) : 0;
+  useEffect(() => {
+    if (apercu >= 1 && apercu <= 7) { setJourServi(apercu); setOuvert(true); }
+  }, [apercu]);
+
+  if (!user?.uid && !apercu) return null;
 
   return (
     <AnimatePresence>
