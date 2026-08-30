@@ -118,6 +118,9 @@ const CarteSeule: React.FC<{
             loading="lazy"
             initial={false}
             className="absolute inset-0 w-full h-full object-cover"
+            // Le dos royal (roue des sept jours, jour 4) : le même dessin,
+            // relevé à l'or, équipé depuis le coffre du profil.
+            style={dosRoyalEquipe() ? { filter: 'sepia(0.9) saturate(1.6) hue-rotate(-12deg) brightness(1.08)' } : undefined}
           />
         )}
       </AnimatePresence>
