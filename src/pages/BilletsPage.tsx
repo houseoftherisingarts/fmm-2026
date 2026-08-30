@@ -53,11 +53,12 @@ const BilletsPage: React.FC = () => {
       />
 
       <Section index="01" name={t.entreesRail} title={t.entreesTitle} lead={t.entreesLead} icon={Ticket}>
-        <Deck billets={entrees} lang={lang} t={t} href={ZEFFY.entrees} />
+        <Deck billets={entrees} lang={lang} t={t} href={lienBilletterie(connecte)}
+              surcharge={surcharge} porte={!connecte} />
       </Section>
 
       <Section index="02" name={t.campingRail} title={t.campingTitle} lead={t.campingLead} icon={Tent}>
-        <Deck billets={camping} lang={lang} t={t} href={ZEFFY.camping} />
+        <Deck billets={camping} lang={lang} t={t} href={ZEFFY_CAMPING} />
       </Section>
 
       <section className="relative caravan-stage bleed-edges pb-24 md:pb-32">
