@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Crown, Gift, Swords, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useApp } from '../../contexts/AppContext';
+import { useUI } from '../../contexts/AppContext';
 import { sonnerBadge } from '../../lib/fanfare';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
