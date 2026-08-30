@@ -187,9 +187,7 @@ const Footer: React.FC = () => {
                 </p>
               )}
               <ChevronButton
-                href={import.meta.env.VITE_ZEFFY_TICKET_URL || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={() => ouvrirBilletterie(Boolean(user))}
                 variant="gold"
               >
                 <Ticket size={13} className="inline mr-1 -mt-0.5" />
