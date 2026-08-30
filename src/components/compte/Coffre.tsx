@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Check, Music, Palette, Disc3 } from 'lucide-react';
+import { Check, Music, Palette, Disc3, Gift } from 'lucide-react';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
+import { lireChoix, ecrireChoix } from '../../games/hnefatafl/assets';
+import { CLE_DOS_TAROT, dosRoyalEquipe } from '../../games/tarot/tapis';
 import { suivreMaBourse, type Bourse } from '../../firebase/montpellois';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
