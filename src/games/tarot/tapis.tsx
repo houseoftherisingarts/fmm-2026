@@ -60,6 +60,12 @@ export const PanneauSens: React.FC<{
   </motion.div>
 );
 
+/** Le dos de carte équipé, gardé dans le navigateur (Coffre.tsx l'écrit). */
+export const CLE_DOS_TAROT = 'fmm.tarot.dos';
+export function dosRoyalEquipe(): boolean {
+  try { return localStorage.getItem(CLE_DOS_TAROT) === 'royal'; } catch { return false; }
+}
+
 // ─── Une case du tapis ──────────────────────────────────────────────
 // La case reste cliquable même sur son dos : c'est le clic qui
 // retourne la carte. Sur un écran large, le panneau du sens se pose
