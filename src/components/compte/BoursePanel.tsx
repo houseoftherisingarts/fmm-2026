@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, Store, Gift } from 'lucide-react';
+import { Store, Gift } from 'lucide-react';
 import { addLocale } from '../../lib/locale';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
-  suivreMaBourse, suivreBourseDe, basculerBoursePublique, reclamerQuotidien,
+  suivreMaBourse, suivreBourseDe, basculerBoursePublique,
   rangFortune, type Bourse,
 } from '../../firebase/montpellois';
 
