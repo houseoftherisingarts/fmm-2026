@@ -11,6 +11,8 @@ import SEO from '../components/SEO';
 // (VITE_SITE_MODE=placeholder): defaults off in favor of the live home.
 const PlaceholderHome: React.FC = () => {
   const { lang } = useUI();
+  const { user } = useAuth();
+  const surBillets = (e: React.MouseEvent) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); };
   return (
     <>
       <SEO />
