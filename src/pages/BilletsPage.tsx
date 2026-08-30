@@ -113,7 +113,7 @@ const Deck: React.FC<{
   >
     {billets.map((b, i) => (
       <li key={b.id} className="min-w-0">
-        <Carte billet={b} lang={lang} t={t} href={href} index={i} />
+        <Carte billet={b} lang={lang} t={t} href={href} index={i} surcharge={surcharge} porte={porte} />
       </li>
     ))}
   </ul>
