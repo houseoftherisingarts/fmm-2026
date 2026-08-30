@@ -21,6 +21,37 @@ export const SOLDE_DEPART = 10;
 export const GAIN_PAR_BADGE = 5;
 /** Ce que rapporte la pièce du jour (reclamerQuotidien). */
 export const GAIN_QUOTIDIEN = 1;
+
+// ── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
+// La visite quotidienne réclame la récompense du jour; un jour sauté
+// remet la roue au jour 1; après le jour 7, elle recommence. Le
+// serveur applique la même table (ROUE_QUOTIDIENNE, functions/index.js)
+// et c'est LUI qui donne — ceci ne sert qu'à l'affichage du panneau.
+export interface RecompenseQuotidienne {
+  jour: number;
+  /** 'montpellois' porte un montant; les autres sont des trésors uniques. */
+  type: 'montpellois' | 'taflPieces' | 'dosTarot' | 'chanceWJW';
+  montant?: number;
+  nomFR: string; nomEN: string;
+  texteFR: string; texteEN: string;
+}
+
+export const RECOMPENSES_QUOTIDIEN: RecompenseQuotidienne[] = [
+  { jour: 1, type: 'montpellois', montant: 5,  nomFR: '5 Montpellois',  nomEN: '5 Montpellois',
+    texteFR: 'Cinq pièces tombent dans votre bourse.', texteEN: 'Five coins drop into your purse.' },
+  { jour: 2, type: 'montpellois', montant: 10, nomFR: '10 Montpellois', nomEN: '10 Montpellois',
+    texteFR: 'Dix pièces tombent dans votre bourse.', texteEN: 'Ten coins drop into your purse.' },
+  { jour: 3, type: 'taflPieces', nomFR: 'La Garde royale', nomEN: 'The Royal Guard',
+    texteFR: 'Un jeu de pièces d’or et d’ivoire pour le hnefatafl, réservé aux fidèles.', texteEN: 'A gold-and-ivory hnefatafl piece set, kept for the faithful.' },
+  { jour: 4, type: 'dosTarot', nomFR: 'Le dos royal', nomEN: 'The royal back',
+    texteFR: 'Un dos de carte doré pour le tarot, que la boutique ne vend pas.', texteEN: 'A gilded tarot card back the shop does not sell.' },
+  { jour: 5, type: 'montpellois', montant: 15, nomFR: '15 Montpellois', nomEN: '15 Montpellois',
+    texteFR: 'Quinze pièces tombent dans votre bourse.', texteEN: 'Fifteen coins drop into your purse.' },
+  { jour: 6, type: 'montpellois', montant: 20, nomFR: '20 Montpellois', nomEN: '20 Montpellois',
+    texteFR: 'Vingt pièces tombent dans votre bourse.', texteEN: 'Twenty coins drop into your purse.' },
+  { jour: 7, type: 'chanceWJW', nomFR: 'Une seconde chance', nomEN: 'A second chance',
+    texteFR: 'Votre nom entre une seconde fois dans le chapeau du concours William J. Walter.', texteEN: 'Your name goes into the William J. Walter draw a second time.' },
+];
 /** Le prix des skins de plateforme, gratuits pour un compte VIP
  *  (users.sansPub) — doit rester en phase avec le même nom de
  *  constante côté fonction serveur. */
