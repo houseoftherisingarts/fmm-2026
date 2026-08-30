@@ -135,11 +135,10 @@ const NavBar: React.FC = () => {
   // formules et renvoie ensuite vers Zeffy. Publiee le 2026-08-03.
   // La porte de la billetterie : le visiteur sans compte voit d'abord
   // l'offre des cinq dollars (Alex, 2026-08-28).
-  const [porteBillets, setPorteBillets] = useState(false);
   const surBillets = (e: React.MouseEvent) => {
     if (user) return;               // déjà membre : le bouton d'aujourd'hui
     e.preventDefault();
-    setPorteBillets(true);
+    ouvrirBilletterie(false);       // la porte globale (montée dans App)
   };
   const ticketUrl = addLocale('/billets', lang);
 
