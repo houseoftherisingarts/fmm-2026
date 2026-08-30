@@ -195,41 +195,60 @@ const RecompensesQuotidiennes: React.FC = () => {
                   : (fr ? 'Votre récompense du jour' : 'Your daily reward')}
             </h2>
 
-            <div className="grid grid-cols-7 gap-1.5 md:gap-3">
+            {/* Sept colonnes comme l'écran de Gwent; sur un téléphone,
+                quatre puis trois, pour que les noms restent lisibles. */}
+            <div className="grid grid-cols-4 md:grid-cols-7 gap-2 md:gap-3">
               {RECOMPENSES_QUOTIDIEN.map((r) => {
                 const courant = r.jour === jourCourant;
                 const passe = r.jour < jourCourant;
+                const nom = fr ? r.nomFR : r.nomEN;
                 return (
-                  <div
+                  <motion.div
                     key={r.jour}
                     title={fr ? r.texteFR : r.texteEN}
-                    className="flex flex-col items-center gap-2 rounded-card px-1 py-3 md:py-5 text-center transition-colors"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: passe ? 0.42 : 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.05 * r.jour, ease: [0.22, 1, 0.36, 1] }}
+                    className={`relative flex flex-col items-center justify-between rounded-card px-1.5 pt-3 pb-4 md:pt-4 md:pb-5 text-center min-h-[168px] md:min-h-[220px] ${r.jour === 5 ? 'col-start-1 md:col-start-auto' : ''}`}
                     style={{
                       background: courant
-                        ? 'linear-gradient(180deg, rgba(216,176,90,0.28), rgba(138,106,36,0.14))'
-                        : 'rgba(244,239,227,0.03)',
-                      border: courant ? '1px solid rgba(216,176,90,0.8)' : '1px solid rgba(244,239,227,0.08)',
-                      boxShadow: courant ? '0 0 24px rgba(216,176,90,0.25)' : undefined,
-                      opacity: passe ? 0.45 : 1,
+                        ? 'linear-gradient(180deg, rgba(216,176,90,0.42) 0%, rgba(150,104,30,0.22) 55%, rgba(30,16,8,0.2) 100%)'
+                        : 'linear-gradient(180deg, rgba(244,239,227,0.05), rgba(244,239,227,0.015))',
+                      border: courant ? '1px solid rgba(232,196,110,0.9)' : '1px solid rgba(244,239,227,0.09)',
+                      boxShadow: courant
+                        ? '0 0 36px rgba(216,176,90,0.32), inset 0 1px 0 rgba(255,236,190,0.35)'
+                        : 'inset 0 1px 0 rgba(255,255,255,0.03)',
                     }}
                   >
-                    <span className="font-sans uppercase tracking-[0.14em] text-[9px] md:text-[10px]"
-                          style={{ color: courant ? '#D8B05A' : 'rgba(244,239,227,0.55)' }}>
+                    <span className="font-display text-[11px] md:text-sm uppercase tracking-[0.18em]"
+                          style={{ color: courant ? '#F4EFE3' : 'rgba(244,239,227,0.6)' }}>
                       {fr ? 'Jour' : 'Day'} {r.jour}
                     </span>
                     <motion.span
-                      animate={courant && jourServi ? { scale: [1, 1.25, 1] } : undefined}
-                      transition={{ duration: 0.6, ease: 'easeOut', delay: 0.3 }}
-                      className="flex items-center justify-center h-10 md:h-12"
+                      animate={courant && jourServi ? { scale: [1, 1.22, 1], rotate: [0, -4, 0] } : undefined}
+                      transition={{ duration: 0.7, ease: 'easeOut', delay: 0.35 }}
+                      className="flex items-center justify-center flex-1 py-2"
                     >
                       <IconeJour type={r.type} grande={courant} />
                     </motion.span>
-                    <span className="font-sans text-[9px] md:text-[11px] leading-tight"
-                          style={{ color: courant ? '#F4EFE3' : 'rgba(244,239,227,0.6)' }}>
-                      {fr ? r.nomFR : r.nomEN}
+                    <span className="flex flex-col items-center gap-0.5">
+                      {r.montant ? (
+                        <span className="font-display text-lg md:text-2xl leading-none" style={{ color: courant ? '#F4EFE3' : 'rgba(244,239,227,0.75)' }}>
+                          ×{r.montant}
+                        </span>
+                      ) : null}
+                      <span className="font-sans text-[10px] md:text-[11px] leading-tight px-0.5"
+                            style={{ color: courant ? '#F4EFE3' : 'rgba(244,239,227,0.6)' }}>
+                        {r.montant ? 'Montpellois' : nom}
+                      </span>
                     </span>
-                    {passe && <Crown size={10} style={{ color: 'rgba(216,176,90,0.5)' }} aria-hidden />}
-                  </div>
+                    {passe && (
+                      <span aria-hidden className="absolute top-2 right-2 rounded-full p-0.5"
+                            style={{ background: 'rgba(216,176,90,0.25)', color: '#D8B05A' }}>
+                        <Check size={10} />
+                      </span>
+                    )}
+                  </motion.div>
                 );
               })}
             </div>
