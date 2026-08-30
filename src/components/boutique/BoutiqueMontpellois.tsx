@@ -178,7 +178,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 <p className="font-editorial italic text-[10px] text-ivory-soft/50">{fr ? 'Votre place pour les trois jours' : 'Your pass for the three days'}</p>
               </div>
             </div>
-            <a href={lienBilletterie(true)} target="_blank" rel="noopener noreferrer"
+            <a href={lienBilletterie(Boolean(user))} target="_blank" rel="noopener noreferrer"
+               onClick={(e) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); }}
                className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card">
               {fr ? 'Voir les billets' : 'See tickets'} <ArrowUpRight size={11} />
             </a>
