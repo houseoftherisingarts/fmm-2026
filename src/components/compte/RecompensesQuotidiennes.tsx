@@ -56,7 +56,7 @@ const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande 
 
 const RecompensesQuotidiennes: React.FC = () => {
   const { user } = useAuth();
-  const { lang } = useApp();
+  const { lang } = useUI();
   const fr = lang === 'FR';
 
   const [bourse, setBourse] = useState<Bourse | null>(null);
