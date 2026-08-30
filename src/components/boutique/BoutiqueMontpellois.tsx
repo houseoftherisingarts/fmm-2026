@@ -10,7 +10,7 @@ import {
 } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
-import { lienBilletterie } from '../../lib/billetterie';
+import { lienBilletterie, ouvrirBilletterie } from '../../lib/billetterie';
 import PieceMontpellois from './PieceMontpellois';
 import SansPubPanel from '../compte/SansPubPanel';
 
