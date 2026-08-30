@@ -38,7 +38,7 @@ function resteAvantDemain(): string {
 // Les trésors se montrent avec les vrais objets du site : la pièce de
 // Montpellois, le dos de carte du tarot relevé à l'or, les teintes du
 // jeu de la Garde royale, le blason de William J. Walter.
-const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande }) => {
+export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande }) => {
   const taille = grande ? 68 : 48;
   if (type === 'montpellois') return <PieceMontpellois size={taille} image />;
   if (type === 'chanceWJW') {
@@ -69,6 +69,41 @@ const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande 
     <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="rounded-[4px] object-cover"
          style={{ height: taille, width: taille * 0.62, filter: FILTRE_DOS_ROYAL,
                   border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }} />
+  );
+};
+
+/** L'aperçu d'un trésor dans son jeu : ce qu'on gagne et comment.
+ *  Un clic ouvre le panneau complet des récompenses quotidiennes. */
+export const ApercuRecompense: React.FC<{ jour: number; lang: 'FR' | 'EN'; className?: string }> = ({ jour, lang, className = '' }) => {
+  const fr = lang === 'FR';
+  const r = RECOMPENSES_QUOTIDIEN[jour - 1];
+  return (
+    <button
+      type="button"
+      onClick={() => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'))}
+      className={`w-full text-left rounded-card p-4 md:p-5 flex items-center gap-4 transition-colors hover:border-brass ${className}`}
+      style={{
+        background: 'linear-gradient(135deg, rgba(216,176,90,0.14), rgba(30,16,8,0.35))',
+        border: '1px solid rgba(216,176,90,0.45)',
+      }}
+    >
+      <span className="flex items-center justify-center shrink-0" style={{ width: 72, height: 72 }}>
+        <IconeJour type={r.type} grande />
+      </span>
+      <span className="min-w-0">
+        <span className="block font-sans uppercase tracking-[0.18em] text-[10px]" style={{ color: '#D8B05A' }}>
+          {fr ? 'Récompense quotidienne · jour' : 'Daily reward · day'} {r.jour}
+        </span>
+        <span className="block font-display text-lg md:text-xl text-ivory leading-tight mt-0.5">
+          {fr ? r.nomFR : r.nomEN}
+        </span>
+        <span className="block font-sans text-xs md:text-sm mt-1" style={{ color: 'rgba(244,239,227,0.7)' }}>
+          {fr
+            ? `Récompense pour vous être connecté ${r.jour} jours d’affilée. Un clic pour voir toutes les récompenses.`
+            : `Reward for signing in ${r.jour} days in a row. Click to see every reward.`}
+        </span>
+      </span>
+    </button>
   );
 };
 
@@ -126,11 +161,11 @@ const RecompensesQuotidiennes: React.FC = () => {
   useEffect(() => {
     const ouvrir = () => {
       setOuvert(true);
-      if (!reclameAujourdhui && !enCours) void reclamer();
+      if (user?.uid && !reclameAujourdhui && !enCours) void reclamer();
     };
     window.addEventListener('fmm:ouvrir-recompenses', ouvrir);
     return () => window.removeEventListener('fmm:ouvrir-recompenses', ouvrir);
-  }, [reclameAujourdhui, enCours, reclamer]);
+  }, [user?.uid, reclameAujourdhui, enCours, reclamer]);
 
   useEffect(() => {
     if (!ouvert) return;
@@ -151,7 +186,8 @@ const RecompensesQuotidiennes: React.FC = () => {
     if (apercu >= 1 && apercu <= 7) { setJourServi(apercu); setOuvert(true); }
   }, [apercu]);
 
-  if (!user?.uid && !apercu) return null;
+  // Sans compte, le panneau s'ouvre quand même depuis les jeux (aperçu
+  // des trésors) : il montre la roue et invite à se connecter.
 
   return (
     <AnimatePresence>
@@ -185,14 +221,16 @@ const RecompensesQuotidiennes: React.FC = () => {
             </button>
 
             <p className="witcher-stat-label text-center mb-1">
-              {fr ? 'La roue des sept jours' : 'The wheel of seven days'}
+              {fr ? 'Récompenses quotidiennes' : 'Daily rewards'}
             </p>
             <h2 className="font-display text-2xl md:text-3xl text-ivory text-center mb-6">
-              {jourServi
-                ? (fr ? 'Voici votre récompense du jour' : 'Here is your daily reward')
-                : reclameAujourdhui
-                  ? (fr ? 'Votre récompense du jour est prise' : 'Today’s reward is claimed')
-                  : (fr ? 'Votre récompense du jour' : 'Your daily reward')}
+              {!user?.uid && !apercu
+                ? (fr ? 'Une récompense par jour de visite' : 'One reward per day you visit')
+                : jourServi
+                  ? (fr ? 'Voici votre récompense du jour' : 'Here is your daily reward')
+                  : reclameAujourdhui
+                    ? (fr ? 'Votre récompense du jour est prise' : 'Today’s reward is claimed')
+                    : (fr ? 'Votre récompense du jour' : 'Your daily reward')}
             </h2>
 
             {/* Sept colonnes comme l'écran de Gwent; sur un téléphone,
@@ -265,9 +303,17 @@ const RecompensesQuotidiennes: React.FC = () => {
               ) : enCours ? (
                 <p className="font-sans text-sm text-ivory-soft/70">{fr ? 'Un instant…' : 'One moment…'}</p>
               ) : null}
-              <p className="font-sans uppercase tracking-[0.18em] text-[10px] mt-3" style={{ color: 'rgba(244,239,227,0.45)' }}>
-                {fr ? 'Nouvelle récompense dans' : 'New reward in'} {compte}
-              </p>
+              {user?.uid || apercu ? (
+                <p className="font-sans uppercase tracking-[0.18em] text-[10px] mt-3" style={{ color: 'rgba(244,239,227,0.45)' }}>
+                  {fr ? 'Nouvelle récompense dans' : 'New reward in'} {compte}
+                </p>
+              ) : (
+                <p className="font-sans text-sm mt-1" style={{ color: '#D8B05A' }}>
+                  {fr
+                    ? 'Connectez-vous chaque jour : la récompense du jour tombe dans votre espace à la première visite. Un jour sauté ramène au jour 1.'
+                    : 'Sign in every day: the day’s reward lands in your space on your first visit. A skipped day sends you back to day 1.'}
+                </p>
+              )}
             </div>
           </motion.div>
         </motion.div>

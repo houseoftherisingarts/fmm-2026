@@ -5,8 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Sparkles, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, MailPlus, PenLine, Target, Shield, Store,
-} from 'lucide-react';
+  Receipt, MailPlus, PenLine, Target, Shield, Store, Gift } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -24,6 +23,7 @@ export type AdminSectionId =
   | 'guildes'
   | 'marchands'
   | 'commerces'
+  | 'concours'
   | 'activites'
   | 'badges'
   | 'musiciens'
@@ -84,6 +84,8 @@ export const NAV: NavItem[] = [
   { id: 'musiciens',  label: 'Musique',         icon: Music,           group: 'Participants' },
   { id: 'mariages',   label: 'Mariages',        icon: Heart,           group: 'Participants' },
   { id: 'invites',    label: 'Invités',         icon: TicketCheck,     group: 'Participants' },
+  // La liste du concours William J. Walter, remise au commanditaire (Alex, 2026-08-30).
+  { id: 'concours',   label: 'Concours William', icon: Gift,           group: 'Participants' },
 
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
   { id: 'bar',        label: 'Bar',             icon: Beer,            group: 'Opérations' },

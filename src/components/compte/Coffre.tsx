@@ -123,7 +123,7 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
       {/* Les trésors de la roue des sept jours, seulement s'il y en a */}
       {(gardeGagnee || dosRoyalGagne || chancesWJW > 0) && (
         <div className="mb-7">
-          <p className="witcher-stat-label mb-3"><Gift size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Trésors de la roue des sept jours' : 'Treasures of the seven-day wheel'}</p>
+          <p className="witcher-stat-label mb-3"><Gift size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Récompenses quotidiennes' : 'Daily rewards'}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {gardeGagnee && (
               <button type="button" onClick={equiperGarde} aria-pressed={gardeEquipee}

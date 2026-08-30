@@ -812,7 +812,7 @@ const PilleJeu: React.FC<{
         {!dispo && (
           <span className="block text-[9px] tracking-[0.2em] opacity-70">
             {it.statut === 'recompense'
-              ? (lang === 'FR' ? 'Roue des 7 jours' : '7-day wheel')
+              ? (lang === 'FR' ? '3e jour d’affilée' : '3rd day in a row')
               : soon}
           </span>
         )}
@@ -963,6 +963,14 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
             />
           ))}
         </Row>
+
+        {/* La Garde royale se gagne, elle ne s'achète pas : l'aperçu dit
+            comment, tant qu'elle n'est pas dans le coffre (Alex, 2026-08-30). */}
+        {!taflDebloques.includes('garde') && (
+          <div className="max-w-xl mx-auto mb-4 md:mb-6">
+            <ApercuRecompense jour={3} lang={lang} />
+          </div>
+        )}
 
         {/* Le bouton se collait au bas d'un long panneau et passait
             sous le texte. Il reste maintenant accroché au bas de la
