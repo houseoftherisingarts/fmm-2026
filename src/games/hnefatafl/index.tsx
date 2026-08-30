@@ -45,6 +45,7 @@ import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { suivreMaBourse } from '../../firebase/montpellois';
+import { ApercuRecompense } from '../../components/compte/RecompensesQuotidiennes';
 import {
   suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
   repondreAuDefi, reclamerForfait, tempsRestant, formatDelai,
