@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, X, UserPlus, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { lienBilletterie, RABAIS_MEMBRE } from '../../lib/billetterie';
+import { useUI } from '../../contexts/AppContext';
+import { lienBilletterie, RABAIS_MEMBRE, EVENEMENT_PORTE } from '../../lib/billetterie';
 
 // ─── La porte de la billetterie ──────────────────────────────────────
 // Alex, 2026-08-28 : le visiteur sans compte voit d'abord cette porte.
