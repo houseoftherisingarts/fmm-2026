@@ -139,9 +139,11 @@ function appeler<TIn extends object, TOut>(nom: string) {
   };
 }
 
-/** Réclame la pièce du jour. Refuse (failed-precondition) si déjà pris
- *  aujourd'hui — l'appelant affiche l'erreur telle quelle. */
-export const reclamerQuotidien = () => appeler<Record<string, never>, { solde: number }>('reclamerQuotidien')({});
+/** Réclame la récompense du jour de la roue. Refuse (failed-precondition)
+ *  si déjà pris aujourd'hui — l'appelant affiche l'erreur telle quelle.
+ *  `jour` (1-7) dit quelle case de RECOMPENSES_QUOTIDIEN vient de tomber. */
+export const reclamerQuotidien = () =>
+  appeler<Record<string, never>, { solde: number; suite?: number; jour?: number }>('reclamerQuotidien')({});
 
 /** Achète un cosmétique de boutique : un objet du catalogue
  *  (source: 'boutique', voir objets.ts) ou un skin de plateforme
