@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Gift } from 'lucide-react';
 import { Eyebrow, DisplayTitle, GildedFrame, SectionFog, SectionTopRail } from '../marche/atmospherics';
-import { inscrireConcoursWJW, PRIX_CONCOURS_WJW } from '../../firebase/concoursWJW';
+import { inscrireConcoursWJW, participerConcoursAvecCompte, PRIX_CONCOURS_WJW } from '../../firebase/concoursWJW';
 import { useAuth } from '../../contexts/AuthContext';
 
 // ─── Le concours William ────────────────────────────────────────────
