@@ -117,6 +117,39 @@ const ConcoursWJW: React.FC = () => {
                       : 'Un lien de connexion vient de partir vers votre courriel : il ouvre votre espace au Festival Médiéval. Cliquez ensuite sur Connexion, en haut à droite, pour voir si vous êtes l’heureux gagnant. Le gagnant y sera annoncé le dimanche 27 septembre au matin.'}
                   </p>
                 </div>
+              ) : user ? (
+                <div className="space-y-4">
+                  <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed">
+                    Vous êtes connecté : votre nom et votre courriel entrent dans le chapeau tels
+                    qu'ils sont dans votre espace. Laissez un numéro de téléphone si vous voulez
+                    être joint autrement que par courriel le jour du tirage.
+                  </p>
+                  <div>
+                    <label htmlFor="cw-tel-compte" className="sr-only">Votre téléphone (facultatif)</label>
+                    <input id="cw-tel-compte" type="tel" inputMode="tel" autoComplete="tel" value={telephone}
+                      onChange={(e) => setTelephone(e.target.value)} placeholder="819 000-0000 (facultatif)"
+                      disabled={etat === 'envoi'} className={CHAMP} style={bordure(false)} />
+                  </div>
+                  {etat === 'erreur' && (
+                    <p className="font-editorial text-sm" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>
+                      L'inscription n'a pas passé. Réessayez dans un instant.
+                    </p>
+                  )}
+                  <div className="pt-2">
+                    <button type="button" onClick={participerAvecCompte} disabled={etat === 'envoi'} className="fmm-glass-btn is-primary px-8 py-4"
+                      style={{ display: 'inline-flex', flexDirection: 'row', gap: '.8rem', alignItems: 'center', width: 'auto' }}>
+                      <Gift size={17} />
+                      <span className="fmm-glass-btn-label">{etat === 'envoi' ? 'Un instant' : 'Participer avec mon compte'}</span>
+                    </button>
+                  </div>
+                  <p className="font-editorial text-[13px] md:text-sm text-ivory-soft/80 leading-relaxed pt-3 max-w-prose">
+                    En participant, vous acceptez que votre courriel et votre téléphone servent à vous
+                    joindre pour la remise des prix et soient remis à William J. Walter pour ses
+                    nouvelles et ses offres, ainsi que celles du festival et de ses partenaires. Chaque
+                    envoi porte un lien pour vous retirer. Les récompenses quotidiennes du site ajoutent
+                    une chance de plus au septième jour de visite d'affilée.
+                  </p>
+                </div>
               ) : (
                 <form onSubmit={envoyer} noValidate className="space-y-4">
                   <div>
