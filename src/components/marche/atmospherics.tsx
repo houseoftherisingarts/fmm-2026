@@ -145,7 +145,7 @@ export const DisplayTitle: React.FC<{
 }> = ({ children, size = 'lg', className = '', glow = false }) => (
   <h2
     className={`font-display leading-[1.02] tracking-[-0.005em] ${
-      size === 'xl' ? 'text-4xl md:text-6xl lg:text-7xl' : 'text-3xl md:text-5xl'
+      size === 'xl' ? 'text-3xl sm:text-4xl md:text-6xl lg:text-7xl' : 'text-2xl sm:text-3xl md:text-5xl'
     } ${className}`}
     style={{
       color: 'var(--color-bone)',
