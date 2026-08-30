@@ -299,10 +299,12 @@ const Carte: React.FC<{
             {t.choisir} <ArrowUpRight size={12} />
           </a>
 
+          {/* Sur mobile la carte est trop courte pour ce bouton (il se fait
+              couper par l'overflow); toucher la carte la retourne déjà. */}
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
-            className="mt-2.5 font-sans uppercase tracking-[0.26em] text-[9px] opacity-55 hover:opacity-100 transition"
+            className="mt-2.5 hidden sm:block font-sans uppercase tracking-[0.26em] text-[9px] opacity-55 hover:opacity-100 transition"
             style={{ color: 'rgba(244,239,227,0.8)' }}
           >
             {t.retourner}
