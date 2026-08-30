@@ -103,6 +103,63 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
         </div>
       </div>
 
+      {/* Les trésors de la roue des sept jours, seulement s'il y en a */}
+      {(gardeGagnee || dosRoyalGagne || chancesWJW > 0) && (
+        <div className="mb-7">
+          <p className="witcher-stat-label mb-3"><Gift size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Trésors de la roue des sept jours' : 'Treasures of the seven-day wheel'}</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {gardeGagnee && (
+              <button type="button" onClick={equiperGarde} aria-pressed={gardeEquipee}
+                      className="rounded-card p-3 flex items-center gap-3 text-left transition"
+                      style={carte(gardeEquipee)}>
+                <span className="w-10 h-10 shrink-0 rounded-md" style={{ background: 'linear-gradient(150deg, #e8dcc0 0%, #d8b05a 55%, #3a2c14 100%)', border: '1.5px solid rgba(244,239,227,0.25)' }} />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-sans text-sm truncate" style={{ color: gardeEquipee ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+                    {fr ? 'La Garde royale' : 'The Royal Guard'}
+                  </span>
+                  <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>Hnefatafl</span>
+                </span>
+                {gardeEquipee && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+              </button>
+            )}
+            {dosRoyalGagne && (
+              <button type="button" onClick={basculerDosRoyal} aria-pressed={dosRoyal}
+                      className="rounded-card p-3 flex items-center gap-3 text-left transition"
+                      style={carte(dosRoyal)}>
+                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
+                  <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover"
+                       style={{ filter: 'sepia(0.9) saturate(1.6) hue-rotate(-12deg) brightness(1.08)' }} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+                    {fr ? 'Le dos royal' : 'The royal back'}
+                  </span>
+                  <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>Tarot</span>
+                </span>
+                {dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+              </button>
+            )}
+            {chancesWJW > 0 && (
+              <div className="rounded-card p-3 flex items-center gap-3" style={carte(true)}>
+                <span className="w-10 h-10 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(216,176,90,0.14)', border: '1.5px solid rgba(244,239,227,0.25)', color: '#D8B05A' }}>
+                  <Gift size={18} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-sans text-sm" style={{ color: '#D8B05A' }}>
+                    {fr
+                      ? `${chancesWJW} seconde${chancesWJW > 1 ? 's' : ''} chance${chancesWJW > 1 ? 's' : ''}`
+                      : `${chancesWJW} second chance${chancesWJW > 1 ? 's' : ''}`}
+                  </span>
+                  <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                    {fr ? 'Concours William J. Walter' : 'William J. Walter draw'}
+                  </span>
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Albums, seulement s'il y en a */}
       {albumsPossedes.length > 0 && (
         <div>
