@@ -161,9 +161,12 @@ export function carteFond(b: Billet, recto = false): { background: string; borde
   };
 }
 
-/** Montant à afficher sur la carte, selon le drapeau `showBeforeTax`. */
-export function displayAmount(b: Billet): number {
-  return showBeforeTax ? b.zeffyAmount / (1 + TAX_RATE) : b.zeffyAmount;
+/** Montant à afficher sur la carte, selon le drapeau `showBeforeTax`.
+    `surcharge` : les 5 $ de la campagne publique quand la personne n'a
+    pas de compte (RABAIS_MEMBRE, entrées seulement). */
+export function displayAmount(b: Billet, surcharge = 0): number {
+  const montant = b.zeffyAmount + surcharge;
+  return showBeforeTax ? montant / (1 + TAX_RATE) : montant;
 }
 
 /** « 30,44 $ » en français, « $30.44 » en anglais. */
