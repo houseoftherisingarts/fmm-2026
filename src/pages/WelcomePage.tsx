@@ -121,7 +121,7 @@ const WelcomePage: React.FC = () => {
               {/* Primary CTAs: Tickets + Enter the festival */}
               <div className="fmm-fade fmm-d400 flex flex-col sm:flex-row gap-3">
                 <a
-                  href={ticketUrl} target="_blank" rel="noopener noreferrer"
+                  href={ticketUrl} onClick={surBillets} target="_blank" rel="noopener noreferrer"
                   className="group inline-flex items-center justify-center gap-2 rounded-full bg-brass px-7 py-3.5 text-sm font-semibold text-midnight-deep transition-all hover:scale-[1.02] hover:bg-brass-soft active:scale-[0.98] uppercase tracking-wider"
                 >
                   <Ticket className="w-4 h-4" /> {t.primaryCta}
