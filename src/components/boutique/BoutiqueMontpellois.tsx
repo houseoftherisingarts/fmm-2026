@@ -83,17 +83,11 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     }
   }
 
-  async function reclamer() {
-    setErreur(null); setEnCours('quotidien');
-    try {
-      await reclamerQuotidien();
-      setDejaReclameLocal(true);
-    } catch (e) {
-      setDejaReclameLocal(true);
-      setErreur(e instanceof Error ? e.message : String(e));
-    } finally {
-      setEnCours(null);
-    }
+  // La roue des sept jours (RecompensesQuotidiennes, montée dans App)
+  // fait la réclamation et la fanfare : le bouton ne fait que l'ouvrir.
+  function reclamer() {
+    window.dispatchEvent(new Event('fmm:ouvrir-recompenses'));
+    setDejaReclameLocal(true);
   }
 
   async function acheterUneAmbiance(id: string) {
