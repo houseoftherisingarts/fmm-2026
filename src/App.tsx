@@ -292,6 +292,7 @@ const Footing: React.FC = () => {
     <Suspense fallback={null}>
       {!immersive && <Footer />}
       <ConsentBanner />
+      <PorteBilletterieGlobale />
     </Suspense>
   );
 };
