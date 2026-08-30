@@ -456,7 +456,7 @@ const EN = {
     { value: '$15,000', label: 'Yearly support from MRC Papineau' },
   ],
   growthEyebrow: 'The fastest-growing medieval festival in Quebec',
-  growthTitle: 'From the first tent to 3,100 festival-goers, in four editions',
+  growthTitle: 'From the first tent to 3,100 festival-goers',
   growthSub: 'No medieval festival in Quebec has grown this fast. Starting from zero in 2022, the FMM already stands beside festivals decades in the making, and every edition has been larger than the last. The name that joins this ascent now grows with it.',
   growth: [
     { year: '2022', note: 'First edition. The village rises for the first time.' },
