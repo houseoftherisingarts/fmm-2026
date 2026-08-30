@@ -5,6 +5,8 @@ import { Sparkles, RotateCcw, Shuffle, ScrollText, X, BookOpen, Share2, Loader2,
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { suivreMaBourse } from '../../firebase/montpellois';
+import { ApercuRecompense, IconeJour } from '../../components/compte/RecompensesQuotidiennes';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
@@ -52,6 +54,13 @@ const TarotPage: React.FC = () => {
   const fr = lang === 'FR';
   const reduce = useReducedMotion();
   const { user } = useAuth();
+  // Le dos royal (récompense quotidienne du jour 4) : l'aperçu se montre
+  // tant qu'il n'est pas gagné (Alex, 2026-08-30).
+  const [dosGagne, setDosGagne] = useState(false);
+  useEffect(() => {
+    if (!user?.uid) { setDosGagne(false); return; }
+    return suivreMaBourse(user.uid, (b) => setDosGagne((b.dosTarot || []).includes('royal')));
+  }, [user?.uid]);
 
   const [tirage, setTirage] = useState<Tirage>(TIRAGES[1]);
   const [paquet, setPaquet] = useState<LameTiree[]>(() => melanger());
@@ -417,6 +426,18 @@ const TarotPage: React.FC = () => {
               {reglesOuvertes ? t.cacherRegles : t.afficherRegles}
             </button>
 
+            {!dosGagne && (
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'))}
+                title={fr ? 'Le dos royal : récompense pour vous être connecté 4 jours d’affilée' : 'The royal back: reward for signing in 4 days in a row'}
+                className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
+              >
+                <span className="flex items-center justify-center" style={{ width: 22, height: 26 }}><IconeJour type="dosTarot" /></span>
+                {fr ? 'Dos royal · jour 4' : 'Royal back · day 4'}
+              </button>
+            )}
+
             {fini && user && (
               <button
                 type="button"
@@ -489,6 +510,7 @@ const TarotPage: React.FC = () => {
               <p className="mt-5 pt-4 border-t border-white/10 font-sans text-[9px] uppercase tracking-[0.2em] text-ivory-soft/45">
                 {t.domaine}
               </p>
+            {!dosGagne && <ApercuRecompense jour={4} lang={lang} className="mt-4" />}
             </motion.aside>
           )}
         </AnimatePresence>
