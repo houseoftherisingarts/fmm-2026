@@ -831,6 +831,14 @@ interface StartScreenProps {
   onChoix: (cle: 'plateau' | 'pieces', id: string) => void;
 }
 const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin, lang, choix, onChoix }) => {
+  // La Garde royale (roue des sept jours) se déverrouille par la bourse.
+  const { user } = useAuth();
+  const [taflDebloques, setTaflDebloques] = useState<string[]>([]);
+  useEffect(() => {
+    if (!user?.uid) { setTaflDebloques([]); return; }
+    return suivreMaBourse(user.uid, (b) => setTaflDebloques(b.taflPieces || []));
+  }, [user?.uid]);
+
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [humanSide, setHumanSide] = useState<Side>(initial.humanSide);
   const [difficulty, setDifficulty] = useState<Difficulty>(initial.difficulty);
