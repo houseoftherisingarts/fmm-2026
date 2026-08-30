@@ -5,7 +5,7 @@ import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre'
 import { suivreSansPub } from '../../firebase/sansPub';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import {
-  suivreMaBourse, acheterCosmetique, acheterAmbiance, reclamerQuotidien, rangFortune,
+  suivreMaBourse, acheterCosmetique, acheterAmbiance, rangFortune,
   PRIX_SKIN, PRIX_ALBUM, PRIX_AMBIANCE, type Bourse,
 } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
@@ -149,7 +149,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40"
         >
           <Gift size={14} />
-          {dejaReclame ? (fr ? 'Déjà réclamée aujourd’hui' : 'Already claimed today') : (fr ? 'Réclamer ma pièce du jour' : 'Claim today’s coin')}
+          {dejaReclame ? (fr ? 'Déjà réclamée aujourd’hui' : 'Already claimed today') : (fr ? 'Réclamer ma récompense du jour' : 'Claim today’s reward')}
         </button>
       </div>
 

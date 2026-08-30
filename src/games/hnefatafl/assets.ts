@@ -14,7 +14,9 @@
 // Les entrées `statut: 'bientot'` s'affichent en boutique, grisées :
 // elles annoncent sans mentir, et n'ont pas besoin de fichier.
 
-export type StatutAsset = 'disponible' | 'bientot';
+// 'recompense' : le jeu existe mais ne se débloque qu'à la roue des
+// sept jours (bourses/{uid}.taflPieces, voir RecompensesQuotidiennes).
+export type StatutAsset = 'disponible' | 'bientot' | 'recompense';
 
 export interface BoardSet {
   id:        string;
