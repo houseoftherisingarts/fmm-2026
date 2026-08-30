@@ -169,7 +169,7 @@ const RecompensesQuotidiennes: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-4xl rounded-lg-card p-6 md:p-8"
+            className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-lg-card p-6 md:p-8"
             style={{
               background: 'linear-gradient(180deg, rgba(20,10,8,0.97), rgba(10,5,4,0.97))',
               border: '1px solid rgba(216,176,90,0.35)',
@@ -243,8 +243,8 @@ const RecompensesQuotidiennes: React.FC = () => {
                       </span>
                     </span>
                     {passe && (
-                      <span aria-hidden className="absolute top-2 right-2 rounded-full p-0.5"
-                            style={{ background: 'rgba(216,176,90,0.25)', color: '#D8B05A' }}>
+                      <span aria-hidden className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full p-1"
+                            style={{ background: '#2a1c0c', border: '1px solid rgba(216,176,90,0.6)', color: '#D8B05A' }}>
                         <Check size={10} />
                       </span>
                     )}
