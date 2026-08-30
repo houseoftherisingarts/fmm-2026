@@ -783,13 +783,23 @@ const PilleJeu: React.FC<{
     >
       <span className="relative w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-[3px] overflow-hidden bg-black/50">
         {dispo ? (
-          <img
-            src={it.vignette}
-            alt=""
-            aria-hidden
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          it.vignette ? (
+            <img
+              src={it.vignette}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            // La Garde royale n'a pas encore de vignette photographiée :
+            // un aplat de ses teintes tient la place.
+            <span
+              aria-hidden
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(150deg, #e8dcc0 0%, #d8b05a 55%, #3a2c14 100%)' }}
+            />
+          )
         ) : (
           <span className="absolute inset-0 flex items-center justify-center text-brass/40">
             <Lock size={12} />
