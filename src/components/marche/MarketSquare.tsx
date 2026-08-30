@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { MarcheKiosk } from '../../content/marche';
 import { Eyebrow, DisplayTitle, HexPanel, HexMark, SectionFog, SectionTopRail, SectionBottomRail } from './atmospherics';
 import { useSpotlight, useSfx } from './effects';
+import SocialLinks from './SocialLinks';
 
 interface Props {
   lang: 'FR' | 'EN';
@@ -26,9 +27,10 @@ export interface MarketCopy {
   photoCaption: string;
 }
 
-// Éditions proposées au filtre. Seule 2025 a des fiches pour l'instant :
-// 2024 n'a pas été saisie et le marché 2026 sera dévoilé sous peu.
+// Éditions proposées au filtre. 2025 et 2026 ont des fiches; 2024 n'a
+// pas été saisie. La grille s'ouvre sur l'édition courante.
 const YEARS = [2024, 2025, 2026] as const;
+const CURRENT_YEAR = 2026;
 
 // ─── MarketSquare: Item-shop grid ──────────────────────────────────
 // Caravan item-shop aesthetic for the 15 on-site kiosks. Each stall is
@@ -38,7 +40,7 @@ const YEARS = [2024, 2025, 2026] as const;
 // other. Category chips at the top filter the grid live.
 const MarketSquare: React.FC<Props> = ({ lang, vendors, copy }) => {
   const [filter, setFilter] = useState<string>('ALL');
-  const [year, setYear] = useState<number | 'ALL'>('ALL');
+  const [year, setYear] = useState<number | 'ALL'>(CURRENT_YEAR);
   const [openId, setOpenId] = useState<string | null>(null);
   const reduce = useReducedMotion();
   const playLoot = useSfx('/orb/sfx/loot.mp3', 0.45);
@@ -437,6 +439,7 @@ const DetailModal: React.FC<{
                       {copy.onsite}
                     </span>
                   )}
+                  <SocialLinks kiosk={kiosk} />
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { MarcheKiosk } from '../../content/marche';
 import { Eyebrow, DisplayTitle, EnergyPulse, HexPanel, ChevronButton, HexMark, SectionFog, SectionTopRail, SectionBottomRail } from './atmospherics';
+import SocialLinks from './SocialLinks';
 import { BubbleCanvas, Motes, useSpotlight, useTilt, useSfx } from './effects';
 
 interface Props {
@@ -270,16 +271,19 @@ const FocusCard: React.FC<{
                     {bio}
                   </p>
                 )}
-                {kiosk.href && (
-                  <ChevronButton
-                    href={kiosk.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    variant="ghost"
-                  >
-                    {cta}
-                  </ChevronButton>
-                )}
+                <div className="flex flex-wrap items-center gap-5">
+                  {kiosk.href && (
+                    <ChevronButton
+                      href={kiosk.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="ghost"
+                    >
+                      {cta}
+                    </ChevronButton>
+                  )}
+                  <SocialLinks kiosk={kiosk} />
+                </div>
               </div>
             </div>
           </div>

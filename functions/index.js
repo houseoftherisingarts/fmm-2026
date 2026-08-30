@@ -2181,7 +2181,59 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
   });
   await verifierRangsFortune(uid, gagneAvant, gagneApres); // ponytail : hors transaction, badge cosmétique
   if (suite >= 7) await poserBadge(uid, 'quotidien-sept');
+  // Le jour 7 inscrit la personne au registre du concours William J.
+  // Walter d'office, et lui compte une chance de plus (Alex, 2026-08-30).
+  if (ROUE_QUOTIDIENNE[jour - 1].chanceWJW) {
+    await inscrireAuConcoursWJW(uid, requete.auth.token && requete.auth.token.email, { viaRecompense: true, chances: 1 });
+  }
   return { solde, suite, jour };
+});
+
+// ── Le registre du concours William J. Walter ────────────────────────
+// Un document par courriel (concoursWJW/{courriel}), le même que le
+// formulaire public. Ici le serveur écrit pour le compte de la personne
+// connectée : nom de sa fiche, courriel de son compte, téléphone si elle
+// l'a donné. `chances` compte les entrées dans le chapeau (1 à
+// l'inscription, +1 par récompense du jour 7). `consentementPartage`
+// n'est vrai que si la personne a cliqué elle-même pour participer.
+async function inscrireAuConcoursWJW(uid, courriel, options) {
+  const email = String(courriel || '').trim().toLowerCase();
+  if (!email) return null;
+  const membre = await db.collection('membres').doc(uid).get();
+  const nom = (membre.exists && membre.data().nom) || '';
+  const ref = db.collection('concoursWJW').doc(email);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const existant = snap.exists ? snap.data() : null;
+    const maj = {
+      courriel: email,
+      uid,
+      nom: (existant && existant.nom) || nom || email,
+      telephone: options.telephone || (existant && existant.telephone) || '',
+      chances: FieldValue.increment(options.chances || 0),
+      majLe: FieldValue.serverTimestamp(),
+    };
+    if (!existant) {
+      maj.inscritLe = FieldValue.serverTimestamp();
+      maj.consentementPartage = !!options.consentement;
+      maj.chances = FieldValue.increment((options.chances || 0) + 1);
+    } else if (options.consentement) {
+      maj.consentementPartage = true;
+    }
+    if (options.viaRecompense) maj.viaRecompense = true;
+    if (options.viaCompte) maj.viaCompte = true;
+    tx.set(ref, maj, { merge: true });
+  });
+  return email;
+}
+
+exports.participerConcoursAvecCompte = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  const email = requete.auth && requete.auth.token && requete.auth.token.email;
+  if (!uid || !email) throw new HttpsError('unauthenticated', 'Connectez-vous pour participer avec votre compte.');
+  const telephone = String((requete.data || {}).telephone || '').trim().slice(0, 40);
+  await inscrireAuConcoursWJW(uid, email, { viaCompte: true, consentement: true, telephone });
+  return { courriel: email.toLowerCase() };
 });
 
 exports.tenterUneTrouvaille = onCall({ region: 'us-central1' }, async (requete) => {

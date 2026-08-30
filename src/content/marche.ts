@@ -33,8 +33,14 @@ export interface MarcheKiosk {
   image?: string;
   /** Optional crop hint for object-position. */
   imagePosition?: string;
-  /** Where their shop / IG / FB lives. */
+  /** Where their shop / IG / FB lives (main CTA). */
   href?: string;
+  /** Liens sociaux distincts, affichés en petites pastilles sous le CTA. */
+  website?: string;
+  facebook?: string;
+  instagram?: string;
+  /** Emplacement payé (10x10, 10x20, 10x30, Faubourg). Info CRM, pas affiché. */
+  booth?: string;
   /** Optional CTA label override for premium tier. */
   cta?: { FR: string; EN: string };
   /** Promo code applicable to this digital boutique. */
