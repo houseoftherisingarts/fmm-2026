@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Gift, Swords, X } from 'lucide-react';
+import { Check, Crown, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { sonnerBadge } from '../../lib/fanfare';
+import { FILTRE_DOS_ROYAL } from '../../games/tarot/dos';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
   RECOMPENSES_QUOTIDIEN, reclamerQuotidien, suivreMaBourse, type Bourse,
