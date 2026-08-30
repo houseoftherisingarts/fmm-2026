@@ -250,7 +250,7 @@ const Carte: React.FC<{
                 textShadow: '0 0 26px rgba(232,200,122,0.4)',
               }}
             >
-              {formatAmount(displayAmount(billet), lang)}
+              {formatAmount(displayAmount(billet, surcharge), lang)}
             </span>
             <span
               className="font-sans uppercase tracking-[0.24em] text-[9px] block"
