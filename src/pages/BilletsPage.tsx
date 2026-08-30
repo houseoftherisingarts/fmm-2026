@@ -24,16 +24,19 @@ import {
 // ⚠️ PAS ENCORE PUBLIÉE : aucune route ne mène ici tant qu'Alex n'a pas
 // tranché la question des taxes (voir src/content/billets.ts).
 
-const ZEFFY = {
-  entrees: import.meta.env.VITE_ZEFFY_TICKET_URL  || 'https://www.zeffy.com/fr-CA/ticketing/fmm--2026',
-  camping: import.meta.env.VITE_ZEFFY_CAMPING_URL || 'https://www.zeffy.com/fr-CA/ticketing/camping-7',
-};
+const ZEFFY_CAMPING = import.meta.env.VITE_ZEFFY_CAMPING_URL || 'https://www.zeffy.com/fr-CA/ticketing/camping-7';
 
 const BilletsPage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
+  const { user } = useAuth();
+  const connecte = Boolean(user);
+  // Sans compte : le prix affiché et le lien sont ceux de la campagne
+  // publique (5 $ de plus par billet); la carte ouvre d'abord la porte
+  // qui offre le rabais membre. Le camping n'a qu'une campagne.
+  const surcharge = connecte ? 0 : RABAIS_MEMBRE;
 
   const entrees = BILLETS.filter((b) => b.billetterie === 'entrees');
   const camping = BILLETS.filter((b) => b.billetterie === 'camping');
