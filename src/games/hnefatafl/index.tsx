@@ -808,7 +808,13 @@ const PilleJeu: React.FC<{
       </span>
       <span className="text-left leading-tight max-w-[84px] md:max-w-[120px]">
         {lang === 'FR' ? it.nomFR : it.nomEN}
-        {!dispo && <span className="block text-[9px] tracking-[0.2em] opacity-70">{soon}</span>}
+        {!dispo && (
+          <span className="block text-[9px] tracking-[0.2em] opacity-70">
+            {it.statut === 'recompense'
+              ? (lang === 'FR' ? 'Roue des 7 jours' : '7-day wheel')
+              : soon}
+          </span>
+        )}
       </span>
       {active && <Check size={12} className="shrink-0" />}
     </button>
