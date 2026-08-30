@@ -762,8 +762,10 @@ const PilleJeu: React.FC<{
   lang:    'FR' | 'EN';
   soon:    string;
   onClick: () => void;
-}> = ({ it, active, lang, soon, onClick }) => {
-  const dispo = it.statut === 'disponible';
+  /** Un jeu 'recompense' (roue des sept jours) gagné par la personne. */
+  debloque?: boolean;
+}> = ({ it, active, lang, soon, onClick, debloque }) => {
+  const dispo = it.statut === 'disponible' || (it.statut === 'recompense' && !!debloque);
   return (
     <button
       type="button"
