@@ -1,6 +1,8 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
+import { lienBilletterie, ouvrirBilletterie } from '../lib/billetterie';
 import { SITE } from '../content';
 import SEO from '../components/SEO';
 
