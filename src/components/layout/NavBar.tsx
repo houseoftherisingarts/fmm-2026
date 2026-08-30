@@ -11,7 +11,7 @@ import { addLocale, stripLocale } from '../../lib/locale';
 import AudioPlayer from '../AudioPlayer';
 import { HexMark } from '../marche/atmospherics';
 import Cloche from '../compte/Cloche';
-import PorteBilletterie from '../billets/PorteBilletterie';
+import { ouvrirBilletterie } from '../../lib/billetterie';
 
 // Local dev (VITE_SITE_MODE=live) previews every pillar; production shows only
 // published ones. `npm run deploy` forces placeholder, so prod follows flags.
