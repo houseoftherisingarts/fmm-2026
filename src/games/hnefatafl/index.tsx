@@ -957,6 +957,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
               lang={lang}
               soon={s.shopSoon}
               active={choix.pieces === b.id}
+              debloque={taflDebloques.includes(b.id)}
               onClick={() => onChoix('pieces', b.id)}
             />
           ))}
