@@ -8,22 +8,20 @@
 // La règle et l'histoire ne sont pas inventées : HISTOIRE.md, à côté,
 // donne les sources et dit ce qui reste incertain.
 
-import React, {
-  forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowUpRight, Cpu, Feather, Maximize2, Minimize2, Music, PawPrint, RotateCcw,
-  Scroll, Swords, Users, VolumeX, X,
+  ArrowUpRight, Cpu, Feather, Maximize2, Minimize2, PawPrint, RotateCcw,
+  Scroll, Swords, Users, X,
 } from 'lucide-react';
 
 import CadreJeu from '../../components/jeux/CadreJeu';
+import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import SEO from '../../components/SEO';
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
-import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -386,58 +384,6 @@ const EcranPreparation: React.FC<{
   );
 };
 
-// ── La musique du plateau ───────────────────────────────────────────
-// Facultative, jamais automatique, et exclusive du lecteur de l'en-tête.
-const MUSIQUE_URL = '/audio/pippin-the-hunchback.mp3';
-const MUSIQUE_TITRE = 'Nordic Wist · Kevin MacLeod, CC BY 4.0';
-
-interface BoutonMusiqueHandle { demarrer(): void; }
-
-const BoutonMusique = forwardRef<BoutonMusiqueHandle, { onLabel: string; offLabel: string }>(
-  ({ onLabel, offLabel }, ref) => {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    const [joue, setJoue] = useState(false);
-
-    useEffect(() => ecouterExclusivite('renard', () => {
-      audioRef.current?.pause();
-      setJoue(false);
-    }), []);
-
-    const jouerPiste = () => {
-      const a = audioRef.current;
-      if (!a || joue) return;
-      annoncerLecture('renard');
-      a.volume = 0.3;
-      a.play().then(() => setJoue(true)).catch(() => setJoue(false));
-    };
-
-    useImperativeHandle(ref, () => ({ demarrer: jouerPiste }), [joue]);
-
-    return (
-      <>
-        <audio ref={audioRef} src={MUSIQUE_URL} loop preload="none" />
-        <button
-          type="button"
-          onClick={() => {
-            const a = audioRef.current;
-            if (!a) return;
-            if (joue) { a.pause(); setJoue(false); return; }
-            jouerPiste();
-          }}
-          title={MUSIQUE_TITRE}
-          aria-pressed={joue}
-          className={`shrink-0 inline-flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-[15px] border transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em] ${
-            joue ? 'border-brass/60 text-ivory' : 'border-brass/30 text-ivory-soft hover:text-ivory hover:border-brass/60'
-          }`}
-        >
-          {joue ? <VolumeX size={12} /> : <Music size={12} />}
-          <span className="hidden sm:inline">{joue ? onLabel : offLabel}</span>
-        </button>
-      </>
-    );
-  },
-);
-BoutonMusique.displayName = 'BoutonMusique';
 
 // ── La planche jouable ──────────────────────────────────────────────
 interface EtatPartie {
@@ -906,7 +852,7 @@ const RenardPage: React.FC = () => {
             </span>
           </span>
           <span className="shrink-0 inline-flex items-center gap-2">
-            <BoutonMusique ref={musiqueRef} onLabel={t.musiqueOn} offLabel={t.musiqueOff} />
+            <BoutonMusique ref={musiqueRef} cle="renard" defaut="menestrel" lang={lang} onLabel={t.musiqueOn} offLabel={t.musiqueOff} />
             <button
               type="button"
               onClick={basculerPleinEcran}

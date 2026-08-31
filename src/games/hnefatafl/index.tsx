@@ -11,9 +11,10 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CadreJeu from '../../components/jeux/CadreJeu';
+import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Music, VolumeX, Check, Lock, Maximize2, Minimize2, Scroll, X } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Check, Lock, Maximize2, Minimize2, Scroll, X } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -41,7 +42,6 @@ import { createPieceSystem } from './pieceMesh';
 import { createHighlightSystem } from './highlightSystem';
 import { pickMove, type Difficulty } from './cpuPlayer';
 import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
-import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { suivreMaBourse } from '../../firebase/montpellois';
@@ -978,70 +978,6 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
   );
 };
 
-// ─── Musique du plateau ─────────────────────────────────────────────
-// Facultative, jamais automatique, et exclusive : elle coupe le lecteur
-// de l'en-tête quand elle démarre (et réciproquement).
-// Piste : « Nordic Wist » de Kevin MacLeod, CC BY 4.0.
-const MUSIQUE_URL = '/audio/nordic-wist.mp3';
-const MUSIQUE_TITRE = 'Nordic Wist · Kevin MacLeod';
-
-export interface BoutonMusiqueHandle {
-  /** Lance la musique si elle ne joue pas déjà. Appelé au premier clic
-   *  sur « Commencer la partie » : c'est un vrai geste utilisateur, donc
-   *  le navigateur autorise la lecture avec son sans qu'on ait à
-   *  attendre un second clic sur ce bouton précis. Idempotent : ne
-   *  relance rien si la musique joue déjà. */
-  demarrer(): void;
-}
-
-const BoutonMusique = forwardRef<BoutonMusiqueHandle, { onLabel: string; offLabel: string }>(
-  ({ onLabel, offLabel }, ref) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [joue, setJoue] = useState(false);
-
-  useEffect(() => ecouterExclusivite('hnefatafl', () => {
-    audioRef.current?.pause();
-    setJoue(false);
-  }), []);
-
-  const jouer = () => {
-    const a = audioRef.current;
-    if (!a || joue) return;
-    annoncerLecture('hnefatafl');
-    a.volume = 0.3;
-    a.play().then(() => setJoue(true)).catch(() => setJoue(false));
-  };
-
-  useImperativeHandle(ref, () => ({ demarrer: jouer }), [joue]);
-
-  const basculer = () => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (joue) { a.pause(); setJoue(false); return; }
-    jouer();
-  };
-
-  return (
-    <>
-      <audio ref={audioRef} src={MUSIQUE_URL} loop preload="none" />
-      <button
-        type="button"
-        onClick={basculer}
-        title={MUSIQUE_TITRE}
-        aria-pressed={joue}
-        className={`shrink-0 inline-flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-card border transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em] ${
-          joue
-            ? 'border-brass/60 text-ivory'
-            : 'border-brass/30 text-ivory-soft hover:text-ivory hover:border-brass/60'
-        }`}
-      >
-        {joue ? <VolumeX size={12} /> : <Music size={12} />}
-        <span className="hidden sm:inline">{joue ? onLabel : offLabel}</span>
-      </button>
-    </>
-  );
-});
-
 const HnefataflPage: React.FC = () => {
   // Pose l'atmosphère de la caravane sur <body> : brumes, grain, noir
   // chaud. C'est ce hook qui raccroche la page au reste du site.
@@ -1455,7 +1391,7 @@ const HnefataflPage: React.FC = () => {
             </span>
           </span>
           <span className="shrink-0 inline-flex items-center gap-2">
-            <BoutonMusique ref={musiqueRef} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
+            <BoutonMusique ref={musiqueRef} cle="hnefatafl" defaut="nordique" lang={lang} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
             <button
               type="button"
               onClick={basculerPleinEcran}
