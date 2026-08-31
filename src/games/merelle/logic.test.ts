@@ -138,12 +138,12 @@ essai('un pion glisse vers un point voisin libre, jamais plus loin', () => {
 });
 
 essai('à trois pions, le vol ouvre tout le plateau', () => {
-  const e = poser([0, 1, 2], [9, 10, 21, 23], [0, 0], 1);
+  const e = poser([0, 1, 2], [10, 21, 23], [0, 0], 1);
   assert.equal(phaseDe(e, 1), 'vol');
   assert.ok(destinations(e, 0).includes(17), 'le vol atteint le carré du milieu');
   const sans = { ...e, vol: false };
   assert.equal(phaseDe(sans, 1), 'deplacement');
-  assert.deepEqual(destinations(sans, 0), [9]);
+  assert.deepEqual(destinations(sans, 0), [9], 'sans le vol, il ne reste que le voisin libre');
 });
 
 essai('la variante du vol se coupe et le camp reste enfermé', () => {
