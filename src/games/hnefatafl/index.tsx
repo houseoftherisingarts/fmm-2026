@@ -53,6 +53,8 @@ import {
 } from '../../firebase/tafl';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
+import BoiteAide from '../../components/jeux/BoiteAide';
+import Tutoriel, { BoutonTutoriel, useTutoriel } from '../Tutoriel';
 import { jeuTafl } from './jeuDefiable';
 
 type Mode = 'two-player' | 'vs-cpu';
@@ -128,6 +130,15 @@ interface GameStrings {
   quitterPleinEcran: string;
   afficherRegles:    string;
   cacherRegles:      string;
+  // La boîte « je ne sais pas quoi faire ».
+  aideBut:        string;
+  aidePreparer:   string;
+  aideFini:       string;
+  aideAttente:    (nom: string) => string;
+  aideOrdinateur: string;
+  aideRoi:        string;
+  aideRaiders:    string;
+  aideAVous:      string;
 }
 
 const STRINGS: Record<'FR' | 'EN', GameStrings> = {
@@ -197,6 +208,14 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     quitterPleinEcran: 'Quitter le plein écran',
     afficherRegles: 'Afficher les règles',
     cacherRegles: 'Cacher les règles',
+    aideBut: 'Le but : le Roi doit atteindre un coin, les Raiders doivent l’encercler.',
+    aidePreparer: 'Choisissez le règlement et votre camp, puis dressez la table.',
+    aideFini: 'La saga est terminée.',
+    aideAttente: (nom) => `À ${nom} de jouer.`,
+    aideOrdinateur: 'À l’ordinateur de jouer.',
+    aideRoi: 'Amenez le roi à un coin.',
+    aideRaiders: 'Capturez les défenseurs en les prenant en tenaille.',
+    aideAVous: 'À vous.',
   },
   EN: {
     raidersFirst: 'Raiders move first',
@@ -264,6 +283,14 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     quitterPleinEcran: 'Exit fullscreen',
     afficherRegles: 'Show the rules',
     cacherRegles: 'Hide the rules',
+    aideBut: 'The goal: the King must reach a corner, the Raiders must surround him.',
+    aidePreparer: 'Pick the rule set and your side, then set the table.',
+    aideFini: 'The saga is over.',
+    aideAttente: (nom) => `${nom} to play.`,
+    aideOrdinateur: 'The computer is playing.',
+    aideRoi: 'Walk the king to a corner.',
+    aideRaiders: 'Capture the defenders by catching them in a vice.',
+    aideAVous: 'Your move.',
   },
 };
 
@@ -831,8 +858,9 @@ interface StartScreenProps {
   lang:    'FR' | 'EN';
   choix:   { plateau: string; pieces: string };
   onChoix: (cle: 'plateau' | 'pieces', id: string) => void;
+  onTutoriel: () => void;
 }
-const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin, lang, choix, onChoix }) => {
+const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin, lang, choix, onChoix, onTutoriel }) => {
   // La caravane (récompense quotidienne du jour 3) se déverrouille par la bourse.
   const { user } = useAuth();
   const [taflDebloques, setTaflDebloques] = useState<string[]>([]);
@@ -854,8 +882,8 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
   // le règlement, le mode, le plateau, les pièces. Rien à faire défiler,
   // le bouton reste au bas de la fenêtre. Sur téléphone, les colonnes
   // s'empilent et c'est le milieu qui défile, jamais le bouton.
-  const Colonne: React.FC<{ num: string; label: string; children: React.ReactNode }> = ({ num, label, children }) => (
-    <section className="rounded-card border border-brass/20 bg-black/30 p-3.5 md:p-4 min-w-0">
+  const Colonne: React.FC<{ num: string; label: string; tuto?: string; children: React.ReactNode }> = ({ num, label, tuto, children }) => (
+    <section data-tuto={tuto} className="rounded-card border border-brass/20 bg-black/30 p-3.5 md:p-4 min-w-0">
       <p className="flex items-baseline gap-2.5 mb-3 md:mb-4">
         <span className="font-display title-medieval text-lg md:text-xl" style={{ color: 'rgba(232,177,74,0.6)' }}>{num}</span>
         <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70">{label}</span>
@@ -935,7 +963,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
             ))}
           </Colonne>
 
-          <Colonne num="IV" label={s.shopPieces}>
+          <Colonne num="IV" label={s.shopPieces} tuto="coffre">
             {PIECE_SETS.map((b) => (
               <PilleJeu
                 key={b.id}
@@ -962,9 +990,10 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
           peut plus passer sous le pli (bogue du 30 août : le panneau,
           devenu plus haut que l'écran, poussait le bouton hors de vue). */}
       <div
-        className="shrink-0 flex justify-center px-4 pt-3 pb-3 md:pb-4"
+        className="shrink-0 flex flex-wrap items-center justify-center gap-2.5 px-4 pt-3 pb-3 md:pb-4"
         style={{ background: 'linear-gradient(0deg, rgba(10,4,6,0.96) 62%, rgba(10,4,6,0))' }}
       >
+        <BoutonTutoriel onClick={onTutoriel} lang={lang} className="min-h-[48px]" />
         <button
           type="button"
           onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
@@ -995,6 +1024,9 @@ const HnefataflPage: React.FC = () => {
   // (vérification du 2026-08-27).
   const [params] = useSearchParams();
   const partieId = params.get('partie');
+  // La visite guidée s'offre d'elle-même à la première venue, jamais
+  // quand un défi attend à l'autre bout du fil.
+  const tuto = useTutoriel('hnefatafl', !partieId);
   const [partie, setPartie] = useState<PartieTafl | null>(null);
   const canvasRef = useRef<CanvasHandle>(null);
   const appliques = useRef(0);
@@ -1166,6 +1198,23 @@ const HnefataflPage: React.FC = () => {
     }
   };
 
+  /** Ce que la boîte d'aide affiche : le tour courant, puis le geste
+   *  attendu MAINTENANT, lu sur l'état réel du damier. */
+  const aideAction = (() => {
+    if (!gameStarted) return s.aidePreparer;
+    if (ui.over) return s.aideFini;
+    const tour = ui.turn === 'attacker' ? s.raidersMove : s.defendersMove;
+    if (partieId && monCamp && ui.turn !== monCamp) {
+      const autre = partie?.noms[partie.joueurs.find((u) => u !== user?.uid) ?? ''] ?? '—';
+      return `${tour} · ${s.aideAttente(autre)}`;
+    }
+    if (!partieId && config.mode === 'vs-cpu' && ui.turn !== config.humanSide) {
+      return `${tour} · ${s.aideOrdinateur}`;
+    }
+    const prefixe = partieId ? `${s.aideAVous} ` : '';
+    return `${tour} · ${prefixe}${ui.turn === 'defender' ? s.aideRoi : s.aideRaiders}`;
+  })();
+
   // Pastille de tour : oxblood du site pour les Raiders, os pour les
   // Défenseurs. Plus de rouge néon ni de jaune saturé.
   const tc = ui.turn === 'attacker' ? '#A6392B' : '#E8DDC1';
@@ -1185,7 +1234,7 @@ const HnefataflPage: React.FC = () => {
         lang={lang}
       >
         {/* ── La table ────────────────────────────────────────────── */}
-        <div ref={sceneRef} className="absolute inset-0 bg-[#0a0406]">
+        <div ref={sceneRef} data-tuto="plateau" className="absolute inset-0 bg-[#0a0406]">
           {/* La porte de sortie du plein écran. Le bandeau qui porte la
               bascule reste hors du plein écran : sans ce bouton, il ne
               resterait que la touche Échap, que personne ne devine. */}
@@ -1300,6 +1349,7 @@ const HnefataflPage: React.FC = () => {
                 onBegin={(next) => setPubEnAttente(() => () => handleBegin(next))}
                 lang={lang}
                 choix={choix}
+                onTutoriel={tuto.ouvrir}
                 onChoix={(cle, id) => {
                   const n = { ...choix, [cle]: id };
                   setChoix(n);
@@ -1390,7 +1440,7 @@ const HnefataflPage: React.FC = () => {
               {gameStarted ? ui.msg : s.tableReady}
             </span>
           </span>
-          <span className="shrink-0 inline-flex items-center gap-2">
+          <span className="shrink-0 inline-flex items-center gap-2" data-tuto="musique">
             <BoutonMusique ref={musiqueRef} cle="hnefatafl" defaut="nordique" lang={lang} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
             <button
               type="button"
@@ -1634,6 +1684,7 @@ const HnefataflPage: React.FC = () => {
             <Scroll size={13} className="text-brass" />
             {reglesOuvertes ? s.cacherRegles : s.afficherRegles}
           </button>
+          <BoutonTutoriel onClick={tuto.ouvrir} lang={lang} className="!min-h-0 py-2" />
           <span className="font-sans text-[10px] md:text-[11px] text-ivory-soft/65 text-center">
             {s.hint}
           </span>
@@ -1643,7 +1694,18 @@ const HnefataflPage: React.FC = () => {
             <span className="text-brass">{s.kingDot}</span>
           </span>
         </div>
+        {/* ── « Je ne sais pas quoi faire » ───────────────────────── */}
+        {!ui.over && (
+          <BoiteAide
+            but={s.aideBut}
+            action={aideAction}
+            lang={lang}
+            className="right-3 md:right-6 bottom-24"
+          />
+        )}
       </CadreJeu>
+
+      <Tutoriel jeu="hnefatafl" lang={lang} ouvert={tuto.ouvert} onFermer={tuto.fermer} />
     </>
   );
 };

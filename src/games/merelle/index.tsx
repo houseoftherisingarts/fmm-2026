@@ -20,6 +20,8 @@ import {
 import CadreJeu from '../../components/jeux/CadreJeu';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
+import BoiteAide from '../../components/jeux/BoiteAide';
+import Tutoriel, { BoutonTutoriel, useTutoriel } from '../Tutoriel';
 import SEO from '../../components/SEO';
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -121,6 +123,17 @@ interface Textes {
   refuser: string;
   retourTable: string;
   chargement: string;
+  // La boîte « je ne sais pas quoi faire ».
+  aideBut: string;
+  aidePreparer: string;
+  aideFini: string;
+  aideAttente: (nom: string) => string;
+  aideOrdinateur: string;
+  aidePoser: (n: number) => string;
+  aideRetirer: string;
+  aideDeplacer: string;
+  aideVoler: string;
+  aideAVous: string;
 }
 
 const MOTS: Record<'FR' | 'EN', Textes> = {
@@ -205,6 +218,16 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
     refuser: 'Refuser',
     retourTable: 'La table de jeux',
     chargement: 'La partie s’ouvre…',
+    aideBut: 'Le but : aligner trois pions sur une ligne gravée, et retirer un pion adverse à chaque moulin fermé.',
+    aidePreparer: 'Choisissez la variante et le mode, puis dressez le plateau.',
+    aideFini: 'La partie est terminée.',
+    aideAttente: (nom) => `À ${nom} de jouer.`,
+    aideOrdinateur: 'À l’ordinateur de jouer.',
+    aidePoser: (n) => `Posez vos pions : ${n} restants.`,
+    aideRetirer: 'Moulin ! Retirez un pion adverse.',
+    aideDeplacer: 'Déplacez un pion sur un point voisin libre.',
+    aideVoler: 'Plus que trois pions : vous volez où vous voulez.',
+    aideAVous: 'À vous.',
   },
   EN: {
     eyebrow: 'The Year of the Lord · Board game',
@@ -287,6 +310,16 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
     refuser: 'Decline',
     retourTable: 'The games table',
     chargement: 'The game is opening…',
+    aideBut: 'The goal: line up three men on an engraved line, and take one enemy man for every mill you close.',
+    aidePreparer: 'Pick the variant and the mode, then set the board.',
+    aideFini: 'The game is over.',
+    aideAttente: (nom) => `${nom} to play.`,
+    aideOrdinateur: 'The computer is playing.',
+    aidePoser: (n) => `Place your men: ${n} left.`,
+    aideRetirer: 'Mill closed. Take an enemy man.',
+    aideDeplacer: 'Slide a man to a free neighbouring point.',
+    aideVoler: 'Three men left: you fly anywhere you like.',
+    aideAVous: 'Your move.',
   },
 };
 
@@ -326,8 +359,10 @@ const Colonne: React.FC<{ num: string; label: string; children: React.ReactNode 
 const EcranDepart: React.FC<{
   initial: Reglage;
   t: Textes;
+  lang: 'FR' | 'EN';
   onCommencer: (r: Reglage) => void;
-}> = ({ initial, t, onCommencer }) => {
+  onTutoriel: () => void;
+}> = ({ initial, t, lang, onCommencer, onTutoriel }) => {
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [camp, setCamp] = useState<Camp>(initial.camp);
   const [difficulte, setDifficulte] = useState<Difficulte>(initial.difficulte);
@@ -393,9 +428,10 @@ const EcranDepart: React.FC<{
           peut jamais passer sous le pli, même quand les colonnes
           s'empilent sur téléphone. */}
       <div
-        className="shrink-0 flex justify-center px-4 pt-3 pb-3 md:pb-4"
+        className="shrink-0 flex flex-wrap items-center justify-center gap-2.5 px-4 pt-3 pb-3 md:pb-4"
         style={{ background: 'linear-gradient(0deg, rgba(10,4,6,0.96) 62%, rgba(10,4,6,0))' }}
       >
+        <BoutonTutoriel onClick={onTutoriel} lang={lang} className="min-h-[48px]" />
         <button
           type="button"
           onClick={() => onCommencer({ mode, camp, difficulte, vol })}
@@ -449,6 +485,9 @@ const MerellePage: React.FC = () => {
   // deux moteurs la rejouent, exactement comme au tafl.
   const [params] = useSearchParams();
   const partieId = params.get('partie');
+  // La visite guidée s'offre d'elle-même à la première venue, jamais
+  // quand un défi attend à l'autre bout du fil.
+  const tuto = useTutoriel('merelle', !partieId);
   const { user } = useAuth();
   const [partie, setPartie] = useState<PartieTafl | null>(null);
   const partieRef = useRef<PartieTafl | null>(null);
@@ -703,6 +742,26 @@ const MerellePage: React.FC = () => {
     return `${t.aVous} · ${phaseDe(etat, etat.tour) === 'vol' ? t.volez : t.deplacez}`;
   };
 
+  /** Ce que la boîte d'aide affiche : le geste attendu MAINTENANT, lu
+   *  sur l'état réel du moteur. */
+  const aideAction = (): string => {
+    if (!commencee) return t.aidePreparer;
+    if (etat.gagnant) return t.aideFini;
+    if (!humainJoue(etat, reglage)) {
+      if (!enLigne) return t.aideOrdinateur;
+      const autre = partie && user
+        ? (partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—')
+        : '—';
+      return t.aideAttente(autre);
+    }
+    const prefixe = enLigne ? `${t.aideAVous} ` : '';
+    if (etat.doitRetirer) return prefixe + t.aideRetirer;
+    const enMain = aPoserDe(etat, etat.tour);
+    if (enMain > 0) return prefixe + t.aidePoser(enMain);
+    if (phaseDe(etat, etat.tour) === 'vol') return prefixe + t.aideVoler;
+    return prefixe + t.aideDeplacer;
+  };
+
   const teinteTour = etat.tour === 1 ? '#D9B681' : '#A6392B';
 
   return (
@@ -717,7 +776,7 @@ const MerellePage: React.FC = () => {
         lang={lang}
       >
         {/* ── La table ────────────────────────────────────────────── */}
-        <div ref={tableRef} className="absolute inset-0 bg-[#0a0604]">
+        <div ref={tableRef} data-tuto="plateau" className="absolute inset-0 bg-[#0a0604]">
           {pleinEcran && (
             <button
               type="button"
@@ -746,7 +805,9 @@ const MerellePage: React.FC = () => {
                 <EcranDepart
                   initial={reglage}
                   t={t}
+                  lang={lang}
                   onCommencer={(r) => setPubEnAttente(() => () => demarrer(r))}
+                  onTutoriel={tuto.ouvrir}
                 />
               )}
             </>
@@ -852,7 +913,7 @@ const MerellePage: React.FC = () => {
               {messageTour()}
             </span>
           </span>
-          <span className="shrink-0 inline-flex items-center gap-2">
+          <span className="shrink-0 inline-flex items-center gap-2" data-tuto="musique">
             <BoutonMusique
               ref={musiqueRef}
               cle="merelle"
@@ -916,7 +977,7 @@ const MerellePage: React.FC = () => {
         )}
 
         {commencee && !etat.gagnant && (
-          <div className={`pointer-events-none absolute left-3 md:left-6 ${enLigne ? 'top-36' : 'top-16'} z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]`}>
+          <div data-tuto="compteur" className={`pointer-events-none absolute left-3 md:left-6 ${enLigne ? 'top-36' : 'top-16'} z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]`}>
             {([1, 2] as Camp[]).map((c) => (
               <span key={c} className="flex items-center gap-2.5 py-0.5">
                 <span
@@ -1005,11 +1066,23 @@ const MerellePage: React.FC = () => {
             <Scroll size={13} className="text-brass" />
             {reglesOuvertes ? t.cacherRegles : t.afficherRegles}
           </button>
+          <BoutonTutoriel onClick={tuto.ouvrir} lang={lang} className="!min-h-0 py-2" />
           <span className="font-sans text-[10px] md:text-[11px] text-ivory-soft/65 text-center">
             {t.geste}
           </span>
         </div>
+        {/* ── « Je ne sais pas quoi faire » ───────────────────────── */}
+        {!etat.gagnant && (
+          <BoiteAide
+            but={t.aideBut}
+            action={aideAction()}
+            lang={lang}
+            className="right-3 md:right-6 bottom-20"
+          />
+        )}
       </CadreJeu>
+
+      <Tutoriel jeu="merelle" lang={lang} ouvert={tuto.ouvert} onFermer={tuto.fermer} />
     </>
   );
 };

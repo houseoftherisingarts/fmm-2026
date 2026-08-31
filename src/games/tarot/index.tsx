@@ -11,6 +11,8 @@ import { DOS_CARTES, dosEquipe, equiperDos } from './dos';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
+import BoutonMusique from '../../components/jeux/BoutonMusique';
+import Tutoriel, { BoutonTutoriel, useTutoriel } from '../Tutoriel';
 import { Motes } from '../../components/marche/effects';
 import { JEU, TIRAGES, type Tirage } from '../../content/tarot';
 import { lireFiche } from '../../firebase/ordre';
@@ -122,6 +124,12 @@ const TarotPage: React.FC = () => {
   // « Continuer » de l'interstitiel.
   const [pubEnAttente, setPubEnAttente] = useState<(() => void) | null>(null);
   const demanderRecommencer = (t: Tirage = tirage) => setPubEnAttente(() => () => recommencer(t));
+
+  // La visite guidée s'offre d'elle-même à la première venue, et se
+  // rejoue par le bouton de la barre du haut. Elle attend que
+  // l'interstitiel du début de tirage soit passé : deux panneaux l'un
+  // par-dessus l'autre, personne ne lit ni l'un ni l'autre.
+  const tuto = useTutoriel('tarot', !pubEnAttente);
 
   // Le premier tirage, déjà mélangé au montage, compte lui aussi comme
   // un début de partie : l'interstitiel s'affiche avant que le tapis ne
@@ -281,7 +289,7 @@ const TarotPage: React.FC = () => {
             <span className="hidden sm:inline font-display title-medieval text-lg md:text-xl text-ivory">
               {t.titre}
             </span>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2" data-tuto="tirages">
               {TIRAGES.map((x) => (
                 <button
                   key={x.id}
@@ -299,6 +307,16 @@ const TarotPage: React.FC = () => {
                 </button>
               ))}
             </div>
+            <span className="inline-flex items-center gap-2 ml-auto" data-tuto="musique">
+              <BoutonTutoriel onClick={tuto.ouvrir} lang={lang} className="!rounded-[15px]" />
+              <BoutonMusique
+                cle="tarot"
+                defaut="chant"
+                lang={lang}
+                onLabel={fr ? 'Couper' : 'Mute'}
+                offLabel={fr ? 'Musique' : 'Music'}
+              />
+            </span>
           </div>
 
           {/* ── Le tapis, et la lecture dans sa propre colonne ────
@@ -308,6 +326,7 @@ const TarotPage: React.FC = () => {
           <div className="relative flex-1 min-h-0 overflow-y-auto px-3 md:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:gap-7">
             <div
               ref={tapisRef}
+              data-tuto="tapis"
               className={`tarot-tapis relative mx-auto my-auto lg:mx-0 rounded-[15px] border border-brass/20 p-3 md:p-7 w-full lg:flex-1 ${
                 tirage.id === 'une' ? 'max-w-[19rem]' : tirage.id === 'trois' ? 'max-w-[46rem]' : 'max-w-[44rem]'
               }`}
@@ -398,7 +417,7 @@ const TarotPage: React.FC = () => {
             style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}
           >
           <div className="mx-auto w-full max-w-5xl flex flex-col sm:flex-row sm:flex-wrap sm:items-end justify-center gap-2.5 sm:gap-3">
-            <label className="w-full sm:w-auto sm:flex-1 sm:min-w-[13rem] sm:max-w-sm">
+            <label className="w-full sm:w-auto sm:flex-1 sm:min-w-[13rem] sm:max-w-sm" data-tuto="question">
               <span className="witcher-stat-label block mb-1.5">{t.questionLabel}</span>
               <input
                 type="text"
@@ -443,6 +462,7 @@ const TarotPage: React.FC = () => {
             {dosGagne ? (
               <button
                 type="button"
+                data-tuto="dos"
                 onClick={basculerDos}
                 aria-pressed={dosRoyal}
                 title={fr ? 'Changer le dos des cartes' : 'Change the card back'}
@@ -457,6 +477,7 @@ const TarotPage: React.FC = () => {
             ) : (
               <button
                 type="button"
+                data-tuto="dos"
                 onClick={() => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'))}
                 title={fr ? 'Le tarot de la caravane : récompense pour vous être connecté 4 jours d’affilée' : 'The caravan tarot: reward for signing in 4 days in a row'}
                 className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
@@ -659,6 +680,8 @@ const TarotPage: React.FC = () => {
           )}
         </AnimatePresence>
       </CadreJeu>
+
+      <Tutoriel jeu="tarot" lang={lang} ouvert={tuto.ouvert} onFermer={tuto.fermer} />
     </>
   );
 };

@@ -419,7 +419,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
       },
       {
         titre: 'Les plateaux et les pièces se gagnent',
-        corps: 'Les deux dernières colonnes de cet écran tiennent les plateaux et les jeux de pièces. Ceux qui portent un cadenas s’ouvrent à la roue des sept jours ou à la boutique, et votre choix se retient d’une visite à l’autre.',
+        corps: 'La dernière colonne de cet écran tient les jeux de pièces, et celle d’à côté les plateaux. Ceux qui portent un cadenas s’ouvrent à la roue des sept jours ou à la boutique, et votre choix se retient d’une visite à l’autre.',
         ancre: 'coffre',
       },
     ],
@@ -448,7 +448,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
       },
       {
         titre: 'Boards and pieces are won',
-        corps: 'The last two columns of this screen hold the boards and the piece sets. The locked ones open at the seven-day wheel or at the shop, and your choice is remembered from one visit to the next.',
+        corps: 'The last column of this screen holds the piece sets, and the one beside it the boards. The locked ones open at the seven-day wheel or at the shop, and your choice is remembered from one visit to the next.',
         ancre: 'coffre',
       },
     ],

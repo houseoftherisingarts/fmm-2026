@@ -19,6 +19,8 @@ import {
 import CadreJeu from '../../components/jeux/CadreJeu';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
+import BoiteAide from '../../components/jeux/BoiteAide';
+import Tutoriel, { BoutonTutoriel, useTutoriel } from '../Tutoriel';
 import SEO from '../../components/SEO';
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -108,6 +110,15 @@ interface Textes {
   refuser: string;
   retourTable: string;
   chargement: string;
+  // La boîte « je ne sais pas quoi faire ».
+  aideBut: string;
+  aidePreparer: string;
+  aideFini: string;
+  aideAttente: (nom: string) => string;
+  aideOrdinateur: string;
+  aideOies: string;
+  aideRenard: string;
+  aideAVous: string;
 }
 
 const TEXTES: Record<'FR' | 'EN', Textes> = {
@@ -179,6 +190,14 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
     refuser: 'Refuser',
     retourTable: 'La table de jeux',
     chargement: 'La partie s’ouvre…',
+    aideBut: 'Le but : les oies coincent le renard, le renard éclaircit le troupeau.',
+    aidePreparer: 'Choisissez la forme du jeu et votre camp, puis dressez la planche.',
+    aideFini: 'La chasse est terminée.',
+    aideAttente: (nom) => `À ${nom} de jouer.`,
+    aideOrdinateur: 'À l’ordinateur de jouer.',
+    aideOies: 'Les oies avancent d’un point; encerclez le renard.',
+    aideRenard: 'Le renard peut sauter par-dessus une oie voisine : gare aux prises.',
+    aideAVous: 'À vous.',
   },
   EN: {
     eyebrow: 'The Year of the Revolt · Board game',
@@ -248,6 +267,14 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
     refuser: 'Decline',
     retourTable: 'The games table',
     chargement: 'The game is opening…',
+    aideBut: 'The goal: the geese pin the fox, the fox thins the flock.',
+    aidePreparer: 'Pick the form of the game and your side, then set the plank.',
+    aideFini: 'The hunt is over.',
+    aideAttente: (nom) => `${nom} to play.`,
+    aideOrdinateur: 'The computer is playing.',
+    aideOies: 'The geese move one point at a time; ring the fox in.',
+    aideRenard: 'The fox may leap over a neighbouring goose: watch the captures.',
+    aideAVous: 'Your move.',
   },
 };
 
@@ -288,7 +315,8 @@ const EcranPreparation: React.FC<{
   t: Textes;
   lang: 'FR' | 'EN';
   onCommencer: (r: Reglages) => void;
-}> = ({ depart, t, lang, onCommencer }) => {
+  onTutoriel: () => void;
+}> = ({ depart, t, lang, onCommencer, onTutoriel }) => {
   const [variante, setVariante] = useState<Variante>(depart.variante);
   const [mode, setMode] = useState<Mode>(depart.mode);
   const [campHumain, setCampHumain] = useState<Camp>(depart.campHumain);
@@ -368,9 +396,10 @@ const EcranPreparation: React.FC<{
       {/* Le bouton vit hors du défilement : il reste visible même quand
           les quatre colonnes s'empilent sur téléphone. */}
       <div
-        className="shrink-0 flex justify-center px-4 pt-3 pb-3 md:pb-4"
+        className="shrink-0 flex flex-wrap items-center justify-center gap-2.5 px-4 pt-3 pb-3 md:pb-4"
         style={{ background: 'linear-gradient(0deg, rgba(10,4,6,0.96) 62%, rgba(10,4,6,0))' }}
       >
+        <BoutonTutoriel onClick={onTutoriel} lang={lang} className="min-h-[48px]" />
         <button
           type="button"
           onClick={() => onCommencer({ variante, mode, campHumain, difficulte })}
@@ -608,6 +637,9 @@ const RenardPage: React.FC = () => {
   // deux moteurs la rejouent, exactement comme au tafl.
   const [params] = useSearchParams();
   const partieId = params.get('partie');
+  // La visite guidée s'offre d'elle-même à la première venue, jamais
+  // quand un défi attend à l'autre bout du fil.
+  const tuto = useTutoriel('renard', !partieId);
   const { user } = useAuth();
   const [partie, setPartie] = useState<PartieTafl | null>(null);
   const enLigne = !!partieId;
@@ -690,6 +722,17 @@ const RenardPage: React.FC = () => {
     if (reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.reflechit;
     return etat.tour === 'renard' ? t.tourRenard : t.tourOies;
   })();
+  /** Ce que la boîte d'aide affiche : le geste attendu MAINTENANT, lu
+   *  sur l'état réel de la planche. */
+  const aideAction = (() => {
+    if (!enPartie) return t.aidePreparer;
+    if (etat.gagnant) return t.aideFini;
+    if (enLigne && monCamp && etat.tour !== monCamp) return t.aideAttente(nomAdverse);
+    if (!enLigne && reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.aideOrdinateur;
+    const prefixe = enLigne ? `${t.aideAVous} ` : '';
+    return prefixe + (etat.tour === 'oies' ? t.aideOies : t.aideRenard);
+  })();
+
   const couleurTour = etat.tour === 'renard' ? '#B5551D' : '#E8DDC1';
 
   return (
@@ -703,7 +746,7 @@ const RenardPage: React.FC = () => {
         orbImage="/jeux/tuile-renard.webp"
         lang={lang}
       >
-        <div ref={sceneRef} className="absolute inset-0 bg-[#0a0406]">
+        <div ref={sceneRef} data-tuto="plateau" className="absolute inset-0 bg-[#0a0406]">
           {pleinEcran && (
             <button
               type="button"
@@ -724,6 +767,7 @@ const RenardPage: React.FC = () => {
               t={t}
               lang={lang}
               onCommencer={(r) => setPubEnAttente(() => () => commencer(r))}
+              onTutoriel={tuto.ouvrir}
             />
           )}
 
@@ -851,7 +895,7 @@ const RenardPage: React.FC = () => {
               {messageTour}
             </span>
           </span>
-          <span className="shrink-0 inline-flex items-center gap-2">
+          <span className="shrink-0 inline-flex items-center gap-2" data-tuto="musique">
             <BoutonMusique ref={musiqueRef} cle="renard" defaut="menestrel" lang={lang} onLabel={t.musiqueOn} offLabel={t.musiqueOff} />
             <button
               type="button"
@@ -940,12 +984,24 @@ const RenardPage: React.FC = () => {
             {reglesOuvertes ? t.cacherRegles : t.afficherRegles}
           </button>
           <span className="font-sans text-[10px] md:text-[11px] text-ivory-soft/65 text-center">{t.indice}</span>
-          <span className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-sans text-[10px] md:text-[11px]">
+          <BoutonTutoriel onClick={tuto.ouvrir} lang={lang} className="!min-h-0 py-2" />
+          <span data-tuto="compteur" className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-sans text-[10px] md:text-[11px]">
             <span style={{ color: '#C0763E' }}>{t.pointRenard}</span>
             <span className="text-ivory-soft">{t.pointOies(etat.oies)}</span>
           </span>
         </div>
+        {/* ── « Je ne sais pas quoi faire » ───────────────────────── */}
+        {!etat.gagnant && (
+          <BoiteAide
+            but={t.aideBut}
+            action={aideAction}
+            lang={lang}
+            className="right-3 md:right-6 bottom-24"
+          />
+        )}
       </CadreJeu>
+
+      <Tutoriel jeu="renard" lang={lang} ouvert={tuto.ouvert} onFermer={tuto.fermer} />
     </>
   );
 };
