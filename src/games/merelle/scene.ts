@@ -323,8 +323,8 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   scene.add(plateau);
 
   // Un socle en retrait donne au madrier son épaisseur et sa mouluration.
-  const socleGeo = new THREE.BoxGeometry(cote + 0.7, 0.34, cote + 0.7);
-  const socleMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0x8a6b45, roughness: 0.8, metalness: 0.02 });
+  const socleGeo = new THREE.BoxGeometry(cote + 0.8, 0.34, cote + 0.8);
+  const socleMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0x6d4c2c, roughness: 0.82, metalness: 0.02 });
   const socle = new THREE.Mesh(socleGeo, socleMat);
   socle.position.y = HAUT - 0.5;
   socle.castShadow = true;
