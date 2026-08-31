@@ -1,13 +1,13 @@
 import React, { useId } from 'react';
 
-// ─── Le dos royal, dessiné ───────────────────────────────────────────
+// ─── Le tarot de la caravane, dessiné ───────────────────────────────
 // La récompense du jour 4 (Alex, 2026-08-30) : un dos de carte qui ne
 // ressemble en rien au dos du festival. Argent au lieu d'or, bleu nuit
 // au lieu du bordeaux, et un saphir taillé à facettes à la place du
 // blason. Tout est vectoriel : net sur le tapis comme en vignette, et
 // rien à télécharger. Mêmes proportions que les lames (813 × 1536).
 
-const DosRoyal: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => {
+const DosCaravane: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => {
   const id = useId().replace(/:/g, '');
   const argent = `url(#${id}-argent)`;
   return (
@@ -107,4 +107,4 @@ const DosRoyal: React.FC<{ className?: string; style?: React.CSSProperties }> = 
   );
 };
 
-export default DosRoyal;
+export default DosCaravane;

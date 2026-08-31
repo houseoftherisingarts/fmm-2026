@@ -7,7 +7,7 @@ import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { ApercuRecompense, IconeJour } from '../../components/compte/RecompensesQuotidiennes';
-import { CLE_DOS_TAROT, dosRoyalEquipe } from './dos';
+import { dosCaravaneEquipe, equiperDosCaravane } from './dos';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
@@ -60,15 +60,15 @@ const TarotPage: React.FC = () => {
   const [dosGagne, setDosGagne] = useState(false);
   useEffect(() => {
     if (!user?.uid) { setDosGagne(false); return; }
-    return suivreMaBourse(user.uid, (b) => setDosGagne((b.dosTarot || []).includes('royal')));
+    return suivreMaBourse(user.uid, (b) => setDosGagne((b.dosTarot || []).includes('caravane')));
   }, [user?.uid]);
   // Le dos équipé se change à même le jeu quand le compte le possède
   // (Alex, 2026-08-30) : l'état force le tapis à se redessiner, le choix
   // vit dans le navigateur comme celui du coffre.
-  const [dosRoyal, setDosRoyal] = useState(() => dosRoyalEquipe());
+  const [dosRoyal, setDosRoyal] = useState(() => dosCaravaneEquipe());
   const basculerDos = () => {
     const suivant = !dosRoyal;
-    try { if (suivant) localStorage.setItem(CLE_DOS_TAROT, 'royal'); else localStorage.removeItem(CLE_DOS_TAROT); } catch { /* navigation privée */ }
+    equiperDosCaravane(suivant);
     setDosRoyal(suivant);
   };
 
@@ -445,17 +445,17 @@ const TarotPage: React.FC = () => {
                 className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
               >
                 <span className="flex items-center justify-center" style={{ width: 22, height: 26 }}><IconeJour type="dosTarot" /></span>
-                {dosRoyal ? (fr ? 'Dos royal' : 'Royal back') : (fr ? 'Dos du festival' : 'Festival back')}
+                {dosRoyal ? (fr ? 'Tarot de la caravane' : 'Caravan tarot') : (fr ? 'Dos du festival' : 'Festival back')}
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'))}
-                title={fr ? 'Le dos royal : récompense pour vous être connecté 4 jours d’affilée' : 'The royal back: reward for signing in 4 days in a row'}
+                title={fr ? 'Le tarot de la caravane : récompense pour vous être connecté 4 jours d’affilée' : 'The caravan tarot: reward for signing in 4 days in a row'}
                 className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
               >
                 <span className="flex items-center justify-center" style={{ width: 22, height: 26 }}><IconeJour type="dosTarot" /></span>
-                {fr ? 'Dos royal · jour 4' : 'Royal back · day 4'}
+                {fr ? 'Tarot de la caravane · jour 4' : 'Caravan tarot · day 4'}
               </button>
             )}
 

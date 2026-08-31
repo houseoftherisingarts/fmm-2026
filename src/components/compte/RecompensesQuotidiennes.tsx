@@ -4,7 +4,7 @@ import { Check, Crown, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { sonnerBadge } from '../../lib/fanfare';
-import { FILTRE_DOS_ROYAL } from '../../games/tarot/dos';
+import DosCaravane from '../../games/tarot/DosCaravane';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
   RECOMPENSES_QUOTIDIEN, reclamerQuotidien, suivreMaBourse, type Bourse,
@@ -37,7 +37,7 @@ function resteAvantDemain(dernierMs: number): string {
 
 // Les trésors se montrent avec les vrais objets du site : la pièce de
 // Montpellois, le dos de carte du tarot relevé à l'or, les teintes du
-// jeu de la Garde royale, le blason de William J. Walter.
+// gens de la caravane, le blason de William J. Walter.
 export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande }) => {
   const taille = grande ? 68 : 48;
   if (type === 'montpellois') return <PieceMontpellois size={taille} image />;
@@ -45,30 +45,31 @@ export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, 
     return <img src="/partenaires/wjw-logo-bone.svg" alt="" aria-hidden style={{ height: taille * 0.9, width: 'auto', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.6))' }} />;
   }
   if (type === 'taflPieces') {
-    // Trois pièces tournées, comme sur le plateau : assaillant sombre,
-    // défenseur d'ivoire, roi d'or couronné.
+    // Les gens de la caravane : l'homme au gilet bleu nuit, la femme en
+    // jupe bordeaux, et la roulotte rouge pour roi.
     const d = taille * 0.46;
     const piece = (fond: string, decal: number, roi = false) => (
       <span key={fond} aria-hidden className="absolute rounded-full flex items-center justify-center"
             style={{ width: d, height: d, left: decal, bottom: roi ? d * 0.35 : 0, background: fond,
                      boxShadow: '0 3px 8px rgba(0,0,0,0.65), inset 0 -3px 5px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.25)',
                      border: '1px solid rgba(244,239,227,0.25)' }}>
-        {roi && <Crown size={d * 0.5} style={{ color: '#3a2c14' }} />}
+        {roi && <Crown size={d * 0.5} style={{ color: '#d9a441' }} />}
       </span>
     );
     return (
       <span className="relative block" style={{ width: taille * 1.15, height: taille * 0.85 }}>
-        {piece('linear-gradient(160deg,#5a4520,#3a2c14)', 0)}
-        {piece('linear-gradient(160deg,#f4ecd8,#cfc1a0)', d * 1.45)}
-        {piece('linear-gradient(160deg,#ecc978,#b8902f)', d * 0.72, true)}
+        {piece('linear-gradient(160deg,#3a5a86,#233b5c)', 0)}
+        {piece('linear-gradient(160deg,#a03a5a,#7a1f3a)', d * 1.45)}
+        {piece('linear-gradient(160deg,#c23a48,#8a2430)', d * 0.72, true)}
       </span>
     );
   }
-  // Le dos royal : le vrai dos du tarot, relevé à l'or.
+  // Le tarot de la caravane : le dos dessiné, tel qu'il paraît sur le tapis.
   return (
-    <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="rounded-[4px] object-cover"
-         style={{ height: taille, width: taille * 0.62, filter: FILTRE_DOS_ROYAL,
-                  border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }} />
+    <span className="block rounded-[4px] overflow-hidden"
+          style={{ height: taille, width: taille * 0.53, border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }}>
+      <DosCaravane className="w-full h-full" />
+    </span>
   );
 };
 

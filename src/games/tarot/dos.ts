@@ -1,14 +1,16 @@
 // ─── Le dos de carte équipé ─────────────────────────────────────────
-// Le dos royal (roue des sept jours, jour 4) se gagne côté serveur
-// (bourses/{uid}.dosTarot) et s'équipe depuis le coffre du profil. Le
-// choix vit dans le navigateur, comme celui des pièces du hnefatafl.
-// Module minuscule, pour que le profil n'embarque pas tout le tapis.
+// Le tarot de la caravane (récompense quotidienne du jour 4) se gagne
+// côté serveur (bourses/{uid}.dosTarot) et s'équipe depuis le coffre du
+// profil ou à même le jeu. Le choix vit dans le navigateur, comme celui
+// des pièces du hnefatafl. Le dessin lui-même est DosCaravane.tsx.
 
 export const CLE_DOS_TAROT = 'fmm.tarot.dos';
+export const DOS_CARAVANE = 'caravane';
 
-export function dosRoyalEquipe(): boolean {
-  try { return localStorage.getItem(CLE_DOS_TAROT) === 'royal'; } catch { return false; }
+export function dosCaravaneEquipe(): boolean {
+  try { return localStorage.getItem(CLE_DOS_TAROT) === DOS_CARAVANE; } catch { return false; }
 }
 
-/** Le même relèvement à l'or, sur le tapis et dans le coffre. */
-export const FILTRE_DOS_ROYAL = 'sepia(0.9) saturate(1.6) hue-rotate(-12deg) brightness(1.08)';
+export function equiperDosCaravane(oui: boolean): void {
+  try { if (oui) localStorage.setItem(CLE_DOS_TAROT, DOS_CARAVANE); else localStorage.removeItem(CLE_DOS_TAROT); } catch { /* navigation privée */ }
+}

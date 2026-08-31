@@ -2136,16 +2136,17 @@ function tirerRarete() {
 
 // ── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
 // Chaque visite quotidienne réclame la récompense du jour de la roue :
-// jour 1 = 5 Montpellois, jour 2 = 10, jour 3 = pièces de la Garde
-// royale (hnefatafl), jour 4 = dos royal (tarot), jour 5 = 15, jour 6
+// jour 1 = 5 Montpellois, jour 2 = 10, jour 3 = le hnefatafl de la
+// caravane (pièces + plateau), jour 4 = le tarot de la caravane (dos de
+// carte), jour 5 = 15, jour 6
 // = 20, jour 7 = une seconde chance au concours William J. Walter.
 // Passé le jour 7, la roue recommence. Un jour sauté remet au jour 1.
 // Doit rester en phase avec RECOMPENSES_QUOTIDIEN (src/firebase/montpellois.ts).
 const ROUE_QUOTIDIENNE = [
   { montpellois: 5 },
   { montpellois: 10 },
-  { taflPieces: 'garde' },
-  { dosTarot: 'royal' },
+  { taflPieces: 'caravane', taflPlateaux: 'caravane' },
+  { dosTarot: 'caravane' },
   { montpellois: 15 },
   { montpellois: 20 },
   { chanceWJW: 1 },
@@ -2177,6 +2178,7 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
     const solde = (data.solde || 0) + gain;
     const maj = { solde, gagne: gagneApres, dernierQuotidien: FieldValue.serverTimestamp(), quotidienSuite: suite, maj: FieldValue.serverTimestamp() };
     if (don.taflPieces) maj.taflPieces = FieldValue.arrayUnion(don.taflPieces);
+    if (don.taflPlateaux) maj.taflPlateaux = FieldValue.arrayUnion(don.taflPlateaux);
     if (don.dosTarot) maj.dosTarot = FieldValue.arrayUnion(don.dosTarot);
     if (don.chanceWJW) maj.chancesWJW = FieldValue.increment(don.chanceWJW);
     tx.set(ref, maj, { merge: true });

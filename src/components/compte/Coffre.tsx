@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Check, Music, Palette, Disc3, Gift, Lock, Swords } from 'lucide-react';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix } from '../../games/hnefatafl/assets';
-import { CLE_DOS_TAROT, dosRoyalEquipe, FILTRE_DOS_ROYAL } from '../../games/tarot/dos';
+import { dosCaravaneEquipe, equiperDosCaravane } from '../../games/tarot/dos';
+import DosCaravane from '../../games/tarot/DosCaravane';
 import { suivreMaBourse, type Bourse } from '../../firebase/montpellois';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
@@ -45,10 +46,10 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
   // Les trésors de la roue des sept jours. Leur « équipement » vit dans
   // le navigateur, comme le reste des choix des jeux (lireChoix du
   // hnefatafl, CLE_DOS_TAROT du tarot).
-  const dosRoyalGagne = (bourse?.dosTarot || []).includes('royal');
+  const dosRoyalGagne = (bourse?.dosTarot || []).includes('caravane');
   const chancesWJW = bourse?.chancesWJW || 0;
   const [choixJeu, setChoixJeu] = useState(() => lireChoix());
-  const [dosRoyal, setDosRoyal] = useState(() => dosRoyalEquipe());
+  const [dosRoyal, setDosRoyal] = useState(() => dosCaravaneEquipe());
   const equiperPlateau = (id: string) => { ecrireChoix(id, choixJeu.pieces); setChoixJeu({ plateau: id, pieces: choixJeu.pieces }); };
   const equiperPieces = (id: string) => { ecrireChoix(choixJeu.plateau, id); setChoixJeu({ plateau: choixJeu.plateau, pieces: id }); };
   // Un jeu 'recompense' se joue seulement s'il est gagné; un jeu
@@ -57,7 +58,7 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
     statut === 'disponible' || (statut === 'recompense' && gagnes.includes(id));
   const basculerDosRoyal = () => {
     const suivant = !dosRoyal;
-    try { if (suivant) localStorage.setItem(CLE_DOS_TAROT, 'royal'); else localStorage.removeItem(CLE_DOS_TAROT); } catch { /* navigation privée */ }
+    equiperDosCaravane(suivant);
     setDosRoyal(suivant);
   };
 
@@ -162,7 +163,7 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
         <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Plateaux du hnefatafl' : 'Hnefatafl boards'}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
           {BOARD_SETS.map((b) => {
-            const ouvert = jeuOuvert(b.statut, b.id, []);
+            const ouvert = jeuOuvert(b.statut, b.id, bourse?.taflPlateaux || []);
             const actif = choixJeu.plateau === b.id;
             return (
               <button key={b.id} type="button" disabled={!ouvert} onClick={() => equiperPlateau(b.id)} aria-pressed={actif}
@@ -174,7 +175,11 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
-                  {!ouvert && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? 'Bientôt' : 'Soon'}</span>}
+                  {!ouvert && (
+                    <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                      {b.statut === 'recompense' ? (fr ? 'Récompense quotidienne · jour 3' : 'Daily reward · day 3') : (fr ? 'Bientôt' : 'Soon')}
+                    </span>
+                  )}
                 </span>
                 {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
               </button>
@@ -193,8 +198,8 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed"
                       style={carte(actif)}>
                 <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center"
-                      style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: b.id === 'garde' ? 'linear-gradient(150deg, #e8dcc0 0%, #d8b05a 55%, #3a2c14 100%)' : 'rgba(0,0,0,0.4)' }}>
-                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: b.id === 'garde' ? '#3a2c14' : 'rgba(216,176,90,0.6)' }} />)}
+                      style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: b.id === 'caravane' ? 'linear-gradient(150deg, #2f6f5a 0%, #8a2430 55%, #d9a441 100%)' : 'rgba(0,0,0,0.4)' }}>
+                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: b.id === 'caravane' ? '#f0e3c8' : 'rgba(216,176,90,0.6)' }} />)}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
@@ -226,11 +231,11 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                   className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed" style={carte(dosRoyal)}>
             <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
               {dosRoyalGagne
-                ? <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover" style={{ filter: FILTRE_DOS_ROYAL }} />
+                ? <DosCaravane className="w-full h-full" />
                 : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? 'Le dos royal' : 'The royal back'}</span>
+              <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? 'Tarot de la caravane' : 'Caravan tarot'}</span>
               {!dosRoyalGagne && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? 'Récompense quotidienne · jour 4' : 'Daily reward · day 4'}</span>}
             </span>
             {dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}

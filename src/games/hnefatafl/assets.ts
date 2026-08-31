@@ -34,7 +34,7 @@ export interface BoardSet {
   /** Teinte du blason peint au centre, et sa présence. */
   decal?:    { couleur: number; opacite: number };
   /** Palette du plateau procédural (voir PALETTES dans boardMesh). */
-  palette?:  'noyer' | 'pierre' | 'taverne';
+  palette?:  'noyer' | 'pierre' | 'taverne' | 'caravane';
 }
 
 export interface PieceSet {
@@ -51,6 +51,8 @@ export interface PieceSet {
   scales?:   Record<number, number>;
   /** Teintes des pièces tournées, quand il n'y a pas de modèle 3D. */
   teintes?:  { assaillant: number; defenseur: number; roi: number };
+  /** Pièces construites en géométrie (caravaneMesh.ts), sans GLB. */
+  procedural?: 'caravane';
 }
 
 export const BOARD_SETS: BoardSet[] = [
@@ -79,6 +81,16 @@ export const BOARD_SETS: BoardSet[] = [
     vignette: '/games/hnefatafl/vignettes/pierre.webp',
     palette: 'pierre',
     decal: { couleur: 0xc8d0d8, opacite: 0.22 },
+  },
+  {
+    id: 'caravane',
+    statut: 'recompense',
+    nomFR: 'La route de la caravane',
+    nomEN: 'The caravan road',
+    texteFR: 'Un plateau peint comme une roulotte : vert de roulotte et bordeaux, filets ocre. Se gagne avec la caravane, au troisième jour de visite d\u2019affilée.',
+    texteEN: 'A board painted like a wagon: vardo green and burgundy, ochre lines. Earned with the caravan, on the third daily visit in a row.',
+    vignette: '',
+    palette: 'caravane',
   },
   {
     id: 'bientot',
@@ -144,14 +156,16 @@ export const PIECE_SETS: PieceSet[] = [
     teintes: { assaillant: 0x7b2018, defenseur: 0xd9c49a, roi: 0xc9a227 },
   },
   {
-    id: 'garde',
+    id: 'caravane',
     statut: 'recompense',
-    nomFR: 'La Garde royale',
-    nomEN: 'The Royal Guard',
-    texteFR: 'Or et ivoire, la parure des fid\u00e8les : elle se gagne au troisi\u00e8me jour de visite d\u2019affil\u00e9e, et ne s\u2019ach\u00e8te nulle part.',
-    texteEN: 'Gold and ivory, the livery of the faithful: earned on the third daily visit in a row, and sold nowhere.',
+    nomFR: 'La caravane',
+    nomEN: 'The caravan',
+    texteFR: 'Une roulotte de gitans pour roi, qui doit gagner un coin du plateau; des hommes de la route au foulard rouge à l\u2019assaut, des femmes en jupe rayée pour la défendre. Se gagne au troisième jour de visite d\u2019affilée.',
+    texteEN: 'A gypsy wagon for a king, bound for a corner of the board; red-scarfed men of the road on the attack, women in striped skirts to defend it. Earned on the third daily visit in a row.',
     vignette: '',
-    teintes: { assaillant: 0x3a2c14, defenseur: 0xe8dcc0, roi: 0xd8b05a },
+    procedural: 'caravane',
+    scales: { 1: 0.58, 2: 0.58, 3: 0.72 },
+    teintes: { assaillant: 0x233b5c, defenseur: 0x7a1f3a, roi: 0x8a2430 },
   },
   {
     id: 'bientot',
@@ -172,11 +186,11 @@ export const BOARD_DEFAUT = 'chene';
 export const PIECES_DEFAUT = 'jarl';
 
 export const boardSet = (id: string): BoardSet =>
-  BOARD_SETS.find((b) => b.id === id && b.statut === 'disponible')
+  BOARD_SETS.find((b) => b.id === id && b.statut !== 'bientot')
   ?? BOARD_SETS.find((b) => b.id === BOARD_DEFAUT)!;
 
 export const pieceSet = (id: string): PieceSet =>
-  PIECE_SETS.find((p) => p.id === id && p.statut === 'disponible')
+  PIECE_SETS.find((p) => p.id === id && p.statut !== 'bientot')
   ?? PIECE_SETS.find((p) => p.id === PIECES_DEFAUT)!;
 
 // ── Choix du joueur ─────────────────────────────────────────────────

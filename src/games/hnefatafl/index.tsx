@@ -794,12 +794,12 @@ const PilleJeu: React.FC<{
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            // La Garde royale n'a pas encore de vignette photographiée :
-            // un aplat de ses teintes tient la place.
+            // La caravane n'a pas encore de vignette photographiée :
+            // un aplat de ses couleurs tient la place.
             <span
               aria-hidden
               className="absolute inset-0"
-              style={{ background: 'linear-gradient(150deg, #e8dcc0 0%, #d8b05a 55%, #3a2c14 100%)' }}
+              style={{ background: 'linear-gradient(150deg, #2f6f5a 0%, #8a2430 55%, #d9a441 100%)' }}
             />
           )
         ) : (
@@ -833,12 +833,13 @@ interface StartScreenProps {
   onChoix: (cle: 'plateau' | 'pieces', id: string) => void;
 }
 const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin, lang, choix, onChoix }) => {
-  // La Garde royale (roue des sept jours) se déverrouille par la bourse.
+  // La caravane (récompense quotidienne du jour 3) se déverrouille par la bourse.
   const { user } = useAuth();
   const [taflDebloques, setTaflDebloques] = useState<string[]>([]);
+  const [plateauxDebloques, setPlateauxDebloques] = useState<string[]>([]);
   useEffect(() => {
-    if (!user?.uid) { setTaflDebloques([]); return; }
-    return suivreMaBourse(user.uid, (b) => setTaflDebloques(b.taflPieces || []));
+    if (!user?.uid) { setTaflDebloques([]); setPlateauxDebloques([]); return; }
+    return suivreMaBourse(user.uid, (b) => { setTaflDebloques(b.taflPieces || []); setPlateauxDebloques(b.taflPlateaux || []); });
   }, [user?.uid]);
 
   const [mode, setMode] = useState<Mode>(initial.mode);
@@ -946,6 +947,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
               lang={lang}
               soon={s.shopSoon}
               active={choix.plateau === b.id}
+              debloque={plateauxDebloques.includes(b.id)}
               onClick={() => onChoix('plateau', b.id)}
             />
           ))}
@@ -965,9 +967,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
           ))}
         </Row>
 
-        {/* La Garde royale se gagne, elle ne s'achète pas : l'aperçu dit
+        {/* La caravane se gagne, elle ne s'achète pas : l'aperçu dit
             comment, tant qu'elle n'est pas dans le coffre (Alex, 2026-08-30). */}
-        {!taflDebloques.includes('garde') && (
+        {!taflDebloques.includes('caravane') && (
           <div className="max-w-xl mx-auto mb-4 md:mb-6">
             <ApercuRecompense jour={3} lang={lang} />
           </div>

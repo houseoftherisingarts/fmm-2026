@@ -41,10 +41,10 @@ export const RECOMPENSES_QUOTIDIEN: RecompenseQuotidienne[] = [
     texteFR: 'Cinq pièces tombent dans votre bourse.', texteEN: 'Five coins drop into your purse.' },
   { jour: 2, type: 'montpellois', montant: 10, nomFR: '10 Montpellois', nomEN: '10 Montpellois',
     texteFR: 'Dix pièces tombent dans votre bourse.', texteEN: 'Ten coins drop into your purse.' },
-  { jour: 3, type: 'taflPieces', nomFR: 'La Garde royale', nomEN: 'The Royal Guard',
-    texteFR: 'Un jeu de pièces d’or et d’ivoire pour le hnefatafl, réservé aux fidèles.', texteEN: 'A gold-and-ivory hnefatafl piece set, kept for the faithful.' },
-  { jour: 4, type: 'dosTarot', nomFR: 'Le dos royal', nomEN: 'The royal back',
-    texteFR: 'Un dos de carte doré pour le tarot, que la boutique ne vend pas.', texteEN: 'A gilded tarot card back the shop does not sell.' },
+  { jour: 3, type: 'taflPieces', nomFR: 'Hnefatafl de la caravane', nomEN: 'Caravan hnefatafl',
+    texteFR: 'Une roulotte pour roi, des gens de la route pour pièces, et leur plateau peint. Le jeu d’échecs viking de la caravane, que la boutique ne vend pas.', texteEN: 'A wagon for a king, people of the road for pieces, and their painted board. The caravan’s Viking chess set, which the shop does not sell.' },
+  { jour: 4, type: 'dosTarot', nomFR: 'Tarot de la caravane', nomEN: 'Caravan tarot',
+    texteFR: 'Un dos de carte d’argent au saphir, bleu nuit, pour le tarot.', texteEN: 'A silver, sapphire-set, midnight-blue card back for the tarot.' },
   { jour: 5, type: 'montpellois', montant: 15, nomFR: '15 Montpellois', nomEN: '15 Montpellois',
     texteFR: 'Quinze pièces tombent dans votre bourse.', texteEN: 'Fifteen coins drop into your purse.' },
   { jour: 6, type: 'montpellois', montant: 20, nomFR: '20 Montpellois', nomEN: '20 Montpellois',
@@ -112,6 +112,7 @@ export interface Bourse {
   /** La roue des sept jours : jours d'affilée, et trésors gagnés. */
   quotidienSuite?: number;
   taflPieces?: string[];
+  taflPlateaux?: string[];
   dosTarot?: string[];
   chancesWJW?: number;
   maj?: unknown;

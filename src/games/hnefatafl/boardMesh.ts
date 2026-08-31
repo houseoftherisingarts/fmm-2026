@@ -79,6 +79,12 @@ const PALETTES: Record<string, Palette> = {
     clair: 0x6a6558, sombre: 0x413d36, socle: 0x14161a, socleHaut: 0x22252a,
     trone: 0x3a5a4a, metal: 0x9aa3ab, metalSombre: 0x555c63, brillance: 8,
   },
+  // Le plateau peint de la caravane (récompense du jour 3) : vert de
+  // roulotte et bordeaux sur les cases, socle de bois rouge, filets ocre.
+  caravane: {
+    clair: 0x2f6f5a, sombre: 0x6b1f2a, socle: 0x3a1c0c, socleHaut: 0x5a2e14,
+    trone: 0xd9a441, metal: 0xd9a441, metalSombre: 0x8a5a12, brillance: 34,
+  },
 };
 
 
