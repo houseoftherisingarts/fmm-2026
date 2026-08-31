@@ -856,8 +856,8 @@ const MerellePage: React.FC = () => {
             <BoutonMusique
               ref={musiqueRef}
               cle="merelle"
-              url="/audio/master-of-the-feast.mp3"
-              titre="Master of the Feast · Kevin MacLeod"
+              defaut="festin"
+              lang={lang}
               onLabel={t.musiqueOn}
               offLabel={t.musiqueOff}
             />

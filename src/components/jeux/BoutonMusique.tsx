@@ -149,7 +149,7 @@ const BoutonMusique = forwardRef<BoutonMusiqueHandle, {
             role="menuitem"
             onClick={() => choisir(null)}
             className={`w-full flex items-center gap-2 px-3 py-2 rounded-[11px] text-left font-sans text-[11px] uppercase tracking-[0.14em] transition-colors ${
-              choix === null ? 'text-brass bg-brass/10' : 'text-ivory-soft hover:text-ivory hover:bg-white/8'
+              choix === null ? 'text-brass bg-brass/10' : 'text-ivory-soft hover:text-ivory hover:bg-white/10'
             }`}
           >
             <VolumeX size={13} />
@@ -165,7 +165,7 @@ const BoutonMusique = forwardRef<BoutonMusiqueHandle, {
               onClick={() => choisir(a.id)}
               title={a.credit}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-[11px] text-left font-sans text-[11px] transition-colors ${
-                choix === a.id ? 'text-brass bg-brass/10' : 'text-ivory-soft hover:text-ivory hover:bg-white/8'
+                choix === a.id ? 'text-brass bg-brass/10' : 'text-ivory-soft hover:text-ivory hover:bg-white/10'
               }`}
             >
               <Music size={13} className="shrink-0" />
