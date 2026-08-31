@@ -276,7 +276,6 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     pieces.delete(coup.de);
 
     const fil = gsap.timeline({ onComplete: fini });
-    let depart = positionDe(coup.de);
     coup.etapes.forEach((etape, n) => {
       const arrivee = positionDe(etape);
       const bond = coup.prises.length > 0;
