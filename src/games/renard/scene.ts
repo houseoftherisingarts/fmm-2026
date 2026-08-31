@@ -175,7 +175,12 @@ function construireRenard(): THREE.Group {
   g.add(boutDeQueue);
 
   g.traverse((o) => { if (o instanceof THREE.Mesh) { o.castShadow = true; } });
-  return g;
+  // L'échelle vit sur la figurine, jamais sur le groupe rendu : c'est
+  // ce dernier que l'animation de capture rétrécit jusqu'à zéro.
+  g.scale.setScalar(1.35);
+  const socle = new THREE.Group();
+  socle.add(g);
+  return socle;
 }
 
 // ── Une oie ─────────────────────────────────────────────────────────
