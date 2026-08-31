@@ -290,9 +290,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
         fil.to(piece.position, { y: 0.85, duration: 0.18, ease: 'power2.out' }, '<');
         fil.to(piece.position, { y: 0, duration: 0.18, ease: 'power2.in' }, '>');
       }
-      depart = arrivee;
     });
-    void depart;
 
     // Les oies emportées s'envolent au moment où le renard passe.
     coup.prises.forEach((prise, n) => {
