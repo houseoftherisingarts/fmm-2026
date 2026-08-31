@@ -58,18 +58,29 @@ function construirePlateau(): THREE.Group {
   const groupe = new THREE.Group();
   const bois = boisDeLaPlanche();
 
-  const bras = (largeurEnPoints: number, hauteurEnPoints: number) => {
-    const g = new THREE.BoxGeometry(
-      largeurEnPoints * PAS_3D, EPAISSEUR, hauteurEnPoints * PAS_3D,
-    );
-    const m = new THREE.Mesh(g, bois);
-    m.position.y = -EPAISSEUR / 2;
-    m.castShadow = true;
-    m.receiveShadow = true;
-    return m;
-  };
-  groupe.add(bras(3.6, 7.6));
-  groupe.add(bras(7.6, 3.6));
+  // Une seule pièce de bois, découpée en croix. Deux planches croisées
+  // auraient donné deux dessus coplanaires au milieu, donc un
+  // scintillement à la moindre rotation de caméra.
+  const a = 1.9;   // demi-largeur d'un bras
+  const L = 5.4;   // demi-longueur de la croix
+  const forme = new THREE.Shape();
+  forme.moveTo(-a, -L);
+  forme.lineTo(a, -L); forme.lineTo(a, -a); forme.lineTo(L, -a);
+  forme.lineTo(L, a); forme.lineTo(a, a); forme.lineTo(a, L);
+  forme.lineTo(-a, L); forme.lineTo(-a, a); forme.lineTo(-L, a);
+  forme.lineTo(-L, -a); forme.lineTo(-a, -a);
+  forme.closePath();
+  const planche = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(forme, {
+      depth: EPAISSEUR, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.06, bevelSegments: 2,
+    }),
+    bois,
+  );
+  planche.rotation.x = -Math.PI / 2;
+  planche.position.y = -EPAISSEUR;
+  planche.castShadow = true;
+  planche.receiveShadow = true;
+  groupe.add(planche);
 
   // Les lignes brûlées au fer, une par voisinage. Elles ne sont pas
   // peintes : elles sont creusées d'un cheveu dans le bois, donc
