@@ -613,6 +613,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     gsap.killTweensOf(groupePions.children.map((o) => o.position));
     eteindre();
     haloGeo.dispose();
+    anneauGeo.dispose();
     pionGeo.dispose();
     matPion[1].dispose();
     matPion[2].dispose();
