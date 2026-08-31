@@ -240,6 +240,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.aspect = W / H;
+    camera.fov = focalePour(camera.aspect);
     camera.updateProjectionMatrix();
     camR = rayonUtile(camera.aspect);
     majCam();
