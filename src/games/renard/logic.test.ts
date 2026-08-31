@@ -50,10 +50,12 @@ cas('la mise en place donne 13 oies, ou 17 dans la forme tardive', () => {
   assert.equal(positionRenard(tardive), CENTRE);
 });
 
-cas('au premier coup le renard a quatre pas et aucune prise', () => {
+cas('au premier coup le renard a trois pas et aucune prise', () => {
+  // Le quatrième voisin porte une oie, et le point derrière elle en
+  // porte une autre : le saut est fermé dès la mise en place.
   const p = plateauInitial('oies13');
   const coups = coupsPossibles(p, 'renard', 'oies13');
-  assert.equal(coups.length, 4);
+  assert.equal(coups.length, 3);
   assert.ok(coups.every((c) => c.prises.length === 0));
 });
 
