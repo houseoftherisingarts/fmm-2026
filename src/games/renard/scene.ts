@@ -20,7 +20,7 @@ import { PAS, POINTS, pointDe, type Coup, type Plateau } from './logic';
 const PAS_3D = 2.0;
 const EPAISSEUR = 0.55;
 
-const HAUTEUR_SURBRILLANCE = 0.03;
+const HAUTEUR_SURBRILLANCE = 0.075;
 
 const COULEUR_CHOISI = 0xe8b14a;   // laiton du site
 const COULEUR_CIBLE = 0x2ab964;    // vert de la forêt ancienne
@@ -35,7 +35,7 @@ const positionDe = (i: number): THREE.Vector3 => {
 // Même texture que la table des dés et du tafl, pour que les trois
 // jeux du festival soient taillés dans le même arbre.
 function boisDeLaPlanche(): THREE.MeshStandardMaterial {
-  const mat = new THREE.MeshStandardMaterial({ color: 0xd8b483, roughness: 0.8, metalness: 0.03 });
+  const mat = new THREE.MeshStandardMaterial({ color: 0xf3ddbe, roughness: 0.78, metalness: 0.03 });
   const tex = new THREE.TextureLoader().load(
     '/jeux/des/table-bois.webp',
     (t) => {
@@ -85,7 +85,7 @@ function construirePlateau(): THREE.Group {
   // Les lignes brûlées au fer, une par voisinage. Elles ne sont pas
   // peintes : elles sont creusées d'un cheveu dans le bois, donc
   // posées juste au-dessus pour rester nettes sous la lumière rase.
-  const braise = new THREE.MeshStandardMaterial({ color: 0x241206, roughness: 0.98, metalness: 0 });
+  const braise = new THREE.MeshStandardMaterial({ color: 0x1a0c03, roughness: 0.98, metalness: 0 });
   const faites = new Set<string>();
   POINTS.forEach((p, i) => {
     for (const { dr, dc } of PAS) {
@@ -98,22 +98,22 @@ function construirePlateau(): THREE.Group {
       const b = positionDe(voisin);
       const horizontal = Math.abs(a.x - b.x) > 0.01;
       const ligne = new THREE.Mesh(
-        new THREE.BoxGeometry(horizontal ? PAS_3D : 0.11, 0.03, horizontal ? 0.11 : PAS_3D),
+        new THREE.BoxGeometry(horizontal ? PAS_3D : 0.13, 0.05, horizontal ? 0.13 : PAS_3D),
         braise,
       );
-      ligne.position.set((a.x + b.x) / 2, 0.012, (a.z + b.z) / 2);
+      ligne.position.set((a.x + b.x) / 2, 0.02, (a.z + b.z) / 2);
       groupe.add(ligne);
     }
   });
 
   // Les cupules : un creux au vilebrequin à chaque point, pour que le
   // pion se cale et que le plateau se lise même de loin.
-  const creux = new THREE.MeshStandardMaterial({ color: 0x1f0f05, roughness: 0.95, metalness: 0 });
-  const creuxGeo = new THREE.CylinderGeometry(0.38, 0.3, 0.1, 22);
+  const creux = new THREE.MeshStandardMaterial({ color: 0x2a1508, roughness: 0.95, metalness: 0 });
+  const creuxGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.06, 24);
   POINTS.forEach((_, i) => {
     const m = new THREE.Mesh(creuxGeo, creux);
     m.position.copy(positionDe(i));
-    m.position.y = -0.028;
+    m.position.y = 0.028;
     m.receiveShadow = true;
     groupe.add(m);
   });
@@ -192,26 +192,26 @@ function construireOie(): THREE.Group {
 
   const corps = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 14), plume);
   corps.position.set(0, 0.32, 0.04);
-  corps.scale.set(0.86, 0.8, 1.15);
+  corps.scale.set(0.78, 0.78, 1.18);
   g.add(corps);
 
-  const cou = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.1, 0.42, 12), plume);
-  cou.position.set(0, 0.62, -0.14);
-  cou.rotation.x = 0.22;
+  const cou = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.11, 0.62, 12), plume);
+  cou.position.set(0, 0.7, -0.16);
+  cou.rotation.x = 0.2;
   g.add(cou);
 
   const tete = new THREE.Mesh(new THREE.SphereGeometry(0.125, 14, 12), plume);
-  tete.position.set(0, 0.86, -0.2);
+  tete.position.set(0, 1.02, -0.24);
   g.add(tete);
 
   const nez = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.2, 10), bec);
   nez.rotation.x = -Math.PI / 2;
-  nez.position.set(0, 0.85, -0.34);
+  nez.position.set(0, 1.01, -0.38);
   g.add(nez);
 
   for (const x of [-0.075, 0.075]) {
     const o = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), oeil);
-    o.position.set(x, 0.9, -0.28);
+    o.position.set(x, 1.06, -0.32);
     g.add(o);
   }
 

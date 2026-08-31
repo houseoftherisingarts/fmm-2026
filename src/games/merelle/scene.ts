@@ -334,18 +334,20 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // ── Les cupules ────────────────────────────────────────────────────
   // Creusées pour de vrai : la peinture donne l'ombre, la géométrie
   // donne le relief quand la caméra passe au ras du bois.
-  const cupuleGeo = new THREE.CylinderGeometry(0.33 * CELL, 0.28 * CELL, 0.07, 24, 1, true);
-  const cupuleFondGeo = new THREE.CircleGeometry(0.28 * CELL, 24);
-  const cupuleMat = new THREE.MeshStandardMaterial({ color: 0x3a2410, roughness: 0.85, metalness: 0.02, side: THREE.DoubleSide });
+  // Une écuelle, pas un trou : la paroi reste assez claire pour prendre
+  // la lumière, sinon les points vides se lisent comme des taches.
+  const cupuleGeo = new THREE.CylinderGeometry(0.29 * CELL, 0.23 * CELL, 0.06, 24, 1, true);
+  const cupuleFondGeo = new THREE.CircleGeometry(0.23 * CELL, 24);
+  const cupuleMat = new THREE.MeshStandardMaterial({ color: 0x6b4926, roughness: 0.72, metalness: 0.02, side: THREE.DoubleSide });
   for (let p = 0; p < 24; p++) {
     const pos = positionDe(p);
     const paroi = new THREE.Mesh(cupuleGeo, cupuleMat);
-    paroi.position.set(pos.x, HAUT - 0.035, pos.z);
+    paroi.position.set(pos.x, HAUT - 0.03, pos.z);
     paroi.receiveShadow = true;
     scene.add(paroi);
     const fond = new THREE.Mesh(cupuleFondGeo, cupuleMat);
     fond.rotation.x = -Math.PI / 2;
-    fond.position.set(pos.x, HAUT - 0.068, pos.z);
+    fond.position.set(pos.x, HAUT - 0.058, pos.z);
     fond.receiveShadow = true;
     scene.add(fond);
   }
