@@ -70,14 +70,14 @@ const EspaceVip: React.FC<{
 
 const FR = {
   devenez: 'Devenez VIP', pitch: 'Un don unique pour toujours enlever la publicité, et débloquer une bannière animée et le choix du skin du site.',
-  cta: 'Voir le don sans publicité',
+  cta: 'Retirer les publicités',
   eyebrow: 'Espace VIP', titre: 'Le skin du site',
   intro: 'Choisissez la teinte du festival, rien que pour votre compte. Le changement s’applique tout de suite, sur toutes les pages.',
   skins: { rouge: 'Rouge', bleu: 'Bleu', dore: 'Doré' } as Record<SkinMembre, string>,
 };
 const EN: typeof FR = {
   devenez: 'Become VIP', pitch: 'A one-time gift to remove ads forever, and unlock an animated banner plus your own site skin.',
-  cta: 'See the ad-free gift',
+  cta: 'Remove the ads',
   eyebrow: 'VIP space', titre: 'The site skin',
   intro: 'Choose the festival’s hue, just for your account. The change applies right away, on every page.',
   skins: { rouge: 'Red', bleu: 'Blue', dore: 'Gold' } as Record<SkinMembre, string>,

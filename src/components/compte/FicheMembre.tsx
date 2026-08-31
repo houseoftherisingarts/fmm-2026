@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords, MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield, Sparkles, Crown, BadgeCheck, Plus, Music, Palette, Ticket, Newspaper } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords, MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield, Sparkles, Crown, BadgeCheck, Plus, Music, Palette, Ticket, Newspaper, X, Camera } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { addLocale } from '../../lib/locale';
@@ -127,7 +127,23 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   }, [compte?.uid]);
   const prive = mode === 'prive';
   const t = lang === 'FR' ? FR : EN;
-  const { user: visiteur, isAdmin, signOut } = useAuth();
+  const { user: visiteur, isSuperAdmin, signOut } = useAuth();
+  // La vision admin (Alex, 2026-08-30) : réservée au compte super-admin,
+  // et à bascule. Éteinte, Alex voit les fiches comme n'importe quel
+  // membre; allumée, les contrôles d'équipe (rôles, vérification,
+  // informations) reviennent. Personne d'autre ne les voit jamais.
+  const [visionAdmin, setVisionAdmin] = useState<boolean>(() => {
+    try { return localStorage.getItem('fmm.visionAdmin') !== '0'; } catch { return true; }
+  });
+  const basculerVisionAdmin = () => {
+    const suivant = !visionAdmin;
+    setVisionAdmin(suivant);
+    try { localStorage.setItem('fmm.visionAdmin', suivant ? '1' : '0'); } catch { /* navigation privée */ }
+  };
+  const isAdmin = isSuperAdmin && visionAdmin;
+  // Le panneau des réglages (photo, informations, préférences) s'ouvre
+  // d'un clic sur la photo de profil (Alex, 2026-08-30).
+  const [reglagesOuverts, setReglagesOuverts] = useState(false);
 
   // ── Les onglets, gardés dans l'URL (?onglet=badges) pour que le
   //    retour arrière du navigateur fonctionne comme partout ailleurs.
@@ -474,6 +490,18 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
           </Link>
             {/* La cloche et les messages, en haut à droite de l'espace. */}
             {prive && <Cloche uid={uid} lang={lang} />}
+            {isSuperAdmin && (
+              <button type="button" onClick={basculerVisionAdmin} aria-pressed={visionAdmin}
+                      title={visionAdmin ? (fr ? 'Vision admin : allumée. Cliquer pour voir comme un membre.' : 'Admin view: on. Click to see as a member.') : (fr ? 'Vision admin : éteinte. Cliquer pour voir en admin.' : 'Admin view: off. Click to see as admin.')}
+                      className="inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-full transition-colors"
+                      style={{ border: `1px solid ${visionAdmin ? 'rgba(216,176,90,0.8)' : 'rgba(244,239,227,0.25)'}`, background: visionAdmin ? 'rgba(216,176,90,0.16)' : 'transparent' }}>
+                <Shield size={13} style={{ color: visionAdmin ? '#D8B05A' : 'rgba(244,239,227,0.6)' }} />
+                <span className="font-sans uppercase tracking-[0.16em] text-[9px]" style={{ color: visionAdmin ? '#D8B05A' : 'rgba(244,239,227,0.6)' }}>Admin</span>
+                <span aria-hidden className="relative w-8 h-4 rounded-full transition-colors" style={{ background: visionAdmin ? 'rgba(216,176,90,0.55)' : 'rgba(244,239,227,0.18)' }}>
+                  <span className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all" style={{ left: visionAdmin ? 'calc(100% - 0.85rem)' : '0.15rem', background: '#F4EFE3' }} />
+                </span>
+              </button>
+            )}
           </div>
 
           {(() => {
@@ -494,6 +522,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
                 <div className={posBanniere === 'droite' ? 'relative flex-1 min-w-0' : 'relative'}>
                   <div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-center md:text-left md:gap-12">
+                    <div className="relative shrink-0">
                     <AvatarUpload
                       uid={uid}
                       email={compte?.email || ''}
@@ -501,9 +530,16 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                       lang={lang}
                       avatarUrl={photo}
                       onChange={setAvatarUrl}
-                      lecture={!prive}
+                      lecture
                                   lienProfilPublic={prive ? `${addLocale('/profil', lang)}/${uid}` : undefined}
 />
+                      {prive && (
+                        <button type="button" onClick={() => setReglagesOuverts(true)}
+                                aria-label={fr ? 'Réglages du profil' : 'Profile settings'} title={fr ? 'Réglages du profil' : 'Profile settings'}
+                                className="absolute inset-0 rounded-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brass" />
+                      )}
+                    </div>
+
 
                     <div className="flex-1 min-w-0 w-full">
                       <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words inline-flex items-center gap-2 md:gap-3 flex-wrap justify-center md:justify-start">
@@ -750,48 +786,23 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               // rien ne peut plus laisser un trou. Sur mobile, tout
               // s'empile déjà dans cet ordre : aucune règle séparée à
               // écrire.
-              <div className="space-y-8 md:space-y-10">
-                <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
-                  <form onSubmit={enregistrerProfil} className="glass-light rounded-lg-card p-7 md:p-8">
-                    <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs mb-2">
-                      <UserIcon size={12} className="inline mr-1.5 -mt-0.5" />{t.profileEyebrow}
-                    </p>
-                    <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-5">{t.profileTitle}</h2>
-                    <label className="block mb-4">
-                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.displayName}</span>
-                      <input type="text" value={nomForm} maxLength={60}
-                             onChange={(e) => { setNomForm(e.target.value); setEnregistre(false); }}
-                             className={inputCls} />
-                    </label>
-                    <label className="block mb-5">
-                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.phone}</span>
-                      <input type="tel" value={phone}
-                             onChange={(e) => { setPhone(e.target.value); setEnregistre(false); }}
-                             className={inputCls} />
-                    </label>
-                    <button type="submit" disabled={enregistrement}
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
-                      <Save size={14} /> {enregistrement ? t.saving : t.save}
-                    </button>
-                    {enregistre && (
-                      <p className="text-xs font-editorial text-brass mt-3 text-center">{t.saved}</p>
-                    )}
-                  </form>
-                </div>
-
-                <div>
-                  <p className="witcher-stat-label mb-4">{t.filDeLaPersonne}</p>
+              <div className="space-y-6 md:space-y-8">
+                {/* Alex, 2026-08-30 : le fil d'abord, tout se replie, et
+                    « Vos informations » vit derrière un clic sur la photo
+                    de profil (panneau des réglages, plus bas). */}
+                <Repliable id="fil" titre={t.filDeLaPersonne} icone={<Newspaper size={16} />}>
                   <MurSocial lang={lang} uid={uid} avecAnnonces={false} />
-                </div>
+                </Repliable>
 
                 {compte && (
-                  <div className="space-y-6 md:space-y-8">
+                  <Repliable id="photos" titre={fr ? 'Mes photos' : 'My photos'} icone={<Camera size={16} />}>
                     <PhotosPanel uid={compte.uid} nomMembre={nom} lang={lang} />
                     {/* Les photos où quelqu'un d'autre m'a identifié (Alex, 2026-08-28). */}
                     <PhotosAvecMoi uid={compte.uid} nom={nom} lang={lang} />
-                  </div>
+                  </Repliable>
                 )}
 
+                <Repliable id="candidatures" titre={fr ? 'Mes candidatures' : 'My applications'} icone={<HandHeart size={16} />}>
                 <div className="grid md:grid-cols-3 gap-6 md:gap-8 items-start">
                   <ApplicationCard
                     icon={HandHeart}
@@ -836,42 +847,47 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   />
                 </div>
 
-                {/* ── Le fil entre le marchand et le festival ── */}
-                {vApp && compte && (
-                  <div className="glass-light rounded-lg-card p-6 md:p-7">
-                    <MessageThread
-                      vendorUid={compte.uid}
-                      currentUid={compte.uid}
-                      currentName={nom}
-                      currentRole="vendor"
-                      lang={lang}
-                    />
-                  </div>
-                )}
+                  {/* ── Le fil entre le marchand et le festival ── */}
+                  {vApp && compte && (
+                    <div className="glass-light rounded-lg-card p-6 md:p-7">
+                      <MessageThread
+                        vendorUid={compte.uid}
+                        currentUid={compte.uid}
+                        currentName={nom}
+                        currentRole="vendor"
+                        lang={lang}
+                      />
+                    </div>
+                  )}
+                </Repliable>
 
-                {/* La fiche de l'Ordre et son questionnaire : plus basse,
-                    elle n'occupe plus toute la colonne de gauche. */}
-                <MaFiche lang={lang} />
+                <Repliable id="fiche" titre={fr ? 'Ma fiche de l’Ordre' : 'My Order sheet'} icone={<UserIcon size={16} />}>
+                  <MaFiche lang={lang} />
+                </Repliable>
 
-                {/* Réglages, musique, parrainage et le reste : des
-                    cartes de même gabarit, deux par ligne sur bureau. */}
-                <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
-                  <div className="space-y-6 md:space-y-8">
-                    <ReglagesProfil prefs={fiche?.prefs} onChange={majPrefs} lang={lang} />
-                    <EspaceVip vip={vip} prefs={fiche?.prefs} onChange={majPrefs} onDevenirVip={allerVersSansPub} lang={lang} />
-                    {compte && <AlertesPanel uid={compte.uid} lang={lang} />}
-                    {compte?.email && <ConcoursPanel email={compte.email} />}
+                <Repliable id="compte" titre={fr ? 'Mon compte' : 'My account'} icone={<Shield size={16} />}>
+                  <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+                    <div className="space-y-6 md:space-y-8">
+                      <EspaceVip vip={vip} prefs={fiche?.prefs} onChange={majPrefs} onDevenirVip={allerVersSansPub} lang={lang} />
+                      {compte && <AlertesPanel uid={compte.uid} lang={lang} />}
+                    </div>
+                    <div className="space-y-6 md:space-y-8">
+                      {compte?.email && <ConcoursPanel email={compte.email} />}
+                      {compte && <ParrainagePanel uid={compte.uid} lang={lang} />}
+                    </div>
                   </div>
-                  <div className="space-y-6 md:space-y-8">
+                </Repliable>
+
+                <Repliable id="musique" titre={fr ? 'Musique et dé de la vie' : 'Music and the die of life'} icone={<Music size={16} />} ouvertParDefaut={false}>
+                  <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
                     {compte && <MusiquePanel uid={compte.uid} lang={lang} />}
-                    {compte && <ParrainagePanel uid={compte.uid} lang={lang} />}
                     {/* Le dé de la vie reste dans l'espace de la personne :
                         il n'a rien à faire sur la fiche d'un autre. */}
                     <Suspense fallback={null}>
                       <DeDeLaVie lang={lang} />
                     </Suspense>
                   </div>
-                </div>
+                </Repliable>
               </div>
             ) : (
               <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-start">
@@ -1102,7 +1118,73 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
         </div>
       </section>
       <BugReportModal open={bugOuvert} onClose={() => setBugOuvert(false)} />
+      {/* ── Les réglages du profil : photo, informations, préférences ──
+          Un espace à part, ouvert d'un clic sur la photo de profil
+          (Alex, 2026-08-30). */}
+      <AnimatePresence>
+        {prive && reglagesOuverts && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] flex items-start md:items-center justify-center p-4 overflow-y-auto"
+            style={{ background: 'rgba(6, 3, 4, 0.86)', backdropFilter: 'blur(6px)' }}
+            onClick={() => setReglagesOuverts(false)}
+            role="dialog" aria-modal="true" aria-label={fr ? 'Réglages du profil' : 'Profile settings'}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-5xl rounded-lg-card p-6 md:p-8 my-6"
+              style={{ background: 'linear-gradient(180deg, rgba(20,10,8,0.98), rgba(10,5,4,0.98))', border: '1px solid rgba(216,176,90,0.35)', boxShadow: '0 30px 80px rgba(0,0,0,0.8)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button type="button" onClick={() => setReglagesOuverts(false)} aria-label={fr ? 'Fermer' : 'Close'}
+                      className="absolute top-4 right-4 p-2 rounded-card text-ivory-soft/60 hover:text-brass transition-colors">
+                <X size={18} />
+              </button>
+              <p className="witcher-stat-label mb-1">{fr ? 'Réglages du profil' : 'Profile settings'}</p>
+              <h2 className="font-display text-2xl md:text-3xl text-ivory mb-6">{fr ? 'Votre photo, vos informations, vos préférences' : 'Your photo, your information, your preferences'}</h2>
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+                <div className="space-y-6 md:space-y-8">
+                  <div className="glass-light rounded-lg-card p-6 md:p-7 flex flex-col items-center gap-4">
+                    <p className="witcher-stat-label self-start">{fr ? 'Ma photo' : 'My photo'}</p>
+                    <AvatarUpload uid={uid} email={compte?.email || ''} displayName={nom} lang={lang} avatarUrl={photo} onChange={setAvatarUrl} />
+                  </div>
+                  <form onSubmit={enregistrerProfil} className="glass-light rounded-lg-card p-7 md:p-8">
+                    <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs mb-2">
+                      <UserIcon size={12} className="inline mr-1.5 -mt-0.5" />{t.profileEyebrow}
+                    </p>
+                    <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-5">{t.profileTitle}</h2>
+                    <label className="block mb-4">
+                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.displayName}</span>
+                      <input type="text" value={nomForm} maxLength={60}
+                             onChange={(e) => { setNomForm(e.target.value); setEnregistre(false); }}
+                             className={inputCls} />
+                    </label>
+                    <label className="block mb-5">
+                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.phone}</span>
+                      <input type="tel" value={phone}
+                             onChange={(e) => { setPhone(e.target.value); setEnregistre(false); }}
+                             className={inputCls} />
+                    </label>
+                    <button type="submit" disabled={enregistrement}
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                      <Save size={14} /> {enregistrement ? t.saving : t.save}
+                    </button>
+                    {enregistre && (
+                      <p className="text-xs font-editorial text-brass mt-3 text-center">{t.saved}</p>
+                    )}
+                  </form>
+                </div>
+                <div className="space-y-6 md:space-y-8">
+                  <ReglagesProfil prefs={fiche?.prefs} onChange={majPrefs} lang={lang} />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
+
   );
 };
 

@@ -89,7 +89,7 @@ export const BOARD_SETS: BoardSet[] = [
     nomEN: 'The caravan road',
     texteFR: 'Un plateau peint comme une roulotte : vert de roulotte et bordeaux, filets ocre. Se gagne avec la caravane, au troisième jour de visite d\u2019affilée.',
     texteEN: 'A board painted like a wagon: vardo green and burgundy, ochre lines. Earned with the caravan, on the third daily visit in a row.',
-    vignette: '',
+    vignette: '/games/hnefatafl/vignettes/route-caravane.webp',
     palette: 'caravane',
   },
   {
@@ -162,7 +162,7 @@ export const PIECE_SETS: PieceSet[] = [
     nomEN: 'The caravan',
     texteFR: 'Une roulotte de gitans pour roi, qui doit gagner un coin du plateau; des hommes de la route au foulard rouge à l\u2019assaut, des femmes en jupe rayée pour la défendre. Se gagne au troisième jour de visite d\u2019affilée.',
     texteEN: 'A gypsy wagon for a king, bound for a corner of the board; red-scarfed men of the road on the attack, women in striped skirts to defend it. Earned on the third daily visit in a row.',
-    vignette: '',
+    vignette: '/games/hnefatafl/vignettes/caravane.webp',
     procedural: 'caravane',
     scales: { 1: 0.58, 2: 0.58, 3: 0.72 },
     teintes: { assaillant: 0x233b5c, defenseur: 0x7a1f3a, roi: 0x8a2430 },

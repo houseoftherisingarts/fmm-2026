@@ -198,8 +198,8 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed"
                       style={carte(actif)}>
                 <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center"
-                      style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: b.id === 'caravane' ? 'linear-gradient(150deg, #2f6f5a 0%, #8a2430 55%, #d9a441 100%)' : 'rgba(0,0,0,0.4)' }}>
-                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: b.id === 'caravane' ? '#f0e3c8' : 'rgba(216,176,90,0.6)' }} />)}
+                      style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: 'rgba(0,0,0,0.4)' }}>
+                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />)}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>

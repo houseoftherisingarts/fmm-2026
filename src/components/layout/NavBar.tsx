@@ -280,7 +280,7 @@ const NavBar: React.FC = () => {
             <button
               type="button"
               onClick={() => (user ? navigate(addLocale('/boutique', lang)) : openSignIn())}
-              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full transition-colors"
               style={{ color: 'rgba(244, 239, 227, 0.8)', border: '1px solid rgba(232, 177, 74, 0.28)' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-amber-glow)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(244, 239, 227, 0.8)'; }}
@@ -288,7 +288,7 @@ const NavBar: React.FC = () => {
               title={UI[lang].cart}
             >
               <PieceMontpellois size={18} image />
-              {user && <span className="font-sans text-xs tabular-nums">{solde ?? '·'}</span>}
+              {user && <span className="font-sans text-xs tabular-nums">{solde === null ? '·' : solde > 99 ? '99+' : solde}</span>}
             </button>
 
             {/* Menu: diamond hover marker */}

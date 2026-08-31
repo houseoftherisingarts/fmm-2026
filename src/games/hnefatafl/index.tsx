@@ -850,147 +850,129 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
   const [regleId, setRegleId] = useState<string>(initial.regleId);
   const regleChoisie = regle(regleId);
 
-  const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-    <div className="mb-4 md:mb-6 text-center">
-      <p className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70 mb-2 md:mb-3">
-        {label}
+  // Quatre colonnes de gauche à droite sur ordinateur (Alex, 2026-08-30) :
+  // le règlement, le mode, le plateau, les pièces. Rien à faire défiler,
+  // le bouton reste au bas de la fenêtre. Sur téléphone, les colonnes
+  // s'empilent et c'est le milieu qui défile, jamais le bouton.
+  const Colonne: React.FC<{ num: string; label: string; children: React.ReactNode }> = ({ num, label, children }) => (
+    <section className="rounded-card border border-brass/20 bg-black/30 p-3.5 md:p-4 min-w-0">
+      <p className="flex items-baseline gap-2.5 mb-3 md:mb-4">
+        <span className="font-display title-medieval text-lg md:text-xl" style={{ color: 'rgba(232,177,74,0.6)' }}>{num}</span>
+        <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-brass/70">{label}</span>
       </p>
-      <div className="flex flex-wrap justify-center gap-2.5">{children}</div>
-    </div>
+      <div className="flex flex-col items-stretch gap-2">{children}</div>
+    </section>
+  );
+  const SousTitre: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <p className="font-sans text-[9px] uppercase tracking-[0.3em] text-ivory-soft/55 mt-2 mb-0.5">{children}</p>
   );
 
   return (
-    <div className="absolute inset-0 z-[5] flex items-center justify-center overflow-y-auto px-4 py-4 md:py-8 bg-[rgba(10,4,6,0.82)] backdrop-blur-md">
-      <div className="w-full max-w-2xl text-center">
-        <p className="font-editorial uppercase tracking-[0.4em] text-[10px] md:text-xs text-[var(--color-amber-glow)] mb-2 md:mb-3">
+    <div className="absolute inset-0 z-[5] flex flex-col bg-[rgba(10,4,6,0.82)] backdrop-blur-md">
+      <div className="shrink-0 text-center px-4 pt-4 md:pt-6">
+        <p className="font-editorial uppercase tracking-[0.4em] text-[10px] md:text-xs text-[var(--color-amber-glow)] mb-1.5 md:mb-2">
           {s.startSubtitle}
         </p>
-        <h2 className="font-display title-medieval text-2xl md:text-5xl text-ivory leading-[1.06]">
+        <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-[1.06]">
           {s.startTitle}
         </h2>
-        <div className="divider-brass w-24 mx-auto mt-4 mb-5 md:mt-5 md:mb-8" />
+        <div className="divider-brass w-24 mx-auto mt-3 mb-3 md:mt-4 md:mb-5" />
+      </div>
 
-        <Row label={lang === 'FR' ? 'Le règlement' : 'The rule set'}>
-          {REGLES.map((r) => (
-            <Pill
-              key={r.id}
-              active={regleId === r.id}
-              onClick={() => setRegleId(r.id)}
-              icon={<Scroll size={13} />}
-            >
-              {lang === 'FR' ? r.nomFR : r.nomEN}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 md:px-6 pb-2">
+        <div className="grid gap-3 md:gap-4 lg:grid-cols-4 max-w-6xl mx-auto items-start">
+          <Colonne num="I" label={lang === 'FR' ? 'Le règlement' : 'The rule set'}>
+            {REGLES.map((r) => (
+              <Pill key={r.id} active={regleId === r.id} onClick={() => setRegleId(r.id)} icon={<Scroll size={13} />}>
+                {lang === 'FR' ? r.nomFR : r.nomEN}
+              </Pill>
+            ))}
+            <p className="font-editorial text-[12px] md:text-[13px] text-ivory-soft/75 mt-2 leading-snug">
+              {lang === 'FR' ? regleChoisie.texteFR : regleChoisie.texteEN}
+              <span className="block mt-1 font-sans uppercase tracking-[0.24em] text-[10px] text-brass/70">
+                {regleChoisie.taille}×{regleChoisie.taille}
+              </span>
+            </p>
+          </Colonne>
+
+          <Colonne num="II" label={s.modeLabel}>
+            <Pill active={mode === 'two-player'} onClick={() => setMode('two-player')} icon={<Users size={13} />}>
+              {s.modeTwoPlayer}
             </Pill>
-          ))}
-        </Row>
-        <p className="font-editorial text-[12px] md:text-sm text-ivory-soft/75 max-w-xl mx-auto -mt-2 mb-5 md:mb-7 leading-snug">
-          {lang === 'FR' ? regleChoisie.texteFR : regleChoisie.texteEN}
-          <span className="block mt-1 font-sans uppercase tracking-[0.24em] text-[10px] text-brass/70">
-            {regleChoisie.taille}×{regleChoisie.taille}
-          </span>
-        </p>
+            <Pill active={mode === 'vs-cpu'} onClick={() => setMode('vs-cpu')} icon={<Cpu size={13} />}>
+              {s.modeVsCpu}
+            </Pill>
+            {mode === 'vs-cpu' && (
+              <>
+                <SousTitre>{s.sideLabel}</SousTitre>
+                <Pill active={humanSide === 'defender'} onClick={() => setHumanSide('defender')} icon={<Shield size={13} />}>
+                  {s.sideDefenders}
+                </Pill>
+                <Pill active={humanSide === 'attacker'} onClick={() => setHumanSide('attacker')} icon={<Swords size={13} />}>
+                  {s.sideRaiders}
+                </Pill>
+                <SousTitre>{s.difficultyLabel}</SousTitre>
+                <div className="flex flex-wrap gap-2">
+                  <Pill active={difficulty === 'easy'} onClick={() => setDifficulty('easy')}>{s.diffEasy}</Pill>
+                  <Pill active={difficulty === 'medium'} onClick={() => setDifficulty('medium')}>{s.diffMedium}</Pill>
+                  <Pill active={difficulty === 'hard'} onClick={() => setDifficulty('hard')}>{s.diffHard}</Pill>
+                </div>
+              </>
+            )}
+          </Colonne>
 
-        <Row label={s.modeLabel}>
-          <Pill
-            active={mode === 'two-player'}
-            onClick={() => setMode('two-player')}
-            icon={<Users size={13} />}
-          >
-            {s.modeTwoPlayer}
-          </Pill>
-          <Pill
-            active={mode === 'vs-cpu'}
-            onClick={() => setMode('vs-cpu')}
-            icon={<Cpu size={13} />}
-          >
-            {s.modeVsCpu}
-          </Pill>
-        </Row>
+          <Colonne num="III" label={s.shopBoards}>
+            {BOARD_SETS.map((b) => (
+              <PilleJeu
+                key={b.id}
+                it={b}
+                lang={lang}
+                soon={s.shopSoon}
+                active={choix.plateau === b.id}
+                debloque={plateauxDebloques.includes(b.id)}
+                onClick={() => onChoix('plateau', b.id)}
+              />
+            ))}
+          </Colonne>
 
-        {mode === 'vs-cpu' && (
-          <>
-            <Row label={s.sideLabel}>
-              <Pill
-                active={humanSide === 'defender'}
-                onClick={() => setHumanSide('defender')}
-                icon={<Shield size={13} />}
-              >
-                {s.sideDefenders}
-              </Pill>
-              <Pill
-                active={humanSide === 'attacker'}
-                onClick={() => setHumanSide('attacker')}
-                icon={<Swords size={13} />}
-              >
-                {s.sideRaiders}
-              </Pill>
-            </Row>
-
-            <Row label={s.difficultyLabel}>
-              <Pill active={difficulty === 'easy'} onClick={() => setDifficulty('easy')}>
-                {s.diffEasy}
-              </Pill>
-              <Pill active={difficulty === 'medium'} onClick={() => setDifficulty('medium')}>
-                {s.diffMedium}
-              </Pill>
-              <Pill active={difficulty === 'hard'} onClick={() => setDifficulty('hard')}>
-                {s.diffHard}
-              </Pill>
-            </Row>
-          </>
-        )}
-
-        <Row label={s.shopBoards}>
-          {BOARD_SETS.map((b) => (
-            <PilleJeu
-              key={b.id}
-              it={b}
-              lang={lang}
-              soon={s.shopSoon}
-              active={choix.plateau === b.id}
-              debloque={plateauxDebloques.includes(b.id)}
-              onClick={() => onChoix('plateau', b.id)}
-            />
-          ))}
-        </Row>
-
-        <Row label={s.shopPieces}>
-          {PIECE_SETS.map((b) => (
-            <PilleJeu
-              key={b.id}
-              it={b}
-              lang={lang}
-              soon={s.shopSoon}
-              active={choix.pieces === b.id}
-              debloque={taflDebloques.includes(b.id)}
-              onClick={() => onChoix('pieces', b.id)}
-            />
-          ))}
-        </Row>
-
-        {/* La caravane se gagne, elle ne s'achète pas : l'aperçu dit
-            comment, tant qu'elle n'est pas dans le coffre (Alex, 2026-08-30). */}
-        {!taflDebloques.includes('caravane') && (
-          <div className="max-w-xl mx-auto mb-4 md:mb-6">
-            <ApercuRecompense jour={3} lang={lang} />
-          </div>
-        )}
-
-        {/* Le bouton se collait au bas d'un long panneau et passait
-            sous le texte. Il reste maintenant accroché au bas de la
-            fenêtre, toujours atteignable (Alex, 2026-08-24). */}
-        <div
-          className="sticky bottom-0 -mx-4 md:-mx-6 mt-5 px-4 md:px-6 pt-4 pb-4 flex justify-center"
-          style={{ background: 'linear-gradient(0deg, rgba(10,4,6,0.96) 62%, rgba(10,4,6,0))' }}
-        >
-          <button
-            type="button"
-            onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
-            className="inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
-          >
-            <Swords size={15} />
-            {s.begin}
-          </button>
+          <Colonne num="IV" label={s.shopPieces}>
+            {PIECE_SETS.map((b) => (
+              <PilleJeu
+                key={b.id}
+                it={b}
+                lang={lang}
+                soon={s.shopSoon}
+                active={choix.pieces === b.id}
+                debloque={taflDebloques.includes(b.id)}
+                onClick={() => onChoix('pieces', b.id)}
+              />
+            ))}
+            {/* La caravane se gagne, elle ne s'achète pas : l'aperçu dit
+                comment, tant qu'elle n'est pas dans le coffre (Alex, 2026-08-30). */}
+            {!taflDebloques.includes('caravane') && (
+              <div className="mt-1">
+                <ApercuRecompense jour={3} lang={lang} className="!p-3" />
+              </div>
+            )}
+          </Colonne>
         </div>
+      </div>
+
+      {/* Le bouton vit au bas de la fenêtre, hors du défilement : il ne
+          peut plus passer sous le pli (bogue du 30 août : le panneau,
+          devenu plus haut que l'écran, poussait le bouton hors de vue). */}
+      <div
+        className="shrink-0 flex justify-center px-4 pt-3 pb-3 md:pb-4"
+        style={{ background: 'linear-gradient(0deg, rgba(10,4,6,0.96) 62%, rgba(10,4,6,0))' }}
+      >
+        <button
+          type="button"
+          onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
+          className="inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+        >
+          <Swords size={15} />
+          {s.begin}
+        </button>
       </div>
     </div>
   );

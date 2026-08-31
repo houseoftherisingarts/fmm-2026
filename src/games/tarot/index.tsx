@@ -248,8 +248,8 @@ const TarotPage: React.FC = () => {
         eyebrow={t.eyebrow}
         titre={t.titre}
         intro={t.intro}
-        orbImage="/tarot/T17.webp"
-        orbImagePosition="center 35%"
+        orbImage="/jeux/tuile-tarot.webp"
+        orbImagePosition="center 50%"
         lang={lang}
       >
         <Motes className="opacity-30" count={14} />

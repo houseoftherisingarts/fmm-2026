@@ -153,7 +153,7 @@ const Banniere: React.FC<{
   const video = estVideoUrl(url);
 
   return (
-    <div className={verticale ? 'relative shrink-0 w-full md:w-[220px] h-64 md:h-full' : 'relative w-full my-8 md:my-10 mx-auto max-w-4xl'}>
+    <div className={verticale ? 'relative shrink-0 w-full md:w-[220px] h-64 md:h-full' : 'relative w-full my-8 md:my-10'}>
       {/* Un cadre mince, comme l'anneau du médaillon, dans le métal du rang
           (Alex, 2026-08-28 : « beaucoup plus subtil et mince »). */}
       <div
@@ -165,7 +165,7 @@ const Banniere: React.FC<{
       >
         <div
           ref={cadreRef}
-          className={`relative overflow-hidden rounded-[13px] ${verticale ? 'h-full aspect-[3/5]' : 'aspect-[16/5] md:aspect-[16/4]'}`}
+          className={`relative overflow-hidden rounded-[13px] ${verticale ? 'h-full aspect-[3/5]' : 'aspect-[16/6] md:aspect-[16/5]'}`}
           style={{ background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.bandeSombre}55, rgba(10,2,7,0.95))` }}
           onPointerDown={ajustage ? surPointerDown : undefined}
           onPointerMove={ajustage ? surPointerMove : undefined}

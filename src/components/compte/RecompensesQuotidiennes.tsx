@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Crown, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { sonnerBadge } from '../../lib/fanfare';
@@ -45,23 +45,10 @@ export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, 
     return <img src="/partenaires/wjw-logo-bone.svg" alt="" aria-hidden style={{ height: taille * 0.9, width: 'auto', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.6))' }} />;
   }
   if (type === 'taflPieces') {
-    // Les gens de la caravane : l'homme au gilet bleu nuit, la femme en
-    // jupe bordeaux, et la roulotte rouge pour roi.
-    const d = taille * 0.46;
-    const piece = (fond: string, decal: number, roi = false) => (
-      <span key={fond} aria-hidden className="absolute rounded-full flex items-center justify-center"
-            style={{ width: d, height: d, left: decal, bottom: roi ? d * 0.35 : 0, background: fond,
-                     boxShadow: '0 3px 8px rgba(0,0,0,0.65), inset 0 -3px 5px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.25)',
-                     border: '1px solid rgba(244,239,227,0.25)' }}>
-        {roi && <Crown size={d * 0.5} style={{ color: '#d9a441' }} />}
-      </span>
-    );
+    // La vignette du jeu lui-même, capturée sur le plateau (Alex, 2026-08-30).
     return (
-      <span className="relative block" style={{ width: taille * 1.15, height: taille * 0.85 }}>
-        {piece('linear-gradient(160deg,#3a5a86,#233b5c)', 0)}
-        {piece('linear-gradient(160deg,#a03a5a,#7a1f3a)', d * 1.45)}
-        {piece('linear-gradient(160deg,#c23a48,#8a2430)', d * 0.72, true)}
-      </span>
+      <img src="/games/hnefatafl/vignettes/caravane.webp" alt="" aria-hidden className="rounded-full object-cover"
+           style={{ width: taille, height: taille, border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }} />
     );
   }
   // Le tarot de la caravane : le dos dessiné, tel qu'il paraît sur le tapis.
