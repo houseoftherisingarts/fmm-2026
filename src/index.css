@@ -818,6 +818,7 @@ html.sans-animations-fond .fmm-fx-canvas,
 html.sans-animations-fond .fire-bed,
 html.sans-animations-fond .embers,
 html.sans-animations-fond .fmm-fond-particules,
+html.sans-animations-fond .orb-flame-canvas,
 html.sans-animations-fond .fmm-fire-backdrop {
   display: none;
 }
@@ -859,9 +860,11 @@ html.sans-animations-fond .fmm-fire-backdrop {
     linear-gradient(180deg,
       transparent 0%,
       transparent 40%,
-      rgba(var(--sk-copper-deep-rgb), 0.26) 72%,
-      rgba(var(--sk-gold-deep-rgb), 0.38) 91%,
-      rgba(var(--sk-mustard-rgb), 0.30) 100%);
+      rgba(124, 70, 24, 0.26) 72%,
+      rgba(153, 99, 28, 0.38) 91%,
+      rgba(219, 148, 54, 0.30) 100%);
+  /* Teinte posée en valeurs, ~5 % plus orangée que les jetons de la
+     peau, à la même luminosité (Alex, 2026-08-31). */
 }
 /* La mousse : une bande claire et floue qui ferme le haut du verre. */
 .fmm-fond-particules[data-variante="bulles"]::before {
@@ -873,8 +876,8 @@ html.sans-animations-fond .fmm-fire-backdrop {
   height: 96px;
   background:
     linear-gradient(180deg,
-      rgba(var(--sk-sheen-rgb), 0.42) 0%,
-      rgba(var(--sk-gilt-lit-rgb), 0.20) 52%,
+      rgba(255, 236, 172, 0.42) 0%,
+      rgba(234, 190, 102, 0.20) 52%,
       transparent 100%);
   filter: blur(11px);
   opacity: 0.8;

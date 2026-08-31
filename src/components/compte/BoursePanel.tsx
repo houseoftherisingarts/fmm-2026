@@ -27,15 +27,16 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
 
   const rang = bourse ? rangFortune(bourse.gagne || 0).actuel : null;
 
-  // Le serveur répond par un code Firebase (functions/not-found quand la
-  // fonction n'est pas déployée, functions/unauthenticated sans compte) :
-  // on le traduit, sinon le membre lit « not-found » en petit doré.
+  // Le serveur répond par un code Firebase : functions/internal ou
+  // not-found quand la fonction n'est pas déployée (le navigateur voit
+  // un 404 sans en-têtes CORS), unauthenticated sans compte. On le
+  // traduit, sinon le membre lit « internal » en petit doré.
   const basculer = async () => {
     setEnvoi(true); setMessage(null);
     try { await basculerBoursePublique(!bourse?.publique); }
     catch (e) {
       const code = (e as { code?: string })?.code || '';
-      setMessage(code.endsWith('not-found')
+      setMessage(/(not-found|internal|unavailable)$/.test(code)
         ? (fr ? 'Le service de la bourse n’est pas encore en ligne. Réessayez un peu plus tard.' : 'The purse service is not online yet. Try again a little later.')
         : code.endsWith('unauthenticated')
           ? (fr ? 'Connectez-vous d’abord.' : 'Sign in first.')

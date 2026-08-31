@@ -18,7 +18,7 @@ import { BadgesProvider } from './contexts/BadgesContext';
 import AnnonceBadge from './components/badges/AnnonceBadge';
 import RecompensesQuotidiennes from './components/compte/RecompensesQuotidiennes';
 import { usePerfTier } from './lib/usePerfTier';
-import { usePrefsFond } from './lib/usePrefsFond';
+import { usePrefsFond, useAnimationsFond } from './lib/usePrefsFond';
 import { useSkinActif } from './lib/useSkinActif';
 import FondParticules from './components/layout/FondParticules';
 import NavBar from './components/layout/NavBar';
@@ -325,7 +325,9 @@ const GlobalFireBackdrop: React.FC = () => {
   const { pathname } = useLocation();
   const { lite } = usePerfTier();
   const skin = useSkinActif();
+  const animations = useAnimationsFond();
   if (lite) return null;                                   // machine modeste
+  if (!animations) return null;                            // réglage « Animations du fond » éteint
   if (pathname.startsWith('/admin')) return null;
   if (pathname === '/' || pathname === '/en') return null;  // l'accueil porte le sien
   // Chaque peau a son ciel (Alex, 2026-08-31) : la neige d'hiver sous
