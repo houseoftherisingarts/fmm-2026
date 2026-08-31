@@ -15,7 +15,6 @@
 // ci-dessous en découlent, mesurées une fois via gltf-transform inspect.
 
 import * as THREE from 'three';
-import { construireCaravane } from './caravaneMesh';
 import gsap from 'gsap';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
@@ -148,10 +147,6 @@ export function createPieceSystem(
     entry.body.material = invisibleMat;
     entry.cap.material = invisibleMat;
   };
-
-  // Le jeu de la caravane se construit sur place, dans le même repère
-  // que les GLB : les prototypes sont prêts avant la première pièce.
-  if (jeu.procedural === 'caravane') Object.assign(loadedModels, construireCaravane());
 
   if (jeu.urls) {
     const draco = new DRACOLoader(manager);

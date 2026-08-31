@@ -52,7 +52,6 @@ export interface PieceSet {
   /** Teintes des pièces tournées, quand il n'y a pas de modèle 3D. */
   teintes?:  { assaillant: number; defenseur: number; roi: number };
   /** Pièces construites en géométrie (caravaneMesh.ts), sans GLB. */
-  procedural?: 'caravane';
 }
 
 export const BOARD_SETS: BoardSet[] = [
@@ -163,7 +162,11 @@ export const PIECE_SETS: PieceSet[] = [
     texteFR: 'Une roulotte de gitans pour roi, qui doit gagner un coin du plateau; des hommes de la route au foulard rouge à l\u2019assaut, des femmes en jupe rayée pour la défendre. Se gagne au troisième jour de visite d\u2019affilée.',
     texteEN: 'A gypsy wagon for a king, bound for a corner of the board; red-scarfed men of the road on the attack, women in striped skirts to defend it. Earned on the third daily visit in a row.',
     vignette: '/games/hnefatafl/vignettes/caravane.webp',
-    procedural: 'caravane',
+    urls: {
+      1: '/games/hnefatafl/models/caravane-homme.glb',
+      2: '/games/hnefatafl/models/caravane-femme.glb',
+      3: '/games/hnefatafl/models/caravane-roulotte.glb',
+    },
     scales: { 1: 0.58, 2: 0.58, 3: 0.72 },
     teintes: { assaillant: 0x233b5c, defenseur: 0x7a1f3a, roi: 0x8a2430 },
   },

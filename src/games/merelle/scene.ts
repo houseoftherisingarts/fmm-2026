@@ -16,6 +16,7 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ARETES, POSITIONS, type Camp } from './logic';
+import { chargerSculpture } from '../sculpture';
 
 /** Un pas de grille, en unités de scène. */
 export const CELL = 1.5;
@@ -373,21 +374,44 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   const groupePions = new THREE.Group();
   scene.add(groupePions);
   /** Le pion visible à chaque point, indexé comme le plateau. */
-  const pions: (THREE.Mesh | null)[] = Array(24).fill(null);
+  const pions: (THREE.Group | null)[] = Array(24).fill(null);
   /** Le point tenu en main, celui dont le pion respire. */
   let selection: number | null = null;
 
-  const creerPion = (p: number, camp: Camp): THREE.Mesh => {
-    const m = new THREE.Mesh(pionGeo, matPion[camp]);
+  // Les pions sculptés (Meshy) remplacent le tour dès qu'ils arrivent;
+  // le tour reste le secours si le réseau manque.
+  const sculptes: Partial<Record<Camp, THREE.Group>> = {};
+  const habiller = (g: THREE.Group) => {
+    const proto = sculptes[g.userData.camp as Camp];
+    if (!proto) return;
+    g.clear();
+    g.add(proto.clone(true));
+  };
+  let vivant = true;
+  ([[1, '/games/merelle/models/pion-clair.glb'], [2, '/games/merelle/models/pion-sombre.glb']] as const)
+    .forEach(([camp, url]) => {
+      chargerSculpture(url, 0.85).then((proto) => {
+        if (!vivant) return;
+        sculptes[camp] = proto;
+        for (const g of pions) if (g && g.userData.camp === camp) habiller(g);
+      }).catch((err) => console.warn('[merelle] pion sculpté indisponible', url, err));
+    });
+
+  const creerPion = (p: number, camp: Camp): THREE.Group => {
+    const g = new THREE.Group();
     const pos = positionDe(p);
-    m.position.copy(pos);
-    m.rotation.y = Math.random() * Math.PI * 2; // le grain du bois n'est jamais aligné
-    m.castShadow = true;
-    m.receiveShadow = true;
-    m.userData.point = p;
-    groupePions.add(m);
-    pions[p] = m;
-    return m;
+    g.position.copy(pos);
+    g.rotation.y = Math.random() * Math.PI * 2; // le grain du bois n'est jamais aligné
+    g.userData.point = p;
+    g.userData.camp = camp;
+    const tour = new THREE.Mesh(pionGeo, matPion[camp]);
+    tour.castShadow = true;
+    tour.receiveShadow = true;
+    g.add(tour);
+    habiller(g);
+    groupePions.add(g);
+    pions[p] = g;
+    return g;
   };
 
   const detruirePion = (p: number) => {
@@ -513,10 +537,11 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     // Un pion touché de plein fouet répond pour son point : sans ça, un
     // pion haut vu de biais masque sa propre cupule et le clic tombe sur
     // le point d'à côté.
-    const touches = ray.intersectObjects(groupePions.children, false);
+    const touches = ray.intersectObjects(groupePions.children, true);
     if (touches.length > 0) {
-      const p = touches[0].object.userData.point;
-      if (typeof p === 'number') return p;
+      let o: THREE.Object3D | null = touches[0].object;
+      while (o && typeof o.userData.point !== 'number') o = o.parent;
+      if (o) return o.userData.point as number;
     }
 
     if (!ray.ray.intersectPlane(planJeu, impact)) return null;
@@ -644,6 +669,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   boucle();
 
   const dispose = () => {
+    vivant = false;
     cancelAnimationFrame(raf);
     gsap.killTweensOf(groupePions.children.map((o) => o.position));
     eteindre();

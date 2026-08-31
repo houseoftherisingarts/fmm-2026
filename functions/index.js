@@ -2023,7 +2023,10 @@ exports.apercuLien = onRequest(
 const SOLDE_DEPART = 10;
 const GAIN_PAR_BADGE = 5;
 const GAIN_QUOTIDIEN = 1;
-const PRIX_SKIN = { bleu: 20, dore: 40 };
+// Prix alignés sur src/firebase/montpellois.ts (Alex, 2026-08-28 : bleu offert,
+// vert 1, doré 5). Le 31 août, le serveur débitait encore 20 et 40 : un
+// joueur a vu « 5 » et payé 40. Les deux tables doivent rester identiques.
+const PRIX_SKIN = { bleu: 0, vert: 1, dore: 5 };
 // Les dos de carte du tarot vendus à la boutique (Alex, 2026-08-30) : le
 // dos du Salon des Inconnus est offert; les autres viennent des
 // récompenses quotidiennes (caravane, William), jamais de la boutique.
@@ -2278,7 +2281,7 @@ exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) =>
 
   if (objetId.startsWith('skin_')) {
     const skin = objetId.slice(5);
-    if (!PRIX_SKIN[skin]) throw new HttpsError('invalid-argument', 'Skin inconnu.');
+    if (!(skin in PRIX_SKIN)) throw new HttpsError('invalid-argument', 'Skin inconnu.');
     const userSnap = await db.collection('users').doc(uid).get();
     const vip = !!(userSnap.exists && userSnap.data().sansPub);
     const avatarRef = db.collection('avatars').doc(uid);
@@ -2286,7 +2289,7 @@ exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) =>
     const deja = avatarSnap.exists && (avatarSnap.data().skinsDebloques || []).includes(skin);
     if (deja) throw new HttpsError('failed-precondition', 'Déjà à vous.');
     let solde;
-    if (vip) { const b = await assurerBourse(uid); solde = b.data.solde; }
+    if (vip || PRIX_SKIN[skin] === 0) { const b = await assurerBourse(uid); solde = b.data.solde || 0; }
     else solde = await debiter(uid, PRIX_SKIN[skin]);
     await avatarRef.set({ skinsDebloques: FieldValue.arrayUnion(skin) }, { merge: true });
     return { solde };

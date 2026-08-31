@@ -37,6 +37,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "playwright": "^1.62.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.0",
     "typescript": "~5.8.2",

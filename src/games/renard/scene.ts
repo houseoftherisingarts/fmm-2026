@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { setupScene } from '../hnefatafl/sceneSetup';
 import { PAS, POINTS, pointDe, type Coup, type Plateau } from './logic';
+import { chargerSculpture } from '../sculpture';
 
 /** L'écart entre deux points du plateau. Sept points de large, donc
  *  une planche d'environ douze unités : le cadrage de sceneSetup, réglé
@@ -130,7 +131,7 @@ function construirePlateau(): THREE.Group {
 }
 
 // ── Le renard ───────────────────────────────────────────────────────
-function construireRenard(): THREE.Group {
+function renardProcedural(): THREE.Group {
   const g = new THREE.Group();
   const roux = new THREE.MeshStandardMaterial({ color: 0xb5551d, roughness: 0.65, metalness: 0.02 });
   const clair = new THREE.MeshStandardMaterial({ color: 0xf1e3cc, roughness: 0.7, metalness: 0.02 });
@@ -192,7 +193,7 @@ function construireRenard(): THREE.Group {
 }
 
 // ── Une oie ─────────────────────────────────────────────────────────
-function construireOie(): THREE.Group {
+function oieProcedurale(): THREE.Group {
   const g = new THREE.Group();
   const plume = new THREE.MeshStandardMaterial({ color: 0xf6f1e4, roughness: 0.72, metalness: 0.02 });
   const bec = new THREE.MeshStandardMaterial({ color: 0xe08a1e, roughness: 0.5, metalness: 0.08 });
@@ -277,7 +278,35 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
   // Les pièces, une par point occupé. Le groupe garde son numéro de
   // point dans userData : l'animation le relit sans table annexe.
   const pieces = new Map<number, THREE.Group>();
-  const renard = construireRenard();
+
+  // Les bêtes sculptées (Meshy) prennent la place des bêtes de
+  // géométrie dès qu'elles arrivent; la géométrie reste le secours.
+  const sculptes: { renard?: THREE.Group; oie?: THREE.Group } = {};
+  const enveloppes: THREE.Group[] = [];
+  const habiller = (g: THREE.Group) => {
+    const proto = sculptes[g.userData.sculpture as 'renard' | 'oie'];
+    if (!proto) return;
+    g.clear();
+    g.add(proto.clone(true));
+  };
+  const construire = (quoi: 'renard' | 'oie'): THREE.Group => {
+    const g = quoi === 'renard' ? renardProcedural() : oieProcedurale();
+    g.userData.sculpture = quoi;
+    enveloppes.push(g);
+    habiller(g);
+    return g;
+  };
+  let vivant = true;
+  ([['renard', '/games/renard/models/renard.glb', 1.15], ['oie', '/games/renard/models/oie.glb', 1.2]] as const)
+    .forEach(([quoi, url, hauteur]) => {
+      chargerSculpture(url, hauteur).then((proto) => {
+        if (!vivant) return;
+        sculptes[quoi] = proto;
+        for (const g of enveloppes) if (g.userData.sculpture === quoi) habiller(g);
+      }).catch((err) => console.warn('[renard] bête sculptée indisponible', url, err));
+    });
+
+  const renard = construire('renard');
   renard.visible = false;
   racine.add(renard);
 
@@ -285,7 +314,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
   const prendreOie = (): THREE.Group => {
     const dispo = oiesLibres.pop();
     if (dispo) { dispo.visible = true; dispo.scale.setScalar(1); return dispo; }
-    const neuve = construireOie();
+    const neuve = construire('oie');
     racine.add(neuve);
     return neuve;
   };
@@ -455,7 +484,6 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
 
   const detacherTaille = vue.attachResize();
 
-  let vivant = true;
   const boucle = () => {
     if (!vivant) return;
     renderer.render(scene, camera);

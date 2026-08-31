@@ -335,7 +335,7 @@ const EcranPreparation: React.FC<{
 
 // ── La musique du plateau ───────────────────────────────────────────
 // Facultative, jamais automatique, et exclusive du lecteur de l'en-tête.
-const MUSIQUE_URL = '/audio/nordic-wist.mp3';
+const MUSIQUE_URL = '/audio/pippin-the-hunchback.mp3';
 const MUSIQUE_TITRE = 'Nordic Wist · Kevin MacLeod, CC BY 4.0';
 
 interface BoutonMusiqueHandle { demarrer(): void; }
