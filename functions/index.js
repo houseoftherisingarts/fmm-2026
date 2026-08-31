@@ -2523,15 +2523,17 @@ exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
     if (!soukSnap.exists) throw new HttpsError('not-found', 'Cet objet n’existe plus.');
     const objet = soukSnap.data();
     if (objet.statut !== 'disponible') throw new HttpsError('failed-precondition', 'Cet objet n’est plus disponible.');
-    if (!objet.prixMontpellois) throw new HttpsError('failed-precondition', 'Cet objet ne se vend pas en Montpellois.');
+    // Un entier strictement positif, rien d'autre : un prix négatif ou une
+    // chaîne renverserait le transfert entre les deux bourses.
+    const prix = objet.prixMontpellois;
+    if (!Number.isInteger(prix) || prix <= 0) throw new HttpsError('failed-precondition', 'Cet objet ne se vend pas en Montpellois.');
     if (objet.uid === acheteurUid) throw new HttpsError('failed-precondition', 'Vous ne pouvez pas vous acheter vous-même.');
     const vendeurRef = db.collection('bourses').doc(objet.uid);
     const [acheteurSnap, vendeurSnap] = await Promise.all([tx.get(acheteurRef), tx.get(vendeurRef)]);
-    const acheteurData = acheteurSnap.exists ? acheteurSnap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
-    const vendeurData = vendeurSnap.exists ? vendeurSnap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
-    if ((acheteurData.solde || 0) < objet.prixMontpellois) throw new HttpsError('failed-precondition', 'Pas assez de Montpellois.');
+    const acheteurData = bourseDe(acheteurSnap);
+    const vendeurData = bourseDe(vendeurSnap);
+    if ((acheteurData.solde || 0) < prix) throw new HttpsError('failed-precondition', 'Pas assez de Montpellois.');
 
-    const prix = objet.prixMontpellois;
     const premiereFois = (acheteurData.depense || 0) === 0;
     const soldeAcheteurApres = (acheteurData.solde || 0) - prix;
     const gagneVendeurAvant = vendeurData.gagne || 0;
