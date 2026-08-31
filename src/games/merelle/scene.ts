@@ -439,7 +439,10 @@ export function monterScene(el: HTMLElement): SceneMerelle {
 
   // ── La surbrillance ────────────────────────────────────────────────
   const halos: THREE.Mesh[] = [];
-  const haloGeo = new THREE.CircleGeometry(0.42 * CELL, 28);
+  const haloGeo = new THREE.CircleGeometry(0.4 * CELL, 28);
+  // Le pion tenu porte un anneau plus large que sa base : un disque
+  // passerait entièrement sous lui et on ne verrait rien.
+  const anneauGeo = new THREE.RingGeometry(0.46 * CELL, 0.62 * CELL, 32);
 
   const eteindre = () => {
     for (const h of halos) {
@@ -449,11 +452,11 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     halos.length = 0;
   };
 
-  const halo = (p: number, couleur: number, opacite: number) => {
+  const halo = (p: number, couleur: number, opacite: number, anneau = false) => {
     const mat = new THREE.MeshBasicMaterial({
       color: couleur, transparent: true, opacity: opacite, depthWrite: false,
     });
-    const m = new THREE.Mesh(haloGeo, mat);
+    const m = new THREE.Mesh(anneau ? anneauGeo : haloGeo, mat);
     m.rotation.x = -Math.PI / 2;
     m.position.copy(positionDe(p, HAUT + 0.012));
     m.userData.opacite = opacite;
