@@ -177,7 +177,7 @@ const Tutoriel: React.FC<Props> = ({ jeu, lang, ouvert, onFermer }) => {
                   width: Math.min(window.innerWidth - 8, rect.width + 16),
                   height: Math.min(window.innerHeight - 8, rect.height + 16),
                   border: '2px solid rgba(232,177,74,0.9)',
-                  boxShadow: '0 0 0 9999px rgba(6,3,4,0.34), 0 0 28px 6px rgba(232,177,74,0.4) inset, 0 0 30px 2px rgba(232,177,74,0.45)',
+                  boxShadow: '0 0 0 9999px rgba(6,3,4,0.74), 0 0 34px 4px rgba(232,177,74,0.5)',
                 }}
               />
             )}
