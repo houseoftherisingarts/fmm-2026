@@ -40,7 +40,7 @@ function moulinsOuverts(points: readonly Case[], camp: Camp): number {
  *  mérelle se perd. */
 function evaluer(e: Etat, camp: Camp): number {
   const adverse = autreCamp(camp);
-  if (e.gagnant) return gagne(e, camp) ? 10_000 : -10_000;
+  if (e.gagnant) return e.gagnant === camp ? 10_000 : -10_000;
   const pions = (compte(e.points, camp) + e.aPoser[camp - 1])
     - (compte(e.points, adverse) + e.aPoser[adverse - 1]);
   const mou = moulins(e.points, camp) - moulins(e.points, adverse);
