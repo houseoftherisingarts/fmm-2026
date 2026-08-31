@@ -28,6 +28,8 @@
  *   firebase functions:secrets:set ZOHO_APP_PASSWORD
  *   firebase functions:secrets:set SQUARE_ACCESS_TOKEN
  *   firebase functions:secrets:set SQUARE_WEBHOOK_KEY
+ *   firebase functions:secrets:set STRIPE_SECRET_KEY
+ *   firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
  */
 
 const crypto = require('crypto');
@@ -2680,3 +2682,153 @@ exports.boursePubliqueBascule = onCall({ region: 'us-central1' }, async (requete
   if (publique) await poserBadge(uid, 'paon');
   return { publique };
 });
+
+
+// ─── Recharger sa bourse en Montpellois, par Stripe ──────────────────
+// Alex, 2026-08-31 : les Montpellois se gagnent en explorant le
+// festival, et depuis la boutique ils s'achètent aussi en argent réel.
+// Trois lots, en dollars canadiens : 5 $ pour cent pièces, 10 $ pour
+// trois cents, 15 $ pour cinq cents.
+//
+// Le chemin est celui du grimoire, avec Stripe à la place de Square :
+//   1. La boutique appelle `acheterMontpelloisLien` avec l'identifiant
+//      du lot. La fonction bâtit une session Stripe Checkout et rend
+//      son adresse; le navigateur s'y rend.
+//   2. Stripe encaisse, puis appelle le webhook `stripeMontpellois`
+//      (événement checkout.session.completed).
+//   3. La signature de Stripe est vérifiée avant tout : sans elle,
+//      n'importe qui se paierait cinq cents Montpellois en forgeant
+//      une requête.
+//   4. `crediter` pose les pièces dans la bourse sous la clé
+//      `stripe_<session>`. Stripe rejoue ses webhooks, et cette clé
+//      fait que le second passage ne paie rien.
+//
+// Le PRIX et le NOMBRE de pièces vivent ici et nulle part ailleurs. La
+// table de src/firebase/montpellois.ts n'en est que le miroir
+// d'affichage : une retouche se fait des deux côtés, sinon la boutique
+// annonce un prix que la caisse ne demande pas.
+//
+// Secrets à poser avant le déploiement (une seule fois) :
+//   firebase functions:secrets:set STRIPE_SECRET_KEY
+//   firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
+const Stripe = require('stripe');
+const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY');
+const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
+
+/** Les lots vendus, montants en cents canadiens. */
+const PACKS_MONTPELLOIS = {
+  p100: { cad: 500, montpellois: 100 },
+  p300: { cad: 1000, montpellois: 300 },
+  p500: { cad: 1500, montpellois: 500 },
+};
+
+const RETOUR_BOUTIQUE = 'https://www.festivalmedievaldemontpellier.org/boutique';
+
+exports.acheterMontpelloisLien = onCall(
+  { region: 'us-central1', secrets: [STRIPE_SECRET_KEY] },
+  async (requete) => {
+    const uid = requete.auth && requete.auth.uid;
+    if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour recharger votre bourse.');
+    const packId = String((requete.data || {}).packId || '');
+    const pack = PACKS_MONTPELLOIS[packId];
+    if (!pack) throw new HttpsError('invalid-argument', 'Ce lot de Montpellois n’existe pas.');
+    // Tant que la clé n'est pas posée, la boutique le dit poliment
+    // plutôt que de rendre une erreur de serveur.
+    const cleStripe = STRIPE_SECRET_KEY.value();
+    // Une vraie clé commence par sk_ ou rk_ : le jeton d'attente posé
+    // pour permettre le déploiement ne compte pas comme une clé.
+    if (!cleStripe || !/^(sk|rk)_/.test(cleStripe)) throw new HttpsError('failed-precondition', 'La recharge arrive bientôt.');
+
+    let session;
+    try {
+      session = await Stripe(cleStripe).checkout.sessions.create({
+        mode: 'payment',
+        line_items: [{
+          quantity: 1,
+          price_data: {
+            currency: 'cad',
+            unit_amount: pack.cad,
+            product_data: { name: `${pack.montpellois} Montpellois` },
+          },
+        }],
+        // L'uid voyage dans les métadonnées : le webhook n'a que ça
+        // pour savoir quelle bourse remplir.
+        metadata: { uid, packId },
+        client_reference_id: uid,
+        success_url: `${RETOUR_BOUTIQUE}?recharge=ok`,
+        cancel_url: `${RETOUR_BOUTIQUE}?recharge=annulee`,
+      });
+    } catch (e) {
+      logger.error('[stripe] session refusée', e);
+      throw new HttpsError('internal', 'Le paiement est indisponible pour le moment.');
+    }
+    if (!session || !session.url) {
+      logger.error('[stripe] session sans adresse', { packId });
+      throw new HttpsError('internal', 'Le paiement est indisponible pour le moment.');
+    }
+    logger.info('[stripe] session ouverte', { uid, packId, sessionId: session.id });
+    return { url: session.url };
+  },
+);
+
+exports.stripeMontpellois = onRequest(
+  {
+    region: 'us-central1',
+    secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET],
+    memory: '256MiB',
+    timeoutSeconds: 60,
+  },
+  async (req, res) => {
+    if (req.method !== 'POST') { res.status(405).send('POST seulement'); return; }
+
+    let evenement;
+    try {
+      // La vérification tient sur le corps BRUT : req.body a déjà été
+      // relu par le cadre, et son sérialisé ne signe plus pareil.
+      evenement = Stripe(STRIPE_SECRET_KEY.value() || 'sk_absente').webhooks.constructEvent(
+        req.rawBody,
+        req.get('stripe-signature'),
+        STRIPE_WEBHOOK_SECRET.value(),
+      );
+    } catch (e) {
+      logger.warn('[stripe] signature invalide, requête rejetée', e && e.message);
+      res.status(400).send('signature invalide');
+      return;
+    }
+
+    if (evenement.type !== 'checkout.session.completed') {
+      res.status(200).send('événement ignoré');
+      return;
+    }
+    const session = (evenement.data && evenement.data.object) || {};
+    if (session.payment_status !== 'paid') {
+      logger.info('[stripe] session non réglée', { sessionId: session.id, statut: session.payment_status });
+      res.status(200).send('paiement non réglé');
+      return;
+    }
+
+    const uid = String((session.metadata && session.metadata.uid) || '').slice(0, 128);
+    const packId = String((session.metadata && session.metadata.packId) || '');
+    const pack = PACKS_MONTPELLOIS[packId];
+    if (!uid || !pack) {
+      logger.warn('[stripe] session sans compte ni lot connu', { sessionId: session.id, uid, packId });
+      res.status(200).send('rien à créditer');
+      return;
+    }
+
+    try {
+      // La clé de session absorbe les rejeux : crediter rend null quand
+      // ce paiement a déjà rempli la bourse.
+      const solde = await crediter(uid, pack.montpellois, `stripe_${session.id}`);
+      logger.info('[stripe] bourse rechargée', {
+        uid, packId, montpellois: pack.montpellois, sessionId: session.id,
+        rejeu: solde === null, solde,
+      });
+      res.status(200).send(solde === null ? 'déjà crédité' : 'crédité');
+    } catch (e) {
+      // Un 500 laisse Stripe réessayer, et la clé empêchera le double crédit.
+      logger.error('[stripe] crédit impossible', e);
+      res.status(500).send('crédit impossible');
+    }
+  },
+);

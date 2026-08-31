@@ -18,6 +18,9 @@ export interface Prise {
   glyphe?: string;
   /** Portrait (dos de carte) ou carré (skin, ambiance). */
   portrait?: boolean;
+  /** Remplace « a été ajouté à votre coffre », déjà traduit par
+   *  l'appelant : les Montpellois d'une recharge vont à la bourse. */
+  texte?: string;
 }
 
 const AffichePrise: React.FC<{ prise: Prise | null; onFermer: () => void; lienCoffre: string; fr: boolean }> = ({ prise, onFermer, lienCoffre, fr }) => {
@@ -80,7 +83,7 @@ const AffichePrise: React.FC<{ prise: Prise | null; onFermer: () => void; lienCo
             </h2>
             <div className="divider-brass w-16 mx-auto mb-4" />
             <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
-              {fr ? 'a été ajouté à votre coffre.' : 'has been added to your vault.'}
+              {prise.texte ?? (fr ? 'a été ajouté à votre coffre.' : 'has been added to your vault.')}
             </p>
 
             <Link

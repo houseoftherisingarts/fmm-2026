@@ -900,7 +900,7 @@ const MerellePage: React.FC = () => {
 
         {/* ── Bandeau du haut ─────────────────────────────────────── */}
         <div
-          className="absolute top-0 inset-x-0 z-20 flex flex-wrap items-center justify-between gap-3 pl-4 md:pl-7 pr-16 md:pr-20 py-3"
+          className="absolute top-0 inset-x-0 z-30 flex flex-wrap items-center justify-between gap-3 pl-4 md:pl-7 pr-16 md:pr-20 py-3"
           style={{ background: 'linear-gradient(180deg, rgba(8,3,5,0.92), rgba(8,3,5,0))' }}
         >
           <span className="inline-flex items-center gap-2.5 min-w-0">

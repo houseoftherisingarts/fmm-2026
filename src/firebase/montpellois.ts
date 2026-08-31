@@ -192,6 +192,36 @@ export const acheterAmbiance = (ambianceId: string) =>
   appeler<{ ambianceId: string }, { solde: number }>('acheterAmbiance')({ ambianceId });
 
 
+// ── Recharger sa bourse en argent réel (Stripe) ─────────────────────
+// Alex, 2026-08-31 : trois lots, payés par carte en dollars canadiens.
+// PARITÉ OBLIGATOIRE avec PACKS_MONTPELLOIS de functions/index.js, qui
+// seul fixe le prix encaissé et le nombre de pièces créditées. Cette
+// table-ci ne sert qu'à l'affichage de la boutique : un chiffre modifié
+// ici sans l'être là-bas ferait mentir la vitrine.
+export interface PackMontpellois {
+  id: 'p100' | 'p300' | 'p500';
+  /** Les pièces créditées à la bourse. */
+  montpellois: number;
+  /** Le prix en dollars canadiens, taxes comprises. */
+  prixCAD: number;
+}
+
+export const PACKS_MONTPELLOIS: PackMontpellois[] = [
+  { id: 'p100', montpellois: 100, prixCAD: 5 },
+  { id: 'p300', montpellois: 300, prixCAD: 10 },
+  { id: 'p500', montpellois: 500, prixCAD: 15 },
+];
+
+/** Ouvre la caisse Stripe pour un lot et y envoie le navigateur. Rend
+ *  la main seulement si Stripe refuse : sinon la page a déjà changé.
+ *  Une erreur `failed-precondition` veut dire que la clé de la caisse
+ *  n'est pas encore posée, et son message se montre tel quel. */
+export const acheterMontpelloisLien = async (packId: PackMontpellois['id']): Promise<void> => {
+  const { url } = await appeler<{ packId: string }, { url: string }>('acheterMontpelloisLien')({ packId });
+  if (!url) throw new Error('La caisse n’a pas répondu.');
+  window.location.href = url;
+};
+
 /** La bourse s'ouvre ou se referme aux regards des autres membres
  *  (Alex, 2026-08-28). Le badge du paon vient avec l'ouverture. */
 export const basculerBoursePublique = (publique: boolean) =>

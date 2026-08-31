@@ -71,9 +71,12 @@ const RAYON_CUPULE = 0.36;
 /** Le dessus de la planche, en couleur. */
 function dessusEpinette(): THREE.CanvasTexture {
   const S = 1024;
+  // Une épinette vieillie, pas un contreplaqué neuf : le fond descend
+  // dans les bruns chauds et les fibres tirent franchement, sinon la
+  // planche part en crème sous la lumière de la taverne.
   const c = grainDeBois({
-    taille: S, fond: '#c8a878', veine: '#6a4c2a',
-    fibres: 620, noeuds: 4, ondulation: 5, repetition: 1,
+    taille: S, fond: '#7a5730', veine: '#301e0c',
+    fibres: 660, noeuds: 4, ondulation: 5, repetition: 1, force: 2.2,
   });
   const g = c.getContext('2d')!;
   const px = uvPx(S);
@@ -81,10 +84,10 @@ function dessusEpinette(): THREE.CanvasTexture {
 
   // La patine : la planche a servi, elle est plus sombre aux extrémités
   // et sur les bords, plus claire là où les mains l'ont polie.
-  const usure = g.createRadialGradient(S / 2, S / 2, S * 0.08, S / 2, S / 2, S * 0.62);
-  usure.addColorStop(0, 'rgba(255,236,200,0.16)');
-  usure.addColorStop(0.6, 'rgba(60,34,12,0.05)');
-  usure.addColorStop(1, 'rgba(40,22,8,0.34)');
+  const usure = g.createRadialGradient(S / 2, S / 2, S * 0.06, S / 2, S / 2, S * 0.62);
+  usure.addColorStop(0, 'rgba(255,230,190,0.14)');
+  usure.addColorStop(0.55, 'rgba(48,28,10,0.14)');
+  usure.addColorStop(1, 'rgba(28,15,5,0.5)');
   g.fillStyle = usure;
   g.fillRect(0, 0, S, S);
 
@@ -120,8 +123,8 @@ function dessusEpinette(): THREE.CanvasTexture {
   g.setLineDash([]);
 
   // Les lignes brûlées au fer, une par voisinage.
-  g.strokeStyle = 'rgba(26,12,3,0.8)';
-  g.lineWidth = S * 0.006;
+  g.strokeStyle = 'rgba(26,12,3,0.72)';
+  g.lineWidth = S * 0.0042;
   POINTS.forEach((p, i) => {
     for (const { dr, dc } of PAS) {
       const v = pointDe(p.r + dr, p.c + dc);
@@ -173,7 +176,7 @@ function reliefEpinette(): HTMLCanvasElement {
   g.lineCap = 'round';
 
   g.strokeStyle = '#3c3c3c';
-  g.lineWidth = S * 0.0055;
+  g.lineWidth = S * 0.004;
   g.filter = 'blur(1.4px)';
   POINTS.forEach((p, i) => {
     for (const { dr, dc } of PAS) {
@@ -207,7 +210,7 @@ function reliefEpinette(): HTMLCanvasElement {
 /** Le chant de la planche : le même bois, vu de côté, sans gravure. */
 function chantEpinette(): THREE.CanvasTexture {
   const t = new THREE.CanvasTexture(grainDeBois({
-    taille: 512, fond: '#b0906a', veine: '#5d3f22', fibres: 520, noeuds: 2, ondulation: 4, repetition: 3,
+    taille: 512, fond: '#7d5b37', veine: '#331f0d', fibres: 520, noeuds: 2, ondulation: 4, repetition: 3, force: 1.7,
   }));
   t.colorSpace = THREE.SRGBColorSpace;
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -218,8 +221,8 @@ function chantEpinette(): THREE.CanvasTexture {
 
 /** Un clou forgé : une tête martelée, jamais parfaitement ronde. */
 function clouForge(mat: THREE.Material): THREE.Mesh {
-  const tete = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 7, 0, Math.PI * 2, 0, Math.PI / 2), mat);
-  tete.scale.set(1, 0.42, 0.92);
+  const tete = new THREE.Mesh(new THREE.SphereGeometry(0.23, 10, 7, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+  tete.scale.set(1, 0.46, 0.9);
   tete.rotation.y = Math.random() * Math.PI;
   tete.castShadow = true;
   return tete;
@@ -292,7 +295,7 @@ function construirePlateau(): { groupe: THREE.Group; ranger: () => void } {
   const creuxGeo = new THREE.LatheGeometry(CUP.map(([r, y]) => new THREE.Vector2(r, y)), 26);
   creuxGeo.computeVertexNormals();
   const creuxMat = new THREE.MeshStandardMaterial({
-    color: 0x9a7245, roughness: 0.32, metalness: 0.05, side: THREE.DoubleSide,
+    color: 0x4d3419, roughness: 0.62, metalness: 0.05, side: THREE.DoubleSide,
   });
   POINTS.forEach((_, i) => {
     const m = new THREE.Mesh(creuxGeo, creuxMat);
@@ -305,7 +308,7 @@ function construirePlateau(): { groupe: THREE.Group; ranger: () => void } {
   // Les clous forgés : un à chaque angle saillant de la croix, comme
   // sur les planches de ferme où le liseré était cloué avant d'être
   // peint.
-  const ferMat = new THREE.MeshStandardMaterial({ color: 0x4a4038, roughness: 0.48, metalness: 0.85 });
+  const ferMat = new THREE.MeshStandardMaterial({ color: 0x2e2620, roughness: 0.42, metalness: 0.9 });
   const a = BRAS - 0.42; const L = LONGUEUR - 0.42;
   for (const [x, z] of [
     [-a, -L], [a, -L], [L, -a], [L, a], [a, L], [-a, L], [-L, a], [-L, -a],

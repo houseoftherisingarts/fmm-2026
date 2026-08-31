@@ -183,7 +183,12 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
         uid: 'apercu', nom: 'Dame Aperçu', verifie: true, vip: true,
         banniereUrl: '/wix/home/scene-cinematic.jpg',
         roles: ['membre'],
-        prefs: { positionBanniere: pos, parallaxe: true, animationsFond: true, cadrage: { x: 50, y: 50 } },
+        prefs: {
+          positionBanniere: pos, parallaxe: true, animationsFond: true, cadrage: { x: 50, y: 50 },
+          // La fiche témoin porte une adresse publique : c'est ce qui permet
+          // de vérifier à l'écran qu'elle paraît, et que celle du compte non.
+          courrielPublic: 'dame.apercu@exemple.test',
+        },
       });
       setChargement(false);
       return () => { vivant = false; };
@@ -637,8 +642,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                           la messagerie. Elles flottaient tout en haut de la
                           page, loin de tout; elles vivent maintenant sur la
                           même rangée que les avis (Alex, 2026-08-31). */}
-                      <div className="mt-7 flex items-center gap-3 md:gap-6 justify-center md:justify-start">
-                        <div className="grid grid-cols-4 gap-1 min-w-0 sm:flex sm:flex-wrap sm:gap-9">
+                      <div className="mt-7 flex items-center gap-2 md:gap-6 justify-center md:justify-start">
+                        <div className="grid grid-cols-4 gap-0 min-w-0 sm:flex sm:flex-wrap sm:gap-9">
                           <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
                           <Chiffre n={nbAmis}    label={t.statAmis}    onClick={() => ouvrir('profil')} />
                           <Chiffre n={nbParties} label={t.statParties} onClick={() => ouvrir('jeux')} />

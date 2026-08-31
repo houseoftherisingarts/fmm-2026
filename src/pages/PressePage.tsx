@@ -322,7 +322,7 @@ const PressePage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/presse/orbe-presse.webp"
+        orbImage="/presse/orbe-presse-chevaliers.webp"
         orbImagePosition="center"
         ctas={[{ label: t.zipCta, href: PRESSE_ZIP, variant: 'primary' }]}
       />
@@ -584,7 +584,7 @@ const FR = {
       k: 'Billets',
       v: 'Passe journée 27 $, passe 3 jours 65 $, banquet médiéval 65 $ plus taxes. La vente se fait en ligne par Zeffy.',
     },
-    { k: 'Organisation', v: 'Le festival est opéré par Le Salon des Inconnus.' },
+    { k: 'Organisation', v: 'Le festival est organisé par une équipe de bénévoles.' },
   ],
   contactLabel: 'Contact presse',
   zipCta: 'Télécharger tout le kit',
@@ -646,7 +646,7 @@ const EN: typeof FR = {
       k: 'Tickets',
       v: 'Day pass $27, three-day pass $65, medieval banquet $65 plus tax. Sold online through Zeffy.',
     },
-    { k: 'Organisation', v: 'The festival is run by Le Salon des Inconnus.' },
+    { k: 'Organisation', v: 'The festival is organized by a volunteer team.' },
   ],
   contactLabel: 'Press contact',
   zipCta: 'Download the whole kit',

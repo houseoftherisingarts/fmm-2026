@@ -53,6 +53,10 @@ const BoutonMusique = forwardRef<BoutonMusiqueHandle, {
   const boiteRef = useRef<HTMLDivElement | null>(null);
   const [joue, setJoue] = useState(false);
   const [ouvert, setOuvert] = useState(false);
+  /** Le menu tombe vers la gauche par défaut. Collé au bord gauche de
+   *  l'écran (la barre du jeu s'empile sur téléphone), il sortirait du
+   *  cadre : il bascule alors vers la droite. */
+  const [versLaDroite, setVersLaDroite] = useState(false);
   const [choix, setChoix] = useState<string | null>(() => lireChoix(cle, defaut));
 
   // Les ambiances achetées, quand quelqu'un est connecté.
@@ -126,7 +130,11 @@ const BoutonMusique = forwardRef<BoutonMusiqueHandle, {
       <audio ref={audioRef} src={courante?.fichier} loop preload="none" />
       <button
         type="button"
-        onClick={() => setOuvert((v) => !v)}
+        onClick={() => {
+          const r = boiteRef.current?.getBoundingClientRect();
+          setVersLaDroite(!!r && r.right < 252);
+          setOuvert((v) => !v);
+        }}
         title={courante?.credit || offLabel}
         aria-haspopup="menu"
         aria-expanded={ouvert}
@@ -141,7 +149,7 @@ const BoutonMusique = forwardRef<BoutonMusiqueHandle, {
       {ouvert && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 z-50 w-[15rem] rounded-[15px] border border-white/15 bg-black/80 backdrop-blur-xl p-1.5"
+          className={`absolute ${versLaDroite ? 'left-0' : 'right-0'} top-full mt-2 z-50 w-[15rem] max-w-[calc(100vw-1.5rem)] rounded-[15px] border border-white/15 bg-black/80 backdrop-blur-xl p-1.5`}
           style={{ boxShadow: '0 18px 44px rgba(0,0,0,0.65)' }}
         >
           <button

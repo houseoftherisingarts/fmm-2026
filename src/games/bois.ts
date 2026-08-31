@@ -33,6 +33,9 @@ export interface GrainOptions {
   /** Le nombre de fois que la texture se répétera : les fibres
    *  s'affinent d'autant pour garder la même finesse à l'écran. */
   repetition?: number;
+  /** Le contraste des fibres. Un bois pâle en demande davantage, sinon
+   *  le grain se noie et la planche tourne au contreplaqué. */
+  force?: number;
 }
 
 /**
@@ -49,6 +52,7 @@ export function grainDeBois(o: GrainOptions): HTMLCanvasElement {
   const nbFibres = Math.round((o.fibres ?? 420) * rep);
   const nbNoeuds = o.noeuds ?? 3;
   const onde = (o.ondulation ?? 9) / rep;
+  const force = o.force ?? 1;
 
   const c = document.createElement('canvas');
   c.width = c.height = S;
@@ -73,7 +77,7 @@ export function grainDeBois(o: GrainOptions): HTMLCanvasElement {
     const phase = Math.random() * Math.PI * 2;
     const frequence = 0.8 + Math.random() * 1.6;
     const amplitude = onde * (0.35 + Math.random() * 0.9);
-    g.globalAlpha = 0.025 + Math.random() * 0.085;
+    g.globalAlpha = (0.025 + Math.random() * 0.085) * force;
     g.strokeStyle = o.veine;
     g.lineWidth = (0.35 + Math.random() * 0.95) / Math.sqrt(rep);
     g.beginPath();
@@ -100,7 +104,7 @@ export function grainDeBois(o: GrainOptions): HTMLCanvasElement {
   // taches noires. Un nœud trop marqué se lit comme une salissure.
   for (const n of noeuds) {
     for (let r = n.rayon; r > 0.9; r -= Math.max(0.9, n.rayon / 9)) {
-      g.globalAlpha = 0.05 + (n.rayon - r) * 0.014;
+      g.globalAlpha = (0.05 + (n.rayon - r) * 0.014) * force;
       g.strokeStyle = o.veine;
       g.lineWidth = 0.8 / Math.sqrt(rep);
       g.beginPath();
@@ -180,6 +184,32 @@ export function ombreDeContact(taille = 256, force = 0.55): THREE.CanvasTexture 
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
+}
+
+/**
+ * Une torsade en relief, tuilable : le motif du cordage qu'un menuisier
+ * gouge tout le long d'une moulure. Rendue en niveaux de gris, elle
+ * passe ensuite par `carteNormales` et devient une vraie sculpture sous
+ * la lumière, sans un seul polygone de plus.
+ */
+export function torsadeEnRelief(taille = 256, periode = 32): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = c.height = taille;
+  const g = c.getContext('2d')!;
+  const img = g.createImageData(taille, taille);
+  for (let y = 0; y < taille; y++) {
+    for (let x = 0; x < taille; x++) {
+      // Deux ondes croisées : le brin qui monte, le brin qui descend.
+      const a = Math.sin((2 * Math.PI * (x + y)) / periode);
+      const b = Math.sin((2 * Math.PI * (x - y)) / (periode * 2));
+      const h = 0.5 + 0.34 * a + 0.16 * b;
+      const v = Math.round(Math.max(0, Math.min(1, h)) * 255);
+      const i = (y * taille + x) * 4;
+      img.data[i] = v; img.data[i + 1] = v; img.data[i + 2] = v; img.data[i + 3] = 255;
+    }
+  }
+  g.putImageData(img, 0, 0);
+  return c;
 }
 
 /** Le profil d'un pied tourné au tour, en coupe : le rayon d'abord, la

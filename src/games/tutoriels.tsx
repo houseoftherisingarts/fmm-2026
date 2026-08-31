@@ -88,15 +88,6 @@ const MiniMerelle: React.FC<{
       const [x, y] = merelleXY(p);
       return <circle key={p} cx={x} cy={y} r="2.4" fill={GRAVURE} fillOpacity="0.55" />;
     })}
-    {moulin && (() => {
-      const [ax, ay] = merelleXY(moulin[0]);
-      const [bx, by] = merelleXY(moulin[moulin.length - 1]);
-      return <line x1={ax} y1={ay} x2={bx} y2={by} stroke={LAITON} strokeWidth="3.4" strokeLinecap="round" opacity="0.85" filter="url(#tuto-lueur)" />;
-    })()}
-    {cibles.map((p) => {
-      const [x, y] = merelleXY(p);
-      return <circle key={`c${p}`} cx={x} cy={y} r="6" fill={VERT} fillOpacity="0.35" stroke={VERT} strokeWidth="1.2" />;
-    })}
     {clairs.map((p) => {
       const [x, y] = merelleXY(p);
       return <circle key={`a${p}`} cx={x} cy={y} r="6.4" fill="#D9B681" stroke={GRAVURE} strokeOpacity="0.6" strokeWidth="1" />;
@@ -104,6 +95,26 @@ const MiniMerelle: React.FC<{
     {sombres.map((p) => {
       const [x, y] = merelleXY(p);
       return <circle key={`b${p}`} cx={x} cy={y} r="6.4" fill="#452A18" stroke="#1b0f06" strokeWidth="1" />;
+    })}
+    {/* Le moulin passe PAR-DESSUS les pions qu'il relie : dessiné avant,
+        il disparaîtrait sous eux et l'alignement ne se verrait plus. Une
+        large bande translucide, puis un filet net dessus : c'est la
+        bande qui se voit de loin, le filet qui dit la ligne exacte. */}
+    {moulin && (() => {
+      const [ax, ay] = merelleXY(moulin[0]);
+      const [bx, by] = merelleXY(moulin[moulin.length - 1]);
+      return (
+        <g>
+          <line x1={ax} y1={ay} x2={bx} y2={by} stroke={LAITON} strokeWidth="16" strokeLinecap="round" opacity="0.3" />
+          <line x1={ax} y1={ay} x2={bx} y2={by} stroke={LAITON} strokeWidth="2.4" strokeLinecap="round" opacity="0.95" filter="url(#tuto-lueur)" />
+        </g>
+      );
+    })()}
+    {/* Une cible se pose en anneau autour de ce qu'elle vise : un disque
+        plein passerait sous le pion qu'on a le droit d'emporter. */}
+    {cibles.map((p) => {
+      const [x, y] = merelleXY(p);
+      return <circle key={`c${p}`} cx={x} cy={y} r="8.4" fill="none" stroke={VERT} strokeWidth="1.8" opacity="0.9" filter="url(#tuto-lueur)" />;
     })}
   </Planchette>
 );
@@ -148,19 +159,9 @@ const MiniRenard: React.FC<{
       const [x, y] = renardXY(i);
       return <circle key={i} cx={x} cy={y} r="2" fill={GRAVURE} fillOpacity="0.5" />;
     })}
-    {saut && (() => {
-      const [ax, ay] = renardXY(saut[0]);
-      const [bx, by] = renardXY(saut[1]);
-      return (
-        <path
-          d={`M ${ax} ${ay} Q ${(ax + bx) / 2} ${Math.min(ay, by) - 15} ${bx} ${by}`}
-          fill="none" stroke={LAITON} strokeWidth="2.2" strokeDasharray="4 3" strokeLinecap="round" filter="url(#tuto-lueur)"
-        />
-      );
-    })()}
     {cibles.map((i) => {
       const [x, y] = renardXY(i);
-      return <circle key={`v${i}`} cx={x} cy={y} r="5.6" fill={VERT} fillOpacity="0.35" stroke={VERT} strokeWidth="1.2" />;
+      return <circle key={`v${i}`} cx={x} cy={y} r="6.2" fill={VERT} fillOpacity="0.28" stroke={VERT} strokeWidth="1.6" opacity="0.95" filter="url(#tuto-lueur)" />;
     })}
     {oies.map((i) => {
       const [x, y] = renardXY(i);
@@ -178,6 +179,24 @@ const MiniRenard: React.FC<{
     {(() => {
       const [x, y] = renardXY(renard);
       return <circle cx={x} cy={y} r="6.4" fill={ROUX} stroke="#2a1006" strokeWidth="1" />;
+    })()}
+    {/* Le trait du saut passe par-dessus les bêtes : dessiné avant, il
+        se cacherait derrière le renard et l'oie qu'il enjambe. */}
+    {saut && (() => {
+      const [ax, ay] = renardXY(saut[0]);
+      const [bx, by] = renardXY(saut[1]);
+      const mx = (ax + bx) / 2;
+      const my = (ay + by) / 2;
+      // Le sommet de l'arc se pousse perpendiculairement au saut, donc
+      // il se voit aussi bien sur un saut vertical qu'horizontal.
+      const dx = bx - ax; const dy = by - ay;
+      const l = Math.hypot(dx, dy) || 1;
+      return (
+        <path
+          d={`M ${ax} ${ay} Q ${mx + (dy / l) * 17} ${my - (dx / l) * 17} ${bx} ${by}`}
+          fill="none" stroke={LAITON} strokeWidth="2.4" strokeDasharray="5 3.5" strokeLinecap="round" filter="url(#tuto-lueur)"
+        />
+      );
     })()}
   </Planchette>
 );
@@ -268,13 +287,13 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
   merelle: {
     FR: [
       {
-        titre: 'Ce que vous cherchez à faire',
+        titre: 'Le but du jeu',
         corps: 'Vous avez neuf pions et le plateau en compte vingt-quatre points. Aligner trois pions sur une même ligne gravée ferme un moulin, et chaque moulin fermé vous donne le droit de retirer un pion adverse. Le camp qui tombe à deux pions, ou qui ne peut plus bouger un seul homme, a perdu.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[0, 1, 2]} sombres={[9, 21]} moulin={MOULIN_DEMO} legende="Trois pions alignés : un moulin" />,
       },
       {
-        titre: 'La pose, un pion à la fois',
+        titre: 'La pose des pions',
         corps: 'Tant que les dix-huit pions ne sont pas sur le bois, rien ne se déplace. Cliquez un point libre et votre pion s’y pose, puis c’est à l’autre camp. Le compteur du coin vous dit combien il vous en reste en main.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[0, 1]} sombres={[9, 21]} cibles={[2]} legende="Cliquez le point libre allumé" />,
@@ -286,26 +305,26 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         schema: <MiniMerelle clairs={[0, 1, 2]} sombres={[9, 21]} moulin={MOULIN_DEMO} cibles={[9, 21]} legende="Le moulin fermé, la prise offerte" />,
       },
       {
-        titre: 'Après la pose, les pions glissent',
+        titre: 'Les pions glissent',
         corps: 'Une fois tous les pions posés, cliquez le vôtre puis un point voisin libre. Réduit à trois pions, vous volez : votre homme se pose alors sur n’importe quel point libre du plateau, ce qui laisse une vraie chance au camp qui perd.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[1]} sombres={[9, 21]} cibles={[0, 2, 4]} legende="Le pion tenu et ses voisins libres" />,
       },
       {
-        titre: 'Où se trouvent les récompenses',
+        titre: 'Les récompenses',
         corps: 'La roue des sept jours et la boutique donnent les ambiances, les plateaux et les pièces des quatre jeux. Tout ce que vous gagnez dort dans le coffre de votre espace, sous l’onglet des badges, et se choisit de là. La pastille de musique, ici en haut, ouvre les ambiances que vous possédez déjà.',
         ancre: 'musique',
       },
     ],
     EN: [
       {
-        titre: 'What you are trying to do',
+        titre: 'The goal of the game',
         corps: 'You hold nine men and the board carries twenty-four points. Three men on one engraved line make a mill, and every closed mill lets you take one enemy man off the board. The side that drops to two men, or can no longer move a single one, has lost.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[0, 1, 2]} sombres={[9, 21]} moulin={MOULIN_DEMO} legende="Three men in line: a mill" />,
       },
       {
-        titre: 'Placing, one man at a time',
+        titre: 'Placing the men',
         corps: 'Nothing moves until all eighteen men are on the wood. Click a free point and your man lands there, then the other side plays. The counter in the corner tells you how many you still hold in hand.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[0, 1]} sombres={[9, 21]} cibles={[2]} legende="Click the lit free point" />,
@@ -317,13 +336,13 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         schema: <MiniMerelle clairs={[0, 1, 2]} sombres={[9, 21]} moulin={MOULIN_DEMO} cibles={[9, 21]} legende="Mill closed, the take offered" />,
       },
       {
-        titre: 'After placing, men slide',
+        titre: 'Then the men slide',
         corps: 'Once every man is down, click one of yours and then a free neighbouring point. Down to three men you fly: your man may land on any free point of the board, which gives the losing side a way back.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[1]} sombres={[9, 21]} cibles={[0, 2, 4]} legende="The held man and its free neighbours" />,
       },
       {
-        titre: 'Where the rewards live',
+        titre: 'The rewards',
         corps: 'The seven-day wheel and the shop hand out the ambiences, the boards and the pieces of all four games. Everything you win rests in the chest of your own space, under the badges tab, and is chosen from there. The music pill up here opens the ambiences you already own.',
         ancre: 'musique',
       },
@@ -339,7 +358,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 2), pointDe(5, 3), pointDe(5, 4), pointDe(6, 3), pointDe(4, 2)]} legende="Le renard au centre, le troupeau qui monte" />,
       },
       {
-        titre: 'Un coup se joue en deux clics',
+        titre: 'Un coup, deux clics',
         corps: 'Cliquez une pièce à vous et les points verts s’allument autour d’elle, puis cliquez celui où vous voulez aller. Chaque camp avance d’un point à la fois, le long des lignes brûlées au fer.',
         ancre: 'plateau',
         schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 3), pointDe(5, 4)]} cibles={[pointDe(2, 3), pointDe(3, 2), pointDe(3, 4), pointDe(4, 3)]} legende="La pièce tenue et ses points verts" />,
@@ -348,15 +367,15 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         titre: 'Le saut du renard',
         corps: 'Le renard saute par-dessus une oie voisine et retombe sur le point libre derrière elle, qui est emportée. S’il peut sauter encore, il enchaîne dans le même tour : cliquez le point vert le plus lointain pour emporter toute la ligne. Les oies, elles, ne prennent jamais rien.',
         ancre: 'plateau',
-        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(4, 3), pointDe(6, 3)]} prise={pointDe(4, 3)} saut={[pointDe(3, 3), pointDe(5, 3)]} legende="Par-dessus l’oie, sur le point libre derrière" />,
+        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(4, 3), pointDe(6, 3)]} prise={pointDe(4, 3)} cibles={[pointDe(5, 3)]} saut={[pointDe(3, 3), pointDe(5, 3)]} legende="Par-dessus l’oie, sur le point libre derrière" />,
       },
       {
-        titre: 'Comment la chasse se termine',
+        titre: 'La fin de la chasse',
         corps: 'Les oies l’emportent quand le renard est cerné et n’a plus un seul coup à jouer. Le renard l’emporte quand le troupeau est descendu sous le seuil du règlement choisi. Le compteur du bas de l’écran suit les oies restantes tout au long de la partie.',
         ancre: 'compteur',
       },
       {
-        titre: 'Où se trouvent les récompenses',
+        titre: 'Les récompenses',
         corps: 'La roue des sept jours et la boutique donnent les ambiances, les plateaux et les pièces des quatre jeux. Tout ce que vous gagnez dort dans le coffre de votre espace, sous l’onglet des badges. La pastille de musique, ici en haut, ouvre les ambiances que vous possédez déjà.',
         ancre: 'musique',
       },
@@ -369,7 +388,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 2), pointDe(5, 3), pointDe(5, 4), pointDe(6, 3), pointDe(4, 2)]} legende="The fox at the centre, the flock climbing" />,
       },
       {
-        titre: 'A move takes two clicks',
+        titre: 'A move, two clicks',
         corps: 'Click a piece of yours and the green points light up around it, then click the one you want. Each side moves one point at a time, along the burnt lines.',
         ancre: 'plateau',
         schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 3), pointDe(5, 4)]} cibles={[pointDe(2, 3), pointDe(3, 2), pointDe(3, 4), pointDe(4, 3)]} legende="The held piece and its green points" />,
@@ -378,7 +397,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         titre: 'The fox leaps',
         corps: 'The fox leaps over a neighbouring goose and lands on the free point behind it, and that goose is gone. If another leap is there, it carries on in the same turn: click the farthest green point to take the whole line. The geese never capture anything.',
         ancre: 'plateau',
-        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(4, 3), pointDe(6, 3)]} prise={pointDe(4, 3)} saut={[pointDe(3, 3), pointDe(5, 3)]} legende="Over the goose, onto the free point behind" />,
+        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(4, 3), pointDe(6, 3)]} prise={pointDe(4, 3)} cibles={[pointDe(5, 3)]} saut={[pointDe(3, 3), pointDe(5, 3)]} legende="Over the goose, onto the free point behind" />,
       },
       {
         titre: 'How the hunt ends',
@@ -386,7 +405,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'compteur',
       },
       {
-        titre: 'Where the rewards live',
+        titre: 'The rewards',
         corps: 'The seven-day wheel and the shop hand out the ambiences, the boards and the pieces of all four games. Everything you win rests in the chest of your own space, under the badges tab. The music pill up here opens the ambiences you already own.',
         ancre: 'musique',
       },
@@ -396,48 +415,48 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
   hnefatafl: {
     FR: [
       {
-        titre: 'Un roi cerné cherche la sortie',
+        titre: 'Le but du jeu',
         corps: 'Le Roi doit atteindre l’un des quatre coins du damier. Les Raiders, deux fois plus nombreux, doivent l’encercler avant qu’il n’y parvienne, et ce sont eux qui ouvrent la partie.',
         ancre: 'plateau',
         schema: <MiniTafl legende="La fuite du Roi vers un coin" />,
       },
       {
-        titre: 'Un coup se joue en deux clics',
+        titre: 'Un coup, deux clics',
         corps: 'Cliquez une de vos pièces et les cases vertes s’allument, puis cliquez celle où vous voulez aller. Toutes les pièces se déplacent en ligne droite, comme une tour aux échecs, et aucune ne saute par-dessus une autre.',
         ancre: 'plateau',
         schema: <MiniTafl legende="Le Roi monte, puis file vers le coin" />,
       },
       {
-        titre: 'Les prises se font en tenaille',
+        titre: 'La prise en tenaille',
         corps: 'Une pièce prise entre deux pièces adverses est capturée et quitte le damier. C’est vous qui refermez la tenaille : une pièce qui vient se placer d’elle-même entre deux adversaires ne risque rien.',
         ancre: 'plateau',
       },
       {
-        titre: 'Comment la saga se termine',
+        titre: 'La fin de la saga',
         corps: 'Le Roi qui touche un coin donne la victoire aux Défenseurs. Le Roi encerclé la donne aux Raiders. Et le camp qui n’a plus un seul coup à jouer perd la partie sur-le-champ.',
         ancre: 'plateau',
       },
       {
-        titre: 'Les plateaux et les pièces se gagnent',
+        titre: 'Plateaux et pièces',
         corps: 'La dernière colonne de cet écran tient les jeux de pièces, et celle d’à côté les plateaux. Ceux qui portent un cadenas s’ouvrent à la roue des sept jours ou à la boutique, et votre choix se retient d’une visite à l’autre.',
         ancre: 'coffre',
       },
     ],
     EN: [
       {
-        titre: 'A cornered king looks for a way out',
+        titre: 'The goal of the game',
         corps: 'The King must reach one of the four corners of the board. The Raiders, twice as many, have to surround him before he gets there, and they open the game.',
         ancre: 'plateau',
         schema: <MiniTafl legende="The King running for a corner" />,
       },
       {
-        titre: 'A move takes two clicks',
+        titre: 'A move, two clicks',
         corps: 'Click one of your pieces and the green squares light up, then click the one you want. Every piece moves in a straight line, like a rook in chess, and none of them jumps over another.',
         ancre: 'plateau',
         schema: <MiniTafl legende="The King climbs, then runs for the corner" />,
       },
       {
-        titre: 'Captures are made in a vice',
+        titre: 'Capture in a vice',
         corps: 'A piece caught between two enemy pieces is captured and leaves the board. You are the one who closes the vice: a piece that walks between two enemies of its own accord is safe.',
         ancre: 'plateau',
       },
@@ -447,7 +466,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'plateau',
       },
       {
-        titre: 'Boards and pieces are won',
+        titre: 'Boards and pieces',
         corps: 'The last column of this screen holds the piece sets, and the one beside it the boards. The locked ones open at the seven-day wheel or at the shop, and your choice is remembered from one visit to the next.',
         ancre: 'coffre',
       },
@@ -462,18 +481,18 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'question',
       },
       {
-        titre: 'Retournez les cartes une à une',
+        titre: 'Retournez les cartes',
         corps: 'Cliquez une carte pour la retourner, dans l’ordre qui vous plaît. Le paquet a été mélangé une seule fois au début du tirage et une lame sur deux sort renversée, donc rien ne se rejoue.',
         ancre: 'tapis',
         schema: <MiniTarot legende="Une carte sur son dos, une carte retournée" />,
       },
       {
-        titre: 'Lisez ce que la lame raconte',
+        titre: 'Lisez la lame',
         corps: 'Posez ensuite le curseur sur une carte retournée, ou touchez-la une seconde fois, et son sens vient se lire dans le panneau de verre. Quand toutes les places sont retournées, la lecture d’ensemble se compose à partir des lames sorties et de votre question.',
         ancre: 'tapis',
       },
       {
-        titre: 'Le dos des cartes se gagne',
+        titre: 'Le dos des cartes',
         corps: 'Le tarot de la caravane s’obtient à la roue des sept jours, au quatrième jour d’affilée. Une fois gagné, le bouton du bas fait passer d’un dos à l’autre, et tout ce que vous gagnez dort dans le coffre de votre espace.',
         ancre: 'dos',
       },
@@ -485,18 +504,18 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'question',
       },
       {
-        titre: 'Turn the cards one at a time',
+        titre: 'Turn the cards',
         corps: 'Click a card to turn it, in whatever order suits you. The deck was shuffled once at the start of the spread and every other card comes out reversed, so nothing is replayed.',
         ancre: 'tapis',
         schema: <MiniTarot legende="One card face down, one turned over" />,
       },
       {
-        titre: 'Read what the card tells',
+        titre: 'Read the card',
         corps: 'Then rest the cursor on a turned card, or tap it a second time, and its meaning appears in the glass panel. Once every place is turned, the whole reading is composed from the cards that came out and from your question.',
         ancre: 'tapis',
       },
       {
-        titre: 'Card backs are won',
+        titre: 'The card backs',
         corps: 'The caravan tarot comes from the seven-day wheel, on the fourth day in a row. Once it is won, the button below switches from one back to the other, and everything you win rests in the chest of your own space.',
         ancre: 'dos',
       },

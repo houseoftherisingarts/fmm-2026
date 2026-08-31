@@ -21,6 +21,7 @@ import PieceMontpellois from './PieceMontpellois';
 import SansPubPanel from '../compte/SansPubPanel';
 import InterrupteurAnimationsFond from '../compte/InterrupteurAnimationsFond';
 import AffichePrise, { type Prise } from './AffichePrise';
+import RechargerBourse from './RechargerBourse';
 
 // ─── BoutiqueMontpellois : la boutique du profil ─────────────────────
 // Alex, 2026-08-28 : le solde en tête, puis les vraies places
@@ -129,6 +130,27 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const celebrer = (p: Prise) => { setPrise(p); setDernierAchat(p.nom); };
   const lienCoffre = addLocale('/compte?onglet=badges', lang);
 
+  // Retour de la caisse Stripe (?recharge=ok) : la même affiche que
+  // pour un objet se lève, avec la pièce, puis le paramètre quitte
+  // l'adresse pour qu'un rafraîchissement ne la rejoue pas. Le solde,
+  // lui, arrive par suivreMaBourse dès que le webhook a crédité.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('recharge') !== 'ok') return;
+    setPrise({
+      // Deux lignes au maximum en typo display : la phrase entière
+      // descend dans le corps de l'affiche.
+      nom: fr ? 'Vos Montpellois sont arrivés' : 'Your Montpellois have arrived',
+      image: '/montpellois.webp',
+      texte: fr
+        ? 'Vos Montpellois sont dans votre bourse : le solde en haut de cette page vient de monter.'
+        : 'Your Montpellois are in your purse: the balance at the top of this page has just gone up.',
+    });
+    params.delete('recharge');
+    const reste = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (reste ? `?${reste}` : '') + window.location.hash);
+  }, [fr]);
+
   async function acheterDos(id: string) {
     setErreur(null); setEnCours(`dos_${id}`);
     try {
@@ -227,6 +249,10 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           {fr ? 'Ouvrir mon coffre' : 'Open my vault'} <ArrowUpRight size={12} />
         </Link>
       </div>
+
+      {/* Recharger la bourse en argent réel (Alex, 2026-08-31) :
+          la première des sections d'achat, juste sous le solde. */}
+      <RechargerBourse lang={lang} />
 
       {/* La billetterie et la table : les vraies places, en dollars,
           jamais en Montpellois (Alex, 2026-08-28). */}

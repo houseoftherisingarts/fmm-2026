@@ -69,9 +69,12 @@ function useRectAncre(nom: string | undefined, actif: boolean): DOMRect | null {
     const el = document.querySelector<HTMLElement>(`[data-tuto="${nom}"]`);
     if (!el) { setRect(null); return; }
 
-    // La zone doit être sous les yeux avant d'être entourée.
+    // La zone doit être sous les yeux avant d'être entourée. Un
+    // plateau dont un quart dépasse en bas de l'écran ne compte pas
+    // comme visible : on recentre dès qu'il en manque le quart.
     const r0 = el.getBoundingClientRect();
-    if (r0.bottom < 80 || r0.top > window.innerHeight - 80) {
+    const vu = Math.min(r0.bottom, window.innerHeight) - Math.max(r0.top, 0);
+    if (vu < Math.min(r0.height, window.innerHeight) * 0.75) {
       el.scrollIntoView({ block: 'center', behavior: 'auto' });
     }
 

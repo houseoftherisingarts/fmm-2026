@@ -17,7 +17,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ARETES, POSITIONS, type Camp } from './logic';
 import { chargerSculpture } from '../sculpture';
-import { carteNormales, grainDeBois, ombreDeContact, piedTourne } from '../bois';
+import { carteNormales, grainDeBois, ombreDeContact, piedTourne, torsadeEnRelief } from '../bois';
 
 /** Un pas de grille, en unités de scène. */
 export const CELL = 1.5;
@@ -77,7 +77,7 @@ const R_CUPULE = (S: number) => (0.31 / (DEMI * 2)) * S;
  *  vingt-quatre cupules avec leur ombre portée. */
 function dessusGrave(): THREE.CanvasTexture {
   const S = 1024;
-  const c = grainDeChene(S, '#7a5530', '#3a2209', 4);
+  const c = grainDeChene(S, '#6d4a28', '#2e1c08', 4);
   const g = c.getContext('2d')!;
   const px = PX_DESSUS(S);
   const R = R_CUPULE(S);
@@ -341,7 +341,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   plancher.renderOrder = -2;
   scene.add(plancher);
 
-  const boisTable = new THREE.CanvasTexture(grainDeChene(512, '#3a2412', '#1b1008'));
+  const boisTable = new THREE.CanvasTexture(grainDeChene(512, '#4a3018', '#20120a'));
   boisTable.wrapS = boisTable.wrapT = THREE.RepeatWrapping;
   boisTable.repeat.set(3, 3);
   boisTable.anisotropy = 8;
@@ -421,14 +421,35 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // c'est elle qui fait la différence entre une planche et un plateau.
   const moulureForme = carre(cote / 2 + 0.55, 0.22);
   moulureForme.holes.push(new THREE.Path(carre(cote / 2 - 0.02, 0.12).getPoints(64)));
-  const MOULURE_BISEAU = 0.06;
+  const MOULURE_BISEAU = 0.055;
+  const MOULURE_FOND = 0.30;
   const moulureGeo = new THREE.ExtrudeGeometry(moulureForme, {
-    depth: 0.34, bevelEnabled: true, bevelThickness: MOULURE_BISEAU, bevelSize: 0.075, bevelSegments: 3, curveSegments: 8,
+    depth: MOULURE_FOND, bevelEnabled: true, bevelThickness: MOULURE_BISEAU, bevelSize: 0.07, bevelSegments: 3, curveSegments: 8,
   });
+  // L'extrusion part de zéro et monte vers +Z. Le quart de tour envoie
+  // ce +Z vers le HAUT : la pièce occupe donc y de -biseau à
+  // profondeur + biseau, et c'est ce sommet qu'on vient poser où il faut.
   moulureGeo.rotateX(-Math.PI / 2);
-  const moulureMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0xa2794c, roughness: 0.55, metalness: 0.03 });
+  const MOULURE_SOMMET = MOULURE_FOND + MOULURE_BISEAU;
+  // La torsade gougée : le motif du cordage, en relief, tout le long de
+  // la moulure. Les UV d'une extrusion sont à l'échelle du monde, donc
+  // une répétition d'un demi-pas donne une torsade lisible sans jamais
+  // se déformer dans les coins.
+  const torsadeTex = carteNormales(torsadeEnRelief(256, 30), 2.9);
+  torsadeTex.wrapS = torsadeTex.wrapT = THREE.RepeatWrapping;
+  torsadeTex.repeat.set(2.4, 2.4);
+  const moulureMat = new THREE.MeshStandardMaterial({
+    map: chantTex,
+    normalMap: torsadeTex,
+    normalScale: new THREE.Vector2(1.15, 1.15),
+    color: 0x8a6238,
+    roughness: 0.62,
+    metalness: 0.03,
+  });
   const moulure = new THREE.Mesh(moulureGeo, moulureMat);
-  moulure.position.y = HAUT + 0.05 - MOULURE_BISEAU;
+  // La lèvre dépasse de quatre centièmes seulement : de quoi retenir un
+  // pion qui roule, jamais de quoi faire un mur qui prive de lumière.
+  moulure.position.y = HAUT + 0.04 - MOULURE_SOMMET;
   moulure.castShadow = true;
   moulure.receiveShadow = true;
   scene.add(moulure);
@@ -436,13 +457,15 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // La plinthe : un second biseau, plus large, qui donne son assise au
   // meuble et rattrape l'ombre sous le madrier.
   const PLINTHE_BISEAU = 0.05;
+  const PLINTHE_FOND = 0.18;
   const plintheGeo = new THREE.ExtrudeGeometry(carre(cote / 2 + 0.78, 0.28), {
-    depth: 0.20, bevelEnabled: true, bevelThickness: PLINTHE_BISEAU, bevelSize: 0.09, bevelSegments: 3, curveSegments: 8,
+    depth: PLINTHE_FOND, bevelEnabled: true, bevelThickness: PLINTHE_BISEAU, bevelSize: 0.09, bevelSegments: 3, curveSegments: 8,
   });
   plintheGeo.rotateX(-Math.PI / 2);
   const plintheMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0x6d4c2c, roughness: 0.82, metalness: 0.02 });
   const plinthe = new THREE.Mesh(plintheGeo, plintheMat);
-  plinthe.position.y = HAUT - 0.16 - PLINTHE_BISEAU;
+  // Son sommet vient affleurer le dessous du madrier (HAUT - 0,32).
+  plinthe.position.y = (HAUT - 0.32) - (PLINTHE_FOND + PLINTHE_BISEAU);
   plinthe.castShadow = true;
   plinthe.receiveShadow = true;
   scene.add(plinthe);
@@ -481,15 +504,18 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // plan de jeu : c'est ce qu'on voit quand la caméra passe au ras.
   // Le fond, poli par mille parties, a sa propre rugosité.
   const CUP = [
-    [0.00, -0.085], [0.05, -0.083], [0.12, -0.070], [0.20, -0.045],
-    [0.27, -0.014], [0.305, 0.000], [0.335, 0.004],
+    [0.00, -0.078], [0.045, -0.076], [0.11, -0.064], [0.18, -0.041],
+    [0.245, -0.013], [0.275, 0.000], [0.30, 0.004],
   ] as const;
   const cupuleGeo = new THREE.LatheGeometry(
     CUP.map(([r, y]) => new THREE.Vector2(r * CELL, y)), 28,
   );
   cupuleGeo.computeVertexNormals();
+  // Plus sombre que le bois autour, sinon la cupule se lit comme une
+  // pastille collée dessus et non comme un creux. Le reflet vient de la
+  // rugosité basse, pas d'un vernis.
   const cupuleMat = new THREE.MeshStandardMaterial({
-    color: 0x7d5730, roughness: 0.34, metalness: 0.05, side: THREE.DoubleSide,
+    color: 0x4e341a, roughness: 0.46, metalness: 0.04, side: THREE.DoubleSide,
   });
   for (let p = 0; p < 24; p++) {
     const pos = positionDe(p);
@@ -823,6 +849,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     plateauGeo.dispose();
     moulureGeo.dispose();
     moulureMat.dispose();
+    torsadeTex.dispose();
     plintheGeo.dispose();
     plintheMat.dispose();
     piedGeo.dispose();

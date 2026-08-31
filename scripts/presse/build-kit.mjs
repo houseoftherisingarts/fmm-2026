@@ -21,7 +21,7 @@
 // Le reste de public/presse/ :
 //   logos/            le blason argenté, le blanc et un noir fabriqué ici
 //   textes/           la présentation FR et EN, les crédits, le LISEZ-MOI
-//   orbe-presse.webp  l'image carrée de l'orbe de la page /presse
+//   orbe-presse-chevaliers.webp  l'image carrée de l'orbe de la page /presse
 //   thumbs/           les vignettes WebP de 640 px que la page affiche
 //   fmm-kit-de-presse.zip, qui contient tout ce qui précède
 //
@@ -428,13 +428,13 @@ async function buildOrbe() {
   const top = Math.max(0, Math.min(height - side, Math.round(height * ORBE.cy - side / 2)));
   const ratio = 1400 / side;
   if (ratio > 1.6) throw new Error(`orbe : agrandissement ×${ratio.toFixed(2)}, trop fort`);
-  const dest = path.join(OUT, 'orbe-presse.webp');
+  const dest = path.join(OUT, 'orbe-presse-chevaliers.webp');
   await sharp(src)
     .extract({ left, top, width: side, height: side })
     .resize(1400, 1400, { kernel: 'lanczos3' })
     .webp({ quality: 90 })
     .toFile(dest);
-  console.log(`  orbe-presse.webp ← ${ORBE.orig} carré ${side}px agrandi ×${ratio.toFixed(2)}`);
+  console.log(`  orbe-presse-chevaliers.webp ← ${ORBE.orig} carré ${side}px agrandi ×${ratio.toFixed(2)}`);
 }
 
 // ─── 7. Les textes du kit ───────────────────────────────────────────
@@ -459,7 +459,7 @@ tarot, les tambours et les clans nordiques. L'arène reçoit les joutes
 ouvre ses étals d'artisans. La scène accueille les troupes du vendredi
 au dimanche, et le banquet médiéval se sert à la torche, sur un feu de
 bois véritable. Le festival est un organisme sans but lucratif porté
-par une équipe de bénévoles et opéré par Le Salon des Inconnus.
+par une équipe de bénévoles.
 
 QUAND
 
@@ -524,8 +524,7 @@ with tarot, drums and the Nordic clans. The arena takes the mounted
 jousts and the Viking troupes while the market opens its artisan
 stalls. The stage hosts the troupes from Friday to Sunday, and the
 medieval banquet is served by torchlight, over a true wood fire. The
-festival is a non-profit run by a team of volunteers and operated by Le
-Salon des Inconnus.
+festival is a non-profit run by a team of volunteers.
 
 WHEN
 
