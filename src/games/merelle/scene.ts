@@ -190,7 +190,10 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x0d0906, 22, 56);
 
-  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+  // Une focale plutôt longue : à 48 degrés, le bord proche du plateau
+  // devenait deux fois plus gros que le bord lointain et les trois
+  // carrés ne se lisaient plus comme des carrés.
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
 
   // ── Cadrage ────────────────────────────────────────────────────────
   // Plongée légère, comme au hnefatafl : assez haut pour lire les trois
