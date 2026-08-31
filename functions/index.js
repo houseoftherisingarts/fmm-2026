@@ -2229,15 +2229,25 @@ async function verifierRangsFortune(uid, gagneAvant, gagneApres) {
   }
 }
 
-/** Le seul chemin qui AJOUTE des Montpellois. */
-async function crediter(uid, montant) {
-  const { ref, data } = await assurerBourse(uid);
-  const gagneAvant = data.gagne || 0;
-  const gagneApres = gagneAvant + montant;
-  const soldeApres = (data.solde || 0) + montant;
-  await ref.set({ solde: soldeApres, gagne: gagneApres, maj: FieldValue.serverTimestamp() }, { merge: true });
-  await verifierRangsFortune(uid, gagneAvant, gagneApres);
-  return soldeApres;
+/** Le seul chemin qui AJOUTE des Montpellois. Tout se passe dans une
+ *  transaction : deux crédits en même temps ne se perdent plus. `cle`
+ *  (l'identifiant du badge) rend le crédit idempotent : la bourse note
+ *  dans `badgesCredites` ce qui a déjà payé, et une relivraison du
+ *  déclencheur ou un badge retiré puis remis ne repaie pas. */
+async function crediter(uid, montant, cle) {
+  const ref = db.collection('bourses').doc(uid);
+  const r = await db.runTransaction(async (tx) => {
+    const data = bourseDe(await tx.get(ref));
+    if (cle && data.badgesCredites && data.badgesCredites[cle]) return null;
+    const gagneAvant = data.gagne;
+    const patch = { solde: data.solde + montant, gagne: gagneAvant + montant, depense: data.depense, maj: FieldValue.serverTimestamp() };
+    if (cle) patch.badgesCredites = { [cle]: true };
+    tx.set(ref, patch, { merge: true });
+    return { solde: patch.solde, gagneAvant, gagneApres: patch.gagne };
+  });
+  if (!r) return null;
+  await verifierRangsFortune(uid, r.gagneAvant, r.gagneApres);
+  return r.solde;
 }
 
 /** Le seul chemin qui RETIRE des Montpellois : pose 'premiere-depense'
