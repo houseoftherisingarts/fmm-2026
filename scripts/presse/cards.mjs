@@ -34,7 +34,7 @@ export const CARDS = [
     },
   },
   {
-    n: '02', key: 'billets', orig: '2025-IMG_6039', focus: 0.5, side: 'left',
+    n: '02', key: 'billets', orig: '2025-IMG_6045', focus: 0.5, side: 'left',
     qr: { fr: '/billets', en: '/en/tickets' },
     fr: {
       kicker: 'Billets',
@@ -82,7 +82,7 @@ export const CARDS = [
     },
   },
   {
-    n: '05', key: 'forge', orig: '2024-IMG_4531', focus: 0.32, side: 'right',
+    n: '05', key: 'forge', orig: '2024-IMG_5538', focus: 0.5, side: 'right',
     qr: { fr: '/activites', en: '/en/activities' },
     fr: {
       kicker: 'La forge',

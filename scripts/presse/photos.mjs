@@ -24,7 +24,7 @@ export const PHOTOS = [
   { id: '01', slug: 'chevalier-plumet', orig: '2025-IMG_5743', focus: 0.40 },
   { id: '02', slug: 'chevalier-lice',   orig: '2025-IMG_5321', focus: 0.44 },
   { id: '03', slug: 'joute',            orig: '2025-IMG_5526', focus: 0.50 },
-  { id: '04', slug: 'forge',            orig: '2025-IMG_8036', focus: 0.50 },
+  { id: '04', slug: 'forge',            orig: '2024-IMG_5649', focus: 0.50 },
   { id: '05', slug: 'rouet',            orig: '2024-IMG_5475', focus: 0.40 },
   { id: '06', slug: 'poteries',         orig: '2025-IMG_4526', focus: 0.50 },
   { id: '07', slug: 'vielle-a-roue',    orig: '2025-IMG_6090', focus: 0.45 },
