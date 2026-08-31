@@ -99,12 +99,23 @@ function grainDeChene(
  *  vingt-quatre cupules avec leur ombre portée. */
 function dessusGrave(): THREE.CanvasTexture {
   const S = 1024;
-  const c = grainDeChene(S, '#7a5530', '#40280f');
+  const c = grainDeChene(S, '#7a5530', '#3a2209', 4);
   const g = c.getContext('2d')!;
   const px = (u: number) => ((u + DEMI) / (DEMI * 2)) * S;
-  const R = (0.34 / (DEMI * 2)) * S; // rayon d'une cupule, en pixels
+  const R = (0.30 / (DEMI * 2)) * S; // rayon d'une cupule, en pixels
 
   g.lineCap = 'round';
+
+  // Le double filet du pourtour : c'est ce qui fait un plateau taillé
+  // pour être offert plutôt qu'une planche marquée à la va-vite.
+  for (const [u, largeur, teinte] of [
+    [3.34, 0.007, 'rgba(30,17,6,0.78)'],
+    [3.46, 0.0035, 'rgba(30,17,6,0.6)'],
+  ] as const) {
+    g.strokeStyle = teinte;
+    g.lineWidth = S * largeur;
+    g.strokeRect(px(-u), px(-u), px(u) - px(-u), px(u) - px(-u));
+  }
   // La gravure : un sillon sombre, puis l'arête claire du côté de la
   // lumière. C'est ce décalage d'un pixel ou deux qui fait creux.
   for (const [a, b] of ARETES) {
