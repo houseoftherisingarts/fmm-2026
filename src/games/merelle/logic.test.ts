@@ -172,12 +172,9 @@ essai('tomber à deux pions fait perdre', () => {
 });
 
 essai('un camp qui ne peut plus bouger perd', () => {
-  // Le sombre tient 21 et 22, tous deux bouchés, plus un pion libre nulle
-  // part : trois pions, zéro déplacement, et le vol coupé.
-  const e: Etat = {
-    ...poser([9, 10, 11, 18, 19, 16], [21, 22, 0], [0, 0], 1),
-    vol: false,
-  };
+  // Le sombre tient le bas du grand carré (21, 22, 23). Ses trois
+  // sorties (9, 19, 14) sont tenues par le clair, et le vol est coupé.
+  const e: Etat = { ...poser([9, 19, 14, 16], [21, 22, 23], [0, 0], 1), vol: false };
   assert.equal(deplacementsDe(e, 2).length, 0);
   const apres = jouer(e, { type: 'deplacement', de: 16, vers: 15 });
   assert.equal(apres.gagnant, 1);
