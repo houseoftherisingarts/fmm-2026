@@ -613,7 +613,7 @@ const RenardPage: React.FC = () => {
           {pubEnAttente && (
             <PubDebutPartie
               lang={lang}
-              jeu={'renard' as 'des'}
+              jeu={'renard' as unknown as 'des'}
               onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
             />
           )}
