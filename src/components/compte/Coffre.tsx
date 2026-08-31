@@ -80,7 +80,7 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
       {/* Skins */}
       <div className="mb-7">
         <p className="witcher-stat-label mb-3"><Palette size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Vos skins' : 'Your skins'}</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {skinsPossedes.map((s) => {
             const info = NOMS_SKIN[s];
             const actif = skinEquipe === s;

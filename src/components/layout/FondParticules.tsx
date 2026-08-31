@@ -222,9 +222,9 @@ const FondParticules: React.FC<Props> = ({ variante, className }) => {
       // troisième collé au bord droit un peu plus bas (mobile : deux).
       const ms = spritesMousse;
       mousses = [
-        { sprite: ms[0], x: w * 0.08, y: h * 0.07, a: 0.16, phase: 0.0, w: 220, h: 96 },
-        { sprite: ms[1], x: w * 0.62, y: h * 0.05, a: 0.13, phase: 2.1, w: 260, h: 110 },
-        ...(mobile ? [] : [{ sprite: ms[2], x: w - 150, y: h * 0.30, a: 0.11, phase: 4.2, w: 200, h: 88 }]),
+        { sprite: ms[0], x: w * 0.10, y: h * 0.13, a: 0.14, phase: 0.0, w: 220, h: 96 },
+        { sprite: ms[1], x: w * 0.66, y: h * 0.11, a: 0.12, phase: 2.1, w: 260, h: 110 },
+        ...(mobile ? [] : [{ sprite: ms[2], x: w - 130, y: h * 0.34, a: 0.10, phase: 4.2, w: 200, h: 88 }]),
       ];
     };
 

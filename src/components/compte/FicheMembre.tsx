@@ -283,7 +283,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
       void publierFiche(uid, { vip: true }).catch(() => { /* hors ligne */ });
     }
   }, [prive, uid, chargement, sansPub, fiche]);
-  const vip = prive ? sansPub : !!fiche?.vip;
+  // L'aperçu sans compte (?apercu=1, dev seulement) montre l'espace VIP
+  // ouvert, pour juger les cartes de skin à l'écran.
+  const vip = prive ? (sansPub || (import.meta.env.DEV && uid === 'apercu')) : !!fiche?.vip;
 
   // Deux badges qui se constatent plutôt qu'ils ne se déclenchent : la
   // bannière et le portrait posés ensemble, puis le profil au grand
