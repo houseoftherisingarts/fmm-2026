@@ -346,9 +346,10 @@ service cloud.firestore {
       // attribue tout seul (Alex, 2026-08-24).
       allow update: if isAdmin()
                     || (isOwner(uid)
-                        // `verifie` (le badge bleu, Alex 2026-08-28) suit le même sort.
+                        // `verifie` (le badge bleu, Alex 2026-08-28) suit le même sort,
+                        // et `vip` aussi : le serveur le pose quand users.sansPub passe à vrai.
                         && !request.resource.data.diff(resource.data).affectedKeys()
-                              .hasAny(['roles', 'tags', 'verifie']));
+                              .hasAny(['roles', 'tags', 'verifie', 'vip']));
       allow delete: if isAdmin();
     }
 
