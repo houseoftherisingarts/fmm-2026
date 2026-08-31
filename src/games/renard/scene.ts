@@ -221,7 +221,10 @@ function construireOie(): THREE.Group {
   g.add(croupion);
 
   g.traverse((o) => { if (o instanceof THREE.Mesh) { o.castShadow = true; } });
-  return g;
+  g.scale.setScalar(1.2);
+  const socle = new THREE.Group();
+  socle.add(g);
+  return socle;
 }
 
 export interface Table3D {
