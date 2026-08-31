@@ -12,8 +12,9 @@
 // Quelqu'un qui n'est pas connecté gagne quand même : le badge dort
 // dans le navigateur et se réclame à la première connexion.
 
-import { doc, getDoc, setDoc, updateDoc, deleteField, onSnapshot, serverTimestamp, type FieldValue } from 'firebase/firestore';
-import { db } from '../firebase';
+import { doc, setDoc, updateDoc, deleteField, onSnapshot, type FieldValue } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { db, firebaseApp } from '../firebase';
 
 export type TaillePrix = 'petit' | 'moyen' | 'grand';
 
