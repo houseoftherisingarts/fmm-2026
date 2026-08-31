@@ -306,7 +306,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // ── Le madrier gravé ───────────────────────────────────────────────
   const cote = DEMI * 2 * CELL;
   const dessusTex = dessusGrave();
-  const chantTex = new THREE.CanvasTexture(grainDeChene(256, '#5c3d21', '#301d0c'));
+  const chantTex = new THREE.CanvasTexture(grainDeChene(256, '#5a3b20', '#2a1809', 3));
   chantTex.colorSpace = THREE.SRGBColorSpace;
   chantTex.anisotropy = 4;
   const matDessus = new THREE.MeshStandardMaterial({ map: dessusTex, roughness: 0.62, metalness: 0.03 });
