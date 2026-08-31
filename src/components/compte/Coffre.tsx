@@ -45,6 +45,14 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
   // Les trésors de la roue des sept jours. Leur « équipement » vit dans
   // le navigateur, comme le reste des choix des jeux (lireChoix du
   // hnefatafl, CLE_DOS_TAROT du tarot).
+  const chancesWJW = bourse?.chancesWJW || 0;
+  const [choixJeu, setChoixJeu] = useState(() => lireChoix());
+  const equiperPlateau = (id: string) => { ecrireChoix(id, choixJeu.pieces); setChoixJeu({ plateau: id, pieces: choixJeu.pieces }); };
+  const equiperPieces = (id: string) => { ecrireChoix(choixJeu.plateau, id); setChoixJeu({ plateau: choixJeu.plateau, pieces: id }); };
+  // Un jeu 'recompense' se joue seulement s'il est gagné; un jeu
+  // 'bientot' s'annonce sans se choisir; un jeu 'disponible' est à tous.
+  const jeuOuvert = (statut: string, id: string, gagnes: string[]) =>
+    statut === 'disponible' || (statut === 'recompense' && gagnes.includes(id));
   const dosPossedes = ['festival', ...(bourse?.dosTarot || [])];
   const [dosActuel, setDosActuel] = useState<string | null>(() => dosEquipe());
   const equiperUnDos = (id: string) => { equiperDos(id === 'festival' ? null : id); setDosActuel(id === 'festival' ? null : id); };
