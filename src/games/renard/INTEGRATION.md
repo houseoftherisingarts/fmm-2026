@@ -101,8 +101,9 @@ Je ne les ai pas créés : le glyphe, le nom bilingue et le sceau sont des choix
 
 ## Vérifications faites
 
-- `npx tsx "src/games/renard/logic.test.ts"` : 15 contrôles, tous verts, cinq exécutions de suite sans variation.
-- `npx tsc -b --noEmit` : zéro erreur dans `src/games/renard/`. Le dépôt en compte 14 qui existaient avant ce chantier, toutes dans `src/components/compte/Coffre.tsx` (`chancesWJW`, `jeuOuvert`, `choixJeu`, `equiperPlateau`, `equiperPieces` introuvables, plus deux imports inutilisés). Ce fichier n'a pas été touché ici.
+- `npx tsx "src/games/renard/logic.test.ts"` : 15 contrôles, tous verts, cinq exécutions de suite sans variation. Ils couvrent la croix de 33 points, les deux mises en place, le recul interdit dans la forme tardive, le saut simple, le saut refusé quand le point d'arrivée est occupé, la chaîne de deux sauts avec son arrêt en route, les deux conditions de victoire, l'immuabilité du plateau, le réflexe des oies qui refusent de s'offrir, la gourmandise du renard, et une partie entière jouée par l'ordinateur des deux côtés jusqu'au vainqueur.
+- `npx tsc -b --noEmit` : zéro erreur dans `src/games/renard/`. Le dépôt en compte 14 qui existaient avant ce chantier, toutes dans `src/components/compte/Coffre.tsx` (`chancesWJW`, `jeuOuvert`, `choixJeu`, `equiperPlateau`, `equiperPieces` introuvables, plus deux imports inutilisés). Ce fichier n'a pas été touché ici, et il faudra le réparer avant le prochain `npm run build`.
+- Le rendu a été regardé en vrai, sur une page d'essai jetable servie par `npx vite --port 5202 --strictPort` et photographiée par un Chromium local en mode logiciel, en 1280 par 800 et en 390 par 780. La page d'essai et le serveur ont été retirés après coup. Trois défauts trouvés et corrigés à cette occasion : le chanfrein de l'extrusion remontait le dessus de la planche au-dessus des lignes brûlées et des cupules, qui étaient donc invisibles; la texture du bois se répétait vingt fois et donnait un tartan; et la croix débordait par les côtés en portrait, une oie du bras gauche sortant du cadre.
 
 ## Deux détails à trancher
 

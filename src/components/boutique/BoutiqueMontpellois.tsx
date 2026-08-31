@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Palette, Disc3, Gift, Music, Ticket, BookOpen, Loader2, ArrowUpRight, Layers } from 'lucide-react';
+import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight, Layers } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { suivreSansPub } from '../../firebase/sansPub';
@@ -179,35 +179,31 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Billet du festival : la campagne membre, cinq dollars de
               moins que la campagne publique (voir src/lib/billetterie.ts). */}
-          <div className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <span className="w-14 h-14 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(216,176,90,0.4)' }}>
-                <img src="/photos/tournage-2026/cavaliere-charge.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
-              </span>
-              <div className="min-w-0">
-                <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? 'Billet du festival' : 'Festival ticket'}</p>
-                <p className="font-editorial italic text-[10px] text-ivory-soft/50">{fr ? 'Votre place pour les trois jours' : 'Your pass for the three days'}</p>
-              </div>
+          <div className="glass-light rounded-lg-card overflow-hidden flex flex-col">
+            {/* La même carte que le livre de recettes : l'image en bandeau (Alex, 2026-08-30). */}
+            <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
+              <img src="/photos/tournage-2026/cavaliere-charge.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
             </div>
+            <div className="p-4 flex flex-col gap-2 flex-1">
+              <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><Ticket size={13} className="text-brass shrink-0" />{fr ? 'Billet du festival' : 'Festival ticket'}</p>
+              <p className="font-sans text-[11px] text-ivory-soft/60">{fr ? 'Votre place pour les trois jours' : 'Your pass for the three days'}</p>
             <a href={lienBilletterie(Boolean(user))} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); }}
                className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card">
               {fr ? 'Voir les billets' : 'See tickets'} <ArrowUpRight size={11} />
             </a>
+            </div>
           </div>
 
           {/* Billet du banquet : même appel serveur que la page
               Nourriture (LIEN_BANQUET), une place à la fois. */}
-          <div className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <span className="w-14 h-14 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(216,176,90,0.4)' }}>
-                <img src="/wix/nourriture/banquet-cercle.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
-              </span>
-              <div className="min-w-0">
-                <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? 'Billet du banquet' : 'Banquet ticket'}</p>
-                <p className="font-sans text-sm text-brass font-semibold mt-0.5">74,73 $</p>
-              </div>
+          <div className="glass-light rounded-lg-card overflow-hidden flex flex-col">
+            <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
+              <img src="/wix/nourriture/banquet-cercle.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
             </div>
+            <div className="p-4 flex flex-col gap-2 flex-1">
+              <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><UtensilsCrossed size={13} className="text-brass shrink-0" />{fr ? 'Billet du banquet' : 'Banquet ticket'}</p>
+              <span className="font-sans text-sm text-brass font-semibold">74,73 $</span>
             <button type="button" disabled={banquetEnRoute || !uid} onClick={acheterBanquet}
                     className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
               {banquetEnRoute ? <Loader2 size={12} className="animate-spin" /> : (fr ? 'Réserver ma place' : 'Book my seat')}
@@ -220,6 +216,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 </a>
               </p>
             )}
+            </div>
           </div>
 
           {/* Livre de recettes : pas encore en vente (voir GRIMOIRE_EN_VENTE,
