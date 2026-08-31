@@ -786,12 +786,25 @@ service cloud.firestore {
     // 2026-08-23).
     // `exposes` : les badges mis en vitrine sur la fiche, cinq au plus
     // (Alex, 2026-08-27).
+    // `obtenus` ne s'écrit que par le serveur (poserBadgeClient valide
+    // l'identifiant) : chaque clé vaut des Montpellois. Le navigateur ne
+    // touche qu'à sa vitrine et n'efface que ses annonces.
     match /badges/{uid} {
-      allow read:  if signedIn();
-      allow write: if isOwner(uid)
-                   && (!('exposes' in request.resource.data)
-                       || (request.resource.data.exposes is list
-                           && request.resource.data.exposes.size() <= 5));
+      function exposesValides() {
+        return !('exposes' in request.resource.data)
+               || (request.resource.data.exposes is list
+                   && request.resource.data.exposes.size() <= 5);
+      }
+      allow read:   if signedIn();
+      allow create: if isOwner(uid)
+                    && request.resource.data.keys().hasOnly(['exposes'])
+                    && exposesValides();
+      allow update: if isOwner(uid)
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['exposes', 'aAnnoncer'])
+                    && exposesValides()
+                    && (!('aAnnoncer' in request.resource.data)
+                        || request.resource.data.aAnnoncer.keys().hasOnly(resource.data.get('aAnnoncer', {}).keys()));
+      allow delete: if false;
     }
 
     // ── Photos publiques (envoyées par les membres) ────────────────
