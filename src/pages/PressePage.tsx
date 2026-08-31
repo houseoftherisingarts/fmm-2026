@@ -156,6 +156,7 @@ const PressePage: React.FC = () => {
               className={`w-full aspect-video transition-transform duration-500 group-hover:scale-[1.03] ${
                 contain ? 'object-contain p-8' : 'object-cover'
               }`}
+              style={a.fond === 'clair' ? { background: 'rgba(239, 233, 220, 0.92)' } : undefined}
             />
           </button>
           {/* Le nom se pose sur sa propre ligne : à trois colonnes, une
@@ -453,7 +454,11 @@ const PressePage: React.FC = () => {
               src={pleineRes(ouverte)}
               alt={nom(ouverteBase) || t.untitled}
               className="max-w-[92vw] max-h-[80vh] object-contain"
-              style={{ boxShadow: '0 30px 90px rgba(0, 0, 0, 0.75)' }}
+              style={{
+                boxShadow: '0 30px 90px rgba(0, 0, 0, 0.75)',
+                background: ouverteBase.fond === 'clair' ? 'rgba(239, 233, 220, 0.94)' : undefined,
+                padding: ouverteBase.fond ? '2rem' : undefined,
+              }}
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}

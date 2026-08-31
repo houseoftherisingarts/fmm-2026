@@ -16,10 +16,12 @@ const InterrupteurAnimationsFond: React.FC<{ lang: 'FR' | 'EN'; className?: stri
   const actif = useAnimationsFond();
   const libelle = fr ? 'Animations du fond' : 'Background animations';
   return (
-    <div className={`flex items-center justify-between gap-3 ${className ?? ''}`}>
-      <span className="min-w-0 flex items-start gap-1.5">
+    // Dans une carte étroite (coffre et VIP sur mobile), l'interrupteur
+    // passe sous le libellé au lieu d'écraser le texte sur trois lignes.
+    <div className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 ${className ?? ''}`}>
+      <span className="flex items-start gap-1.5 whitespace-nowrap">
         <Flame size={12} className="shrink-0 mt-0.5" style={{ color: 'var(--sk-gilt)' }} />
-        <span className="min-w-0">
+        <span>
           <span className="block font-sans text-[11px] leading-tight" style={{ color: 'rgba(var(--sk-parchment-rgb),0.8)' }}>{libelle}</span>
           <span className="block font-sans text-[10px] leading-tight mt-0.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
             {fr ? 'feu, neige, bulles' : 'fire, snow, bubbles'}

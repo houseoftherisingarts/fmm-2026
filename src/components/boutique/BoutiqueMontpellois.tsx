@@ -20,6 +20,7 @@ import { lienBilletterie, ouvrirBilletterie } from '../../lib/billetterie';
 import PieceMontpellois from './PieceMontpellois';
 import SansPubPanel from '../compte/SansPubPanel';
 import InterrupteurAnimationsFond from '../compte/InterrupteurAnimationsFond';
+import AffichePrise, { type Prise } from './AffichePrise';
 
 // ─── BoutiqueMontpellois : la boutique du profil ─────────────────────
 // Alex, 2026-08-28 : le solde en tête, puis les vraies places
@@ -122,18 +123,30 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   // avait acheté un skin et une musique sans savoir où ils étaient allés
   // (retour d'utilisateur, 2026-08-31).
   const [dernierAchat, setDernierAchat] = useState<string | null>(null);
+  // L'affiche de la prise : image de l'objet, son du succès, « a été
+  // ajouté à votre coffre » (Alex, 2026-08-31).
+  const [prise, setPrise] = useState<Prise | null>(null);
+  const celebrer = (p: Prise) => { setPrise(p); setDernierAchat(p.nom); };
   const lienCoffre = addLocale('/compte?onglet=badges', lang);
 
   async function acheterDos(id: string) {
     setErreur(null); setEnCours(`dos_${id}`);
-    try { await acheterCosmetique(`dos_${id}`); setDernierAchat(fr ? 'Le dos de carte' : 'The card back'); }
+    try {
+      await acheterCosmetique(`dos_${id}`);
+      const d = DOS_CARTES.find((x) => x.id === id);
+      celebrer({ nom: d ? (fr ? d.nomFR : d.nomEN) : (fr ? 'Le dos de carte' : 'The card back'), image: d?.image, portrait: true });
+    }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
     finally { setEnCours(null); }
   }
 
   async function acheterUneAmbiance(id: string) {
     setErreur(null); setEnCours(`ambiance_${id}`);
-    try { await acheterAmbiance(id); setDernierAchat(fr ? 'L’ambiance' : 'The ambience'); }
+    try {
+      await acheterAmbiance(id);
+      const a = AMBIANCES.find((x) => x.id === id);
+      celebrer({ nom: a ? (fr ? `L’ambiance « ${a.titreFR} »` : `The “${a.titreEN}” ambience`) : (fr ? 'L’ambiance' : 'The ambience'), glyphe: '♫' });
+    }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
     finally { setEnCours(null); }
   }
@@ -144,7 +157,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     try {
       if (!sansPub) await acheterCosmetique(`skin_${skin}`);
       await definirPref(uid, 'skin', skin);
-      setDernierAchat(fr ? 'Le skin' : 'The skin');
+      const n = NOMS_SKIN[skin];
+      celebrer({ nom: fr ? `Le skin ${n.FR}` : `The ${n.EN} skin`, image: IMAGE_SKIN[skin] });
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
@@ -164,6 +178,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
   return (
     <div className="space-y-10">
+      <AffichePrise prise={prise} onFermer={() => setPrise(null)} lienCoffre={lienCoffre} fr={fr} />
       {/* Solde */}
       <div className="flex flex-wrap items-center justify-between gap-4 glass-light rounded-lg-card p-5">
         <div className="flex items-center gap-3">
@@ -226,8 +241,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               <img src="/photos/tournage-2026/cavaliere-charge.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
             </div>
             <div className="p-4 flex flex-col gap-2 flex-1">
-              <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><Ticket size={13} className="text-brass shrink-0" />{fr ? 'Billet du festival' : 'Festival ticket'}</p>
-              <p className="font-sans text-[11px] text-ivory-soft/60">{fr ? 'Votre place pour les trois jours' : 'Your pass for the three days'}</p>
+              <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><Ticket size={13} className="text-brass shrink-0" />{fr ? 'Billets du festival' : 'Festival tickets'}</p>
+              <p className="font-sans text-[11px] text-ivory-soft/60">{fr ? 'De 27 $ la journée à 65 $ les trois jours' : 'From $27 a day to $65 for all three days'}</p>
             <a href={lienBilletterie(Boolean(user))} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); }}
                className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card">
@@ -240,7 +255,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               Nourriture (LIEN_BANQUET), une place à la fois. */}
           <div className="glass-light rounded-lg-card overflow-hidden flex flex-col">
             <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
-              <img src="/wix/nourriture/banquet-cercle.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
+              <img src="/wix/nourriture/13fb1062.jpg" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
             </div>
             <div className="p-4 flex flex-col gap-2 flex-1">
               <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><UtensilsCrossed size={13} className="text-brass shrink-0" />{fr ? 'Billet du banquet' : 'Banquet ticket'}</p>

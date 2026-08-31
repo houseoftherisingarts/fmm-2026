@@ -92,9 +92,9 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                   {IMAGE_SKIN[s]
                     ? <img src={IMAGE_SKIN[s]} alt="" aria-hidden loading="lazy" className="block w-full aspect-square object-cover rounded-md" style={{ opacity: actif ? 1 : 0.85 }} />
                     : <span className="block w-full aspect-square rounded-md" style={{ background: info.couleur }} />}
-                  <span className="flex items-center justify-center gap-1.5 mt-2 font-sans text-sm text-center" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
+                  <span className="flex items-center justify-center gap-1.5 mt-2 font-sans text-sm leading-tight text-center" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
                     {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
-                    <span className="truncate">{fr ? info.FR : info.EN}</span>
+                    <span>{fr ? info.FR : info.EN}</span>
                   </span>
                 </button>
                 <InterrupteurAnimationsFond lang={lang} className="px-3 pb-3 pt-2" />

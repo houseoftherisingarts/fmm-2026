@@ -174,7 +174,11 @@ function shell(body, extraCss = '') {
   .mark {
     position: absolute; right: 58px; bottom: 34px; height: 112px; width: auto;
     opacity: 0.94;
-    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px rgba(0, 0, 0, 0.5));
+    /* Sur une photo claire (les poteries, les paniers d'herbes), un
+       blason blanc cassé disparaît. Le halo sombre le rattrape sans
+       durcir le trait. */
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 7px rgba(0, 0, 0, 0.72))
+            drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
   }
   /* Le carré du QR, en bas à gauche, à 3 % du bord. */
   .qr {
@@ -190,7 +194,8 @@ function shell(body, extraCss = '') {
     font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
     font-weight: 600; font-size: 26px; font-variant: small-caps;
     letter-spacing: 0.16em; color: rgba(244, 239, 227, 0.85);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.92), 0 1px 8px rgba(0, 0, 0, 0.75), 0 0 22px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 5px rgba(0, 0, 0, 0.9),
+                 0 0 14px rgba(0, 0, 0, 0.7), 0 0 32px rgba(0, 0, 0, 0.45);
   }
   ${extraCss}
 </style></head><body><div class="frame">${body}</div></body></html>`;

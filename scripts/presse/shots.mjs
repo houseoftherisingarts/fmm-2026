@@ -72,8 +72,8 @@ for (const v of VIEWS) {
   await page.waitForTimeout(900);
   await page.screenshot({ path: path.join(OUT, 'loupe-suivante.png'), animations: 'disabled' });
   await page.keyboard.press('Escape');
-  await page.waitForTimeout(500);
-  const fermee = (await page.locator('[role="dialog"]').count()) === 0;
+  await page.waitForTimeout(900);
+  const fermee = (await page.locator('[aria-label="Image en plein écran"]').count()) === 0;
 
   // La bascule « Version QR » de la première carte.
   const bascule = page.locator('button[title]:has-text("Version QR")').first();

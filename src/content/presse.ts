@@ -23,6 +23,9 @@ export interface PresseAsset {
   qr?: boolean;
   /** La page que ce code QR ouvre, pour l'afficher sous la tuile. */
   qrPath?: string;
+  /** Le fond sur lequel poser un PNG transparent. Le blason noir
+   *  disparaît sur du verre sombre, il lui faut du parchemin. */
+  fond?: 'clair' | 'sombre';
 }
 
 const carte = (
@@ -74,12 +77,12 @@ export const CARTES_POSTALES: PresseAsset[] = [
 ];
 
 export const LOGOS: PresseAsset[] = [
-  { file: 'logos/fmm-logo-embossed-silver.png', labelFR: 'Blason argenté', labelEN: 'Silver crest' },
-  { file: 'logos/fmm-logo-argent-1024.png', labelFR: 'Blason argenté, 1024 px', labelEN: 'Silver crest, 1024 px' },
-  { file: 'logos/fmm-logo-white.png', labelFR: 'Blason blanc', labelEN: 'White crest' },
-  { file: 'logos/fmm-logo-blanc-1024.png', labelFR: 'Blason blanc, 1024 px', labelEN: 'White crest, 1024 px' },
-  { file: 'logos/fmm-logo-noir.png', labelFR: 'Blason noir', labelEN: 'Black crest' },
-  { file: 'logos/fmm-logo-noir-1024.png', labelFR: 'Blason noir, 1024 px', labelEN: 'Black crest, 1024 px' },
+  { file: 'logos/fmm-logo-embossed-silver.png', labelFR: 'Blason argenté', labelEN: 'Silver crest', fond: 'sombre' },
+  { file: 'logos/fmm-logo-argent-1024.png', labelFR: 'Blason argenté, 1024 px', labelEN: 'Silver crest, 1024 px', fond: 'sombre' },
+  { file: 'logos/fmm-logo-white.png', labelFR: 'Blason blanc', labelEN: 'White crest', fond: 'sombre' },
+  { file: 'logos/fmm-logo-blanc-1024.png', labelFR: 'Blason blanc, 1024 px', labelEN: 'White crest, 1024 px', fond: 'sombre' },
+  { file: 'logos/fmm-logo-noir.png', labelFR: 'Blason noir', labelEN: 'Black crest', fond: 'clair' },
+  { file: 'logos/fmm-logo-noir-1024.png', labelFR: 'Blason noir, 1024 px', labelEN: 'Black crest, 1024 px', fond: 'clair' },
 ];
 
 /** Les fichiers texte du kit. Pas de vignette : la tuile est un feuillet. */
