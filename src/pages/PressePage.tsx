@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Check, Download, Mail, Phone, Share2 } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, ChevronLeft, ChevronRight, Download, FileText, Mail, Phone, QrCode, Share2, X } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { SITE } from '../content';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -9,7 +10,10 @@ import {
   CARTES_POSTALES,
   LOGOS,
   PRESSE_ZIP,
+  QR_BASE,
+  TEXTES,
   pleineRes,
+  versionQR,
   vignette,
   type PresseAsset,
 } from '../content/presse';
@@ -33,8 +37,15 @@ import {
 // festivalmedieval.org/presskit tombe juste, peu importe la façon dont
 // il l'écrit dans un courriel.
 //
-// Les tuiles affichent une vignette WebP de 640 px; le bouton
-// Télécharger sert le PNG 1920 × 1080. Voir src/content/presse.ts.
+// Trois gestes par tuile : Télécharger sert le PNG 1920 × 1080,
+// Partager passe par le partage natif ou copie le lien, et Version QR
+// bascule la tuile sur la même carte portant un code QR vers la page
+// du site qui traite du sujet. Cliquer l'image l'ouvre en grand.
+//
+// Les tuiles affichent une vignette WebP de 640 px. Voir
+// src/content/presse.ts et scripts/presse/build-kit.mjs.
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 const PressePage: React.FC = () => {
   useCaravanPage();
@@ -45,13 +56,28 @@ const PressePage: React.FC = () => {
   // Le fichier dont le lien vient d'être copié, pour l'accusé de
   // réception sous le bouton Partager.
   const [copie, setCopie] = useState<string | null>(null);
+  // Les tuiles passées en version QR, par nom de fichier de base.
+  const [enQR, setEnQR] = useState<Set<string>>(() => new Set());
+  // La visionneuse : la série affichée et le rang de l'image ouverte.
+  const [loupe, setLoupe] = useState<{ serie: PresseAsset[]; i: number } | null>(null);
+
+  const nom = (a: PresseAsset) => (lang === 'FR' ? a.labelFR : a.labelEN);
+  const affiche = (a: PresseAsset) => (enQR.has(a.file) ? versionQR(a) : a);
+
+  const basculerQR = (a: PresseAsset) =>
+    setEnQR((s) => {
+      const n = new Set(s);
+      if (n.has(a.file)) n.delete(a.file);
+      else n.add(a.file);
+      return n;
+    });
 
   const partager = async (a: PresseAsset, titre: string) => {
-    const chemin = pleineRes(a);
+    const chemin = pleineRes(affiche(a));
     try {
       const reponse = await fetch(chemin);
       const blob = await reponse.blob();
-      const fichier = new File([blob], a.file.split('/').pop() || 'fmm.png', {
+      const fichier = new File([blob], chemin.split('/').pop() || 'fmm.png', {
         type: blob.type || 'image/png',
       });
       if (navigator.canShare?.({ files: [fichier] })) {
@@ -72,35 +98,84 @@ const PressePage: React.FC = () => {
     window.setTimeout(() => setCopie((c) => (c === a.file ? null : c)), 2400);
   };
 
-  const tuile = (a: PresseAsset, contain = false) => {
-    const label = lang === 'FR' ? a.labelFR : a.labelEN;
+  // ── La visionneuse ────────────────────────────────────────────────
+  const fermer = useCallback(() => setLoupe(null), []);
+  const glisser = useCallback(
+    (pas: number) =>
+      setLoupe((v) => (v ? { ...v, i: (v.i + pas + v.serie.length) % v.serie.length } : v)),
+    [],
+  );
+
+  useEffect(() => {
+    if (!loupe) return undefined;
+    const auClavier = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') fermer();
+      if (e.key === 'ArrowLeft') glisser(-1);
+      if (e.key === 'ArrowRight') glisser(1);
+    };
+    window.addEventListener('keydown', auClavier);
+    const avant = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', auClavier);
+      document.body.style.overflow = avant;
+    };
+  }, [loupe, fermer, glisser]);
+
+  const ouvrir = (serie: PresseAsset[], i: number) => setLoupe({ serie, i });
+
+  const boutonRond =
+    'inline-flex items-center justify-center rounded-full transition-colors backdrop-blur-sm';
+  const styleRond: React.CSSProperties = {
+    background: 'rgba(12, 10, 8, 0.55)',
+    border: '1px solid rgba(232, 177, 74, 0.34)',
+    color: 'var(--color-bone)',
+  };
+
+  // ── Une tuile ─────────────────────────────────────────────────────
+  const tuile = (a: PresseAsset, serie: PresseAsset[], i: number, contain = false) => {
+    const label = nom(a);
+    const vue = affiche(a);
+    const actif = enQR.has(a.file);
     return (
       <HexPanel key={a.file} size="sm" className="h-full">
         <div className="caravan-glass h-full flex flex-col">
-          <img
-            src={vignette(a)}
-            alt={label}
-            width={640}
-            height={360}
-            loading="lazy"
-            decoding="async"
-            className={`w-full aspect-video ${contain ? 'object-contain p-8' : 'object-cover'}`}
-          />
+          <button
+            type="button"
+            onClick={() => ouvrir(serie, i)}
+            aria-label={`${t.enlarge} · ${label || t.untitled}`}
+            className="block w-full group relative overflow-hidden cursor-zoom-in"
+          >
+            <img
+              src={vignette(vue)}
+              alt={label || t.untitled}
+              width={640}
+              height={360}
+              loading="lazy"
+              decoding="async"
+              className={`w-full aspect-video transition-transform duration-500 group-hover:scale-[1.03] ${
+                contain ? 'object-contain p-8' : 'object-cover'
+              }`}
+            />
+          </button>
           {/* Le nom se pose sur sa propre ligne : à trois colonnes, une
-              tuile fait 230 px et un titre mis à côté des deux boutons
-              se faisait couper au troisième mot. */}
-          <div className="px-4 py-3.5 border-t"
-               style={{ borderColor: 'rgba(216, 155, 58, 0.18)' }}>
-            <p className="font-display-alt text-sm tracking-[0.06em] mb-2.5"
-               style={{ color: 'var(--color-bone)' }}>
-              {label}
-            </p>
-            <div className="flex items-center gap-2">
+              tuile fait 230 px et un titre mis à côté des boutons se
+              faisait couper au troisième mot. */}
+          <div className="px-4 py-3.5 border-t" style={{ borderColor: 'rgba(216, 155, 58, 0.18)' }}>
+            {label && (
+              <p
+                className="font-display-alt text-sm tracking-[0.06em] mb-2.5"
+                style={{ color: 'var(--color-bone)' }}
+              >
+                {label}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
               <a
-                href={pleineRes(a)}
+                href={pleineRes(vue)}
                 download
                 title={t.download}
-                aria-label={`${t.download} · ${label}`}
+                aria-label={`${t.download} · ${label || t.untitled}`}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1.5 font-sans uppercase tracking-[0.18em] text-[10px] transition-colors rounded-[3px]"
                 style={{
                   color: 'var(--color-amber-glow)',
@@ -112,9 +187,9 @@ const PressePage: React.FC = () => {
               </a>
               <button
                 type="button"
-                onClick={() => partager(a, label)}
+                onClick={() => partager(a, label || t.untitled)}
                 title={t.share}
-                aria-label={`${t.share} · ${label}`}
+                aria-label={`${t.share} · ${label || t.untitled}`}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1.5 font-sans uppercase tracking-[0.18em] text-[10px] transition-colors rounded-[3px]"
                 style={{
                   color: copie === a.file ? 'var(--color-bone)' : 'rgba(244, 239, 227, 0.72)',
@@ -125,12 +200,85 @@ const PressePage: React.FC = () => {
                 {copie === a.file ? <Check size={12} /> : <Share2 size={12} />}
                 {copie === a.file ? t.copied : t.share}
               </button>
+              {a.qr && (
+                <button
+                  type="button"
+                  onClick={() => basculerQR(a)}
+                  aria-pressed={actif}
+                  title={actif ? t.qrOff : t.qrOn}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 font-sans uppercase tracking-[0.18em] text-[10px] transition-colors rounded-[3px]"
+                  style={{
+                    color: actif ? '#0c0a08' : 'rgba(244, 239, 227, 0.72)',
+                    background: actif ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.05)',
+                    border: `1px solid ${actif ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.16)'}`,
+                  }}
+                >
+                  <QrCode size={12} /> {t.qr}
+                </button>
+              )}
             </div>
+            {actif && a.qrPath && (
+              <p
+                className="mt-2 font-sans uppercase tracking-[0.16em] text-[9px] break-all"
+                style={{ color: 'var(--color-amber-glow)' }}
+              >
+                {t.qrLeadsTo} {QR_BASE.replace('https://www.', '')}
+                {a.qrPath === '/' ? '' : a.qrPath}
+              </p>
+            )}
           </div>
         </div>
       </HexPanel>
     );
   };
+
+  // ── Une tuile de texte : un feuillet, pas une image ───────────────
+  const feuillet = (a: PresseAsset) => (
+    <HexPanel key={a.file} size="sm" className="h-full">
+      <div className="caravan-glass h-full flex flex-col">
+        <div
+          className="w-full aspect-video flex items-center justify-center px-6 text-center"
+          style={{
+            background:
+              'radial-gradient(120% 100% at 50% 0%, rgba(232,177,74,0.10) 0%, rgba(12,10,8,0) 70%)',
+          }}
+        >
+          <div>
+            <FileText size={26} style={{ color: 'var(--color-amber-glow)' }} className="mx-auto mb-3" />
+            <p
+              className="font-sans uppercase tracking-[0.28em] text-[10px]"
+              style={{ color: 'rgba(244, 239, 227, 0.6)' }}
+            >
+              {a.file.split('/').pop()}
+            </p>
+          </div>
+        </div>
+        <div className="px-4 py-3.5 border-t" style={{ borderColor: 'rgba(216, 155, 58, 0.18)' }}>
+          <p
+            className="font-display-alt text-sm tracking-[0.06em] mb-2.5"
+            style={{ color: 'var(--color-bone)' }}
+          >
+            {nom(a)}
+          </p>
+          <a
+            href={pleineRes(a)}
+            download
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 font-sans uppercase tracking-[0.18em] text-[10px] transition-colors rounded-[3px]"
+            style={{
+              color: 'var(--color-amber-glow)',
+              background: 'rgba(232, 177, 74, 0.09)',
+              border: '1px solid rgba(232, 177, 74, 0.3)',
+            }}
+          >
+            <Download size={12} /> {t.download}
+          </a>
+        </div>
+      </div>
+    </HexPanel>
+  );
+
+  const ouverte = loupe ? affiche(loupe.serie[loupe.i]) : null;
+  const ouverteBase = loupe ? loupe.serie[loupe.i] : null;
 
   return (
     <div>
@@ -139,7 +287,8 @@ const PressePage: React.FC = () => {
         eyebrow={t.eyebrow}
         titleA={t.title}
         intro={t.intro}
-        orbImage="/histoire/archives/lena/thumb/2025-IMG_5107.webp"
+        orbImage="/presse/orbe-presse.webp"
+        orbImagePosition="center"
         ctas={[{ label: t.zipCta, href: PRESSE_ZIP, variant: 'primary' }]}
       />
 
@@ -208,7 +357,7 @@ const PressePage: React.FC = () => {
             {t.visuelsLead}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {cartes.map((a) => tuile(a))}
+            {cartes.map((a, i) => tuile(a, cartes, i))}
           </div>
         </div>
       </section>
@@ -222,17 +371,27 @@ const PressePage: React.FC = () => {
              style={{ color: 'rgba(244, 239, 227, 0.72)' }}>
             {t.postalesLead}
           </p>
-          <p className="font-sans uppercase tracking-[0.28em] text-[10px] mb-8"
-             style={{ color: 'var(--color-amber-glow)' }}>
+          {/* Le crédit obligatoire, dans la typo médiévale du site. */}
+          <p
+            className="font-display-alt mb-8"
+            style={{
+              color: 'rgba(244, 239, 227, 0.85)',
+              fontVariant: 'small-caps',
+              fontWeight: 600,
+              fontSize: '1.05rem',
+              letterSpacing: '0.16em',
+              textShadow: '0 1px 2px rgba(0,0,0,0.7), 0 0 18px rgba(0,0,0,0.45)',
+            }}
+          >
             {t.credit}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CARTES_POSTALES.map((a) => tuile(a))}
+            {CARTES_POSTALES.map((a, i) => tuile(a, CARTES_POSTALES, i))}
           </div>
         </div>
       </section>
 
-      {/* ── Logos ───────────────────────────────────────────────── */}
+      {/* ── Logos et textes ─────────────────────────────────────── */}
       <section className="pb-12 md:pb-16">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <Eyebrow tone="amber" className="mb-3">{t.logosEyebrow}</Eyebrow>
@@ -242,7 +401,8 @@ const PressePage: React.FC = () => {
             {t.logosLead}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {LOGOS.map((a) => tuile(a, true))}
+            {LOGOS.map((a, i) => tuile(a, LOGOS, i, true))}
+            {TEXTES.map((a) => feuillet(a))}
           </div>
         </div>
       </section>
@@ -271,6 +431,84 @@ const PressePage: React.FC = () => {
           </GildedFrame>
         </div>
       </section>
+
+      {/* ── La visionneuse ──────────────────────────────────────── */}
+      <AnimatePresence>
+        {loupe && ouverte && ouverteBase && (
+          <motion.div
+            key="loupe"
+            className="fixed inset-0 z-[300] flex items-center justify-center px-4 py-6"
+            style={{ background: 'rgba(0, 0, 0, 0.9)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22, ease: EASE }}
+            onClick={fermer}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.viewer}
+          >
+            <motion.img
+              key={ouverte.file}
+              src={pleineRes(ouverte)}
+              alt={nom(ouverteBase) || t.untitled}
+              className="max-w-[92vw] max-h-[80vh] object-contain"
+              style={{ boxShadow: '0 30px 90px rgba(0, 0, 0, 0.75)' }}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.26, ease: EASE }}
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            <p
+              className="absolute left-0 right-0 bottom-5 text-center font-display-alt px-6"
+              style={{
+                color: 'rgba(244, 239, 227, 0.78)',
+                fontVariant: 'small-caps',
+                letterSpacing: '0.14em',
+                fontSize: '0.95rem',
+              }}
+            >
+              {nom(ouverteBase)}
+              {nom(ouverteBase) && ' · '}
+              {loupe.i + 1} / {loupe.serie.length}
+            </p>
+
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); fermer(); }}
+              aria-label={t.close}
+              className={`${boutonRond} absolute top-5 right-5 w-11 h-11`}
+              style={styleRond}
+            >
+              <X size={20} />
+            </button>
+            {loupe.serie.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); glisser(-1); }}
+                  aria-label={t.prev}
+                  className={`${boutonRond} absolute left-3 md:left-6 top-1/2 -translate-y-1/2 w-11 h-11 md:w-12 md:h-12`}
+                  style={styleRond}
+                >
+                  <ChevronLeft size={22} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); glisser(1); }}
+                  aria-label={t.next}
+                  className={`${boutonRond} absolute right-3 md:right-6 top-1/2 -translate-y-1/2 w-11 h-11 md:w-12 md:h-12`}
+                  style={styleRond}
+                >
+                  <ChevronRight size={22} />
+                </button>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -297,26 +535,37 @@ const FR = {
   ],
   contactLabel: 'Contact presse',
   zipCta: 'Télécharger tout le kit',
-  zipNote: 'Un seul fichier ZIP : les douze cartes, les huit photographies et les deux logos.',
+  zipNote:
+    'Un seul fichier ZIP : les vingt-quatre cartes, leurs versions à code QR, les douze photographies, les trois blasons et les textes de présentation.',
   visuelsEyebrow: 'Visuels à partager',
-  visuelsTitle: 'Six cartes prêtes à publier',
+  visuelsTitle: 'Douze cartes prêtes à publier',
   visuelsLead:
-    'Chaque carte mesure 1920 × 1080 pixels et porte le blason du festival. La série anglaise vit sur la page /en/press.',
+    'Chaque carte mesure 1920 × 1080 pixels et porte le blason du festival. Le bouton Version QR la remplace par la même carte avec un code qui mène à la page du site. La série anglaise vit sur la page /en/press.',
   postalesEyebrow: 'Cartes postales',
   postalesTitle: 'Les photographies, sans texte',
   postalesLead:
-    'Huit images de l’édition 2025, signées par la photographe, bonnes pour l’écran comme pour le papier.',
+    'Douze images des éditions 2024 et 2025, signées par la photographe, bonnes pour l’écran comme pour le papier. Leur version à code QR mène à l’accueil du site.',
   credit: 'Crédit obligatoire : Léna LeBozec, photographe',
-  logosEyebrow: 'Logos',
-  logosTitle: 'Le blason du festival',
+  logosEyebrow: 'Logos et textes',
+  logosTitle: 'Le blason et la documentation',
   logosLead:
-    'Le blason argenté demande un fond sombre, et la version blanche se pose sur les photographies. Gardez les proportions et la couleur telles quelles.',
+    'Le blason existe en argenté, en blanc et en noir, chacun en pleine résolution et en 1024 pixels. Les feuillets de texte donnent la présentation du festival, les crédits et le mode d’emploi du kit.',
   contactTitle: 'Une question, un besoin précis',
   contactLeadA: 'Écrivez à ',
   contactLeadB: ' et nous vous répondons dans la journée.',
   download: 'Télécharger',
   share: 'Partager',
   copied: 'Lien copié',
+  qr: 'Version QR',
+  qrOn: 'Afficher la version à code QR',
+  qrOff: 'Revenir à la version sans code',
+  qrLeadsTo: 'Le code mène à',
+  enlarge: 'Agrandir',
+  viewer: 'Image en plein écran',
+  close: 'Fermer',
+  prev: 'Image précédente',
+  next: 'Image suivante',
+  untitled: 'Photographie du festival',
 };
 
 const EN: typeof FR = {
@@ -341,26 +590,37 @@ const EN: typeof FR = {
   ],
   contactLabel: 'Press contact',
   zipCta: 'Download the whole kit',
-  zipNote: 'One ZIP file: the twelve cards, the eight photographs and the two logos.',
+  zipNote:
+    'One ZIP file: the twenty-four cards, their QR versions, the twelve photographs, the three crests and the presentation texts.',
   visuelsEyebrow: 'Visuals to share',
-  visuelsTitle: 'Six cards ready to publish',
+  visuelsTitle: 'Twelve cards ready to publish',
   visuelsLead:
-    'Each card measures 1920 × 1080 pixels and carries the festival crest. The French series lives on the /presse page.',
+    'Each card measures 1920 × 1080 pixels and carries the festival crest. The QR version button swaps it for the same card with a code that leads to the matching page. The French series lives on the /presse page.',
   postalesEyebrow: 'Postcards',
   postalesTitle: 'The photographs, without text',
   postalesLead:
-    'Eight images from the 2025 edition, signed by the photographer, good for screen and for paper.',
+    'Twelve images from the 2024 and 2025 editions, signed by the photographer, good for screen and for paper. Their QR version leads to the home page.',
   credit: 'Required credit: Léna LeBozec, photographer',
-  logosEyebrow: 'Logos',
-  logosTitle: 'The festival crest',
+  logosEyebrow: 'Logos and texts',
+  logosTitle: 'The crest and the documentation',
   logosLead:
-    'The silver crest wants a dark background, and the white version sits on photographs. Keep the proportions and the colour exactly as they are.',
+    'The crest comes in silver, in white and in black, each at full resolution and at 1024 pixels. The text sheets carry the festival presentation, the credits and the instructions for the kit.',
   contactTitle: 'A question, a specific need',
   contactLeadA: 'Write to ',
   contactLeadB: ' and we answer the same day.',
   download: 'Download',
   share: 'Share',
   copied: 'Link copied',
+  qr: 'QR version',
+  qrOn: 'Show the QR code version',
+  qrOff: 'Back to the version without a code',
+  qrLeadsTo: 'The code leads to',
+  enlarge: 'Enlarge',
+  viewer: 'Full-screen image',
+  close: 'Close',
+  prev: 'Previous image',
+  next: 'Next image',
+  untitled: 'Festival photograph',
 };
 
 export default PressePage;
