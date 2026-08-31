@@ -3,8 +3,8 @@
 // .env.local. Without it, the site renders as a static SPA: forms degrade
 // gracefully, analytics no-ops, admin route refuses sign-in.
 import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 // firebase/analytics is dynamically imported only after LOI 25 consent:
 // keeps it out of the eager vendor-firebase chunk on first paint.
@@ -27,6 +27,9 @@ let _storage: FirebaseStorage | null = null;
 const isConfigured =
   !!firebaseConfig.projectId && firebaseConfig.projectId !== 'undefined';
 
+// `VITE_USE_EMULATORS=1 npx vite` : voir plus bas.
+const auxEmulateurs = import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === '1';
+
 if (isConfigured) {
   try {
     app = initializeApp(firebaseConfig);
@@ -40,6 +43,19 @@ if (isConfigured) {
   console.info(
     '[Firebase] Not configured. Running in offline mode. Add VITE_FIREBASE_* to .env.local',
   );
+}
+
+// ── Les émulateurs, en développement seulement ──────────────────────
+// `VITE_USE_EMULATORS=1 npx vite` fait parler le site aux émulateurs
+// locaux au lieu du vrai projet. C'est ainsi qu'une partie à deux se
+// vérifie avec deux comptes sans rien écrire en production, et que les
+// règles de firestore.rules sont mises à l'épreuve pour de vrai.
+// Hors développement, la condition est fausse et le code disparaît au
+// build.
+if (auxEmulateurs && _auth && _db) {
+  connectAuthEmulator(_auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  connectFirestoreEmulator(_db, '127.0.0.1', 8080);
+  console.info('[Firebase] Émulateurs locaux : auth 9099, firestore 8080.');
 }
 
 // L'instance elle-même : les Cloud Functions appelables en ont besoin

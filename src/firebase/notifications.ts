@@ -19,6 +19,7 @@ import { db } from '../firebase';
 import { PILLARS } from '../content';
 import { PILLAR_PUBLISH_FLAGS, subscribeSiteFlags, isPillarPublished } from './siteFlags';
 import { badgeParId } from './badges';
+import { JEUX_DEFIABLES, jeuDe, type JeuDefi } from './tafl';
 
 export type GenreNotif = 'message' | 'amitie' | 'badge' | 'page' | 'defi' | 'tour';
 
@@ -130,14 +131,17 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
         const p = d.data();
         const autre = ((p.joueurs as string[]) || []).find((x) => x !== uid) || '';
         const nom = (p.noms as Record<string, string> | undefined)?.[autre] || '';
-        const lien = { FR: `/jeunesse/hnefatafl?partie=${d.id}`, EN: `/en/youth/hnefatafl?partie=${d.id}` };
+        // La collection porte les trois jeux de plateau : le nom et le
+        // lien de la cloche suivent celui de la partie.
+        const j = JEUX_DEFIABLES[jeuDe(p as { jeu?: JeuDefi })];
+        const lien = { FR: `${j.cheminFR}?partie=${d.id}`, EN: `${j.cheminEN}?partie=${d.id}` };
         const quand = ms(p.updatedAt as Timestamp | undefined);
         if (p.statut === 'defi' && p.lancePar !== uid) {
           parties.push({ id: `defi-${d.id}`, genre: 'defi', quand, lien,
-            titre: { FR: `${nom || 'Quelqu’un'} vous défie au Hnefatafl`, EN: `${nom || 'Someone'} challenges you at Hnefatafl` } });
+            titre: { FR: `${nom || 'Quelqu’un'} vous défie ${j.auFR}`, EN: `${nom || 'Someone'} challenges you at ${j.nomEN}` } });
         } else if (p.statut === 'encours' && (p.camps as Record<string, string> | undefined)?.[String(p.tour)] === uid) {
           parties.push({ id: `tour-${d.id}`, genre: 'tour', quand, lien,
-            titre: { FR: `À vous de jouer contre ${nom || '—'} (Hnefatafl)`, EN: `Your move against ${nom || '—'} (Hnefatafl)` } });
+            titre: { FR: `À vous de jouer contre ${nom || '—'} (${j.nomFR})`, EN: `Your move against ${nom || '—'} (${j.nomEN})` } });
         }
       });
       publier();

@@ -20,15 +20,22 @@ const ROUTES = [
   { name: 'press-en', url: `${BASE}/en/press` },
 ];
 
-const descendre = async (page, tours = 26) => {
+const descendre = async (page, tours = 70) => {
   for (let i = 0; i < tours; i += 1) {
     await page.mouse.wheel(0, 700);
     await page.waitForTimeout(140);
   }
   await page.waitForTimeout(900);
-  await page.evaluate(() =>
-    Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null)))),
-  );
+  // Une image paresseuse sans src ne résout jamais son decode() : la
+  // course contre un chronomètre évite l'attente sans fin.
+  await page
+    .evaluate(() =>
+      Promise.race([
+        Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null)))),
+        new Promise((r) => setTimeout(r, 5000)),
+      ]),
+    )
+    .catch(() => {});
 };
 
 const browser = await chromium.launch();
@@ -40,11 +47,17 @@ for (const v of VIEWS) {
     page.on('pageerror', (e) => errs.push(String(e)));
     await page.goto(r.url, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('img[src^="/presse/thumbs/"]', { timeout: 15000 });
+    await page.waitForTimeout(2200);
+    // Le haut de page, pour l'orbe et l'entrée en matière.
+    await page.screenshot({ path: path.join(OUT, `${r.name}-${v.name}-haut.png`), animations: 'disabled' });
     await descendre(page);
     const manquantes = await page.evaluate(() =>
       [...document.images].filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.currentSrc || i.src),
     );
-    await page.screenshot({ path: path.join(OUT, `${r.name}-${v.name}.png`), fullPage: true, animations: 'disabled', timeout: 90000 });
+    // La page porte près de deux cents tuiles : une capture pleine
+    // hauteur dépasserait la limite de Chromium. Le bas de la descente
+    // suffit à voir que les vignettes se chargent.
+    await page.screenshot({ path: path.join(OUT, `${r.name}-${v.name}-bas.png`), animations: 'disabled' });
     console.log(`${r.name}-${v.name} · images manquantes: ${manquantes.length} · erreurs console: ${errs.length}`);
     if (manquantes.length) console.log('   ', manquantes.slice(0, 5).join('\n    '));
     if (errs.length) console.log('   ', errs.slice(0, 5).join('\n    '));
@@ -75,13 +88,20 @@ for (const v of VIEWS) {
   await page.waitForTimeout(900);
   const fermee = (await page.locator('[aria-label="Image en plein écran"]').count()) === 0;
 
-  // La bascule « Version QR » de la première carte.
+  // Les bascules « Version QR » et « Photo seule » de la première carte.
   const bascule = page.locator('button[title]:has-text("Version QR")').first();
   await bascule.scrollIntoViewIfNeeded();
   await bascule.click();
   await page.waitForTimeout(900);
   await page.screenshot({ path: path.join(OUT, 'version-qr.png'), animations: 'disabled' });
   const srcQR = await page.locator('img[src*="-qr.webp"]').first().getAttribute('src');
+  const nue = page.locator('button:has-text("Photo seule")').first();
+  await nue.scrollIntoViewIfNeeded();
+  await nue.click();
+  await page.waitForTimeout(900);
+  await page.screenshot({ path: path.join(OUT, 'version-nue.png'), animations: 'disabled' });
+  const srcNu = await page.locator('img[src*="-nu"]').first().getAttribute('src');
+  console.log(`  vignette nue : ${srcNu}`);
   console.log(`loupe fermée par Échap: ${fermee} · vignette QR: ${srcQR} · erreurs: ${errs.length}`);
   if (errs.length) console.log('   ', errs.slice(0, 5).join('\n    '));
   await page.close();

@@ -493,6 +493,23 @@ const NavBar: React.FC = () => {
 
               {/* CTA: copper/gold gradient fill (the 20% accent moment).
                   Pops in last with a back-ease overshoot. */}
+              {/* Kit de presse : dans le tiroir, juste au-dessus des billets
+                  (Alex, 2026-08-31). */}
+              <MotionLink
+                variants={ctaVariants}
+                initial="hidden"
+                animate="shown"
+                to={addLocale('/presse', lang)}
+                className="group relative inline-flex items-center gap-3 px-8 py-3.5 mr-3 font-sans uppercase tracking-[0.28em] text-[11px] font-semibold"
+                style={{
+                  color: 'var(--color-bone)',
+                  borderRadius: 999,
+                  border: '1px solid rgba(var(--sk-glow-rgb), 0.5)',
+                  background: 'rgba(var(--sk-glow-rgb), 0.08)',
+                }}
+              >
+                <Newspaper size={14} /> {lang === 'FR' ? 'Kit de presse' : 'Press kit'}
+              </MotionLink>
               <MotionLink
                 variants={ctaVariants}
                 initial="hidden"

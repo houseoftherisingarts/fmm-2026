@@ -12,9 +12,11 @@ import assert from 'node:assert/strict';
 import {
   LIGNES, POSITIONS, aPoserDe, autreCamp, compte, coupsLegaux, deplacementsDe,
   destinations, estDansMoulin, etatInitial, jouer, moulins, phaseDe,
-  retraitsPossibles, voisins, type Camp, type Case, type Etat,
+  retraitsPossibles, voisins, coupEnTexte, coupDepuisTexte,
+  type Camp, type Case, type Etat,
 } from './logic';
 import { choisirCoup } from './cpu';
+import type { Coup } from './logic';
 
 let faits = 0;
 function essai(nom: string, corps: () => void): void {
@@ -229,6 +231,44 @@ essai('une partie complète ordinateur contre ordinateur se termine', () => {
     assert.ok(moulins(e.points, camp) <= 3);
     assert.equal(autreCamp(autreCamp(camp)), camp);
   }
+});
+
+// ── Le texte des coups, pour les parties en ligne ────────────────────
+// Une partie jouée à deux ne partage que cette liste : si l'aller-retour
+// perd un coup, les deux plateaux divergent en silence.
+essai('un coup écrit puis relu rend le même coup', () => {
+  const coups: Coup[] = [
+    { type: 'pose', vers: 0 },
+    { type: 'pose', vers: 23 },
+    { type: 'retrait', p: 7 },
+    { type: 'deplacement', de: 3, vers: 10 },
+  ];
+  for (const c of coups) {
+    assert.deepEqual(coupDepuisTexte(coupEnTexte(c)), c, coupEnTexte(c));
+  }
+  for (const brut of ['', 'x1', 'p', 'p99', 'd3', 'd3>', 'r-1']) {
+    assert.equal(coupDepuisTexte(brut), null, brut);
+  }
+});
+
+essai('une partie entière survit à l’aller-retour par le texte', () => {
+  let ici = etatInitial(true);
+  let laBas = etatInitial(true);
+  let tours = 0;
+  while (!ici.gagnant && tours < 300) {
+    const coup = choisirCoup(ici, 'facile');
+    if (!coup) break;
+    ici = jouer(ici, coup);
+    // L'autre bout ne reçoit que le texte, et rejoue dans son moteur.
+    const relu = coupDepuisTexte(coupEnTexte(coup));
+    assert.ok(relu, 'coup illisible');
+    laBas = jouer(laBas, relu);
+    assert.deepEqual(laBas.points, ici.points, `divergence au coup ${tours}`);
+    assert.equal(laBas.tour, ici.tour);
+    assert.equal(laBas.doitRetirer, ici.doitRetirer);
+    tours++;
+  }
+  assert.ok(tours > 18);
 });
 
 console.log(`\n${faits} essais passés.`);

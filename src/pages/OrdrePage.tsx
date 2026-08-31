@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Search, UserPlus, Check, Clock, Users, Swords, Dices, ArrowUpRight } from 'lucide-react';
 import { lancerDefi, DELAIS_DEFI } from '../firebase/tafl';
 import { lancerDefiDes } from '../firebase/desParties';
@@ -25,18 +26,70 @@ import BadgeVerifie from '../components/compte/BadgeVerifie';
 // nom, on ajoute quelqu'un comme ami, on ouvre sa fiche. C'est la
 // première pierre du réseau, avant qu'il ait sa propre plateforme.
 
+// ─── Les trois catégories du registre (Alex, 2026-08-31) ────────────
+// Organisateurs, VIP, réguliers : chacun n'apparaît que dans une seule
+// catégorie, dans cet ordre de priorité. Un « organisateur » porte une
+// vraie fonction (autre chose que le rôle « membre » que tout le monde
+// a d'office) ou une étiquette posée par l'équipe. La seule étiquette
+// qu'on écarte est « importé » : elle marque une fiche créée d'office
+// depuis les exports du festival (voir tools/importer-profils-fmm.mjs),
+// pas une fonction d'équipe.
+export type CategorieMembre = 'organisateur' | 'vip' | 'regulier';
+
+const sansAccentsTag = (v: string) =>
+  v.normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+
+export function categoriserMembre(m: Pick<Membre, 'roles' | 'tags' | 'vip'>): CategorieMembre {
+  const porteUneFonction = (m.roles || []).some((r) => r !== 'membre');
+  // Seules les étiquettes qui désignent l'équipe comptent : un tag libre
+  // comme « viking » ou « client » ne fait pas d'un visiteur un
+  // organisateur (resserré le 2026-08-31).
+  const ETIQUETTES_EQUIPE = ['equipe', 'organisateur', 'organisation', 'benevole', 'staff', 'conseil'];
+  const porteUneEtiquetteEquipe = (m.tags || []).some((t) => ETIQUETTES_EQUIPE.includes(sansAccentsTag(t)));
+  if (porteUneFonction || porteUneEtiquetteEquipe) return 'organisateur';
+  if (m.vip) return 'vip';
+  return 'regulier';
+}
+
+const ONGLETS_CATEGORIE: { cle: 'tous' | CategorieMembre; FR: string; EN: string }[] = [
+  { cle: 'tous',         FR: 'Tous',          EN: 'All'        },
+  { cle: 'organisateur', FR: 'Organisateurs', EN: 'Organizers' },
+  { cle: 'vip',          FR: 'VIP',           EN: 'VIP'        },
+  { cle: 'regulier',     FR: 'Membres',       EN: 'Members'    },
+];
+
+// Quelques fiches fictives pour vérifier le rendu du registre sans
+// compte : `?apercu=1` en développement seulement (même échappatoire
+// que PorteDuJeu.tsx et BadgesContext.tsx), jamais présent en prod.
+const MEMBRES_APERCU: Membre[] = [
+  { uid: 'apercu-1', nom: 'Ragnar le Bâtisseur', avatarHue: 25, roles: ['membre', 'benevole', 'securite'], verifie: true, ville: 'Montpellier' },
+  { uid: 'apercu-2', nom: 'Aveline des Forges', avatarHue: 190, tags: ['équipe kiosque'] },
+  { uid: 'apercu-3', nom: 'Client Fortuné', avatarHue: 280, vip: true, devise: 'Sans publicité, sans compromis.' },
+  { uid: 'apercu-4', nom: 'Un Villageois de Passage', avatarHue: 100, tags: ['viking'] },
+  { uid: 'apercu-5', nom: 'Fiche Jamais Réclamée', avatarHue: 60, tags: ['importé'], importe: true },
+  { uid: 'apercu-6', nom: 'Second Villageois', avatarHue: 210 },
+];
+
 const OrdrePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const fr = lang === 'FR';
   const { user, openSignIn, isAdmin } = useAuth();
 
+  // Échappatoire de développement seulement : `?apercu=1` montre le
+  // registre avec des fiches fictives, sans compte (même convention que
+  // PorteDuJeu.tsx et BadgesContext.tsx). Disparaît du bundle de prod.
+  const previewApercu = import.meta.env.DEV
+    && new URLSearchParams(window.location.search).get('apercu') === '1';
+
   const [membres, setMembres] = useState<Membre[]>([]);
   const [liens, setLiens] = useState<Amitie[]>([]);
   const [terme, setTerme] = useState('');
+  const [onglet, setOnglet] = useState<'tous' | CategorieMembre>('tous');
   const [charge, setCharge] = useState(true);
 
   useEffect(() => {
+    if (previewApercu) { setMembres(MEMBRES_APERCU); setCharge(false); return; }
     if (!user) { setCharge(false); return; }
     let vivant = true;
     listerMembres()
@@ -44,11 +97,29 @@ const OrdrePage: React.FC = () => {
       .finally(() => { if (vivant) setCharge(false); });
     const stop = suivreMesAmities(user.uid, setLiens);
     return () => { vivant = false; stop(); };
-  }, [user?.uid]);
+  }, [user?.uid, previewApercu]);
+
+  const moiUid = user?.uid || 'apercu-moi';
+  const monNomAffiche = user?.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger');
+
+  const autresMembres = useMemo(
+    () => membres.filter((m) => m.uid !== moiUid),
+    [membres, moiUid],
+  );
+
+  // Chacun n'apparaît que dans une seule catégorie (voir categoriserMembre
+  // plus haut), à jour avant que la recherche ne s'applique par-dessus.
+  const parCategorie = useMemo(() => {
+    const groupes: Record<CategorieMembre, Membre[]> = { organisateur: [], vip: [], regulier: [] };
+    for (const m of autresMembres) groupes[categoriserMembre(m)].push(m);
+    return groupes;
+  }, [autresMembres]);
+
+  const selectionOnglet = onglet === 'tous' ? autresMembres : parCategorie[onglet];
 
   const visibles = useMemo(
-    () => filtrerMembres(membres.filter((m) => m.uid !== user?.uid), terme),
-    [membres, terme, user?.uid],
+    () => filtrerMembres(selectionOnglet, terme),
+    [selectionOnglet, terme],
   );
 
   const amis = useMemo(
@@ -84,7 +155,7 @@ const OrdrePage: React.FC = () => {
       <section className="relative py-14 md:py-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          {!user ? (
+          {!user && !previewApercu ? (
             <div className="max-w-lg mx-auto text-center rounded-lg-card border border-brass/35 px-7 py-12"
                  style={{ background: 'rgba(var(--sk-deep-rgb), 0.5)' }}>
               <h2 className="font-display title-medieval text-2xl text-ivory mb-3">
@@ -118,6 +189,40 @@ const OrdrePage: React.FC = () => {
                 </span>
               </div>
 
+              {/* Les trois catégories du registre, plus « Tous » (Alex,
+                  2026-08-31) : la recherche ci-dessus continue de filtrer
+                  à l'intérieur de la catégorie choisie. */}
+              <div role="tablist"
+                   aria-label={fr ? 'Filtrer le registre par catégorie' : 'Filter the roll by category'}
+                   className="inline-flex flex-wrap gap-1 p-1 rounded-card mb-8"
+                   style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(var(--sk-glow-rgb),0.18)' }}>
+                {ONGLETS_CATEGORIE.map(({ cle, FR, EN }) => {
+                  const actif = onglet === cle;
+                  const compte = cle === 'tous' ? autresMembres.length : parCategorie[cle].length;
+                  return (
+                    <button
+                      key={cle}
+                      type="button"
+                      role="tab"
+                      aria-selected={actif}
+                      onClick={() => setOnglet(cle)}
+                      className={`relative px-4 py-2 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] font-semibold transition-colors ${
+                        actif ? 'text-midnight-deep' : 'text-ivory-soft/60 hover:text-ivory-soft'
+                      }`}
+                    >
+                      {actif && (
+                        <motion.span
+                          layoutId="ordre-onglet-actif"
+                          className="absolute inset-0 rounded-card bg-amber-glow"
+                          transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative">{(fr ? FR : EN)} ({compte})</span>
+                    </button>
+                  );
+                })}
+              </div>
+
               {charge ? (
                 <p className="font-sans text-sm text-ivory-soft/55">{fr ? 'Lecture du registre…' : 'Reading the roll…'}</p>
               ) : visibles.length === 0 ? (
@@ -136,27 +241,27 @@ const OrdrePage: React.FC = () => {
                       <p className="witcher-stat-label mb-3">
                         {fr ? 'Inscrits eux-mêmes' : 'Signed up themselves'} · {visibles.filter((m) => !m.importe).length}
                       </p>
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
                         {visibles.filter((m) => !m.importe).map((m) => (
                           <CarteMembre key={m.uid} m={m} fr={fr} lang={lang}
-                            moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens} />
+                            moi={moiUid} monNom={monNomAffiche} liens={liens} />
                         ))}
                       </div>
                       <p className="witcher-stat-label mb-3">
                         {fr ? 'Fiches importées, jamais réclamées' : 'Imported cards, never claimed'} · {visibles.filter((m) => m.importe).length}
                       </p>
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {visibles.filter((m) => m.importe).map((m) => (
                           <CarteMembre key={m.uid} m={m} fr={fr} lang={lang}
-                            moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens} />
+                            moi={moiUid} monNom={monNomAffiche} liens={liens} />
                         ))}
                       </div>
                     </>
                   ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                       {visibles.map((m) => (
                         <CarteMembre key={m.uid} m={m} fr={fr} lang={lang}
-                          moi={user.uid} monNom={user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger')} liens={liens} />
+                          moi={moiUid} monNom={monNomAffiche} liens={liens} />
                       ))}
                     </div>
                   )}
@@ -186,6 +291,7 @@ const CarteMembre: React.FC<{
   m: Membre; fr: boolean; lang: 'FR' | 'EN'; moi: string; monNom: string; liens: Amitie[];
 }> = ({ m, fr, lang, moi, monNom, liens }) => {
   const { isAdmin } = useAuth();
+  const categorie = categoriserMembre(m);
   // Le défi (Alex, 2026-08-27) : depuis la carte, on choisit le jeu,
   // la partie s'ouvre dans l'attente de l'autre, et le lien mène au
   // plateau. Deux jeux se jouent à deux : Hnefatafl et les dés.
@@ -243,10 +349,23 @@ const CarteMembre: React.FC<{
         <div className="min-w-0">
           <span className="flex items-center gap-1.5 min-w-0">
             <Link to={`${addLocale('/profil', lang)}/${m.uid}`}
-                  className="block font-display title-medieval text-lg text-ivory hover:text-brass transition-colors truncate">
+                  className="block min-w-0 font-display title-medieval text-lg text-ivory hover:text-brass transition-colors truncate">
               {m.nom || (fr ? 'Un inconnu' : 'A stranger')}
             </Link>
             {m.verifie && <BadgeVerifie size={22} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
+            {/* Insigne discret : jamais criard, petites capitales seulement. */}
+            {categorie === 'organisateur' && (
+              <span className="shrink-0 px-2 py-0.5 rounded-card border border-amber-glow/40 font-sans uppercase tracking-[0.16em] text-[8px] text-amber-glow/90"
+                    style={{ background: 'rgba(232,177,74,0.10)' }}>
+                {fr ? 'Équipe' : 'Team'}
+              </span>
+            )}
+            {categorie === 'vip' && (
+              <span className="shrink-0 px-2 py-0.5 rounded-card border border-amber-glow/40 font-sans uppercase tracking-[0.16em] text-[8px] text-amber-glow/90"
+                    style={{ background: 'rgba(232,177,74,0.10)' }}>
+                VIP
+              </span>
+            )}
           </span>
           {m.ville && <span className="block font-sans text-[11px] text-ivory-soft/55 truncate">{m.ville}</span>}
         </div>

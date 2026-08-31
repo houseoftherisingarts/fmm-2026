@@ -4,13 +4,20 @@ KIT DE PRESSE · FESTIVAL MÉDIÉVAL DE MONTPELLIER
 
 CE QUE CONTIENT LE KIT
 
-fmm-2026-NN-sujet-fr.png     Douze cartes explicatives en français,
-                             1920 × 1080, blason du festival compris.
-fmm-2026-NN-sujet-en.png     Les mêmes douze cartes en anglais.
-...-qr.png                   La même carte avec un code QR qui mène à
-                             la page du site qui traite du sujet.
-fmm-carte-postale-NN-...png  Douze photographies sans texte, signées.
-                             Leur variante QR mène à l'accueil.
+Vingt-neuf visuels en 1920 × 1080, chacun en six fichiers.
+
+...-fr-texte.png     La carte avec son texte français.
+...-en-texte.png     La même carte en anglais.
+...-nu.png           La photographie seule, avec le blason, l'adresse
+                     du site et la signature de la photographe.
+...-qr.png           N'importe laquelle des trois, avec un code QR qui
+                     mène à la page du site qui traite du sujet.
+
+Les visuels se rangent en deux familles. Le festival sur place réunit
+treize cartes explicatives et douze photographies. Le festival en ligne
+réunit quatre cartes bâties sur le site : les jeux médiévaux, le
+registre de l'Ordre, la monnaie du site et la section Apprendre.
+
 logos/                       Le blason argenté, le blanc et le noir,
                              chacun en pleine résolution et en 1024 px.
 textes/                      Cette note, les crédits, et la
@@ -21,18 +28,18 @@ COMMENT CRÉDITER
 
 Photos : Léna LeBozec, photographe
 
-La mention est obligatoire. Elle vaut pour les cartes comme pour les
-photographies sans texte. Le blason garde ses proportions et sa
-couleur.
+La mention est obligatoire pour toutes les photographies du festival,
+qu'elles portent un texte ou non. La carte « Tresse et Tisse » est
+d'Alex T. St-Laurent. Le blason garde ses proportions et sa couleur.
 
 LES BILLETS
 
-Passe journée 27 $, passe trois jours 65 $, banquet médiéval à venir.
-La vente se fait en ligne par Zeffy.
-https://www.festivalmedievaldemontpellier.org/billets
+Passe journée 27 $, passe trois jours 65 $, banquet médiéval 65 $ plus
+taxes. La vente se fait en ligne par Zeffy.
+https://festivalmedieval.org/billets
 
 UNE QUESTION
 
 admin@festivalmedievaldemontpellier.org
 514-418-3450
-https://www.festivalmedievaldemontpellier.org/presse
+https://festivalmedieval.org/presse

@@ -87,3 +87,6 @@ node_modules/
 
 # Graphe de connaissance local (graphify), reconstruit à la demande
 graphify-out/
+
+# GitHub refuse les fichiers de plus de 100 Mo; le ZIP du kit vit dans le hosting seulement
+public/presse/fmm-kit-de-presse.zip

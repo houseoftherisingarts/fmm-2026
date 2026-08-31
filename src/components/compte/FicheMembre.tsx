@@ -39,6 +39,7 @@ import Repliable from './Repliable';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { TableDeJeux } from '../../pages/JeuxEnLignePage';
+import { DefierAuxJeux, MesDefis } from './DefisJeux';
 import MesBadges from './MesBadges';
 import Coffre from './Coffre';
 import MaFiche from './MaFiche';
@@ -1073,7 +1074,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               <div className="space-y-6 md:space-y-8">
                 {/* La même table de jeux que la page publique : les défis
                     se lancent dans le jeu lui-même, plus besoin d'une
-                    vitrine à part (Alex, 2026-08-30). */}
+                    vitrine à part (Alex, 2026-08-30). Les défis reçus et
+                    envoyés se lisent juste au-dessus (Alex, 2026-08-31). */}
+                <MesDefis uid={uid} lang={lang} />
                 <TableDeJeux />
               </div>
             ) : (
@@ -1089,14 +1092,19 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     </p>
                   </div>
                 </div>
-                <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-6">
+                <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
                   {nbParties > 0 ? t.partiesTexte : t.partiesVide}
                 </p>
-                <Link to={addLocale('/jeunesse/hnefatafl', lang)} className={secondair}>
-                  <Swords size={14} /> {t.allerJouer} <ArrowUpRight size={12} />
-                </Link>
               </section>
             ))}
+
+            {/* Défier la personne dont on regarde la fiche : les trois
+                plateaux, un bouton chacun (Alex, 2026-08-31). */}
+            {onglet === 'jeux' && !prive && (
+              <div className="mt-6 md:mt-8">
+                <DefierAuxJeux uid={uid} nom={nom} lang={lang} />
+              </div>
+            )}
 
             {/* Les photos qu'une personne envoie aux archives du festival :
                 son affaire à elle, jamais celle d'un visiteur. */}

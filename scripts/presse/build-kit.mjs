@@ -1,18 +1,29 @@
 #!/usr/bin/env node
 // ─── Le kit de presse du FMM, fabriqué en une commande ──────────────
+//   npx vite --port 5221 --strictPort      (une seule fois, pour les captures)
+//   node scripts/presse/capture-site.mjs   (une seule fois, idem)
 //   node scripts/presse/build-kit.mjs
 //
-// Produit dans public/presse/ :
-//   · 24 cartes explicatives 1920×1080 (12 en français, 12 en anglais)
-//   · les mêmes 24 avec un code QR discret en bas à gauche (suffixe -qr)
-//   · 12 cartes postales 1920×1080 (la photo seule, signée), plus
-//     leurs 12 variantes QR vers l'accueil du site
-//   · logos/ : le blason argenté, le blanc et un noir fabriqué ici,
-//     chacun en pleine résolution et en 1024 px
-//   · textes/ : la présentation FR et EN, les crédits, le LISEZ-MOI
-//   · orbe-presse.webp, l'image carrée de l'orbe de la page /presse
-//   · thumbs/ : les vignettes WebP de 640 px que la page affiche
-//   · fmm-kit-de-presse.zip, qui contient tout ce qui précède
+// Vingt-neuf visuels, chacun en six fichiers :
+//   <base>-fr-texte.png      la carte avec son texte français
+//   <base>-fr-texte-qr.png   la même, avec le code QR vers la page FR
+//   <base>-en-texte.png      la carte avec son texte anglais
+//   <base>-en-texte-qr.png   la même, avec le code QR vers la page EN
+//   <base>-nu.png            la photo seule, blason, lien, signature
+//   <base>-nu-qr.png         la même, avec le code QR vers l'accueil
+//
+// Les vingt-neuf visuels se rangent en deux familles :
+//   · le festival sur place : treize cartes explicatives et douze
+//     photographies, toutes tirées des archives du festival;
+//   · le festival en ligne : quatre cartes bâties sur des captures du
+//     site (jeux, Ordre, Montpellois, Apprendre).
+//
+// Le reste de public/presse/ :
+//   logos/            le blason argenté, le blanc et un noir fabriqué ici
+//   textes/           la présentation FR et EN, les crédits, le LISEZ-MOI
+//   orbe-presse.webp  l'image carrée de l'orbe de la page /presse
+//   thumbs/           les vignettes WebP de 640 px que la page affiche
+//   fmm-kit-de-presse.zip, qui contient tout ce qui précède
 //
 // Le rendu passe par Chromium plutôt que par un compositeur d'images :
 // les cartes héritent ainsi des vraies fontes du site (Cinzel
@@ -33,12 +44,13 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 import QRCode from 'qrcode';
 import { chromium } from 'playwright';
-import { PHOTOS, BASE_URL } from './photos.mjs';
-import { CARDS } from './cards.mjs';
+import { PHOTOS, BASE_URL, LIEN_COURT } from './photos.mjs';
+import { CARTES_SITE, CARTES_LIGNE, CREDIT_LENA } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
 const LENA = path.join(ROOT, 'public/histoire/archives/lena');
+const CAPTURES = path.join(HERE, 'captures');
 const OUT = path.join(ROOT, 'public/presse');
 const OUT_LOGOS = path.join(OUT, 'logos');
 const OUT_TEXTES = path.join(OUT, 'textes');
@@ -46,7 +58,6 @@ const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'fmm-presse-'));
 
 const W = 1920;
 const H = 1080;
-const SIGNATURE = 'Léna LeBozec, photographe';
 const BONE = '#E8DDC1';
 const OFFWHITE = '#F4EFE3';
 const INK = '#0B0906';
@@ -59,28 +70,104 @@ const FONTS_HREF =
 
 const url = (p) => pathToFileURL(p).href;
 
-// ─── 1. Les photos, recadrées 16:9 et rien d'autre ──────────────────
+// ─── 0. La liste des visuels, dans l'ordre du kit ───────────────────
+// Un visuel porte son image, ses deux textes, sa cible de QR et, quand
+// la photo vient d'un photographe nommé, sa signature.
+const VISUELS = [
+  ...CARTES_SITE.map((c) => ({
+    base: `fmm-2026-${c.n}-${c.key}`,
+    famille: 'sur-place', genre: 'carte',
+    src: c.src, side: c.side, credit: c.credit, qr: c.qr, fr: c.fr, en: c.en,
+  })),
+  ...PHOTOS.map((p) => ({
+    base: `fmm-carte-postale-${p.id}-${p.slug}`,
+    famille: 'sur-place', genre: 'photo',
+    src: { lena: p.orig, focus: p.focus }, side: p.side, credit: CREDIT_LENA,
+    qr: { fr: '/', en: '/en' }, fr: p.fr, en: p.en,
+  })),
+  ...CARTES_LIGNE.map((c) => ({
+    base: `fmm-2026-${c.n}-${c.key}`,
+    famille: 'en-ligne', genre: 'carte',
+    src: c.src, side: c.side, credit: c.credit, qr: c.qr, fr: c.fr, en: c.en,
+  })),
+];
+
+// ─── 1. Les images, recadrées 16:9 et rien d'autre ──────────────────
 // `focus` place le centre de la fenêtre 16:9 dans la hauteur de
 // l'original. Sans lui, un portrait 1280 × 1920 perd son sujet : la
 // fenêtre ne garde que 37 % de la hauteur, et le chevalier sort par le
-// haut.
+// haut. Les captures du site sont déjà en 1920 × 1080 et passent tout
+// droit.
 const baseCache = new Map();
-async function basePhoto(orig, focus = 0.5) {
-  const key = `${orig}@${focus}`;
+function sourcePath(src) {
+  if (src.lena) return path.join(LENA, `${src.lena}.webp`);
+  if (src.capture) return path.join(CAPTURES, `${src.capture}.png`);
+  return path.join(ROOT, src.fichier);
+}
+
+// Le champ de badges : les jetons que les membres de l'Ordre
+// collectionnent, semés sur le fond de nuit du site. Les rangées se
+// décalent d'un demi-pas pour éviter la grille de tableur, et le tout
+// s'assombrit vers la droite, là où le bandeau de texte se pose.
+async function champBadges(page, n) {
+  const dossier = path.join(ROOT, 'public/badges');
+  const fichiers = fs.readdirSync(dossier).filter((f) => f.endsWith('.webp')).sort().slice(0, n);
+  const cols = 8;
+  const cases = fichiers
+    .map((f, i) => {
+      const decalage = Math.floor(i / cols) % 2 ? 118 : 0;
+      return `<div class="case" style="transform: translateX(${decalage}px)">
+        <img src="${url(path.join(dossier, f))}" alt="">
+      </div>`;
+    })
+    .join('');
+  const css = `
+    body { background: #0c0a08; }
+    .champ {
+      position: absolute; inset: -80px -160px -80px -60px;
+      display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 26px 22px;
+      align-content: center; justify-items: center;
+    }
+    .case img { width: 176px; height: 176px; object-fit: contain;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6)) drop-shadow(0 0 26px rgba(232,177,74,0.16)); }
+    .voile { position: absolute; inset: 0;
+      background: radial-gradient(120% 90% at 22% 45%, rgba(12,10,8,0) 0%, rgba(12,10,8,0.55) 62%, rgba(12,10,8,0.86) 100%); }`;
+  const dest = path.join(TMP, `champ-badges-${n}.png`);
+  await shoot(page, shell(`<div class="champ">${cases}</div><div class="voile"></div>`, css), dest);
+  return dest;
+}
+
+async function baseImage(src, page) {
+  const key = JSON.stringify(src);
   if (baseCache.has(key)) return baseCache.get(key);
-  const src = path.join(LENA, `${orig}.webp`);
-  const { width, height } = await sharp(src).metadata();
+  if (src.badges) {
+    const champ = await champBadges(page, src.badges);
+    baseCache.set(key, champ);
+    return champ;
+  }
+  const file = sourcePath(src);
+  if (!fs.existsSync(file)) {
+    throw new Error(`image absente : ${file}` + (src.capture
+      ? '\n  → lancez `npx vite --port 5221 --strictPort` puis `node scripts/presse/capture-site.mjs`'
+      : ''));
+  }
+  const focus = src.focus ?? 0.5;
+  const { width, height } = await sharp(file).metadata();
   const cropH = Math.min(height, Math.round(width / (16 / 9)));
   const wanted = Math.round(height * focus - cropH / 2);
   const top = Math.max(0, Math.min(height - cropH, wanted));
-  const dest = path.join(TMP, `base-${orig}-${Math.round(focus * 100)}.png`);
-  await sharp(src)
+  const dest = path.join(TMP, `base-${key.replace(/\W+/g, '_')}.png`);
+  await sharp(file)
     .extract({ left: 0, top, width, height: cropH })
     .resize(W, H, { kernel: 'lanczos3' })
     .png({ compressionLevel: 6 })
     .toFile(dest);
-  const note = width < W ? ` (original ${width}×${height}, agrandi ×${(W / width).toFixed(2)})` : '';
-  console.log(`  ${orig} focus ${focus}${note}`);
+  const ratio = W / width;
+  // Agrandir une image plus qu'à une fois et demie la ramollit. La
+  // völva du site ne fait que 1280 de large : ×1,5, à la limite.
+  if (ratio > 1.6) throw new Error(`${file} : agrandissement ×${ratio.toFixed(2)}, trop fort`);
+  const note = width < W ? ` (source ${width}×${height}, agrandie ×${ratio.toFixed(2)})` : '';
+  console.log(`  ${path.basename(file)} focus ${focus}${note}`);
   baseCache.set(key, dest);
   return dest;
 }
@@ -115,7 +202,9 @@ async function buildLogoSolid(hex, dest) {
 // ─── 3. Les codes QR ────────────────────────────────────────────────
 // Correction de niveau M, encre noire, fond blanc cassé. Le module se
 // dimensionne pour que le carré tombe entre 150 et 170 px de côté,
-// quelle que soit la longueur de l'adresse.
+// quelle que soit la longueur de l'adresse. L'adresse encodée passe
+// toujours par le domaine court : il redirige en 301 en gardant le
+// chemin, et il tient sur une ligne de carte.
 const qrCache = new Map();
 async function buildQr(target) {
   if (qrCache.has(target)) return qrCache.get(target);
@@ -166,6 +255,8 @@ function shell(body, extraCss = '') {
     --bone: ${BONE};
     --amber: #E8B14A;
     --night: #0c0a08;
+    --ombre: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 5px rgba(0, 0, 0, 0.9),
+             0 0 14px rgba(0, 0, 0, 0.7), 0 0 32px rgba(0, 0, 0, 0.45);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: ${W}px; height: ${H}px; overflow: hidden; background: var(--night); }
@@ -180,36 +271,56 @@ function shell(body, extraCss = '') {
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 7px rgba(0, 0, 0, 0.72))
             drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
   }
-  /* Le carré du QR, en bas à gauche, à 3 % du bord. */
-  .qr {
+  /* Le coin bas gauche tient le code QR, la signature de la
+     photographe et l'adresse du site. Une rangée en flex : le QR à
+     gauche, le bloc de texte à sa droite, tous deux calés sur la même
+     ligne de base. Rien ne peut donc se chevaucher, quelle que soit la
+     combinaison. */
+  .corner {
     position: absolute; left: 58px; bottom: 34px;
-    border-radius: 8px; overflow: hidden; display: block;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+    display: flex; align-items: flex-end; gap: 26px;
   }
-  .qr img { display: block; }
+  .corner .qr { border-radius: 8px; overflow: hidden; display: block; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55); }
+  .corner .qr img { display: block; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
   /* La signature de la photographe : Cormorant SC en petites
      capitales, lettrage espacé, blanc cassé à 85 %, ombre douce. */
   .credit {
-    position: absolute; left: 58px; bottom: 62px;
     font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
-    font-weight: 600; font-size: 26px; font-variant: small-caps;
+    font-weight: 600; font-size: 26px; font-variant: small-caps; line-height: 1.1;
     letter-spacing: 0.16em; color: rgba(244, 239, 227, 0.85);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 5px rgba(0, 0, 0, 0.9),
-                 0 0 14px rgba(0, 0, 0, 0.7), 0 0 32px rgba(0, 0, 0, 0.45);
+    text-shadow: var(--ombre);
+  }
+  /* L'adresse du site, dans la fonte, la couleur et la taille exactes
+     de la ligne meta des cartes. */
+  .lien {
+    font-family: 'Inter', system-ui, sans-serif; font-weight: 500; font-size: 13px;
+    letter-spacing: 0.3em; text-transform: uppercase; color: rgba(232, 177, 74, 0.9);
+    line-height: 1.2; text-shadow: var(--ombre);
   }
   ${extraCss}
 </style></head><body><div class="frame">${body}</div></body></html>`;
 }
 
-function qrTag(qr) {
-  if (!qr) return '';
-  return `<span class="qr"><img src="${url(qr.file)}" width="${qr.side}" height="${qr.side}" alt=""></span>`;
+// La hauteur du coin, pour que le texte du bandeau s'arrête au-dessus
+// quand les deux se rangent du même côté.
+function cornerHeight({ qr, credit }) {
+  const stack = credit ? 26 * 1.1 + 10 + 13 * 1.2 : 13 * 1.2;
+  return Math.round(Math.max(qr ? qr.side : 0, stack));
 }
 
-function cardHtml({ photoUrl, markUrl, side, kicker, hook, body, meta, qr }) {
-  // Le QR se pose dans le coin bas gauche : quand le bandeau est de ce
-  // côté, son texte remonte pour lui laisser la place.
-  const bottomPad = qr && side === 'left' ? 96 + qr.side + 46 : side === 'left' ? 96 : 150;
+function cornerHtml({ qr, credit }) {
+  const carre = qr
+    ? `<span class="qr"><img src="${url(qr.file)}" width="${qr.side}" height="${qr.side}" alt=""></span>`
+    : '';
+  const signature = credit ? `<p class="credit">${credit}</p>` : '';
+  return `<div class="corner">${carre}<div class="stack">${signature}<p class="lien">${LIEN_COURT}</p></div></div>`;
+}
+
+function carteHtml({ photoUrl, markUrl, side, credit, kicker, hook, body, meta, qr }) {
+  // Le coin bas gauche mange le bas du bandeau quand celui-ci est du
+  // même côté : le texte remonte pour lui laisser la place.
+  const bottomPad = side === 'left' ? 34 + cornerHeight({ qr, credit }) + 48 : 150;
   const css = `
   .plate {
     position: absolute; top: 0; bottom: 0; width: ${PLATE_W}%;
@@ -244,24 +355,17 @@ function cardHtml({ photoUrl, markUrl, side, kicker, hook, body, meta, qr }) {
        <p class="body">${body}</p>
        <p class="meta">${meta}</p>
      </div>
-     ${qrTag(qr)}
+     ${cornerHtml({ qr, credit })}
      <img class="mark" src="${markUrl}" alt="">`,
     css,
   );
 }
 
-function postcardHtml({ photoUrl, markUrl, qr }) {
-  // Sans QR, la signature tient le coin. Avec, elle se range à sa
-  // droite, à mi-hauteur du carré, et les deux forment un seul bloc.
-  const css = qr
-    ? `.credit { left: ${58 + qr.side + 24}px; bottom: ${Math.round(34 + qr.side / 2 - 17)}px; }`
-    : '';
+function nuHtml({ photoUrl, markUrl, credit, qr }) {
   return shell(
     `<img class="shot" src="${photoUrl}" alt="">
-     ${qrTag(qr)}
-     <p class="credit">${SIGNATURE}</p>
+     ${cornerHtml({ qr, credit })}
      <img class="mark" src="${markUrl}" alt="">`,
-    css,
   );
 }
 
@@ -307,10 +411,15 @@ async function shoot(page, html, dest, { fit = false } = {}) {
 }
 
 // ─── 6. L'orbe de la page /presse ───────────────────────────────────
-// Un carré serré sur le guerrier, tête et épaules dans le tiers haut
-// du cercle, tiré de l'original et non de la vignette. Agrandissement
-// Lanczos plafonné, aucun filtre.
-const ORBE = { orig: '2025-IMG_5107', cx: 0.469, cy: 0.457, size: 0.82 };
+// Le chevalier au plumet, celui qu'Alex préfère en haut du kit. Le
+// casque tombe sur l'axe vertical du carré et dans son tiers haut, ce
+// que le cercle de l'orbe demande. L'autre chevalier reste dans les
+// cartes et les cartes postales. Agrandissement Lanczos plafonné,
+// aucun filtre.
+// Repères mesurés sur l'original : le casque tombe à x 0,379 et le
+// haut du plumet à y 0,205. Le carré de 0,734 les met sur l'axe et dans
+// le tiers haut du cercle, sans couper la plume.
+const ORBE = { orig: '2025-IMG_5743', cx: 0.379, cy: 0.400, size: 0.734 };
 async function buildOrbe() {
   const src = path.join(LENA, `${ORBE.orig}.webp`);
   const { width, height } = await sharp(src).metadata();
@@ -329,8 +438,8 @@ async function buildOrbe() {
 }
 
 // ─── 7. Les textes du kit ───────────────────────────────────────────
-// Tout vient de src/content.ts (SITE, HOME, FOOTER) et des pages du
-// site. Rien n'est inventé.
+// Tout vient de src/content.ts (SITE, HOME, FOOTER), des pages du site
+// et du prix réel du banquet (NourriturePage). Rien n'est inventé.
 const TEXTES = {
   'festival-fr.txt': `FESTIVAL MÉDIÉVAL DE MONTPELLIER
 Édition 2026 · Caravanes & Saltimbanques
@@ -346,11 +455,11 @@ EN UN PARAGRAPHE
 Trois jours sur les routes du temps. Les caravanes et les saltimbanques
 s'installent dans le village de Montpellier, en Outaouais, avec le
 tarot, les tambours et les clans nordiques. L'arène reçoit les joutes
-équestres et les combats en armure pendant que le marché ouvre ses
-étals d'artisans. La scène accueille les troupes du vendredi au
-dimanche, et le banquet médiéval se sert à la torche. Le festival est
-un organisme sans but lucratif porté par une équipe de bénévoles et
-opéré par Le Salon des Inconnus.
+équestres et les combats des troupes vikings pendant que le marché
+ouvre ses étals d'artisans. La scène accueille les troupes du vendredi
+au dimanche, et le banquet médiéval se sert à la torche, sur un feu de
+bois véritable. Le festival est un organisme sans but lucratif porté
+par une équipe de bénévoles et opéré par Le Salon des Inconnus.
 
 QUAND
 
@@ -367,9 +476,19 @@ BILLETS
 
 Passe journée : 27 $
 Passe trois jours : 65 $, bracelet officiel FMM compris
-Banquet médiéval : prix à venir
+Banquet médiéval : 65 $ plus taxes, 50 places, inscription jusqu'au
+17 septembre 2026
 La vente se fait en ligne par Zeffy.
 ${BASE_URL}/billets
+
+LE FESTIVAL EN LIGNE
+
+Le site vit toute l'année. Les jeux médiévaux du festival s'y jouent
+sur mobile comme au bureau, le registre de l'Ordre tient les fiches de
+ses membres et leurs badges, la boutique s'ouvre contre des Montpellois
+gagnés en explorant le site, et la section Apprendre poursuit la
+mission éducative du festival.
+${BASE_URL}/jeux-en-ligne
 
 CONTACT PRESSE
 
@@ -385,6 +504,8 @@ https://www.instagram.com/festivalmedievaldemontpellier/
 PHOTOGRAPHIES
 
 Photos : Léna LeBozec, photographe. La mention est obligatoire.
+Les visuels du festival en ligne sont des captures du site et ne
+portent aucune signature de photographe.
 `,
   'festival-en.txt': `FESTIVAL MÉDIÉVAL DE MONTPELLIER
 2026 edition · Caravans & Players
@@ -400,10 +521,11 @@ IN ONE PARAGRAPH
 Three days on the roads of time. Caravans and travelling players settle
 into the village of Montpellier, in the Outaouais region of Quebec,
 with tarot, drums and the Nordic clans. The arena takes the mounted
-jousts and the armoured combat while the market opens its artisan
+jousts and the Viking troupes while the market opens its artisan
 stalls. The stage hosts the troupes from Friday to Sunday, and the
-medieval banquet is served by torchlight. The festival is a non-profit
-run by a team of volunteers and operated by Le Salon des Inconnus.
+medieval banquet is served by torchlight, over a true wood fire. The
+festival is a non-profit run by a team of volunteers and operated by Le
+Salon des Inconnus.
 
 WHEN
 
@@ -420,9 +542,19 @@ TICKETS
 
 Day pass: $27
 Three-day pass: $65, official FMM wristband included
-Medieval banquet: price to be announced
+Medieval banquet: $65 plus tax, 50 seats, registration until
+September 17, 2026
 Tickets are sold online through Zeffy.
 ${BASE_URL}/en/tickets
+
+THE FESTIVAL ONLINE
+
+The site is alive all year. The festival's medieval games are played
+there on mobile and at the desk, the roll of the Order keeps its
+members' cards and badges, the shop opens for Montpellois earned while
+exploring the site, and the Learning section carries on the festival's
+educational mission.
+${BASE_URL}/en/online-games
 
 PRESS CONTACT
 
@@ -438,18 +570,30 @@ https://www.instagram.com/festivalmedievaldemontpellier/
 PHOTOGRAPHS
 
 Photos: Léna LeBozec, photographer. The credit is required.
+The visuals of the festival online are screenshots of the site and
+carry no photographer credit.
 `,
   'credits.txt': `CRÉDITS PHOTOGRAPHIQUES · PHOTO CREDITS
 
-Toutes les photographies de ce kit sont de Léna LeBozec.
-La mention suivante est obligatoire à chaque publication :
+La plupart des photographies de ce kit sont de Léna LeBozec, et chacune
+porte sa signature en bas à gauche. La mention suivante est obligatoire
+à chaque publication :
 
     Photos : Léna LeBozec, photographe
 
-All photographs in this kit are by Léna LeBozec.
-The following credit is required with every publication:
+La carte « Tresse et Tisse » est une photographie d'Alex T. St-Laurent
+et porte sa propre signature. Les visuels du festival en ligne sont des
+captures du site et ne portent aucune signature.
+
+Most photographs in this kit are by Léna LeBozec, and each one carries
+her credit in the bottom left corner. The following credit is required
+with every publication:
 
     Photos: Léna LeBozec, photographer
+
+The "Tresse et Tisse" card is a photograph by Alex T. St-Laurent and
+carries his own credit. The visuals of the festival online are
+screenshots of the site and carry no credit.
 
 Le blason du Festival Médiéval de Montpellier garde ses proportions et
 sa couleur. Merci de ne pas le redessiner, le recolorer ni l'étirer.
@@ -463,13 +607,20 @@ its colour. Please do not redraw, recolour or stretch it.
 
 CE QUE CONTIENT LE KIT
 
-fmm-2026-NN-sujet-fr.png     Douze cartes explicatives en français,
-                             1920 × 1080, blason du festival compris.
-fmm-2026-NN-sujet-en.png     Les mêmes douze cartes en anglais.
-...-qr.png                   La même carte avec un code QR qui mène à
-                             la page du site qui traite du sujet.
-fmm-carte-postale-NN-...png  Douze photographies sans texte, signées.
-                             Leur variante QR mène à l'accueil.
+Vingt-neuf visuels en 1920 × 1080, chacun en six fichiers.
+
+...-fr-texte.png     La carte avec son texte français.
+...-en-texte.png     La même carte en anglais.
+...-nu.png           La photographie seule, avec le blason, l'adresse
+                     du site et la signature de la photographe.
+...-qr.png           N'importe laquelle des trois, avec un code QR qui
+                     mène à la page du site qui traite du sujet.
+
+Les visuels se rangent en deux familles. Le festival sur place réunit
+treize cartes explicatives et douze photographies. Le festival en ligne
+réunit quatre cartes bâties sur le site : les jeux médiévaux, le
+registre de l'Ordre, la monnaie du site et la section Apprendre.
+
 logos/                       Le blason argenté, le blanc et le noir,
                              chacun en pleine résolution et en 1024 px.
 textes/                      Cette note, les crédits, et la
@@ -480,14 +631,14 @@ COMMENT CRÉDITER
 
 Photos : Léna LeBozec, photographe
 
-La mention est obligatoire. Elle vaut pour les cartes comme pour les
-photographies sans texte. Le blason garde ses proportions et sa
-couleur.
+La mention est obligatoire pour toutes les photographies du festival,
+qu'elles portent un texte ou non. La carte « Tresse et Tisse » est
+d'Alex T. St-Laurent. Le blason garde ses proportions et sa couleur.
 
 LES BILLETS
 
-Passe journée 27 $, passe trois jours 65 $, banquet médiéval à venir.
-La vente se fait en ligne par Zeffy.
+Passe journée 27 $, passe trois jours 65 $, banquet médiéval 65 $ plus
+taxes. La vente se fait en ligne par Zeffy.
 ${BASE_URL}/billets
 
 UNE QUESTION
@@ -502,13 +653,20 @@ September 25 · 26 · 27, 2026 · Montpellier, Quebec
 
 WHAT IS IN THE KIT
 
-fmm-2026-NN-topic-fr.png     Twelve explanatory cards in French,
-                             1920 × 1080, festival crest included.
-fmm-2026-NN-topic-en.png     The same twelve cards in English.
-...-qr.png                   The same card with a QR code that leads
-                             to the page of the site on that topic.
-fmm-carte-postale-NN-...png  Twelve photographs without text, signed.
-                             Their QR variant leads to the home page.
+Twenty-nine visuals at 1920 × 1080, each one in six files.
+
+...-fr-texte.png     The card with its French text.
+...-en-texte.png     The same card in English.
+...-nu.png           The photograph alone, with the crest, the site
+                     address and the photographer's credit.
+...-qr.png           Any of the three, with a QR code leading to the
+                     page of the site on that topic.
+
+The visuals come in two families. The festival on the grounds gathers
+thirteen explanatory cards and twelve photographs. The festival online
+gathers four cards built on the site itself: the medieval games, the
+roll of the Order, the site currency and the Learning section.
+
 logos/                       The silver crest, the white one and the
                              black one, at full size and at 1024 px.
 textes/                      This note, the credits, and the festival
@@ -518,13 +676,13 @@ HOW TO CREDIT
 
 Photos: Léna LeBozec, photographer
 
-The credit is required. It applies to the cards as much as to the
-photographs without text. The crest keeps its proportions and its
-colour.
+The credit is required for every festival photograph, with or without
+text on it. The "Tresse et Tisse" card is by Alex T. St-Laurent. The
+crest keeps its proportions and its colour.
 
 TICKETS
 
-Day pass $27, three-day pass $65, medieval banquet to be announced.
+Day pass $27, three-day pass $65, medieval banquet $65 plus tax.
 Tickets are sold online through Zeffy.
 ${BASE_URL}/en/tickets
 
@@ -538,52 +696,49 @@ ${BASE_URL}/en/press
 
 // ─── 8. Le tout ─────────────────────────────────────────────────────
 // `node scripts/presse/build-kit.mjs --only=escrime,marche` ne rend que
-// ces cartes et saute le reste : les tours de vérification visuelle
-// coûtent dix minutes autrement.
+// ces visuels et saute le reste : les tours de vérification visuelle
+// coûtent une demi-heure autrement.
 const ONLY = (process.argv.find((a) => a.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
 
 async function main() {
   if (!ONLY.length) fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT_LOGOS, { recursive: true });
   fs.mkdirSync(OUT_TEXTES, { recursive: true });
-  const cartes = ONLY.length ? CARDS.filter((c) => ONLY.includes(c.key)) : CARDS;
+  const visuels = ONLY.length ? VISUELS.filter((v) => ONLY.some((k) => v.base.includes(k))) : VISUELS;
+  if (!visuels.length) throw new Error(`--only=${ONLY.join(',')} ne correspond à aucun visuel`);
 
   console.log('Codes QR :');
   const qrs = new Map();
-  for (const c of cartes) {
-    qrs.set(`${c.key}:fr`, await buildQr(c.qr.fr));
-    qrs.set(`${c.key}:en`, await buildQr(c.qr.en));
+  for (const v of visuels) {
+    qrs.set(`${v.base}:fr`, await buildQr(v.qr.fr));
+    qrs.set(`${v.base}:en`, await buildQr(v.qr.en));
   }
   const qrAccueil = await buildQr('/');
 
-  console.log('\nPhotos, recadrées 16:9 depuis les originaux de Léna :');
+  console.log('\nImages, recadrées 16:9 depuis les sources :');
   const markUrl = url(await buildLogoMark());
 
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 
-  console.log('\nCartes explicatives :');
-  for (const card of cartes) {
-    const photoUrl = url(await basePhoto(card.orig, card.focus));
+  for (const v of visuels) {
+    const photoUrl = url(await baseImage(v.src, page));
     for (const lang of ['fr', 'en']) {
       for (const withQr of [false, true]) {
-        const suffix = withQr ? '-qr' : '';
-        const dest = path.join(OUT, `fmm-2026-${card.n}-${card.key}-${lang}${suffix}.png`);
-        const qr = withQr ? qrs.get(`${card.key}:${lang}`) : null;
-        await shoot(page, cardHtml({ photoUrl, markUrl, side: card.side, ...card[lang], qr }), dest, {
-          fit: true,
-        });
+        const dest = path.join(OUT, `${v.base}-${lang}-texte${withQr ? '-qr' : ''}.png`);
+        const qr = withQr ? qrs.get(`${v.base}:${lang}`) : null;
+        // La signature de la photographe suit ses photographies dans
+        // les deux versions; sur une carte explicative elle attend la
+        // version nue, où l'image est seule à parler.
+        const credit = v.genre === 'photo' ? v.credit : null;
+        await shoot(page, carteHtml({ photoUrl, markUrl, side: v.side, credit, ...v[lang], qr }), dest, { fit: true });
       }
     }
-  }
-
-  console.log('\nCartes postales :');
-  for (const p of (ONLY.length ? PHOTOS.slice(0, 1) : PHOTOS)) {
-    const photoUrl = url(await basePhoto(p.orig, p.focus));
+    // La version nue ne porte aucun mot de langue : un seul fichier
+    // sert les deux, et son code QR mène à l'accueil du site.
     for (const withQr of [false, true]) {
-      const suffix = withQr ? '-qr' : '';
-      const dest = path.join(OUT, `fmm-carte-postale-${p.id}-${p.slug}${suffix}.png`);
-      await shoot(page, postcardHtml({ photoUrl, markUrl, qr: withQr ? qrAccueil : null }), dest);
+      const dest = path.join(OUT, `${v.base}-nu${withQr ? '-qr' : ''}.png`);
+      await shoot(page, nuHtml({ photoUrl, markUrl, credit: v.credit, qr: withQr ? qrAccueil : null }), dest);
     }
   }
 
@@ -614,8 +769,8 @@ async function main() {
     console.log(`  textes/${name}`);
   }
 
-  // Vignettes web. La page /presse affiche une soixantaine de tuiles :
-  // servir les PNG pleine résolution y mettrait des dizaines de Mo. Les
+  // Vignettes web. La page /presse affiche près de deux cents tuiles :
+  // servir les PNG pleine résolution y mettrait des centaines de Mo. Les
   // tuiles montrent un WebP de 640 px, le bouton Télécharger sert le
   // PNG d'origine. Le blason garde sa transparence, il se pose sur du
   // verre sombre.
@@ -643,7 +798,8 @@ async function main() {
   const zipName = 'fmm-kit-de-presse.zip';
   execFileSync('zip', ['-r', '-q', zipName, '.', '-i', '*.png', 'logos/*', 'textes/*'], { cwd: OUT });
   const mo = (fs.statSync(path.join(OUT, zipName)).size / 1048576).toFixed(1);
-  console.log(`\n${zipName} · ${mo} Mo`);
+  const nPng = fs.readdirSync(OUT).filter((n) => n.endsWith('.png')).length;
+  console.log(`\n${nPng} PNG · ${zipName} · ${mo} Mo`);
 
   fs.rmSync(TMP, { recursive: true, force: true });
 }

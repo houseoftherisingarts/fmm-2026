@@ -209,3 +209,33 @@ export function verdict(p: Plateau, tour: Camp, v: Variante): Verdict {
   if (coupsPossibles(p, tour, v).length === 0) return tour === 'renard' ? 'oies' : 'renard';
   return null;
 }
+
+// ─── Un coup, en texte ──────────────────────────────────────────────
+// Une partie en ligne ne stocke pas la planche, seulement la liste des
+// coups (Alex, 2026-08-31, même patron que le tafl). Un saut du renard
+// porte les oies emportées, parce que deux enchaînements différents
+// peuvent finir sur le même point.
+
+/** « 12>10 » un pas, « 12>10:11,17 » un saut et ce qu'il emporte. */
+export function coupEnTexte(c: Coup): string {
+  return c.prises.length > 0 ? `${c.de}>${c.vers}:${c.prises.join(',')}` : `${c.de}>${c.vers}`;
+}
+
+/**
+ * Relit un coup venu de l'autre bout et lui rend ses étapes.
+ *
+ * Le coup n'est pas reconstruit à la main : il est CHERCHÉ dans la
+ * liste des coups légaux de la position courante. Un coup qui n'y est
+ * pas rend `null`, et la planche ne bouge pas.
+ */
+export function coupDepuisTexte(
+  s: string, p: Plateau, camp: Camp, v: Variante,
+): Coup | null {
+  const [chemin, prises] = s.split(':');
+  const [de, vers] = (chemin ?? '').split('>').map(Number);
+  if (!Number.isInteger(de) || !Number.isInteger(vers)) return null;
+  const attendues = prises ? prises.split(',').map(Number).join(',') : '';
+  return coupsPossibles(p, camp, v).find(
+    (c) => c.de === de && c.vers === vers && c.prises.join(',') === attendues,
+  ) ?? null;
+}

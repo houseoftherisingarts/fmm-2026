@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { Newspaper } from 'lucide-react';
 import EmberCanvas from '../components/vendor/EmberCanvas';
 import FondParticules from '../components/layout/FondParticules';
 import { useSkinActif } from '../lib/useSkinActif';
@@ -954,7 +955,7 @@ const OrbHomePage: React.FC = () => {
               <button
                 onClick={onConfirm}
                 disabled={confirming}
-                className={`self-start font-display title-medieval uppercase transition-all duration-300 border bg-brass border-brass hover:bg-brass-soft hover:scale-[1.02] ${
+                className={`self-start rounded-full font-display title-medieval uppercase transition-all duration-300 border bg-brass border-brass hover:bg-brass-soft hover:scale-[1.02] ${
                   presale
                     ? 'text-white px-12 md:px-16 py-6 md:py-7 text-base md:text-xl tracking-[0.28em]'
                     : 'text-midnight-deep px-8 py-3.5 text-[11px] tracking-[0.35em]'
@@ -974,6 +975,16 @@ const OrbHomePage: React.FC = () => {
                       ? (lang === 'FR' ? 'Acheter mes billets' : 'Buy tickets')
                       : (lang === 'FR' ? 'Confirmer mon choix' : 'Confirm my choice')}
               </button>
+              {/* Le kit de presse, juste à côté des billets (Alex, 2026-08-31). */}
+              <Link
+                to={addLocale('/presse', lang)}
+                className={`self-start inline-flex items-center gap-2 font-display title-medieval uppercase transition-all duration-300 border rounded-full border-brass/60 text-ivory hover:bg-brass/15 hover:scale-[1.02] ${
+                  presale ? 'px-8 md:px-10 py-5 md:py-6 text-sm md:text-base tracking-[0.24em]' : 'px-7 py-3.5 text-[11px] tracking-[0.3em]'
+                }`}
+                style={{ background: 'rgba(var(--sk-glow-rgb), 0.08)' }}
+              >
+                <Newspaper size={presale ? 18 : 14} /> {lang === 'FR' ? 'Kit de presse' : 'Press kit'}
+              </Link>
             </div>
           </div>
 

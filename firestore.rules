@@ -295,7 +295,12 @@ service cloud.firestore {
                     && request.auth.uid == request.resource.data.lancePar
                     && request.resource.data.coups.size() == 0
                     && request.resource.data.gagnant == null
-                    && request.resource.data.tour == 'attacker'
+                    // La collection porte les trois jeux de plateau
+                    // depuis le 31 août 2026, et chacun a son propre
+                    // vocabulaire de camps ('attacker', '1', 'oies'…).
+                    // La partie doit donc ouvrir sur un camp qu'elle
+                    // déclare elle-même, plus sur un nom en dur.
+                    && request.resource.data.tour in request.resource.data.camps.keys()
                     && (
                       // Un défi nommé s'ouvre à deux, en attente.
                       (request.resource.data.statut == 'defi'

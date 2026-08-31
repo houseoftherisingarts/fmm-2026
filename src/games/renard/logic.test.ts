@@ -10,7 +10,8 @@
 import assert from 'node:assert/strict';
 import {
   CENTRE, NB_POINTS, POINTS, coupsPossibles, jouer, nbOies, plateauInitial,
-  pointDe, positionRenard, reglement, verdict, type Occupant, type Plateau,
+  pointDe, positionRenard, reglement, verdict, coupEnTexte, coupDepuisTexte,
+  type Occupant, type Plateau,
 } from './logic';
 import { choisirCoup, evaluer } from './cpu';
 
@@ -208,6 +209,33 @@ cas('une partie entière contre l’ordinateur se termine', () => {
   }
   assert.ok(coups < 400, 'la partie ne doit pas tourner en rond indéfiniment');
   assert.ok(verdict(p, tour, 'oies13') !== null, 'la partie doit avoir un vainqueur');
+});
+
+// ── Le texte des coups, pour les parties en ligne ────────────────────
+// La partie à deux ne partage que cette liste. Un saut relu doit
+// retrouver ses étapes, sinon l'animation saute des oies.
+cas('une partie entière survit à l’aller-retour par le texte', () => {
+  let ici: Plateau = plateauInitial('oies13');
+  let laBas: Plateau = plateauInitial('oies13');
+  let tour: 'renard' | 'oies' = 'oies';
+  let coups = 0;
+  while (verdict(ici, tour, 'oies13') === null && coups < 400) {
+    const choix = choisirCoup(ici, tour, 'oies13', 'facile');
+    assert.ok(choix);
+    const texte = coupEnTexte(choix);
+    // L'autre bout relit le coup sur SA planche, sans rien recevoir
+    // d'autre : c'est ce qui prouve que le texte suffit.
+    const relu = coupDepuisTexte(texte, laBas, tour, 'oies13');
+    assert.ok(relu, `coup illisible : ${texte}`);
+    assert.deepEqual(relu.etapes, choix.etapes, `étapes perdues : ${texte}`);
+    ici = jouer(ici, choix);
+    laBas = jouer(laBas, relu);
+    assert.deepEqual(laBas, ici, `divergence au coup ${coups}`);
+    tour = tour === 'renard' ? 'oies' : 'renard';
+    coups++;
+  }
+  assert.ok(coups > 4);
+  assert.equal(coupDepuisTexte('0>1', plateauInitial('oies13'), 'oies', 'oies13'), null);
 });
 
 console.log(`\n${reussis} contrôles passés.`);

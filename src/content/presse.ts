@@ -6,23 +6,34 @@
 //
 // Chaque entrée porte deux chemins : la vignette WebP de 640 px que la
 // tuile affiche, et le PNG 1920 × 1080 que le bouton télécharge. Servir
-// soixante PNG pleine résolution dans une grille ferait des dizaines de
-// mégaoctets par visite.
+// deux cents PNG pleine résolution dans une grille ferait des centaines
+// de mégaoctets par visite.
 //
-// Les cartes et les cartes postales existent en deux versions : la
-// nue, et la même avec un code QR en bas à gauche (suffixe `-qr`) qui
-// mène à la page du site qui traite du sujet. Le bouton « Version QR »
-// de la tuile bascule de l'une à l'autre.
+// Depuis le 2026-08-31, chaque visuel existe en quatre versions et la
+// tuile bascule de l'une à l'autre :
+//   `file`     la carte avec son texte, dans la langue de la page
+//   `fileNu`   la photographie seule, blason, adresse et signature
+//   `-qr`      l'une ou l'autre, avec un code QR en bas à gauche
+// La version avec texte mène à la page du site qui traite du sujet, la
+// version nue mène à l'accueil.
+//
+// Les visuels se rangent en deux familles : le festival sur place
+// (treize cartes et douze photographies) et le festival en ligne
+// (quatre cartes bâties sur des captures du site).
 
 export interface PresseAsset {
-  /** Nom du fichier PNG, sans le dossier. */
+  /** Nom du fichier PNG avec texte, sans le dossier. */
   file: string;
+  /** Le même visuel, photographie seule. Absent pour les logos. */
+  fileNu?: string;
   labelFR: string;
   labelEN: string;
   /** Une variante `-qr` du même fichier existe. */
   qr?: boolean;
-  /** La page que ce code QR ouvre, pour l'afficher sous la tuile. */
+  /** La page que le code QR ouvre, pour l'afficher sous la tuile. */
   qrPath?: string;
+  /** La page que le code QR de la version nue ouvre. */
+  qrPathNu?: string;
   /** Le fond sur lequel poser un PNG transparent. Le blason noir
    *  disparaît sur du verre sombre, il lui faut du parchemin. */
   fond?: 'clair' | 'sombre';
@@ -35,11 +46,25 @@ const carte = (
   labelEN: string,
   qrFR: string,
   qrEN: string,
-) => ({
-  fr: { file: `fmm-2026-${n}-${key}-fr.png`, labelFR, labelEN, qr: true, qrPath: qrFR },
-  en: { file: `fmm-2026-${n}-${key}-en.png`, labelFR, labelEN, qr: true, qrPath: qrEN },
-});
+) => {
+  const base = `fmm-2026-${n}-${key}`;
+  const commun = { labelFR, labelEN, qr: true, fileNu: `${base}-nu.png`, qrPathNu: '/' };
+  return {
+    fr: { ...commun, file: `${base}-fr-texte.png`, qrPath: qrFR },
+    en: { ...commun, file: `${base}-en-texte.png`, qrPath: qrEN },
+  };
+};
 
+const postale = (id: string, slug: string, labelFR: string, labelEN: string) => {
+  const base = `fmm-carte-postale-${id}-${slug}`;
+  const commun = { labelFR, labelEN, qr: true, fileNu: `${base}-nu.png`, qrPathNu: '/' };
+  return {
+    fr: { ...commun, file: `${base}-fr-texte.png`, qrPath: '/' },
+    en: { ...commun, file: `${base}-en-texte.png`, qrPath: '/en' },
+  };
+};
+
+// ─── Le festival sur place ──────────────────────────────────────────
 const CARTES = [
   carte('01', 'festival', 'Le festival', 'The festival', '/', '/en'),
   carte('02', 'billets', 'Billets', 'Tickets', '/billets', '/en/tickets'),
@@ -53,28 +78,43 @@ const CARTES = [
   carte('10', 'jeunesse', 'Village jeunesse', 'Youth village', '/activites', '/en/activities'),
   carte('11', 'camping', 'Camping', 'Camping', '/hebergement', '/en/lodging'),
   carte('12', 'mariages', 'Mariages et groupes', 'Weddings and groups', '/mariages', '/en/weddings'),
+  carte('13', 'tresse-et-tisse', 'Tresse et Tisse', 'Tresse et Tisse', '/histoire', '/en/history'),
 ];
 
 export const CARTES_FR: PresseAsset[] = CARTES.map((c) => c.fr);
 export const CARTES_EN: PresseAsset[] = CARTES.map((c) => c.en);
 
-// La douzième n'a ni titre ni légende : la scène n'est ni une proue ni
-// des flammes, et une légende fausse vaut moins que le silence
-// (Alex, 2026-08-31).
-export const CARTES_POSTALES: PresseAsset[] = [
-  { file: 'fmm-carte-postale-01-chevalier-plumet.png', labelFR: 'Le chevalier au plumet', labelEN: 'The plumed knight', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-02-chevalier-lice.png', labelFR: 'Le chevalier en lice', labelEN: 'The knight in the lists', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-03-joute.png', labelFR: 'La joute équestre', labelEN: 'The mounted joust', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-04-forge.png', labelFR: 'La forge', labelEN: 'The forge', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-05-rouet.png', labelFR: 'Le rouet', labelEN: 'The spinning wheel', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-06-poteries.png', labelFR: 'Les poteries', labelEN: 'The pottery', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-07-vielle-a-roue.png', labelFR: 'La vielle à roue', labelEN: 'The hurdy-gurdy', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-08-convives.png', labelFR: 'Les convives', labelEN: 'The guests at table', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-09-paniers-herbes.png', labelFR: 'Les paniers d’herbes', labelEN: 'The herb baskets', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-10-mur-de-boucliers.png', labelFR: 'Le mur de boucliers', labelEN: 'The shield wall', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-11-guerrier-epee.png', labelFR: 'Le guerrier à l’épée', labelEN: 'The warrior with the sword', qr: true, qrPath: '/' },
-  { file: 'fmm-carte-postale-12-feu-dragon.png', labelFR: '', labelEN: '', qr: true, qrPath: '/' },
+// La douzième portait un titre faux, alors elle n'en avait plus du tout
+// (Alex, 2026-08-31). Elle en a repris un depuis, celui de ce que la
+// photo montre vraiment : une tête de bête sculptée, éclairée au feu.
+const POSTALES = [
+  postale('01', 'chevalier-plumet', 'Le chevalier au plumet', 'The plumed knight'),
+  postale('02', 'chevalier-lice', 'Le chevalier en lice', 'The knight in the lists'),
+  postale('03', 'joute', 'La joute équestre', 'The mounted joust'),
+  postale('04', 'forge', 'La forge', 'The forge'),
+  postale('05', 'rouet', 'Le rouet', 'The spinning wheel'),
+  postale('06', 'poteries', 'Les poteries', 'The pottery'),
+  postale('07', 'vielle-a-roue', 'La vielle à roue', 'The hurdy-gurdy'),
+  postale('08', 'convives', 'Les convives', 'The guests at table'),
+  postale('09', 'paniers-herbes', 'Les paniers d’herbes', 'The herb baskets'),
+  postale('10', 'mur-de-boucliers', 'Le mur de boucliers', 'The shield wall'),
+  postale('11', 'guerrier-epee', 'Le guerrier à l’épée', 'The warrior with the sword'),
+  postale('12', 'feu-dragon', 'La tête sculptée, au feu', 'The carved head by firelight'),
 ];
+
+export const CARTES_POSTALES_FR: PresseAsset[] = POSTALES.map((c) => c.fr);
+export const CARTES_POSTALES_EN: PresseAsset[] = POSTALES.map((c) => c.en);
+
+// ─── Le festival en ligne ───────────────────────────────────────────
+const LIGNE = [
+  carte('21', 'jeux', 'Les jeux en ligne', 'The online games', '/jeux-en-ligne', '/en/online-games'),
+  carte('22', 'ordre', 'Le registre de l’Ordre', 'The roll of the Order', '/ordre', '/en/order'),
+  carte('23', 'montpellois', 'Le Montpellois', 'The Montpellois', '/boutique', '/en/shop'),
+  carte('24', 'apprendre', 'Apprendre', 'Learning', '/histoire', '/en/history'),
+];
+
+export const CARTES_LIGNE_FR: PresseAsset[] = LIGNE.map((c) => c.fr);
+export const CARTES_LIGNE_EN: PresseAsset[] = LIGNE.map((c) => c.en);
 
 export const LOGOS: PresseAsset[] = [
   { file: 'logos/fmm-logo-embossed-silver.png', labelFR: 'Blason argenté', labelEN: 'Silver crest', fond: 'sombre' },
@@ -96,12 +136,23 @@ export const TEXTES: PresseAsset[] = [
 
 export const PRESSE_ZIP = '/presse/fmm-kit-de-presse.zip';
 
-/** L'adresse complète que porte un code QR. */
-export const QR_BASE = 'https://www.festivalmedievaldemontpellier.org';
+/** Le domaine court que portent les codes QR. Il redirige en 301 vers
+ *  le long en gardant le chemin, et il tient sur une ligne de carte. */
+export const QR_BASE = 'https://festivalmedieval.org';
 
-/** La même carte, version code QR. Rendue telle quelle si elle n'en a pas. */
-export const versionQR = (a: PresseAsset): PresseAsset =>
-  a.qr ? { ...a, file: a.file.replace(/\.png$/, '-qr.png') } : a;
+/** Options d'affichage d'une tuile : photo seule, code QR, ou les deux. */
+export interface Variante { nu?: boolean; qr?: boolean }
+
+/** Le fichier qui correspond à l'état de la tuile. */
+export const variante = (a: PresseAsset, v: Variante): PresseAsset => {
+  const socle = v.nu && a.fileNu ? a.fileNu : a.file;
+  const file = v.qr && a.qr ? socle.replace(/\.png$/, '-qr.png') : socle;
+  return { ...a, file };
+};
+
+/** La page que le code QR de cette version ouvre. */
+export const cibleQR = (a: PresseAsset, v: Variante) =>
+  (v.nu ? a.qrPathNu : a.qrPath) ?? a.qrPath;
 
 /** Le PNG pleine résolution, celui que le bouton Télécharger sert. */
 export const pleineRes = (a: PresseAsset) => `/presse/${a.file}`;

@@ -10,10 +10,11 @@
 // coup, lancer l'animation qui va avec, et dire à qui de jouer.
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Cpu, RotateCcw, Scroll, X, Maximize2, Minimize2, Feather,
-  Circle, Grid3x3, Hand, Swords,
+  Circle, Grid3x3, Hand, Swords, ArrowUpRight,
 } from 'lucide-react';
 
 import CadreJeu from '../../components/jeux/CadreJeu';
@@ -24,9 +25,15 @@ import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 
+import { useAuth } from '../../contexts/AuthContext';
 import {
-  aPoserDe, compte, destinations, etatInitial, jouer, phaseDe,
-  retraitsPossibles, type Camp, type Coup, type Etat,
+  suivrePartie, repondreAuDefi, abandonner,
+  jouerCoup as pousserLeCoup, type PartieTafl,
+} from '../../firebase/tafl';
+
+import {
+  aPoserDe, compte, coupDepuisTexte, coupEnTexte, destinations, etatInitial,
+  jouer, phaseDe, retraitsPossibles, type Camp, type Coup, type Etat,
 } from './logic';
 import { choisirCoup, type Difficulte } from './cpu';
 import { monterScene, type SceneMerelle } from './scene';
@@ -98,6 +105,22 @@ interface Textes {
   reglesTitre: string;
   regles: Array<{ titre: string; corps: string }>;
   atelier: string;
+  // La partie à deux, chacun chez soi.
+  contre: string;
+  vousTenez: string;
+  aVousDeJouer: string;
+  enAttente: string;
+  partieFinie: string;
+  abandonner: string;
+  defi: string;
+  vousDefie: (nom: string) => string;
+  defiEnvoye: (nom: string) => string;
+  defiRefuse: string;
+  defiAttente: string;
+  accepter: string;
+  refuser: string;
+  retourTable: string;
+  chargement: string;
 }
 
 const MOTS: Record<'FR' | 'EN', Textes> = {
@@ -167,6 +190,21 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
       },
     ],
     atelier: 'Plateau, pions et code sortis de l’atelier du Salon des Inconnus.',
+    contre: 'Contre',
+    vousTenez: 'Vous tenez',
+    aVousDeJouer: 'À vous de jouer',
+    enAttente: 'En attente de l’autre',
+    partieFinie: 'Partie terminée',
+    abandonner: 'Abandonner',
+    defi: 'Défi',
+    vousDefie: (nom) => `${nom} vous défie à la mérelle`,
+    defiEnvoye: (nom) => `Défi envoyé à ${nom}`,
+    defiRefuse: 'Ce défi a été refusé.',
+    defiAttente: 'Le plateau se dresse dès que la personne accepte. Vous pouvez revenir plus tard : la partie vous attendra dans vos notifications.',
+    accepter: 'Accepter',
+    refuser: 'Refuser',
+    retourTable: 'La table de jeux',
+    chargement: 'La partie s’ouvre…',
   },
   EN: {
     eyebrow: 'The Year of the Lord · Board game',
@@ -234,6 +272,21 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
       },
     ],
     atelier: 'Board, men and code out of the workshop of Le Salon des Inconnus.',
+    contre: 'Against',
+    vousTenez: 'You hold',
+    aVousDeJouer: 'Your move',
+    enAttente: 'Waiting for them',
+    partieFinie: 'Game over',
+    abandonner: 'Resign',
+    defi: 'Challenge',
+    vousDefie: (nom) => `${nom} challenges you at morris`,
+    defiEnvoye: (nom) => `Challenge sent to ${nom}`,
+    defiRefuse: 'This challenge was declined.',
+    defiAttente: 'The board is set as soon as they accept. You can come back later: the game will wait in your notifications.',
+    accepter: 'Accept',
+    refuser: 'Decline',
+    retourTable: 'The games table',
+    chargement: 'The game is opening…',
   },
 };
 
@@ -390,30 +443,98 @@ const MerellePage: React.FC = () => {
   const tableRef = useRef<HTMLDivElement>(null);
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
 
+  // ── La partie à deux, chacun chez soi ────────────────────────────
+  // /jeux/merelle?partie=<id> ouvre le défi accepté depuis la fiche de
+  // l'autre personne. Le document ne porte que la liste des coups : les
+  // deux moteurs la rejouent, exactement comme au tafl.
+  const [params] = useSearchParams();
+  const partieId = params.get('partie');
+  const { user } = useAuth();
+  const [partie, setPartie] = useState<PartieTafl | null>(null);
+  const partieRef = useRef<PartieTafl | null>(null);
+  partieRef.current = partie;
+
+  /** La liste des coups telle que JE la connais, y compris celui que je
+   *  viens d'envoyer. Un moulin fermé donne deux coups de suite au même
+   *  joueur : sans ce miroir, le retrait repartirait de la liste d'avant
+   *  la pose et l'effacerait. */
+  const coupsRef = useRef<string[]>([]);
+  if (partie && partie.coups.length > coupsRef.current.length) coupsRef.current = partie.coups;
+
+  useEffect(() => {
+    if (!partieId) { setPartie(null); return; }
+    return suivrePartie(partieId, setPartie);
+  }, [partieId]);
+
+  const monCamp = useMemo<Camp | null>(() => {
+    if (!partie || !user) return null;
+    if (partie.camps['1'] === user.uid) return 1;
+    if (partie.camps['2'] === user.uid) return 2;
+    return null;
+  }, [partie, user]);
+
+  // Lu par des rappels qui ne se refont pas à chaque coup.
+  const enLigneRef = useRef<{ monCamp: Camp; fige: boolean } | null>(null);
+  enLigneRef.current = partieId && monCamp
+    ? { monCamp, fige: partie?.statut !== 'encours' }
+    : null;
+  const enLigne = !!partieId;
+
+  /** Les coups reçus attendent leur tour : l'animation du précédent doit
+   *  finir avant que le suivant ne parte, sinon les deux se marchent
+   *  dessus et le plateau diverge. */
+  const fileRef = useRef<Coup[]>([]);
+  /** Combien de coups du document sont déjà passés sur le plateau. */
+  const appliques = useRef(0);
+  const jouerCoupRef = useRef<(c: Coup, distant?: boolean) => void>(() => {});
+
   const majEtat = useCallback((e: Etat) => { etatRef.current = e; setEtat(e); }, []);
 
   /** Joue un coup : la scène anime, l'état ne bascule qu'une fois le
    *  pion posé. Le verrou d'animation ferme la table entre les deux. */
-  const jouerCoup = useCallback((coup: Coup) => {
+  const jouerCoup = useCallback((coup: Coup, distant = false) => {
     const avant = etatRef.current;
     const apres = jouer(avant, coup);
     if (apres === avant) return;
     animeRef.current = true;
     setSelection(null);
     sceneRef.current?.allumer({});
-    const fini = () => { animeRef.current = false; majEtat(apres); };
+
+    // Mon coup part vers l'autre bout. Un coup REÇU ne repart jamais :
+    // il ferait l'aller-retour sans fin.
+    const p = partieRef.current;
+    if (!distant && p) {
+      appliques.current += 1;
+      const avant = coupsRef.current;
+      const texte = coupEnTexte(coup);
+      coupsRef.current = [...avant, texte];
+      void pousserLeCoup(
+        p.id, avant, texte,
+        String(apres.tour), apres.gagnant ? String(apres.gagnant) : null,
+      );
+    }
+
+    const fini = () => {
+      animeRef.current = false;
+      majEtat(apres);
+      const suivant = fileRef.current.shift();
+      if (suivant) jouerCoupRef.current(suivant, true);
+    };
     const sc = sceneRef.current;
     if (!sc) { fini(); return; }
     if (coup.type === 'pose') sc.poser(coup.vers, avant.tour, fini);
     else if (coup.type === 'deplacement') sc.deplacer(coup.de, coup.vers, fini);
     else sc.retirer(coup.p, fini);
   }, [majEtat]);
+  jouerCoupRef.current = jouerCoup;
 
   /** Est-ce à un humain de jouer ? En deux joueurs, toujours. Contre la
    *  machine, seulement quand c'est le tour de son camp. */
-  const humainJoue = useCallback((e: Etat, r: Reglage) => (
-    r.mode === 'deux-joueurs' || e.tour === r.camp
-  ), []);
+  const humainJoue = useCallback((e: Etat, r: Reglage) => {
+    const el = enLigneRef.current;
+    if (el) return !el.fige && e.tour === el.monCamp;
+    return r.mode === 'deux-joueurs' || e.tour === r.camp;
+  }, []);
 
   // ── Le clic sur un point ─────────────────────────────────────────
   const surPoint = useCallback((p: number) => {
@@ -529,13 +650,49 @@ const MerellePage: React.FC = () => {
     animeRef.current = false;
   };
 
+  // ── Le défi accepté dresse le plateau tout seul ──────────────────
+  // Les réglages ont été choisis au moment du défi : l'écran de
+  // préparation n'a plus rien à demander, il saute.
+  useEffect(() => {
+    if (!partie || partie.statut !== 'encours' || commencee) return;
+    appliques.current = 0;
+    fileRef.current = [];
+    coupsRef.current = partie.coups;
+    demarrer({
+      mode: 'deux-joueurs',
+      camp: monCamp ?? 1,
+      difficulte: 'moyen',
+      vol: partie.regleId !== 'sans-vol',
+    });
+    // `demarrer` remonte la scène et ne dépend que de ce qu'on lui passe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partie, commencee, monCamp]);
+
+  // ── Les coups venus de l'autre bout ──────────────────────────────
+  // Ils entrent dans la file et sortent un par un, à la fin de chaque
+  // animation. Une partie déjà entamée se rattrape de la même façon.
+  useEffect(() => {
+    if (!partie || !commencee) return;
+    const restants = partie.coups.slice(appliques.current);
+    if (restants.length === 0) return;
+    appliques.current = partie.coups.length;
+    for (const texte of restants) {
+      const coup = coupDepuisTexte(texte);
+      if (coup) fileRef.current.push(coup);
+    }
+    if (!animeRef.current) {
+      const suivant = fileRef.current.shift();
+      if (suivant) jouerCoup(suivant, true);
+    }
+  }, [partie, commencee, jouerCoup]);
+
   // ── Ce qui s'écrit dans le bandeau ───────────────────────────────
   const nomCamp = (c: Camp) => (c === 1 ? t.campClair : t.campSombre);
   const messageTour = (): string => {
     if (!commencee) return t.tablePrete;
     if (etat.gagnant) return t.gagne(nomCamp(etat.gagnant));
     const aMoi = humainJoue(etat, reglage);
-    if (!aMoi) return t.reflechit;
+    if (!aMoi) return enLigne ? t.enAttente : t.reflechit;
     if (etat.doitRetirer) return t.retirez;
     if (reglage.mode === 'deux-joueurs') {
       const qui = etat.tour === 1 ? t.clairJoue : t.sombreJoue;
@@ -585,12 +742,55 @@ const MerellePage: React.FC = () => {
                   backgroundImage: 'url(/jeux/tuile-merelle.webp)',
                 }}
               />
-              <EcranDepart
-                initial={reglage}
-                t={t}
-                onCommencer={(r) => setPubEnAttente(() => () => demarrer(r))}
-              />
+              {!enLigne && (
+                <EcranDepart
+                  initial={reglage}
+                  t={t}
+                  onCommencer={(r) => setPubEnAttente(() => () => demarrer(r))}
+                />
+              )}
             </>
+          )}
+
+          {/* ── Le défi reçu ou envoyé, avant que le plateau ne se dresse ── */}
+          {enLigne && !commencee && (
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[6] w-[min(24rem,calc(100%-2rem))] rounded-[15px] border border-brass/40 bg-black/75 backdrop-blur-md px-6 py-6 text-center">
+              <p className="font-sans uppercase tracking-[0.25em] text-[10px] text-brass mb-2">{t.defi}</p>
+              {!partie || !user ? (
+                <p className="font-display text-lg text-ivory">{t.chargement}</p>
+              ) : partie.statut === 'refuse' ? (
+                <p className="font-display text-lg text-ivory">{t.defiRefuse}</p>
+              ) : partie.lancePar === user.uid ? (
+                <>
+                  <p className="font-display text-lg text-ivory mb-2">
+                    {t.defiEnvoye(partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—')}
+                  </p>
+                  <p className="font-sans text-xs text-ivory-soft/70">{t.defiAttente}</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-display text-lg text-ivory mb-2">
+                    {t.vousDefie(partie.noms[partie.lancePar] ?? '—')}
+                  </p>
+                  <div className="mt-4 flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { void repondreAuDefi(partie.id, true); }}
+                      className="px-5 py-2.5 rounded-full bg-brass text-[#1A0A05] font-sans uppercase tracking-[0.18em] text-[10px] font-semibold hover:bg-brass-soft transition-colors"
+                    >
+                      {t.accepter}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { void repondreAuDefi(partie.id, false); }}
+                      className="px-5 py-2.5 rounded-full border border-white/20 text-ivory-soft hover:text-ivory font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
+                    >
+                      {t.refuser}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {/* La pub AdSense, entre le clic et le vrai départ. */}
@@ -616,14 +816,23 @@ const MerellePage: React.FC = () => {
                 {t.gagne(nomCamp(etat.gagnant))}
               </h2>
               <div className="divider-brass w-24 mx-auto my-7" />
-              <button
-                type="button"
-                onClick={retourAuMenu}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
-              >
-                <RotateCcw size={15} />
-                {t.nouvelle}
-              </button>
+              {enLigne ? (
+                <Link
+                  to={lang === 'FR' ? '/jeux-en-ligne' : '/en/online-games'}
+                  className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+                >
+                  {t.retourTable} <ArrowUpRight size={15} />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={retourAuMenu}
+                  className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+                >
+                  <RotateCcw size={15} />
+                  {t.nouvelle}
+                </button>
+              )}
             </motion.div>
           )}
         </div>
@@ -662,7 +871,7 @@ const MerellePage: React.FC = () => {
               {pleinEcran ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
               <span className="hidden sm:inline">{pleinEcran ? t.quitterPleinEcran : t.pleinEcran}</span>
             </button>
-            {commencee && (
+            {commencee && !enLigne && (
               <button
                 type="button"
                 onClick={retourAuMenu}
@@ -679,8 +888,35 @@ const MerellePage: React.FC = () => {
         {/* Il ne porte aucun bouton : `pointer-events-none` l'empêche
             d'avaler le clic sur le point du coin haut-gauche, qui passe
             sous lui dès que la fenêtre se resserre. */}
+        {/* ── La partie à deux : contre qui, quel camp, à qui de jouer ── */}
+        {partie && monCamp && user && (
+          <div className="absolute left-3 md:left-6 top-16 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-3">
+            <span className="min-w-0">
+              <span className="block font-display text-[13px] text-ivory truncate">
+                {t.contre} {partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—'}
+              </span>
+              <span className="block font-sans text-[9px] uppercase tracking-[0.16em] text-ivory-soft/60 mt-1">
+                {t.vousTenez} {nomCamp(monCamp)}
+                {' · '}
+                {partie.statut === 'fini'
+                  ? t.partieFinie
+                  : etat.tour === monCamp ? t.aVousDeJouer : t.enAttente}
+              </span>
+            </span>
+            {partie.statut === 'encours' && (
+              <button
+                type="button"
+                onClick={() => { void abandonner(partie.id, user.uid, String(monCamp === 1 ? 2 : 1)); }}
+                className="shrink-0 px-3 py-2 rounded-[15px] border border-white/15 text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors font-sans text-[9px] uppercase tracking-[0.18em]"
+              >
+                {t.abandonner}
+              </button>
+            )}
+          </div>
+        )}
+
         {commencee && !etat.gagnant && (
-          <div className="pointer-events-none absolute left-3 md:left-6 top-16 z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]">
+          <div className={`pointer-events-none absolute left-3 md:left-6 ${enLigne ? 'top-36' : 'top-16'} z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]`}>
             {([1, 2] as Camp[]).map((c) => (
               <span key={c} className="flex items-center gap-2.5 py-0.5">
                 <span

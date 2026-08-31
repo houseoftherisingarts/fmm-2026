@@ -6,7 +6,7 @@
 import type { DefiAffiche, JeuDefiable } from '../../components/jeux/PanneauAmis';
 import { REGLES } from './gameLogic';
 import {
-  suivreMesParties, lancerDefi, repondreAuDefi, ouvrirDefiParLien,
+  suivreMesParties, lancerDefi, repondreAuDefi, ouvrirDefiParLien, jeuDe,
   type PartieTafl, type CampTafl,
 } from '../../firebase/tafl';
 
@@ -33,8 +33,10 @@ export function jeuTafl(opts: {
       regleId: opts.regleId, monCamp: opts.camp,
     }),
     repondre: repondreAuDefi,
+    // La collection porte les trois jeux depuis le 31 août 2026 : le
+    // panneau du tafl ne montre que les parties de tafl.
     suivre: (uid, cb) => suivreMesParties(uid, (parties: PartieTafl[]) => {
-      cb(parties.map((p): DefiAffiche => ({
+      cb(parties.filter((p) => jeuDe(p) === 'hnefatafl').map((p): DefiAffiche => ({
         id: p.id,
         joueurs: p.joueurs,
         noms: p.noms,

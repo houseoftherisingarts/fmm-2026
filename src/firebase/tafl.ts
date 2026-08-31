@@ -5,6 +5,11 @@
 //
 //   /taflParties/{id}   ← le défi PUIS la partie, même document
 //
+// La collection a gardé son nom de baptême, mais elle porte maintenant
+// les trois jeux de plateau (Alex, 2026-08-31) : le champ `jeu` dit
+// lequel, et les camps prennent le vocabulaire du jeu concerné. Une
+// partie d'avant ce jour-là n'a pas le champ, et c'est du tafl.
+//
 // Le plateau n'est jamais stocké : seule la LISTE DES COUPS l'est.
 // Chaque camp rejoue les coups sur son propre moteur, ce qui garde le
 // document minuscule et rend la triche visible (un coup illégal ne
@@ -19,22 +24,78 @@ import { db } from '../firebase';
 export type CampTafl = 'attacker' | 'defender';
 export type StatutPartie = 'defi' | 'lobby' | 'refuse' | 'encours' | 'fini';
 
+/** Les trois jeux de plateau qui se défient d'un compte à l'autre. */
+export type JeuDefi = 'hnefatafl' | 'merelle' | 'renard';
+
+/** Le jeu d'une partie. Les parties ouvertes avant le 31 août 2026 ne
+ *  portent pas le champ : elles sont toutes du hnefatafl. */
+export const jeuDe = (p: { jeu?: JeuDefi }): JeuDefi => p.jeu ?? 'hnefatafl';
+
+/** Qui ouvre la partie, dans chaque jeu. */
+export const PREMIER_CAMP: Record<JeuDefi, string> = {
+  hnefatafl: 'attacker',
+  merelle:   '1',
+  renard:    'oies',
+};
+
+/** Les deux camps de chaque jeu, celui qui ouvre en premier. La
+ *  personne défiée prend toujours le premier : elle n'a rien demandé,
+ *  elle mérite le premier coup. */
+export const CAMPS_DU_JEU: Record<JeuDefi, [string, string]> = {
+  hnefatafl: ['attacker', 'defender'],
+  merelle:   ['1', '2'],
+  renard:    ['oies', 'renard'],
+};
+
+/** Le nom et l'adresse de chaque jeu, en un seul endroit : la cloche,
+ *  la fiche d'un membre et la liste des défis y lisent la même chose.
+ *  `auFR` porte la préposition, qui n'est pas la même d'un titre à
+ *  l'autre (« au Hnefatafl », mais « à la Mérelle »). */
+export const JEUX_DEFIABLES: Record<JeuDefi, {
+  nomFR: string; nomEN: string; auFR: string;
+  cheminFR: string; cheminEN: string;
+}> = {
+  hnefatafl: {
+    nomFR: 'Hnefatafl', nomEN: 'Hnefatafl', auFR: 'au Hnefatafl',
+    cheminFR: '/jeunesse/hnefatafl', cheminEN: '/en/youth/hnefatafl',
+  },
+  merelle: {
+    nomFR: 'La Mérelle', nomEN: 'Nine Men’s Morris', auFR: 'à la Mérelle',
+    cheminFR: '/jeux/merelle', cheminEN: '/en/games/merelle',
+  },
+  renard: {
+    nomFR: 'Le Renard et les Oies', nomEN: 'Fox and Geese', auFR: 'au Renard et les Oies',
+    cheminFR: '/jeux/renard', cheminEN: '/en/games/fox-and-geese',
+  },
+};
+
+/** Le règlement pris par défaut quand le défi part d'une fiche de
+ *  membre, où il n'y a pas de place pour choisir. */
+export const REGLE_PAR_DEFAUT: Record<JeuDefi, string> = {
+  hnefatafl: 'copenhague',
+  merelle:   'vol',
+  renard:    'oies13',
+};
+
 export interface PartieTafl {
   id:        string;
+  /** Le jeu de la partie. Absent : hnefatafl (voir `jeuDe`). */
+  jeu?:      JeuDefi;
   /** Les deux uid, pour la requête et pour les règles de sécurité. */
   joueurs:   string[];
   noms:      Record<string, string>;
-  /** Qui tient quel camp. */
-  camps:     Record<CampTafl, string>;
+  /** Qui tient quel camp, dans le vocabulaire du jeu. */
+  camps:     Record<string, string>;
+  /** Le règlement ou la variante, selon le jeu. */
   regleId:   string;
   statut:    StatutPartie;
   /** Qui a lancé le défi (l'autre doit accepter). */
   lancePar:  string;
   /** Les coups, dans l'ordre : "fr,fc>tr,tc". */
   coups:     string[];
-  /** À qui de jouer. */
-  tour:      CampTafl;
-  gagnant?:  CampTafl | null;
+  /** À qui de jouer, dans le vocabulaire du jeu. */
+  tour:      string;
+  gagnant?:  string | null;
   /** Le camp qui a abandonné, s'il y a lieu. */
   abandon?:  string | null;
   /** Le minuteur choisi au défi (Alex, 2026-08-27) : chaque coup doit
@@ -60,19 +121,28 @@ export const coupDepuisTexte = (s: string): [number, number, number, number] => 
   return [fr, fc, tr, tc];
 };
 
-/** Lance un défi. L'adversaire le voit dans son espace et l'accepte. */
-export async function lancerDefi(opts: {
+/**
+ * Lance un défi, pour n'importe lequel des trois jeux de plateau.
+ *
+ * Le document est le même d'un jeu à l'autre : deux joueurs, une carte
+ * des camps, un règlement, une liste de coups. Seul le vocabulaire des
+ * camps change, et le jeu le dit dans `camps`.
+ */
+export async function lancerDefiJeu(opts: {
+  jeu: JeuDefi;
   moiUid: string; moiNom: string;
   cibleUid: string; cibleNom: string;
   regleId: string;
-  /** Le camp que JE prends; l'autre prend le camp opposé. */
-  monCamp: CampTafl;
+  /** Le camp que JE prends; la personne défiée prend l'autre. */
+  monCamp: string;
   /** Temps accordé à chaque coup, en millisecondes; 0 ou absent = sans limite. */
   delaiMs?: number;
 }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
-  const autre: CampTafl = opts.monCamp === 'attacker' ? 'defender' : 'attacker';
+  const [a, b] = CAMPS_DU_JEU[opts.jeu];
+  const autre = opts.monCamp === a ? b : a;
   const ref = await addDoc(collection(db, COL), {
+    jeu: opts.jeu,
     joueurs: [opts.moiUid, opts.cibleUid],
     noms: { [opts.moiUid]: opts.moiNom, [opts.cibleUid]: opts.cibleNom },
     camps: { [opts.monCamp]: opts.moiUid, [autre]: opts.cibleUid },
@@ -80,8 +150,7 @@ export async function lancerDefi(opts: {
     statut: 'defi' as StatutPartie,
     lancePar: opts.moiUid,
     coups: [] as string[],
-    // Les assaillants ouvrent toujours la partie.
-    tour: 'attacker' as CampTafl,
+    tour: PREMIER_CAMP[opts.jeu],
     gagnant: null,
     abandon: null,
     delaiMs: opts.delaiMs || null,
@@ -91,6 +160,35 @@ export async function lancerDefi(opts: {
   });
   return ref.id;
 }
+
+/**
+ * Défier quelqu'un depuis sa fiche de membre, sans écran de réglages.
+ *
+ * La personne défiée reçoit le camp qui ouvre la partie : c'est elle
+ * qui subit le défi, le premier coup lui revient.
+ */
+export const defierAuJeu = (
+  jeu: JeuDefi,
+  moi: { uid: string; nom: string },
+  cible: { uid: string; nom: string },
+): Promise<string> => lancerDefiJeu({
+  jeu,
+  moiUid: moi.uid, moiNom: moi.nom,
+  cibleUid: cible.uid, cibleNom: cible.nom,
+  regleId: REGLE_PAR_DEFAUT[jeu],
+  monCamp: CAMPS_DU_JEU[jeu][1],
+});
+
+/** Lance un défi de tafl. L'adversaire le voit dans son espace. */
+export const lancerDefi = (opts: {
+  moiUid: string; moiNom: string;
+  cibleUid: string; cibleNom: string;
+  regleId: string;
+  /** Le camp que JE prends; l'autre prend le camp opposé. */
+  monCamp: CampTafl;
+  /** Temps accordé à chaque coup, en millisecondes; 0 ou absent = sans limite. */
+  delaiMs?: number;
+}): Promise<string> => lancerDefiJeu({ ...opts, jeu: 'hnefatafl' });
 
 /** L'échéance du prochain coup, d'après le délai de la partie. */
 const echeanceSuivante = (delaiMs?: number | null) =>
@@ -110,6 +208,7 @@ export async function ouvrirDefiParLien(opts: {
   if (!db) throw new Error('Firestore non configuré');
   const autre: CampTafl = opts.monCamp === 'attacker' ? 'defender' : 'attacker';
   const ref = await addDoc(collection(db, COL), {
+    jeu: 'hnefatafl' as JeuDefi,
     joueurs: [opts.moiUid],
     noms: { [opts.moiUid]: opts.moiNom },
     camps: { [opts.monCamp]: opts.moiUid, [autre]: '' },
@@ -172,8 +271,8 @@ export async function jouerCoup(
   id: string,
   coupsAvant: string[],
   coup: string,
-  tourSuivant: CampTafl,
-  gagnant: CampTafl | null = null,
+  tourSuivant: string,
+  gagnant: string | null = null,
   delaiMs?: number | null,
 ): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
@@ -186,7 +285,7 @@ export async function jouerCoup(
   });
 }
 
-export async function abandonner(id: string, uid: string, campGagnant: CampTafl): Promise<void> {
+export async function abandonner(id: string, uid: string, campGagnant: string): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {
     statut: 'fini' as StatutPartie,
@@ -197,7 +296,7 @@ export async function abandonner(id: string, uid: string, campGagnant: CampTafl)
 }
 
 /** Le minuteur est écoulé sur le tour de l'autre : je réclame la partie. */
-export async function reclamerForfait(id: string, uidPerdant: string, campGagnant: CampTafl): Promise<void> {
+export async function reclamerForfait(id: string, uidPerdant: string, campGagnant: string): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {
     statut: 'fini' as StatutPartie,

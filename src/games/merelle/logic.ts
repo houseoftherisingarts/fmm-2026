@@ -237,3 +237,44 @@ export function jouer(e: Etat, coup: Coup): Etat {
   n.points[coup.vers] = e.tour;
   return apresPose(n, coup.vers);
 }
+
+// ─── Un coup, en texte ──────────────────────────────────────────────
+// Une partie en ligne ne stocke pas le plateau, seulement la liste des
+// coups (Alex, 2026-08-31, même patron que le tafl). Chaque camp la
+// rejoue dans son propre moteur, ce qui garde le document minuscule et
+// laisse `jouer` refuser tout ce qui sort de la règle.
+
+/** « p12 » une pose, « d3>10 » un glissement, « r7 » un retrait. */
+export function coupEnTexte(c: Coup): string {
+  if (c.type === 'pose') return `p${c.vers}`;
+  if (c.type === 'retrait') return `r${c.p}`;
+  return `d${c.de}>${c.vers}`;
+}
+
+const point = (s: string): number | null => {
+  // Le test sur les chiffres avant tout : `Number('')` vaut zéro, et
+  // « p » tout court passerait pour une pose sur le premier point.
+  if (!/^\d{1,2}$/.test(s)) return null;
+  const n = Number(s);
+  return n < 24 ? n : null;
+};
+
+/** Relit un coup écrit par l'autre bout. Rend `null` sur tout ce qui
+ *  n'est pas un coup lisible; la légalité, elle, reste l'affaire de
+ *  `jouer`, qui rend l'état inchangé quand le coup ne passe pas. */
+export function coupDepuisTexte(s: string): Coup | null {
+  if (s.startsWith('p')) {
+    const vers = point(s.slice(1));
+    return vers === null ? null : { type: 'pose', vers };
+  }
+  if (s.startsWith('r')) {
+    const p = point(s.slice(1));
+    return p === null ? null : { type: 'retrait', p };
+  }
+  if (s.startsWith('d')) {
+    const [a, b] = s.slice(1).split('>');
+    const de = point(a ?? ''); const vers = point(b ?? '');
+    return de === null || vers === null ? null : { type: 'deplacement', de, vers };
+  }
+  return null;
+}

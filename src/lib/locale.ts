@@ -37,6 +37,8 @@ const FR_TO_EN: Record<string, string> = {
   // correspondance : un lien de défi copié depuis la version anglaise
   // tombait sur `/en/defi/...`, une adresse qui n'existe pas.
   '/jeux/des': '/games/dice',
+  '/jeux/merelle': '/games/merelle',
+  '/jeux/renard': '/games/fox-and-geese',
   '/defi': '/challenge',
   '/nourriture': '/food',
   '/apprendre': '/learn',

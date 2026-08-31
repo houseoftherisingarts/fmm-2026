@@ -1,19 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Download, FileText, Mail, Phone, QrCode, Share2, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Download, FileText, Image as ImageIcon, Mail, Phone, QrCode, Share2, X } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { SITE } from '../content';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import {
   CARTES_EN,
   CARTES_FR,
-  CARTES_POSTALES,
+  CARTES_LIGNE_EN,
+  CARTES_LIGNE_FR,
+  CARTES_POSTALES_EN,
+  CARTES_POSTALES_FR,
   LOGOS,
   PRESSE_ZIP,
   QR_BASE,
   TEXTES,
+  cibleQR,
   pleineRes,
-  versionQR,
+  variante,
   vignette,
   type PresseAsset,
 } from '../content/presse';
@@ -37,10 +41,14 @@ import {
 // festivalmedieval.org/presskit tombe juste, peu importe la façon dont
 // il l'écrit dans un courriel.
 //
-// Trois gestes par tuile : Télécharger sert le PNG 1920 × 1080,
-// Partager passe par le partage natif ou copie le lien, et Version QR
-// bascule la tuile sur la même carte portant un code QR vers la page
-// du site qui traite du sujet. Cliquer l'image l'ouvre en grand.
+// Quatre gestes par tuile : Télécharger sert le PNG 1920 × 1080,
+// Partager passe par le partage natif ou copie le lien, Version QR
+// ajoute au visuel un code qui mène à la page du sujet, et Photo seule
+// retire le texte pour ne laisser que l'image, le blason, l'adresse du
+// site et la signature. Cliquer l'image l'ouvre en grand.
+//
+// La page se lit en deux temps : le festival sur place, puis le
+// festival en ligne, qui vit toute l'année sur le site.
 //
 // Les tuiles affichent une vignette WebP de 640 px. Voir
 // src/content/presse.ts et scripts/presse/build-kit.mjs.
@@ -51,21 +59,30 @@ const PressePage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
-  const cartes = lang === 'FR' ? CARTES_FR : CARTES_EN;
+  const fr = lang === 'FR';
+  const cartes = fr ? CARTES_FR : CARTES_EN;
+  const postales = fr ? CARTES_POSTALES_FR : CARTES_POSTALES_EN;
+  const enLigne = fr ? CARTES_LIGNE_FR : CARTES_LIGNE_EN;
 
   // Le fichier dont le lien vient d'être copié, pour l'accusé de
   // réception sous le bouton Partager.
   const [copie, setCopie] = useState<string | null>(null);
-  // Les tuiles passées en version QR, par nom de fichier de base.
+  // Les tuiles passées en version QR et celles passées en photo seule,
+  // par nom de fichier de base.
   const [enQR, setEnQR] = useState<Set<string>>(() => new Set());
+  const [enNu, setEnNu] = useState<Set<string>>(() => new Set());
   // La visionneuse : la série affichée et le rang de l'image ouverte.
   const [loupe, setLoupe] = useState<{ serie: PresseAsset[]; i: number } | null>(null);
 
-  const nom = (a: PresseAsset) => (lang === 'FR' ? a.labelFR : a.labelEN);
-  const affiche = (a: PresseAsset) => (enQR.has(a.file) ? versionQR(a) : a);
+  const nom = (a: PresseAsset) => (fr ? a.labelFR : a.labelEN);
+  const etat = (a: PresseAsset) => ({ nu: enNu.has(a.file), qr: enQR.has(a.file) });
+  const affiche = (a: PresseAsset) => variante(a, etat(a));
 
-  const basculerQR = (a: PresseAsset) =>
-    setEnQR((s) => {
+  const bascule = (
+    poser: React.Dispatch<React.SetStateAction<Set<string>>>,
+    a: PresseAsset,
+  ) =>
+    poser((s) => {
       const n = new Set(s);
       if (n.has(a.file)) n.delete(a.file);
       else n.add(a.file);
@@ -137,6 +154,7 @@ const PressePage: React.FC = () => {
     const label = nom(a);
     const vue = affiche(a);
     const actif = enQR.has(a.file);
+    const nu = enNu.has(a.file);
     return (
       <HexPanel key={a.file} size="sm" className="h-full">
         <div className="caravan-glass h-full flex flex-col">
@@ -204,7 +222,7 @@ const PressePage: React.FC = () => {
               {a.qr && (
                 <button
                   type="button"
-                  onClick={() => basculerQR(a)}
+                  onClick={() => bascule(setEnQR, a)}
                   aria-pressed={actif}
                   title={actif ? t.qrOff : t.qrOn}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 font-sans uppercase tracking-[0.18em] text-[10px] transition-colors rounded-[3px]"
@@ -217,14 +235,30 @@ const PressePage: React.FC = () => {
                   <QrCode size={12} /> {t.qr}
                 </button>
               )}
+              {a.fileNu && (
+                <button
+                  type="button"
+                  onClick={() => bascule(setEnNu, a)}
+                  aria-pressed={nu}
+                  title={nu ? t.texteOn : t.nuOn}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 font-sans uppercase tracking-[0.18em] text-[10px] transition-colors rounded-[3px]"
+                  style={{
+                    color: nu ? '#0c0a08' : 'rgba(244, 239, 227, 0.72)',
+                    background: nu ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.05)',
+                    border: `1px solid ${nu ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.16)'}`,
+                  }}
+                >
+                  <ImageIcon size={12} /> {nu ? t.avecTexte : t.photoSeule}
+                </button>
+              )}
             </div>
-            {actif && a.qrPath && (
+            {actif && cibleQR(a, etat(a)) && (
               <p
                 className="mt-2 font-sans uppercase tracking-[0.16em] text-[9px] break-all"
                 style={{ color: 'var(--color-amber-glow)' }}
               >
-                {t.qrLeadsTo} {QR_BASE.replace('https://www.', '')}
-                {a.qrPath === '/' ? '' : a.qrPath}
+                {t.qrLeadsTo} {QR_BASE.replace('https://www.', '').replace('https://', '')}
+                {cibleQR(a, etat(a)) === '/' ? '' : cibleQR(a, etat(a))}
               </p>
             )}
           </div>
@@ -348,26 +382,25 @@ const PressePage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Visuels à partager ──────────────────────────────────── */}
+      {/* ── Le festival sur place ───────────────────────────────── */}
       <section className="pb-12 md:pb-16">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <Eyebrow tone="amber" className="mb-3">{t.visuelsEyebrow}</Eyebrow>
-          <DisplayTitle size="lg" className="mb-3">{t.visuelsTitle}</DisplayTitle>
+          <Eyebrow tone="amber" className="mb-3">{t.placeEyebrow}</Eyebrow>
+          <DisplayTitle size="lg" className="mb-3">{t.placeTitle}</DisplayTitle>
           <p className="font-editorial text-base md:text-lg max-w-2xl mb-8"
              style={{ color: 'rgba(244, 239, 227, 0.72)' }}>
-            {t.visuelsLead}
+            {t.placeLead}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {cartes.map((a, i) => tuile(a, cartes, i))}
           </div>
-        </div>
-      </section>
 
-      {/* ── Cartes postales ─────────────────────────────────────── */}
-      <section className="pb-12 md:pb-16">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <Eyebrow tone="amber" className="mb-3">{t.postalesEyebrow}</Eyebrow>
-          <DisplayTitle size="lg" className="mb-3">{t.postalesTitle}</DisplayTitle>
+          {/* Les photographies, sous les cartes, dans la même section. */}
+          <h3 className="font-display-alt mt-14 mb-3"
+              style={{ color: 'var(--color-bone)', fontVariant: 'small-caps',
+                       letterSpacing: '0.14em', fontSize: '1.5rem' }}>
+            {t.postalesTitle}
+          </h3>
           <p className="font-editorial text-base md:text-lg max-w-2xl mb-3"
              style={{ color: 'rgba(244, 239, 227, 0.72)' }}>
             {t.postalesLead}
@@ -387,7 +420,22 @@ const PressePage: React.FC = () => {
             {t.credit}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CARTES_POSTALES.map((a, i) => tuile(a, CARTES_POSTALES, i))}
+            {postales.map((a, i) => tuile(a, postales, i))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Le festival en ligne ────────────────────────────────── */}
+      <section className="pb-12 md:pb-16">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <Eyebrow tone="amber" className="mb-3">{t.ligneEyebrow}</Eyebrow>
+          <DisplayTitle size="lg" className="mb-3">{t.ligneTitle}</DisplayTitle>
+          <p className="font-editorial text-base md:text-lg max-w-2xl mb-8"
+             style={{ color: 'rgba(244, 239, 227, 0.72)' }}>
+            {t.ligneLead}
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {enLigne.map((a, i) => tuile(a, enLigne, i))}
           </div>
         </div>
       </section>
@@ -534,23 +582,26 @@ const FR = {
     },
     {
       k: 'Billets',
-      v: 'Passe journée 27 $, passe 3 jours 65 $, banquet médiéval à venir. La vente se fait en ligne par Zeffy.',
+      v: 'Passe journée 27 $, passe 3 jours 65 $, banquet médiéval 65 $ plus taxes. La vente se fait en ligne par Zeffy.',
     },
     { k: 'Organisation', v: 'Le festival est opéré par Le Salon des Inconnus.' },
   ],
   contactLabel: 'Contact presse',
   zipCta: 'Télécharger tout le kit',
   zipNote:
-    'Un seul fichier ZIP : les vingt-quatre cartes, leurs versions à code QR, les douze photographies, les trois blasons et les textes de présentation.',
-  visuelsEyebrow: 'Visuels à partager',
-  visuelsTitle: 'Douze cartes prêtes à publier',
-  visuelsLead:
-    'Chaque carte mesure 1920 × 1080 pixels et porte le blason du festival. Le bouton Version QR la remplace par la même carte avec un code qui mène à la page du site. La série anglaise vit sur la page /en/press.',
-  postalesEyebrow: 'Cartes postales',
-  postalesTitle: 'Les photographies, sans texte',
+    'Un seul fichier ZIP : les vingt-neuf visuels dans leurs quatre versions, avec ou sans texte, avec ou sans code QR, plus les trois blasons et les textes de présentation.',
+  placeEyebrow: 'Le festival sur place',
+  placeTitle: 'Trois jours à Montpellier, en images',
+  placeLead:
+    'Treize cartes et douze photographies, toutes en 1920 × 1080 avec le blason du festival. Chaque tuile se décline en quatre : le bouton Version QR ajoute un code qui mène à la page du sujet, et Photo seule retire le texte pour ne garder que l’image.',
+  postalesTitle: 'Les photographies',
   postalesLead:
-    'Douze images des éditions 2024 et 2025, signées par la photographe, bonnes pour l’écran comme pour le papier. Leur version à code QR mène à l’accueil du site.',
+    'Douze images des éditions 2024 et 2025, signées par la photographe, bonnes pour l’écran comme pour le papier. Chacune porte maintenant un court texte, que le bouton Photo seule retire.',
   credit: 'Crédit obligatoire : Léna LeBozec, photographe',
+  ligneEyebrow: 'Le festival en ligne',
+  ligneTitle: 'Le site vit toute l’année',
+  ligneLead:
+    'Les jeux médiévaux se jouent en ligne, le registre de l’Ordre tient les fiches de ses membres et leurs badges, la boutique s’ouvre contre des Montpellois gagnés en explorant le site, et la section Apprendre poursuit la mission éducative du festival. Ces quatre cartes montrent le site lui-même.',
   logosEyebrow: 'Logos et textes',
   logosTitle: 'Le blason et la documentation',
   logosLead:
@@ -565,6 +616,10 @@ const FR = {
   qrOn: 'Afficher la version à code QR',
   qrOff: 'Revenir à la version sans code',
   qrLeadsTo: 'Le code mène à',
+  photoSeule: 'Photo seule',
+  avecTexte: 'Avec texte',
+  nuOn: 'Retirer le texte et garder la photo',
+  texteOn: 'Remettre le texte sur l’image',
   enlarge: 'Agrandir',
   viewer: 'Image en plein écran',
   close: 'Fermer',
@@ -589,23 +644,26 @@ const EN: typeof FR = {
     },
     {
       k: 'Tickets',
-      v: 'Day pass $27, three-day pass $65, medieval banquet to be announced. Sold online through Zeffy.',
+      v: 'Day pass $27, three-day pass $65, medieval banquet $65 plus tax. Sold online through Zeffy.',
     },
     { k: 'Organisation', v: 'The festival is run by Le Salon des Inconnus.' },
   ],
   contactLabel: 'Press contact',
   zipCta: 'Download the whole kit',
   zipNote:
-    'One ZIP file: the twenty-four cards, their QR versions, the twelve photographs, the three crests and the presentation texts.',
-  visuelsEyebrow: 'Visuals to share',
-  visuelsTitle: 'Twelve cards ready to publish',
-  visuelsLead:
-    'Each card measures 1920 × 1080 pixels and carries the festival crest. The QR version button swaps it for the same card with a code that leads to the matching page. The French series lives on the /presse page.',
-  postalesEyebrow: 'Postcards',
-  postalesTitle: 'The photographs, without text',
+    'One ZIP file: the twenty-nine visuals in their four versions, with or without text, with or without a QR code, plus the three crests and the presentation texts.',
+  placeEyebrow: 'The festival on the grounds',
+  placeTitle: 'Three days in Montpellier, in pictures',
+  placeLead:
+    'Thirteen cards and twelve photographs, all 1920 × 1080 with the festival crest. Every tile comes in four versions: the QR button adds a code leading to the matching page, and Photo only strips the text back to the image.',
+  postalesTitle: 'The photographs',
   postalesLead:
-    'Twelve images from the 2024 and 2025 editions, signed by the photographer, good for screen and for paper. Their QR version leads to the home page.',
+    'Twelve images from the 2024 and 2025 editions, signed by the photographer, good for screen and for paper. Each one now carries a short text that the Photo only button removes.',
   credit: 'Required credit: Léna LeBozec, photographer',
+  ligneEyebrow: 'The festival online',
+  ligneTitle: 'The site is alive all year',
+  ligneLead:
+    'The medieval games are played online, the roll of the Order keeps its members’ cards and badges, the shop opens for Montpellois earned while exploring the site, and the Learning section carries on the festival’s educational mission. These four cards show the site itself.',
   logosEyebrow: 'Logos and texts',
   logosTitle: 'The crest and the documentation',
   logosLead:
@@ -620,6 +678,10 @@ const EN: typeof FR = {
   qrOn: 'Show the QR code version',
   qrOff: 'Back to the version without a code',
   qrLeadsTo: 'The code leads to',
+  photoSeule: 'Photo only',
+  avecTexte: 'With text',
+  nuOn: 'Strip the text and keep the photo',
+  texteOn: 'Put the text back on the image',
   enlarge: 'Enlarge',
   viewer: 'Full-screen image',
   close: 'Close',

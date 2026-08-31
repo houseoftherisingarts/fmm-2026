@@ -11,10 +11,11 @@
 import React, {
   forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState,
 } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Cpu, Feather, Maximize2, Minimize2, Music, PawPrint, RotateCcw, Scroll,
-  Swords, Users, VolumeX, X,
+  ArrowUpRight, Cpu, Feather, Maximize2, Minimize2, Music, PawPrint, RotateCcw,
+  Scroll, Swords, Users, VolumeX, X,
 } from 'lucide-react';
 
 import CadreJeu from '../../components/jeux/CadreJeu';
@@ -24,9 +25,15 @@ import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import { annoncerLecture, ecouterExclusivite } from '../../lib/audioExclusif';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
+import { useAuth } from '../../contexts/AuthContext';
 import {
-  coupsPossibles, jouer, nbOies, plateauInitial, REGLEMENTS, reglement, verdict,
-  VARIANTE_DEFAUT, type Camp, type Coup, type Plateau, type Variante,
+  suivrePartie, repondreAuDefi, abandonner,
+  jouerCoup as pousserLeCoup, type PartieTafl,
+} from '../../firebase/tafl';
+import {
+  coupDepuisTexte, coupEnTexte, coupsPossibles, jouer, nbOies, plateauInitial,
+  REGLEMENTS, reglement, verdict, VARIANTE_DEFAUT,
+  type Camp, type Coup, type Plateau, type Variante,
 } from './logic';
 import { choisirCoup, type Difficulte } from './cpu';
 import { creerTable, type Table3D } from './scene';
@@ -87,6 +94,22 @@ interface Textes {
   reglesTitre: string;
   regles: Array<{ titre: string; corps: string }>;
   atelierTexte: string;
+  // La partie à deux, chacun chez soi.
+  contre: string;
+  vousTenez: string;
+  aVousDeJouer: string;
+  enAttente: string;
+  partieFinie: string;
+  abandonner: string;
+  defi: string;
+  vousDefie: (nom: string) => string;
+  defiEnvoye: (nom: string) => string;
+  defiRefuse: string;
+  defiAttente: string;
+  accepter: string;
+  refuser: string;
+  retourTable: string;
+  chargement: string;
 }
 
 const TEXTES: Record<'FR' | 'EN', Textes> = {
@@ -143,6 +166,21 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
       },
     ],
     atelierTexte: 'La planche, les pièces et le code viennent de l’atelier du Salon des Inconnus. La règle retenue est celle que H. J. R. Murray tient pour la plus ancienne, et les sources sont consignées à côté du jeu.',
+    contre: 'Contre',
+    vousTenez: 'Vous tenez',
+    aVousDeJouer: 'À vous de jouer',
+    enAttente: 'En attente de l’autre',
+    partieFinie: 'Partie terminée',
+    abandonner: 'Abandonner',
+    defi: 'Défi',
+    vousDefie: (nom) => `${nom} vous défie au renard et les oies`,
+    defiEnvoye: (nom) => `Défi envoyé à ${nom}`,
+    defiRefuse: 'Ce défi a été refusé.',
+    defiAttente: 'La planche se dresse dès que la personne accepte. Vous pouvez revenir plus tard : la partie vous attendra dans vos notifications.',
+    accepter: 'Accepter',
+    refuser: 'Refuser',
+    retourTable: 'La table de jeux',
+    chargement: 'La partie s’ouvre…',
   },
   EN: {
     eyebrow: 'The Year of the Revolt · Board game',
@@ -197,6 +235,21 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
       },
     ],
     atelierTexte: 'The plank, the pieces and the code come from the Salon des Inconnus workshop. The rule set is the one H. J. R. Murray holds to be the oldest, and the sources are filed next to the game.',
+    contre: 'Against',
+    vousTenez: 'You hold',
+    aVousDeJouer: 'Your move',
+    enAttente: 'Waiting for them',
+    partieFinie: 'Game over',
+    abandonner: 'Resign',
+    defi: 'Challenge',
+    vousDefie: (nom) => `${nom} challenges you at fox and geese`,
+    defiEnvoye: (nom) => `Challenge sent to ${nom}`,
+    defiRefuse: 'This challenge was declined.',
+    defiAttente: 'The board is set as soon as they accept. You can come back later: the game will wait in your notifications.',
+    accepter: 'Accept',
+    refuser: 'Decline',
+    retourTable: 'The games table',
+    chargement: 'The game is opening…',
   },
 };
 
@@ -394,10 +447,22 @@ interface EtatPartie {
   attente: boolean;
 }
 
+/** Ce qu'une partie à deux ajoute à la planche : mon camp, la liste des
+ *  coups déjà écrits dans le document, et où envoyer les miens. */
+interface FilEnLigne {
+  monCamp: Camp;
+  /** Partie finie ou abandonnée : plus personne ne bouge rien. */
+  fige: boolean;
+  /** Tous les coups du document, dans l'ordre. */
+  coups: string[];
+  surMonCoup: (texte: string, tourSuivant: Camp, gagnant: Camp | null) => void;
+}
+
 const Planche: React.FC<{
   reglages: Reglages;
   onEtat: (e: EtatPartie) => void;
-}> = ({ reglages, onEtat }) => {
+  enLigne?: FilEnLigne | null;
+}> = ({ reglages, onEtat, enLigne }) => {
   const boite = useRef<HTMLDivElement>(null);
   const table = useRef<Table3D | null>(null);
   const partie = useRef({
@@ -420,14 +485,40 @@ const Planche: React.FC<{
     });
   }, [onEtat, reglages.variante]);
 
-  const jouerLeCoup = useCallback((coup: Coup) => {
+  // ── La partie à deux ─────────────────────────────────────────────
+  // Le fil est lu par référence : la planche se monte une seule fois et
+  // ne doit pas se reconstruire à chaque coup reçu.
+  const filRef = useRef<FilEnLigne | null>(enLigne ?? null);
+  filRef.current = enLigne ?? null;
+  /** Les coups reçus attendent leur tour : l'animation du précédent doit
+   *  finir avant que le suivant ne parte. */
+  const file = useRef<string[]>([]);
+  /** Combien de coups du document sont déjà passés sur la planche. */
+  const appliques = useRef(0);
+  const pomperRef = useRef<() => void>(() => {});
+
+  const jouerLeCoup = useCallback((coup: Coup, distant = false) => {
     const p = partie.current;
     if (p.occupe || p.fini) return;
     p.occupe = true;
     p.choisi = null;
     table.current?.surbrillance(null, []);
+    const avantTour = p.tour;
     p.plateau = jouer(p.plateau, coup);
     annoncer();
+
+    // Mon coup part vers l'autre bout, avec le verdict s'il y en a un.
+    // Un coup REÇU ne repart jamais : il ferait l'aller-retour sans fin.
+    const fil = filRef.current;
+    if (!distant && fil) {
+      const apresTour: Camp = avantTour === 'renard' ? 'oies' : 'renard';
+      appliques.current += 1;
+      fil.surMonCoup(
+        coupEnTexte(coup),
+        apresTour,
+        verdict(p.plateau, apresTour, reglages.variante),
+      );
+    }
 
     table.current?.animer(coup, () => {
       const suivant: Camp = p.tour === 'renard' ? 'oies' : 'renard';
@@ -436,10 +527,12 @@ const Planche: React.FC<{
       const fin = verdict(p.plateau, suivant, reglages.variante);
       if (fin) { p.fini = true; annoncer(); return; }
       annoncer();
+      pomperRef.current();
 
       // Au tour de l'ordinateur : il réfléchit dans un temps mort pour
-      // que l'animation précédente respire avant la suivante.
-      if (reglages.mode === 'ordinateur' && suivant !== reglages.campHumain) {
+      // que l'animation précédente respire avant la suivante. Une partie
+      // à deux n'a pas d'ordinateur du tout.
+      if (!filRef.current && reglages.mode === 'ordinateur' && suivant !== reglages.campHumain) {
         window.setTimeout(() => {
           const choix = choisirCoup(p.plateau, suivant, reglages.variante, reglages.difficulte);
           if (choix) jouerLeCoup(choix);
@@ -448,10 +541,36 @@ const Planche: React.FC<{
     });
   }, [annoncer, reglages.campHumain, reglages.difficulte, reglages.mode, reglages.variante]);
 
+  /** Sort le prochain coup reçu et le relit sur la planche telle qu'elle
+   *  est maintenant : c'est la position courante qui lui rend ses
+   *  étapes, et un coup qui n'est pas légal ne passe pas. */
+  const pomper = useCallback(() => {
+    const p = partie.current;
+    if (p.occupe || p.fini) return;
+    const texte = file.current.shift();
+    if (!texte) return;
+    const coup = coupDepuisTexte(texte, p.plateau, p.tour, reglages.variante);
+    if (coup) jouerLeCoup(coup, true);
+  }, [jouerLeCoup, reglages.variante]);
+  pomperRef.current = pomper;
+
+  useEffect(() => {
+    const coups = enLigne?.coups;
+    if (!coups) return;
+    const restants = coups.slice(appliques.current);
+    if (restants.length === 0) return;
+    appliques.current = coups.length;
+    file.current.push(...restants);
+    pomper();
+  }, [enLigne?.coups, pomper]);
+
   const surClic = useCallback((point: number) => {
     const p = partie.current;
     if (p.occupe || p.fini) return;
-    if (reglages.mode === 'ordinateur' && p.tour !== reglages.campHumain) return;
+    const fil = filRef.current;
+    if (fil) {
+      if (fil.fige || p.tour !== fil.monCamp) return;
+    } else if (reglages.mode === 'ordinateur' && p.tour !== reglages.campHumain) return;
 
     const coups = coupsPossibles(p.plateau, p.tour, reglages.variante);
 
@@ -490,9 +609,10 @@ const Planche: React.FC<{
     t.poser(partie.current.plateau);
     annoncer();
 
-    // Si l'ordinateur tient les oies, c'est lui qui ouvre.
+    // Si l'ordinateur tient les oies, c'est lui qui ouvre. Une partie à
+    // deux n'a pas d'ordinateur : les oies attendent leur joueur.
     let depart = 0;
-    if (reglages.mode === 'ordinateur' && reglages.campHumain === 'renard') {
+    if (!filRef.current && reglages.mode === 'ordinateur' && reglages.campHumain === 'renard') {
       depart = window.setTimeout(() => {
         const choix = choisirCoup(partie.current.plateau, 'oies', reglages.variante, reglages.difficulte);
         if (choix) jouerLeCoup(choix);
@@ -536,6 +656,32 @@ const RenardPage: React.FC = () => {
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
 
+  // ── La partie à deux, chacun chez soi ────────────────────────────
+  // /jeux/renard?partie=<id> ouvre le défi accepté depuis la fiche de
+  // l'autre personne. Le document ne porte que la liste des coups : les
+  // deux moteurs la rejouent, exactement comme au tafl.
+  const [params] = useSearchParams();
+  const partieId = params.get('partie');
+  const { user } = useAuth();
+  const [partie, setPartie] = useState<PartieTafl | null>(null);
+  const enLigne = !!partieId;
+
+  useEffect(() => {
+    if (!partieId) { setPartie(null); return; }
+    return suivrePartie(partieId, setPartie);
+  }, [partieId]);
+
+  const monCamp = useMemo<Camp | null>(() => {
+    if (!partie || !user) return null;
+    if (partie.camps.renard === user.uid) return 'renard';
+    if (partie.camps.oies === user.uid) return 'oies';
+    return null;
+  }, [partie, user]);
+
+  const nomAdverse = partie && user
+    ? (partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—')
+    : '—';
+
   const victoireContreOrdinateur =
     enPartie && reglages.mode === 'ordinateur' && etat.gagnant === reglages.campHumain;
   useGagnerBadge('renard-victoire', victoireContreOrdinateur);
@@ -555,6 +701,30 @@ const RenardPage: React.FC = () => {
     setEtat({ tour: 'oies', oies: reglement(reglages.variante).oies, gagnant: null, attente: false });
   };
 
+  // Les réglages ont été choisis au moment du défi : l'écran de
+  // préparation n'a plus rien à demander, il saute.
+  useEffect(() => {
+    if (!partie || partie.statut !== 'encours' || enPartie) return;
+    const variante: Variante = partie.regleId === 'oies17' ? 'oies17' : 'oies13';
+    commencer({
+      variante,
+      mode: 'deux-joueurs',
+      campHumain: monCamp ?? 'oies',
+      difficulte: 'moyen',
+    });
+    // `commencer` remonte la planche et ne dépend que de ce qu'on lui passe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partie, enPartie, monCamp]);
+
+  const fil = partieId && monCamp && partie ? {
+    monCamp,
+    fige: partie.statut !== 'encours',
+    coups: partie.coups,
+    surMonCoup: (texte: string, tourSuivant: Camp, gagnant: Camp | null) => {
+      void pousserLeCoup(partie.id, partie.coups ?? [], texte, tourSuivant, gagnant);
+    },
+  } : null;
+
   useEffect(() => {
     const surChangement = () => setPleinEcran(document.fullscreenElement === sceneRef.current);
     document.addEventListener('fullscreenchange', surChangement);
@@ -570,6 +740,7 @@ const RenardPage: React.FC = () => {
   const messageTour = (() => {
     if (!enPartie) return t.tablePrete;
     if (etat.gagnant) return etat.gagnant === 'renard' ? t.gagneRenard : t.gagneOies;
+    if (enLigne) return monCamp && etat.tour === monCamp ? t.aVousDeJouer : t.enAttente;
     if (reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.reflechit;
     return etat.tour === 'renard' ? t.tourRenard : t.tourOies;
   })();
@@ -599,15 +770,81 @@ const RenardPage: React.FC = () => {
             </button>
           )}
 
-          {enPartie && <Planche key={cle} reglages={reglages} onEtat={setEtat} />}
+          {enPartie && <Planche key={cle} reglages={reglages} onEtat={setEtat} enLigne={fil} />}
 
-          {!enPartie && (
+          {!enPartie && !enLigne && (
             <EcranPreparation
               depart={reglages}
               t={t}
               lang={lang}
               onCommencer={(r) => setPubEnAttente(() => () => commencer(r))}
             />
+          )}
+
+          {/* ── Le défi reçu ou envoyé, avant que la planche ne se dresse ── */}
+          {enLigne && !enPartie && (
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[6] w-[min(24rem,calc(100%-2rem))] rounded-[15px] border border-brass/40 bg-black/75 backdrop-blur-md px-6 py-6 text-center">
+              <p className="font-sans uppercase tracking-[0.25em] text-[10px] text-brass mb-2">{t.defi}</p>
+              {!partie || !user ? (
+                <p className="font-display text-lg text-ivory">{t.chargement}</p>
+              ) : partie.statut === 'refuse' ? (
+                <p className="font-display text-lg text-ivory">{t.defiRefuse}</p>
+              ) : partie.lancePar === user.uid ? (
+                <>
+                  <p className="font-display text-lg text-ivory mb-2">{t.defiEnvoye(nomAdverse)}</p>
+                  <p className="font-sans text-xs text-ivory-soft/70">{t.defiAttente}</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-display text-lg text-ivory mb-2">
+                    {t.vousDefie(partie.noms[partie.lancePar] ?? '—')}
+                  </p>
+                  <div className="mt-4 flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { void repondreAuDefi(partie.id, true); }}
+                      className="px-5 py-2.5 rounded-full bg-brass text-[#1A0A05] font-sans uppercase tracking-[0.18em] text-[10px] font-semibold hover:bg-brass-soft transition-colors"
+                    >
+                      {t.accepter}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { void repondreAuDefi(partie.id, false); }}
+                      className="px-5 py-2.5 rounded-full border border-white/20 text-ivory-soft hover:text-ivory font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
+                    >
+                      {t.refuser}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ── La partie à deux : contre qui, quel camp, à qui de jouer ── */}
+          {partie && monCamp && user && (
+            <div className="absolute left-3 md:left-6 top-16 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-3">
+              <span className="min-w-0">
+                <span className="block font-display text-[13px] text-ivory truncate">
+                  {t.contre} {nomAdverse}
+                </span>
+                <span className="block font-sans text-[9px] uppercase tracking-[0.16em] text-ivory-soft/60 mt-1">
+                  {t.vousTenez} {monCamp === 'renard' ? t.campRenard : t.campOies}
+                  {' · '}
+                  {partie.statut === 'fini'
+                    ? t.partieFinie
+                    : etat.tour === monCamp ? t.aVousDeJouer : t.enAttente}
+                </span>
+              </span>
+              {partie.statut === 'encours' && (
+                <button
+                  type="button"
+                  onClick={() => { void abandonner(partie.id, user.uid, monCamp === 'renard' ? 'oies' : 'renard'); }}
+                  className="shrink-0 px-3 py-2 rounded-[15px] border border-white/15 text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors font-sans text-[9px] uppercase tracking-[0.18em]"
+                >
+                  {t.abandonner}
+                </button>
+              )}
+            </div>
           )}
 
           {pubEnAttente && (
@@ -632,14 +869,23 @@ const RenardPage: React.FC = () => {
                 {etat.gagnant === 'renard' ? t.gagneRenard : t.gagneOies}
               </h2>
               <div className="divider-brass w-24 mx-auto my-7" />
-              <button
-                type="button"
-                onClick={retourAuMenu}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
-              >
-                <RotateCcw size={15} />
-                {t.rejouer}
-              </button>
+              {enLigne ? (
+                <Link
+                  to={lang === 'FR' ? '/jeux-en-ligne' : '/en/online-games'}
+                  className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+                >
+                  {t.retourTable} <ArrowUpRight size={15} />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={retourAuMenu}
+                  className="inline-flex items-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
+                >
+                  <RotateCcw size={15} />
+                  {t.rejouer}
+                </button>
+              )}
             </motion.div>
           )}
         </div>
@@ -671,7 +917,7 @@ const RenardPage: React.FC = () => {
               {pleinEcran ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
               <span className="hidden sm:inline">{pleinEcran ? t.quitterPleinEcran : t.pleinEcran}</span>
             </button>
-            {enPartie && (
+            {enPartie && !enLigne && (
               <button
                 type="button"
                 onClick={retourAuMenu}
