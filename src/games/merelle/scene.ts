@@ -412,7 +412,6 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // ── La surbrillance ────────────────────────────────────────────────
   const halos: THREE.Mesh[] = [];
   const haloGeo = new THREE.CircleGeometry(0.42 * CELL, 28);
-  let selection: number | null = null;
 
   const eteindre = () => {
     for (const h of halos) {
