@@ -425,8 +425,8 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     });
     const m = new THREE.Mesh(haloGeo, mat);
     m.rotation.x = -Math.PI / 2;
-    const pos = positionDe(p, HAUT + 0.012);
-    m.position.copy(pos);
+    m.position.copy(positionDe(p, HAUT + 0.012));
+    m.userData.opacite = opacite;
     scene.add(m);
     halos.push(m);
   };
