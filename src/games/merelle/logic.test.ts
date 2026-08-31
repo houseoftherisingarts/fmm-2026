@@ -147,7 +147,9 @@ essai('à trois pions, le vol ouvre tout le plateau', () => {
 });
 
 essai('la variante du vol se coupe et le camp reste enfermé', () => {
-  const e = { ...poser([0, 1, 2], [9, 3, 14, 22, 21, 23], [0, 0], 1), vol: false };
+  // Les trois pions clairs tiennent 0, 1, 2; leurs seules sorties (9, 4,
+  // 14) sont bouchées. Avec le vol, ils s'échapperaient encore.
+  const e = { ...poser([0, 1, 2], [9, 4, 14], [0, 0], 1), vol: false };
   assert.equal(deplacementsDe(e, 1).length, 0);
 });
 
