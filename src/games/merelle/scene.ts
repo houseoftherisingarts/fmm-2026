@@ -437,6 +437,12 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     selection?: number | null; destinations?: number[]; retraits?: number[];
   }) => {
     eteindre();
+    // Le pion qu'on lâche redescend dans sa cupule : sans ce rappel, il
+    // resterait suspendu à la hauteur où la respiration l'avait laissé.
+    if (selection !== null && selection !== sel) {
+      const ancien = pions[selection];
+      if (ancien && !gsap.isTweening(ancien.position)) ancien.position.y = HAUT;
+    }
     selection = sel;
     if (sel !== null) halo(sel, 0xe8b14a, 0.62);
     for (const p of destinations) halo(p, 0x2ab964, 0.42);
