@@ -7,8 +7,8 @@
 // Le fallback localStorage évite le flash : la classe s'applique dès
 // le premier rendu, avant même que Firestore ait répondu.
 
-import { useEffect } from 'react';
-import { suivreFiche, type SkinMembre } from '../firebase/ordre';
+import { useEffect, useState } from 'react';
+import { definirPref, suivreFiche, type SkinMembre } from '../firebase/ordre';
 import { useAuth } from '../contexts/AuthContext';
 
 const CLE = 'fmm.prefsFond';
@@ -51,4 +51,31 @@ export function usePrefsFond(): void {
       appliquer(p);
     });
   }, [user]);
+}
+
+// ── L'interrupteur « Animations du fond » (Alex, 2026-08-31) ─────────
+// Il vit sous chaque carte de skin (boutique, coffre, espace VIP) et
+// dans les Réglages du profil. Un seul état, lu sur <html> : la classe
+// posée ci-dessus est la source de vérité, un MutationObserver suffit
+// pour que tous les interrupteurs suivent le même clic (même patron que
+// useSkinActif.ts). Sans compte, la préférence reste dans le navigateur.
+
+export function useAnimationsFond(): boolean {
+  const lire = () => typeof document === 'undefined'
+    || !document.documentElement.classList.contains('sans-animations-fond');
+  const [actif, setActif] = useState(lire);
+  useEffect(() => {
+    setActif(lire());
+    const obs = new MutationObserver(() => setActif(lire()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => obs.disconnect();
+  }, []);
+  return actif;
+}
+
+export function definirAnimationsFond(uid: string | undefined, valeur: boolean): void {
+  const p = { ...lireLocal(), animationsFond: valeur };
+  ecrireLocal(p);
+  appliquer(p);
+  if (uid) void definirPref(uid, 'animationsFond', valeur).catch(() => { /* hors ligne ou aperçu */ });
 }

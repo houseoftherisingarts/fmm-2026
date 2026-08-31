@@ -190,14 +190,8 @@ export const acheterAmbiance = (ambianceId: string) =>
 
 /** La bourse s'ouvre ou se referme aux regards des autres membres
  *  (Alex, 2026-08-28). Le badge du paon vient avec l'ouverture. */
-export async function basculerBoursePublique(publique: boolean): Promise<{ publique: boolean }> {
-  if (!firebaseApp) throw new Error('Firebase n’est pas configuré');
-  const appeler = httpsCallable<{ publique: boolean }, { publique: boolean }>(
-    getFunctions(firebaseApp, 'us-central1'), 'boursePubliqueBascule',
-  );
-  const { data } = await appeler({ publique });
-  return data;
-}
+export const basculerBoursePublique = (publique: boolean) =>
+  appeler<{ publique: boolean }, { publique: boolean }>('boursePubliqueBascule')({ publique });
 
 /** La bourse de quelqu'un d'autre, quand elle est ouverte. */
 export function suivreBourseDe(uid: string, cb: (bourse: { solde: number; gagne: number; publique?: boolean } | null) => void): () => void {

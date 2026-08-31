@@ -19,6 +19,7 @@ const PRIX_DOS: Record<string, number> = { salon: 0 };
 import { lienBilletterie, ouvrirBilletterie } from '../../lib/billetterie';
 import PieceMontpellois from './PieceMontpellois';
 import SansPubPanel from '../compte/SansPubPanel';
+import InterrupteurAnimationsFond from '../compte/InterrupteurAnimationsFond';
 
 // ─── BoutiqueMontpellois : la boutique du profil ─────────────────────
 // Alex, 2026-08-28 : le solde en tête, puis les vraies places
@@ -30,10 +31,19 @@ import SansPubPanel from '../compte/SansPubPanel';
 // le catalogue de chantier/objets.ts, juste plus vendus ici.
 
 export const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: string }> = {
-  rouge: { FR: 'Rouge d’origine', EN: 'Original red', couleur: '#8B2E2E' },
-  bleu:  { FR: 'Bleu et argent',  EN: 'Blue and silver', couleur: '#8FAFD0' },
-  vert:  { FR: 'Vert de forêt',   EN: 'Forest green',    couleur: '#7FA982' },
-  dore:  { FR: 'Doré et noir',    EN: 'Gold and black', couleur: '#D9B44A' },
+  rouge: { FR: 'Feu de la caravane', EN: 'Caravan fire',  couleur: '#8B2E2E' },
+  bleu:  { FR: 'Hiver argenté',      EN: 'Silver winter', couleur: '#8FAFD0' },
+  vert:  { FR: 'Vert de forêt',      EN: 'Forest green',  couleur: '#7FA982' },
+  dore:  { FR: 'Bière et cervoise',  EN: 'Beer and ale',  couleur: '#D9B44A' },
+};
+// La photo de chaque skin (public/skins, Alex, 2026-08-31) : la flamme
+// sur velours rouge, le flocon d'argent sur la nuit bleue, la chope
+// d'ale dorée. Le vert garde sa pastille de couleur en attendant sa photo.
+export const IMAGE_SKIN: Record<SkinMembre, string | undefined> = {
+  rouge: '/skins/feu-caravane.webp',
+  bleu:  '/skins/hiver-argente.webp',
+  vert:  undefined,
+  dore:  '/skins/biere-cervoise.webp',
 };
 const SKINS_ACHETABLES: Array<'bleu' | 'dore'> = ['bleu', 'dore'];
 // Les couleurs réelles des skins (src/index.css, html.skin-*), pour
@@ -47,10 +57,6 @@ const DESCRIPTION_SKIN: Record<'bleu' | 'dore', { FR: string; EN: string }> = {
     FR: 'L’or à la feuille sur du noir chaud, sans une goutte de rouge nulle part, et des bulles qui montent derrière les pages comme au fond d’un verre de bière.',
     EN: 'Gold leaf on warm black, not a drop of red left anywhere, and bubbles rising behind the pages like the bottom of a glass of beer.',
   },
-};
-const APERCU_SKIN: Record<'bleu' | 'dore', { velours: string; metal: string }> = {
-  bleu: { velours: 'linear-gradient(160deg, #0A1322, #050A13)', metal: '#B9C4D2' },
-  dore: { velours: 'linear-gradient(160deg, #120D07, #080503)', metal: '#D9B44A' },
 };
 
 // Le même appel que le banquet de Nourriture (src/pages/NourriturePage.tsx) :
@@ -287,26 +293,32 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             const info = NOMS_SKIN[skin];
             const aDeja = sansPub;
             return (
-              <div key={skin} className="glass-light rounded-lg-card p-4 flex items-start gap-3">
-                {/* L'aperçu du skin : son velours et son métal, comme à l'écran (Alex, 2026-08-30). */}
-                <span className="w-14 h-14 shrink-0 rounded-md relative overflow-hidden" style={{ background: APERCU_SKIN[skin].velours, border: `1.5px solid ${APERCU_SKIN[skin].metal}` }}>
-                  <span className="absolute inset-2 rounded-full" style={{ border: `2px solid ${APERCU_SKIN[skin].metal}`, boxShadow: `0 0 14px ${APERCU_SKIN[skin].metal}66 inset` }} />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{ background: APERCU_SKIN[skin].metal }} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-display title-medieval text-sm text-ivory">{fr ? info.FR : info.EN}</p>
-                  <p className="font-editorial text-[13px] leading-snug text-ivory-soft mt-1">
-                    {fr ? DESCRIPTION_SKIN[skin].FR : DESCRIPTION_SKIN[skin].EN}
-                  </p>
-                  <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold mt-2">
-                    {sansPub ? (fr ? 'Gratuit · VIP' : 'Free · VIP') : (<><PieceMontpellois size={14} />{PRIX_SKIN[skin]}</>)}
-                  </p>
+              <div key={skin} className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
+                <div className="flex items-start gap-4">
+                  {/* La photo du skin, en vignette carrée, le nom dessous (Alex, 2026-08-31). */}
+                  <div className="shrink-0 w-24 sm:w-28">
+                    <img src={IMAGE_SKIN[skin]} alt="" aria-hidden loading="lazy"
+                         className="block w-full aspect-square object-cover rounded-md"
+                         style={{ border: '1px solid rgba(var(--sk-gilt-rgb),0.35)' }} />
+                    <p className="font-display title-medieval text-[13px] leading-tight text-ivory text-center mt-2">{fr ? info.FR : info.EN}</p>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-editorial text-[13px] leading-snug text-ivory-soft">
+                      {fr ? DESCRIPTION_SKIN[skin].FR : DESCRIPTION_SKIN[skin].EN}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
+                      <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold">
+                        {sansPub ? (fr ? 'Gratuit · VIP' : 'Free · VIP') : (<><PieceMontpellois size={14} />{PRIX_SKIN[skin]}</>)}
+                      </p>
+                      <button type="button" disabled={aDeja || enCours === `skin_${skin}` || !uid}
+                              onClick={() => acheterSkin(skin)}
+                              className="px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40 shrink-0">
+                        {aDeja ? (fr ? 'À vous' : 'Yours') : (fr ? 'Acheter' : 'Buy')}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <button type="button" disabled={aDeja || enCours === `skin_${skin}` || !uid}
-                        onClick={() => acheterSkin(skin)}
-                        className="px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40 shrink-0">
-                  {aDeja ? (fr ? 'À vous' : 'Yours') : (fr ? 'Acheter' : 'Buy')}
-                </button>
+                <InterrupteurAnimationsFond lang={lang} className="pt-3" />
               </div>
             );
           })}

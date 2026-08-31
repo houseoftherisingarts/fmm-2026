@@ -27,10 +27,20 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
 
   const rang = bourse ? rangFortune(bourse.gagne || 0).actuel : null;
 
+  // Le serveur répond par un code Firebase (functions/not-found quand la
+  // fonction n'est pas déployée, functions/unauthenticated sans compte) :
+  // on le traduit, sinon le membre lit « not-found » en petit doré.
   const basculer = async () => {
     setEnvoi(true); setMessage(null);
     try { await basculerBoursePublique(!bourse?.publique); }
-    catch (e) { setMessage(e instanceof Error ? e.message : String(e)); }
+    catch (e) {
+      const code = (e as { code?: string })?.code || '';
+      setMessage(code.endsWith('not-found')
+        ? (fr ? 'Le service de la bourse n’est pas encore en ligne. Réessayez un peu plus tard.' : 'The purse service is not online yet. Try again a little later.')
+        : code.endsWith('unauthenticated')
+          ? (fr ? 'Connectez-vous d’abord.' : 'Sign in first.')
+          : (e instanceof Error ? e.message : String(e)));
+    }
     finally { setEnvoi(false); }
   };
 
@@ -107,7 +117,7 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
               ? (fr ? 'Les autres membres voient votre fortune sur votre profil.' : 'Other members see your fortune on your profile.')
               : (fr ? 'Personne ne voit votre bourse. Ouvrez-la pour gagner le badge du paon.' : 'Nobody sees your purse. Open it to earn the peacock badge.')}
           </p>
-          {message && <p className="mt-3 font-sans text-xs" style={{ color: 'var(--sk-gilt)' }}>{message}</p>}
+          {message && <p role="alert" className="mt-3 font-sans text-xs" style={{ color: 'var(--sk-gilt)' }}>{message}</p>}
         </>
       )}
     </section>

@@ -7,7 +7,8 @@ import { suivreMaBourse, type Bourse } from '../../firebase/montpellois';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
-import { NOMS_SKIN } from '../boutique/BoutiqueMontpellois';
+import { NOMS_SKIN, IMAGE_SKIN } from '../boutique/BoutiqueMontpellois';
+import InterrupteurAnimationsFond from './InterrupteurAnimationsFond';
 
 // ─── Le coffre : ce que la personne possède, équipé d'un clic ────────
 // Alex, 2026-08-28 : « quand on achète les skins, il faudrait un
@@ -84,16 +85,20 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
             const info = NOMS_SKIN[s];
             const actif = skinEquipe === s;
             return (
-              <button key={s} type="button" onClick={() => definirPref(uid, 'skin', s)}
-                      aria-pressed={actif}
-                      className="rounded-card p-3 flex items-center gap-3 text-left transition"
-                      style={carte(actif)}>
-                <span className="w-10 h-10 shrink-0 rounded-md" style={{ background: info.couleur, border: '1.5px solid rgba(244,239,227,0.25)' }} />
-                <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
-                  {fr ? info.FR : info.EN}
-                </span>
-                {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
-              </button>
+              <div key={s} className="rounded-card overflow-hidden flex flex-col transition" style={carte(actif)}>
+                <button type="button" onClick={() => definirPref(uid, 'skin', s)} aria-pressed={actif}
+                        className="block w-full text-left p-3 pb-2">
+                  {/* La photo du skin en vignette carrée, le nom dessous (Alex, 2026-08-31). */}
+                  {IMAGE_SKIN[s]
+                    ? <img src={IMAGE_SKIN[s]} alt="" aria-hidden loading="lazy" className="block w-full aspect-square object-cover rounded-md" style={{ opacity: actif ? 1 : 0.85 }} />
+                    : <span className="block w-full aspect-square rounded-md" style={{ background: info.couleur }} />}
+                  <span className="flex items-center justify-center gap-1.5 mt-2 font-sans text-sm text-center" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
+                    {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
+                    <span className="truncate">{fr ? info.FR : info.EN}</span>
+                  </span>
+                </button>
+                <InterrupteurAnimationsFond lang={lang} className="px-3 pb-3 pt-2" />
+              </div>
             );
           })}
         </div>

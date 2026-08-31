@@ -1,6 +1,8 @@
 import React from 'react';
 import { Crown, Check } from 'lucide-react';
 import type { PrefsMembre, SkinMembre } from '../../firebase/ordre';
+import { IMAGE_SKIN } from '../boutique/BoutiqueMontpellois';
+import InterrupteurAnimationsFond from './InterrupteurAnimationsFond';
 
 // ─── L'espace VIP ──────────────────────────────────────────────────
 // Alex, 2026-08-28 : réservé aux comptes « sans publicité à vie »
@@ -8,14 +10,8 @@ import type { PrefsMembre, SkinMembre } from '../../firebase/ordre';
 // même snapshot Firestore que lit usePrefsFond.ts reflète l'écriture
 // locale avant même la confirmation du serveur.
 
-// Les vraies couleurs des trois peaux (src/index.css, html.skin-*). Les
-// pastilles gardent des valeurs en dur : une pastille qui suivrait la
-// peau active montrerait trois fois la même chose.
-const SKINS: { id: SkinMembre; swatch: string }[] = [
-  { id: 'rouge', swatch: 'linear-gradient(135deg, #2B0A12, #E8B14A)' },
-  { id: 'bleu',  swatch: 'linear-gradient(135deg, #050A13, #DCE3EB)' },
-  { id: 'dore',  swatch: 'linear-gradient(135deg, #080503, #EBCF7E)' },
-];
+// Les trois peaux, chacune avec sa photo (public/skins, Alex, 2026-08-31).
+const SKINS: SkinMembre[] = ['rouge', 'bleu', 'dore'];
 
 const EspaceVip: React.FC<{
   vip: boolean;
@@ -50,20 +46,23 @@ const EspaceVip: React.FC<{
       </p>
       <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-5">{t.titre}</h2>
       <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-5">{t.intro}</p>
-      <div className="flex flex-wrap gap-3">
-        {SKINS.map((s) => {
-          const actif = skin === s.id;
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {SKINS.map((id) => {
+          const actif = skin === id;
           return (
-            <button key={s.id} type="button" onClick={() => onChange({ skin: s.id })}
-                    aria-pressed={actif}
-                    className="w-28 rounded-card overflow-hidden transition"
-                    style={{ border: `2px solid ${actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.18)'}` }}>
-              <span className="block h-14 w-full" style={{ background: s.swatch }} />
-              <span className="flex items-center justify-center gap-1 px-1.5 py-2 font-sans uppercase tracking-[0.12em] text-[10px] leading-tight text-center"
-                    style={{ color: actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.7)', background: 'rgba(var(--sk-ink-rgb),0.5)' }}>
-                {actif && <Check size={11} />} {t.skins[s.id]}
-              </span>
-            </button>
+            <div key={id} className="rounded-card overflow-hidden flex flex-col"
+                 style={{ border: `1.5px solid ${actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.18)'}`, background: 'rgba(var(--sk-ink-rgb),0.5)' }}>
+              <button type="button" onClick={() => onChange({ skin: id })} aria-pressed={actif} className="block w-full text-left">
+                <img src={IMAGE_SKIN[id]} alt="" aria-hidden loading="lazy"
+                     className="block w-full aspect-square object-cover rounded-md transition-opacity"
+                     style={{ opacity: actif ? 1 : 0.82 }} />
+                <span className="flex items-center justify-center gap-1 px-2 py-2 font-sans uppercase tracking-[0.12em] text-[10px] leading-tight text-center"
+                      style={{ color: actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.7)' }}>
+                  {actif && <Check size={11} className="shrink-0" />} {t.skins[id]}
+                </span>
+              </button>
+              <InterrupteurAnimationsFond lang={lang} className="px-2.5 pb-2.5 pt-2" />
+            </div>
           );
         })}
       </div>
@@ -76,14 +75,14 @@ const FR = {
   cta: 'Retirer les publicités',
   eyebrow: 'Espace VIP', titre: 'Le skin du site',
   intro: 'Choisissez la teinte du festival, rien que pour votre compte. Le changement s’applique tout de suite, sur toutes les pages.',
-  skins: { rouge: 'Rouge et or', bleu: 'Bleu et argent', dore: 'Doré et noir' } as Record<SkinMembre, string>,
+  skins: { rouge: 'Feu de la caravane', bleu: 'Hiver argenté', dore: 'Bière et cervoise', vert: 'Vert de forêt' } as Record<SkinMembre, string>,
 };
 const EN: typeof FR = {
   devenez: 'Become VIP', pitch: 'A one-time gift to remove ads forever, and unlock an animated banner plus your own site skin.',
   cta: 'Remove the ads',
   eyebrow: 'VIP space', titre: 'The site skin',
   intro: 'Choose the festival’s hue, just for your account. The change applies right away, on every page.',
-  skins: { rouge: 'Red and gold', bleu: 'Blue and silver', dore: 'Gold and black' } as Record<SkinMembre, string>,
+  skins: { rouge: 'Caravan fire', bleu: 'Silver winter', dore: 'Beer and ale', vert: 'Forest green' } as Record<SkinMembre, string>,
 };
 
 export default EspaceVip;

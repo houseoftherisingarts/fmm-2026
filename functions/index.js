@@ -2072,20 +2072,50 @@ const OBJET_PAR_BADGE = {
   photographe: 'amulette_oeil',
 };
 
+// La bourse telle que le serveur la lit : les valeurs de départ comblent
+// un document absent ou partiel (créé par un set merge sans solde).
+const BOURSE_VIDE = () => ({ solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0, dernierQuotidien: null, albums: [] });
+function bourseDe(snap) { return { ...BOURSE_VIDE(), ...(snap.exists ? snap.data() : {}) }; }
+
+/** LECTURE seule pour les appelants : la création passe par create(),
+ *  jamais par un set nu qui écraserait une bourse née entre-temps. */
 async function assurerBourse(uid) {
   const ref = db.collection('bourses').doc(uid);
   const snap = await ref.get();
-  if (snap.exists) return { ref, data: snap.data() };
-  const vide = { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0, dernierQuotidien: null, albums: [], maj: FieldValue.serverTimestamp() };
-  await ref.set(vide);
+  if (snap.exists) return { ref, data: bourseDe(snap) };
+  const vide = { ...BOURSE_VIDE(), maj: FieldValue.serverTimestamp() };
+  try { await ref.create(vide); } catch (e) {
+    if (e.code !== 6 && e.code !== 'already-exists') throw e;
+    return { ref, data: bourseDe(await ref.get()) };
+  }
   return { ref, data: vide };
 }
 
+// Les identifiants de badges que le serveur connaît. Le déclencheur ne
+// paie que ceux-là; le client ne peut réclamer que BADGES_CLIENT, tout
+// le reste se pose ici même. Doit rester en phase avec src/firebase/badges.ts.
+const BADGES_SERVEUR = new Set([
+  'defi-gagne', 'guilde-fondee', 'souk-vendu', 'souk-donne', 'parrain', 'le-parrain', 'amitie-1', 'amis-dix',
+  'paon', 'premiere-depense', 'premier-achat-boutique', 'audiophile', 'collectionneur', 'quotidien-sept',
+  'fortune-100', 'fortune-1000', 'fortune-10000', 'fortune-100000', 'fortune-1000000', 'fortune-1000000000',
+  'verifie', 'vip', 'beta-testeur',
+]);
+const BADGES_CLIENT = new Set([
+  'visiteur', 'programme', 'histoire', 'marche', 'village',
+  'petit-joueur', 'joueur', 'tafl', 'tarot', 'renard', 'renard-victoire', 'merelle', 'merelle-victoire', 'des',
+  'banquet', 'livre', 'billets',
+  'benevole', 'kiosque', 'commanditaire', 'veteran', 'membre', 'photographe', 'profil-complet',
+  'mur-premier', 'commentaire', 'guilde', 'souk', 'commerce', 'banniere', 'banniere-et-portrait',
+  'billet-1', 'billet-2', 'billet-3', 'billet-4',
+]);
+const BADGES_CONNUS = new Set([...BADGES_SERVEUR, ...BADGES_CLIENT]);
+
+/** Rend true seulement quand le badge vient d'être posé. */
 async function poserBadge(uid, badgeId, options = {}) {
   const ref = db.collection('badges').doc(uid);
   const snap = await ref.get();
   const obtenus = (snap.exists ? snap.data().obtenus : {}) || {};
-  if (obtenus[badgeId]) return;
+  if (badgeId in obtenus) return false;
   const patch = { obtenus: { ...obtenus, [badgeId]: FieldValue.serverTimestamp() } };
   // Un badge décerné par l'équipe (vérifié, VIP, bêta-testeur) s'annonce
   // à la prochaine visite : le client lit `aAnnoncer`, fait sonner le

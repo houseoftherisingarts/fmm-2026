@@ -1,6 +1,9 @@
 import React from 'react';
 import { SlidersHorizontal, MoveVertical, MoveHorizontal, Flame } from 'lucide-react';
 import type { PositionBanniere, PrefsMembre } from '../../firebase/ordre';
+import Interrupteur from '../ui/Interrupteur';
+import { useAuth } from '../../contexts/AuthContext';
+import { useAnimationsFond, definirAnimationsFond } from '../../lib/usePrefsFond';
 
 // ─── Réglages de mon profil ───────────────────────────────────────────
 // Alex, 2026-08-28 : trois réglages personnels, écrits dans
@@ -13,18 +16,6 @@ const POSITIONS: { id: PositionBanniere; icon: React.ComponentType<{ size?: numb
   { id: 'droite', icon: MoveHorizontal },
 ];
 
-const Interrupteur: React.FC<{ actif: boolean; onClick: () => void; label: string }> = ({ actif, onClick, label }) => (
-  <button
-    type="button" role="switch" aria-checked={actif} onClick={onClick}
-    className="relative w-10 h-[22px] rounded-full transition-colors shrink-0"
-    style={{ background: actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.18)' }}
-    aria-label={label}
-  >
-    <span className="absolute left-0 top-0.5 w-[18px] h-[18px] rounded-full transition-transform"
-          style={{ background: 'var(--sk-parchment)', transform: actif ? 'translateX(20px)' : 'translateX(2px)' }} />
-  </button>
-);
-
 const ReglagesProfil: React.FC<{
   prefs?: PrefsMembre;
   onChange: (patch: Partial<PrefsMembre>) => void;
@@ -33,7 +24,10 @@ const ReglagesProfil: React.FC<{
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
   const parallaxe = prefs?.parallaxe !== false;
-  const animationsFond = prefs?.animationsFond !== false;
+  // Le même interrupteur que sous les cartes de skin : un seul état,
+  // lu sur <html> (voir InterrupteurAnimationsFond.tsx).
+  const { user } = useAuth();
+  const animationsFond = useAnimationsFond();
   const position = prefs?.positionBanniere || 'bas';
 
   return (
@@ -73,7 +67,7 @@ const ReglagesProfil: React.FC<{
           <span className="font-sans text-sm text-ivory-soft inline-flex items-center gap-1.5">
             <Flame size={13} className="text-brass" /> {t.animationsFond}
           </span>
-          <Interrupteur actif={animationsFond} onClick={() => onChange({ animationsFond: !animationsFond })} label={t.animationsFond} />
+          <Interrupteur actif={animationsFond} onClick={() => definirAnimationsFond(user?.uid, !animationsFond)} label={t.animationsFond} />
         </div>
       </div>
     </section>
@@ -85,14 +79,14 @@ const FR = {
   position: 'Position de la bannière',
   positions: { haut: 'Au-dessus', bas: 'Sous le nom', droite: 'À droite' } as Record<PositionBanniere, string>,
   parallaxe: 'La bannière glisse au défilement',
-  animationsFond: 'Braises et flammes du site',
+  animationsFond: 'Animations du fond (feu, neige, bulles)',
 };
 const EN: typeof FR = {
   eyebrow: 'Settings', titre: 'My profile settings',
   position: 'Banner position',
   positions: { haut: 'Above', bas: 'Below the name', droite: 'On the right' } as Record<PositionBanniere, string>,
   parallaxe: 'The banner drifts while scrolling',
-  animationsFond: 'Embers and flames on the site',
+  animationsFond: 'Background animations (fire, snow, bubbles)',
 };
 
 export default ReglagesProfil;
