@@ -111,11 +111,16 @@ cas('les sauts s’enchaînent dans le même tour', () => {
 cas('les oies gagnent quand le renard est immobilisé', () => {
   const p = vide();
   pose(p, 0, 2, 'renard');
+  // Les deux voisins du coin de bras sont pris, et les deux points
+  // d'atterrissage derrière eux aussi : plus de pas, plus de saut.
   pose(p, 0, 3, 'oie');
+  pose(p, 0, 4, 'oie');
   pose(p, 1, 2, 'oie');
-  // Le coin de bras (0,2) n'a que ces deux voisins. Assez d'oies
-  // ailleurs pour que le seuil ne déclenche pas la victoire du renard.
-  for (const c of [2, 3, 4]) { pose(p, 5, c, 'oie'); pose(p, 6, c, 'oie'); }
+  pose(p, 2, 2, 'oie');
+  // Assez d'oies ailleurs pour que le seuil ne donne pas la victoire
+  // au renard avant que l'étau ne soit constaté.
+  for (const c of [2, 3, 4]) pose(p, 5, c, 'oie');
+  pose(p, 6, 3, 'oie');
   assert.ok(nbOies(p) > reglement('oies13').seuilRenard);
   assert.equal(coupsPossibles(p, 'renard', 'oies13').length, 0);
   assert.equal(verdict(p, 'renard', 'oies13'), 'oies');
