@@ -2641,7 +2641,9 @@ exports.badgeMontpelloisEtTrouvaille = onDocumentWritten(
     const uid = event.params.uid;
     const avant = (event.data && event.data.before && event.data.before.exists) ? (event.data.before.data().obtenus || {}) : {};
     const apres = (event.data && event.data.after && event.data.after.exists) ? (event.data.after.data().obtenus || {}) : {};
-    const nouveaux = Object.keys(apres).filter((id) => !avant[id]);
+    // Seuls les identifiants connus paient, et chaque crédit porte la clé
+    // du badge : crediter refuse de payer deux fois la même clé.
+    const nouveaux = Object.keys(apres).filter((id) => !(id in avant) && BADGES_CONNUS.has(id));
     for (const badgeId of nouveaux) {
       // Un badge de fortune vient d'un gain : le recréditer ferait
       // tourner la fonction en rond (Alex, 2026-08-28).
@@ -2651,14 +2653,15 @@ exports.badgeMontpelloisEtTrouvaille = onDocumentWritten(
         continue;
       }
       // Le collectionneur (Alex, 2026-08-30) vaut vingt Montpellois, pas cinq.
-      if (badgeId === 'collectionneur') { await crediter(uid, 20); continue; }
-      await crediter(uid, GAIN_PAR_BADGE);
+      if (badgeId === 'collectionneur') { await crediter(uid, 20, 'collectionneur'); continue; }
+      await crediter(uid, GAIN_PAR_BADGE, badgeId);
       const objetId = OBJET_PAR_BADGE[badgeId];
       if (objetId) await db.collection('avatars').doc(uid).set({ sac: FieldValue.arrayUnion(objetId) }, { merge: true });
     }
     // Dix badges réunis : le badge du collectionneur se pose, et sa
     // prime part par le tour suivant de cette même fonction.
-    if (Object.keys(apres).length >= 10 && !apres.collectionneur) await poserBadge(uid, 'collectionneur');
+    const connus = Object.keys(apres).filter((id) => BADGES_CONNUS.has(id)).length;
+    if (connus >= 10 && !('collectionneur' in apres)) await poserBadge(uid, 'collectionneur');
   },
 );
 
