@@ -249,24 +249,35 @@ async function main() {
   // Vignettes web. La page /presse affiche 20 tuiles : servir les PNG
   // pleine résolution y mettrait 45 Mo. Les tuiles montrent un WebP de
   // 640 px, le bouton Télécharger sert le PNG d'origine.
-  console.log('\nVignettes 640 px :');
-  const thumbs = path.join(OUT, 'thumbs');
-  fs.mkdirSync(thumbs, { recursive: true });
-  let nThumbs = 0;
-  for (const f of fs.readdirSync(OUT).filter((n) => n.endsWith('.png'))) {
-    await sharp(path.join(OUT, f))
-      .resize(640)
-      .webp({ quality: 78 })
-      .toFile(path.join(thumbs, f.replace(/\.png$/, '.webp')));
-    nThumbs += 1;
-  }
-  console.log(`  ${nThumbs} vignettes`);
-
   console.log('\nLogos :');
   for (const f of ['fmm-logo-embossed-silver.png', 'fmm-logo-white.png']) {
     fs.copyFileSync(path.join(ROOT, 'public', f), path.join(OUT_LOGOS, f));
     console.log(`  logos/${f}`);
   }
+
+  // Vignettes web. La page /presse affiche vingt-deux tuiles : servir
+  // les PNG pleine résolution y mettrait 45 Mo. Les tuiles montrent un
+  // WebP de 640 px, le bouton Télécharger sert le PNG d'origine. Le
+  // blason garde sa transparence, il se pose sur du verre sombre.
+  console.log('\nVignettes 640 px :');
+  const thumbs = path.join(OUT, 'thumbs');
+  fs.mkdirSync(thumbs, { recursive: true });
+  let nThumbs = 0;
+  const toThumb = async (src, name) => {
+    await sharp(src)
+      .resize({ width: 640, withoutEnlargement: true })
+      .webp({ quality: 78 })
+      .toFile(path.join(thumbs, name));
+    nThumbs += 1;
+  };
+  for (const f of fs.readdirSync(OUT).filter((n) => n.endsWith('.png'))) {
+    await toThumb(path.join(OUT, f), f.replace(/\.png$/, '.webp'));
+  }
+  // Le blason argenté traîne 3600 × 4800 de marge transparente : la
+  // vignette part de la version détourée, sinon la tuile montre du vide.
+  await toThumb(await buildLogoMark(), 'fmm-logo-embossed-silver.webp');
+  await toThumb(path.join(OUT_LOGOS, 'fmm-logo-white.png'), 'fmm-logo-white.webp');
+  console.log(`  ${nThumbs} vignettes`);
 
   const zipName = 'fmm-kit-de-presse.zip';
   execFileSync('zip', ['-r', '-q', zipName, '.', '-i', '*.png', 'logos/*'], { cwd: OUT });
