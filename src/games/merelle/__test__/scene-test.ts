@@ -7,11 +7,19 @@ const el = document.getElementById('table')!;
 const sc = monterScene(el);
 sc.attacherResize();
 
+import { choisirCoup } from '../cpu';
+
 let e = etatInitial(true);
-const ouverture = [4, 10, 1, 19, 7, 22, 13, 16, 0] as const;
-for (const p of ouverture) e = jouer(e, { type: 'pose', vers: p });
+// Dix-huit demi-coups joués par la machine : le plateau se remplit
+// vraiment, moulins et retraits compris.
+for (let i = 0; i < 26 && !e.gagnant; i++) {
+  const coup = choisirCoup(e, 'moyen');
+  if (!coup) break;
+  e = jouer(e, coup);
+}
 sc.reinitialiser(e.points);
-sc.allumer({ selection: 4, destinations: [3, 5], retraits: [22] });
+const tenu = e.points.findIndex((v) => v === 1);
+sc.allumer({ selection: tenu, destinations: [], retraits: [] });
 
 (window as unknown as Record<string, unknown>).__merelle = {
   pret: true,
