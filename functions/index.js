@@ -2024,6 +2024,10 @@ const SOLDE_DEPART = 10;
 const GAIN_PAR_BADGE = 5;
 const GAIN_QUOTIDIEN = 1;
 const PRIX_SKIN = { bleu: 20, dore: 40 };
+// Les dos de carte du tarot vendus à la boutique (Alex, 2026-08-30) : le
+// dos du Salon des Inconnus est offert; les autres viennent des
+// récompenses quotidiennes (caravane, William), jamais de la boutique.
+const PRIX_DOS = { salon: 0 };
 const PRIX_ALBUM = 30;
 // Alex, 2026-08-28 : les ambiances achetables de src/lib/ambiances.ts
 // (celles marquées `gratuite: false`) — un seul palier pour l'instant.
@@ -2149,7 +2153,7 @@ const ROUE_QUOTIDIENNE = [
   { dosTarot: 'caravane' },
   { montpellois: 15 },
   { montpellois: 20 },
-  { chanceWJW: 1 },
+  { chanceWJW: 1, dosTarot: 'william' },
 ];
 
 exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) => {
@@ -2285,6 +2289,16 @@ exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) =>
     if (vip) { const b = await assurerBourse(uid); solde = b.data.solde; }
     else solde = await debiter(uid, PRIX_SKIN[skin]);
     await avatarRef.set({ skinsDebloques: FieldValue.arrayUnion(skin) }, { merge: true });
+    return { solde };
+  }
+
+  if (objetId.startsWith('dos_')) {
+    const dos = objetId.slice(4);
+    if (!(dos in PRIX_DOS)) throw new HttpsError('invalid-argument', 'Dos de carte inconnu.');
+    const { ref, data } = await assurerBourse(uid);
+    if ((data.dosTarot || []).includes(dos)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
+    const solde = PRIX_DOS[dos] > 0 ? await debiter(uid, PRIX_DOS[dos]) : (data.solde || 0);
+    await ref.set({ dosTarot: FieldValue.arrayUnion(dos), maj: FieldValue.serverTimestamp() }, { merge: true });
     return { solde };
   }
 
@@ -2466,10 +2480,15 @@ exports.badgeMontpelloisEtTrouvaille = onDocumentWritten(
         if (objetSeul) await db.collection('avatars').doc(uid).set({ sac: FieldValue.arrayUnion(objetSeul) }, { merge: true });
         continue;
       }
+      // Le collectionneur (Alex, 2026-08-30) vaut vingt Montpellois, pas cinq.
+      if (badgeId === 'collectionneur') { await crediter(uid, 20); continue; }
       await crediter(uid, GAIN_PAR_BADGE);
       const objetId = OBJET_PAR_BADGE[badgeId];
       if (objetId) await db.collection('avatars').doc(uid).set({ sac: FieldValue.arrayUnion(objetId) }, { merge: true });
     }
+    // Dix badges réunis : le badge du collectionneur se pose, et sa
+    // prime part par le tour suivant de cette même fonction.
+    if (Object.keys(apres).length >= 10 && !apres.collectionneur) await poserBadge(uid, 'collectionneur');
   },
 );
 

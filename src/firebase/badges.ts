@@ -151,6 +151,8 @@ export const COLLECTIONS: Collection[] = [
         texteFR: 'Vous avez acheté votre premier article à la boutique.', texteEN: 'You bought your first item at the shop.' },
       { id: 'audiophile',       glyphe: '♫', nomFR: 'Audiophile',       nomEN: 'Audiophile',
         texteFR: 'Cinq ambiances ou albums achetés pour votre profil.', texteEN: 'Five ambiences or albums bought for your profile.' },
+      { id: 'collectionneur',   glyphe: '✦', nomFR: 'Collectionneur',   nomEN: 'Collector',
+        texteFR: 'Dix badges réunis. Vingt Montpellois pour la peine.', texteEN: 'Ten badges gathered. Twenty Montpellois for your trouble.' },
       { id: 'quotidien-sept',   glyphe: '⌛', nomFR: 'Semaine fidèle',   nomEN: 'Faithful week',
         texteFR: 'Sept jours de suite à réclamer votre pièce du jour.', texteEN: 'Seven days in a row claiming your daily coin.' },
       { id: 'fortune-100',      glyphe: '❂', nomFR: 'Bourse garnie',   nomEN: 'Full purse',

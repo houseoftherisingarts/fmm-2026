@@ -2,8 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Tirage } from '../../content/tarot';
 import { resume, type LameTiree } from './interpretation';
-import { dosCaravaneEquipe } from './dos';
-import DosCaravane from './DosCaravane';
+import { dosEquipe, imageDos } from './dos';
 
 // ─── Le tapis du tarot ──────────────────────────────────────────────
 // Tout ce qui se pose sur le drap : la case d'une carte, le panneau de
@@ -112,23 +111,15 @@ const CarteSeule: React.FC<{
             />
           </motion.div>
         ) : (
-          dosCaravaneEquipe() ? (
-            // Le tarot de la caravane (récompense du jour 4), dessiné en
-            // vectoriel, équipé depuis le coffre ou la barre du jeu.
-            <motion.div key="dos-caravane" initial={false} className="absolute inset-0">
-              <DosCaravane className="absolute inset-0 w-full h-full" />
-            </motion.div>
-          ) : (
-            <motion.img
-              key="dos"
-              src="/tarot/dos-v2.webp"
-              alt=""
-              aria-hidden
-              loading="lazy"
-              initial={false}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          )
+          <motion.img
+            key={`dos-${dosEquipe() || 'festival'}`}
+            src={imageDos(dosEquipe())}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            initial={false}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         )}
       </AnimatePresence>
     </button>

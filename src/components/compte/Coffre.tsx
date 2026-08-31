@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Check, Music, Palette, Disc3, Gift, Lock, Swords } from 'lucide-react';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix } from '../../games/hnefatafl/assets';
-import { dosCaravaneEquipe, equiperDosCaravane } from '../../games/tarot/dos';
-import DosCaravane from '../../games/tarot/DosCaravane';
+import { DOS_CARTES, dosEquipe, equiperDos } from '../../games/tarot/dos';
 import { suivreMaBourse, type Bourse } from '../../firebase/montpellois';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
@@ -46,21 +45,9 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
   // Les trésors de la roue des sept jours. Leur « équipement » vit dans
   // le navigateur, comme le reste des choix des jeux (lireChoix du
   // hnefatafl, CLE_DOS_TAROT du tarot).
-  const dosRoyalGagne = (bourse?.dosTarot || []).includes('caravane');
-  const chancesWJW = bourse?.chancesWJW || 0;
-  const [choixJeu, setChoixJeu] = useState(() => lireChoix());
-  const [dosRoyal, setDosRoyal] = useState(() => dosCaravaneEquipe());
-  const equiperPlateau = (id: string) => { ecrireChoix(id, choixJeu.pieces); setChoixJeu({ plateau: id, pieces: choixJeu.pieces }); };
-  const equiperPieces = (id: string) => { ecrireChoix(choixJeu.plateau, id); setChoixJeu({ plateau: choixJeu.plateau, pieces: id }); };
-  // Un jeu 'recompense' se joue seulement s'il est gagné; un jeu
-  // 'bientot' s'annonce sans se choisir; un jeu 'disponible' est à tous.
-  const jeuOuvert = (statut: string, id: string, gagnes: string[]) =>
-    statut === 'disponible' || (statut === 'recompense' && gagnes.includes(id));
-  const basculerDosRoyal = () => {
-    const suivant = !dosRoyal;
-    equiperDosCaravane(suivant);
-    setDosRoyal(suivant);
-  };
+  const dosPossedes = ['festival', ...(bourse?.dosTarot || [])];
+  const [dosActuel, setDosActuel] = useState<string | null>(() => dosEquipe());
+  const equiperUnDos = (id: string) => { equiperDos(id === 'festival' ? null : id); setDosActuel(id === 'festival' ? null : id); };
 
   const carte = (actif: boolean) => ({
     background: actif ? 'rgba(216,176,90,0.14)' : 'transparent',
@@ -217,29 +204,23 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
 
         <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Dos de carte du tarot' : 'Tarot card backs'}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <button type="button" onClick={() => { if (dosRoyal) basculerDosRoyal(); }} aria-pressed={!dosRoyal}
-                  className="rounded-card p-3 flex items-center gap-3 text-left transition" style={carte(!dosRoyal)}>
-            <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
-              <img src="/tarot/dos-v2.webp" alt="" aria-hidden className="w-full h-full object-cover" />
-            </span>
-            <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: !dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
-              {fr ? 'Le dos du festival' : 'The festival back'}
-            </span>
-            {!dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
-          </button>
-          <button type="button" disabled={!dosRoyalGagne} onClick={() => { if (!dosRoyal) basculerDosRoyal(); }} aria-pressed={dosRoyal}
-                  className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed" style={carte(dosRoyal)}>
-            <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)' }}>
-              {dosRoyalGagne
-                ? <DosCaravane className="w-full h-full" />
-                : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-sans text-sm truncate" style={{ color: dosRoyal ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? 'Tarot de la caravane' : 'Caravan tarot'}</span>
-              {!dosRoyalGagne && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? 'Récompense quotidienne · jour 4' : 'Daily reward · day 4'}</span>}
-            </span>
-            {dosRoyal && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
-          </button>
+          {DOS_CARTES.map((d) => {
+            const possede = dosPossedes.includes(d.id);
+            const actif = (dosActuel || 'festival') === d.id;
+            return (
+              <button key={d.id} type="button" disabled={!possede} onClick={() => equiperUnDos(d.id)} aria-pressed={actif}
+                      className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed" style={carte(actif)}>
+                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: 'rgba(0,0,0,0.4)' }}>
+                  {possede ? <img src={d.image} alt="" aria-hidden className="w-full h-full object-cover" /> : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? d.nomFR : d.nomEN}</span>
+                  {!possede && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? d.origineFR : d.origineEN}</span>}
+                </span>
+                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+              </button>
+            );
+          })}
         </div>
       </div>
 

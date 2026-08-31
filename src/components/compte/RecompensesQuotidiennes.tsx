@@ -4,7 +4,7 @@ import { Check, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { sonnerBadge } from '../../lib/fanfare';
-import DosCaravane from '../../games/tarot/DosCaravane';
+import DosCarte from '../../games/tarot/DosCaravane';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
   RECOMPENSES_QUOTIDIEN, reclamerQuotidien, suivreMaBourse, type Bourse,
@@ -42,7 +42,12 @@ export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, 
   const taille = grande ? 68 : 48;
   if (type === 'montpellois') return <PieceMontpellois size={taille} image />;
   if (type === 'chanceWJW') {
-    return <img src="/partenaires/wjw-logo-bone.svg" alt="" aria-hidden style={{ height: taille * 0.9, width: 'auto', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.6))' }} />;
+    // La seconde chance vient avec le dos de carte William (Alex, 2026-08-30).
+    return (
+      <span className="block rounded-[4px] overflow-hidden" style={{ height: taille, width: taille * 0.53, border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }}>
+        <DosCarte id="william" className="w-full h-full" />
+      </span>
+    );
   }
   if (type === 'taflPieces') {
     // La vignette du jeu lui-même, capturée sur le plateau (Alex, 2026-08-30).
@@ -55,7 +60,7 @@ export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, 
   return (
     <span className="block rounded-[4px] overflow-hidden"
           style={{ height: taille, width: taille * 0.53, border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }}>
-      <DosCaravane className="w-full h-full" />
+      <DosCarte id="caravane" className="w-full h-full" />
     </span>
   );
 };

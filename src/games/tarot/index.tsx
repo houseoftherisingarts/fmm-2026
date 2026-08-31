@@ -7,7 +7,7 @@ import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { ApercuRecompense, IconeJour } from '../../components/compte/RecompensesQuotidiennes';
-import { dosCaravaneEquipe, equiperDosCaravane } from './dos';
+import { DOS_CARTES, dosEquipe, equiperDos } from './dos';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
@@ -57,20 +57,24 @@ const TarotPage: React.FC = () => {
   const { user } = useAuth();
   // Le dos royal (récompense quotidienne du jour 4) : l'aperçu se montre
   // tant qu'il n'est pas gagné (Alex, 2026-08-30).
-  const [dosGagne, setDosGagne] = useState(false);
+  // Les dos de carte possédés (bourse) et celui qui est équipé : la
+  // pastille de la barre passe de l'un à l'autre (Alex, 2026-08-30).
+  const [dosPossedes, setDosPossedes] = useState<string[]>([]);
   useEffect(() => {
-    if (!user?.uid) { setDosGagne(false); return; }
-    return suivreMaBourse(user.uid, (b) => setDosGagne((b.dosTarot || []).includes('caravane')));
+    if (!user?.uid) { setDosPossedes([]); return; }
+    return suivreMaBourse(user.uid, (b) => setDosPossedes(b.dosTarot || []));
   }, [user?.uid]);
-  // Le dos équipé se change à même le jeu quand le compte le possède
-  // (Alex, 2026-08-30) : l'état force le tapis à se redessiner, le choix
-  // vit dans le navigateur comme celui du coffre.
-  const [dosRoyal, setDosRoyal] = useState(() => dosCaravaneEquipe());
+  const dosGagne = dosPossedes.length > 0;
+  const [dosActuel, setDosActuel] = useState<string | null>(() => dosEquipe());
+  const dosRoyal = dosActuel !== null;
   const basculerDos = () => {
-    const suivant = !dosRoyal;
-    equiperDosCaravane(suivant);
-    setDosRoyal(suivant);
+    const liste = ['festival', ...DOS_CARTES.map((d) => d.id).filter((id) => id !== 'festival' && dosPossedes.includes(id))];
+    const i = liste.indexOf(dosActuel || 'festival');
+    const suivant = liste[(i + 1) % liste.length];
+    equiperDos(suivant === 'festival' ? null : suivant);
+    setDosActuel(suivant === 'festival' ? null : suivant);
   };
+  const nomDos = (id: string | null) => { const d = DOS_CARTES.find((x) => x.id === (id || 'festival')) || DOS_CARTES[0]; return fr ? d.nomFR : d.nomEN; };
 
   const [tirage, setTirage] = useState<Tirage>(TIRAGES[1]);
   const [paquet, setPaquet] = useState<LameTiree[]>(() => melanger());
@@ -444,8 +448,8 @@ const TarotPage: React.FC = () => {
                 title={fr ? 'Changer le dos des cartes' : 'Change the card back'}
                 className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
               >
-                <span className="flex items-center justify-center" style={{ width: 22, height: 26 }}><IconeJour type="dosTarot" /></span>
-                {dosRoyal ? (fr ? 'Tarot de la caravane' : 'Caravan tarot') : (fr ? 'Dos du festival' : 'Festival back')}
+                <span className="flex items-center justify-center rounded-[3px] overflow-hidden" style={{ width: 16, height: 26 }}><img src={DOS_CARTES.find((d) => d.id === (dosActuel || 'festival'))?.image} alt="" aria-hidden className="w-full h-full object-cover" /></span>
+                {nomDos(dosActuel)}
               </button>
             ) : (
               <button

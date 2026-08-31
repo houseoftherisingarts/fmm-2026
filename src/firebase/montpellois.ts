@@ -49,8 +49,8 @@ export const RECOMPENSES_QUOTIDIEN: RecompenseQuotidienne[] = [
     texteFR: 'Quinze pièces tombent dans votre bourse.', texteEN: 'Fifteen coins drop into your purse.' },
   { jour: 6, type: 'montpellois', montant: 20, nomFR: '20 Montpellois', nomEN: '20 Montpellois',
     texteFR: 'Vingt pièces tombent dans votre bourse.', texteEN: 'Twenty coins drop into your purse.' },
-  { jour: 7, type: 'chanceWJW', nomFR: 'Une seconde chance', nomEN: 'A second chance',
-    texteFR: 'Votre nom entre une seconde fois dans le chapeau du concours William J. Walter.', texteEN: 'Your name goes into the William J. Walter draw a second time.' },
+  { jour: 7, type: 'chanceWJW', nomFR: 'Seconde chance et dos William', nomEN: 'Second chance and William back',
+    texteFR: 'Votre nom entre une seconde fois dans le chapeau du concours William J. Walter, et le dos de carte William entre dans votre coffre.', texteEN: 'Your name goes into the William J. Walter draw a second time, and the William card back joins your vault.' },
 ];
 /** Le prix des skins de plateforme, gratuits pour un compte VIP
  *  (users.sansPub) — doit rester en phase avec le même nom de
