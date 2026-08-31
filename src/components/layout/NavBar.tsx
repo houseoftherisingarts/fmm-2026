@@ -13,7 +13,7 @@ import { addLocale, stripLocale } from '../../lib/locale';
 import AudioPlayer from '../AudioPlayer';
 import { HexMark } from '../marche/atmospherics';
 import Cloche from '../compte/Cloche';
-import { ouvrirBilletterie } from '../../lib/billetterie';
+import { ouvrirBilletterie, tarifMembre } from '../../lib/billetterie';
 
 // Local dev (VITE_SITE_MODE=live) previews every pillar; production shows only
 // published ones. `npm run deploy` forces placeholder, so prod follows flags.
@@ -142,8 +142,10 @@ const NavBar: React.FC = () => {
   // formules et renvoie ensuite vers Zeffy. Publiee le 2026-08-03.
   // La porte de la billetterie : le visiteur sans compte voit d'abord
   // l'offre des cinq dollars (Alex, 2026-08-28).
+  // Tarif membre (personne connectée, ou système non membres éteint) :
+  // le bouton d'aujourd'hui, qui mène droit à /billets.
   const surBillets = (e: React.MouseEvent) => {
-    if (user) return;               // déjà membre : le bouton d'aujourd'hui
+    if (tarifMembre(Boolean(user))) return;
     e.preventDefault();
     ouvrirBilletterie(false);       // la porte globale (montée dans App)
   };

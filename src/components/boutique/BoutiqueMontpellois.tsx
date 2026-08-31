@@ -268,7 +268,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             </div>
             <div className="p-4 flex flex-col gap-2 flex-1">
               <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><Ticket size={13} className="text-brass shrink-0" />{fr ? 'Billets du festival' : 'Festival tickets'}</p>
-              <p className="font-sans text-[11px] text-ivory-soft/60">{fr ? 'De 27 $ la journée à 65 $ les trois jours' : 'From $27 a day to $65 for all three days'}</p>
+              <p className="font-sans text-[11px] text-ivory-soft/60">{fr ? 'De 20 $ (enfant, une journée) à 125 $ (famille, trois jours)' : 'From $20 (child, one day) to $125 (family, three days)'}</p>
             <a href={lienBilletterie(Boolean(user))} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.preventDefault(); ouvrirBilletterie(Boolean(user)); }}
                className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card">

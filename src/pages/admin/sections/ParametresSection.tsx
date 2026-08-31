@@ -17,6 +17,14 @@ const LIBELLES: Record<string, string> = {
   showCommanditaire: 'Commanditaire d’honneur',
   showHistoireFrise: 'Frise de l’histoire',
   pubAlliance: 'L’Alliance (page des alliés, en préparation)',
+  billetsNonMembres: 'Billets non membres',
+};
+
+// Une ligne d'explication sous le libellé, pour les bascules dont l'effet
+// ne se devine pas au nom. L'équipe ne lit pas le code (2026-08-23).
+const SOUS_TEXTES: Record<string, string> = {
+  billetsNonMembres:
+    'Éteint : tout le monde reçoit les billets au tarif membre, jusqu’au vote de l’équipe.',
 };
 
 const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
@@ -102,7 +110,12 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
             .filter((k) => k !== 'knightPlacementEditor' && !PUBLISH_FLAG_KEYS.has(k))
             .map((k) => (
               <div key={k} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
-                <span className="font-sans text-sm text-ivory">{LIBELLES[k] || k}</span>
+                <div className="min-w-0">
+                  <span className="font-sans text-sm text-ivory">{LIBELLES[k] || k}</span>
+                  {SOUS_TEXTES[k] && (
+                    <p className="font-editorial italic text-xs text-ivory-soft/70 mt-1">{SOUS_TEXTES[k]}</p>
+                  )}
+                </div>
                 <ToggleSwitch checked={!!flags[k]} onChange={(v) => setFlag(k, v)} />
               </div>
             ))}

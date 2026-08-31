@@ -474,8 +474,8 @@ Montpellier en France.
 
 BILLETS
 
-Passe journée : 27 $
-Passe trois jours : 65 $, bracelet officiel FMM compris
+Une journée : enfant 20 $, adulte 35 $, famille de quatre 90 $
+Les trois jours : enfant 25 $, adulte 55 $, famille de quatre 125 $
 Banquet médiéval : 65 $ plus taxes, 50 places, inscription jusqu'au
 17 septembre 2026
 La vente se fait en ligne par Zeffy.
@@ -539,8 +539,8 @@ Montpellier in France.
 
 TICKETS
 
-Day pass: $27
-Three-day pass: $65, official FMM wristband included
+One day: child $20, adult $35, family of four $90
+All three days: child $25, adult $55, family of four $125
 Medieval banquet: $65 plus tax, 50 seats, registration until
 September 17, 2026
 Tickets are sold online through Zeffy.
@@ -636,7 +636,7 @@ d'Alex T. St-Laurent. Le blason garde ses proportions et sa couleur.
 
 LES BILLETS
 
-Passe journée 27 $, passe trois jours 65 $, banquet médiéval 65 $ plus
+Billets de 20 $ (enfant, une journée) à 125 $ (famille, trois jours), banquet médiéval 65 $ plus
 taxes. La vente se fait en ligne par Zeffy.
 ${BASE_URL}/billets
 
@@ -681,7 +681,7 @@ crest keeps its proportions and its colour.
 
 TICKETS
 
-Day pass $27, three-day pass $65, medieval banquet $65 plus tax.
+Tickets from $20 (child, one day) to $125 (family, three days), medieval banquet $65 plus tax.
 Tickets are sold online through Zeffy.
 ${BASE_URL}/en/tickets
 

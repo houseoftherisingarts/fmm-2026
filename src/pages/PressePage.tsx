@@ -582,7 +582,7 @@ const FR = {
     },
     {
       k: 'Billets',
-      v: 'Passe journée 27 $, passe 3 jours 65 $, banquet médiéval 65 $ plus taxes. La vente se fait en ligne par Zeffy.',
+      v: 'Une journée : enfant 20 $, adulte 35 $, famille 90 $. Trois jours : enfant 25 $, adulte 55 $, famille 125 $. Banquet médiéval 65 $ plus taxes. La vente se fait en ligne par Zeffy.',
     },
     { k: 'Organisation', v: 'Le festival est organisé par une équipe de bénévoles.' },
   ],
@@ -644,7 +644,7 @@ const EN: typeof FR = {
     },
     {
       k: 'Tickets',
-      v: 'Day pass $27, three-day pass $65, medieval banquet $65 plus tax. Sold online through Zeffy.',
+      v: 'One day: child $20, adult $35, family $90. Three days: child $25, adult $55, family $125. Medieval banquet $65 plus tax. Sold online through Zeffy.',
     },
     { k: 'Organisation', v: 'The festival is organized by a volunteer team.' },
   ],

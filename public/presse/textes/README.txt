@@ -33,7 +33,7 @@ crest keeps its proportions and its colour.
 
 TICKETS
 
-Day pass $27, three-day pass $65, medieval banquet $65 plus tax.
+Tickets from $20 (child, one day) to $125 (family, three days), medieval banquet $65 plus tax.
 Tickets are sold online through Zeffy.
 https://festivalmedieval.org/en/tickets
 

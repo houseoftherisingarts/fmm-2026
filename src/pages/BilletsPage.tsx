@@ -11,7 +11,7 @@ import {
   BILLETS, displayAmount, formatAmount, showBeforeTax, carteFond, type Billet,
 } from '../content/billets';
 import { useAuth } from '../contexts/AuthContext';
-import { lienBilletterie, ouvrirBilletterie, RABAIS_MEMBRE } from '../lib/billetterie';
+import { lienBilletterie, ouvrirBilletterie, surchargeBillet, tarifMembre } from '../lib/billetterie';
 
 // ─── Billetterie ────────────────────────────────────────────────────
 // Une main de cartes plutôt qu'une liste. Chaque billet est une carte
@@ -35,10 +35,13 @@ const BilletsPage: React.FC = () => {
   const t = fr ? FR : EN;
   const { user } = useAuth();
   const connecte = Boolean(user);
-  // Sans compte : le prix affiché et le lien sont ceux de la campagne
-  // publique (5 $ de plus par billet); la carte ouvre d'abord la porte
-  // qui offre le rabais membre. Le camping n'a qu'une campagne.
-  const surcharge = connecte ? 0 : RABAIS_MEMBRE;
+  // Sans compte, ET si le système des billets non membres est allumé :
+  // le prix affiché et le lien sont ceux de la campagne publique (5 $ de
+  // plus par billet) et la carte ouvre d'abord la porte qui offre le
+  // rabais membre. Système éteint, tout le monde voit le tarif membre.
+  // Le camping n'a qu'une campagne.
+  const membre = tarifMembre(connecte);
+  const surcharge = surchargeBillet(connecte);
 
   const entrees = BILLETS.filter((b) => b.billetterie === 'entrees');
   const camping = BILLETS.filter((b) => b.billetterie === 'camping');
@@ -56,7 +59,7 @@ const BilletsPage: React.FC = () => {
 
       <Section index="01" name={t.entreesRail} title={t.entreesTitle} lead={t.entreesLead} icon={Ticket}>
         <Deck billets={entrees} lang={lang} t={t} href={lienBilletterie(connecte)}
-              surcharge={surcharge} porte={!connecte} />
+              surcharge={surcharge} porte={!membre} />
       </Section>
 
       <Section index="02" name={t.campingRail} title={t.campingTitle} lead={t.campingLead} icon={Tent}>

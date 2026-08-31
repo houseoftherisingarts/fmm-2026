@@ -111,8 +111,8 @@ export const HOME = {
       lead: 'Choisissez votre formule. Tous les billets se procurent en ligne via Zeffy.',
       cta: 'Acheter sur Zeffy',
       tiers: [
-        { name: 'Passe Journée',    price: '27 $',     perks: ['Accès complet au site',  'Marché et démonstrations',     'Spectacles et tournois'] },
-        { name: 'Passe 3 Jours',    price: '65 $',     perks: ['Tous les avantages',     'Économies vs journée',         'Bracelet officiel FMM'] },
+        { name: 'Adulte, une journée', price: '35 $',  perks: ['Enfant 20 $ · famille 90 $', 'Marché et démonstrations',     'Spectacles et tournois'] },
+        { name: 'Adulte, trois jours', price: '55 $',  perks: ['Enfant 25 $ · famille 125 $', 'Du vendredi au dimanche',      'Bracelet officiel FMM'] },
         { name: 'Banquet Médiéval', price: 'À venir',  perks: ['Souper servi à la torche', 'Hypocras de l\'aubergiste', 'Animation pendant le repas'] },
       ],
     },
@@ -151,8 +151,8 @@ export const HOME = {
       lead: 'Pick your pass. All tickets sold online via Zeffy.',
       cta: 'Buy on Zeffy',
       tiers: [
-        { name: 'Day Pass',        price: '$27',  perks: ['Full site access',      'Market and demos',             'Shows and tournaments'] },
-        { name: '3-Day Pass',      price: '$65',  perks: ['All day-pass perks',    'Savings vs day-by-day',        'Official FMM wristband'] },
+        { name: 'Adult, one day',   price: '$35',  perks: ['Child $20 · family $90',   'Market and demos',             'Shows and tournaments'] },
+        { name: 'Adult, three days', price: '$55', perks: ['Child $25 · family $125',  'Friday to Sunday',             'Official FMM wristband'] },
         { name: 'Medieval Banquet', price: 'TBA', perks: ['Torchlit dinner',       'The innkeeper\'s hypocras',    'Live entertainment at table'] },
       ],
     },

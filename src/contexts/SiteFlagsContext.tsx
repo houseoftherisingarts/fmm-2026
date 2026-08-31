@@ -3,6 +3,7 @@ import {
   type SiteFlags, SITE_FLAGS_DEFAULTS,
   subscribeSiteFlags, setSiteFlag as setSiteFlagRemote,
 } from '../firebase/siteFlags';
+import { reglerSystemeNonMembres } from '../lib/billetterie';
 
 // Site-wide feature flags. Live-synced from Firestore (siteFlags/global).
 // localStorage is kept as a same-device offline fallback so the first
@@ -56,6 +57,12 @@ export const SiteFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }),
     [flags, ready],
   );
+
+  // Les helpers de lib/billetterie sont appelés hors de React (clics,
+  // événement global) et ne peuvent pas lire ce contexte. Le miroir se
+  // règle pendant le rendu du provider, jamais dans un effet : les
+  // enfants rendent après lui, ils lisent donc toujours la bonne valeur.
+  reglerSystemeNonMembres(flags.billetsNonMembres);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };
