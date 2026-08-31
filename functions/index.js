@@ -2257,17 +2257,21 @@ async function crediter(uid, montant, cle) {
  *  achat-boutique' se pose ici même, une seule fois pour tous les
  *  appelants (Alex, 2026-08-28). */
 async function debiter(uid, montant, extra = {}) {
-  const { ref, data } = await assurerBourse(uid);
-  const solde = data.solde || 0;
-  if (solde < montant) throw new HttpsError('failed-precondition', 'Pas assez de Montpellois.');
-  const premiereFois = (data.depense || 0) === 0;
-  const soldeApres = solde - montant;
-  await ref.set({ solde: soldeApres, depense: (data.depense || 0) + montant, maj: FieldValue.serverTimestamp(), ...extra }, { merge: true });
-  if (premiereFois) {
+  const ref = db.collection('bourses').doc(uid);
+  // Garde et écriture dans la même transaction : deux achats lancés coup
+  // sur coup ne passent plus tous deux avec un seul solde.
+  const r = await db.runTransaction(async (tx) => {
+    const data = bourseDe(await tx.get(ref));
+    if (data.solde < montant) throw new HttpsError('failed-precondition', 'Pas assez de Montpellois.');
+    const patch = { solde: data.solde - montant, gagne: data.gagne, depense: data.depense + montant, maj: FieldValue.serverTimestamp(), ...extra };
+    tx.set(ref, patch, { merge: true });
+    return { solde: patch.solde, premiereFois: data.depense === 0 };
+  });
+  if (r.premiereFois) {
     await poserBadge(uid, 'premiere-depense');
     await poserBadge(uid, 'premier-achat-boutique');
   }
-  return soldeApres;
+  return r.solde;
 }
 
 /** L'audiophile : cinq ambiances ou albums achetés, peu importe le
