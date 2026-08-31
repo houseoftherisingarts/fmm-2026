@@ -259,6 +259,11 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   const torcheB = new THREE.PointLight(0xff3d0a, 3.4, 16);
   torcheB.position.set(7, 5, 7);
   scene.add(torcheB);
+  // Une pointe froide au-dessus de la table : sans elle, le chêne clair
+  // et le bois teint virent tous les deux au même orange.
+  const jour = new THREE.PointLight(0x8fa6ff, 1.1, 22);
+  jour.position.set(0, 9, -2);
+  scene.add(jour);
 
   // ── La salle et la table ───────────────────────────────────────────
   // Même taverne que le hnefatafl : un seul décor, deux jeux, et le
