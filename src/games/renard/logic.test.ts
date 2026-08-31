@@ -91,19 +91,8 @@ cas('le renard n’enjambe pas une oie adossée à une autre pièce', () => {
 });
 
 cas('les sauts s’enchaînent dans le même tour', () => {
-  const p = vide();
-  pose(p, 3, 3, 'renard');
-  pose(p, 3, 4, 'oie');   // premier saut vers (3,5)
-  pose(p, 4, 5, 'oie');   // second saut vers (5,5)... hors croix, donc:
-  // (5,5) n'existe pas. On enchaîne plutôt vers le haut.
-  p[pointDe(4, 5)] = null;
-  pose(p, 2, 5, 'oie');   // depuis (3,5), saut vers (1,5)... hors croix.
-  p[pointDe(2, 5)] = null;
-  // Chaîne valide : (3,3) saute (3,4) vers (3,5), puis saute (2,5)?
-  // (2,5) est sur la croix, (1,5) ne l'est pas. On prend la verticale.
-  pose(p, 4, 3, 'oie');
-  pose(p, 4, 1, 'oie');
-  // (3,3) saute (4,3) vers (5,3); de (5,3) rien. Chaîne horizontale à la place :
+  // Le renard part de (3,1) et remonte la rangée du milieu : il saute
+  // (3,2) pour se poser en (3,3), puis (3,4) pour finir en (3,5).
   const q = vide();
   pose(q, 3, 1, 'renard');
   pose(q, 3, 2, 'oie');   // saut vers (3,3)
