@@ -20,6 +20,7 @@ import { auth, isFirebaseReady } from '../firebase';
 import { watchAdminRole, backfillUid } from '../firebase/adminRoles';
 import { assurerFiche } from '../firebase/ordre';
 import type { AdminRole } from '../lib/adminPermissions';
+import { codeAuth } from '../lib/authErreurs';
 
 // Allowlist: who counts as a SUPER ADMIN by email. Sourced from
 // VITE_ADMIN_EMAILS (comma-separated). Each entry is either a full
@@ -45,6 +46,21 @@ function emailMatchesAllowlist(email: string, allow: string[]): boolean {
 
 const STORAGE_EMAIL = 'fmm.auth.emailForSignIn';
 
+// Le domaine court sert de raccourci et redirige (301) vers le vrai
+// domaine. Un lien de connexion qui repasserait par là risque de perdre
+// ses paramètres en chemin, et de toute façon la mémoire du navigateur
+// (l'adresse retenue) appartient à l'origine d'où part la demande. Le
+// lien revient donc toujours sur le domaine canonique.
+const ORIGINE_CANONIQUE = 'https://www.festivalmedievaldemontpellier.org';
+const DOMAINES_RACCOURCIS = /(^|\.)festivalmedieval\.org$/i;
+
+function origineDeRetour(): string {
+  const h = window.location.hostname;
+  return DOMAINES_RACCOURCIS.test(h) ? ORIGINE_CANONIQUE : window.location.origin;
+}
+
+export type EtatLien = 'aucun' | 'verification' | 'courrielRequis' | 'erreur';
+
 interface AuthState {
   user: User | null;
   loading: boolean;
@@ -64,6 +80,21 @@ interface AuthState {
   resetPassword: (email: string) => Promise<void>;
   sendMagicLink: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Où en est la finalisation d'un lien de connexion reçu par
+   *  courriel. 'aucun' = la page n'est pas une page d'atterrissage.
+   *  'verification' = le lien est en train d'être échangé contre une
+   *  session. 'courrielRequis' = le lien s'ouvre dans un navigateur qui
+   *  ne se souvient pas de l'adresse (autre appareil, autre fureteur,
+   *  navigation privée), il faut la redemander. 'erreur' = le lien est
+   *  mort ou l'échange a échoué. */
+  lienEtat: EtatLien;
+  /** Le code Firebase de la dernière erreur du lien, ou ''. */
+  lienCode: string;
+  /** Termine la connexion avec l'adresse que la personne vient de
+   *  retaper. Ne jette pas : l'état du contexte porte le résultat. */
+  finaliserLien: (email: string) => Promise<void>;
+  /** Referme l'écran de finalisation et nettoie l'adresse du lien. */
+  abandonnerLien: () => void;
   signInModalOpen: boolean;
   openSignIn: () => void;
   closeSignIn: () => void;
@@ -75,28 +106,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [signInModalOpen, setOpen] = useState(false);
+  const [lienEtat, setLienEtat] = useState<EtatLien>(() =>
+    auth && typeof window !== 'undefined' && isSignInWithEmailLink(auth, window.location.href)
+      ? 'verification' : 'aucun');
+  const [lienCode, setLienCode] = useState('');
+
+  // Une fois la session ouverte, l'adresse du lien n'a plus rien à faire
+  // dans la barre : elle contient un code à usage unique, et un
+  // rafraîchissement la rejouerait pour rien.
+  const nettoyerAdresse = () => {
+    const url = new URL(window.location.href);
+    ['apiKey', 'oobCode', 'mode', 'lang', 'continueUrl', 'tenantId'].forEach((k) => url.searchParams.delete(k));
+    window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+  };
+
+  /** L'échange du lien contre une vraie session. Ne jette jamais :
+   *  l'écran de finalisation lit `lienEtat` et `lienCode`. */
+  const finaliserLien = async (email: string) => {
+    if (!auth) return;
+    const propre = email.trim();
+    if (!propre.includes('@')) { setLienCode('auth/invalid-email'); setLienEtat('courrielRequis'); return; }
+    setLienEtat('verification'); setLienCode('');
+    try {
+      await signInWithEmailLink(auth, propre, window.location.href);
+      window.localStorage.removeItem(STORAGE_EMAIL);
+      nettoyerAdresse();
+      setLienEtat('aucun'); setLienCode('');
+      setOpen(false);
+    } catch (e) {
+      const code = codeAuth(e);
+      // Une adresse qui ne correspond pas au lien laisse le code intact :
+      // la personne retape et réessaie. Un lien mort, lui, est mort.
+      const recuperable = code === 'auth/invalid-email' || code === 'auth/missing-email';
+      setLienCode(code === 'auth/invalid-email' ? 'lien/adresse-differente' : (code || 'auth/invalid-action-code'));
+      setLienEtat(recuperable ? 'courrielRequis' : 'erreur');
+      console.warn('[Auth] finalisation du lien refusée :', code || e);
+    }
+  };
+
+  const abandonnerLien = () => {
+    window.localStorage.removeItem(STORAGE_EMAIL);
+    nettoyerAdresse();
+    setLienEtat('aucun'); setLienCode('');
+  };
 
   // Subscribe to auth state + handle email-link return.
   useEffect(() => {
     if (!auth) { setLoading(false); return; }
 
-    // Complete sign-in if we landed back from a magic link.
+    // Le retour du lien reçu par courriel. L'adresse retenue au départ
+    // n'existe que sur l'origine et le navigateur d'où la demande est
+    // partie : ouvrir le lien sur le téléphone, dans un autre fureteur
+    // ou en navigation privée tombe forcément à vide. Dans ce cas
+    // l'écran de finalisation la redemande, au lieu du `window.prompt`
+    // que les navigateurs mobiles avalent sans rien dire.
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      let savedEmail = window.localStorage.getItem(STORAGE_EMAIL) || '';
-      if (!savedEmail) {
-        savedEmail = window.prompt('Confirmez votre courriel pour terminer la connexion :') || '';
-      }
-      if (savedEmail) {
-        signInWithEmailLink(auth, savedEmail, window.location.href)
-          .then(() => {
-            window.localStorage.removeItem(STORAGE_EMAIL);
-            // Strip auth params from URL.
-            const url = new URL(window.location.href);
-            ['apiKey', 'oobCode', 'mode', 'lang', 'continueUrl'].forEach((k) => url.searchParams.delete(k));
-            window.history.replaceState({}, '', url.pathname + url.search);
-          })
-          .catch((e) => console.warn('[Auth] email-link sign-in failed:', e));
-      }
+      const retenue = window.localStorage.getItem(STORAGE_EMAIL) || '';
+      if (retenue) void finaliserLien(retenue);
+      else { setLienEtat('courrielRequis'); setLienCode(''); }
     }
 
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -147,11 +214,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const sendMagicLink = async (email: string) => {
     if (!auth) throw new Error('Firebase not configured');
-    await sendSignInLinkToEmail(auth, email, {
-      url: window.location.origin + window.location.pathname,
+    const propre = email.trim();
+    // Le projet Firebase envoie ses courriels en anglais par défaut
+    // (`defaultLocale: en` dans la configuration). Une personne qui
+    // demande son lien depuis une page française doit le recevoir en
+    // français, sinon le courriel ressemble à un pourriel et finit
+    // ignoré : c'est là qu'une inscription se perd.
+    auth.languageCode = window.location.pathname.startsWith('/en') ? 'en' : 'fr';
+    await sendSignInLinkToEmail(auth, propre, {
+      url: origineDeRetour() + window.location.pathname,
       handleCodeInApp: true,
     });
-    window.localStorage.setItem(STORAGE_EMAIL, email);
+    window.localStorage.setItem(STORAGE_EMAIL, propre);
   };
 
   const signOut = async () => {
@@ -202,7 +276,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signInModalOpen,
     openSignIn: () => setOpen(true),
     closeSignIn: () => setOpen(false),
-  }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen]);
+    lienEtat, lienCode, finaliserLien, abandonnerLien,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen, lienEtat, lienCode]);
 
   // Une fiche importée se réclame à la première vraie connexion : le
   // petit « i » du registre disparaît alors (Alex, 2026-08-28).

@@ -103,7 +103,7 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
           Bascules visibles côté public. Synchronisées en temps réel via Firestore (<code className="text-brass">siteFlags/global</code>).
         </p>
         <div className="space-y-1">
-          {Object.keys(flags)
+          {Object.keys(flags).filter((k) => typeof flags[k] === 'boolean')
             // `knightPlacementEditor` has its own dedicated toggle inside
             // « Écran d'accueil »; the per-page publication flags get their own
             // labeled panel below → keep both out of this generic list.

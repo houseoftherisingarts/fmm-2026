@@ -33,6 +33,10 @@ const ConsentBanner = lazy(() => import('./components/layout/ConsentBanner'));
 const PorteBilletterieGlobale = lazy(() =>
   import('./components/billets/PorteBilletterie').then((m) => ({ default: m.PorteBilletterieGlobale })));
 const SignInModal   = lazy(() => import('./components/auth/SignInModal'));
+// L'atterrissage du lien de connexion reçu par courriel. Monté au-dessus
+// de tout le site : le lien peut ramener sur n'importe quelle page, et
+// en mode « placeholder » l'intro couvre l'écran.
+const FinaliserLien = lazy(() => import('./components/auth/FinaliserLien'));
 
 import { logPageView } from './firebase';
 import { trackPixelPageView } from './lib/metaPixel';
@@ -400,6 +404,7 @@ const App: React.FC = () => (
           <GlobalFireBackdrop />
           <Suspense fallback={null}>
             <SignInModal />
+            <FinaliserLien />
           </Suspense>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>

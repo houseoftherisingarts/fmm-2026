@@ -4,16 +4,58 @@ import { retenirLeCode, codeRetenu } from '../../firebase/parrainage';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Check, KeyRound, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useUI } from '../../contexts/AppContext';
+import { messageAuth, codeAuth, CODES_COMPTE_EXISTANT } from '../../lib/authErreurs';
 
 // Multi-provider sign-in / sign-up modal: Google + email/password
 // (login OR account creation) + magic link. Triggered via
 // useAuth().openSignIn(). Closes on successful authentication.
+// Les phrases qui rapportent un résultat à la personne. Les libellés du
+// formulaire restent en français pour l'instant; ce qui suit une erreur
+// ou un envoi, non : c'est exactement là qu'une inscription se perd.
+const TEXTES = {
+  FR: {
+    errCourriel: 'Ce courriel n’est pas valide.',
+    errCourt: 'Le mot de passe doit contenir au moins huit caractères.',
+    errPasPareil: 'Les deux mots de passe ne sont pas les mêmes.',
+    errCourrielDabord: 'Entrez d’abord votre courriel.',
+    lienTitre: 'Lien envoyé',
+    lienEnvoyeA: 'Un lien de connexion vient de partir vers',
+    lienConsigne: 'Ouvrez votre boîte de courriel et cliquez sur le lien. Il vaut une heure.',
+    resetEnvoye: 'Courriel de réinitialisation envoyé à',
+    aideCompte: 'Le lien de connexion ouvre ce compte sans mot de passe, même s’il a été créé avec Google ou à l’achat d’un billet. Vous pourrez poser un mot de passe ensuite, depuis votre fiche.',
+    lienRecevoir: 'Recevoir un lien de connexion',
+    lienEnvoi: 'Envoi…',
+    avecGoogle: 'Se connecter avec Google',
+    courrielEnvoye: 'Courriel envoyé',
+    definirMdp: 'Définir un mot de passe',
+  },
+  EN: {
+    errCourriel: 'That email address is not valid.',
+    errCourt: 'The password needs at least eight characters.',
+    errPasPareil: 'The two passwords are not the same.',
+    errCourrielDabord: 'Enter your email address first.',
+    lienTitre: 'Link sent',
+    lienEnvoyeA: 'A sign-in link has just gone out to',
+    lienConsigne: 'Open your inbox and click the link. It is good for one hour.',
+    resetEnvoye: 'Reset email sent to',
+    aideCompte: 'The sign-in link opens this account without a password, even if it was created with Google or when a ticket was bought. You can set a password afterwards, from your profile.',
+    lienRecevoir: 'Get a sign-in link',
+    lienEnvoi: 'Sending…',
+    avecGoogle: 'Sign in with Google',
+    courrielEnvoye: 'Email sent',
+    definirMdp: 'Set a password',
+  },
+} as const;
+
 const SignInModal: React.FC = () => {
   const {
     signInModalOpen, closeSignIn,
     signInWithGoogle, signInWithPassword, signUpWithPassword,
     sendMagicLink, resetPassword,
   } = useAuth();
+  const { lang } = useUI();
+  const t = TEXTES[lang];
   // Top-level mode: log-in vs create-new-account.
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   // Inside sign-in mode, the user picks password or magic-link.
@@ -61,9 +103,7 @@ const SignInModal: React.FC = () => {
   };
 
   const setErrFromException = (e: unknown) => {
-    const raw = e instanceof Error ? e.message : String(e);
-    const codeMatch = raw.match(/auth\/[a-z-]+/);
-    setErr({ message: humanError(e), code: codeMatch ? codeMatch[0] : '' });
+    setErr({ message: messageAuth(e, lang), code: codeAuth(e) });
   };
   const setLocalErr = (message: string) => setErr({ message, code: '' });
 
@@ -83,9 +123,9 @@ const SignInModal: React.FC = () => {
 
   const onSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.includes('@')) { setLocalErr('Courriel invalide.'); return; }
-    if (password.length < 8)  { setLocalErr('Le mot de passe doit contenir au moins 8 caractères.'); return; }
-    if (password !== confirm) { setLocalErr('Les mots de passe ne correspondent pas.'); return; }
+    if (!email.includes('@')) { setLocalErr(t.errCourriel); return; }
+    if (password.length < 8)  { setLocalErr(t.errCourt); return; }
+    if (password !== confirm) { setLocalErr(t.errPasPareil); return; }
     setBusy(true); setErr(null);
     try { await signUpWithPassword(email, password, displayName); reset(); }
     catch (e2) { setErrFromException(e2); setBusy(false); }
@@ -101,23 +141,27 @@ const SignInModal: React.FC = () => {
   };
 
   const onReset = async () => {
-    if (!email.includes('@')) { setLocalErr('Entrez d’abord votre courriel.'); return; }
+    if (!email.includes('@')) { setLocalErr(t.errCourrielDabord); return; }
     setBusy(true); setErr(null);
     try { await resetPassword(email); setResetSent(true); }
     catch (e2) { setErrFromException(e2); }
     setBusy(false);
   };
 
-  // Codes where the right move is "use Google or reset your password":
-  // typically these mean the account exists but doesn't have a
-  // password set (or the password is wrong).
-  const ACCOUNT_RECOVERY_CODES = new Set([
-    'auth/email-already-in-use',
-    'auth/invalid-credential',
-    'auth/wrong-password',
-    'auth/invalid-login-credentials',
-  ]);
-  const showRecoveryHelp = !!err && ACCOUNT_RECOVERY_CODES.has(err.code);
+  // Le compte existe, mais pas par le chemin que la personne vient
+  // d'essayer : compte Google, ou compte ouvert d'office lors d'un achat
+  // de billet, qui n'a aucun mot de passe. Le lien de connexion est la
+  // seule porte qui marche dans tous ces cas, donc il passe en premier.
+  const showRecoveryHelp = !!err && CODES_COMPTE_EXISTANT.has(err.code);
+
+  // Le lien de connexion, demandé depuis le panneau de récupération.
+  const onLienDepuisErreur = async () => {
+    if (!email.includes('@')) { setLocalErr(t.errCourrielDabord); return; }
+    setBusy(true);
+    try { await sendMagicLink(email); setErr(null); setLinkSent(true); }
+    catch (e2) { setErrFromException(e2); }
+    setBusy(false);
+  };
 
   // Switching modes resets the form-level error/state but keeps email
   // typed (so users don't re-enter it when bouncing between flows).
@@ -133,7 +177,12 @@ const SignInModal: React.FC = () => {
       {signInModalOpen && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-midnight-deep/80 backdrop-blur-md"
+          // `overflow-y-auto` + `items-start` + `my-auto` sur le panneau : le
+          // formulaire d'inscription fait 923 px de haut, un téléphone en a 844.
+          // Sans ça le haut de la fenêtre sortait de l'écran, sans moyen de
+          // remonter, et les boutons du bas passaient sous le bandeau de
+          // témoins (z-100), qui les rendait tout simplement incliquables.
+          className="fixed inset-0 z-[105] flex items-start justify-center px-4 py-6 overflow-y-auto bg-midnight-deep/80 backdrop-blur-md"
           onClick={() => { closeSignIn(); reset(); }}
         >
           <motion.div
@@ -141,7 +190,7 @@ const SignInModal: React.FC = () => {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.97 }}
             transition={{ type: 'spring', damping: 24, stiffness: 220 }}
-            className="relative glass-deep rounded-lg-card p-7 md:p-9 w-full max-w-md text-ivory"
+            className="relative my-auto glass-deep rounded-lg-card p-7 md:p-9 w-full max-w-md text-ivory"
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={() => { closeSignIn(); reset(); }}
@@ -154,12 +203,12 @@ const SignInModal: React.FC = () => {
                 <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
                   <Check size={26} className="text-brass" />
                 </div>
-                <h2 className="font-display title-medieval text-2xl text-ivory mb-2">Lien envoyé</h2>
+                <h2 className="font-display title-medieval text-2xl text-ivory mb-2">{t.lienTitre}</h2>
                 <p className="font-editorial text-ivory-soft mb-2">
-                  Un lien de connexion a été envoyé à <span className="text-brass">{email}</span>.
+                  {t.lienEnvoyeA} <span className="text-brass">{email}</span>.
                 </p>
                 <p className="font-editorial italic text-sm text-ivory-soft">
-                  Cliquez sur le lien dans votre boîte de courriel pour vous connecter.
+                  {t.lienConsigne}
                 </p>
               </div>
             ) : (
@@ -248,7 +297,7 @@ const SignInModal: React.FC = () => {
 
                         {resetSent ? (
                           <p className="text-xs font-editorial italic text-emerald-300 mb-3">
-                            Courriel de réinitialisation envoyé à {email}.
+                            {t.resetEnvoye} {email}.
                           </p>
                         ) : (
                           <button type="button" onClick={onReset} disabled={busy}
@@ -347,9 +396,17 @@ const SignInModal: React.FC = () => {
                         }}
                       >
                         <p className="font-editorial italic text-[12px] text-ivory-soft leading-snug mb-3">
-                          Si vous avez créé ce compte avec Google, connectez-vous avec Google. Sinon,
-                          recevez un courriel pour définir / réinitialiser votre mot de passe.
+                          {t.aideCompte}
                         </p>
+                        <button
+                          type="button"
+                          onClick={onLienDepuisErreur}
+                          disabled={busy}
+                          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 mb-2 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50"
+                        >
+                          <Mail size={11} />
+                          {busy ? t.lienEnvoi : t.lienRecevoir}
+                        </button>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <button
                             type="button"
@@ -363,7 +420,7 @@ const SignInModal: React.FC = () => {
                               <path fill="#FBBC05" d="M3.95 10.71A5.41 5.41 0 0 1 3.66 9c0-.59.1-1.17.29-1.71V4.96H.96A8.99 8.99 0 0 0 0 9c0 1.45.35 2.83.96 4.04l2.99-2.33z"/>
                               <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.42 0 9 0A8.99 8.99 0 0 0 .96 4.96l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
                             </svg>
-                            Se connecter avec Google
+                            {t.avecGoogle}
                           </button>
                           <button
                             type="button"
@@ -372,7 +429,7 @@ const SignInModal: React.FC = () => {
                             className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold transition rounded-card disabled:opacity-50"
                           >
                             <Mail size={11} />
-                            {resetSent ? 'Courriel envoyé' : 'Définir un mot de passe'}
+                            {resetSent ? t.courrielEnvoye : t.definirMdp}
                           </button>
                         </div>
                       </div>
@@ -402,23 +459,5 @@ const SignInModal: React.FC = () => {
     </AnimatePresence>
   );
 };
-
-// Translate Firebase Auth error codes to readable French. The
-// account-recovery panel renders below for the codes that need it,
-// so these messages stay short.
-function humanError(e: unknown): string {
-  const msg = e instanceof Error ? e.message : String(e);
-  if (msg.includes('auth/invalid-credential') || msg.includes('auth/wrong-password') || msg.includes('auth/invalid-login-credentials'))
-    return 'Identifiants incorrects : votre compte a peut-être été créé avec Google.';
-  if (msg.includes('auth/user-not-found'))         return 'Aucun compte trouvé pour ce courriel.';
-  if (msg.includes('auth/email-already-in-use'))   return 'Un compte existe déjà pour ce courriel.';
-  if (msg.includes('auth/weak-password'))          return 'Mot de passe trop faible : minimum 8 caractères.';
-  if (msg.includes('auth/invalid-email'))          return 'Courriel invalide.';
-  if (msg.includes('auth/too-many-requests'))      return 'Trop de tentatives. Réessayez plus tard.';
-  if (msg.includes('auth/network-request-failed')) return 'Problème de réseau.';
-  if (msg.includes('auth/popup-closed-by-user'))   return 'Connexion Google annulée.';
-  if (msg.includes('auth/operation-not-allowed'))  return 'Méthode non activée dans Firebase Console.';
-  return msg;
-}
 
 export default SignInModal;
