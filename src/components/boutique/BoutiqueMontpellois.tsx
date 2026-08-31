@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight } from 'lucide-react';
+import { Palette, Disc3, Gift, Music, Ticket, BookOpen, Loader2, ArrowUpRight, Layers } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { suivreSansPub } from '../../firebase/sansPub';
@@ -10,6 +10,10 @@ import {
 } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
+import { DOS_CARTES } from '../../games/tarot/dos';
+
+// Les dos vendus ici et leur prix; les autres dos (caravane, William) se gagnent.
+const PRIX_DOS: Record<string, number> = { salon: 0 };
 import { lienBilletterie, ouvrirBilletterie } from '../../lib/billetterie';
 import PieceMontpellois from './PieceMontpellois';
 import SansPubPanel from '../compte/SansPubPanel';
@@ -30,6 +34,12 @@ export const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: st
   dore:  { FR: 'Doré du festin',  EN: 'Festival gold',  couleur: '#D8B05A' },
 };
 const SKINS_ACHETABLES: Array<'bleu' | 'dore'> = ['bleu', 'dore'];
+// Les couleurs réelles des skins (src/index.css, html.skin-*), pour
+// que la boutique montre le vrai velours et le vrai métal.
+const APERCU_SKIN: Record<'bleu' | 'dore', { velours: string; metal: string }> = {
+  bleu: { velours: 'linear-gradient(160deg, #0A1322, #050A13)', metal: '#B9C4D2' },
+  dore: { velours: 'linear-gradient(160deg, #120D07, #080503)', metal: '#D9B44A' },
+};
 
 // Le même appel que le banquet de Nourriture (src/pages/NourriturePage.tsx) :
 // une place, le même lien de secours si la fonction serveur tombe.
@@ -88,6 +98,13 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   function reclamer() {
     window.dispatchEvent(new Event('fmm:ouvrir-recompenses'));
     setDejaReclameLocal(true);
+  }
+
+  async function acheterDos(id: string) {
+    setErreur(null); setEnCours(`dos_${id}`);
+    try { await acheterCosmetique(`dos_${id}`); }
+    catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
+    finally { setEnCours(null); }
   }
 
   async function acheterUneAmbiance(id: string) {
@@ -164,8 +181,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               moins que la campagne publique (voir src/lib/billetterie.ts). */}
           <div className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
             <div className="flex items-center gap-3">
-              <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(244,239,227,0.05)', border: '1.5px solid rgba(216,176,90,0.4)' }}>
-                <Ticket size={22} style={{ color: '#D8B05A' }} />
+              <span className="w-14 h-14 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                <img src="/photos/tournage-2026/cavaliere-charge.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
               </span>
               <div className="min-w-0">
                 <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? 'Billet du festival' : 'Festival ticket'}</p>
@@ -183,8 +200,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               Nourriture (LIEN_BANQUET), une place à la fois. */}
           <div className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
             <div className="flex items-center gap-3">
-              <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(244,239,227,0.05)', border: '1.5px solid rgba(216,176,90,0.4)' }}>
-                <UtensilsCrossed size={22} style={{ color: '#D8B05A' }} />
+              <span className="w-14 h-14 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                <img src="/wix/nourriture/banquet-cercle.webp" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
               </span>
               <div className="min-w-0">
                 <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? 'Billet du banquet' : 'Banquet ticket'}</p>
@@ -234,12 +251,16 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       <section>
         <p className="witcher-stat-label mb-4"><Palette size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Skins de la plateforme' : 'Platform skins'}</p>
         <div className="grid sm:grid-cols-2 gap-4">
-          {SKINS_ACHETABLES.map((skin) => {
+          {SKINS_ACHETABLES.filter((skin) => !(skinsDebloques.includes(skin) || skinActuel === skin)).map((skin) => {
             const info = NOMS_SKIN[skin];
-            const aDeja = sansPub || skinsDebloques.includes(skin) || skinActuel === skin;
+            const aDeja = sansPub;
             return (
               <div key={skin} className="glass-light rounded-lg-card p-4 flex items-center gap-3">
-                <span className="w-14 h-14 shrink-0 rounded-md" style={{ background: info.couleur, border: '1.5px solid rgba(244,239,227,0.25)' }} />
+                {/* L'aperçu du skin : son velours et son métal, comme à l'écran (Alex, 2026-08-30). */}
+                <span className="w-14 h-14 shrink-0 rounded-md relative overflow-hidden" style={{ background: APERCU_SKIN[skin].velours, border: `1.5px solid ${APERCU_SKIN[skin].metal}` }}>
+                  <span className="absolute inset-2 rounded-full" style={{ border: `2px solid ${APERCU_SKIN[skin].metal}`, boxShadow: `0 0 14px ${APERCU_SKIN[skin].metal}66 inset` }} />
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{ background: APERCU_SKIN[skin].metal }} />
+                </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? info.FR : info.EN}</p>
                   <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold mt-1">
@@ -257,6 +278,35 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         </div>
       </section>
 
+      {/* Les dos de carte du tarot (Alex, 2026-08-30) : le dos du Salon des
+          Inconnus est offert; les autres se gagnent aux récompenses
+          quotidiennes et ne se vendent pas. Un dos obtenu quitte la
+          boutique et vit au coffre. */}
+      {DOS_CARTES.some((d) => d.id in PRIX_DOS && !(bourse?.dosTarot || []).includes(d.id)) && (
+        <section>
+          <p className="witcher-stat-label mb-4"><Layers size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Dos de carte du tarot' : 'Tarot card backs'}</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {DOS_CARTES.filter((d) => d.id in PRIX_DOS && !(bourse?.dosTarot || []).includes(d.id)).map((d) => (
+              <div key={d.id} className="glass-light rounded-lg-card p-4 flex items-center gap-3">
+                <span className="w-14 h-20 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                  <img src={d.image} alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-display title-medieval text-sm text-ivory">{fr ? d.nomFR : d.nomEN}</p>
+                  <p className="font-sans text-xs mt-0.5 inline-flex items-center gap-1" style={{ color: '#D8B05A' }}>
+                    {PRIX_DOS[d.id] === 0 ? (fr ? 'Offert' : 'Free') : (<><PieceMontpellois size={14} />{PRIX_DOS[d.id]}</>)}
+                  </p>
+                </div>
+                <button type="button" disabled={enCours === `dos_${d.id}` || !uid} onClick={() => acheterDos(d.id)}
+                        className="px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
+                  {enCours === `dos_${d.id}` ? <Loader2 size={12} className="animate-spin" /> : (fr ? 'Prendre' : 'Take')}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Ambiances (voir src/lib/ambiances.ts) : les trois du festival
           sont déjà offertes à tous dans le panneau Musique, seules
           celles marquées `gratuite: false` s'achètent ici (Alex,
@@ -268,8 +318,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           {fr ? 'Une musique de plus pour l’onglet Profil, à choisir dans le panneau Musique une fois achetée.' : 'One more track for the Profile tab, pick it in the Music panel once bought.'}
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {AMBIANCES.filter((a) => !a.gratuite).map((a) => {
-            const possedee = (bourse?.ambiances || []).includes(a.id);
+          {AMBIANCES.filter((a) => !a.gratuite && !(bourse?.ambiances || []).includes(a.id)).map((a) => {
+            const possedee = false;
             return (
               <div key={a.id} className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
                 <div className="flex items-center gap-3">

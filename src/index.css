@@ -744,16 +744,17 @@ html.sans-animations-fond .fmm-fire-backdrop {
    .fmm-caravan-page et [data-admin-skin="parchment"] plus haut : on
    redéfinit les jetons de couleur, toutes les classes Tailwind qui
    les lisent (bg-brass, text-brass…) suivent automatiquement. */
-/* Bleu et argent (Alex, 2026-08-28) : tout ce qui était or devient
-   bleuté, et l'accent tire vers l'argent poli. */
+/* Bleu et argent, refait le 2026-08-30 (Alex : « affreux ») : une nuit
+   de velours bleu profond, presque noire, et l'accent est un argent
+   poli légèrement chaud, jamais un bleu ciel qui délave le site. */
 html.skin-bleu {
-  --color-velvet:        #0C1B30;
-  --color-velvet-deep:   #050C17;
-  --color-amber-glow:    #CFE0F2;
-  --color-brass:         #8FAFD0;
-  --color-brass-soft:    #B6CDE6;
-  --color-copper:        #5C7EA6;
-  --color-mustard:       #A8C4E0;
+  --color-velvet:        #0A1322;
+  --color-velvet-deep:   #050A13;
+  --color-amber-glow:    #E9EEF4;
+  --color-brass:         #B9C4D2;
+  --color-brass-soft:    #DCE3EB;
+  --color-copper:        #7D8FA6;
+  --color-mustard:       #C9D3DF;
 }
 /* Vert de forêt et vieil étain (Alex, 2026-08-28), le skin à un
    Montpellois. */
@@ -766,13 +767,17 @@ html.skin-vert {
   --color-copper:        #4E7550;
   --color-mustard:       #96BE96;
 }
+/* Doré du festin, refait le 2026-08-30 : un noir chaud très sombre
+   (jamais le brun clair d'avant) pour que l'or se lise comme du métal
+   sur du velours, et un vrai or de dorure à la feuille. */
 html.skin-dore {
-  --color-velvet:        #3A2412;
-  --color-velvet-deep:   #22140A;
-  --color-amber-glow:    #F2D08A;
-  --color-brass:         #D4AF6A;
-  --color-brass-soft:    #E8C989;
-  --color-copper:        #C6873A;
+  --color-velvet:        #120D07;
+  --color-velvet-deep:   #080503;
+  --color-amber-glow:    #F6DFA3;
+  --color-brass:         #D9B44A;
+  --color-brass-soft:    #EBCF7E;
+  --color-copper:        #A6782C;
+  --color-mustard:       #E3C468;
 }
 
 /* ── Admin : registre Thronebreaker ────────────────────────────────
