@@ -135,8 +135,9 @@ const MiniRenard: React.FC<{
   oies: readonly number[];
   saut?: readonly [number, number];
   prise?: number;
+  cibles?: readonly number[];
   legende?: string;
-}> = ({ renard, oies, saut, prise, legende }) => (
+}> = ({ renard, oies, saut, prise, cibles = [], legende }) => (
   <Planchette legende={legende}>
     {ARETES_RENARD.map(([a, b], i) => {
       const [ax, ay] = renardXY(a);
@@ -157,6 +158,10 @@ const MiniRenard: React.FC<{
         />
       );
     })()}
+    {cibles.map((i) => {
+      const [x, y] = renardXY(i);
+      return <circle key={`v${i}`} cx={x} cy={y} r="5.6" fill={VERT} fillOpacity="0.35" stroke={VERT} strokeWidth="1.2" />;
+    })}
     {oies.map((i) => {
       const [x, y] = renardXY(i);
       const emportee = i === prise;
@@ -287,7 +292,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         schema: <MiniMerelle clairs={[1]} sombres={[9, 21]} cibles={[0, 2, 4]} legende="Le pion tenu et ses voisins libres" />,
       },
       {
-        titre: 'Où trouvent-elles, les récompenses',
+        titre: 'Où se trouvent les récompenses',
         corps: 'La roue des sept jours et la boutique donnent les ambiances, les plateaux et les pièces des quatre jeux. Tout ce que vous gagnez dort dans le coffre de votre espace, sous l’onglet des badges, et se choisit de là. La pastille de musique, ici en haut, ouvre les ambiances que vous possédez déjà.',
         ancre: 'musique',
       },
@@ -337,7 +342,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         titre: 'Un coup se joue en deux clics',
         corps: 'Cliquez une pièce à vous et les points verts s’allument autour d’elle, puis cliquez celui où vous voulez aller. Chaque camp avance d’un point à la fois, le long des lignes brûlées au fer.',
         ancre: 'plateau',
-        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 3), pointDe(5, 4)]} saut={[pointDe(3, 3), pointDe(2, 3)]} legende="La pièce tenue et son point vert" />,
+        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 3), pointDe(5, 4)]} cibles={[pointDe(2, 3), pointDe(3, 2), pointDe(3, 4), pointDe(4, 3)]} legende="La pièce tenue et ses points verts" />,
       },
       {
         titre: 'Le saut du renard',
@@ -351,7 +356,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'compteur',
       },
       {
-        titre: 'Où trouvent-elles, les récompenses',
+        titre: 'Où se trouvent les récompenses',
         corps: 'La roue des sept jours et la boutique donnent les ambiances, les plateaux et les pièces des quatre jeux. Tout ce que vous gagnez dort dans le coffre de votre espace, sous l’onglet des badges. La pastille de musique, ici en haut, ouvre les ambiances que vous possédez déjà.',
         ancre: 'musique',
       },
@@ -367,7 +372,7 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         titre: 'A move takes two clicks',
         corps: 'Click a piece of yours and the green points light up around it, then click the one you want. Each side moves one point at a time, along the burnt lines.',
         ancre: 'plateau',
-        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 3), pointDe(5, 4)]} saut={[pointDe(3, 3), pointDe(2, 3)]} legende="The held piece and its green point" />,
+        schema: <MiniRenard renard={pointDe(3, 3)} oies={[pointDe(5, 3), pointDe(5, 4)]} cibles={[pointDe(2, 3), pointDe(3, 2), pointDe(3, 4), pointDe(4, 3)]} legende="The held piece and its green points" />,
       },
       {
         titre: 'The fox leaps',
