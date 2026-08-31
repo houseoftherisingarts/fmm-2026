@@ -669,8 +669,8 @@ const DesPage: React.FC = () => {
               <BoutonMusique
                 ref={musiqueRef}
                 cle="des"
-                url="/audio/master-of-the-feast.mp3"
-                titre="Master of the Feast · Kevin MacLeod"
+                defaut="festin"
+                lang={lang}
                 onLabel={fr ? 'Couper' : 'Mute'}
                 offLabel={fr ? 'Musique' : 'Music'}
               />
