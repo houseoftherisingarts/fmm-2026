@@ -17,7 +17,7 @@ import { PAS, POINTS, pointDe, type Coup, type Plateau } from './logic';
 /** L'écart entre deux points du plateau. Sept points de large, donc
  *  une planche d'environ douze unités : le cadrage de sceneSetup, réglé
  *  pour le damier du tafl, la prend sans rien changer. */
-const PAS_3D = 1.7;
+const PAS_3D = 2.0;
 const EPAISSEUR = 0.55;
 
 const HAUTEUR_SURBRILLANCE = 0.03;
@@ -35,13 +35,13 @@ const positionDe = (i: number): THREE.Vector3 => {
 // Même texture que la table des dés et du tafl, pour que les trois
 // jeux du festival soient taillés dans le même arbre.
 function boisDeLaPlanche(): THREE.MeshStandardMaterial {
-  const mat = new THREE.MeshStandardMaterial({ color: 0xb98c5a, roughness: 0.82, metalness: 0.03 });
+  const mat = new THREE.MeshStandardMaterial({ color: 0xd8b483, roughness: 0.8, metalness: 0.03 });
   const tex = new THREE.TextureLoader().load(
     '/jeux/des/table-bois.webp',
     (t) => {
       t.colorSpace = THREE.SRGBColorSpace;
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(2.2, 2.2);
+      t.repeat.set(0.16, 0.16);
       t.anisotropy = 8;
       mat.needsUpdate = true;
     },
@@ -61,8 +61,8 @@ function construirePlateau(): THREE.Group {
   // Une seule pièce de bois, découpée en croix. Deux planches croisées
   // auraient donné deux dessus coplanaires au milieu, donc un
   // scintillement à la moindre rotation de caméra.
-  const a = 1.9;   // demi-largeur d'un bras
-  const L = 5.4;   // demi-longueur de la croix
+  const a = 2.25;  // demi-largeur d'un bras
+  const L = 6.35;  // demi-longueur de la croix
   const forme = new THREE.Shape();
   forme.moveTo(-a, -L);
   forme.lineTo(a, -L); forme.lineTo(a, -a); forme.lineTo(L, -a);
@@ -85,7 +85,7 @@ function construirePlateau(): THREE.Group {
   // Les lignes brûlées au fer, une par voisinage. Elles ne sont pas
   // peintes : elles sont creusées d'un cheveu dans le bois, donc
   // posées juste au-dessus pour rester nettes sous la lumière rase.
-  const braise = new THREE.MeshStandardMaterial({ color: 0x2b1608, roughness: 0.95, metalness: 0 });
+  const braise = new THREE.MeshStandardMaterial({ color: 0x241206, roughness: 0.98, metalness: 0 });
   const faites = new Set<string>();
   POINTS.forEach((p, i) => {
     for (const { dr, dc } of PAS) {
@@ -98,22 +98,22 @@ function construirePlateau(): THREE.Group {
       const b = positionDe(voisin);
       const horizontal = Math.abs(a.x - b.x) > 0.01;
       const ligne = new THREE.Mesh(
-        new THREE.BoxGeometry(horizontal ? PAS_3D : 0.075, 0.035, horizontal ? 0.075 : PAS_3D),
+        new THREE.BoxGeometry(horizontal ? PAS_3D : 0.11, 0.03, horizontal ? 0.11 : PAS_3D),
         braise,
       );
-      ligne.position.set((a.x + b.x) / 2, 0.005, (a.z + b.z) / 2);
+      ligne.position.set((a.x + b.x) / 2, 0.012, (a.z + b.z) / 2);
       groupe.add(ligne);
     }
   });
 
   // Les cupules : un creux au vilebrequin à chaque point, pour que le
   // pion se cale et que le plateau se lise même de loin.
-  const creux = new THREE.MeshStandardMaterial({ color: 0x30190b, roughness: 0.9, metalness: 0 });
-  const creuxGeo = new THREE.CylinderGeometry(0.3, 0.24, 0.08, 20);
+  const creux = new THREE.MeshStandardMaterial({ color: 0x1f0f05, roughness: 0.95, metalness: 0 });
+  const creuxGeo = new THREE.CylinderGeometry(0.38, 0.3, 0.1, 22);
   POINTS.forEach((_, i) => {
     const m = new THREE.Mesh(creuxGeo, creux);
     m.position.copy(positionDe(i));
-    m.position.y = -0.02;
+    m.position.y = -0.028;
     m.receiveShadow = true;
     groupe.add(m);
   });
