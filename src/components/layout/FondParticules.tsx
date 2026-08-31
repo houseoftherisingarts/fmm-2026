@@ -205,17 +205,17 @@ const FondParticules: React.FC<Props> = ({ variante, className }) => {
         const r = 1 + Math.random() * 2.2;                // 1 à 3,2 px à la naissance
         return {
           x: ((i + 0.2 + Math.random() * 0.6) / nf) * w,
-          periode: 260 + Math.random() * 420,             // ms entre deux bulles
+          periode: 180 + Math.random() * 200,             // ms entre deux bulles : serrées, en chapelet
           prochain: performance.now() + Math.random() * 700,
           r,
-          vy: -(0.9 + r * 0.28 + Math.random() * 0.3),    // les grosses montent plus vite
+          vy: -(1.3 + r * 0.3 + Math.random() * 0.4),     // les grosses montent plus vite
           derive: (Math.random() - 0.5) * 36,             // décalage latéral à l'arrivée
           amp: 1.5 + Math.random() * 3,                   // ondulation, croît en montant
         };
       });
       // La réserve de bulles des filets : assez pour que chaque filet
       // tienne toute la hauteur à sa cadence la plus rapide.
-      const parFilet = Math.ceil((h / 0.9 / 16.7) / 260) + 2;
+      const parFilet = Math.min(60, Math.ceil((h / 1.3 / 16.7) / 180) + 2);
       colonnes = Array.from({ length: nf * parFilet }, () => ({ vivant: false } as Particule));
 
       // La mousse : deux amas près de la surface qui dérivent, un
@@ -290,7 +290,7 @@ const FondParticules: React.FC<Props> = ({ variante, className }) => {
           b.x0 = f.x; b.x = f.x; b.y = h + 4;
           b.r = f.r * (0.85 + Math.random() * 0.3);
           b.vy = f.vy; b.derive = f.derive; b.amp = f.amp;
-          b.a = 0.5 + Math.random() * 0.3;
+          b.a = 0.6 + Math.random() * 0.3;
           b.phase = Math.random() * Math.PI * 2;
           b.sprite = b.r > 2.6 ? 1 : 0;
           b.fin = h * (0.06 + Math.random() * 0.06);

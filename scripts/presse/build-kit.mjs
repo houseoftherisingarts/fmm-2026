@@ -305,7 +305,7 @@ async function shoot(page, html, dest, { fit = false } = {}) {
 // Un carré serré sur le guerrier, tête et épaules dans le tiers haut
 // du cercle, tiré de l'original et non de la vignette. Agrandissement
 // Lanczos plafonné, aucun filtre.
-const ORBE = { orig: '2025-IMG_5107', cx: 0.545, cy: 0.50, size: 1.0 };
+const ORBE = { orig: '2025-IMG_5107', cx: 0.469, cy: 0.457, size: 0.82 };
 async function buildOrbe() {
   const src = path.join(LENA, `${ORBE.orig}.webp`);
   const { width, height } = await sharp(src).metadata();
@@ -532,14 +532,20 @@ ${BASE_URL}/en/press
 };
 
 // ─── 8. Le tout ─────────────────────────────────────────────────────
+// `node scripts/presse/build-kit.mjs --only=escrime,marche` ne rend que
+// ces cartes et saute le reste : les tours de vérification visuelle
+// coûtent dix minutes autrement.
+const ONLY = (process.argv.find((a) => a.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
+
 async function main() {
-  fs.rmSync(OUT, { recursive: true, force: true });
+  if (!ONLY.length) fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT_LOGOS, { recursive: true });
   fs.mkdirSync(OUT_TEXTES, { recursive: true });
+  const cartes = ONLY.length ? CARDS.filter((c) => ONLY.includes(c.key)) : CARDS;
 
   console.log('Codes QR :');
   const qrs = new Map();
-  for (const c of CARDS) {
+  for (const c of cartes) {
     qrs.set(`${c.key}:fr`, await buildQr(c.qr.fr));
     qrs.set(`${c.key}:en`, await buildQr(c.qr.en));
   }
@@ -552,7 +558,7 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 
   console.log('\nCartes explicatives :');
-  for (const card of CARDS) {
+  for (const card of cartes) {
     const photoUrl = url(await basePhoto(card.orig, card.focus));
     for (const lang of ['fr', 'en']) {
       for (const withQr of [false, true]) {
@@ -567,7 +573,7 @@ async function main() {
   }
 
   console.log('\nCartes postales :');
-  for (const p of PHOTOS) {
+  for (const p of (ONLY.length ? PHOTOS.slice(0, 1) : PHOTOS)) {
     const photoUrl = url(await basePhoto(p.orig, p.focus));
     for (const withQr of [false, true]) {
       const suffix = withQr ? '-qr' : '';
@@ -577,6 +583,7 @@ async function main() {
   }
 
   await browser.close();
+  if (ONLY.length) { console.log('\n(--only : logos, textes, vignettes et zip sautés)'); fs.rmSync(TMP, { recursive: true, force: true }); return; }
 
   console.log('\nOrbe de la page :');
   await buildOrbe();

@@ -50,7 +50,7 @@ export const CARDS = [
     },
   },
   {
-    n: '03', key: 'chevaliers', orig: '2025-IMG_5743', focus: 0.40, side: 'right',
+    n: '03', key: 'chevaliers', orig: '2025-IMG_5743', focus: 0.45, side: 'right',
     qr: { fr: '/activites', en: '/en/activities' },
     fr: {
       kicker: 'Chevaliers',
@@ -146,7 +146,7 @@ export const CARDS = [
     },
   },
   {
-    n: '09', key: 'banquet', orig: '2025-IMG_8571', focus: 0.45, side: 'left',
+    n: '09', key: 'banquet', orig: '2025-IMG_4508', focus: 0.5, side: 'right',
     qr: { fr: '/nourriture', en: '/en/food' },
     fr: {
       kicker: 'Le banquet',
