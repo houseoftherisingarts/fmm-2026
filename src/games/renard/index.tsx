@@ -523,7 +523,7 @@ const RenardPage: React.FC = () => {
   // BadgesContext et de PubDebutPartie. Le transtypage saute le jour où
   // le chef les ajoute (voir INTEGRATION.md); la valeur passée à
   // l'exécution est bien « renard ».
-  useBadgeJeu('renard' as unknown as 'tafl');
+  useBadgeJeu('renard');
 
   const [reglages, setReglages] = useState<Reglages>(REGLAGES_DEFAUT);
   const [enPartie, setEnPartie] = useState(false);
@@ -613,7 +613,7 @@ const RenardPage: React.FC = () => {
           {pubEnAttente && (
             <PubDebutPartie
               lang={lang}
-              jeu={'renard' as unknown as 'des'}
+              jeu="renard"
               onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
             />
           )}

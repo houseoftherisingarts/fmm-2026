@@ -88,6 +88,8 @@ const RessourcesPage          = lazy(() => import('./pages/RessourcesPage'));
 const HnefataflGame           = lazy(() => import('./games/hnefatafl'));
 const TarotGame               = lazy(() => import('./games/tarot'));
 const DesGame                 = lazy(() => import('./games/des'));
+const RenardGame              = lazy(() => import('./games/renard'));
+const MerelleGame             = lazy(() => import('./games/merelle'));
 const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
@@ -277,6 +279,7 @@ const Chrome: React.FC = () => {
 // Les jeux occupent l'écran d'un bord à l'autre : aucun pied de page ne
 // doit se dresser dessous (Alex, 2026-08-23 : « une seule fenêtre »).
 const SANS_PIED = [
+  '/jeux/renard', '/en/games/fox-and-geese', '/jeux/merelle', '/en/games/merelle',
   '/', '/en', '/labo-titre', '/backuppage', '/en/backuppage',
   '/jeux/des', '/en/games/dice',
   '/jeux/tarot', '/en/games/tarot',
@@ -478,6 +481,10 @@ const App: React.FC = () => (
                 <Route path="/jeunesse/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />
                 <Route path="/jeux/tarot"           element={<PorteDuJeu><TarotGame /></PorteDuJeu>} />
                 <Route path="/jeux/des"             element={<PorteDuJeu><DesGame /></PorteDuJeu>} />
+                <Route path="/jeux/renard"          element={<PorteDuJeu><RenardGame /></PorteDuJeu>} />
+                <Route path="/en/games/fox-and-geese" element={<PorteDuJeu><RenardGame /></PorteDuJeu>} />
+                <Route path="/jeux/merelle"         element={<PorteDuJeu><MerelleGame /></PorteDuJeu>} />
+                <Route path="/en/games/merelle"     element={<PorteDuJeu><MerelleGame /></PorteDuJeu>} />
                 <Route path="/en/games/dice"        element={<PorteDuJeu><DesGame /></PorteDuJeu>} />
                 <Route path="/en/games/tarot"       element={<PorteDuJeu><TarotGame /></PorteDuJeu>} />
                 <Route path="/en/youth/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />

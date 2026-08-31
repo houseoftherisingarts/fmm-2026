@@ -366,7 +366,7 @@ const MerellePage: React.FC = () => {
   // premiers jeux : le transtypage garde l'appel prévu et la mérelle
   // s'inscrit quand même dans la liste des jeux essayés. INTEGRATION.md
   // demande d'élargir l'union à 'merelle' dans BadgesContext.
-  useBadgeJeu('merelle' as unknown as 'des');
+  useBadgeJeu('merelle');
 
   const [reglage, setReglage] = useState<Reglage>(REGLAGE_DEFAUT);
   const reglageRef = useRef(reglage);
@@ -597,7 +597,7 @@ const MerellePage: React.FC = () => {
           {pubEnAttente && (
             <PubDebutPartie
               lang={lang}
-              jeu={'merelle' as unknown as 'des'}
+              jeu="merelle"
               onContinuer={() => { const action = pubEnAttente; setPubEnAttente(null); action(); }}
             />
           )}

@@ -21,7 +21,7 @@ interface Props {
   lang: 'FR' | 'EN';
   /** Le jeu qui affiche cette pub, pour la répartition par jeu dans
    *  l'admin (siteStats/AAAA-MM-JJ.pubJeuxParJeu). */
-  jeu: 'des' | 'hnefatafl' | 'tarot';
+  jeu: 'des' | 'hnefatafl' | 'tarot' | 'renard' | 'merelle';
   /** Ce qui démarre réellement la partie, une fois la pub passée (ou
    *  tout de suite, si aucun bloc n'est encore configuré). */
   onContinuer: () => void;
