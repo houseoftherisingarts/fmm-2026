@@ -475,9 +475,9 @@ export function monterScene(el: HTMLElement): SceneMerelle {
       if (ancien && !gsap.isTweening(ancien.position)) ancien.position.y = HAUT;
     }
     selection = sel;
-    if (sel !== null) halo(sel, 0xe8b14a, 0.62);
-    for (const p of destinations) halo(p, 0x2ab964, 0.42);
-    for (const p of retraits) halo(p, 0xa6392b, 0.55);
+    if (sel !== null) halo(sel, 0xe8b14a, 0.72, true);
+    for (const p of destinations) halo(p, 0x2ab964, 0.46);
+    for (const p of retraits) halo(p, 0xc0503e, 0.6, true);
   };
 
   // ── Le clic ────────────────────────────────────────────────────────
