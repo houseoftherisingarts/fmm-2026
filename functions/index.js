@@ -2158,14 +2158,17 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
   const { solde, gagneAvant, gagneApres, suite, jour } = await db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const data = snap.exists ? snap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
-    const aujourdhui = new Date().toISOString().slice(0, 10);
-    const hier = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-    const dernier = data.dernierQuotidien && data.dernierQuotidien.toDate ? data.dernierQuotidien.toDate().toISOString().slice(0, 10) : null;
-    if (dernier === aujourdhui) throw new HttpsError('failed-precondition', 'Déjà réclamée aujourd’hui.');
+    // Un vrai délai de 24 heures depuis la dernière réclamation, jamais
+    // une frontière de calendrier (Alex, 2026-08-30 : minuit UTC tombait
+    // à 20 h au Québec et servait deux récompenses le même soir).
+    const JOUR_MS = 24 * 3600000;
+    const dernierMs = data.dernierQuotidien && data.dernierQuotidien.toMillis ? data.dernierQuotidien.toMillis() : 0;
+    const ecoule = Date.now() - dernierMs;
+    if (dernierMs && ecoule < JOUR_MS) throw new HttpsError('failed-precondition', 'Déjà réclamée : la prochaine récompense vient 24 heures après la dernière.');
     // La suite (Alex, 2026-08-28, badge 'quotidien-sept') : elle continue
-    // si la dernière réclamation datait d'hier, elle repart à un jour
-    // sinon (premier jour, ou un jour sauté).
-    const suite = dernier === hier ? (data.quotidienSuite || 0) + 1 : 1;
+    // si la dernière réclamation date de moins de 48 heures, elle repart
+    // à un jour sinon (premier jour, ou un jour sauté).
+    const suite = dernierMs && ecoule < 2 * JOUR_MS ? (data.quotidienSuite || 0) + 1 : 1;
     const jour = ((suite - 1) % 7) + 1;
     const don = ROUE_QUOTIDIENNE[jour - 1];
     const gain = don.montpellois || 0;

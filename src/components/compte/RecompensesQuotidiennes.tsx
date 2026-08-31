@@ -24,12 +24,12 @@ import {
 
 const dateISO = (d: Date = new Date()) => d.toISOString().slice(0, 10);
 
-/** Le temps qu'il reste avant la prochaine récompense (minuit UTC,
- *  la même horloge que le serveur). */
-function resteAvantDemain(): string {
-  const t = new Date();
-  const demain = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate() + 1);
-  const ms = demain - t.getTime();
+const JOUR_MS = 24 * 3600000;
+
+/** Le temps qu'il reste avant la prochaine récompense : 24 heures
+ *  après la dernière réclamation, la même règle que le serveur. */
+function resteAvantDemain(dernierMs: number): string {
+  const ms = Math.max(0, dernierMs + JOUR_MS - Date.now());
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   return `${String(h).padStart(2, '0')} h ${String(m).padStart(2, '0')} min`;
@@ -117,7 +117,7 @@ const RecompensesQuotidiennes: React.FC = () => {
   const [jourServi, setJourServi] = useState<number | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [compte, setCompte] = useState(resteAvantDemain());
+  const [compte, setCompte] = useState('');
   const dejaTente = useRef(false);
 
   useEffect(() => {
@@ -125,13 +125,16 @@ const RecompensesQuotidiennes: React.FC = () => {
     return suivreMaBourse(user.uid, setBourse);
   }, [user?.uid]);
 
-  const dernier = bourse?.dernierQuotidien?.toDate ? dateISO(bourse.dernierQuotidien.toDate()) : null;
-  const reclameAujourdhui = dernier === dateISO();
+  const dernierMs = bourse?.dernierQuotidien?.toMillis ? bourse.dernierQuotidien.toMillis() : 0;
+  const ecoule = Date.now() - dernierMs;
+  // « Déjà pris » veut dire : moins de 24 heures depuis la dernière
+  // réclamation, comme le serveur. La suite tient jusqu'à 48 heures.
+  const reclameAujourdhui = dernierMs > 0 && ecoule < JOUR_MS;
   const suite = bourse?.quotidienSuite || 0;
-  // Le jour affiché : celui servi à l'instant, sinon celui d'aujourd'hui
-  // (déjà pris), sinon celui que la prochaine visite servira.
+  // Le jour affiché : celui servi à l'instant, sinon celui déjà pris,
+  // sinon celui que la prochaine visite servira.
   const jourCourant = jourServi
-    ?? (reclameAujourdhui ? ((suite - 1) % 7) + 1 : (dernier === dateISO(new Date(Date.now() - 86400000)) ? (suite % 7) + 1 : 1));
+    ?? (reclameAujourdhui ? ((suite - 1) % 7) + 1 : (dernierMs > 0 && ecoule < 2 * JOUR_MS ? (suite % 7) + 1 : 1));
 
   const reclamer = useCallback(async () => {
     if (enCours) return;
@@ -169,10 +172,13 @@ const RecompensesQuotidiennes: React.FC = () => {
 
   useEffect(() => {
     if (!ouvert) return;
-    const t = setInterval(() => setCompte(resteAvantDemain()), 30000);
-    setCompte(resteAvantDemain());
+    // Après une réclamation à l'instant, le serveur n'a pas encore
+    // renvoyé l'horodatage : on compte depuis maintenant.
+    const depuis = jourServi && ecoule >= JOUR_MS ? Date.now() : dernierMs;
+    const t = setInterval(() => setCompte(resteAvantDemain(depuis)), 30000);
+    setCompte(resteAvantDemain(depuis));
     return () => clearInterval(t);
-  }, [ouvert]);
+  }, [ouvert, dernierMs, jourServi, ecoule]);
 
   const fermer = () => {
     setOuvert(false);

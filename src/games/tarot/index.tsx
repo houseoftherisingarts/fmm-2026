@@ -7,6 +7,7 @@ import { useUI } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { ApercuRecompense, IconeJour } from '../../components/compte/RecompensesQuotidiennes';
+import { CLE_DOS_TAROT, dosRoyalEquipe } from './dos';
 import { useCaravanPage } from '../../lib/useCaravanPage';
 import SEO from '../../components/SEO';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
@@ -61,6 +62,15 @@ const TarotPage: React.FC = () => {
     if (!user?.uid) { setDosGagne(false); return; }
     return suivreMaBourse(user.uid, (b) => setDosGagne((b.dosTarot || []).includes('royal')));
   }, [user?.uid]);
+  // Le dos équipé se change à même le jeu quand le compte le possède
+  // (Alex, 2026-08-30) : l'état force le tapis à se redessiner, le choix
+  // vit dans le navigateur comme celui du coffre.
+  const [dosRoyal, setDosRoyal] = useState(() => dosRoyalEquipe());
+  const basculerDos = () => {
+    const suivant = !dosRoyal;
+    try { if (suivant) localStorage.setItem(CLE_DOS_TAROT, 'royal'); else localStorage.removeItem(CLE_DOS_TAROT); } catch { /* navigation privée */ }
+    setDosRoyal(suivant);
+  };
 
   const [tirage, setTirage] = useState<Tirage>(TIRAGES[1]);
   const [paquet, setPaquet] = useState<LameTiree[]>(() => melanger());
@@ -426,7 +436,18 @@ const TarotPage: React.FC = () => {
               {reglesOuvertes ? t.cacherRegles : t.afficherRegles}
             </button>
 
-            {!dosGagne && (
+            {dosGagne ? (
+              <button
+                type="button"
+                onClick={basculerDos}
+                aria-pressed={dosRoyal}
+                title={fr ? 'Changer le dos des cartes' : 'Change the card back'}
+                className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
+              >
+                <span className="flex items-center justify-center" style={{ width: 22, height: 26 }}><IconeJour type="dosTarot" /></span>
+                {dosRoyal ? (fr ? 'Dos royal' : 'Royal back') : (fr ? 'Dos du festival' : 'Festival back')}
+              </button>
+            ) : (
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'))}
