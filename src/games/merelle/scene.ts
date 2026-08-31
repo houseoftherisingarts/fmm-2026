@@ -96,7 +96,7 @@ function dessusGrave(): THREE.CanvasTexture {
   const c = grainDeChene(S, '#7a5530', '#40280f');
   const g = c.getContext('2d')!;
   const px = (u: number) => ((u + DEMI) / (DEMI * 2)) * S;
-  const R = (0.34 * CELL / (DEMI * 2 * CELL)) * S * CELL; // rayon d'une cupule, en pixels
+  const R = (0.34 / (DEMI * 2)) * S; // rayon d'une cupule, en pixels
 
   g.lineCap = 'round';
   // La gravure : un sillon sombre, puis l'arête claire du côté de la
