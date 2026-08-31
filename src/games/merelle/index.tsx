@@ -25,7 +25,7 @@ import { useCaravanPage } from '../../lib/useCaravanPage';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 
 import {
-  aPoserDe, autreCamp, compte, destinations, etatInitial, jouer, phaseDe,
+  aPoserDe, compte, destinations, etatInitial, jouer, phaseDe,
   retraitsPossibles, type Camp, type Coup, type Etat,
 } from './logic';
 import { choisirCoup, type Difficulte } from './cpu';
