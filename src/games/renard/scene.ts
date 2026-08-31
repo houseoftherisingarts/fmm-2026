@@ -19,6 +19,7 @@ import { PAS, POINTS, pointDe, type Coup, type Plateau } from './logic';
  *  pour le damier du tafl, la prend sans rien changer. */
 const PAS_3D = 2.0;
 const EPAISSEUR = 0.55;
+const BISEAU = 0.05;
 
 const HAUTEUR_SURBRILLANCE = 0.075;
 
@@ -72,7 +73,7 @@ function construirePlateau(): THREE.Group {
   forme.closePath();
   const planche = new THREE.Mesh(
     new THREE.ExtrudeGeometry(forme, {
-      depth: EPAISSEUR, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.06, bevelSegments: 2,
+      depth: EPAISSEUR, bevelEnabled: true, bevelThickness: BISEAU, bevelSize: 0.06, bevelSegments: 2,
     }),
     bois,
   );

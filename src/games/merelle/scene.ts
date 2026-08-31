@@ -142,9 +142,9 @@ function dessusGrave(): THREE.CanvasTexture {
     const cx = px(x);
     const cz = px(z);
     const grad = g.createRadialGradient(cx + R * 0.28, cz + R * 0.3, R * 0.05, cx, cz, R);
-    grad.addColorStop(0, 'rgba(18,10,3,0.92)');
-    grad.addColorStop(0.8, 'rgba(52,32,15,0.8)');
-    grad.addColorStop(1, 'rgba(86,60,32,0.55)');
+    grad.addColorStop(0, 'rgba(46,28,11,0.52)');
+    grad.addColorStop(0.8, 'rgba(74,49,23,0.36)');
+    grad.addColorStop(1, 'rgba(116,84,47,0.14)');
     g.fillStyle = grad;
     g.beginPath();
     g.arc(cx, cz, R, 0, Math.PI * 2);
