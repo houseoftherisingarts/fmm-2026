@@ -41,6 +41,7 @@ const nodemailer = require('nodemailer');
 
 admin.initializeApp();
 const db = admin.firestore();
+const functionsV1 = require('firebase-functions/v1');
 
 const ZOHO_APP_PASSWORD = defineSecret('ZOHO_APP_PASSWORD');
 const SQUARE_ACCESS_TOKEN = defineSecret('SQUARE_ACCESS_TOKEN');
@@ -2080,13 +2081,106 @@ async function assurerBourse(uid) {
   return { ref, data: vide };
 }
 
-async function poserBadge(uid, badgeId) {
+async function poserBadge(uid, badgeId, options = {}) {
   const ref = db.collection('badges').doc(uid);
   const snap = await ref.get();
   const obtenus = (snap.exists ? snap.data().obtenus : {}) || {};
   if (obtenus[badgeId]) return;
-  await ref.set({ obtenus: { ...obtenus, [badgeId]: FieldValue.serverTimestamp() } }, { merge: true });
+  const patch = { obtenus: { ...obtenus, [badgeId]: FieldValue.serverTimestamp() } };
+  // Un badge décerné par l'équipe (vérifié, VIP, bêta-testeur) s'annonce
+  // à la prochaine visite : le client lit `aAnnoncer`, fait sonner le
+  // succès une seule fois, puis efface la clé (Alex, 2026-08-31).
+  if (options.annoncer) patch.aAnnoncer = { [badgeId]: true };
+  await ref.set(patch, { merge: true });
 }
+
+// ── Les badges de la cour : décernés, jamais gagnés ──────────────────
+// Le badge bleu vérifié suit membres/{uid}.verifie (posé par l'équipe
+// depuis la fiche), le badge VIP suit users/{uid}.sansPub (Square ou
+// l'équipe). Les deux s'annoncent à la prochaine connexion.
+exports.badgeVerifie = onDocumentWritten(
+  { document: 'membres/{uid}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const avant = event.data && event.data.before && event.data.before.exists ? event.data.before.data() : {};
+    const apres = event.data && event.data.after && event.data.after.exists ? event.data.after.data() : {};
+    if (apres.verifie && !avant.verifie) await poserBadge(event.params.uid, 'verifie', { annoncer: true });
+  },
+);
+exports.badgeVip = onDocumentWritten(
+  { document: 'users/{uid}', region: 'us-central1', memory: '256MiB' },
+  async (event) => {
+    const avant = event.data && event.data.before && event.data.before.exists ? event.data.before.data() : {};
+    const apres = event.data && event.data.after && event.data.after.exists ? event.data.after.data() : {};
+    if (apres.sansPub && !avant.sansPub) {
+      await poserBadge(event.params.uid, 'vip', { annoncer: true });
+      await db.collection('membres').doc(event.params.uid).set({ vip: true, maj: FieldValue.serverTimestamp() }, { merge: true });
+    }
+  },
+);
+
+// ── Le registre des membres : une fiche par compte, toujours ─────────
+// Alex, 2026-08-31 : « Purazar Médiéval » avait un compte mais aucune
+// fiche visible dans le registre. Chaque compte Auth doit avoir sa fiche
+// users/{uid} (le registre de l'admin) et membres/{uid} (la fiche
+// publique), créées au moment où le compte naît, et rattrapables en lot.
+function teinteDeNom(nom) { let h = 0; for (const ch of String(nom)) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; }
+
+async function assurerFicheCompte(u) {
+  const uid = u.uid;
+  const mail = String(u.email || '').toLowerCase();
+  const nom = u.displayName || (mail ? mail.split('@')[0] : 'Membre');
+  const userRef = db.collection('users').doc(uid);
+  const membreRef = db.collection('membres').doc(uid);
+  const [us, ms] = await Promise.all([userRef.get(), membreRef.get()]);
+  const ud = us.exists ? us.data() : {};
+  const md = ms.exists ? ms.data() : {};
+  const lot = db.batch();
+  let touche = 0;
+  const patchU = {};
+  if (!ud.email && mail) patchU.email = mail;
+  if (!ud.displayName) patchU.displayName = nom;
+  if (!ud.createdAt) patchU.createdAt = u.creeLe ? admin.firestore.Timestamp.fromMillis(u.creeLe) : FieldValue.serverTimestamp();
+  if (!us.exists) patchU.origine = 'site';
+  if (Object.keys(patchU).length) { patchU.updatedAt = FieldValue.serverTimestamp(); lot.set(userRef, patchU, { merge: true }); touche++; }
+  const patchM = {};
+  if (!md.uid) patchM.uid = uid;
+  if (!md.nom) patchM.nom = nom;
+  if (md.avatarHue === undefined) patchM.avatarHue = teinteDeNom(nom);
+  if (!md.avatarUrl && u.photoURL) patchM.avatarUrl = u.photoURL;
+  if (Object.keys(patchM).length) { patchM.maj = FieldValue.serverTimestamp(); lot.set(membreRef, patchM, { merge: true }); touche++; }
+  if (touche) await lot.commit();
+  return touche > 0;
+}
+
+exports.compteCree = functionsV1.region('us-central1').auth.user().onCreate((user) => assurerFicheCompte({
+  uid: user.uid, email: user.email, displayName: user.displayName, photoURL: user.photoURL,
+  creeLe: user.metadata && user.metadata.creationTime ? Date.parse(user.metadata.creationTime) : 0,
+}));
+
+exports.synchroniserRegistre = onCall(
+  { region: 'us-central1', memory: '512MiB', timeoutSeconds: 540 },
+  async (requete) => {
+    const courriel = requete.auth && requete.auth.token && requete.auth.token.email
+      ? String(requete.auth.token.email).toLowerCase() : null;
+    if (!courriel || !COURRIELS_ADMIN.includes(courriel)) {
+      throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
+    }
+    let comptes = 0, corriges = 0, jeton;
+    do {
+      const page = await admin.auth().listUsers(1000, jeton);
+      for (const user of page.users) {
+        comptes++;
+        if (await assurerFicheCompte({
+          uid: user.uid, email: user.email, displayName: user.displayName, photoURL: user.photoURL,
+          creeLe: user.metadata && user.metadata.creationTime ? Date.parse(user.metadata.creationTime) : 0,
+        })) corriges++;
+      }
+      jeton = page.pageToken;
+    } while (jeton);
+    logger.info('[registre] synchronisation', { comptes, corriges });
+    return { comptes, corriges };
+  },
+);
 
 async function verifierRangsFortune(uid, gagneAvant, gagneApres) {
   for (const rang of RANGS_FORTUNE) {
