@@ -21,7 +21,8 @@ const PAS_3D = 2.0;
 const EPAISSEUR = 0.55;
 const BISEAU = 0.05;
 
-/** Le jeu entier est grossi d'un quart dans la scène du tafl. */
+/** Le jeu entier est grossi d'un quart dans la scène du tafl, moins
+ *  en portrait (voir `ajusterEchelle`). */
 const ECHELLE = 1.25;
 
 const HAUTEUR_SURBRILLANCE = 0.075;
@@ -256,9 +257,22 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
   // avec un autre jeu, et le ResizeObserver de sceneSetup continue de
   // faire son travail.
   const racine = new THREE.Group();
-  racine.scale.setScalar(ECHELLE);
   scene.add(racine);
   racine.add(construirePlateau());
+
+  // En portrait, sceneSetup ne recule pas assez la caméra pour une
+  // planche aussi large que haute : la croix débordait par les côtés
+  // et une oie du bras gauche sortait du cadre. L'échelle se resserre
+  // donc avec le format.
+  let echelle = ECHELLE;
+  const ajusterEchelle = () => {
+    const format = el.clientWidth / Math.max(el.clientHeight, 1);
+    echelle = ECHELLE * Math.min(1, Math.pow(Math.max(format, 0.3), 0.45));
+    racine.scale.setScalar(echelle);
+  };
+  const suiviFormat = new ResizeObserver(ajusterEchelle);
+  suiviFormat.observe(el);
+  ajusterEchelle();
 
   // Les pièces, une par point occupé. Le groupe garde son numéro de
   // point dans userData : l'animation le relit sans table annexe.
@@ -374,7 +388,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     if (!rayon.ray.intersectPlane(plan, contact)) return null;
     // Le clic est mesuré dans le repère du jeu, pas dans celui de la
     // scène : la racine est mise à l'échelle selon le format.
-    contact.divideScalar(ECHELLE);
+    contact.divideScalar(echelle);
     let meilleur: number | null = null;
     let distance = PAS_3D * 0.62;
     POINTS.forEach((_, i) => {
@@ -451,6 +465,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
 
   const dispose = () => {
     vivant = false;
+    suiviFormat.disconnect();
     gsap.killTweensOf(renard.position);
     effacer();
     disqueGeo.dispose();

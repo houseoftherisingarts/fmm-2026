@@ -210,7 +210,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     (aspect >= 1 ? 38 : Math.min(60, 38 / Math.pow(Math.max(aspect, 0.3), 0.55)));
   const rayonUtile = (aspect: number) => {
     const t = Math.tan((camera.fov * Math.PI) / 360);
-    return 1.08 * Math.max(DEMI_HAUTEUR / t, DEMI_LARGEUR / (t * aspect));
+    return 1.16 * Math.max(DEMI_HAUTEUR / t, DEMI_LARGEUR / (t * aspect));
   };
 
   let camR = 16;
@@ -529,6 +529,24 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     }
     return meilleur;
   };
+
+  // ── Sonde de développement ─────────────────────────────────────────
+  // Même contrat que `window.__hnef` au hnefatafl : la projection d'un
+  // point vers l'écran, pour qu'un test Playwright puisse cliquer une
+  // case précise. Rien n'est exposé en production.
+  if (import.meta.env.DEV) {
+    (window as unknown as Record<string, unknown>).__merelleScene = {
+      ecranDe: (p: number) => {
+        const v = positionDe(p, HAUT + 0.2).project(camera);
+        const rect = renderer.domElement.getBoundingClientRect();
+        return {
+          x: rect.left + ((v.x + 1) / 2) * rect.width,
+          y: rect.top + ((1 - v.y) / 2) * rect.height,
+        };
+      },
+      pointSous,
+    };
+  }
 
   const attacherEntrees = (surPoint: (p: number) => void): (() => void) => {
     const cible = renderer.domElement;
