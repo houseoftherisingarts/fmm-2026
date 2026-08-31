@@ -50,38 +50,44 @@ export interface SceneMerelle {
 // ── Le bois ──────────────────────────────────────────────────────────
 // Un canevas peint plutôt qu'une image à télécharger : la page du jeu
 // ouvre sans attendre le réseau, et le grain se règle au pixel près.
-function grainDeChene(taille = 512, fond = '#6b4a29', veine = '#3a2412'): HTMLCanvasElement {
+function grainDeChene(
+  taille = 512, fond = '#6b4a29', veine = '#3a2412', densite = 1,
+): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = c.height = taille;
   const g = c.getContext('2d')!;
   g.fillStyle = fond;
   g.fillRect(0, 0, taille, taille);
   g.strokeStyle = veine;
-  for (let i = 0; i < 150; i++) {
+  // Le chêne se lit à la fréquence de ses veines. Trop peu de traits et
+  // le bois tourne au carton peint (constat à l'écran, 2026-08-30).
+  const traits = Math.round(150 * densite);
+  for (let i = 0; i < traits; i++) {
     const x = Math.random() * taille;
-    g.globalAlpha = 0.04 + Math.random() * 0.13;
-    g.lineWidth = 0.6 + Math.random() * 2.4;
+    g.globalAlpha = 0.03 + Math.random() * 0.11;
+    g.lineWidth = (0.5 + Math.random() * 1.6) / Math.sqrt(densite);
     g.beginPath();
     g.moveTo(x, 0);
-    const amp = 4 + Math.random() * 14;
-    for (let y = 0; y <= taille; y += 14) {
+    const amp = (3 + Math.random() * 11) / Math.sqrt(densite);
+    for (let y = 0; y <= taille; y += 12) {
       g.lineTo(x + Math.sin((y / taille) * Math.PI * (1 + Math.random())) * amp, y);
     }
     g.stroke();
   }
-  // Deux ou trois nœuds : sans eux, le bois ressemble à du carton rayé.
-  for (let k = 0; k < 3; k++) {
+  // Quelques nœuds : sans eux, le bois ressemble à du carton rayé.
+  for (let k = 0; k < 3 * densite; k++) {
     const nx = 60 + Math.random() * (taille - 120);
     const ny = 60 + Math.random() * (taille - 120);
-    for (let r = 22; r > 1; r -= 2.4) {
-      g.globalAlpha = 0.04 + (22 - r) * 0.01;
+    const grand = (16 + Math.random() * 14) / Math.sqrt(densite);
+    for (let r = grand; r > 1; r -= 1.8) {
+      g.globalAlpha = 0.035 + (grand - r) * 0.009;
       g.beginPath();
-      g.ellipse(nx, ny, r, r * 0.5, Math.random() * Math.PI, 0, Math.PI * 2);
+      g.ellipse(nx, ny, r, r * 0.45, Math.random() * Math.PI, 0, Math.PI * 2);
       g.stroke();
     }
   }
-  g.globalAlpha = 0.045;
-  for (let i = 0; i < 4200; i++) {
+  g.globalAlpha = 0.05;
+  for (let i = 0; i < 4200 * densite; i++) {
     g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
     g.fillRect(Math.random() * taille, Math.random() * taille, 1, 1);
   }
