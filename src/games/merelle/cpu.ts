@@ -15,17 +15,10 @@
 
 import {
   LIGNES, autreCamp, compte, coupsLegaux, deplacementsDe, jouer, moulins,
-  voisins, type Camp, type Case, type Coup, type Etat,
+  type Camp, type Case, type Coup, type Etat,
 } from './logic';
 
 export type Difficulte = 'facile' | 'moyen' | 'difficile';
-
-/** Un point vaut ce que vaut son carrefour : les quatre milieux des
- *  côtés touchent quatre voisins, les coins n'en touchent que deux. */
-const POIDS_CARREFOUR = voisins.length; // évite un import inutilisé au build
-void POIDS_CARREFOUR;
-
-function gagne(e: Etat, camp: Camp): boolean { return e.gagnant === camp; }
 
 /** Alignements où le camp tient deux points sur trois, le troisième
  *  étant libre : autant de moulins à un coup de se fermer. */
