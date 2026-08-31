@@ -142,11 +142,15 @@ const COLLECTION = 'bourses';
 /** Le solde en direct, ou une bourse vide tant que le premier geste
  *  (réclamation, achat, badge…) ne l'a pas créée côté serveur. */
 export function suivreMaBourse(uid: string, cb: (b: Bourse) => void): () => void {
-  if (!db) { cb({ solde: 0, gagne: 0, depense: 0, albums: [] }); return () => {}; }
+  // Le même « vide » que le serveur (SOLDE_DEPART), jamais 0 : un nouveau
+  // membre voyait 10, puis 0, puis 15 à sa première réclamation.
+  const vide: Bourse = { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0, albums: [] };
+  if (!db) { cb(vide); return () => {}; }
   return onSnapshot(
     doc(db, COLLECTION, uid),
-    (snap) => cb(snap.exists() ? (snap.data() as Bourse) : { solde: 0, gagne: 0, depense: 0, albums: [] }),
-    () => cb({ solde: 0, gagne: 0, depense: 0, albums: [] }),
+    (snap) => cb(snap.exists() ? { ...vide, ...(snap.data() as Bourse) } : vide),
+    // Sur erreur, la dernière valeur reste affichée : pas de fausse bourse à 0.
+    (e) => console.warn('[bourse] écoute interrompue', e),
   );
 }
 
