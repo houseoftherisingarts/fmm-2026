@@ -135,21 +135,29 @@ function dessusGrave(): THREE.CanvasTexture {
     g.stroke();
   }
 
+  // Les cupules : un bord net, un fond sombre, et l'arête claire du côté
+  // de la lumière. Le dégradé s'arrête au bord, sinon la cupule bave sur
+  // le bois et tout le plateau paraît sale.
   for (const [x, z] of POSITIONS) {
     const cx = px(x);
     const cz = px(z);
-    const grad = g.createRadialGradient(cx - R * 0.3, cz - R * 0.3, R * 0.1, cx, cz, R);
-    grad.addColorStop(0, 'rgba(22,12,5,0.88)');
-    grad.addColorStop(0.72, 'rgba(46,28,13,0.72)');
-    grad.addColorStop(1, 'rgba(120,86,48,0.05)');
+    const grad = g.createRadialGradient(cx + R * 0.28, cz + R * 0.3, R * 0.05, cx, cz, R);
+    grad.addColorStop(0, 'rgba(18,10,3,0.92)');
+    grad.addColorStop(0.8, 'rgba(52,32,15,0.8)');
+    grad.addColorStop(1, 'rgba(86,60,32,0.55)');
     g.fillStyle = grad;
     g.beginPath();
     g.arc(cx, cz, R, 0, Math.PI * 2);
     g.fill();
-    g.strokeStyle = 'rgba(226,190,136,0.28)';
-    g.lineWidth = S * 0.0026;
+    // L'arête haute prend la lumière, l'arête basse reste dans l'ombre.
+    g.strokeStyle = 'rgba(232,197,144,0.42)';
+    g.lineWidth = S * 0.0032;
     g.beginPath();
-    g.arc(cx, cz + R * 0.06, R * 0.98, Math.PI * 1.05, Math.PI * 1.95);
+    g.arc(cx, cz, R, Math.PI * 1.08, Math.PI * 1.92);
+    g.stroke();
+    g.strokeStyle = 'rgba(24,13,4,0.55)';
+    g.beginPath();
+    g.arc(cx, cz, R, Math.PI * 0.08, Math.PI * 0.92);
     g.stroke();
   }
 
