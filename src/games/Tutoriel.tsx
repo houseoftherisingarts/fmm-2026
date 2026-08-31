@@ -149,13 +149,15 @@ const Tutoriel: React.FC<Props> = ({ jeu, lang, ouvert, onFermer }) => {
           aria-modal="true"
           aria-label={fr ? 'Visite guidée du jeu' : 'Guided tour of the game'}
         >
-          {/* Le voile. Un clic dessus quitte la visite. */}
+          {/* Le voile, et le clic qui quitte la visite. Quand une zone est
+              entourée, c'est l'ombre de l'anneau qui assombrit le reste :
+              la zone dont on parle reste alors la seule chose éclairée. */}
           <button
             type="button"
             onClick={onFermer}
             aria-label={fr ? 'Quitter la visite' : 'Leave the tour'}
             className="absolute inset-0 w-full h-full cursor-default"
-            style={{ background: 'rgba(6,3,4,0.74)', backdropFilter: 'blur(2px)' }}
+            style={rect ? undefined : { background: 'rgba(6,3,4,0.74)', backdropFilter: 'blur(2px)' }}
           />
 
           {/* L'anneau de lumière autour de la zone dont parle l'étape. */}
