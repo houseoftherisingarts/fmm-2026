@@ -92,7 +92,7 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
             [86, 100], [116, 92], [100, 130], [78, 160], [124, 170], [100, 210],
           ].map(([sx, sy], i) => (
             <path key={i} d={`M ${sx} ${sy - 2.4} L ${sx + 0.9} ${sy - 0.6} L ${sx + 2.4} ${sy} L ${sx + 0.9} ${sy + 0.6} L ${sx} ${sy + 2.4} L ${sx - 0.9} ${sy + 0.6} L ${sx - 2.4} ${sy} L ${sx - 0.9} ${sy - 0.6} Z`}
-                  fill="rgba(244,239,227,0.75)" />
+                  fill="rgba(var(--sk-parchment-rgb),0.75)" />
           ))}
         </Piece>
       )}
@@ -118,8 +118,8 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
       {pieds && (
         <Piece rarete={pieds.rarete}>
           {pieds.variante === 2 && <>
-            <circle cx={100 - m.hip + 3} cy={FOOT_Y - 4} r="1.6" fill="rgba(244,239,227,0.7)" />
-            <circle cx={100 + m.hip - 3} cy={FOOT_Y - 4} r="1.6" fill="rgba(244,239,227,0.7)" />
+            <circle cx={100 - m.hip + 3} cy={FOOT_Y - 4} r="1.6" fill="rgba(var(--sk-parchment-rgb),0.7)" />
+            <circle cx={100 + m.hip - 3} cy={FOOT_Y - 4} r="1.6" fill="rgba(var(--sk-parchment-rgb),0.7)" />
           </>}
           {/* Bottes ailées (variante 3) : une petite paire d'ailes à chaque talon. */}
           {pieds.variante === 3 && <>
@@ -163,8 +163,8 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
           {torse.variante === 3 && <>
             <circle cx={100 - m.shoulder + 8} cy={SHOULDER_Y + 6} r="3" fill={torse.couleur} stroke="rgba(0,0,0,0.4)" />
             <circle cx={100 + m.shoulder - 8} cy={SHOULDER_Y + 6} r="3" fill={torse.couleur} stroke="rgba(0,0,0,0.4)" />
-            <circle cx={92} cy={130} r="1.6" fill="rgba(244,239,227,0.75)" />
-            <circle cx={108} cy={130} r="1.6" fill="rgba(244,239,227,0.75)" />
+            <circle cx={92} cy={130} r="1.6" fill="rgba(var(--sk-parchment-rgb),0.75)" />
+            <circle cx={108} cy={130} r="1.6" fill="rgba(var(--sk-parchment-rgb),0.75)" />
           </>}
         </Piece>
       )}
@@ -172,7 +172,7 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
         <Piece rarete={amulette.rarete}>
           <polygon points="100,96 105,104 100,112 95,104" fill={amulette.couleur} stroke="rgba(0,0,0,0.35)" />
           {/* Amulette de l'œil (variante 2) : une pupille gravée au centre. */}
-          {amulette.variante === 2 && <circle cx="100" cy="104" r="1.8" fill="rgba(244,239,227,0.85)" />}
+          {amulette.variante === 2 && <circle cx="100" cy="104" r="1.8" fill="rgba(var(--sk-parchment-rgb),0.85)" />}
         </Piece>
       )}
 
@@ -211,15 +211,15 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
             <path d={`M ${CX - 21} 40 A 21 21 0 0 1 ${CX + 21} 40 L ${CX + 17} 56 L ${CX - 17} 56 Z`} fill={casque.couleur} />
             <path d={`M ${CX - 21} 40 A 21 21 0 0 1 ${CX + 21} 40 L ${CX + 17} 56 L ${CX - 17} 56 Z`} fill="url(#metal)" />
             <rect x={CX - 12} y="44" width="24" height="3.5" rx="1.5" fill="rgba(5,2,4,0.85)" />
-            <circle cx={CX - 18} cy="42" r="1.6" fill="rgba(244,239,227,0.75)" />
-            <circle cx={CX + 18} cy="42" r="1.6" fill="rgba(244,239,227,0.75)" />
+            <circle cx={CX - 18} cy="42" r="1.6" fill="rgba(var(--sk-parchment-rgb),0.75)" />
+            <circle cx={CX + 18} cy="42" r="1.6" fill="rgba(var(--sk-parchment-rgb),0.75)" />
           </>}
           {/* Masque du corbeau (variante 4) : cosmétique pur, un bec crochu. */}
           {casque.variante === 4 && <>
             <path d={`M ${CX - 19} 38 A 19 19 0 0 1 ${CX + 19} 38 L ${CX + 15} 50 L ${CX - 15} 50 Z`} fill={casque.couleur} />
             <path d={`M ${CX - 4} 50 Q ${CX} 60 ${CX + 5} 50 Q ${CX} 55 ${CX - 4} 50 Z`} fill={casque.couleur} stroke="rgba(0,0,0,0.4)" strokeWidth="0.8" />
-            <circle cx={CX - 9} cy="40" r="1.4" fill="rgba(216,176,90,0.85)" />
-            <circle cx={CX + 9} cy="40" r="1.4" fill="rgba(216,176,90,0.85)" />
+            <circle cx={CX - 9} cy="40" r="1.4" fill="rgba(var(--sk-gilt-rgb),0.85)" />
+            <circle cx={CX + 9} cy="40" r="1.4" fill="rgba(var(--sk-gilt-rgb),0.85)" />
           </>}
           {/* Couronne du Parrain (variante 5) : cosmétique légendaire, une couronne à pointes. */}
           {casque.variante === 5 && <>
@@ -233,7 +233,7 @@ const Personnage: React.FC<PersonnageProps> = ({ corps, peau, coiffure, equipe, 
           {casque.variante === 6 && <>
             <path d={`M ${CX - 20} 40 A 20 20 0 0 1 ${CX + 20} 40 L ${CX + 15} 44 L ${CX - 15} 44 Z`} fill={casque.couleur} opacity={0.85} />
             {[-16, -8, 0, 8, 16].map((dx, i) => (
-              <circle key={i} cx={CX + dx} cy={40 - Math.abs(dx) * 0.15} r="2.2" fill={i % 2 === 0 ? '#E9C7D8' : '#F4EFE3'} stroke="rgba(0,0,0,0.25)" strokeWidth="0.5" />
+              <circle key={i} cx={CX + dx} cy={40 - Math.abs(dx) * 0.15} r="2.2" fill={i % 2 === 0 ? '#E9C7D8' : 'var(--sk-parchment)'} stroke="rgba(0,0,0,0.25)" strokeWidth="0.5" />
             ))}
           </>}
         </Piece>

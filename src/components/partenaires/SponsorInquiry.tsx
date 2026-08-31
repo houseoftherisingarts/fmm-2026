@@ -112,7 +112,7 @@ const SponsorInquiry: React.FC = () => {
         {err && <p className="sm:col-span-2 font-editorial text-sm" style={{ color: '#FCA5B0' }}>{err}</p>}
 
         <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3 pt-1">
-          <p className="font-editorial text-xs" style={{ color: 'rgba(244, 239, 227, 0.45)' }}>{t.privacy}</p>
+          <p className="font-editorial text-xs" style={{ color: 'rgba(var(--sk-parchment-rgb), 0.45)' }}>{t.privacy}</p>
           <button
             type="submit"
             disabled={busy}

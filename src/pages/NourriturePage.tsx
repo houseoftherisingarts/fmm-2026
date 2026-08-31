@@ -102,7 +102,7 @@ const GuildeRepliable: React.FC<{ guilde: Categorie; lang: 'FR' | 'EN' }> = ({ g
         aria-expanded={ouverte}
         aria-controls={id}
         className="w-full text-left mb-5 pb-3 group"
-        style={{ borderBottom: '1px solid rgba(232,177,74,0.22)' }}
+        style={{ borderBottom: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}
       >
         <div className="flex items-baseline gap-3">
           <span aria-hidden style={{ color: 'var(--color-copper)' }}><Glyphe name={g.icon} size={22} /></span>
@@ -376,11 +376,11 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                 <p className="font-editorial text-xs text-ivory-soft/70 mt-4">{t.banquetNote}</p>
               </div>
               <ul className="lg:col-span-5 space-y-5 font-sans text-sm text-ivory-soft lg:pt-10">
-                <li className="flex items-start gap-3 pb-5" style={{ borderBottom: '1px solid rgba(244,239,227,0.1)' }}>
+                <li className="flex items-start gap-3 pb-5" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
                   <Clock size={16} className="text-brass mt-0.5 shrink-0" />
                   <div><span className="block font-display title-medieval text-xs text-brass mb-0.5">{t.when}</span>{t.banquetWhen}</div>
                 </li>
-                <li className="flex items-start gap-3 pb-5" style={{ borderBottom: '1px solid rgba(244,239,227,0.1)' }}>
+                <li className="flex items-start gap-3 pb-5" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
                   <Users size={16} className="text-brass mt-0.5 shrink-0" />
                   <div><span className="block font-display title-medieval text-xs text-brass mb-0.5">{t.seats}</span>{t.banquetSeats}</div>
                 </li>
@@ -397,9 +397,9 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                     chaudron doré au milieu, ouvre la procession. */}
                 <li className="pt-7">
                   <div aria-hidden className="flex items-center gap-3 mb-5">
-                    <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0) 0%, rgba(232,177,74,0.5) 100%)' }} />
+                    <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(var(--sk-glow-rgb),0) 0%, rgba(var(--sk-glow-rgb),0.5) 100%)' }} />
                     <Glyphe name="cauldron" size={22} />
-                    <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(232,177,74,0.5) 0%, rgba(232,177,74,0) 100%)' }} />
+                    <span className="h-[2px] flex-1" style={{ background: 'linear-gradient(90deg, rgba(var(--sk-glow-rgb),0.5) 0%, rgba(var(--sk-glow-rgb),0) 100%)' }} />
                   </div>
                   <p className="font-display title-medieval text-xs text-brass mb-4 text-center">
                     {t.banquetMenuTitle}
@@ -477,7 +477,7 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                 className="w-full rounded-[15px] object-cover"
                 style={{ aspectRatio: '4/3', boxShadow: '0 18px 44px rgba(0,0,0,.5)' }}
               />
-              <p className="font-sans uppercase tracking-[0.3em] text-[10px] leading-loose text-right mt-3 hidden lg:block" style={{ color: 'rgba(244,239,227,0.45)' }}>
+              <p className="font-sans uppercase tracking-[0.3em] text-[10px] leading-loose text-right mt-3 hidden lg:block" style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}>
                 {t.kioskAside}
               </p>
             </div>
@@ -499,7 +499,7 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
           {/* La taverne des élixirs : pleine largeur, corners dorés. */}
           <Reveal className="mt-2">
             <GildedFrame tone="amber" active className="block">
-              <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
+              <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(var(--sk-glow-rgb), 0.045)' }}>
                 <header className="flex items-baseline gap-3 mb-6">
                   <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}><Glyphe name={ABREUVOIR.icon} size={26} /></span>
                   <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{ABREUVOIR.name[lang]}</h3>
@@ -538,7 +538,7 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
           />
           <Reveal amount={0.1}>
             <GildedFrame tone="amber" active className="block">
-              <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center px-6 py-10 md:px-12 md:py-14" style={{ background: 'rgba(232, 177, 74, 0.045)' }}>
+              <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center px-6 py-10 md:px-12 md:py-14" style={{ background: 'rgba(var(--sk-glow-rgb), 0.045)' }}>
                 <div className="lg:col-span-7 min-w-0">
                   <Eyebrow tone="amber" className="mb-5 inline-flex items-center gap-3">
                     <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />

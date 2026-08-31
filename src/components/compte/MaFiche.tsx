@@ -75,12 +75,12 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   };
 
   const champ = 'w-full px-4 py-3 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40';
-  const champStyle = { background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' };
+  const champStyle = { background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' };
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-6 pb-2"
-           style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+           style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-stat-label">{fr ? 'Ma fiche de l’Ordre' : 'My card in the Order'}</span>
         <Link to={addLocale('/ordre', lang)}
               className="font-sans uppercase tracking-[0.2em] text-[10px] text-ivory-soft/55 hover:text-brass transition-colors inline-flex items-center gap-1.5">
@@ -115,7 +115,7 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             <span className="font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/60 w-24 shrink-0">
               {fr ? nomFR : nomEN}
             </span>
-            <input type="range" min={1} max={20} className="flex-1 accent-[#D8B05A]"
+            <input type="range" min={1} max={20} className="flex-1 accent-[var(--sk-gilt)]"
                    value={(fiche.stats || STATS_VIDES)[cle]}
                    onChange={(e) => majStat(cle, Number(e.target.value))} />
             <span className="font-display text-sm text-ivory w-6 text-right">
@@ -140,13 +140,13 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                     : [...(fiche.anneesPresence || []), an],
                 })}
                 className="px-3 py-1.5 rounded-full font-sans text-[11px] tracking-[0.14em] transition-colors"
-                style={{ border: `1px solid ${coche ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: coche ? 'rgba(216,176,90,0.16)' : 'transparent', color: coche ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                style={{ border: `1px solid ${coche ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`, background: coche ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent', color: coche ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                 {an}
               </button>
             );
           })}
         </div>
-        <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(244,239,227,0.45)' }}>
+        <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}>
           {fr ? 'Deux éditions vous valent le badge du vétéran.' : 'Two editions earn you the veteran badge.'}
         </p>
       </div>
@@ -154,7 +154,7 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       {/* Le questionnaire : quels autres rendez-vous médiévaux la
           personne fréquente. Le festival est coché d'office; la liste
           vit dans src/content/evenementsMedievaux.ts (Alex, 2026-08-27). */}
-      <div className="mb-6 pt-6" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
+      <div className="mb-6 pt-6" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <p className="witcher-stat-label mb-2">{fr ? 'Où vous croiser ailleurs' : 'Where else to meet you'}</p>
         <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-5">
           {fr
@@ -182,12 +182,12 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                         title={e.lieu}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-sans text-xs transition-colors"
                         style={{
-                          border: `1px solid ${coche ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`,
-                          background: coche ? 'rgba(216,176,90,0.16)' : 'transparent',
-                          color: coche ? '#F4EFE3' : 'rgba(244,239,227,0.6)',
+                          border: `1px solid ${coche ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`,
+                          background: coche ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent',
+                          color: coche ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.6)',
                         }}
                       >
-                        {coche && <Check size={11} style={{ color: '#D8B05A' }} />}
+                        {coche && <Check size={11} style={{ color: 'var(--sk-gilt)' }} />}
                         {e.nom}
                       </button>
                     </li>

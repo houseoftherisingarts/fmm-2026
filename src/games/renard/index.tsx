@@ -735,7 +735,7 @@ const RenardPage: React.FC = () => {
 
         {/* ── Bandeau du bas : les règles, le geste, les camps ─────── */}
         <div
-          className="absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-3 md:px-6 pt-10 pb-3"
+          className="absolute inset-x-0 bottom-0 z-[3] flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-3 md:px-6 pt-10 pb-3"
           style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}
         >
           <button

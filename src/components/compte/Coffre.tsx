@@ -58,15 +58,15 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
   const equiperUnDos = (id: string) => { equiperDos(id === 'festival' ? null : id); setDosActuel(id === 'festival' ? null : id); };
 
   const carte = (actif: boolean) => ({
-    background: actif ? 'rgba(216,176,90,0.14)' : 'transparent',
-    border: `1px solid ${actif ? 'rgba(216,176,90,0.6)' : 'rgba(244,239,227,0.18)'}`,
+    background: actif ? 'rgba(var(--sk-gilt-rgb),0.14)' : 'transparent',
+    border: `1px solid ${actif ? 'rgba(var(--sk-gilt-rgb),0.6)' : 'rgba(var(--sk-parchment-rgb),0.18)'}`,
   });
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
-      <div className="flex items-center gap-4 mb-6 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+      <div className="flex items-center gap-4 mb-6 pb-2" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-tile shrink-0" style={{ width: 46, height: 46 }}>
-          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Palette size={16} /></span>
+          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Palette size={16} /></span>
         </span>
         <div className="min-w-0">
           <p className="witcher-stat-label mb-1">{fr ? 'Le coffre' : 'The vault'}</p>
@@ -89,10 +89,10 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       className="rounded-card p-3 flex items-center gap-3 text-left transition"
                       style={carte(actif)}>
                 <span className="w-10 h-10 shrink-0 rounded-md" style={{ background: info.couleur, border: '1.5px solid rgba(244,239,227,0.25)' }} />
-                <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+                <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
                   {fr ? info.FR : info.EN}
                 </span>
-                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+                {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
               </button>
             );
           })}
@@ -110,10 +110,10 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       aria-pressed={actif}
                       className="rounded-card p-3 flex items-center gap-3 text-left transition"
                       style={carte(actif)}>
-                <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+                <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
                   {fr ? a.titreFR : a.titreEN}
                 </span>
-                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+                {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
               </button>
             );
           })}
@@ -128,16 +128,16 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
           <p className="witcher-stat-label mb-3"><Gift size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Récompenses quotidiennes' : 'Daily rewards'}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="rounded-card p-3 flex items-center gap-3" style={carte(true)}>
-              <span className="w-10 h-10 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(216,176,90,0.14)', border: '1.5px solid rgba(244,239,227,0.25)', color: '#D8B05A' }}>
+              <span className="w-10 h-10 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(var(--sk-gilt-rgb),0.14)', border: '1.5px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'var(--sk-gilt)' }}>
                 <Gift size={18} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block font-sans text-sm" style={{ color: '#D8B05A' }}>
+                <span className="block font-sans text-sm" style={{ color: 'var(--sk-gilt)' }}>
                   {fr
                     ? `${chancesWJW} seconde${chancesWJW > 1 ? 's' : ''} chance${chancesWJW > 1 ? 's' : ''}`
                     : `${chancesWJW} second chance${chancesWJW > 1 ? 's' : ''}`}
                 </span>
-                <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
                   {fr ? 'Concours William J. Walter' : 'William J. Walter draw'}
                 </span>
               </span>
@@ -151,11 +151,11 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
           dans le navigateur, comme dans le lobby du hnefatafl. */}
       <div className="mb-7">
         <p className="witcher-stat-label mb-1"><Swords size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Vos jeux' : 'Your games'}</p>
-        <p className="font-sans text-[11px] mb-4" style={{ color: 'rgba(244,239,227,0.5)' }}>
+        <p className="font-sans text-[11px] mb-4" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
           {fr ? 'Plateaux et pièces du hnefatafl, dos de carte du tarot. Ce qui est verrouillé se gagne ou s’en vient.' : 'Hnefatafl boards and pieces, tarot card backs. What is locked is earned or on its way.'}
         </p>
 
-        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Plateaux du hnefatafl' : 'Hnefatafl boards'}</p>
+        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>{fr ? 'Plateaux du hnefatafl' : 'Hnefatafl boards'}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
           {BOARD_SETS.map((b) => {
             const ouvert = jeuOuvert(b.statut, b.id, bourse?.taflPlateaux || []);
@@ -165,24 +165,24 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       title={fr ? b.texteFR : b.texteEN}
                       className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed"
                       style={carte(actif)}>
-                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: 'rgba(0,0,0,0.4)' }}>
-                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
+                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(var(--sk-parchment-rgb),0.25)', background: 'rgba(0,0,0,0.4)' }}>
+                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : <Lock size={14} style={{ color: 'rgba(var(--sk-gilt-rgb),0.6)' }} />}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
+                  <span className="block font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
                   {!ouvert && (
-                    <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+                    <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
                       {b.statut === 'recompense' ? (fr ? 'Récompense quotidienne · jour 3' : 'Daily reward · day 3') : (fr ? 'Bientôt' : 'Soon')}
                     </span>
                   )}
                 </span>
-                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+                {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
               </button>
             );
           })}
         </div>
 
-        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Pièces du hnefatafl' : 'Hnefatafl pieces'}</p>
+        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>{fr ? 'Pièces du hnefatafl' : 'Hnefatafl pieces'}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
           {PIECE_SETS.map((b) => {
             const ouvert = jeuOuvert(b.statut, b.id, bourse?.taflPieces || []);
@@ -193,24 +193,24 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                       className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed"
                       style={carte(actif)}>
                 <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center"
-                      style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: 'rgba(0,0,0,0.4)' }}>
-                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />)}
+                      style={{ border: '1.5px solid rgba(var(--sk-parchment-rgb),0.25)', background: 'rgba(0,0,0,0.4)' }}>
+                  {ouvert && b.vignette ? <img src={b.vignette} alt="" aria-hidden className="w-full h-full object-cover" /> : (!ouvert && <Lock size={14} style={{ color: 'rgba(var(--sk-gilt-rgb),0.6)' }} />)}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
+                  <span className="block font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>{fr ? b.nomFR : b.nomEN}</span>
                   {!ouvert && (
-                    <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>
-                      {b.statut === 'recompense' ? (fr ? 'Récompense quotidienne · jour 3' : 'Daily reward · day 3') : (fr ? 'Bientôt' : 'Soon')}
+                    <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+                      {b.statut === 'recompense' ? (fr ? 'Récompense quotidienne · jour 8' : 'Daily reward · day 8') : (fr ? 'Bientôt' : 'Soon')}
                     </span>
                   )}
                 </span>
-                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+                {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
               </button>
             );
           })}
         </div>
 
-        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(244,239,227,0.55)' }}>{fr ? 'Dos de carte du tarot' : 'Tarot card backs'}</p>
+        <p className="font-sans uppercase tracking-[0.18em] text-[10px] mb-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>{fr ? 'Dos de carte du tarot' : 'Tarot card backs'}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {DOS_CARTES.map((d) => {
             const possede = dosPossedes.includes(d.id);
@@ -218,14 +218,14 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
             return (
               <button key={d.id} type="button" disabled={!possede} onClick={() => equiperUnDos(d.id)} aria-pressed={actif}
                       className="rounded-card p-3 flex items-center gap-3 text-left transition disabled:opacity-50 disabled:cursor-not-allowed" style={carte(actif)}>
-                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(244,239,227,0.25)', background: 'rgba(0,0,0,0.4)' }}>
-                  {possede ? <img src={d.image} alt="" aria-hidden className="w-full h-full object-cover" /> : <Lock size={14} style={{ color: 'rgba(216,176,90,0.6)' }} />}
+                <span className="w-10 h-10 shrink-0 rounded-md overflow-hidden flex items-center justify-center" style={{ border: '1.5px solid rgba(var(--sk-parchment-rgb),0.25)', background: 'rgba(0,0,0,0.4)' }}>
+                  {possede ? <img src={d.image} alt="" aria-hidden className="w-full h-full object-cover" /> : <Lock size={14} style={{ color: 'rgba(var(--sk-gilt-rgb),0.6)' }} />}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>{fr ? d.nomFR : d.nomEN}</span>
-                  {!possede && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(244,239,227,0.5)' }}>{fr ? d.origineFR : d.origineEN}</span>}
+                  <span className="block font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>{fr ? d.nomFR : d.nomEN}</span>
+                  {!possede && <span className="block font-sans text-[10px] uppercase tracking-[0.16em]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>{fr ? d.origineFR : d.origineEN}</span>}
                 </span>
-                {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+                {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
               </button>
             );
           })}
@@ -244,10 +244,10 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
                         aria-pressed={actif}
                         className="rounded-card p-3 flex items-center gap-3 text-left transition"
                         style={carte(actif)}>
-                  <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+                  <span className="min-w-0 flex-1 font-sans text-sm truncate" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
                     {g.nom}
                   </span>
-                  {actif && <Check size={14} className="shrink-0" style={{ color: '#D8B05A' }} />}
+                  {actif && <Check size={14} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />}
                 </button>
               );
             })}

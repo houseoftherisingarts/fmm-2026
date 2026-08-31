@@ -58,11 +58,11 @@ const MesBadges: React.FC<{
   return (
     <section aria-labelledby="badges-title" className="glass-light rounded-lg-card p-7 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-6 pb-2"
-           style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+           style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span id="badges-title" className="witcher-stat-label">
           {titre || (fr ? 'Mes badges' : 'My badges')}
         </span>
-        <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+        <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}>
           {etat.obtenus} / {etat.total}
         </span>
       </div>
@@ -75,14 +75,14 @@ const MesBadges: React.FC<{
 
       {mien && (
         <div className="mb-7 p-4 flex flex-wrap items-center justify-between gap-3"
-             style={{ background: 'rgba(216,176,90,0.06)', border: '1px solid rgba(216,176,90,0.3)' }}>
-          <p className="font-sans text-sm leading-relaxed" style={{ color: 'rgba(244,239,227,0.85)', fontWeight: 300 }}>
-            <Pin size={13} className="inline mr-1.5 -mt-0.5" style={{ color: '#D8B05A' }} />
+             style={{ background: 'rgba(var(--sk-gilt-rgb),0.06)', border: '1px solid rgba(var(--sk-gilt-rgb),0.3)' }}>
+          <p className="font-sans text-sm leading-relaxed" style={{ color: 'rgba(var(--sk-parchment-rgb),0.85)', fontWeight: 300 }}>
+            <Pin size={13} className="inline mr-1.5 -mt-0.5" style={{ color: 'var(--sk-gilt)' }} />
             {fr
               ? 'Épinglez jusqu’à cinq badges : ils paraissent en tête de votre fiche, pour tous.'
               : 'Pin up to five badges: they show at the top of your card, for everyone.'}
           </p>
-          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: avis ? '#E08A6E' : '#D8B05A', fontWeight: 300 }}>
+          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: avis ? '#E08A6E' : 'var(--sk-gilt)', fontWeight: 300 }}>
             {avis || `${exposes.length} / ${MAX_EXPOSES}`}
           </span>
         </div>
@@ -98,7 +98,7 @@ const MesBadges: React.FC<{
                   {fr ? c.nomFR : c.nomEN}
                 </h3>
                 <span className="font-sans uppercase tracking-[0.2em] text-[10px] whitespace-nowrap"
-                      style={{ color: ligne.complete ? 'var(--color-amber-glow)' : 'rgba(244,239,227,0.45)' }}>
+                      style={{ color: ligne.complete ? 'var(--color-amber-glow)' : 'rgba(var(--sk-parchment-rgb),0.45)' }}>
                   {(fr ? PRIX_FR : PRIX_EN)[c.prix]} · {ligne.obtenus}/{ligne.total}
                 </span>
               </div>
@@ -121,9 +121,9 @@ const MesBadges: React.FC<{
                           aria-label={`${expose ? (fr ? 'Retirer de la vitrine' : 'Unpin') : (fr ? 'Épingler' : 'Pin')} · ${fr ? b.nomFR : b.nomEN}`}
                           className="absolute -top-1 right-2 z-10 flex items-center justify-center w-6 h-6 rounded-full transition-colors"
                           style={{
-                            background: expose ? '#D8B05A' : 'rgba(10,2,7,0.8)',
-                            border: `1px solid ${expose ? '#D8B05A' : 'rgba(244,239,227,0.3)'}`,
-                            color: expose ? '#1a050b' : 'rgba(244,239,227,0.6)',
+                            background: expose ? 'var(--sk-gilt)' : 'rgba(var(--sk-ink-rgb),0.8)',
+                            border: `1px solid ${expose ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.3)'}`,
+                            color: expose ? 'var(--sk-deep)' : 'rgba(var(--sk-parchment-rgb),0.6)',
                           }}
                         >
                           <Pin size={11} />
@@ -134,9 +134,9 @@ const MesBadges: React.FC<{
                           aria-hidden
                           className="mx-auto mb-2 w-16 h-16 flex items-center justify-center text-3xl rounded-full"
                           style={{
-                            border: `1px solid ${eu ? 'rgba(232,177,74,0.4)' : 'rgba(244,239,227,0.18)'}`,
-                            color: eu ? '#D8B05A' : 'rgba(244,239,227,0.35)',
-                            filter: eu ? 'drop-shadow(0 0 10px rgba(232,177,74,0.22))' : 'none',
+                            border: `1px solid ${eu ? 'rgba(var(--sk-glow-rgb),0.4)' : 'rgba(var(--sk-parchment-rgb),0.18)'}`,
+                            color: eu ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.35)',
+                            filter: eu ? 'drop-shadow(0 0 10px rgba(var(--sk-glow-rgb),0.22))' : 'none',
                           }}
                         >
                           {b.glyphe}
@@ -147,12 +147,12 @@ const MesBadges: React.FC<{
                           onError={() => setSceauxCasses((s) => new Set(s).add(b.id))}
                           className="mx-auto mb-2 w-16 h-16 object-contain"
                           style={eu
-                            ? { filter: 'drop-shadow(0 0 14px rgba(232,177,74,0.28))' }
+                            ? { filter: 'drop-shadow(0 0 14px rgba(var(--sk-glow-rgb),0.28))' }
                             : { filter: 'grayscale(1) brightness(0.42)', opacity: 0.75 }}
                         />
                       )}
                       <span className="block font-sans text-[10px] leading-tight"
-                            style={{ color: eu ? 'rgba(244,239,227,0.8)' : 'rgba(244,239,227,0.35)' }}>
+                            style={{ color: eu ? 'rgba(var(--sk-parchment-rgb),0.8)' : 'rgba(var(--sk-parchment-rgb),0.35)' }}>
                         {fr ? b.nomFR : b.nomEN}
                       </span>
                     </motion.div>

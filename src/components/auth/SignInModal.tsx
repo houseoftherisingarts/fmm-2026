@@ -287,7 +287,7 @@ const SignInModal: React.FC = () => {
                         return (
                           <button key={an} type="button" role="checkbox" aria-checked={coche} onClick={() => basculerAnnee(an)}
                             className="px-3 py-1.5 rounded-full font-sans text-[11px] tracking-[0.14em] transition-colors"
-                            style={{ border: `1px solid ${coche ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: coche ? 'rgba(216,176,90,0.16)' : 'transparent', color: coche ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                            style={{ border: `1px solid ${coche ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`, background: coche ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent', color: coche ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                             {an}
                           </button>
                         );
@@ -342,8 +342,8 @@ const SignInModal: React.FC = () => {
                       <div
                         className="mt-3 p-3.5 rounded-card border"
                         style={{
-                          background: 'rgba(232, 177, 74, 0.06)',
-                          borderColor: 'rgba(232, 177, 74, 0.30)',
+                          background: 'rgba(var(--sk-glow-rgb), 0.06)',
+                          borderColor: 'rgba(var(--sk-glow-rgb), 0.30)',
                         }}
                       >
                         <p className="font-editorial italic text-[12px] text-ivory-soft leading-snug mb-3">

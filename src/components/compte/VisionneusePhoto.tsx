@@ -56,7 +56,7 @@ const Repere: React.FC<{ x: number; y: number; nom: string; onRemove?: () => voi
     <span className="relative">
       <span
         className="block w-3.5 h-3.5 rounded-[4px] border-2"
-        style={{ borderColor: '#D8B05A', background: 'rgba(216,176,90,0.2)' }}
+        style={{ borderColor: 'var(--sk-gilt)', background: 'rgba(var(--sk-gilt-rgb),0.2)' }}
       />
       {onRemove && (
         <button
@@ -64,7 +64,7 @@ const Repere: React.FC<{ x: number; y: number; nom: string; onRemove?: () => voi
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
           aria-label="Retirer"
           className="absolute -top-2 -right-2 flex items-center justify-center w-4 h-4 rounded-full"
-          style={{ background: '#1a050b', border: '1px solid rgba(244,239,227,0.4)', color: '#F4EFE3' }}
+          style={{ background: 'var(--sk-deep)', border: '1px solid rgba(var(--sk-parchment-rgb),0.4)', color: 'var(--sk-parchment)' }}
         >
           <X size={9} />
         </button>
@@ -72,7 +72,7 @@ const Repere: React.FC<{ x: number; y: number; nom: string; onRemove?: () => voi
     </span>
     <span
       className="px-1.5 py-0.5 rounded-full font-sans uppercase tracking-[0.12em] text-[9px] whitespace-nowrap max-w-[120px] truncate"
-      style={{ background: 'rgba(10,2,7,0.82)', color: '#F4EFE3', border: '1px solid rgba(216,176,90,0.35)' }}
+      style={{ background: 'rgba(var(--sk-ink-rgb),0.82)', color: 'var(--sk-parchment)', border: '1px solid rgba(var(--sk-gilt-rgb),0.35)' }}
     >
       {nom}
     </span>
@@ -212,12 +212,12 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
       <motion.div
         className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-lg-card"
         initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-        style={{ background: '#1a050b', border: '1px solid rgba(244,239,227,0.14)' }}
+        style={{ background: 'var(--sk-deep)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}
       >
         <button
           type="button" onClick={onClose} aria-label={t.fermer}
           className="absolute top-3 right-3 z-10 flex items-center justify-center w-9 h-9 rounded-full"
-          style={{ background: 'rgba(10,2,7,0.78)', border: '1px solid rgba(244,239,227,0.25)', color: '#F4EFE3' }}
+          style={{ background: 'rgba(var(--sk-ink-rgb),0.78)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'var(--sk-parchment)' }}
         >
           <X size={16} />
         </button>
@@ -241,7 +241,7 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
           )}
 
           {personnes.length > 0 && (
-            <p className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.75)' }}>
+            <p className="font-sans text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.75)' }}>
               {t.avec}{' '}
               {personnes.map((p, i) => (
                 <React.Fragment key={p.uid}>
@@ -269,7 +269,7 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
 
           {proprietaire && mode && (
             <div className="space-y-3">
-              <p className="font-sans text-xs" style={{ color: 'rgba(244,239,227,0.55)' }}>
+              <p className="font-sans text-xs" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                 {enPose ? t.choisirQui : t.cliquezPourPoser}
               </p>
 
@@ -285,7 +285,7 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
                         <button
                           type="button" onClick={() => choisir(moi.uid, moi.nom)}
                           className="w-full text-left px-3 py-2 rounded-card font-sans text-sm hover:bg-brass/10"
-                          style={{ color: '#F4EFE3', border: '1px solid rgba(216,176,90,0.3)' }}
+                          style={{ color: 'var(--sk-parchment)', border: '1px solid rgba(var(--sk-gilt-rgb),0.3)' }}
                         >
                           {t.moi}
                         </button>
@@ -296,14 +296,14 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
                         <button
                           type="button" onClick={() => choisir(m.uid, m.nom)}
                           className="w-full text-left px-3 py-2 rounded-card font-sans text-sm hover:bg-brass/10"
-                          style={{ color: 'rgba(244,239,227,0.85)', border: '1px solid rgba(244,239,227,0.12)' }}
+                          style={{ color: 'rgba(var(--sk-parchment-rgb),0.85)', border: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }}
                         >
                           {m.nom}
                         </button>
                       </li>
                     ))}
                     {suggestions.length === 0 && recherche.trim() && (
-                      <li className="font-sans text-xs px-1" style={{ color: 'rgba(244,239,227,0.45)' }}>{t.aucunResultat}</li>
+                      <li className="font-sans text-xs px-1" style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}>{t.aucunResultat}</li>
                     )}
                   </ul>
                 </div>
@@ -318,7 +318,7 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
                 </button>
                 <button
                   type="button" onClick={annuler}
-                  className="font-sans uppercase tracking-[0.18em] text-[11px]" style={{ color: 'rgba(244,239,227,0.55)' }}
+                  className="font-sans uppercase tracking-[0.18em] text-[11px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}
                 >
                   {t.annuler}
                 </button>
@@ -330,7 +330,7 @@ const VisionneusePhoto: React.FC<Props> = ({ photo, lang, onClose, moi, propriet
             <button
               type="button" onClick={meRetirer} disabled={retrait}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-card font-sans uppercase tracking-[0.18em] text-[11px] disabled:opacity-60"
-              style={{ border: '1px solid rgba(244,239,227,0.3)', color: '#F4EFE3' }}
+              style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.3)', color: 'var(--sk-parchment)' }}
             >
               {retrait ? <Loader2 size={13} className="animate-spin" /> : <X size={13} />} {t.meRetirer}
             </button>

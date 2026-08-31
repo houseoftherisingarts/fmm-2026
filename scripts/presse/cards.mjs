@@ -19,7 +19,7 @@ export const CARDS = [
     en: {
       kicker: 'The festival',
       hook: 'Three days on the roads of time',
-      body: 'The Festival Médiéval de Montpellier pitches its caravans at 4 rue du Bosquet, in the Petite-Nation, Outaouais, Quebec.',
+      body: 'The Festival Médiéval de Montpellier pitches its caravans at 4 rue du Bosquet, in the Petite-Nation region of Outaouais, Quebec.',
       meta: 'September 25-27, 2026 · Montpellier, Quebec',
     },
   },
@@ -57,14 +57,14 @@ export const CARDS = [
     n: '04', key: 'marche', photo: '02', side: 'right',
     fr: {
       kicker: 'Marché et démonstrations',
-      hook: 'Une cinquantaine d’étals, forge comprise',
-      body: 'Forgerons, costumiers, bijoutiers et herboristes tiennent boutique pendant que les démonstrateurs travaillent l’os, le bois et le fer devant vous.',
+      hook: 'Le marché des artisans et la forge',
+      body: 'Forgerons, costumiers, bijoutiers et herboristes tiennent boutique pendant que les démonstrateurs travaillent le fer et le bois devant vous.',
       meta: 'Marché médiéval · trois jours',
     },
     en: {
       kicker: 'Market and demos',
-      hook: 'Fifty-odd stalls, forge included',
-      body: 'Smiths, costumers, jewellers and herbalists keep shop while the demonstrators work bone, wood and iron in front of you.',
+      hook: 'The artisans’ market and the forge',
+      body: 'Smiths, costumers, jewellers and herbalists keep shop while the demonstrators work iron and wood in front of you.',
       meta: 'Medieval market · three days',
     },
   },
@@ -73,14 +73,14 @@ export const CARDS = [
     fr: {
       kicker: 'Musique et spectacles',
       hook: 'Du tambour viking aux ballades',
-      body: 'Skarazula, L’Harfang, la Troupe Caravane, BicOasis, Trifolys et Svarica montent sur scène, et la soirée finit en bal autour du feu.',
-      meta: 'Scènes · soirées dansantes',
+      body: 'Skarazula, L’Harfang, la Troupe Caravane, BicOasis, Trifolys et Svarica montent sur scène pendant les trois jours du festival.',
+      meta: 'Scènes · du 25 au 27 septembre 2026',
     },
     en: {
       kicker: 'Music and shows',
       hook: 'From Viking drums to ballads',
-      body: 'Skarazula, L’Harfang, Troupe Caravane, BicOasis, Trifolys and Svarica take the stage, and the evening ends in a ball around the fire.',
-      meta: 'Stages · evening dances',
+      body: 'Skarazula, L’Harfang, Troupe Caravane, BicOasis, Trifolys and Svarica take the stage across the festival’s three days.',
+      meta: 'Stages · September 25 to 27, 2026',
     },
   },
   {

@@ -227,8 +227,8 @@ const PartenairesPage: React.FC = () => {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    'radial-gradient(ellipse 60% 65% at 50% 55%, rgba(184, 106, 42, 0.22), transparent 70%),' +
-                    'radial-gradient(ellipse 45% 55% at 50% 60%, rgba(232, 177, 74, 0.12), transparent 75%)',
+                    'radial-gradient(ellipse 60% 65% at 50% 55%, rgba(var(--sk-copper-rgb), 0.22), transparent 70%),' +
+                    'radial-gradient(ellipse 45% 55% at 50% 60%, rgba(var(--sk-glow-rgb), 0.12), transparent 75%)',
                 }}
               />
               <img
@@ -237,7 +237,7 @@ const PartenairesPage: React.FC = () => {
                 className="fmm-no-grade relative w-full h-full object-contain"
                 style={{
                   filter:
-                    'drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(184, 106, 42, 0.4))',
+                    'drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(var(--sk-copper-rgb), 0.4))',
                   WebkitMaskImage: 'linear-gradient(to bottom, #000 70%, transparent 100%)',
                   maskImage:       'linear-gradient(to bottom, #000 70%, transparent 100%)',
                 }}

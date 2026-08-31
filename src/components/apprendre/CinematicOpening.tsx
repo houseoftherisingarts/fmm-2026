@@ -173,7 +173,7 @@ const CinematicOpening: React.FC<Props> = ({
               position: 'absolute',
               inset: 0,
               background:
-                'radial-gradient(120% 90% at 50% 18%, rgba(184,106,42,0.35), rgba(26,5,11,0.35) 55%, rgba(10,2,7,0.85) 100%)',
+                'radial-gradient(120% 90% at 50% 18%, rgba(var(--sk-copper-rgb),0.35), rgba(var(--sk-deep-rgb),0.35) 55%, rgba(var(--sk-ink-rgb),0.85) 100%)',
               mixBlendMode: 'multiply',
             }}
           />
@@ -191,7 +191,7 @@ const CinematicOpening: React.FC<Props> = ({
               transform: 'translateX(-50%)',
               borderRadius: '50%',
               background:
-                'radial-gradient(circle at 50% 45%, rgba(232,177,74,0.35) 0%, rgba(184,106,42,0.20) 38%, transparent 70%)',
+                'radial-gradient(circle at 50% 45%, rgba(var(--sk-glow-rgb),0.35) 0%, rgba(var(--sk-copper-rgb),0.20) 38%, transparent 70%)',
               filter: 'blur(20px)',
             }}
           />
@@ -208,8 +208,8 @@ const CinematicOpening: React.FC<Props> = ({
                   width: s.size,
                   height: s.size,
                   borderRadius: '50%',
-                  background: '#FFF6D5',
-                  boxShadow: '0 0 8px 2px rgba(232,177,74,0.65)',
+                  background: 'var(--sk-sheen)',
+                  boxShadow: '0 0 8px 2px rgba(var(--sk-glow-rgb),0.65)',
                   opacity: 0.7,
                   animation: `apSparkPulse 3.4s ease-in-out ${s.delay}s infinite`,
                 }}
@@ -225,7 +225,7 @@ const CinematicOpening: React.FC<Props> = ({
               position: 'absolute',
               inset: '-10% 0 0 0',
               background:
-                'linear-gradient(to bottom, rgba(10,2,7,0.55) 0%, transparent 28%, transparent 52%, rgba(10,2,7,0.80) 100%)',
+                'linear-gradient(to bottom, rgba(var(--sk-ink-rgb),0.55) 0%, transparent 28%, transparent 52%, rgba(var(--sk-ink-rgb),0.80) 100%)',
             }}
           />
 
@@ -266,11 +266,11 @@ const CinematicOpening: React.FC<Props> = ({
                 lineHeight: 0.95,
                 letterSpacing: '0.02em',
                 margin: 0,
-                background: 'linear-gradient(180deg, #F4EFE3 0%, #E8B14A 70%, #B86A2A 100%)',
+                background: 'linear-gradient(180deg, var(--sk-parchment) 0%, var(--sk-glow) 70%, var(--sk-copper) 100%)',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 color: 'transparent',
-                filter: 'drop-shadow(0 6px 30px rgba(184,106,42,0.45))',
+                filter: 'drop-shadow(0 6px 30px rgba(var(--sk-copper-rgb),0.45))',
               }}
             >
               {title}
@@ -301,7 +301,7 @@ const CinematicOpening: React.FC<Props> = ({
                   fontSize: 'clamp(1.3rem, 3.4vw, 2.4rem)',
                   lineHeight: 1.4,
                   color: 'var(--color-ivory)',
-                  textShadow: '0 2px 24px rgba(10,2,7,0.7)',
+                  textShadow: '0 2px 24px rgba(var(--sk-ink-rgb),0.7)',
                 }}
               >
                 {lead}

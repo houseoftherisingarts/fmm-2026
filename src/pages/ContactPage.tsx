@@ -93,10 +93,10 @@ const ContactPage: React.FC = () => {
                   <span
                     className="inline-flex items-center justify-center w-14 h-14 mb-5"
                     style={{
-                      background: 'rgba(232, 177, 74, 0.10)',
+                      background: 'rgba(var(--sk-glow-rgb), 0.10)',
                       border: '1px solid var(--color-amber-glow)',
                       clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
-                      filter: 'drop-shadow(0 0 14px rgba(232, 177, 74, 0.45))',
+                      filter: 'drop-shadow(0 0 14px rgba(var(--sk-glow-rgb), 0.45))',
                     }}
                   >
                     <Check size={28} style={{ color: 'var(--color-amber-glow)' }} />
@@ -104,7 +104,7 @@ const ContactPage: React.FC = () => {
                   <Eyebrow tone="amber" className="mb-3">{t.sentEyebrow}</Eyebrow>
                   <DisplayTitle size="lg" className="mb-3">{t.sentTitle}</DisplayTitle>
                   <p className="font-editorial italic text-base md:text-lg max-w-xl mx-auto"
-                     style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
+                     style={{ color: 'rgba(var(--sk-parchment-rgb), 0.78)' }}>
                     {t.sentBody.replace('{dept}', dept ? (lang === 'FR' ? dept.labelFR : dept.labelEN) : '')}
                   </p>
                 </div>
@@ -115,7 +115,7 @@ const ContactPage: React.FC = () => {
                     <Eyebrow tone="amber" className="mb-2">{t.formEyebrow}</Eyebrow>
                     <DisplayTitle size="lg" className="mb-2">{t.formTitle}</DisplayTitle>
                     <p className="font-editorial italic text-sm md:text-base"
-                       style={{ color: 'rgba(244, 239, 227, 0.65)' }}>
+                       style={{ color: 'rgba(var(--sk-parchment-rgb), 0.65)' }}>
                       {t.formIntro}
                     </p>
                   </div>
@@ -139,7 +139,7 @@ const ContactPage: React.FC = () => {
                     </select>
                     {dept && (lang === 'FR' ? dept.hintFR : dept.hintEN) && (
                       <p className="mt-1.5 font-editorial italic text-[12px]"
-                         style={{ color: 'rgba(244, 239, 227, 0.55)' }}>
+                         style={{ color: 'rgba(var(--sk-parchment-rgb), 0.55)' }}>
                         {lang === 'FR' ? dept.hintFR : dept.hintEN}
                       </p>
                     )}
@@ -207,7 +207,7 @@ const ContactPage: React.FC = () => {
 
                   <div className="md:col-span-2 flex flex-wrap items-center justify-between gap-3 pt-2">
                     <p className="font-editorial italic text-xs"
-                       style={{ color: 'rgba(244, 239, 227, 0.45)' }}>
+                       style={{ color: 'rgba(var(--sk-parchment-rgb), 0.45)' }}>
                       {t.privacyNote}
                     </p>
                     <button
@@ -220,7 +220,7 @@ const ContactPage: React.FC = () => {
                           'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
                         borderRadius: 16,
                         boxShadow:
-                          'inset 0 1px 0 rgba(255, 240, 200, 0.45), 0 14px 32px -10px rgba(216, 155, 58, 0.7)',
+                          'inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.45), 0 14px 32px -10px rgba(var(--sk-mustard-rgb), 0.7)',
                       }}
                     >
                       <Send size={13} /> {busy ? t.sending : t.send}
@@ -262,8 +262,8 @@ const ChannelCard: React.FC<{
   const inner = (
     <div className="px-5 py-4 transition-colors"
       style={{
-        background: 'rgba(10, 2, 7, 0.55)',
-        border: '1px solid rgba(216, 155, 58, 0.22)',
+        background: 'rgba(var(--sk-ink-rgb), 0.55)',
+        border: '1px solid rgba(var(--sk-mustard-rgb), 0.22)',
       }}
     >
       <Icon size={14} className="text-brass mx-auto mb-2" />

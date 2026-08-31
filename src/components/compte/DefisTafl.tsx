@@ -99,7 +99,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   return (
     <section
       className="relative p-6 md:p-8 overflow-hidden"
-      style={{ background: 'rgba(26, 5, 11, 0.55)', border: '1px solid rgba(244, 239, 227, 0.10)' }}
+      style={{ background: 'rgba(var(--sk-deep-rgb), 0.55)', border: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
     >
       <header className="mb-5">
         <p className="witcher-stat-label mb-1.5 inline-flex items-center gap-2">
@@ -108,7 +108,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         <h2 className="font-display text-2xl md:text-3xl leading-snug" style={{ color: 'var(--color-bone)', fontWeight: 400 }}>
           {fr ? 'Défier quelqu’un' : 'Challenge someone'}
         </h2>
-        <p className="font-editorial text-sm md:text-base mt-2" style={{ color: 'rgba(244,239,227,0.72)' }}>
+        <p className="font-editorial text-sm md:text-base mt-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.72)' }}>
           {fr
             ? 'Rendez-vous visible, choisissez un règlement et votre camp, puis lancez un défi. La partie s’ouvre dès que l’autre accepte.'
             : 'Make yourself visible, pick a rule set and a side, then send a challenge. The game opens as soon as they accept.'}
@@ -138,11 +138,11 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       </button>
 
       {/* Le lien de défi : pour quelqu'un qui n'est pas encore membre */}
-      <div className="mb-5 p-5 rounded-card" style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(232,177,74,0.22)' }}>
+      <div className="mb-5 p-5 rounded-card" style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}>
         <p className="witcher-stat-label mb-2 inline-flex items-center gap-2">
           <Link2 size={11} /> {fr ? 'Défier un ami de l’extérieur' : 'Challenge a friend from outside'}
         </p>
-        <p className="font-editorial text-sm mb-4" style={{ color: 'rgba(244,239,227,0.72)' }}>
+        <p className="font-editorial text-sm mb-4" style={{ color: 'rgba(var(--sk-parchment-rgb),0.72)' }}>
           {fr
             ? 'Créez un lien, collez-le dans Messenger ou dans un courriel. Votre ami arrive dans le lobby, se crée un compte, et la partie commence.'
             : 'Create a link, paste it into Messenger or an email. Your friend lands in the lobby, makes an account, and the game begins.'}
@@ -150,7 +150,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         {lienDefi ? (
           <div className="space-y-3">
             <p className="font-sans text-[12px] break-all px-3 py-2.5 rounded-card"
-               style={{ background: 'rgba(0,0,0,0.4)', color: 'rgba(244,239,227,0.8)' }}>
+               style={{ background: 'rgba(0,0,0,0.4)', color: 'rgba(var(--sk-parchment-rgb),0.8)' }}>
               {lienDefi}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -189,7 +189,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               aria-pressed={regleId === r.id}
               className={`px-3.5 py-2 rounded-card border font-sans text-[10px] uppercase tracking-[0.16em] transition-colors ${
                 regleId === r.id
-                  ? 'bg-brass text-[#1A0A05] border-brass'
+                  ? 'bg-brass text-[var(--sk-brown-dark)] border-brass'
                   : 'bg-black/30 text-ivory-soft border-brass/30 hover:border-brass/70'
               }`}
             >
@@ -207,7 +207,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               aria-pressed={camp === c}
               className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-card border font-sans text-[10px] uppercase tracking-[0.16em] transition-colors ${
                 camp === c
-                  ? 'bg-brass text-[#1A0A05] border-brass'
+                  ? 'bg-brass text-[var(--sk-brown-dark)] border-brass'
                   : 'bg-black/30 text-ivory-soft border-brass/30 hover:border-brass/70'
               }`}
             >
@@ -224,7 +224,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       <div className="mb-5">
         <p className="witcher-stat-label mb-2">{fr ? 'À la table' : 'At the table'}</p>
         {autres.length === 0 ? (
-          <p className="font-editorial italic text-sm" style={{ color: 'rgba(244,239,227,0.55)' }}>
+          <p className="font-editorial italic text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>
             {fr ? 'Personne d’autre pour l’instant. Revenez tantôt.' : 'Nobody else yet. Come back later.'}
           </p>
         ) : (
@@ -309,7 +309,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               </li>
             ))}
             {defisEnvoyes.map((p) => (
-              <li key={p.id} className="px-4 py-3 rounded-card border border-brass/15 bg-black/20 font-editorial italic text-sm" style={{ color: 'rgba(244,239,227,0.6)' }}>
+              <li key={p.id} className="px-4 py-3 rounded-card border border-brass/15 bg-black/20 font-editorial italic text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}>
                 {fr ? 'Défi envoyé à' : 'Challenge sent to'} {nomAdverse(p)} · {fr ? 'en attente de sa réponse' : 'waiting for their answer'}
               </li>
             ))}
@@ -328,7 +328,7 @@ const DefisTafl: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 : p.camps.defender === user.uid ? 'defender' : null;
               const gagne = monCamp && p.gagnant === monCamp;
               return (
-                <li key={p.id} className="font-editorial text-sm" style={{ color: 'rgba(244,239,227,0.6)' }}>
+                <li key={p.id} className="font-editorial text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}>
                   {gagne ? (fr ? 'Victoire' : 'Win') : (fr ? 'Défaite' : 'Loss')} · {nomAdverse(p)}
                 </li>
               );

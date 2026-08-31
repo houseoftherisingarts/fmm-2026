@@ -79,7 +79,7 @@ export function useTilt(intensity = 7) {
 // ─── useSpotlight ───────────────────────────────────────────────────
 // Mouse-tracking radial light overlay. Returns the wrapper props +
 // background motion-template ready to apply on a child <motion.div>.
-export function useSpotlight(color = 'rgba(232,177,74,0.18)', size = 280) {
+export function useSpotlight(color = 'rgba(var(--sk-glow-rgb),0.18)', size = 280) {
   const x = useMotionValue(-9999);
   const y = useMotionValue(-9999);
   const reduce = useReducedMotion();

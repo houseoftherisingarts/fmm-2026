@@ -40,12 +40,12 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
-      <div className="flex items-center justify-between gap-4 mb-5 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+      <div className="flex items-center justify-between gap-4 mb-5 pb-2" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-stat-label inline-flex items-center gap-2">
           <PieceMontpellois size={15} /> {prive ? (fr ? 'Ma bourse' : 'My purse') : (fr ? 'Sa bourse' : 'Their purse')}
         </span>
         {rang && (
-          <span className="font-sans uppercase tracking-[0.18em] text-[10px]" style={{ color: '#D8B05A' }}>
+          <span className="font-sans uppercase tracking-[0.18em] text-[10px]" style={{ color: 'var(--sk-gilt)' }}>
             {fr ? rang.nomFR : rang.nomEN}
           </span>
         )}
@@ -55,7 +55,7 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
         <PieceMontpellois size={54} image />
         <div className="min-w-0">
           <p className="font-display text-3xl md:text-4xl text-ivory leading-none">{bourse?.solde ?? 0}</p>
-          <p className="font-sans uppercase tracking-[0.2em] text-[10px] mt-1" style={{ color: 'rgba(244,239,227,0.55)' }}>
+          <p className="font-sans uppercase tracking-[0.2em] text-[10px] mt-1" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>
             {fr ? 'Montpellois' : 'Montpellois'}
           </p>
         </div>
@@ -69,17 +69,17 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
                      onChange={basculer} disabled={envoi} />
               <span aria-hidden className="relative w-11 h-6 rounded-full transition-colors shrink-0"
                     style={{
-                      background: bourse?.publique ? 'rgba(216,176,90,0.45)' : 'rgba(244,239,227,0.14)',
-                      border: `1px solid ${bourse?.publique ? '#D8B05A' : 'rgba(244,239,227,0.25)'}`,
+                      background: bourse?.publique ? 'rgba(var(--sk-gilt-rgb),0.45)' : 'rgba(var(--sk-parchment-rgb),0.14)',
+                      border: `1px solid ${bourse?.publique ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.25)'}`,
                     }}>
                 <span className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full transition-all"
                       style={{
                         left: bourse?.publique ? 'calc(100% - 1.25rem)' : '0.25rem',
-                        background: bourse?.publique ? '#F4EFE3' : 'rgba(244,239,227,0.6)',
+                        background: bourse?.publique ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.6)',
                         boxShadow: '0 1px 3px rgba(0,0,0,0.5)',
                       }} />
               </span>
-              <span className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.85)', fontWeight: 300 }}>
+              <span className="font-sans text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.85)', fontWeight: 300 }}>
                 {envoi
                   ? (fr ? 'Un instant…' : 'One moment…')
                   : bourse?.publique
@@ -90,24 +90,24 @@ const BoursePanel: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }> 
 
             <button type="button" onClick={reclamer}
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/80 hover:text-brass transition-colors"
-                    style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                    style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
               <Gift size={12} />
               {fr ? 'Ma récompense du jour' : 'My daily reward'}
             </button>
 
             <Link to={addLocale('/boutique', lang)}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/80 hover:text-brass transition-colors"
-                  style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                  style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
               <Store size={12} /> {fr ? 'La boutique' : 'The shop'}
             </Link>
           </div>
 
-          <p className="font-sans text-[11px]" style={{ color: 'rgba(244,239,227,0.5)' }}>
+          <p className="font-sans text-[11px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
             {bourse?.publique
               ? (fr ? 'Les autres membres voient votre fortune sur votre profil.' : 'Other members see your fortune on your profile.')
               : (fr ? 'Personne ne voit votre bourse. Ouvrez-la pour gagner le badge du paon.' : 'Nobody sees your purse. Open it to earn the peacock badge.')}
           </p>
-          {message && <p className="mt-3 font-sans text-xs" style={{ color: '#D8B05A' }}>{message}</p>}
+          {message && <p className="mt-3 font-sans text-xs" style={{ color: 'var(--sk-gilt)' }}>{message}</p>}
         </>
       )}
     </section>

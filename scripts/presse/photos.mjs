@@ -18,5 +18,3 @@ export const PHOTOS = [
   { id: '07', slug: 'joute',             orig: '2025-IMG_5526' },
   { id: '08', slug: 'cracheur-feu',      orig: '2025-IMG_6377' },
 ];
-
-export const PHOTO_BY_ID = Object.fromEntries(PHOTOS.map((p) => [p.id, p]));

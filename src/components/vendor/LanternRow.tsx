@@ -16,12 +16,12 @@ const Lantern: React.FC<{ delay: number; size?: number }> = ({ delay, size = 44 
         <defs>
           <radialGradient id={`lglow-${delay}`} cx="50%" cy="55%" r="55%">
             <stop offset="0%"  stopColor="#FFE6A8" stopOpacity="1" />
-            <stop offset="55%" stopColor="#E8B14A" stopOpacity="0.85" />
+            <stop offset="55%" stopColor="var(--sk-glow)" stopOpacity="0.85" />
             <stop offset="100%" stopColor="#7B1E2D" stopOpacity="0.0" />
           </radialGradient>
           <linearGradient id={`lframe-${delay}`} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%"  stopColor="#7A6534" />
-            <stop offset="50%" stopColor="#C4A45A" />
+            <stop offset="0%"  stopColor="var(--sk-brass-deep)" />
+            <stop offset="50%" stopColor="var(--sk-brass-warm)" />
             <stop offset="100%" stopColor="#5B4A22" />
           </linearGradient>
         </defs>

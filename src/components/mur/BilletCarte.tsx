@@ -54,11 +54,11 @@ const VideoBillet: React.FC<{
     <div className="mt-4">
       {ouverte ? (
         <video controls playsInline autoPlay src={url}
-               className="w-full max-h-[32rem] rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
+               className="w-full max-h-[32rem] rounded-card" style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }} />
       ) : (
         <button type="button" onClick={() => setOuverte(true)} aria-label={fr ? 'Lire la vidéo' : 'Play video'}
                 className="relative block w-full rounded-card overflow-hidden group"
-                style={{ border: '1px solid rgba(244,239,227,0.12)' }}>
+                style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }}>
           {vignette ? (
             <img src={vignette} alt="" loading="lazy" className="w-full max-h-[32rem] object-cover" />
           ) : (
@@ -227,7 +227,7 @@ const BilletCarte: React.FC<{
       style={{ background: fond, border: `1px solid ${bord}` }}
     >
       {post.epingle && (
-        <p className="flex items-center gap-1.5 mb-3 font-sans uppercase tracking-[0.18em] text-[9px]" style={{ color: '#D8B05A' }}>
+        <p className="flex items-center gap-1.5 mb-3 font-sans uppercase tracking-[0.18em] text-[9px]" style={{ color: 'var(--sk-gilt)' }}>
           <Pin size={11} /> {bandeauEpingle}
         </p>
       )}
@@ -242,7 +242,7 @@ const BilletCarte: React.FC<{
             {post.verifie && <BadgeVerifie size={22} titre={fr ? 'Membre vérifié' : 'Verified member'} />}
             {post.moderateur && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px] shrink-0"
-                    style={{ background: 'rgba(216,176,90,0.16)', border: '1px solid #D8B05A', color: '#D8B05A' }}>
+                    style={{ background: 'rgba(var(--sk-gilt-rgb),0.16)', border: '1px solid var(--sk-gilt)', color: 'var(--sk-gilt)' }}>
                 <ShieldCheck size={10} /> {fr ? 'Admin · Modérateur' : 'Admin · Moderator'}
               </span>
             )}
@@ -263,7 +263,7 @@ const BilletCarte: React.FC<{
                     aria-label={post.epingle ? (fr ? 'Décrocher' : 'Unpin') : (fr ? 'Épingler' : 'Pin')}
                     aria-pressed={!!post.epingle}
                     className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-                    style={{ color: post.epingle ? '#D8B05A' : 'rgba(244,239,227,0.4)' }}>
+                    style={{ color: post.epingle ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.4)' }}>
               {post.epingle ? <Pin size={14} fill="currentColor" /> : <PinOff size={14} />}
             </button>
           )}
@@ -278,7 +278,7 @@ const BilletCarte: React.FC<{
 
       {post.texte && <p className="font-editorial text-[15px] text-ivory leading-relaxed whitespace-pre-line">{post.texte}</p>}
       {post.photoUrl && (
-        <img src={post.photoUrl} alt="" loading="lazy" className="mt-4 w-full max-h-[32rem] object-cover rounded-card" style={{ border: '1px solid rgba(244,239,227,0.12)' }} />
+        <img src={post.photoUrl} alt="" loading="lazy" className="mt-4 w-full max-h-[32rem] object-cover rounded-card" style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }} />
       )}
       {post.videoUrl && (
         <VideoBillet fr={fr} url={post.videoUrl} vignette={post.videoVignette}
@@ -289,7 +289,7 @@ const BilletCarte: React.FC<{
       {post.apercu && (post.apercu.titre || post.apercu.description || post.apercu.image) && (
         <a href={post.apercu.url} target="_blank" rel="noreferrer"
            className="mt-4 flex gap-3 rounded-card overflow-hidden hover:opacity-90 transition-opacity"
-           style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(244,239,227,0.14)' }}>
+           style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}>
           {post.apercu.image && (
             <img src={post.apercu.image} alt="" loading="lazy" className="w-28 h-28 object-cover shrink-0" />
           )}
@@ -303,7 +303,7 @@ const BilletCarte: React.FC<{
 
       {/* La carte citée d'un partage (Alex, 2026-08-28). */}
       {post.partage && (
-        <div className="mt-4 rounded-card p-4" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(244,239,227,0.14)' }}>
+        <div className="mt-4 rounded-card p-4" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}>
           {post.partage.auteurNom && (
             <p className="font-sans text-[11px] text-ivory-soft/60 mb-1.5">
               {fr ? `Partagé de ${post.partage.auteurNom}` : `Shared from ${post.partage.auteurNom}`}
@@ -312,7 +312,7 @@ const BilletCarte: React.FC<{
           {post.partage.titre && <p className="font-display text-sm text-brass mb-1">{post.partage.titre}</p>}
           {post.partage.extrait && <p className="font-editorial text-[13px] text-ivory-soft leading-relaxed">{post.partage.extrait}</p>}
           {post.partage.imageUrl && (
-            <img src={post.partage.imageUrl} alt="" loading="lazy" className="mt-3 w-full max-h-72 object-cover rounded-card" style={{ border: '1px solid rgba(244,239,227,0.1)' }} />
+            <img src={post.partage.imageUrl} alt="" loading="lazy" className="mt-3 w-full max-h-72 object-cover rounded-card" style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }} />
           )}
           {post.partage.url && (
             <a href={post.partage.url} target="_blank" rel="noreferrer"
@@ -349,7 +349,7 @@ const BilletCarte: React.FC<{
             rows={2}
             placeholder={fr ? 'Ajoutez un mot…' : 'Add a word…'}
             className="w-full px-3 py-2 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
-            style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+            style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}
           />
           <div className="mt-2 flex items-center justify-end gap-2">
             {erreurPartage && <p className="mr-auto font-sans text-[11px]" style={{ color: '#E08A6E' }}>{erreurPartage}</p>}
@@ -370,7 +370,7 @@ const BilletCarte: React.FC<{
                 rows={1}
                 placeholder={fr ? 'Écrire un commentaire…' : 'Write a comment…'}
                 className="flex-1 px-3 py-2 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
-                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(244,239,227,0.14)' }}
+                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}
               />
               <button type="button" onClick={publierCommentaireIci} disabled={envoiComment || !texteComment.trim()}
                       aria-label={fr ? 'Envoyer' : 'Send'}

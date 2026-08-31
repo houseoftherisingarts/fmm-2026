@@ -62,7 +62,7 @@ const VitrineObjets: React.FC<Props> = ({ uid, lang, editable }) => {
                 <span
                   className="w-14 h-14 rounded-md flex items-center justify-center"
                   style={{
-                    background: 'rgba(244,239,227,0.05)',
+                    background: 'rgba(var(--sk-parchment-rgb),0.05)',
                     border: `1.5px solid ${COULEUR_RARETE[o.rarete]}`,
                     boxShadow: o.rarete !== 'commune' ? `0 0 8px ${COULEUR_RARETE[o.rarete]}` : undefined,
                   }}
@@ -101,8 +101,8 @@ const VitrineObjets: React.FC<Props> = ({ uid, lang, editable }) => {
                   className="w-10 h-10 rounded-md flex items-center justify-center transition"
                   title={fr ? o.nom.FR : o.nom.EN}
                   style={{
-                    background: actif ? 'rgba(216,176,90,0.22)' : 'rgba(244,239,227,0.05)',
-                    border: `1px solid ${actif ? '#D8B05A' : COULEUR_RARETE[o.rarete]}`,
+                    background: actif ? 'rgba(var(--sk-gilt-rgb),0.22)' : 'rgba(var(--sk-parchment-rgb),0.05)',
+                    border: `1px solid ${actif ? 'var(--sk-gilt)' : COULEUR_RARETE[o.rarete]}`,
                   }}
                 >
                   <span style={{ width: 20, height: 20, borderRadius: 4, background: o.couleur }} />

@@ -106,7 +106,7 @@ export const TableDeJeux: React.FC = () => {
         {/* Barre haute de la console : le nom de la table et le
             décompte, comme la barre de Gwent. */}
         <div className="flex items-center justify-between gap-4 px-5 md:px-7 py-3.5 border-b border-brass/20"
-             style={{ background: 'linear-gradient(180deg, rgba(232,177,74,0.07), rgba(10,4,6,0))' }}>
+             style={{ background: 'linear-gradient(180deg, rgba(var(--sk-glow-rgb),0.07), rgba(10,4,6,0))' }}>
           <span className="inline-flex items-center gap-3 font-display title-medieval uppercase tracking-[0.32em] text-[11px] md:text-xs"
                 style={{ color: 'var(--color-amber-glow)' }}>
             <span aria-hidden className="w-1.5 h-1.5 rotate-45 bg-brass" />
@@ -144,7 +144,7 @@ export const TableDeJeux: React.FC = () => {
                   }}
                 />
                 <span className="absolute top-3 left-4 font-display title-medieval text-3xl md:text-4xl"
-                      style={{ color: 'rgba(232,177,74,0.55)' }}>
+                      style={{ color: 'rgba(var(--sk-glow-rgb),0.55)' }}>
                   {a.chiffre}
                 </span>
                 {scellee && (

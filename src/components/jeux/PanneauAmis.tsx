@@ -164,7 +164,7 @@ const PanneauAmis: React.FC<Props> = ({ lang, jeu }) => {
         type="button"
         disabled={envoi === a.uid}
         onClick={() => { void defier(a.uid, a.nom); }}
-        className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-card border border-brass/40 text-brass hover:bg-brass hover:text-[#1A0A05] transition-colors font-sans text-[10px] uppercase tracking-[0.18em] disabled:opacity-50"
+        className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-card border border-brass/40 text-brass hover:bg-brass hover:text-[var(--sk-brown-dark)] transition-colors font-sans text-[10px] uppercase tracking-[0.18em] disabled:opacity-50"
       >
         {envoi === a.uid ? (fr ? 'Envoi…' : 'Sending…') : (fr ? 'Défier' : 'Challenge')}
       </button>
@@ -204,7 +204,7 @@ const PanneauAmis: React.FC<Props> = ({ lang, jeu }) => {
                   type="button"
                   disabled={envoi === p.id}
                   onClick={() => { void accepter(p); }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-card bg-brass text-[#1A0A05] font-sans text-[10px] uppercase tracking-[0.18em] font-semibold hover:bg-brass-soft transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-card bg-brass text-[var(--sk-brown-dark)] font-sans text-[10px] uppercase tracking-[0.18em] font-semibold hover:bg-brass-soft transition-colors disabled:opacity-50"
                 >
                   <Check size={12} /> {fr ? 'Accepter' : 'Accept'}
                 </button>
@@ -236,7 +236,7 @@ const PanneauAmis: React.FC<Props> = ({ lang, jeu }) => {
         </label>
         {recherche.trim().length >= 2 && (
           trouves.length === 0 ? (
-            <p className="mt-2.5 font-editorial text-[13px]" style={{ color: 'rgba(244,239,227,0.6)' }}>
+            <p className="mt-2.5 font-editorial text-[13px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}>
               {fr
                 ? 'Personne de ce nom dans le registre.'
                 : 'Nobody by that name in the register.'}
@@ -257,7 +257,7 @@ const PanneauAmis: React.FC<Props> = ({ lang, jeu }) => {
       {/* Le cercle : une ligne par ami, l'action à droite. */}
       {amis.length === 0 ? (
         <div className="px-5 py-5">
-          <p className="font-editorial text-sm leading-relaxed" style={{ color: 'rgba(244,239,227,0.62)' }}>
+          <p className="font-editorial text-sm leading-relaxed" style={{ color: 'rgba(var(--sk-parchment-rgb),0.62)' }}>
             {fr
               ? 'Votre cercle est encore vide. Les autres joueurs vous attendent dans le registre de l’Ordre.'
               : 'Your circle is still empty. The other players are waiting in the Order’s register.'}
@@ -286,7 +286,7 @@ const PanneauAmis: React.FC<Props> = ({ lang, jeu }) => {
           <div className="space-y-2.5">
             <p
               className="font-sans text-[11px] break-all px-3 py-2.5 rounded-card"
-              style={{ background: 'rgba(0,0,0,0.4)', color: 'rgba(244,239,227,0.8)' }}
+              style={{ background: 'rgba(0,0,0,0.4)', color: 'rgba(var(--sk-parchment-rgb),0.8)' }}
             >
               {lienDefi}
             </p>

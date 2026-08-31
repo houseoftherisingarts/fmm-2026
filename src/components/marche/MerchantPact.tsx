@@ -52,18 +52,18 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
 
       <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8">
         {/* ─── TOP HAIRLINE: state registers, read-only ──────── */}
-        <div className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+        <div className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
           <div className="flex items-center gap-6 md:gap-9 flex-wrap">
             <span className="flex items-baseline gap-3">
               <span className="witcher-stat-label">{lang === 'FR' ? 'Cohorte 2026' : 'Cohort 2026'}</span>
-              <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'rgba(244,239,227,0.55)', fontWeight: 300 }}>
+              <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)', fontWeight: 300 }}>
                 {lang === 'FR' ? 'Complète' : 'Full'}
               </span>
             </span>
-            <span aria-hidden className="hidden sm:block w-px h-5" style={{ background: 'rgba(244,239,227,0.12)' }} />
+            <span aria-hidden className="hidden sm:block w-px h-5" style={{ background: 'rgba(var(--sk-parchment-rgb),0.12)' }} />
             <span className="flex items-baseline gap-3">
               <span className="witcher-stat-label">{lang === 'FR' ? 'Cohorte 2027' : 'Cohort 2027'}</span>
-              <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+              <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}>
                 {lang === 'FR' ? 'Inscriptions ouvertes' : 'Applications open'}
               </span>
             </span>
@@ -80,7 +80,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
         >
           <p
             className="font-sans uppercase tracking-[0.45em] text-[10px] md:text-[11px] mb-7"
-            style={{ color: '#D8B05A' }}
+            style={{ color: 'var(--sk-gilt)' }}
           >
             {copy.eyebrow}
           </p>
@@ -90,23 +90,23 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
             style={{
               color: 'var(--color-bone)',
               fontWeight: 400,
-              textShadow: '0 0 24px rgba(232, 177, 74, 0.28), 0 0 60px rgba(184, 106, 42, 0.22)',
+              textShadow: '0 0 24px rgba(var(--sk-glow-rgb), 0.28), 0 0 60px rgba(var(--sk-copper-rgb), 0.22)',
             }}
           >
             {copy.title}
           </h2>
 
           {/* Italic lore-quote: sits like the Sea Siren intro */}
-          <blockquote className="mb-8 pl-4" style={{ borderLeft: '1px solid rgba(216, 176, 90, 0.45)' }}>
+          <blockquote className="mb-8 pl-4" style={{ borderLeft: '1px solid rgba(var(--sk-gilt-rgb), 0.45)' }}>
             <p
               className="font-editorial italic text-base md:text-lg leading-snug"
-              style={{ color: '#D8B05A', fontWeight: 400 }}
+              style={{ color: 'var(--sk-gilt)', fontWeight: 400 }}
             >
               {loreQuote}
             </p>
             <p
               className="font-sans uppercase tracking-[0.35em] text-[10px] mt-2"
-              style={{ color: 'rgba(216, 176, 90, 0.55)' }}
+              style={{ color: 'rgba(var(--sk-gilt-rgb), 0.55)' }}
             >
               {loreAttrib}
             </p>
@@ -114,13 +114,13 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
 
           <p
             className="font-sans text-base md:text-lg leading-[1.75] mb-4"
-            style={{ color: 'rgba(244, 239, 227, 0.78)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.78)', fontWeight: 300 }}
           >
             {copy.body}
           </p>
           <p
             className="font-sans text-sm leading-relaxed mb-12"
-            style={{ color: 'rgba(244, 239, 227, 0.45)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.45)', fontWeight: 300 }}
           >
             {copy.reviewNote}
           </p>
@@ -143,7 +143,7 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
             grand, entre les deux filets. */}
         <div
           className="mt-14 md:mt-20 pt-12 md:pt-16 pb-2 flex flex-col items-center text-center"
-          style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}
+          style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
         >
           {/* Deux portes, côte à côte : la cohorte 2026 a encore de la
               place au Faubourg, la 2027 se prépare (Alex, 2026-08-22).
@@ -181,12 +181,12 @@ const MerchantPact: React.FC<Props> = ({ lang, copy }) => {
 
           <p
             className="font-sans text-xs md:text-sm tracking-[0.25em] uppercase mt-6"
-            style={{ color: 'rgba(244, 239, 227, 0.5)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.5)', fontWeight: 300 }}
           >
             {lang === 'FR' ? 'Réponse via votre espace marchand' : 'Reply via your merchant space'}
           </p>
         </div>
-        <div className="mt-12 md:mt-16" style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }} />
+        <div className="mt-12 md:mt-16" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }} />
       </div>
     </section>
   );
@@ -215,7 +215,7 @@ const PerkCell: React.FC<{ perk: PerkTile; index: number; reduce: boolean }> = (
       className="flex flex-col items-start gap-6"
     >
       <span className="witcher-tile shrink-0" style={{ width: 54, height: 54 }}>
-        <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+        <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
           <Icon size={16} />
         </span>
       </span>
@@ -228,7 +228,7 @@ const PerkCell: React.FC<{ perk: PerkTile; index: number; reduce: boolean }> = (
         </span>
         <span
           className="font-sans text-[12px] leading-snug mt-1"
-          style={{ color: 'rgba(244, 239, 227, 0.5)', fontWeight: 300 }}
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.5)', fontWeight: 300 }}
         >
           {perk.detail}
         </span>

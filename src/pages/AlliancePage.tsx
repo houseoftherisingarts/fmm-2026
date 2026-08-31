@@ -43,7 +43,7 @@ const AlliancePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             {visibles.map((a) => (
               <article key={a.id} className="rounded-lg-card border border-brass/25 p-7 md:p-8"
-                       style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+                       style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
                 <h2 className="font-display title-medieval text-2xl text-ivory mb-2">{a.nom}</h2>
                 {a.lieu && (
                   <p className="font-sans uppercase tracking-[0.22em] text-[10px] text-ivory-soft/55 mb-4">{a.lieu}</p>

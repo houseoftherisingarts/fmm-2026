@@ -192,7 +192,7 @@ const CommunautePage: React.FC = () => {
       id: 'open' as ChannelId,
       label: lang === 'FR' ? 'Place du village (ouvert)' : 'Village square (open)',
       icon: <Hash size={13} />,
-      tone: '#c9a05a',
+      tone: 'var(--sk-brass-warm)',
       routeTo: addLocale('/communaute', lang),
     }];
     for (const t of teams) {
@@ -200,7 +200,7 @@ const CommunautePage: React.FC = () => {
         id: teamChannelId(t.id),
         label: `${t.icon || '🏛️'} ${t.name}`,
         icon: <Users size={13} />,
-        tone: t.color || '#c9a05a',
+        tone: t.color || 'var(--sk-brass-warm)',
         routeTo: addLocale(`/communaute/equipe/${t.id}`, lang),
       });
     }
@@ -277,7 +277,7 @@ const CommunautePage: React.FC = () => {
               <header className="rounded-card border p-5 mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-card flex items-center justify-center text-xl"
-                    style={{ background: `${currentTeam?.color || '#c9a05a'}22`, border: `1px solid ${currentTeam?.color || '#c9a05a'}55` }}>
+                    style={{ background: `${currentTeam?.color || 'var(--sk-brass-warm)'}22`, border: `1px solid ${currentTeam?.color || 'var(--sk-brass-warm)'}55` }}>
                     {currentTeam?.icon || '🏛️'}
                   </div>
                   <div className="flex-1 min-w-0">

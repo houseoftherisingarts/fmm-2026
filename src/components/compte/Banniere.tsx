@@ -43,8 +43,8 @@ const METAL: Record<Metal, { bande: string; bandeClair: string; bandeSombre: str
             rivet: 'radial-gradient(circle at 30% 30%, #F1C99A 0%, #B7783C 35%, #6B4218 75%, #33200A 100%)', nomFR: 'Bronze', nomEN: 'Bronze' },
   argent: { bande: '#B9BFC8', bandeClair: '#EEF1F5', bandeSombre: '#6E757F', echo: 'rgba(200,205,215,0.55)', bois: 'rgba(30,30,36,0.9)',
             rivet: 'radial-gradient(circle at 30% 30%, #FFFFFF 0%, #C9CFD8 35%, #7A828C 75%, #3C4149 100%)', nomFR: 'Argent', nomEN: 'Silver' },
-  or:     { bande: 'var(--color-brass)', bandeClair: '#F4E5B6', bandeSombre: '#8C6A1F', echo: 'rgba(140,106,31,0.55)', bois: 'rgba(60,30,8,0.85)',
-            rivet: 'radial-gradient(circle at 30% 30%, #F4E5B6 0%, #C9A85A 35%, #8C6A1F 75%, #4A3812 100%)', nomFR: 'Or', nomEN: 'Gold' },
+  or:     { bande: 'var(--color-brass)', bandeClair: 'var(--sk-gilt-pale)', bandeSombre: 'var(--sk-brass-deep)', echo: 'rgba(var(--sk-brass-line-rgb),0.55)', bois: 'rgba(var(--sk-wood-rgb),0.85)',
+            rivet: 'radial-gradient(circle at 30% 30%, var(--sk-gilt-pale) 0%, var(--sk-brass-warm) 35%, var(--sk-brass-deep) 75%, var(--sk-brass-dark) 100%)', nomFR: 'Or', nomEN: 'Gold' },
 };
 
 const cadrageOrigine = (): { x: number; y: number } => ({ x: 50, y: 50 });
@@ -166,7 +166,7 @@ const Banniere: React.FC<{
         <div
           ref={cadreRef}
           className={`relative overflow-hidden rounded-[13px] ${verticale ? 'h-full aspect-[3/5]' : 'aspect-[16/6] md:aspect-[16/5]'}`}
-          style={{ background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.bandeSombre}55, rgba(10,2,7,0.95))` }}
+          style={{ background: url ? undefined : `url(/textures/black-linen.png), radial-gradient(120% 90% at 50% 100%, ${m.bandeSombre}55, rgba(var(--sk-ink-rgb),0.95))` }}
           onPointerDown={ajustage ? surPointerDown : undefined}
           onPointerMove={ajustage ? surPointerMove : undefined}
           onPointerUp={ajustage ? surPointerFin : undefined}
@@ -192,7 +192,7 @@ const Banniere: React.FC<{
           {/* L'écho fin à l'intérieur, comme sur la charte. */}
           {!verticale && (
             <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
-                 style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.55), transparent)' }} />
+                 style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.55), transparent)' }} />
           )}
 
           {editable && !ajustage && (
@@ -202,7 +202,7 @@ const Banniere: React.FC<{
                   type="button"
                   onPointerDown={(e) => { e.preventDefault(); onCommencerDeplacement(); }}
                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
-                  style={{ background: 'rgba(10,2,7,0.75)', border: '1px solid rgba(244,239,227,0.25)', color: 'rgba(244,239,227,0.9)' }}
+                  style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}
                 >
                   <Move size={12} /> {fr ? 'Déplacer' : 'Move'}
                 </button>
@@ -212,7 +212,7 @@ const Banniere: React.FC<{
                   type="button"
                   onClick={ouvrirAjustage}
                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
-                  style={{ background: 'rgba(10,2,7,0.75)', border: '1px solid rgba(244,239,227,0.25)', color: 'rgba(244,239,227,0.9)' }}
+                  style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}
                 >
                   <Crop size={12} /> {fr ? 'Ajuster' : 'Adjust'}
                 </button>
@@ -222,7 +222,7 @@ const Banniere: React.FC<{
                 onClick={() => input.current?.click()}
                 disabled={envoi}
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
-                style={{ background: 'rgba(10,2,7,0.75)', border: '1px solid rgba(244,239,227,0.25)', color: 'rgba(244,239,227,0.9)' }}
+                style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}
               >
                 {envoi ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
                 {url ? (fr ? 'Changer la bannière' : 'Change banner') : (fr ? 'Ajouter une bannière' : 'Add a banner')}
@@ -232,16 +232,16 @@ const Banniere: React.FC<{
 
           {ajustage && (
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full"
-                 style={{ background: 'rgba(10,2,7,0.85)', border: '1px solid rgba(216,176,90,0.4)' }}>
-              <span className="font-sans text-[10px] uppercase tracking-[0.16em] mr-1 hidden sm:inline" style={{ color: 'rgba(244,239,227,0.6)' }}>
+                 style={{ background: 'rgba(var(--sk-ink-rgb),0.85)', border: '1px solid rgba(var(--sk-gilt-rgb),0.4)' }}>
+              <span className="font-sans text-[10px] uppercase tracking-[0.16em] mr-1 hidden sm:inline" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}>
                 {fr ? 'Glissez la photo' : 'Drag the photo'}
               </span>
               <button type="button" onClick={annulerAjustage}
-                      className="w-8 h-8 rounded-full flex items-center justify-center" style={{ color: 'rgba(244,239,227,0.75)' }}>
+                      className="w-8 h-8 rounded-full flex items-center justify-center" style={{ color: 'rgba(var(--sk-parchment-rgb),0.75)' }}>
                 <X size={14} />
               </button>
               <button type="button" onClick={enregistrerAjustage}
-                      className="w-8 h-8 rounded-full flex items-center justify-center" style={{ color: '#D8B05A' }}>
+                      className="w-8 h-8 rounded-full flex items-center justify-center" style={{ color: 'var(--sk-gilt)' }}>
                 <Check size={16} />
               </button>
             </div>

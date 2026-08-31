@@ -297,7 +297,11 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     return g;
   };
   let vivant = true;
-  ([['renard', '/games/renard/models/renard.glb', 1.15], ['oie', '/games/renard/models/oie.glb', 1.2]] as const)
+    // Hauteurs mesurées à l'écran (pas de grille PAS_3D = 2,0) : le
+  // renard doit dominer la basse-cour, or Meshy sort les deux bêtes à
+  // la même hauteur normalisée. 1,4 contre 1,1 : le renard fait un
+  // quart de plus, et l'oie garde son assise dans sa cupule.
+  ([['renard', '/games/renard/models/renard.glb', 1.4], ['oie', '/games/renard/models/oie.glb', 1.1]] as const)
     .forEach(([quoi, url, hauteur]) => {
       chargerSculpture(url, hauteur).then((proto) => {
         if (!vivant) return;
@@ -427,6 +431,26 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     });
     return meilleur;
   };
+
+  // ── Sonde de développement ────────────────────────────────────────
+  // Même contrat qu'à la mérelle (`window.__merelleScene`) et au
+  // hnefatafl : la projection d'un point vers l'écran, pour qu'un test
+  // Playwright clique un point précis. Rien n'est exposé en production.
+  if (import.meta.env.DEV) {
+    (window as unknown as Record<string, unknown>).__renardScene = {
+      ecranDe: (i: number) => {
+        const v = positionDe(i).multiplyScalar(echelle);
+        v.y = 0.3 * echelle;
+        v.project(camera);
+        const boite = renderer.domElement.getBoundingClientRect();
+        return {
+          x: boite.left + ((v.x + 1) / 2) * boite.width,
+          y: boite.top + ((1 - v.y) / 2) * boite.height,
+        };
+      },
+      pointSous,
+    };
+  }
 
   let presse = false;
   let bouge = false;

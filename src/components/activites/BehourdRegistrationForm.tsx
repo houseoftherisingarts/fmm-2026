@@ -85,7 +85,7 @@ const BehourdRegistrationForm: React.FC<Props> = ({ lang }) => {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-2 px-7 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold hover:bg-brass-soft transition rounded-card shadow-[0_8px_24px_rgba(176,141,58,0.25)]"
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold hover:bg-brass-soft transition rounded-card shadow-[0_8px_24px_rgba(var(--sk-brass-rgb),0.25)]"
           >
             <Swords size={16} /> {t.openCta}
           </button>

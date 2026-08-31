@@ -52,7 +52,7 @@ export const IconeJour: React.FC<{ type: string; grande?: boolean; jour?: number
     // La seconde semaine finit sur une chance de plus, sans dos de carte.
     return (
       <span className="inline-flex items-center justify-center rounded-full" style={{ width: taille, height: taille, border: '1px solid rgba(244,239,227,0.45)', background: 'rgba(244,239,227,0.06)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }}>
-        <Ticket size={Math.round(taille * 0.5)} style={{ color: '#E8C46E' }} />
+        <Ticket size={Math.round(taille * 0.5)} style={{ color: 'var(--sk-gilt-lit)' }} />
       </span>
     );
   }
@@ -91,15 +91,15 @@ export const ApercuRecompense: React.FC<{ jour: number; lang: 'FR' | 'EN'; class
       onClick={() => window.dispatchEvent(new Event('fmm:ouvrir-recompenses'))}
       className={`w-full text-left rounded-card p-4 md:p-5 flex items-center gap-4 transition-colors hover:border-brass ${className}`}
       style={{
-        background: 'linear-gradient(135deg, rgba(216,176,90,0.14), rgba(30,16,8,0.35))',
-        border: '1px solid rgba(216,176,90,0.45)',
+        background: 'linear-gradient(135deg, rgba(var(--sk-gilt-rgb), 0.14), rgba(30,16,8,0.35))',
+        border: '1px solid rgba(var(--sk-gilt-rgb), 0.45)',
       }}
     >
       <span className="flex items-center justify-center shrink-0" style={{ width: 72, height: 72 }}>
         <IconeJour type={r.type} grande />
       </span>
       <span className="min-w-0">
-        <span className="block font-sans uppercase tracking-[0.18em] text-[10px]" style={{ color: '#D8B05A' }}>
+        <span className="block font-sans uppercase tracking-[0.18em] text-[10px]" style={{ color: 'var(--sk-gilt)' }}>
           {fr ? 'Récompense quotidienne · jour' : 'Daily reward · day'} {r.jour}
         </span>
         <span className="block font-display text-lg md:text-xl text-ivory leading-tight mt-0.5">
@@ -226,8 +226,8 @@ const RecompensesQuotidiennes: React.FC = () => {
             className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-lg-card p-6 md:p-8"
             style={{
               background: 'linear-gradient(180deg, rgba(20,10,8,0.97), rgba(10,5,4,0.97))',
-              border: '1px solid rgba(216,176,90,0.35)',
-              boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(216,176,90,0.08) inset',
+              border: '1px solid rgba(var(--sk-gilt-rgb), 0.35)',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(var(--sk-gilt-rgb), 0.08) inset',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -254,7 +254,7 @@ const RecompensesQuotidiennes: React.FC = () => {
             {/* Sept colonnes comme l'écran de Gwent; sur un téléphone,
                 quatre puis trois, pour que les noms restent lisibles. */}
             {semaine > 1 && (
-              <p className="mb-3 font-sans uppercase tracking-[0.2em] text-[10px]" style={{ color: 'rgba(232,196,110,0.85)' }}>
+              <p className="mb-3 font-sans uppercase tracking-[0.2em] text-[10px]" style={{ color: 'rgba(var(--sk-gilt-lit-rgb), 0.85)' }}>
                 {fr ? `Deuxième semaine d’affilée · jour ${jourCourant}` : `Second week in a row · day ${jourCourant}`}
               </p>
             )}
@@ -273,11 +273,11 @@ const RecompensesQuotidiennes: React.FC = () => {
                     className={`relative flex flex-col items-center justify-between rounded-card px-1.5 pt-3 pb-4 md:pt-4 md:pb-5 text-center min-h-[168px] md:min-h-[220px] ${i === 4 ? 'col-start-1 md:col-start-auto' : ''}`}
                     style={{
                       background: courant
-                        ? 'linear-gradient(180deg, rgba(216,176,90,0.42) 0%, rgba(150,104,30,0.22) 55%, rgba(30,16,8,0.2) 100%)'
+                        ? 'linear-gradient(180deg, rgba(var(--sk-gilt-rgb), 0.42) 0%, rgba(var(--sk-gold-deep-rgb), 0.22) 55%, rgba(30,16,8,0.2) 100%)'
                         : 'linear-gradient(180deg, rgba(244,239,227,0.05), rgba(244,239,227,0.015))',
-                      border: courant ? '1px solid rgba(232,196,110,0.9)' : '1px solid rgba(244,239,227,0.09)',
+                      border: courant ? '1px solid rgba(var(--sk-gilt-lit-rgb), 0.9)' : '1px solid rgba(244,239,227,0.09)',
                       boxShadow: courant
-                        ? '0 0 36px rgba(216,176,90,0.32), inset 0 1px 0 rgba(255,236,190,0.35)'
+                        ? '0 0 36px rgba(var(--sk-gilt-rgb), 0.32), inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.35)'
                         : 'inset 0 1px 0 rgba(255,255,255,0.03)',
                     }}
                   >
@@ -305,7 +305,7 @@ const RecompensesQuotidiennes: React.FC = () => {
                     </span>
                     {passe && (
                       <span aria-hidden className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full p-1"
-                            style={{ background: '#2a1c0c', border: '1px solid rgba(216,176,90,0.6)', color: '#D8B05A' }}>
+                            style={{ background: '#2a1c0c', border: '1px solid rgba(var(--sk-gilt-rgb), 0.6)', color: 'var(--sk-gilt)' }}>
                         <Check size={10} />
                       </span>
                     )}
@@ -316,13 +316,13 @@ const RecompensesQuotidiennes: React.FC = () => {
 
             <div className="mt-6 text-center">
               {jourServi ? (
-                <p className="font-sans text-sm" style={{ color: '#D8B05A' }}>
+                <p className="font-sans text-sm" style={{ color: 'var(--sk-gilt)' }}>
                   {fr
                     ? RECOMPENSES_QUOTIDIEN[jourServi - 1].texteFR
                     : RECOMPENSES_QUOTIDIEN[jourServi - 1].texteEN}
                 </p>
               ) : erreur ? (
-                <p className="font-sans text-sm" style={{ color: '#D8B05A' }}>{erreur}</p>
+                <p className="font-sans text-sm" style={{ color: 'var(--sk-gilt)' }}>{erreur}</p>
               ) : enCours ? (
                 <p className="font-sans text-sm text-ivory-soft/70">{fr ? 'Un instant…' : 'One moment…'}</p>
               ) : null}
@@ -331,7 +331,7 @@ const RecompensesQuotidiennes: React.FC = () => {
                   {fr ? 'Nouvelle récompense dans' : 'New reward in'} {compte}
                 </p>
               ) : (
-                <p className="font-sans text-sm mt-1" style={{ color: '#D8B05A' }}>
+                <p className="font-sans text-sm mt-1" style={{ color: 'var(--sk-gilt)' }}>
                   {fr
                     ? 'Connectez-vous chaque jour : la récompense du jour tombe dans votre espace à la première visite. Un jour sauté ramène au jour 1.'
                     : 'Sign in every day: the day’s reward lands in your space on your first visit. A skipped day sends you back to day 1.'}

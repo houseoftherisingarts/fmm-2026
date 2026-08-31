@@ -16,7 +16,7 @@ export interface Team {
   id: string;
   name:        string;     // e.g. "Bar principal", "Accueil"
   description?: string;
-  /** Hex colour ("#c9a05a") or token name: used for the kanban column header. */
+  /** Hex colour ("var(--sk-brass-warm)") or token name: used for the kanban column header. */
   color?: string;
   /** Optional emoji / lucide-name to mark the team visually. */
   icon?: string;

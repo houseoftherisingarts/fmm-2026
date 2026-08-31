@@ -71,8 +71,8 @@ const C = {
   carte:     '#150A10',   // le parchemin sombre de la lettre
   bande:     '#100609',   // l'en-tête, le pied, les blocs rapportés
   bordure:   '#3B2A1B',   // le filet de laiton éteint
-  or:        '#C9A85A',   // --color-brass de la palette caravane
-  orPale:    '#E0BE6A',   // --color-brass-soft
+  or:        'var(--sk-brass-warm)',   // --color-brass de la palette caravane
+  orPale:    'var(--sk-brass-warm-soft)',   // --color-brass-soft
   texte:     '#EFE8DB',   // l'ivoire du corps
   texteDoux: '#BDB2A1',   // l'ivoire assourdi
   texteMuet: '#8B8072',   // le pied de page et les crédits

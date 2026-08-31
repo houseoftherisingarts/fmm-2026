@@ -82,12 +82,12 @@ export const DepthChapter: React.FC<{
 
   const farBg =
     tone === 'parchment'
-      ? 'radial-gradient(ellipse 60% 50% at 50% 40%, rgba(232,177,74,0.16), transparent 70%)'
-      : 'radial-gradient(ellipse 65% 55% at 50% 45%, rgba(184,106,42,0.22), transparent 72%)';
+      ? 'radial-gradient(ellipse 60% 50% at 50% 40%, rgba(var(--sk-glow-rgb),0.16), transparent 70%)'
+      : 'radial-gradient(ellipse 65% 55% at 50% 45%, rgba(var(--sk-copper-rgb),0.22), transparent 72%)';
   const midBg =
     tone === 'parchment'
-      ? 'linear-gradient(90deg, transparent, rgba(176,141,58,0.12) 45%, transparent)'
-      : 'linear-gradient(90deg, transparent, rgba(232,177,74,0.10) 50%, transparent)';
+      ? 'linear-gradient(90deg, transparent, rgba(var(--sk-brass-rgb),0.12) 45%, transparent)'
+      : 'linear-gradient(90deg, transparent, rgba(var(--sk-glow-rgb),0.10) 50%, transparent)';
 
   const z = (v: MotionValue<number>) => (reduce ? 0 : v);
 
@@ -124,7 +124,7 @@ export const DepthChapter: React.FC<{
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(120% 80% at 50% 120%, rgba(10,2,7,0.45), transparent 60%)',
+            'radial-gradient(120% 80% at 50% 120%, rgba(var(--sk-ink-rgb),0.45), transparent 60%)',
           y: z(yNear),
           pointerEvents: 'none',
         }}

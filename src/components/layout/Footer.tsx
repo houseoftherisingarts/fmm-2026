@@ -155,7 +155,7 @@ const Footer: React.FC = () => {
                 style={{
                   color: 'var(--color-bone)',
                   fontWeight: 400,
-                  textShadow: '0 0 32px rgba(232, 177, 74, 0.22)',
+                  textShadow: '0 0 32px rgba(var(--sk-glow-rgb), 0.22)',
                 }}
               >
                 {lang === 'FR'
@@ -266,6 +266,11 @@ const Footer: React.FC = () => {
             </FooterLink>
           </li>
           <li>
+            <FooterLink to={lang === 'FR' ? '/presse' : '/en/press'}>
+              {lang === 'FR' ? 'Presse' : 'Press'}
+            </FooterLink>
+          </li>
+          <li>
             <FooterLink to={lang === 'FR' ? '/politique-de-confidentialite' : '/en/privacy'}>{t.privacy}</FooterLink>
           </li>
           <li>
@@ -301,7 +306,7 @@ const Footer: React.FC = () => {
                 style={{
                   color: 'var(--color-bone)',
                   fontWeight: 400,
-                  textShadow: '0 0 28px rgba(232, 177, 74, 0.18)',
+                  textShadow: '0 0 28px rgba(var(--sk-glow-rgb), 0.18)',
                 }}
               >
                 {t.newsletterTitle}
@@ -366,16 +371,16 @@ const Footer: React.FC = () => {
                       aria-describedby={erreur
                         ? 'fmm-infolettre-erreur fmm-infolettre-consentement'
                         : 'fmm-infolettre-consentement'}
-                      className="flex-1 min-w-0 bg-[rgba(10,2,7,0.6)] px-4 py-3 text-sm font-sans transition-colors focus:outline-none disabled:opacity-60 placeholder:text-[rgba(232,221,193,0.45)]"
+                      className="flex-1 min-w-0 bg-[rgba(var(--sk-ink-rgb),0.6)] px-4 py-3 text-sm font-sans transition-colors focus:outline-none disabled:opacity-60 placeholder:text-[rgba(var(--sk-bone-rgb),0.45)]"
                       style={{
                         color: 'var(--color-bone)',
-                        border: `1px solid ${erreur ? 'rgba(224, 138, 122, 0.55)' : 'rgba(232, 177, 74, 0.35)'}`,
+                        border: `1px solid ${erreur ? 'rgba(224, 138, 122, 0.55)' : 'rgba(var(--sk-glow-rgb), 0.35)'}`,
                       }}
                       onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; }}
                       onBlur={(e) => {
                         e.currentTarget.style.borderColor = erreur
                           ? 'rgba(224, 138, 122, 0.55)'
-                          : 'rgba(232, 177, 74, 0.35)';
+                          : 'rgba(var(--sk-glow-rgb), 0.35)';
                       }}
                     />
                     <ChevronButton type="submit" variant="gold" disabled={etat === 'envoi'}>
@@ -479,7 +484,7 @@ const CountUnit: React.FC<{ n: number; label: string; small?: boolean }> = ({ n,
       style={{
         color: 'var(--color-bone)',
         fontSize: small ? 'clamp(1.4rem, 2.4vw, 2rem)' : 'clamp(2.2rem, 4vw, 3.2rem)',
-        textShadow: '0 0 24px rgba(232, 177, 74, 0.2)',
+        textShadow: '0 0 24px rgba(var(--sk-glow-rgb), 0.2)',
       }}
     >
       {n.toString().padStart(2, '0')}
@@ -529,12 +534,12 @@ const SocialButton: React.FC<{ href: string; label: string; children: React.Reac
     className="w-10 h-10 flex items-center justify-center transition-all hover:scale-[1.06]"
     style={{
       color: 'var(--color-amber-glow)',
-      background: 'rgba(232, 177, 74, 0.08)',
-      border: '1px solid rgba(232, 177, 74, 0.35)',
+      background: 'rgba(var(--sk-glow-rgb), 0.08)',
+      border: '1px solid rgba(var(--sk-glow-rgb), 0.35)',
       borderRadius: 12,
     }}
-    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(232, 177, 74, 0.18)'; }}
-    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(232, 177, 74, 0.08)'; }}
+    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(var(--sk-glow-rgb), 0.18)'; }}
+    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(var(--sk-glow-rgb), 0.08)'; }}
   >
     {children}
   </a>

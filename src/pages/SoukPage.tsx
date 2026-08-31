@@ -57,9 +57,9 @@ const SoukPage: React.FC = () => {
         className="relative bleed-edges pt-4 pb-24 overflow-hidden"
         style={{
           background: `
-            radial-gradient(ellipse 60% 40% at 12% 8%, rgba(216, 155, 58, 0.14), transparent 60%),
-            radial-gradient(ellipse 50% 35% at 88% 22%, rgba(216, 155, 58, 0.10), transparent 60%),
-            radial-gradient(ellipse 55% 40% at 30% 85%, rgba(216, 155, 58, 0.09), transparent 60%),
+            radial-gradient(ellipse 60% 40% at 12% 8%, rgba(var(--sk-mustard-rgb), 0.14), transparent 60%),
+            radial-gradient(ellipse 50% 35% at 88% 22%, rgba(var(--sk-mustard-rgb), 0.10), transparent 60%),
+            radial-gradient(ellipse 55% 40% at 30% 85%, rgba(var(--sk-mustard-rgb), 0.09), transparent 60%),
             linear-gradient(180deg, #08060a 0%, #0c0810 45%, #08060a 100%)
           `,
         }}
@@ -183,7 +183,7 @@ export const CarteObjet: React.FC<{ o: ObjetSouk; lang: 'FR' | 'EN' }> = ({ o, l
   }
 
   return (
-    <div className="glass-light rounded-lg-card overflow-hidden flex flex-col" style={{ border: '1px solid rgba(216, 176, 90, 0.18)' }}>
+    <div className="glass-light rounded-lg-card overflow-hidden flex flex-col" style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.18)' }}>
       <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
         {o.photos[0] ? (
           <img src={o.photos[0]} alt={o.titre} className="w-full h-full object-cover" />
@@ -279,7 +279,7 @@ const RuelleCommerces: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {commerces.map((c) => (
-            <div key={c.uid} className="glass-light rounded-lg-card overflow-hidden flex flex-col" style={{ border: '1px solid rgba(216, 176, 90, 0.18)' }}>
+            <div key={c.uid} className="glass-light rounded-lg-card overflow-hidden flex flex-col" style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.18)' }}>
               <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
                 {c.photos[0] ? (
                   <img src={c.photos[0]} alt={c.nom} className="w-full h-full object-cover" />

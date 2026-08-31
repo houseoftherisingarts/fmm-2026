@@ -58,11 +58,11 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
               onClick={() => definirPref(uid, 'musique', a.id)}
               className="w-full flex flex-col gap-0.5 px-4 py-2.5 rounded-card transition text-left"
               style={{
-                background: actif ? 'rgba(216,176,90,0.14)' : 'transparent',
-                border: `1px solid ${actif ? 'rgba(216,176,90,0.5)' : 'rgba(244,239,227,0.18)'}`,
+                background: actif ? 'rgba(var(--sk-gilt-rgb),0.14)' : 'transparent',
+                border: `1px solid ${actif ? 'rgba(var(--sk-gilt-rgb),0.5)' : 'rgba(var(--sk-parchment-rgb),0.18)'}`,
               }}
             >
-              <span className="font-sans text-sm" style={{ color: actif ? '#D8B05A' : 'var(--color-ivory-soft)' }}>
+              <span className="font-sans text-sm" style={{ color: actif ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)' }}>
                 {fr ? a.titreFR : a.titreEN}
               </span>
               {/* L'attribution exacte de la licence Creative Commons, en
@@ -88,9 +88,9 @@ const MusiquePanel: React.FC<Props> = ({ uid, lang }) => {
                 onClick={() => definirPref(uid, 'musique', g.id)}
                 className="w-full px-4 py-2.5 rounded-card transition text-left font-sans text-sm"
                 style={{
-                  background: choix === g.id ? 'rgba(216,176,90,0.14)' : 'transparent',
-                  border: `1px solid ${choix === g.id ? 'rgba(216,176,90,0.5)' : 'rgba(244,239,227,0.18)'}`,
-                  color: choix === g.id ? '#D8B05A' : 'var(--color-ivory-soft)',
+                  background: choix === g.id ? 'rgba(var(--sk-gilt-rgb),0.14)' : 'transparent',
+                  border: `1px solid ${choix === g.id ? 'rgba(var(--sk-gilt-rgb),0.5)' : 'rgba(var(--sk-parchment-rgb),0.18)'}`,
+                  color: choix === g.id ? 'var(--sk-gilt)' : 'var(--color-ivory-soft)',
                 }}
               >
                 {g.nom}

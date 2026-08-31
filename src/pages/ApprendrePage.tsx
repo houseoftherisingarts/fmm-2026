@@ -246,7 +246,7 @@ export const FormationsSection: React.FC = () => {
       <Parallax speed={0.12} className="absolute inset-0 -z-10">
         <div
           className="absolute inset-x-0 top-1/4 h-1/2"
-          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(var(--sk-copper-rgb),0.10), transparent 70%)' }}
         />
       </Parallax>
       <DepthChapter tone="ember">
@@ -265,7 +265,7 @@ export const FormationsSection: React.FC = () => {
                 distance={56}
                 className="glass-light rounded-card p-5 md:p-7 hover:bg-brass/10 transition group hover:-translate-y-1 duration-300"
               >
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-brass/40 bg-gradient-to-b from-brass/15 to-transparent flex items-center justify-center mb-4 group-hover:border-brass/70 group-hover:shadow-[0_0_24px_rgba(184,106,42,0.25)] transition duration-300">
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-brass/40 bg-gradient-to-b from-brass/15 to-transparent flex items-center justify-center mb-4 group-hover:border-brass/70 group-hover:shadow-[0_0_24px_rgba(var(--sk-copper-rgb),0.25)] transition duration-300">
                   <Icon size={30} className="text-brass group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <h3 className="font-display title-medieval text-base md:text-lg text-ivory mb-1.5 group-hover:text-brass transition">
@@ -309,7 +309,7 @@ const ApprendrePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               className="font-display uppercase"
               style={{
                 fontSize: 'clamp(3rem, 11vw, 8.5rem)',
-                background: 'linear-gradient(180deg, #F4EFE3 0%, #E8B14A 70%, #B86A2A 100%)',
+                background: 'linear-gradient(180deg, var(--sk-parchment) 0%, var(--sk-glow) 70%, var(--sk-copper) 100%)',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 color: 'transparent',

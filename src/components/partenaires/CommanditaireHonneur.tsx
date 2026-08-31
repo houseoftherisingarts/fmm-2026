@@ -110,7 +110,7 @@ const CommanditaireHonneur: React.FC = () => {
                       fontSize: '4rem',
                       color: 'var(--color-amber-glow)',
                       opacity: 0.55,
-                      textShadow: '0 0 22px rgba(232, 177, 74, 0.35)',
+                      textShadow: '0 0 22px rgba(var(--sk-glow-rgb), 0.35)',
                     }}
                   >
                     «
@@ -126,7 +126,7 @@ const CommanditaireHonneur: React.FC = () => {
                     </>
                   ) : (
                     <p className="font-display text-lg md:text-2xl leading-snug"
-                       style={{ color: 'rgba(244, 239, 227, 0.42)' }}>
+                       style={{ color: 'rgba(var(--sk-parchment-rgb), 0.42)' }}>
                       {t.quoteAwaiting}
                     </p>
                   )}
@@ -157,7 +157,7 @@ const CommanditaireHonneur: React.FC = () => {
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
                     background:
-                      'radial-gradient(ellipse 70% 90% at 15% 0%, rgba(232, 177, 74, 0.14), transparent 70%)',
+                      'radial-gradient(ellipse 70% 90% at 15% 0%, rgba(var(--sk-glow-rgb), 0.14), transparent 70%)',
                   }}
                 />
                 <p className="relative font-editorial italic text-brass uppercase tracking-[0.3em] text-[11px] mb-4">
@@ -197,8 +197,8 @@ const Portrait: React.FC<{ src: string; name: string }> = ({ src, name }) => {
         className="absolute -inset-[18%] pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 50% 50%, rgba(184, 106, 42, 0.30), transparent 68%),' +
-            'radial-gradient(circle at 50% 55%, rgba(232, 177, 74, 0.16), transparent 72%)',
+            'radial-gradient(circle at 50% 50%, rgba(var(--sk-copper-rgb), 0.30), transparent 68%),' +
+            'radial-gradient(circle at 50% 55%, rgba(var(--sk-glow-rgb), 0.16), transparent 72%)',
         }}
       />
       {/* Anneau extérieur */}
@@ -206,24 +206,24 @@ const Portrait: React.FC<{ src: string; name: string }> = ({ src, name }) => {
         aria-hidden
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
-          border: '1px solid rgba(216, 155, 58, 0.45)',
-          boxShadow: '0 0 30px -6px rgba(216, 155, 58, 0.5)',
+          border: '1px solid rgba(var(--sk-mustard-rgb), 0.45)',
+          boxShadow: '0 0 30px -6px rgba(var(--sk-mustard-rgb), 0.5)',
         }}
       />
       {/* Cercle photo, serti à l'intérieur de l'anneau */}
       <div
         className="absolute inset-[7px] rounded-full overflow-hidden"
         style={{
-          border: '1px solid rgba(232, 177, 74, 0.55)',
+          border: '1px solid rgba(var(--sk-glow-rgb), 0.55)',
           boxShadow:
-            'inset 0 2px 24px rgba(0, 0, 0, 0.65), inset 0 0 0 1px rgba(255, 240, 200, 0.10)',
+            'inset 0 2px 24px rgba(0, 0, 0, 0.65), inset 0 0 0 1px rgba(var(--sk-sheen-rgb), 0.10)',
           background:
-            'radial-gradient(circle at 50% 35%, rgba(184, 106, 42, 0.35), rgba(10, 2, 7, 0.95) 70%)',
+            'radial-gradient(circle at 50% 35%, rgba(var(--sk-copper-rgb), 0.35), rgba(var(--sk-ink-rgb), 0.95) 70%)',
         }}
       >
         {failed ? (
           <span className="absolute inset-0 flex items-center justify-center font-display title-medieval text-5xl md:text-6xl"
-                style={{ color: 'rgba(232, 177, 74, 0.55)', letterSpacing: '0.08em' }}>
+                style={{ color: 'rgba(var(--sk-glow-rgb), 0.55)', letterSpacing: '0.08em' }}>
             {initials}
           </span>
         ) : (
@@ -240,7 +240,7 @@ const Portrait: React.FC<{ src: string; name: string }> = ({ src, name }) => {
         <span
           aria-hidden
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(circle at 50% 40%, transparent 45%, rgba(10, 2, 7, 0.55) 100%)' }}
+          style={{ background: 'radial-gradient(circle at 50% 40%, transparent 45%, rgba(var(--sk-ink-rgb), 0.55) 100%)' }}
         />
       </div>
     </div>

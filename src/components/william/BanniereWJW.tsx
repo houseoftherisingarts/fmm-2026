@@ -35,7 +35,7 @@ const BanniereWJW: React.FC = () => {
           left: '50%', top: '58%', width: 'min(96vw, 76rem)', height: 'min(60vw, 44rem)',
           transform: 'translate(-50%, -50%)',
           background:
-            'radial-gradient(circle, rgba(184, 106, 42, .30) 0%, rgba(232, 177, 74, .12) 30%, rgba(123, 30, 45, .08) 50%, transparent 66%)',
+            'radial-gradient(circle, rgba(var(--sk-copper-rgb), .30) 0%, rgba(var(--sk-glow-rgb), .12) 30%, rgba(var(--sk-ruby-rgb), .08) 50%, transparent 66%)',
           filter: 'blur(8px)',
         }}
       />
@@ -49,7 +49,7 @@ const BanniereWJW: React.FC = () => {
           src="/partenaires/wjw-logo-bone.svg"
           alt="William J. Walter, saucissier"
           className="mx-auto w-[min(94vw,70rem)]"
-          style={{ filter: 'drop-shadow(0 0 34px rgba(232, 177, 74, .26))' }}
+          style={{ filter: 'drop-shadow(0 0 34px rgba(var(--sk-glow-rgb), .26))' }}
         />
 
         <motion.div {...fondu(reduit, 0.65)} className="flex justify-center mt-8 md:mt-10">

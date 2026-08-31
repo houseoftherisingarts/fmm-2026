@@ -27,7 +27,7 @@ const TEMOIN: EtatNotifs = {
 
 const Pastille: React.FC<{ n: number }> = ({ n }) => (n > 0 ? (
   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-sans text-[10px] font-semibold"
-        style={{ background: '#D8B05A', color: '#1a050b', boxShadow: '0 0 0 2px rgba(10,2,7,0.9)' }}>
+        style={{ background: 'var(--sk-gilt)', color: 'var(--sk-deep)', boxShadow: '0 0 0 2px rgba(var(--sk-ink-rgb),0.9)' }}>
     {n > 9 ? '9+' : n}
   </span>
 ) : null);
@@ -77,8 +77,8 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
   const total = etat.notifs.length;
   const bouton = `relative inline-flex items-center justify-center ${header ? 'w-9 h-9' : 'w-11 h-11'} rounded-full transition-colors`;
   const style = header
-    ? { background: 'rgba(10, 2, 7, 0.5)', border: '1px solid rgba(232, 177, 74, 0.35)', color: 'var(--color-amber-glow)' }
-    : { background: 'rgba(26,5,11,0.55)', border: '1px solid rgba(244,239,227,0.14)', color: 'rgba(244,239,227,0.85)' };
+    ? { background: 'rgba(var(--sk-ink-rgb), 0.5)', border: '1px solid rgba(var(--sk-glow-rgb), 0.35)', color: 'var(--color-amber-glow)' }
+    : { background: 'rgba(var(--sk-deep-rgb),0.55)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)', color: 'rgba(var(--sk-parchment-rgb),0.85)' };
 
   return (
     <div ref={boite} className="relative flex items-center gap-2">
@@ -86,9 +86,9 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
         <Link
           to={addLocale('/compte', lang)}
           className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
-          style={{ background: 'rgba(10, 2, 7, 0.5)', border: '1px solid rgba(232, 177, 74, 0.35)', color: 'var(--color-amber-glow)' }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; e.currentTarget.style.boxShadow = '0 0 14px -4px rgba(232, 177, 74, 0.55)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.35)'; e.currentTarget.style.boxShadow = ''; }}
+          style={{ background: 'rgba(var(--sk-ink-rgb), 0.5)', border: '1px solid rgba(var(--sk-glow-rgb), 0.35)', color: 'var(--color-amber-glow)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; e.currentTarget.style.boxShadow = '0 0 14px -4px rgba(var(--sk-glow-rgb), 0.55)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(var(--sk-glow-rgb), 0.35)'; e.currentTarget.style.boxShadow = ''; }}
           aria-label={fr ? 'Mon profil' : 'My profile'} title={fr ? 'Mon profil' : 'My profile'}
         >
           <UserIcon size={14} /> {fr ? 'Profil' : 'Profile'}
@@ -123,10 +123,10 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="absolute right-0 top-[calc(100%+10px)] z-30 w-[min(22rem,calc(100vw-2rem))] rounded-card overflow-hidden"
-            style={{ background: 'rgba(16,4,8,0.96)', border: '1px solid rgba(216,176,90,0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
+            style={{ background: 'rgba(16,4,8,0.96)', border: '1px solid rgba(var(--sk-gilt-rgb),0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
             role="menu"
           >
-            <p className="px-4 pt-3.5 pb-2 witcher-stat-label" style={{ borderBottom: '1px solid rgba(244,239,227,0.08)' }}>
+            <p className="px-4 pt-3.5 pb-2 witcher-stat-label" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb),0.08)' }}>
               {fr ? 'Ce qui vous attend' : 'What awaits you'}
             </p>
             {total === 0 ? (
@@ -142,9 +142,9 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
                       <Link to={n.lien[lang]} role="menuitem" onClick={() => setOuverte(false)}
                             className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors">
                         <span className="witcher-tile shrink-0" style={{ width: 34, height: 34 }}>
-                          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Icone size={13} /></span>
+                          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Icone size={13} /></span>
                         </span>
-                        <span className="font-sans text-sm leading-snug" style={{ color: 'rgba(244,239,227,0.88)', fontWeight: 300 }}>
+                        <span className="font-sans text-sm leading-snug" style={{ color: 'rgba(var(--sk-parchment-rgb),0.88)', fontWeight: 300 }}>
                           {n.titre[lang]}
                         </span>
                       </Link>
@@ -156,7 +156,7 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
             {(
               <Link to={addLocale('/messages', lang)} onClick={() => setOuverte(false)}
                     className="block px-4 py-3 font-sans uppercase tracking-[0.2em] text-[10px] text-brass hover:bg-white/5 transition-colors"
-                    style={{ borderTop: '1px solid rgba(244,239,227,0.08)' }}>
+                    style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.08)' }}>
                 {fr ? 'Ouvrir ma boîte de réception' : 'Open my inbox'}
               </Link>
             )}

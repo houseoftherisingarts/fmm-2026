@@ -151,7 +151,7 @@ const FocusCard: React.FC<{
   total: number;
 }> = ({ kiosk, lang, copy, index, total }) => {
   const tilt = useTilt(5);
-  const spot = useSpotlight('rgba(232, 177, 74, 0.22)', 360);
+  const spot = useSpotlight('rgba(var(--sk-glow-rgb), 0.22)', 360);
   const bio = lang === 'FR' ? kiosk.bioFR : kiosk.bioEN;
   const tag = lang === 'FR' ? kiosk.tagFR : kiosk.tagEN;
   const cta = lang === 'FR' ? (kiosk.cta?.FR ?? copy.defaultCta) : (kiosk.cta?.EN ?? copy.defaultCta);
@@ -196,8 +196,8 @@ const FocusCard: React.FC<{
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(180deg, rgba(184,106,42,0.18) 0%, transparent 40%, rgba(26,5,11,0.85) 100%),' +
-                      'linear-gradient(90deg, transparent 55%, rgba(26,5,11,0.7) 100%)',
+                      'linear-gradient(180deg, rgba(var(--sk-copper-rgb),0.18) 0%, transparent 40%, rgba(var(--sk-deep-rgb),0.85) 100%),' +
+                      'linear-gradient(90deg, transparent 55%, rgba(var(--sk-deep-rgb),0.7) 100%)',
                   }}
                 />
                 {/* Mouse-tracking spotlight */}
@@ -241,7 +241,7 @@ const FocusCard: React.FC<{
                     style={{
                       color: 'var(--color-bone)',
                       fontWeight: 400,
-                      textShadow: '0 4px 24px rgba(0,0,0,0.85), 0 0 32px rgba(232,177,74,0.25)',
+                      textShadow: '0 4px 24px rgba(0,0,0,0.85), 0 0 32px rgba(var(--sk-glow-rgb),0.25)',
                     }}
                   >
                     {kiosk.name}
@@ -313,8 +313,8 @@ const PickerRow: React.FC<{
     }`}
     style={{
       background: isActive
-        ? 'rgba(232, 177, 74, 0.10)'
-        : 'rgba(26, 5, 11, 0.55)',
+        ? 'rgba(var(--sk-glow-rgb), 0.10)'
+        : 'rgba(var(--sk-deep-rgb), 0.55)',
     }}
   >
     {/* Leading marker */}
@@ -345,7 +345,7 @@ const PickerRow: React.FC<{
         }`}
         style={{
           boxShadow:
-            'inset 0 0 0 1px rgba(232, 177, 74, 0.55), inset 0 0 20px -4px rgba(232, 177, 74, 0.45)',
+            'inset 0 0 0 1px rgba(var(--sk-glow-rgb), 0.55), inset 0 0 20px -4px rgba(var(--sk-glow-rgb), 0.45)',
         }}
       />
     </span>

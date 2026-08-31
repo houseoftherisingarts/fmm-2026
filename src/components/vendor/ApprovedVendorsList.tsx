@@ -45,12 +45,12 @@ const ApprovedVendorsList: React.FC = () => {
         {/* Rail de registre, même grammaire que le reste du pilier */}
         <div
           className="flex items-center justify-between gap-4 mb-10 md:mb-14 pb-2"
-          style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
+          style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
         >
           <span className="witcher-stat-label">{t.eyebrow}</span>
           <span
             className="font-sans text-sm tracking-[0.2em]"
-            style={{ color: '#D8B05A', fontWeight: 300 }}
+            style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}
           >
             {loading ? '…' : rows.length > 0 ? String(rows.length) : t.none}
           </span>
@@ -64,7 +64,7 @@ const ApprovedVendorsList: React.FC = () => {
           <DisplayTitle size="lg" glow className="mb-5">{t.title}</DisplayTitle>
           <p
             className="font-sans text-base md:text-lg leading-[1.75]"
-            style={{ color: 'rgba(244, 239, 227, 0.75)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.75)', fontWeight: 300 }}
           >
             {t.lead}
           </p>
@@ -91,7 +91,7 @@ const ApprovedVendorsList: React.FC = () => {
 
         <p
           className="font-sans text-sm text-center mt-10 max-w-xl mx-auto leading-relaxed"
-          style={{ color: 'rgba(244, 239, 227, 0.45)', fontWeight: 300 }}
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.45)', fontWeight: 300 }}
         >
           {t.refreshNote}
         </p>
@@ -110,10 +110,10 @@ const Notice: React.FC<{ v: VendorApp; tilt: number; t: typeof FR; index: number
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: Math.min(0.1 + index * 0.05, 0.6) }}
     >
-      <p className="font-sans text-[10px] text-[#7a4a1a] uppercase tracking-[0.35em] text-center mb-2.5">
+      <p className="font-sans text-[10px] text-[var(--sk-brass-deep)] uppercase tracking-[0.35em] text-center mb-2.5">
         {t.acceptedTag}
       </p>
-      <h3 className="font-display text-lg md:text-xl text-[#2a1505] text-center mb-1.5 leading-snug">
+      <h3 className="font-display text-lg md:text-xl text-[var(--sk-brown-deep)] text-center mb-1.5 leading-snug">
         {v.companyName || v.kioskName}
       </h3>
       {v.regionOfOrigin && (
@@ -131,7 +131,7 @@ const Notice: React.FC<{ v: VendorApp; tilt: number; t: typeof FR; index: number
           <a
             href={ensureUrl(v.socials || v.websiteUrl || '')}
             target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-sans uppercase tracking-[0.2em] text-[#7a4a1a] hover:text-[#2a1505] transition"
+            className="inline-flex items-center gap-1 text-[11px] font-sans uppercase tracking-[0.2em] text-[var(--sk-brass-deep)] hover:text-[var(--sk-brown-deep)] transition"
           >
             {t.visit} <ExternalLink size={11} />
           </a>

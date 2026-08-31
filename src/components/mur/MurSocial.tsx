@@ -161,14 +161,14 @@ const MurSocial: React.FC<{
             rows={3}
             placeholder={fr ? 'Quoi de neuf sur votre route ?' : 'What’s new on your road?'}
             className="w-full px-4 py-3 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 leading-relaxed"
-            style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+            style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}
           />
           {apercu && (
             <div className="relative mt-3 inline-block">
               <img src={apercu} alt="" className="max-h-56 rounded-card object-cover" />
               <button type="button" onClick={() => setPhoto(null)} aria-label={fr ? 'Retirer la photo' : 'Remove photo'}
                       className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
+                      style={{ background: 'rgba(var(--sk-ink-rgb),0.8)', color: 'var(--sk-parchment)' }}><X size={13} /></button>
             </div>
           )}
           {apercuVideo && (
@@ -176,7 +176,7 @@ const MurSocial: React.FC<{
               <video src={apercuVideo} className="max-h-56 rounded-card" controls />
               <button type="button" onClick={() => setVideo(null)} aria-label={fr ? 'Retirer la vidéo' : 'Remove video'}
                       className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
+                      style={{ background: 'rgba(var(--sk-ink-rgb),0.8)', color: 'var(--sk-parchment)' }}><X size={13} /></button>
             </div>
           )}
           {erreurVideo && <p className="mt-2 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurVideo}</p>}
@@ -188,19 +188,19 @@ const MurSocial: React.FC<{
                 value={videoTitre} onChange={(e) => setVideoTitre(e.target.value.slice(0, LONGUEUR_MAX_TITRE_VIDEO))}
                 placeholder={fr ? 'Titre de la vidéo (facultatif)' : 'Video title (optional)'}
                 className="w-full px-3 py-2 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
-                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(244,239,227,0.14)' }}
+                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}
               />
               <textarea
                 value={videoDescription} onChange={(e) => setVideoDescription(e.target.value.slice(0, LONGUEUR_MAX_DESCRIPTION_VIDEO))}
                 rows={2}
                 placeholder={fr ? 'Description de la vidéo (facultatif)' : 'Video description (optional)'}
                 className="w-full px-3 py-2 rounded-card font-sans text-[13px] text-ivory placeholder:text-ivory-soft/40"
-                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(244,239,227,0.14)' }}
+                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}
               />
               <div className="flex items-center gap-3">
                 <button type="button" onClick={() => fichierVignette.current?.click()}
                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
-                        style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                        style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
                   <ImagePlus size={13} /> {fr ? 'Vignette' : 'Thumbnail'}
                 </button>
                 <input ref={fichierVignette} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only"
@@ -214,7 +214,7 @@ const MurSocial: React.FC<{
                   <img src={apercuVignette} alt="" className="max-h-28 rounded-card object-cover" />
                   <button type="button" onClick={() => setVideoVignette(null)} aria-label={fr ? 'Retirer la vignette' : 'Remove thumbnail'}
                           className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center"
-                          style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={11} /></button>
+                          style={{ background: 'rgba(var(--sk-ink-rgb),0.8)', color: 'var(--sk-parchment)' }}><X size={11} /></button>
                 </div>
               )}
             </div>
@@ -225,7 +225,7 @@ const MurSocial: React.FC<{
               return (
                 <button key={g} type="button" role="radio" aria-checked={actif} onClick={() => setGenre(g)}
                         className="px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
-                        style={{ border: `1px solid ${actif ? tg.accent : 'rgba(244,239,227,0.18)'}`, background: actif ? tg.fond : 'transparent', color: actif ? tg.accent : 'rgba(244,239,227,0.55)' }}>
+                        style={{ border: `1px solid ${actif ? tg.accent : 'rgba(var(--sk-parchment-rgb),0.18)'}`, background: actif ? tg.fond : 'transparent', color: actif ? tg.accent : 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                   {fr ? tg.nomFR : tg.nomEN}
                 </button>
               );
@@ -237,7 +237,7 @@ const MurSocial: React.FC<{
           <div className="mt-3 flex items-center justify-between gap-3">
             <button type="button" onClick={() => fichier.current?.click()}
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
-                    style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                    style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
               <ImageIcon size={13} /> {fr ? 'Photo' : 'Photo'}
             </button>
             <input ref={fichier} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
@@ -254,7 +254,7 @@ const MurSocial: React.FC<{
                       fichierVideo.current?.click();
                     }}
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
-                    style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                    style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
               <Video size={13} /> {fr ? 'Vidéo' : 'Video'}
             </button>
             <input ref={fichierVideo} type="file" accept="video/mp4,video/webm" className="sr-only"
@@ -287,11 +287,11 @@ const MurSocial: React.FC<{
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="rounded-lg-card p-5 md:p-6"
-          style={{ background: 'rgba(216,176,90,0.07)', border: '1px solid rgba(216,176,90,0.35)' }}
+          style={{ background: 'rgba(var(--sk-gilt-rgb),0.07)', border: '1px solid rgba(var(--sk-gilt-rgb),0.35)' }}
         >
           <div className="flex items-center gap-3 mb-3">
             <span className="witcher-tile shrink-0" style={{ width: 40, height: 40 }}>
-              <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Megaphone size={14} /></span>
+              <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Megaphone size={14} /></span>
             </span>
             <div className="min-w-0">
               <p className="font-display text-base text-ivory truncate">{fr ? 'Annonce du festival' : 'Festival notice'}</p>

@@ -24,7 +24,7 @@ const PorteAdmin: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   return (
     <section className="rounded-lg-card p-7 md:p-8 relative overflow-hidden"
              style={{
-               background: `linear-gradient(135deg, ${teinte.rail}, rgba(26,5,11,0.55))`,
+               background: `linear-gradient(135deg, ${teinte.rail}, rgba(var(--sk-deep-rgb),0.55))`,
                border: `1px solid ${teinte.line}`,
                boxShadow: `0 0 44px -22px ${teinte.accent}`,
              }}>

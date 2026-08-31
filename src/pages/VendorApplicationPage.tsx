@@ -63,16 +63,16 @@ const VendorApplicationPage: React.FC = () => {
           {/* Rail supérieur : retour + registre d'année */}
           <div
             className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2"
-            style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
+            style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
           >
             <Link
               to={addLocale('/marche', lang)}
-              className="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.3em] text-[var(--color-bone)]/60 hover:text-[#D8B05A] transition"
+              className="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.3em] text-[var(--color-bone)]/60 hover:text-[var(--sk-gilt)] transition"
             >
               <ArrowLeft size={13} /> {t.backToMarket}
             </Link>
             <div className="hidden md:flex items-center gap-3">
-              <Calendar size={12} style={{ color: '#D8B05A' }} />
+              <Calendar size={12} style={{ color: 'var(--sk-gilt)' }} />
               <span className="witcher-stat-label">{isEarly ? t.banner2027 : t.banner2026}</span>
             </div>
           </div>
@@ -80,7 +80,7 @@ const VendorApplicationPage: React.FC = () => {
           <div>
             <p
               className="font-sans uppercase tracking-[0.45em] text-[10px] md:text-[11px] mb-7 inline-flex items-center gap-2"
-              style={{ color: '#D8B05A' }}
+              style={{ color: 'var(--sk-gilt)' }}
             >
               <ShoppingBag size={12} />{t.eyebrow}
             </p>
@@ -93,7 +93,7 @@ const VendorApplicationPage: React.FC = () => {
               style={{
                 color: 'var(--color-bone)',
                 fontWeight: 400,
-                textShadow: '0 0 24px rgba(232, 177, 74, 0.28), 0 0 60px rgba(184, 106, 42, 0.22)',
+                textShadow: '0 0 24px rgba(var(--sk-glow-rgb), 0.28), 0 0 60px rgba(var(--sk-copper-rgb), 0.22)',
               }}
             >
               {titleWords.map((w, i) => (
@@ -112,7 +112,7 @@ const VendorApplicationPage: React.FC = () => {
             <motion.p
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
               className="font-sans text-base md:text-lg leading-[1.75] max-w-2xl"
-              style={{ color: 'rgba(244, 239, 227, 0.78)', fontWeight: 300 }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb), 0.78)', fontWeight: 300 }}
             >
               {isEarly ? t.intro2027 : t.intro}
             </motion.p>
@@ -145,7 +145,7 @@ const VendorApplicationPage: React.FC = () => {
         <div
           aria-hidden
           className="absolute inset-x-0 bottom-0 h-48 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.85), transparent)' }}
+          style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.85), transparent)' }}
         />
       </section>
 
@@ -159,22 +159,22 @@ const SignedOutCard: React.FC<{ onSignIn: () => void; t: typeof FR }> = ({ onSig
   <motion.div
     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}
     className="velvet-card p-10 md:p-12 text-center relative overflow-hidden max-w-2xl mx-auto"
-    style={{ border: '1px solid rgba(216, 176, 90, 0.3)' }}
+    style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.3)' }}
   >
     <span className="witcher-tile mx-auto mb-8 block" style={{ width: 54, height: 54 }}>
-      <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+      <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
         <LogIn size={18} />
       </span>
     </span>
     <h2 className="font-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-bone)', fontWeight: 400 }}>{t.authTitle}</h2>
-    <p className="font-sans text-base mb-9 max-w-md mx-auto" style={{ color: 'rgba(244,239,227,0.7)', fontWeight: 300 }}>{t.authBody}</p>
+    <p className="font-sans text-base mb-9 max-w-md mx-auto" style={{ color: 'rgba(var(--sk-parchment-rgb),0.7)', fontWeight: 300 }}>{t.authBody}</p>
     <div className="flex justify-center">
       <button type="button" className="witcher-prompt" data-primary="true" onClick={onSignIn}>
         <span className="witcher-prompt-glyph"><span>A</span></span>
         {t.signInCta}
       </button>
     </div>
-    <p className="font-sans text-xs mt-6" style={{ color: 'rgba(244,239,227,0.4)', fontWeight: 300 }}>{t.authNote}</p>
+    <p className="font-sans text-xs mt-6" style={{ color: 'rgba(var(--sk-parchment-rgb),0.4)', fontWeight: 300 }}>{t.authNote}</p>
   </motion.div>
 );
 

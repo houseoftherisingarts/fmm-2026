@@ -170,18 +170,18 @@ const GuildePage: React.FC = () => {
           {/* ── La bannière de la guilde (Alex, 2026-08-28) ── */}
           {(guilde.banniereUrl || peutGerer) && (
             <div className="relative rounded-[16px] p-[3px]"
-                 style={{ background: 'linear-gradient(135deg, #F4E5B6 0%, var(--color-brass) 40%, #8C6A1F 70%, #F4E5B6 100%)',
-                          boxShadow: '0 0 0 1px rgba(60,30,8,0.85), 0 20px 50px -30px rgba(0,0,0,0.9)' }}>
+                 style={{ background: 'linear-gradient(135deg, var(--sk-gilt-pale) 0%, var(--color-brass) 40%, var(--sk-brass-deep) 70%, var(--sk-gilt-pale) 100%)',
+                          boxShadow: '0 0 0 1px rgba(var(--sk-wood-rgb),0.85), 0 20px 50px -30px rgba(0,0,0,0.9)' }}>
               <div className="relative overflow-hidden rounded-[13px] aspect-[16/5]"
-                   style={{ background: guilde.banniereUrl ? undefined : 'url(/textures/black-linen.png), rgba(10,2,7,0.9)' }}>
+                   style={{ background: guilde.banniereUrl ? undefined : 'url(/textures/black-linen.png), rgba(var(--sk-ink-rgb),0.9)' }}>
                 {guilde.banniereUrl && <img src={guilde.banniereUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
                 <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
-                     style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.6), transparent)' }} />
+                     style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.6), transparent)' }} />
                 {peutGerer && (
                   <>
                     <button type="button" onClick={() => fichierBanniere.current?.click()} disabled={banniereEnvoi}
                             className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px]"
-                            style={{ background: 'rgba(10,2,7,0.75)', border: '1px solid rgba(244,239,227,0.25)', color: 'rgba(244,239,227,0.9)' }}>
+                            style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}>
                       {banniereEnvoi ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
                       {guilde.banniereUrl ? (fr ? 'Changer la bannière' : 'Change the banner') : (fr ? 'Ajouter une bannière' : 'Add a banner')}
                     </button>
@@ -197,7 +197,7 @@ const GuildePage: React.FC = () => {
           {(guilde.blason || peutGerer) && (
             <div className="flex items-center gap-4">
               <span className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden shrink-0 border border-brass/40 flex items-center justify-center"
-                    style={{ background: 'rgba(26,5,11,0.6)', boxShadow: '0 0 28px -8px rgba(216,176,90,0.5)' }}>
+                    style={{ background: 'rgba(var(--sk-deep-rgb),0.6)', boxShadow: '0 0 28px -8px rgba(var(--sk-gilt-rgb),0.5)' }}>
                 {guilde.blason
                   ? <img src={guilde.blason} alt="" className="w-full h-full object-cover" />
                   : <Users size={28} className="text-brass" />}
@@ -230,7 +230,7 @@ const GuildePage: React.FC = () => {
                           <button key={f.id} type="button" role="radio" aria-checked={actif}
                             onClick={() => { void modifierGuilde(guilde.id, { forme: f.id as FormeGuilde }); }}
                             className="px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
-                            style={{ border: `1px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: actif ? 'rgba(216,176,90,0.16)' : 'transparent', color: actif ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                            style={{ border: `1px solid ${actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`, background: actif ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent', color: actif ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                             {fr ? f.FR : f.EN}
                           </button>
                         );
@@ -241,13 +241,13 @@ const GuildePage: React.FC = () => {
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
                     <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))}
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
+                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
                   </label>
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
                     <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory resize-y"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
+                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
                   </label>
                   <div className="flex items-center justify-end gap-2">
                     <button type="button" onClick={() => setEditEnCours(false)}
@@ -278,7 +278,7 @@ const GuildePage: React.FC = () => {
 
               {/* Demandes en attente */}
               {guilde.demandes.length > 0 && (
-                <div className="pt-3" style={{ borderTop: '1px solid rgba(244,239,227,0.1)' }}>
+                <div className="pt-3" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
                   <p className="witcher-stat-label mb-2.5">
                     {fr ? 'Demandes en attente' : 'Pending requests'} ({guilde.demandes.length})
                   </p>
@@ -342,7 +342,7 @@ const MembreLigne: React.FC<{ uid: string; fiche: Membre | null | undefined; lan
   return (
     <Link to={`${addLocale('/profil', lang)}/${uid}`}
           className="flex items-center gap-2.5 px-3 py-2 rounded-card hover:bg-brass/5 transition"
-          style={{ border: '1px solid rgba(244,239,227,0.1)' }}>
+          style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
       <Medaillon nom={nom} url={fiche?.avatarUrl} hue={fiche?.avatarHue} />
       <span className="min-w-0 flex-1">
         <span className="block font-sans text-sm text-ivory truncate">{nom}</span>
@@ -361,7 +361,7 @@ const DemandeLigne: React.FC<{
   const [busy, setBusy] = useState(false);
   const agir = async (fn: () => void) => { setBusy(true); try { await fn(); } finally { setBusy(false); } };
   return (
-    <div className="flex items-center gap-2.5 px-3 py-2 rounded-card" style={{ border: '1px solid rgba(244,239,227,0.1)' }}>
+    <div className="flex items-center gap-2.5 px-3 py-2 rounded-card" style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
       <Link to={`${addLocale('/profil', lang)}/${uid}`} className="flex items-center gap-2.5 min-w-0 flex-1">
         <Medaillon nom={nom} url={fiche?.avatarUrl} hue={fiche?.avatarHue} />
         <span className="font-sans text-sm text-ivory truncate">{nom}</span>

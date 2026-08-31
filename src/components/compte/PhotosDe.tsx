@@ -31,10 +31,10 @@ const PhotosDe: React.FC<{
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-6 pb-2"
-           style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+           style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-stat-label inline-flex items-center gap-2"><Camera size={13} /> {titre}</span>
         {photos && photos.length > 0 && (
-          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}>
             {photos.length}
           </span>
         )}
@@ -66,9 +66,9 @@ const PhotosDe: React.FC<{
                       <span key={pers.uid} className="absolute flex flex-col items-center gap-0.5"
                             style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}>
                         <span className="block w-2 h-2 rounded-[2px] border"
-                              style={{ borderColor: '#D8B05A', background: 'rgba(216,176,90,0.25)' }} />
+                              style={{ borderColor: 'var(--sk-gilt)', background: 'rgba(var(--sk-gilt-rgb),0.25)' }} />
                         <span className="px-1 py-0.5 rounded-full font-sans uppercase tracking-[0.1em] text-[8px] whitespace-nowrap"
-                              style={{ background: 'rgba(10,2,7,0.85)', color: '#F4EFE3' }}>
+                              style={{ background: 'rgba(var(--sk-ink-rgb),0.85)', color: 'var(--sk-parchment)' }}>
                           {pers.nom}
                         </span>
                       </span>
@@ -78,7 +78,7 @@ const PhotosDe: React.FC<{
               )}
               {p.legende && (
                 <figcaption className="absolute bottom-0 left-0 right-0 px-3 py-2 font-sans text-[11px] leading-snug"
-                            style={{ background: 'linear-gradient(to top, rgba(10,2,7,0.85), transparent)', color: 'rgba(244,239,227,0.85)' }}>
+                            style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.85), transparent)', color: 'rgba(var(--sk-parchment-rgb),0.85)' }}>
                   {p.legende}
                 </figcaption>
               )}

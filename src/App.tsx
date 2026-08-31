@@ -19,6 +19,8 @@ import AnnonceBadge from './components/badges/AnnonceBadge';
 import RecompensesQuotidiennes from './components/compte/RecompensesQuotidiennes';
 import { usePerfTier } from './lib/usePerfTier';
 import { usePrefsFond } from './lib/usePrefsFond';
+import { useSkinActif } from './lib/useSkinActif';
+import FondParticules from './components/layout/FondParticules';
 import NavBar from './components/layout/NavBar';
 import ErrorBoundary from './components/layout/ErrorBoundary';
 import PageLoader from './components/layout/PageLoader';
@@ -93,6 +95,7 @@ const MerelleGame             = lazy(() => import('./games/merelle'));
 const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
+const PressePage       = lazy(() => import('./pages/PressePage'));
 const MedievalIntro    = lazy(() => import('./components/landing/MedievalIntro'));
 const MedievalIntroMobile = lazy(() => import('./components/landing/MedievalIntroMobile'));
 
@@ -321,9 +324,15 @@ const PrefsFondWatcher: React.FC = () => { usePrefsFond(); return null; };
 const GlobalFireBackdrop: React.FC = () => {
   const { pathname } = useLocation();
   const { lite } = usePerfTier();
+  const skin = useSkinActif();
   if (lite) return null;                                   // machine modeste
   if (pathname.startsWith('/admin')) return null;
-  if (pathname === '/' || pathname === '/en') return null;  // FireCanvas y est déjà
+  if (pathname === '/' || pathname === '/en') return null;  // l'accueil porte le sien
+  // Chaque peau a son ciel (Alex, 2026-08-31) : la neige d'hiver sous
+  // le bleu et argent, les bulles qui montent sous le doré et noir. Le
+  // rouge d'origine et le vert gardent la flamme filmée.
+  if (skin === 'bleu') return <FondParticules variante="neige" />;
+  if (skin === 'dore') return <FondParticules variante="bulles" />;
   return (
     <div aria-hidden className="fmm-fire-backdrop" data-always>
       <video src="/orb/fire.mp4" autoPlay muted loop playsInline preload="auto" />
@@ -492,6 +501,18 @@ const App: React.FC = () => (
                 <Route path="/en/privacy" element={<PrivacyPage />} />
                 <Route path="/contact"    element={<ContactPage />} />
                 <Route path="/en/contact" element={<ContactPage />} />
+
+                {/* Salle de presse. Alex envoie le raccourci
+                    festivalmedieval.org/presskit dans ses courriels, et
+                    il l'écrit tantôt collé, tantôt avec un trait
+                    d'union : les trois orthographes rendent la même
+                    page plutôt qu'un 404, dans les deux langues. */}
+                <Route path="/presse"       element={<PressePage />} />
+                <Route path="/presskit"     element={<PressePage />} />
+                <Route path="/press-kit"    element={<PressePage />} />
+                <Route path="/en/press"     element={<PressePage />} />
+                <Route path="/en/presskit"  element={<PressePage />} />
+                <Route path="/en/press-kit" element={<PressePage />} />
 
                 {/* Legacy slug redirects: old scaffold paths and Wix variants. */}
                 <Route path="/festival-medieval-de-montpellier" element={<Navigate to="/" replace />} />

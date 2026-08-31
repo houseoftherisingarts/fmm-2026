@@ -24,14 +24,14 @@ const PREVIEW_ALL = (import.meta.env.VITE_SITE_MODE || 'live') === 'live';
 // fully opaque so menu text is always readable against the page beneath.
 const CHARCOAL_BG       = '#16161a';
 const CHARCOAL_BG_SOFT  = '#1f1f24';
-const CHARCOAL_DIVIDER  = 'rgba(244, 239, 227, 0.08)';
+const CHARCOAL_DIVIDER  = 'rgba(var(--sk-parchment-rgb), 0.08)';
 // Copper/gold accent palette: references the project's design tokens
 // where possible so the drawer stays in sync with the rest of the site.
-const ACCENT_DEEP   = 'var(--color-copper)';        // copper ~ #b86a2a
-const ACCENT_MID    = 'var(--color-mustard)';       // mustard ~ #d89b3a
-const ACCENT_BRIGHT = 'var(--color-amber-glow)';    // amber glow ~ #e8b14a
-const ACCENT_GLOW   = 'rgba(232, 177, 74, 0.55)';   // amber-glow with alpha
-const ACCENT_DIM    = 'rgba(184, 106, 42, 0.45)';   // copper-faded
+const ACCENT_DEEP   = 'var(--color-copper)';        // copper ~ var(--sk-copper)
+const ACCENT_MID    = 'var(--color-mustard)';       // mustard ~ var(--sk-mustard)
+const ACCENT_BRIGHT = 'var(--color-amber-glow)';    // amber glow ~ var(--sk-glow)
+const ACCENT_GLOW   = 'rgba(var(--sk-glow-rgb), 0.55)';   // amber-glow with alpha
+const ACCENT_DIM    = 'rgba(var(--sk-copper-rgb), 0.45)';   // copper-faded
 
 // Four lit copper L-ticks pinned to the drawer's corners: Witcher
 // inventory chrome on the charcoal stage.
@@ -171,7 +171,7 @@ const NavBar: React.FC = () => {
               className="fmm-no-grade h-7 md:h-8 w-auto transition-opacity opacity-90 group-hover:opacity-100"
             />
             <span className="hidden sm:inline-flex items-baseline gap-1.5 font-display text-[12px] md:text-[13px] tracking-[0.22em] uppercase">
-              <span style={{ color: 'rgba(244, 239, 227, 0.85)' }}>FMM</span>
+              <span style={{ color: 'rgba(var(--sk-parchment-rgb), 0.85)' }}>FMM</span>
               <span style={{ color: 'var(--color-amber-glow)' }}>{SITE.year}</span>
             </span>
           </Link>
@@ -180,8 +180,8 @@ const NavBar: React.FC = () => {
             <div
               className="hidden sm:inline-flex ml-3 md:ml-4 items-center p-0.5 backdrop-blur-md transition-colors"
               style={{
-                background: 'rgba(10, 2, 7, 0.5)',
-                border: '1px solid rgba(232, 177, 74, 0.25)',
+                background: 'rgba(var(--sk-ink-rgb), 0.5)',
+                border: '1px solid rgba(var(--sk-glow-rgb), 0.25)',
               }}
             >
               {(['EN', 'FR'] as const).map((code) => (
@@ -192,7 +192,7 @@ const NavBar: React.FC = () => {
                   className="px-2.5 py-0.5 font-sans font-semibold text-[9px] tracking-[0.25em] transition-all"
                   style={{
                     color:
-                      lang === code ? 'var(--color-velvet-deep)' : 'rgba(244, 239, 227, 0.55)',
+                      lang === code ? 'var(--color-velvet-deep)' : 'rgba(var(--sk-parchment-rgb), 0.55)',
                     background:
                       lang === code ? 'var(--color-amber-glow)' : 'transparent',
                   }}
@@ -221,7 +221,7 @@ const NavBar: React.FC = () => {
                   'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
                 borderRadius: 999,
                 boxShadow:
-                  'inset 0 1px 0 rgba(255, 240, 200, 0.4), 0 6px 18px -6px rgba(216, 155, 58, 0.55)',
+                  'inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.4), 0 6px 18px -6px rgba(var(--sk-mustard-rgb), 0.55)',
               }}
             >
               {lang === 'FR' ? 'Billets' : 'Tickets'}
@@ -241,7 +241,7 @@ const NavBar: React.FC = () => {
                 <Link
                   to={addLocale('/mur', lang)}
                   className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
-                  style={{ background: 'rgba(10, 2, 7, 0.5)', border: '1px solid rgba(232, 177, 74, 0.35)', color: 'var(--color-amber-glow)' }}
+                  style={{ background: 'rgba(var(--sk-ink-rgb), 0.5)', border: '1px solid rgba(var(--sk-glow-rgb), 0.35)', color: 'var(--color-amber-glow)' }}
                   title={lang === 'FR' ? 'Mur social' : 'Social wall'}
                 >
                   <Newspaper size={14} /> {lang === 'FR' ? 'Mur social' : 'Social wall'}
@@ -254,17 +254,17 @@ const NavBar: React.FC = () => {
                 onClick={openSignIn}
                 className="hidden sm:inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px]"
                 style={{
-                  background: 'rgba(10, 2, 7, 0.5)',
-                  border: '1px solid rgba(244, 239, 227, 0.22)',
-                  color: 'rgba(244, 239, 227, 0.8)',
+                  background: 'rgba(var(--sk-ink-rgb), 0.5)',
+                  border: '1px solid rgba(var(--sk-parchment-rgb), 0.22)',
+                  color: 'rgba(var(--sk-parchment-rgb), 0.8)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.55)';
+                  e.currentTarget.style.borderColor = 'rgba(var(--sk-glow-rgb), 0.55)';
                   e.currentTarget.style.color = 'var(--color-amber-glow)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(244, 239, 227, 0.22)';
-                  e.currentTarget.style.color = 'rgba(244, 239, 227, 0.8)';
+                  e.currentTarget.style.borderColor = 'rgba(var(--sk-parchment-rgb), 0.22)';
+                  e.currentTarget.style.color = 'rgba(var(--sk-parchment-rgb), 0.8)';
                 }}
                 aria-label={lang === 'FR' ? 'Connexion ou création de compte' : 'Sign in or create an account'}
                 title={lang === 'FR' ? 'Connexion ou création de compte' : 'Sign in or create an account'}
@@ -281,9 +281,9 @@ const NavBar: React.FC = () => {
               type="button"
               onClick={() => (user ? navigate(addLocale('/boutique', lang)) : openSignIn())}
               className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full transition-colors"
-              style={{ color: 'rgba(244, 239, 227, 0.8)', border: '1px solid rgba(232, 177, 74, 0.28)' }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb), 0.8)', border: '1px solid rgba(var(--sk-glow-rgb), 0.28)' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-amber-glow)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(244, 239, 227, 0.8)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(var(--sk-parchment-rgb), 0.8)'; }}
               aria-label={UI[lang].cart}
               title={UI[lang].cart}
             >
@@ -306,7 +306,7 @@ const NavBar: React.FC = () => {
                 aria-hidden
                 className="absolute inset-1 transition-opacity opacity-0 group-hover:opacity-100"
                 style={{
-                  border: '1px solid rgba(232, 177, 74, 0.55)',
+                  border: '1px solid rgba(var(--sk-glow-rgb), 0.55)',
                   clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
                 }}
               />
@@ -339,8 +339,8 @@ const NavBar: React.FC = () => {
                 // Deep charcoal vertical wash + faint copper blooms at
                 // opposite corners so the panel doesn't read as a flat
                 // grey slab.
-                `radial-gradient(1100px 700px at 92% -10%, rgba(232, 177, 74, 0.10), transparent 60%),` +
-                `radial-gradient(900px 700px at 8% 110%, rgba(184, 106, 42, 0.07), transparent 65%),` +
+                `radial-gradient(1100px 700px at 92% -10%, rgba(var(--sk-glow-rgb), 0.10), transparent 60%),` +
+                `radial-gradient(900px 700px at 8% 110%, rgba(var(--sk-copper-rgb), 0.07), transparent 65%),` +
                 `linear-gradient(180deg, ${CHARCOAL_BG_SOFT} 0%, ${CHARCOAL_BG} 55%, #0e0e12 100%)`,
             }}
           >
@@ -354,7 +354,7 @@ const NavBar: React.FC = () => {
               style={{
                 background: `linear-gradient(180deg, rgba(255,255,255,0.02), transparent)`,
                 borderBottom: `1px solid ${ACCENT_DEEP}`,
-                boxShadow: `0 1px 0 rgba(232, 177, 74, 0.18)`,
+                boxShadow: `0 1px 0 rgba(var(--sk-glow-rgb), 0.18)`,
               }}
             >
               <Link
@@ -364,7 +364,7 @@ const NavBar: React.FC = () => {
               >
                 <img decoding="async" src={SITE.logoWhite} alt={SITE.shortName} className="fmm-no-grade h-7 w-auto" />
                 <span className="font-display text-[13px] tracking-[0.22em] uppercase">
-                  <span style={{ color: 'rgba(244, 239, 227, 0.85)' }}>FMM </span>
+                  <span style={{ color: 'rgba(var(--sk-parchment-rgb), 0.85)' }}>FMM </span>
                   <span style={{ color: ACCENT_BRIGHT }}>{SITE.year}</span>
                 </span>
               </Link>
@@ -437,7 +437,7 @@ const NavBar: React.FC = () => {
                         <span
                           className="font-display title-medieval text-xs md:text-sm uppercase tracking-[0.4em] w-9 md:w-11 text-right shrink-0 transition-colors group-hover:!opacity-100"
                           style={{
-                            color: isActive ? ACCENT_BRIGHT : 'rgba(244, 239, 227, 0.45)',
+                            color: isActive ? ACCENT_BRIGHT : 'rgba(var(--sk-parchment-rgb), 0.45)',
                             opacity: isActive ? 1 : 0.7,
                           }}
                         >
@@ -473,7 +473,7 @@ const NavBar: React.FC = () => {
                         <ArrowUpRight
                           size={18}
                           className="opacity-30 group-hover:opacity-100 transition"
-                          style={{ color: isActive ? ACCENT_BRIGHT : 'rgba(244, 239, 227, 0.6)' }}
+                          style={{ color: isActive ? ACCENT_BRIGHT : 'rgba(var(--sk-parchment-rgb), 0.6)' }}
                         />
 
                         {/* Copper bottom hairline that draws left → right on hover */}
@@ -505,7 +505,7 @@ const NavBar: React.FC = () => {
                   background: `linear-gradient(180deg, ${ACCENT_BRIGHT} 0%, ${ACCENT_MID} 55%, ${ACCENT_DEEP} 100%)`,
                   borderRadius: 999,
                   boxShadow:
-                    `inset 0 1px 0 rgba(255, 240, 200, 0.45), 0 14px 32px -10px ${ACCENT_GLOW}`,
+                    `inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.45), 0 14px 32px -10px ${ACCENT_GLOW}`,
                   border: `1px solid ${ACCENT_DEEP}`,
                 }}
               >

@@ -86,13 +86,16 @@ const PressePage: React.FC = () => {
             decoding="async"
             className={`w-full aspect-video ${contain ? 'object-contain p-8' : 'object-cover'}`}
           />
-          <div className="flex items-center justify-between gap-3 px-4 py-3.5 border-t"
+          {/* Le nom se pose sur sa propre ligne : à trois colonnes, une
+              tuile fait 230 px et un titre mis à côté des deux boutons
+              se faisait couper au troisième mot. */}
+          <div className="px-4 py-3.5 border-t"
                style={{ borderColor: 'rgba(216, 155, 58, 0.18)' }}>
-            <p className="font-display-alt text-sm tracking-[0.06em] truncate"
+            <p className="font-display-alt text-sm tracking-[0.06em] mb-2.5"
                style={{ color: 'var(--color-bone)' }}>
               {label}
             </p>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2">
               <a
                 href={pleineRes(a)}
                 download
@@ -105,7 +108,7 @@ const PressePage: React.FC = () => {
                   border: '1px solid rgba(232, 177, 74, 0.3)',
                 }}
               >
-                <Download size={12} /> <span className="hidden sm:inline">{t.download}</span>
+                <Download size={12} /> {t.download}
               </a>
               <button
                 type="button"
@@ -120,7 +123,7 @@ const PressePage: React.FC = () => {
                 }}
               >
                 {copie === a.file ? <Check size={12} /> : <Share2 size={12} />}
-                <span className="hidden sm:inline">{copie === a.file ? t.copied : t.share}</span>
+                {copie === a.file ? t.copied : t.share}
               </button>
             </div>
           </div>
@@ -284,7 +287,7 @@ const FR = {
     { k: 'Quand', v: '25 · 26 · 27 septembre 2026. Les portes ouvrent le vendredi à 17 h.' },
     {
       k: 'Où',
-      v: '4 rue du Bosquet, Montpellier, Québec, dans la Petite-Nation. À ne pas confondre avec Montpellier en France.',
+      v: 'Le site se trouve au 4 rue du Bosquet à Montpellier, dans la Petite-Nation en Outaouais. À ne pas confondre avec Montpellier en France.',
     },
     {
       k: 'Billets',
@@ -328,7 +331,7 @@ const EN: typeof FR = {
     { k: 'When', v: 'September 25 · 26 · 27, 2026. Gates open Friday at 5 p.m.' },
     {
       k: 'Where',
-      v: '4 rue du Bosquet, Montpellier, Quebec, in the Petite-Nation. Not to be confused with Montpellier in France.',
+      v: 'The grounds sit at 4 rue du Bosquet in Montpellier, in the Petite-Nation region of Outaouais. Not to be confused with Montpellier in France.',
     },
     {
       k: 'Tickets',

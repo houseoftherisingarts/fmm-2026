@@ -61,7 +61,7 @@ const PorteBilletterie: React.FC<{
             className="relative w-full max-w-lg rounded-lg-card p-7 md:p-9"
             style={{
               background: 'linear-gradient(150deg, rgba(38,12,18,0.97), rgba(16,4,8,0.97))',
-              border: '1px solid rgba(216,176,90,0.4)',
+              border: '1px solid rgba(var(--sk-gilt-rgb),0.4)',
               boxShadow: '0 40px 100px -40px rgba(0,0,0,0.95)',
             }}
           >
@@ -71,7 +71,7 @@ const PorteBilletterie: React.FC<{
             </button>
 
             <span className="witcher-tile inline-flex mb-5" style={{ width: 52, height: 52 }}>
-              <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Ticket size={18} /></span>
+              <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Ticket size={18} /></span>
             </span>
 
             <p className="witcher-stat-label mb-2">{fr ? 'La billetterie' : 'The box office'}</p>
@@ -109,7 +109,7 @@ const PorteBilletterie: React.FC<{
                   </button>
                   <button type="button" onClick={continuerSansCompte}
                           className="inline-flex items-center justify-center gap-2 px-6 py-3 font-sans uppercase tracking-wider text-xs text-ivory-soft/70 hover:text-ivory transition rounded-card"
-                          style={{ border: '1px solid rgba(244,239,227,0.18)' }}>
+                          style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.18)' }}>
                     {fr ? 'Non merci, je paie le plein prix' : 'No thanks, I pay full price'} <ArrowUpRight size={13} />
                   </button>
                 </div>

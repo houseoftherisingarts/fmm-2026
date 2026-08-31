@@ -21,7 +21,7 @@ export type PinTone = 'cire' | 'laiton' | 'or';
 const PIN: Record<PinTone, string> = {
   cire:   'radial-gradient(circle at 35% 30%, #c93a3a 0%, #7e1c1c 60%, #3e0808 100%)',
   laiton: 'radial-gradient(circle at 35% 30%, #e8cd93 0%, #a9812f 60%, #5d4413 100%)',
-  or:     'radial-gradient(circle at 35% 30%, #f6e6b0 0%, #D8B05A 55%, #7a5a17 100%)',
+  or:     'radial-gradient(circle at 35% 30%, #f6e6b0 0%, var(--sk-gilt) 55%, #7a5a17 100%)',
 };
 
 export const NoticeBoard: React.FC<{
@@ -76,10 +76,10 @@ export const NoticeBoard: React.FC<{
 // centré, aucune image, aucune animation.
 const OR = {
   shadow:    '#3c2a0d',
-  accent:    '#a07832',
-  highlight: '#d4a857',
+  accent:    'var(--sk-brass-mid)',
+  highlight: 'var(--sk-brass-warm)',
   specular:  '#fde2a3',
-  glow:      'rgba(168, 128, 48, 0.42)',
+  glow:      'rgba(var(--sk-brass-rgb), 0.42)',
 };
 
 // Même recette que `metallicRibbonBg` des portes.

@@ -132,7 +132,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
             <div key={g.titre} className="shrink-0 lg:shrink lg:mb-5">
               <p
                 className="hidden lg:block font-sans uppercase tracking-[0.3em] text-[9px] mb-2"
-                style={{ color: 'rgba(244,239,227,0.4)' }}
+                style={{ color: 'rgba(var(--sk-parchment-rgb),0.4)' }}
               >
                 {g.titre}
               </p>
@@ -219,18 +219,18 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
             {jourLabel && <p className="witcher-stat-label mb-3">{jourLabel}</p>}
             <h3
               className="font-display title-medieval text-2xl md:text-3xl leading-tight mb-4"
-              style={{ color: '#D8B05A', textShadow: '0 0 22px rgba(216,176,90,0.28)' }}
+              style={{ color: 'var(--sk-gilt)', textShadow: '0 0 22px rgba(var(--sk-gilt-rgb),0.28)' }}
             >
               {b.name}
             </h3>
             <div
               aria-hidden
               className="mb-4 h-px w-16"
-              style={{ background: 'linear-gradient(90deg,#D8B05A,transparent)' }}
+              style={{ background: 'linear-gradient(90deg,var(--sk-gilt),transparent)' }}
             />
             <p
               className="font-editorial text-[15px] md:text-base leading-relaxed"
-              style={{ color: 'rgba(244,239,227,0.82)' }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb),0.82)' }}
             >
               {lang === 'FR' ? b.bioFR : b.bioEN}
             </p>
@@ -239,7 +239,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
                 {b.website && (
                   <a
                     href={b.website} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.22em] text-[10px] text-[var(--color-bone)]/70 hover:text-[#D8B05A] transition w-fit"
+                    className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.22em] text-[10px] text-[var(--color-bone)]/70 hover:text-[var(--sk-gilt)] transition w-fit"
                   >
                     {lang === 'FR' ? 'Leur site' : 'Their site'} <ArrowUpRight size={12} />
                   </a>
@@ -247,7 +247,7 @@ const BestiaryBoard: React.FC<Props> = ({ bands, lang, registre, sansJourTitre, 
                 {b.spotify && (
                   <a
                     href={b.spotify} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.22em] text-[10px] text-[var(--color-bone)]/70 hover:text-[#D8B05A] transition w-fit"
+                    className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.22em] text-[10px] text-[var(--color-bone)]/70 hover:text-[var(--sk-gilt)] transition w-fit"
                   >
                     {lang === 'FR' ? 'Les écouter' : 'Listen' } <ArrowUpRight size={12} />
                   </a>

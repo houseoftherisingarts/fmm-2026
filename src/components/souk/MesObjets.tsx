@@ -43,7 +43,7 @@ const EMPTY = {
  *  deux phrases, pas un pavé juridique. Partagé avec SoukPage.tsx. */
 export const DisclaimerSouk: React.FC<{ fr: boolean }> = ({ fr }) => (
   <p className="font-sans text-[11px] text-ivory-soft/60 leading-relaxed rounded-card px-3.5 py-2.5"
-     style={{ border: '1px solid rgba(244,239,227,0.12)', background: 'rgba(0,0,0,0.18)' }}>
+     style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.12)', background: 'rgba(0,0,0,0.18)' }}>
     {fr
       ? 'Le Festival médiéval de Montpellier et Médiéval Petite Nation ne sont pas responsables des ventes conclues dans le Souk. C’est un espace de courtoisie offert de membre à membre, sans aucune modération des objets ou des services par l’équipe.'
       : 'The Montpellier Medieval Festival and Médiéval Petite Nation are not responsible for sales made in the Souk. It is a space of courtesy offered from member to member, with no moderation of items or services by the team.'}

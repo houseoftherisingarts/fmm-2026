@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight, Layers } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { addLocale } from '../../lib/locale';
+import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight, Layers, Archive } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { suivreSansPub } from '../../firebase/sansPub';
@@ -31,11 +33,21 @@ export const NOMS_SKIN: Record<SkinMembre, { FR: string; EN: string; couleur: st
   rouge: { FR: 'Rouge d’origine', EN: 'Original red', couleur: '#8B2E2E' },
   bleu:  { FR: 'Bleu et argent',  EN: 'Blue and silver', couleur: '#8FAFD0' },
   vert:  { FR: 'Vert de forêt',   EN: 'Forest green',    couleur: '#7FA982' },
-  dore:  { FR: 'Doré du festin',  EN: 'Festival gold',  couleur: '#D8B05A' },
+  dore:  { FR: 'Doré et noir',    EN: 'Gold and black', couleur: '#D9B44A' },
 };
 const SKINS_ACHETABLES: Array<'bleu' | 'dore'> = ['bleu', 'dore'];
 // Les couleurs réelles des skins (src/index.css, html.skin-*), pour
 // que la boutique montre le vrai velours et le vrai métal.
+const DESCRIPTION_SKIN: Record<'bleu' | 'dore', { FR: string; EN: string }> = {
+  bleu: {
+    FR: 'La nuit d’hiver sur le festival. Le velours passe au bleu profond, tous les cadres et toutes les icônes passent à l’argent poli, et la neige souffle derrière les pages.',
+    EN: 'A winter night over the festival. Deep blue velvet, polished silver on every frame and every icon, and snow drifting behind the pages.',
+  },
+  dore: {
+    FR: 'L’or à la feuille sur du noir chaud, sans une goutte de rouge nulle part, et des bulles qui montent derrière les pages comme au fond d’un verre de bière.',
+    EN: 'Gold leaf on warm black, not a drop of red left anywhere, and bubbles rising behind the pages like the bottom of a glass of beer.',
+  },
+};
 const APERCU_SKIN: Record<'bleu' | 'dore', { velours: string; metal: string }> = {
   bleu: { velours: 'linear-gradient(160deg, #0A1322, #050A13)', metal: '#B9C4D2' },
   dore: { velours: 'linear-gradient(160deg, #120D07, #080503)', metal: '#D9B44A' },
@@ -100,16 +112,22 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     setDejaReclameLocal(true);
   }
 
+  // Après un achat, le mot « coffre » s'affiche avec le lien : un joueur
+  // avait acheté un skin et une musique sans savoir où ils étaient allés
+  // (retour d'utilisateur, 2026-08-31).
+  const [dernierAchat, setDernierAchat] = useState<string | null>(null);
+  const lienCoffre = addLocale('/compte?onglet=badges', lang);
+
   async function acheterDos(id: string) {
     setErreur(null); setEnCours(`dos_${id}`);
-    try { await acheterCosmetique(`dos_${id}`); }
+    try { await acheterCosmetique(`dos_${id}`); setDernierAchat(fr ? 'Le dos de carte' : 'The card back'); }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
     finally { setEnCours(null); }
   }
 
   async function acheterUneAmbiance(id: string) {
     setErreur(null); setEnCours(`ambiance_${id}`);
-    try { await acheterAmbiance(id); }
+    try { await acheterAmbiance(id); setDernierAchat(fr ? 'L’ambiance' : 'The ambience'); }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
     finally { setEnCours(null); }
   }
@@ -120,6 +138,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     try {
       if (!sansPub) await acheterCosmetique(`skin_${skin}`);
       await definirPref(uid, 'skin', skin);
+      setDernierAchat(fr ? 'Le skin' : 'The skin');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
@@ -149,7 +168,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             {(() => {
               const { actuel, prochain } = rangFortune(bourse?.gagne ?? 0);
               return (
-                <p className="font-sans text-[11px] mt-0.5" style={{ color: 'rgba(244,239,227,0.55)' }}>
+                <p className="font-sans text-[11px] mt-0.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                   {actuel ? (fr ? actuel.nomFR : actuel.nomEN) : (fr ? 'Sans rang encore' : 'No rank yet')}
                   {prochain && (fr
                     ? ` · encore ${prochain.seuil - (bourse?.gagne ?? 0)} pour « ${prochain.nomFR} »`
@@ -171,6 +190,22 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       </div>
 
       {erreur && <p className="font-editorial italic text-xs text-blush">{erreur}</p>}
+
+      {/* Où vont les achats : dit une fois pour toutes, et redit après
+          chaque achat avec le lien vers le coffre. */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-card px-4 py-3"
+           style={{ background: dernierAchat ? 'rgba(var(--sk-gilt-lit-rgb),0.14)' : 'rgba(var(--sk-parchment-rgb),0.05)', border: `1px solid ${dernierAchat ? 'rgba(var(--sk-gilt-lit-rgb),0.6)' : 'rgba(var(--sk-parchment-rgb),0.12)'}` }}>
+        <p className="font-editorial text-sm md:text-base text-ivory/85 flex items-center gap-2">
+          <Archive size={16} className="shrink-0" style={{ color: 'var(--color-amber-glow)' }} />
+          {dernierAchat
+            ? (fr ? `${dernierAchat} est dans votre coffre.` : `${dernierAchat} is in your vault.`)
+            : (fr ? 'Tout ce que vous prenez ici va dans votre coffre, dans votre compte.' : 'Everything you take here goes into your vault, in your account.')}
+        </p>
+        <Link to={lienCoffre}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card">
+          {fr ? 'Ouvrir mon coffre' : 'Open my vault'} <ArrowUpRight size={12} />
+        </Link>
+      </div>
 
       {/* La billetterie et la table : les vraies places, en dollars,
           jamais en Montpellois (Alex, 2026-08-28). */}
@@ -252,15 +287,18 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             const info = NOMS_SKIN[skin];
             const aDeja = sansPub;
             return (
-              <div key={skin} className="glass-light rounded-lg-card p-4 flex items-center gap-3">
+              <div key={skin} className="glass-light rounded-lg-card p-4 flex items-start gap-3">
                 {/* L'aperçu du skin : son velours et son métal, comme à l'écran (Alex, 2026-08-30). */}
                 <span className="w-14 h-14 shrink-0 rounded-md relative overflow-hidden" style={{ background: APERCU_SKIN[skin].velours, border: `1.5px solid ${APERCU_SKIN[skin].metal}` }}>
                   <span className="absolute inset-2 rounded-full" style={{ border: `2px solid ${APERCU_SKIN[skin].metal}`, boxShadow: `0 0 14px ${APERCU_SKIN[skin].metal}66 inset` }} />
                   <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{ background: APERCU_SKIN[skin].metal }} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? info.FR : info.EN}</p>
-                  <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold mt-1">
+                  <p className="font-display title-medieval text-sm text-ivory">{fr ? info.FR : info.EN}</p>
+                  <p className="font-editorial text-[13px] leading-snug text-ivory-soft mt-1">
+                    {fr ? DESCRIPTION_SKIN[skin].FR : DESCRIPTION_SKIN[skin].EN}
+                  </p>
+                  <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold mt-2">
                     {sansPub ? (fr ? 'Gratuit · VIP' : 'Free · VIP') : (<><PieceMontpellois size={14} />{PRIX_SKIN[skin]}</>)}
                   </p>
                 </div>
@@ -285,12 +323,12 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {DOS_CARTES.filter((d) => d.id in PRIX_DOS && !(bourse?.dosTarot || []).includes(d.id)).map((d) => (
               <div key={d.id} className="glass-light rounded-lg-card p-4 flex items-center gap-3">
-                <span className="w-14 h-20 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(216,176,90,0.4)' }}>
+                <span className="w-14 h-20 shrink-0 rounded-md overflow-hidden" style={{ border: '1.5px solid rgba(var(--sk-gilt-rgb),0.4)' }}>
                   <img src={d.image} alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-display title-medieval text-sm text-ivory">{fr ? d.nomFR : d.nomEN}</p>
-                  <p className="font-sans text-xs mt-0.5 inline-flex items-center gap-1" style={{ color: '#D8B05A' }}>
+                  <p className="font-sans text-xs mt-0.5 inline-flex items-center gap-1" style={{ color: 'var(--sk-gilt)' }}>
                     {PRIX_DOS[d.id] === 0 ? (fr ? 'Offert' : 'Free') : (<><PieceMontpellois size={14} />{PRIX_DOS[d.id]}</>)}
                   </p>
                 </div>
@@ -320,8 +358,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             return (
               <div key={a.id} className="glass-light rounded-lg-card p-4 flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(244,239,227,0.05)', border: '1.5px solid rgba(216,176,90,0.4)' }}>
-                    <Music size={22} style={{ color: '#D8B05A' }} />
+                  <span className="w-14 h-14 shrink-0 rounded-md flex items-center justify-center" style={{ background: 'rgba(var(--sk-parchment-rgb),0.05)', border: '1.5px solid rgba(var(--sk-gilt-rgb),0.4)' }}>
+                    <Music size={22} style={{ color: 'var(--sk-gilt)' }} />
                   </span>
                   <div className="min-w-0">
                     <p className="font-display title-medieval text-sm text-ivory truncate">{fr ? a.titreFR : a.titreEN}</p>

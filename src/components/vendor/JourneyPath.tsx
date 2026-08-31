@@ -59,7 +59,7 @@ export const JourneyPath: React.FC<Props> = ({ chapter, completed, onJump, label
                 aria-current={isCurrent ? 'step' : undefined}
                 aria-label={labels[i] || `Chapitre ${id}`}
                 style={{
-                  filter: isCurrent ? `drop-shadow(0 6px 18px ${ACCENTS[i]}) drop-shadow(0 0 28px rgba(232, 177, 74, 0.45))` : undefined,
+                  filter: isCurrent ? `drop-shadow(0 6px 18px ${ACCENTS[i]}) drop-shadow(0 0 28px rgba(var(--sk-glow-rgb), 0.45))` : undefined,
                 }}
               >
                 <div className="w-12 sm:w-14 md:w-16">
@@ -75,7 +75,7 @@ export const JourneyPath: React.FC<Props> = ({ chapter, completed, onJump, label
                     transition={reduce ? { duration: 0.2 } : { type: 'spring', stiffness: 300, damping: 16 }}
                     className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full"
                     style={{
-                      background: 'radial-gradient(circle at 35% 30%, #E5C679 0%, #C4A45A 55%, #7A6534 100%)',
+                      background: 'radial-gradient(circle at 35% 30%, #E5C679 0%, var(--sk-brass-warm) 55%, var(--sk-brass-deep) 100%)',
                       boxShadow: '0 2px 6px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.4) inset',
                     }}
                     aria-hidden

@@ -63,11 +63,11 @@ const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   return (
     <section
       className="relative p-6 md:p-8 overflow-hidden"
-      style={{ background: 'rgba(26, 5, 11, 0.55)', border: '1px solid rgba(244, 239, 227, 0.10)' }}
+      style={{ background: 'rgba(var(--sk-deep-rgb), 0.55)', border: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
     >
       <header className="flex items-start gap-4 mb-5">
         <span className="witcher-tile shrink-0" style={{ width: 46, height: 46 }}>
-          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
             <Dices size={16} />
           </span>
         </span>
@@ -86,7 +86,7 @@ const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
       <p
         className="font-sans text-sm md:text-[15px] leading-[1.7] mb-6"
-        style={{ color: 'rgba(244, 239, 227, 0.7)', fontWeight: 300 }}
+        style={{ color: 'rgba(var(--sk-parchment-rgb), 0.7)', fontWeight: 300 }}
       >
         {t.lead}
       </p>
@@ -103,7 +103,7 @@ const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             <Link
               to={addLocale(j.path, lang)}
               className="group relative block overflow-hidden h-full"
-              style={{ border: '1px solid rgba(216, 176, 90, 0.28)' }}
+              style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.28)' }}
             >
               <div className="relative h-32 overflow-hidden">
                 <img
@@ -116,7 +116,7 @@ const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 <span
                   aria-hidden
                   className="absolute inset-0"
-                  style={{ background: 'linear-gradient(180deg, rgba(10,2,7,0.35) 0%, rgba(10,2,7,0.92) 100%)' }}
+                  style={{ background: 'linear-gradient(180deg, rgba(var(--sk-ink-rgb),0.35) 0%, rgba(var(--sk-ink-rgb),0.92) 100%)' }}
                 />
               </div>
               <div className="p-4">
@@ -130,12 +130,12 @@ const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                   <ArrowUpRight
                     size={14}
                     className="shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    style={{ color: '#D8B05A' }}
+                    style={{ color: 'var(--sk-gilt)' }}
                   />
                 </span>
                 <span
                   className="block font-sans text-[13px] leading-snug"
-                  style={{ color: 'rgba(244,239,227,0.6)', fontWeight: 300 }}
+                  style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)', fontWeight: 300 }}
                 >
                   {fr ? j.texteFR : j.texteEN}
                 </span>
@@ -147,11 +147,11 @@ const SalonDesJeux: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         {/* Place tenue pour la suite : on annonce sans promettre de date. */}
         <li
           className="flex items-center justify-center p-6 text-center"
-          style={{ border: '1px dashed rgba(244, 239, 227, 0.16)' }}
+          style={{ border: '1px dashed rgba(var(--sk-parchment-rgb), 0.16)' }}
         >
           <span
             className="font-sans text-[13px] leading-snug"
-            style={{ color: 'rgba(244,239,227,0.42)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb),0.42)', fontWeight: 300 }}
           >
             {t.aVenir}
           </span>

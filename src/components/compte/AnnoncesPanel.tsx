@@ -55,14 +55,14 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     <section aria-labelledby="annonces-title" className="mb-10 md:mb-14">
       <div
         className="flex items-center justify-between gap-4 mb-6 md:mb-8 pb-2"
-        style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
+        style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
       >
         <span id="annonces-title" className="witcher-stat-label">
           {fr ? 'Avis de la caravane' : 'Caravan notices'}
         </span>
         <span
           className="font-sans text-sm tracking-[0.2em]"
-          style={{ color: '#D8B05A', fontWeight: 300 }}
+          style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}
         >
           {restants.length} / {ANNONCES.length}
         </span>
@@ -73,7 +73,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           (Alex, 2026-08-23). */}
       {pris.length > 0 && (
         <div className="mb-7 rounded-lg-card border border-brass/25 px-6 py-5"
-             style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+             style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
           <p className="witcher-stat-label mb-3">
             {fr ? 'Mes avis décrochés' : 'Notices I have taken'}
           </p>
@@ -106,7 +106,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         </NoticeBoard>
       ) : (
         <div className="rounded-lg-card border border-brass/30 px-7 py-10 text-center"
-             style={{ background: 'rgba(26, 5, 11, 0.5)' }}>
+             style={{ background: 'rgba(var(--sk-deep-rgb), 0.5)' }}>
           <p className="font-display title-medieval text-xl text-ivory mb-2">
             {fr ? 'Le babillard est vide' : 'The board is empty'}
           </p>
@@ -127,13 +127,13 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         rel="noopener noreferrer"
         className="group mt-6 md:mt-8 flex items-center justify-between gap-4 p-5 border transition-colors"
         style={{
-          borderColor: 'rgba(244, 239, 227, 0.12)',
-          background: 'rgba(26, 5, 11, 0.5)',
+          borderColor: 'rgba(var(--sk-parchment-rgb), 0.12)',
+          background: 'rgba(var(--sk-deep-rgb), 0.5)',
         }}
       >
         <span className="flex items-center gap-4 min-w-0">
           <span className="witcher-tile shrink-0" style={{ width: 42, height: 42 }}>
-            <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+            <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
               <Facebook size={15} />
             </span>
           </span>
@@ -146,7 +146,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             </span>
             <span
               className="block font-sans text-[13px] leading-snug"
-              style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)', fontWeight: 300 }}
             >
               {fr
                 ? 'Les publications du festival, au fil des jours.'
@@ -157,7 +157,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         <ArrowUpRight
           size={16}
           className="shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-          style={{ color: '#D8B05A' }}
+          style={{ color: 'var(--sk-gilt)' }}
         />
       </a>
     </section>
@@ -173,7 +173,7 @@ const AnnonceNotice: React.FC<{
 }> = ({ a, lang, index, onAccepter }) => {
   const fr = lang === 'FR';
   const Icon = a.tone === 'alerte' ? AlertTriangle : a.tone === 'appel' ? Stars : Info;
-  const encre = a.tone === 'alerte' ? '#8d2f1e' : '#7a4a1a';
+  const encre = a.tone === 'alerte' ? '#8d2f1e' : 'var(--sk-brass-deep)';
   const tag = a.tone === 'alerte'
     ? (fr ? 'Consigne'    : 'Rule')
     : a.tone === 'appel'
@@ -200,7 +200,7 @@ const AnnonceNotice: React.FC<{
         >
           {tag}
         </p>
-        <h3 className="font-display text-lg md:text-xl text-[#2a1505] text-center mb-3 leading-snug">
+        <h3 className="font-display text-lg md:text-xl text-[var(--sk-brown-deep)] text-center mb-3 leading-snug">
           {fr ? a.titleFR : a.titleEN}
         </h3>
         {/* Les alinéas de l'auteur sont respectés : un avis long se lit
@@ -220,8 +220,8 @@ const AnnonceNotice: React.FC<{
               type="button"
               onClick={onAccepter}
               className="inline-flex items-center gap-2 px-5 py-2.5 font-sans uppercase tracking-[0.2em] text-[11px] transition-colors"
-              style={{ border: '1px solid rgba(122, 74, 26, 0.55)', color: '#2a1505' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(122, 74, 26, 0.12)'; }}
+              style={{ border: '1px solid rgba(var(--sk-copper-deep-rgb), 0.55)', color: 'var(--sk-brown-deep)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(var(--sk-copper-deep-rgb), 0.12)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <Check size={13} /> {fr ? 'Accepté' : 'Accepted'}
@@ -236,8 +236,8 @@ const AnnonceNotice: React.FC<{
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 font-sans uppercase tracking-[0.2em] text-[11px] transition-colors"
-              style={{ border: '1px solid rgba(122, 74, 26, 0.55)', color: '#2a1505' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(122, 74, 26, 0.12)'; }}
+              style={{ border: '1px solid rgba(var(--sk-copper-deep-rgb), 0.55)', color: 'var(--sk-brown-deep)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(var(--sk-copper-deep-rgb), 0.12)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               {fr ? a.cta.labelFR : a.cta.labelEN}
@@ -252,13 +252,13 @@ const AnnonceNotice: React.FC<{
             target={a.lienPiece?.startsWith('http') ? '_blank' : undefined}
             rel={a.lienPiece?.startsWith('http') ? 'noopener noreferrer' : undefined}
             className="group flex items-center gap-4 mt-5 pt-4 transition-opacity hover:opacity-100 opacity-90"
-            style={{ borderTop: '1px solid rgba(122, 74, 26, 0.3)' }}
+            style={{ borderTop: '1px solid rgba(var(--sk-copper-deep-rgb), 0.3)' }}
           >
             <PetiteMonnaieCoin className="w-14 h-14 shrink-0" flotte={false} />
             <span className="min-w-0">
               <span
                 className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-1"
-                style={{ color: '#2a1505' }}
+                style={{ color: 'var(--sk-brown-deep)' }}
               >
                 {fr ? 'La Petite Monnaie' : 'The Petite Monnaie'}
               </span>
@@ -272,7 +272,7 @@ const AnnonceNotice: React.FC<{
             <ArrowUpRight
               size={14}
               className="shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              style={{ color: '#7a4a1a' }}
+              style={{ color: 'var(--sk-brass-deep)' }}
             />
           </a>
         )}

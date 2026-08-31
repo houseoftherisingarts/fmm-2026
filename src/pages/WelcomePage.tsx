@@ -84,7 +84,7 @@ const WelcomePage: React.FC = () => {
         />
         {/* Brass / oxblood atmospheric tint */}
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-midnight-deep/60 via-transparent to-midnight-deep" />
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_0%,rgba(176,141,58,0.16),transparent_60%)]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_0%,rgba(var(--sk-brass-rgb),0.16),transparent_60%)]" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 pb-16 sm:px-6 md:pt-32 md:pb-24 lg:px-8 min-h-[100svh] flex items-center">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10 items-start w-full">
@@ -279,10 +279,10 @@ const WelcomePage: React.FC = () => {
           displayFontFamily={'"Cinzel", "Times New Roman", serif'}
           bodyFontFamily={'"Cormorant Garamond", Georgia, serif'}
           colors={{
-            text:        'rgba(244, 239, 227, 0.95)',
-            textSoft:    'rgba(244, 239, 227, 0.7)',
-            accent:      '#B08D3A',
-            accentSoft:  '#C9A85A',
+            text:        'rgba(var(--sk-parchment-rgb), 0.95)',
+            textSoft:    'rgba(var(--sk-parchment-rgb), 0.7)',
+            accent:      'var(--sk-brass)',
+            accentSoft:  'var(--sk-brass-warm)',
             pageBg:      '#0E1F33',
             stageBg:     '#081424',
             overlay:     'rgba(8, 20, 36, 0.35)',

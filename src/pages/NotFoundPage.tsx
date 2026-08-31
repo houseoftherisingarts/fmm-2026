@@ -135,13 +135,13 @@ const NotFoundPage: React.FC = () => {
           </p>
           <p
             className="font-editorial italic text-sm md:text-base mb-1"
-            style={{ color: 'rgba(244, 239, 227, 0.7)' }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.7)' }}
           >
             {t.line1}
           </p>
           <p
             className="font-editorial italic text-sm md:text-base mb-7"
-            style={{ color: 'rgba(244, 239, 227, 0.55)' }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.55)' }}
           >
             {t.line2}
           </p>

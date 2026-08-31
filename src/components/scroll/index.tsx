@@ -325,8 +325,8 @@ export const ScrollProgress: React.FC<{ className?: string }> = ({ className }) 
       style={{
         scaleX: scrollYProgress,
         background:
-          'linear-gradient(90deg, var(--color-copper), var(--color-amber-glow) 55%, #FFF6D5)',
-        boxShadow: '0 0 12px rgba(232,177,74,0.55)',
+          'linear-gradient(90deg, var(--color-copper), var(--color-amber-glow) 55%, var(--sk-sheen))',
+        boxShadow: '0 0 12px rgba(var(--sk-glow-rgb),0.55)',
       }}
     />
   );
@@ -365,7 +365,7 @@ export const ParallaxBackdrop: React.FC<{
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 120% 90% at 50% 50%, rgba(10,2,7,${scrim * 0.6}), rgba(10,2,7,${scrim}) 80%)`,
+          background: `radial-gradient(ellipse 120% 90% at 50% 50%, rgba(var(--sk-ink-rgb),${scrim * 0.6}), rgba(var(--sk-ink-rgb),${scrim}) 80%)`,
         }}
       />
     </div>

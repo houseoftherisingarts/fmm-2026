@@ -44,7 +44,7 @@ const MurPage: React.FC = () => {
             </Link>
             <Link to={addLocale('/ordre', lang)}
                   className="inline-flex items-center gap-3 px-8 py-4 font-sans uppercase tracking-[0.2em] text-sm font-semibold transition rounded-card"
-                  style={{ border: '1px solid rgba(216,176,90,0.45)', color: '#D8B05A' }}>
+                  style={{ border: '1px solid rgba(var(--sk-gilt-rgb),0.45)', color: 'var(--sk-gilt)' }}>
               <Users size={18} /> {fr ? 'Voir les membres de l’Ordre' : 'See the members of the Order'}
             </Link>
           </div>

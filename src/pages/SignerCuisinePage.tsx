@@ -56,7 +56,7 @@ const LecteurEntente: React.FC = () => {
 
   return (
     <div className="mb-8">
-      <div className="rounded-[15px] overflow-hidden" style={{ border: '1px solid rgba(232, 177, 74, 0.35)' }}>
+      <div className="rounded-[15px] overflow-hidden" style={{ border: '1px solid rgba(var(--sk-glow-rgb), 0.35)' }}>
         <div ref={boiteRef} className="max-h-[65vh] overflow-y-auto bg-white" />
       </div>
       {etat === 'charge' && (
@@ -181,7 +181,7 @@ const SignerCuisinePage: React.FC = () => {
   };
 
   const CHAMP =
-    'w-full min-w-0 bg-[rgba(10,2,7,0.6)] px-4 py-3 text-base font-sans transition-colors focus:outline-none placeholder:text-[rgba(232,221,193,0.45)]';
+    'w-full min-w-0 bg-[rgba(var(--sk-ink-rgb),0.6)] px-4 py-3 text-base font-sans transition-colors focus:outline-none placeholder:text-[rgba(var(--sk-bone-rgb),0.45)]';
 
   return (
     <>
@@ -219,7 +219,7 @@ const SignerCuisinePage: React.FC = () => {
               <input id="sc-nom" type="text" autoComplete="name" value={nom}
                 onChange={(e) => setNom(e.target.value)} placeholder="Prénom et nom"
                 className={CHAMP}
-                style={{ color: 'var(--color-bone)', border: '1px solid rgba(232, 177, 74, 0.35)' }} />
+                style={{ color: 'var(--color-bone)', border: '1px solid rgba(var(--sk-glow-rgb), 0.35)' }} />
             </div>
 
             <div>

@@ -19,7 +19,7 @@ const SVG: React.FC<{ size: number; className?: string }> = ({ size, className }
     <defs>
       <radialGradient id="piece-or" cx="35%" cy="30%" r="75%">
         <stop offset="0%" stopColor="#F7E2A0" />
-        <stop offset="45%" stopColor="#D8B05A" />
+        <stop offset="45%" stopColor="var(--sk-gilt)" />
         <stop offset="100%" stopColor="#8A6423" />
       </radialGradient>
       <linearGradient id="piece-relief" x1="0" y1="0" x2="1" y2="1">
@@ -54,13 +54,13 @@ const PieceMontpellois: React.FC<Props> = ({ size = 20, image = false, className
         alt="Montpellois"
         width={size}
         height={size}
-        className={className}
+        className={`fmm-piece ${className || ''}`}
         style={{ width: size, height: size, objectFit: 'contain' }}
         onError={() => setEchec(true)}
       />
     );
   }
-  return <SVG size={size} className={className} />;
+  return <SVG size={size} className={`fmm-piece ${className || ''}`} />;
 };
 
 export default PieceMontpellois;

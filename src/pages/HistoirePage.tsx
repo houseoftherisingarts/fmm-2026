@@ -430,7 +430,7 @@ export const FilmsSection: React.FC = () => {
                 aria-pressed={on}
                 className={`group relative w-full text-left rounded-card overflow-hidden border transition-all duration-300 ${
                   on
-                    ? 'border-brass/70 shadow-[0_0_26px_rgba(232,177,74,0.22)]'
+                    ? 'border-brass/70 shadow-[0_0_26px_rgba(var(--sk-glow-rgb),0.22)]'
                     : 'border-white/12 hover:border-brass/50 hover:-translate-y-1'
                 }`}
               >
@@ -447,8 +447,8 @@ export const FilmsSection: React.FC = () => {
                     className="absolute inset-0 transition-opacity duration-300"
                     style={{
                       background: on
-                        ? 'linear-gradient(180deg, rgba(10,2,7,0.15) 0%, rgba(10,2,7,0.85) 100%)'
-                        : 'linear-gradient(180deg, rgba(10,2,7,0.45) 0%, rgba(10,2,7,0.92) 100%)',
+                        ? 'linear-gradient(180deg, rgba(var(--sk-ink-rgb),0.15) 0%, rgba(var(--sk-ink-rgb),0.85) 100%)'
+                        : 'linear-gradient(180deg, rgba(var(--sk-ink-rgb),0.45) 0%, rgba(var(--sk-ink-rgb),0.92) 100%)',
                     }}
                   />
                   {/* Pastille de lecture : le geste est évident. */}
@@ -461,9 +461,9 @@ export const FilmsSection: React.FC = () => {
                     <span
                       className="flex items-center justify-center w-11 h-11 rounded-full border backdrop-blur-sm"
                       style={{
-                        borderColor: on ? 'rgba(232,177,74,0.85)' : 'rgba(244,239,227,0.35)',
-                        background: 'rgba(10,2,7,0.45)',
-                        color: on ? 'var(--color-amber-glow)' : 'rgba(244,239,227,0.85)',
+                        borderColor: on ? 'rgba(var(--sk-glow-rgb),0.85)' : 'rgba(var(--sk-parchment-rgb),0.35)',
+                        background: 'rgba(var(--sk-ink-rgb),0.45)',
+                        color: on ? 'var(--color-amber-glow)' : 'rgba(var(--sk-parchment-rgb),0.85)',
                       }}
                     >
                       <span className="translate-x-[1px] text-sm">&#9654;</span>
@@ -546,7 +546,7 @@ export const EquipeSection: React.FC = () => {
       <Parallax speed={0.12} className="absolute inset-0 -z-10">
         <div
           className="absolute inset-x-0 top-1/4 h-1/2"
-          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(184,106,42,0.10), transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(var(--sk-copper-rgb),0.10), transparent 70%)' }}
         />
       </Parallax>
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">

@@ -131,7 +131,7 @@ const SalonOrdre: React.FC = () => {
       </header>
 
       <div className="rounded-lg-card border border-brass/25 overflow-hidden flex flex-col h-[30rem] md:h-[34rem]"
-           style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+           style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
 
         <div
           ref={listeRef}
@@ -169,7 +169,7 @@ const SalonOrdre: React.FC = () => {
 
         {bloques.length > 0 && user && (
           <div className="px-5 md:px-7 py-2.5 flex flex-wrap items-center gap-2"
-               style={{ borderTop: '1px solid rgba(244, 239, 227, 0.08)' }}>
+               style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.08)' }}>
             <span className="font-sans uppercase tracking-[0.18em] text-[9px] text-ivory-soft/45">
               {t.silences}
             </span>
@@ -184,7 +184,7 @@ const SalonOrdre: React.FC = () => {
 
         {avis && (
           <p role="status" className="px-5 md:px-7 py-2 font-sans text-[11px] text-brass/90"
-             style={{ borderTop: '1px solid rgba(244, 239, 227, 0.08)' }}>
+             style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.08)' }}>
             {avis}
           </p>
         )}
@@ -192,7 +192,7 @@ const SalonOrdre: React.FC = () => {
         {user ? (
           <form onSubmit={parler}
                 className="px-5 md:px-7 py-4 flex items-end gap-3"
-                style={{ borderTop: '1px solid rgba(232, 177, 74, 0.18)' }}>
+                style={{ borderTop: '1px solid rgba(var(--sk-glow-rgb), 0.18)' }}>
             <label htmlFor="mot-salon" className="sr-only">{t.champ}</label>
             <textarea
               id="mot-salon"
@@ -208,7 +208,7 @@ const SalonOrdre: React.FC = () => {
               }}
               placeholder={t.champ}
               className="flex-1 px-4 py-3 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 resize-none max-h-40 focus:outline-none focus:border-brass/60 transition-colors"
-              style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+              style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}
             />
             <div className="flex flex-col items-end gap-1.5">
               {reste < 200 && (
@@ -226,7 +226,7 @@ const SalonOrdre: React.FC = () => {
           </form>
         ) : (
           <div className="px-5 md:px-7 py-5 flex flex-wrap items-center justify-between gap-4"
-               style={{ borderTop: '1px solid rgba(232, 177, 74, 0.18)' }}>
+               style={{ borderTop: '1px solid rgba(var(--sk-glow-rgb), 0.18)' }}>
             <p className="font-editorial text-sm text-ivory-soft/75">{t.connectezVous}</p>
             <button type="button" onClick={openSignIn}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brass/50 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory hover:bg-brass/15 transition-colors">

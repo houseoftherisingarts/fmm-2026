@@ -67,16 +67,16 @@ const CinematicHero: React.FC<Props> = ({
       {/* Atmospheric overlays: vignette + warm gradients */}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-night/70 via-night/55 to-night/95" />
       <div className="absolute inset-0 z-10 bg-gradient-to-tr from-oxblood-deep/45 via-transparent to-transparent" />
-      <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_30%_20%,rgba(176,141,58,0.18),transparent_55%)]" />
+      <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_30%_20%,rgba(var(--sk-brass-rgb),0.18),transparent_55%)]" />
 
       {/* Twin pulsing torchlights: opposite phases, subtly different periods */}
       <motion.div
-        className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_12%_78%,rgba(232,184,106,0.28),transparent_45%)]"
+        className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_12%_78%,rgba(var(--sk-flame-rgb),0.28),transparent_45%)]"
         animate={{ opacity: [0.55, 1, 0.7, 0.95, 0.55] }}
         transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_88%_28%,rgba(232,184,106,0.22),transparent_42%)]"
+        className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_88%_28%,rgba(var(--sk-flame-rgb),0.22),transparent_42%)]"
         animate={{ opacity: [0.85, 0.5, 1, 0.65, 0.85] }}
         transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -168,7 +168,7 @@ const CinematicHero: React.FC<Props> = ({
 interface InternalCtaProps extends CtaProps { primary?: boolean }
 const CTA: React.FC<InternalCtaProps> = ({ label, href, external, primary }) => {
   const cls = primary
-    ? 'inline-flex items-center justify-center gap-2 px-7 py-4 bg-brass text-night font-sans uppercase tracking-wider text-sm font-semibold hover:bg-brass-soft transition group rounded-card shadow-[0_8px_32px_-8px_rgba(176,141,58,0.6)]'
+    ? 'inline-flex items-center justify-center gap-2 px-7 py-4 bg-brass text-night font-sans uppercase tracking-wider text-sm font-semibold hover:bg-brass-soft transition group rounded-card shadow-[0_8px_32px_-8px_rgba(var(--sk-brass-rgb),0.6)]'
     : 'inline-flex items-center justify-center px-7 py-4 glass-frost text-parchment hover:border-brass hover:text-brass font-sans uppercase tracking-wider text-sm transition rounded-card';
   return (
     <a href={href} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className={cls}>

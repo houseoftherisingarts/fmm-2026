@@ -25,7 +25,7 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
-      <div className="flex items-center justify-between gap-4 mb-5 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+      <div className="flex items-center justify-between gap-4 mb-5 pb-2" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-stat-label inline-flex items-center gap-2">
           <ShieldOff size={13} /> {fr ? 'Retirer les publicités, paiement unique' : 'Remove the ads, one-time payment'}
         </span>
@@ -57,7 +57,7 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
             {DONS_PROPOSES.map((d) => (
               <button key={d} type="button" onClick={() => setMontant(d)} aria-pressed={montant === d}
                       className="px-4 py-2 rounded-full font-sans text-sm transition-colors"
-                      style={{ border: `1px solid ${montant === d ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: montant === d ? 'rgba(216,176,90,0.16)' : 'transparent', color: montant === d ? '#F4EFE3' : 'rgba(244,239,227,0.6)' }}>
+                      style={{ border: `1px solid ${montant === d ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`, background: montant === d ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent', color: montant === d ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.6)' }}>
                 {d} $
               </button>
             ))}
@@ -66,7 +66,7 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
               <input type="number" min={10} max={100} value={montant}
                      onChange={(e) => setMontant(Math.min(100, Math.max(10, Number(e.target.value) || 10)))}
                      className="w-20 px-3 py-2 rounded-card font-sans text-sm text-ivory"
-                     style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
+                     style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
               $
             </label>
           </div>
@@ -80,11 +80,11 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
           <div className="mt-4">
             <button type="button" disabled
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card font-sans uppercase tracking-wider text-xs cursor-not-allowed"
-                    style={{ border: '1px dashed rgba(216,176,90,0.45)', color: 'rgba(244,239,227,0.6)', background: 'rgba(216,176,90,0.06)' }}>
-              <Coins size={14} style={{ color: '#D8B05A' }} />
+                    style={{ border: '1px dashed rgba(var(--sk-gilt-rgb),0.45)', color: 'rgba(var(--sk-parchment-rgb),0.6)', background: 'rgba(var(--sk-gilt-rgb),0.06)' }}>
+              <Coins size={14} style={{ color: 'var(--sk-gilt)' }} />
               {fr ? 'Payer mon espace VIP en petite monnaie' : 'Pay for my VIP space in local currency'}
             </button>
-            <p className="font-sans text-[10px] mt-1.5 uppercase tracking-[0.2em]" style={{ color: '#D8B05A' }}>
+            <p className="font-sans text-[10px] mt-1.5 uppercase tracking-[0.2em]" style={{ color: 'var(--sk-gilt)' }}>
               {fr ? 'À venir bientôt' : 'Coming soon'}
             </p>
           </div>

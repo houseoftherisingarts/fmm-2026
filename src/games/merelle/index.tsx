@@ -676,8 +676,11 @@ const MerellePage: React.FC = () => {
         </div>
 
         {/* ── Le décompte des pions ───────────────────────────────── */}
+        {/* Il ne porte aucun bouton : `pointer-events-none` l'empêche
+            d'avaler le clic sur le point du coin haut-gauche, qui passe
+            sous lui dès que la fenêtre se resserre. */}
         {commencee && !etat.gagnant && (
-          <div className="absolute left-3 md:left-6 top-16 z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]">
+          <div className="pointer-events-none absolute left-3 md:left-6 top-16 z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]">
             {([1, 2] as Camp[]).map((c) => (
               <span key={c} className="flex items-center gap-2.5 py-0.5">
                 <span
@@ -754,7 +757,7 @@ const MerellePage: React.FC = () => {
 
         {/* ── Bandeau du bas ──────────────────────────────────────── */}
         <div
-          className="absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-3 md:px-6 pt-10 pb-3"
+          className="absolute inset-x-0 bottom-0 z-[3] flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-3 md:px-6 pt-10 pb-3"
           style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}
         >
           <button

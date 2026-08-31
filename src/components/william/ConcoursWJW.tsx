@@ -14,7 +14,7 @@ import { useAuth } from '../../contexts/AuthContext';
 // Même écrin que le reste de la page : verre vin dans les coins dorés.
 
 const CHAMP =
-  'w-full min-w-0 bg-[rgba(10,2,7,0.6)] px-4 py-3 text-sm font-sans transition-colors focus:outline-none disabled:opacity-60 placeholder:text-[rgba(232,221,193,0.45)]';
+  'w-full min-w-0 bg-[rgba(var(--sk-ink-rgb),0.6)] px-4 py-3 text-sm font-sans transition-colors focus:outline-none disabled:opacity-60 placeholder:text-[rgba(var(--sk-bone-rgb),0.45)]';
 
 const ConcoursWJW: React.FC = () => {
   const { user, sendMagicLink } = useAuth();
@@ -26,7 +26,7 @@ const ConcoursWJW: React.FC = () => {
 
   const bordure = (vide: boolean) => ({
     color: 'var(--color-bone)',
-    border: `1px solid ${vide && etat === 'erreur' ? 'rgba(224, 138, 122, 0.55)' : 'rgba(232, 177, 74, 0.35)'}`,
+    border: `1px solid ${vide && etat === 'erreur' ? 'rgba(224, 138, 122, 0.55)' : 'rgba(var(--sk-glow-rgb), 0.35)'}`,
   });
 
   // Connecté : un clic suffit, le serveur prend le nom de la fiche et le
@@ -173,7 +173,7 @@ const ConcoursWJW: React.FC = () => {
 
                   <label className="flex items-start gap-3 cursor-pointer pt-1">
                     <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)}
-                      className="mt-1 shrink-0 accent-[#E8B14A]" />
+                      className="mt-1 shrink-0 accent-[var(--sk-glow)]" />
                     <span className="font-editorial text-[15px] text-ivory-soft leading-snug">
                       Je comprends que mon courriel et mon téléphone servent à me joindre
                       pour la remise des prix, et j’accepte qu’ils soient remis à

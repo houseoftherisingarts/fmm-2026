@@ -91,11 +91,11 @@ const ConcoursPanel: React.FC<{ email: string }> = ({ email }) => {
                 </p>
                 <button type="button" onClick={participer} disabled={envoi}
                         className="inline-flex items-center gap-2 px-5 py-3 rounded-card font-sans uppercase tracking-[0.16em] text-[11px] transition-colors disabled:opacity-50"
-                        style={{ background: 'rgba(216,176,90,0.18)', border: '1px solid rgba(216,176,90,0.7)', color: '#F4EFE3' }}>
+                        style={{ background: 'rgba(var(--sk-gilt-rgb),0.18)', border: '1px solid rgba(var(--sk-gilt-rgb),0.7)', color: 'var(--sk-parchment)' }}>
                   {envoi ? <Loader2 size={13} className="animate-spin" /> : <Gift size={13} />}
                   Participer avec mon compte
                 </button>
-                {erreur && <p className="mt-3 font-sans text-xs" style={{ color: '#D8B05A' }}>{erreur}</p>}
+                {erreur && <p className="mt-3 font-sans text-xs" style={{ color: 'var(--sk-gilt)' }}>{erreur}</p>}
               </>
             )}
           </div>

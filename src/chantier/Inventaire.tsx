@@ -104,8 +104,8 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
         <div className="flex flex-col items-center gap-1">
           <div {...dragProps} className="w-12 h-12 rounded-md flex items-center justify-center cursor-pointer transition"
                style={{
-                 background: survole === emplacement ? 'rgba(216,176,90,0.22)' : 'rgba(244,239,227,0.05)',
-                 border: `1px solid ${objet ? COULEUR_RARETE[objet.rarete] : 'rgba(244,239,227,0.14)'}`,
+                 background: survole === emplacement ? 'rgba(var(--sk-gilt-rgb),0.22)' : 'rgba(var(--sk-parchment-rgb),0.05)',
+                 border: `1px solid ${objet ? COULEUR_RARETE[objet.rarete] : 'rgba(var(--sk-parchment-rgb),0.14)'}`,
                }}>
             {objet && <span style={{ width: 20, height: 20, borderRadius: 4, background: objet.couleur }} />}
           </div>
@@ -116,12 +116,12 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
     return (
       <div className="flex flex-col items-center gap-1.5">
         <span {...dragProps} className="witcher-tile cursor-pointer" data-active={!!objet}
-              style={survole === emplacement ? { background: 'rgba(216,176,90,0.22)', borderColor: '#D8B05A' } : undefined}>
+              style={survole === emplacement ? { background: 'rgba(var(--sk-gilt-rgb),0.22)', borderColor: 'var(--sk-gilt)' } : undefined}>
           <span className="witcher-tile-inner">
             {objet ? (
               <span style={{ width: 22, height: 22, borderRadius: 5, background: objet.couleur, border: `1.5px solid ${COULEUR_RARETE[objet.rarete]}` }} />
             ) : (
-              <span style={{ width: 18, height: 18, borderRadius: 3, border: '1px dashed rgba(244,239,227,0.25)' }} />
+              <span style={{ width: 18, height: 18, borderRadius: 3, border: '1px dashed rgba(var(--sk-parchment-rgb),0.25)' }} />
             )}
           </span>
         </span>
@@ -133,7 +133,7 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr_300px] items-start">
       {/* ── Aptitudes, à gauche ── */}
-      <section className="rounded-lg-card border border-brass/25 p-6" style={{ background: 'rgba(26,5,11,0.45)' }}>
+      <section className="rounded-lg-card border border-brass/25 p-6" style={{ background: 'rgba(var(--sk-deep-rgb),0.45)' }}>
         <p className="witcher-stat-label mb-4">{fr ? 'Aptitudes' : 'Abilities'}</p>
         <ul className="space-y-3">
           {APTITUDES.map(([cle, nomFR, nomEN]) => (
@@ -141,10 +141,10 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
               <span className="font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/60 w-20 shrink-0">
                 {fr ? nomFR : nomEN}
               </span>
-              <span className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(244,239,227,0.1)' }}>
+              <span className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(var(--sk-parchment-rgb),0.1)' }}>
                 <span className="block h-full" style={{
                   width: `${Math.max(0, Math.min(20, stats[cle])) * 5}%`,
-                  background: 'linear-gradient(90deg, rgba(232,177,74,0.5), var(--color-amber-glow))',
+                  background: 'linear-gradient(90deg, rgba(var(--sk-glow-rgb),0.5), var(--color-amber-glow))',
                 }} />
               </span>
               <span className="font-display text-sm text-ivory w-6 text-right">{stats[cle]}</span>
@@ -160,7 +160,7 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
                 <button key={c} type="button"
                         onClick={() => onChange({ ...avatar, corps: c as CorpsId })}
                         className="px-3 py-1.5 font-sans text-xs uppercase tracking-wider rounded-card border transition"
-                        style={{ borderColor: avatar.corps === c ? '#D8B05A' : 'rgba(244,239,227,0.2)', color: avatar.corps === c ? '#D8B05A' : undefined }}>
+                        style={{ borderColor: avatar.corps === c ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)', color: avatar.corps === c ? 'var(--sk-gilt)' : undefined }}>
                   {c}
                 </button>
               ))}
@@ -173,7 +173,7 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
                 <button key={couleur} type="button" onClick={() => onChange({ ...avatar, peau: i })}
                         aria-label={`peau ${i}`}
                         className="w-7 h-7 rounded-full border-2 transition"
-                        style={{ background: couleur, borderColor: avatar.peau === i ? '#D8B05A' : 'rgba(244,239,227,0.2)' }} />
+                        style={{ background: couleur, borderColor: avatar.peau === i ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)' }} />
               ))}
             </div>
           </div>
@@ -184,7 +184,7 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
                 <button key={c} type="button" onClick={() => onChange({ ...avatar, coiffure: c })}
                         aria-label={`coiffure ${c}`}
                         className="w-7 h-7 rounded-full border-2 transition"
-                        style={{ background: COULEURS_COIFFURE[c], borderColor: avatar.coiffure === c ? '#D8B05A' : 'rgba(244,239,227,0.2)' }} />
+                        style={{ background: COULEURS_COIFFURE[c], borderColor: avatar.coiffure === c ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)' }} />
               ))}
             </div>
           </div>
@@ -231,8 +231,8 @@ const Inventaire: React.FC<Props> = ({ lang, avatar, onChange }) => {
               <div key={i}
                    className="aspect-square rounded-md flex items-center justify-center cursor-pointer transition"
                    style={{
-                     background: survole === `sac-${i}` ? 'rgba(216,176,90,0.18)' : 'rgba(244,239,227,0.05)',
-                     border: `1px solid ${objet ? COULEUR_RARETE[objet.rarete] : 'rgba(244,239,227,0.12)'}`,
+                     background: survole === `sac-${i}` ? 'rgba(var(--sk-gilt-rgb),0.18)' : 'rgba(var(--sk-parchment-rgb),0.05)',
+                     border: `1px solid ${objet ? COULEUR_RARETE[objet.rarete] : 'rgba(var(--sk-parchment-rgb),0.12)'}`,
                    }}
                    draggable={!!objet}
                    onDragStart={(e) => objet && ecrire({ id: objet.id, from: 'sac' }, e)}

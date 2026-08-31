@@ -26,7 +26,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 import { chromium } from 'playwright';
-import { PHOTOS, PHOTO_BY_ID } from './photos.mjs';
+import { PHOTOS } from './photos.mjs';
 import { CARDS } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));

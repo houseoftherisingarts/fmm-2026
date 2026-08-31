@@ -25,6 +25,9 @@ const HAUT = 0.18;
 /** Du centre au bord du bois, en unités de grille. */
 const DEMI = 3.6;
 
+/** Hauteur d'un pion sculpté, en unités de scène (un pas = CELL = 1,5). */
+const HAUTEUR_PION = 1.5;
+
 const TEINTES: Record<Camp, number> = {
   1: 0xd9b681, // chêne clair, huilé
   2: 0x452a18, // bois teint au brou de noix
@@ -379,7 +382,11 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   let selection: number | null = null;
 
   // Les pions sculptés (Meshy) remplacent le tour dès qu'ils arrivent;
-  // le tour reste le secours si le réseau manque.
+  // le tour reste le secours si le réseau manque. La hauteur est
+  // mesurée à l'écran : Meshy rend des figurines élancées (0,77 de
+  // large pour 1,9 de haut), donc une hauteur de 0,85 les réduisait à
+  // des grains de riz au fond de leur cupule. À 1,5, la figurine fait
+  // un pas de grille de haut, comme les pièces du hnefatafl.
   const sculptes: Partial<Record<Camp, THREE.Group>> = {};
   const habiller = (g: THREE.Group) => {
     const proto = sculptes[g.userData.camp as Camp];
@@ -390,7 +397,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   let vivant = true;
   ([[1, '/games/merelle/models/pion-clair.glb'], [2, '/games/merelle/models/pion-sombre.glb']] as const)
     .forEach(([camp, url]) => {
-      chargerSculpture(url, 0.85).then((proto) => {
+      chargerSculpture(url, HAUTEUR_PION).then((proto) => {
         if (!vivant) return;
         sculptes[camp] = proto;
         for (const g of pions) if (g && g.userData.camp === camp) habiller(g);

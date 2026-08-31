@@ -18,7 +18,7 @@ export const SectionTopRail: React.FC<{
 }> = ({ index, name, meta, metaValue, className = '' }) => (
   <div
     className={`flex items-center justify-between gap-4 pb-2 ${className}`}
-    style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
+    style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
   >
     <div className="flex items-center gap-3">
       <span
@@ -41,7 +41,7 @@ export const SectionTopRail: React.FC<{
       <div className="hidden md:flex items-center gap-2">
         <span
           className="font-sans uppercase tracking-[0.35em] text-[10px]"
-          style={{ color: 'rgba(244, 239, 227, 0.55)' }}
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.55)' }}
         >
           {meta}
         </span>
@@ -65,7 +65,7 @@ export const SectionBottomRail: React.FC<{
 }> = ({ hint, meta, className = '' }) => (
   <div
     className={`flex items-center justify-between flex-wrap gap-y-3 pt-5 ${className}`}
-    style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}
+    style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
   >
     <div className="flex items-center gap-3">
       <span
@@ -79,7 +79,7 @@ export const SectionBottomRail: React.FC<{
       />
       <span
         className="font-sans uppercase tracking-[0.35em] text-[10px]"
-        style={{ color: 'rgba(244, 239, 227, 0.55)' }}
+        style={{ color: 'rgba(var(--sk-parchment-rgb), 0.55)' }}
       >
         {hint}
       </span>
@@ -87,7 +87,7 @@ export const SectionBottomRail: React.FC<{
     {meta && (
       <span
         className="font-sans uppercase tracking-[0.35em] text-[10px]"
-        style={{ color: 'rgba(244, 239, 227, 0.55)' }}
+        style={{ color: 'rgba(var(--sk-parchment-rgb), 0.55)' }}
       >
         {meta}
       </span>
@@ -150,7 +150,7 @@ export const DisplayTitle: React.FC<{
     style={{
       color: 'var(--color-bone)',
       fontWeight: 400,
-      textShadow: glow ? '0 0 24px rgba(232, 177, 74, 0.28), 0 0 60px rgba(184, 106, 42, 0.22)' : undefined,
+      textShadow: glow ? '0 0 24px rgba(var(--sk-glow-rgb), 0.28), 0 0 60px rgba(var(--sk-copper-rgb), 0.22)' : undefined,
     }}
   >
     {children}
@@ -385,12 +385,12 @@ export const ChevronButton: React.FC<ChevronButtonProps> = ({
     background:
       'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
     boxShadow:
-      '0 0 0 1px rgba(232, 177, 74, 0.6) inset, 0 0 30px -4px rgba(232, 177, 74, 0.55), 0 14px 32px -10px rgba(216, 155, 58, 0.7)',
+      '0 0 0 1px rgba(var(--sk-glow-rgb), 0.6) inset, 0 0 30px -4px rgba(var(--sk-glow-rgb), 0.55), 0 14px 32px -10px rgba(var(--sk-mustard-rgb), 0.7)',
   };
   const ghostStyle: React.CSSProperties = {
     color: 'var(--color-amber-glow)',
-    background: 'rgba(232, 177, 74, 0.08)',
-    boxShadow: '0 0 0 1px rgba(232, 177, 74, 0.45) inset',
+    background: 'rgba(var(--sk-glow-rgb), 0.08)',
+    boxShadow: '0 0 0 1px rgba(var(--sk-glow-rgb), 0.45) inset',
   };
   const style = disabled
     ? { ...ghostStyle, opacity: 0.55, cursor: 'not-allowed' }
@@ -405,7 +405,7 @@ export const ChevronButton: React.FC<ChevronButtonProps> = ({
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle at 50% 100%, rgba(255, 240, 200, 0.55), transparent 70%)',
+              'radial-gradient(circle at 50% 100%, rgba(var(--sk-sheen-rgb), 0.55), transparent 70%)',
             mixBlendMode: 'screen',
           }}
         />

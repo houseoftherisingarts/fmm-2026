@@ -102,7 +102,7 @@ const MarketSquare: React.FC<Props> = ({ lang, vendors, copy }) => {
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(180deg, rgba(184,106,42,0.15) 0%, transparent 35%, rgba(10,2,7,0.92) 100%)',
+                      'linear-gradient(180deg, rgba(var(--sk-copper-rgb),0.15) 0%, transparent 35%, rgba(var(--sk-ink-rgb),0.92) 100%)',
                   }}
                 />
                 <p
@@ -172,7 +172,7 @@ const MarketSquare: React.FC<Props> = ({ lang, vendors, copy }) => {
         {filtered.length === 0 && (
           <p
             className="font-editorial italic text-base md:text-lg max-w-xl"
-            style={{ color: 'rgba(244, 239, 227, 0.6)' }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.6)' }}
           >
             {copy.emptyYear}
           </p>
@@ -243,7 +243,7 @@ const CategoryChip: React.FC<{
     }`}
     style={{
       color: isActive ? 'var(--color-amber-glow)' : 'var(--color-bone)',
-      background: isActive ? 'rgba(232, 177, 74, 0.10)' : 'rgba(26, 5, 11, 0.45)',
+      background: isActive ? 'rgba(var(--sk-glow-rgb), 0.10)' : 'rgba(var(--sk-deep-rgb), 0.45)',
     }}
   >
     {label}
@@ -257,7 +257,7 @@ const StallTile: React.FC<{
   isOpen: boolean;
   onSelect: () => void;
 }> = ({ kiosk, index, isOpen, onSelect }) => {
-  const spot = useSpotlight('rgba(232, 177, 74, 0.32)', 220);
+  const spot = useSpotlight('rgba(var(--sk-glow-rgb), 0.32)', 220);
   return (
     <HexPanel size="sm" active={isOpen} className="fmm-shimmer">
       <button
@@ -269,7 +269,7 @@ const StallTile: React.FC<{
         aria-label={`${kiosk.name}: ${kiosk.category}`}
         className="group/btn relative block w-full aspect-[4/5] overflow-hidden text-left transition-transform duration-500 hover:-translate-y-1"
         style={{
-          background: 'rgba(26, 5, 11, 0.7)',
+          background: 'rgba(var(--sk-deep-rgb), 0.7)',
         }}
       >
         {/* Photo */}
@@ -287,7 +287,7 @@ const StallTile: React.FC<{
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(180deg, rgba(184,106,42,0.18) 0%, transparent 35%, rgba(10,2,7,0.92) 100%)',
+              'linear-gradient(180deg, rgba(var(--sk-copper-rgb),0.18) 0%, transparent 35%, rgba(var(--sk-ink-rgb),0.92) 100%)',
           }}
         />
         {/* Mouse-tracking spotlight */}
@@ -301,8 +301,8 @@ const StallTile: React.FC<{
           className="absolute top-3 left-3 z-10 inline-block px-2.5 py-1 font-sans text-[9px] tracking-[0.5em] chev-cta"
           style={{
             color: 'var(--color-amber-glow)',
-            background: 'rgba(10, 2, 7, 0.85)',
-            boxShadow: 'inset 0 0 0 1px rgba(232, 177, 74, 0.5)',
+            background: 'rgba(var(--sk-ink-rgb), 0.85)',
+            boxShadow: 'inset 0 0 0 1px rgba(var(--sk-glow-rgb), 0.5)',
           }}
         >
           {String(index + 1).padStart(2, '0')}
@@ -345,7 +345,7 @@ const DetailModal: React.FC<{
       transition={{ duration: 0.3 }}
       onClick={onClose}
       className="fixed inset-0 z-[60] flex items-center justify-center px-3 sm:px-4 md:px-8 py-4 md:py-8 overflow-y-auto"
-      style={{ background: 'rgba(10, 2, 7, 0.88)', backdropFilter: 'blur(14px)' }}
+      style={{ background: 'rgba(var(--sk-ink-rgb), 0.88)', backdropFilter: 'blur(14px)' }}
     >
       <motion.div
         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 30, scale: 0.96 }}
@@ -361,7 +361,7 @@ const DetailModal: React.FC<{
               type="button"
               onClick={onClose}
               aria-label={copy.closeLbl}
-              className="absolute top-4 right-4 z-30 w-10 h-10 flex items-center justify-center caravan-glass hover:bg-[rgba(232,177,74,0.15)] transition"
+              className="absolute top-4 right-4 z-30 w-10 h-10 flex items-center justify-center caravan-glass hover:bg-[rgba(var(--sk-glow-rgb),0.15)] transition"
               style={{ color: 'var(--color-amber-glow)' }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -383,8 +383,8 @@ const DetailModal: React.FC<{
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(90deg, transparent 50%, rgba(26,5,11,0.85) 100%),' +
-                      'linear-gradient(180deg, rgba(184,106,42,0.18) 0%, transparent 40%, rgba(10,2,7,0.5) 100%)',
+                      'linear-gradient(90deg, transparent 50%, rgba(var(--sk-deep-rgb),0.85) 100%),' +
+                      'linear-gradient(180deg, rgba(var(--sk-copper-rgb),0.18) 0%, transparent 40%, rgba(var(--sk-ink-rgb),0.5) 100%)',
                   }}
                 />
               </div>
@@ -397,7 +397,7 @@ const DetailModal: React.FC<{
                 </p>
                 <h3
                   className="font-display leading-[1.0] tracking-[-0.005em] text-2xl sm:text-3xl md:text-5xl mb-5"
-                  style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 0 32px rgba(232,177,74,0.18)' }}
+                  style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 0 32px rgba(var(--sk-glow-rgb),0.18)' }}
                 >
                   {kiosk.name}
                 </h3>
@@ -424,8 +424,8 @@ const DetailModal: React.FC<{
                       className="group inline-flex items-center gap-3 px-5 py-2.5 font-sans uppercase tracking-[0.3em] text-[11px] hover:scale-[1.02] transition chev-cta"
                       style={{
                         color: 'var(--color-amber-glow)',
-                        boxShadow: 'inset 0 0 0 1px rgba(232,177,74,0.5)',
-                        background: 'rgba(232,177,74,0.08)',
+                        boxShadow: 'inset 0 0 0 1px rgba(var(--sk-glow-rgb),0.5)',
+                        background: 'rgba(var(--sk-glow-rgb),0.08)',
                       }}
                     >
                       {copy.visit}

@@ -93,13 +93,13 @@ const GuildesPage: React.FC = () => {
                         return (
                           <button key={f.id} type="button" role="radio" aria-checked={actif} onClick={() => setForme(f.id)}
                             className="px-3 py-1.5 rounded-full font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
-                            style={{ border: `1px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, background: actif ? 'rgba(216,176,90,0.16)' : 'transparent', color: actif ? '#F4EFE3' : 'rgba(244,239,227,0.55)' }}>
+                            style={{ border: `1px solid ${actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`, background: actif ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent', color: actif ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                             {fr ? f.FR : f.EN}
                           </button>
                         );
                       })}
                     </div>
-                    <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(244,239,227,0.45)' }}>
+                    <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}>
                       {fr ? 'Le mot change, le fonctionnement reste le même.' : 'The word changes, everything else stays the same.'}
                     </p>
                   </div>
@@ -108,14 +108,14 @@ const GuildesPage: React.FC = () => {
                     <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))} required autoFocus
                       placeholder={fr ? `Le nom ${['clan','ordre'].includes(forme) ? 'du' : 'de la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `The ${motDeLaForme(forme, 'EN').toLowerCase()}’s name`}
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
+                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
                   </label>
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
                     <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
                       placeholder={fr ? `Ce qui rassemble ${['clan','ordre'].includes(forme) ? 'le' : 'la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `What brings the ${motDeLaForme(forme, 'EN').toLowerCase()} together`}
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 resize-y"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
+                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
                   </label>
                   {erreur && <p className="font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}
                   <div className="flex items-center justify-end gap-2">
@@ -167,12 +167,12 @@ const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> 
         </span>
       ) : (
         <span className="witcher-tile shrink-0" style={{ width: 48, height: 48 }}>
-          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Shield size={18} /></span>
+          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Shield size={18} /></span>
         </span>
       )}
       <div className="min-w-0 flex-1">
         <h3 className="font-display title-medieval text-lg text-ivory truncate">{guilde.nom}</h3>
-        <span className="inline-block font-sans uppercase tracking-[0.2em] text-[9px] mb-0.5" style={{ color: '#D8B05A' }}>
+        <span className="inline-block font-sans uppercase tracking-[0.2em] text-[9px] mb-0.5" style={{ color: 'var(--sk-gilt)' }}>
           {motDeLaForme(guilde.forme, lang)}
         </span>
         {guilde.description && (

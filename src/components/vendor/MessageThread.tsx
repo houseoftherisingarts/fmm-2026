@@ -185,10 +185,10 @@ const InvitationCard: React.FC<{
       className="relative w-full rounded-card overflow-hidden"
       style={{
         background:
-          'radial-gradient(ellipse 60% 50% at 20% 0%, rgba(232,177,74,0.10), transparent 65%), linear-gradient(180deg, rgba(43,10,18,0.45) 0%, rgba(8,20,36,0.85) 100%)',
-        border: '1px solid rgba(232, 177, 74, 0.35)',
+          'radial-gradient(ellipse 60% 50% at 20% 0%, rgba(var(--sk-glow-rgb),0.10), transparent 65%), linear-gradient(180deg, rgba(var(--sk-velvet-rgb),0.45) 0%, rgba(8,20,36,0.85) 100%)',
+        border: '1px solid rgba(var(--sk-glow-rgb), 0.35)',
         boxShadow:
-          'inset 0 1px 0 rgba(232, 177, 74, 0.15), 0 12px 30px -12px rgba(0, 0, 0, 0.5)',
+          'inset 0 1px 0 rgba(var(--sk-glow-rgb), 0.15), 0 12px 30px -12px rgba(0, 0, 0, 0.5)',
       }}
     >
       {/* Brass hairline + small mark */}

@@ -24,8 +24,8 @@ const SocialLinks: React.FC<{ kiosk: MarcheKiosk }> = ({ kiosk }) => {
           className="inline-flex items-center justify-center w-9 h-9 rounded-full transition hover:scale-110"
           style={{
             color: 'var(--color-amber-glow)',
-            boxShadow: 'inset 0 0 0 1px rgba(232,177,74,0.35)',
-            background: 'rgba(232,177,74,0.06)',
+            boxShadow: 'inset 0 0 0 1px rgba(var(--sk-glow-rgb),0.35)',
+            background: 'rgba(var(--sk-glow-rgb),0.06)',
           }}
         >
           <Icon size={15} strokeWidth={1.6} />

@@ -83,6 +83,89 @@
   --radius-xl3: 30px;
 }
 
+/* ── Couche de peau (skin layer) ───────────────────────────────────
+   Alex, 2026-08-31 : « le skin bleu ne change pas grand-chose, tout est
+   encore rouge à l'exception des boutons ». La cause était structurelle.
+   Les couleurs du festival vivaient en dur dans les feuilles et dans les
+   styles en ligne (rgba(232,177,74,…), #D8B05A, rgba(10,2,7,…)), et le
+   shim caravane posé sur <body> réécrivait par-dessus les jetons que le
+   skin posait sur <html>.
+
+   Tout passe maintenant par cette couche. Un seul endroit décide de la
+   teinte du site; les valeurs par défaut sont EXACTEMENT les littéraux
+   d'avant, donc la palette d'origine rend au pixel près ce qu'elle
+   rendait. Les trois skins ne font que redéfinir ces jetons.
+
+   Les jetons en -rgb portent un triplet nu, à lire dans
+   rgba(var(--sk-glow-rgb), 0.35). */
+:root {
+  --sk-parchment-rgb:  244, 239, 227;
+  --sk-bone-rgb:       232, 221, 193;
+
+  --sk-glow:           #E8B14A;
+  --sk-glow-rgb:       232, 177, 74;
+  --sk-gilt:           #D8B05A;
+  --sk-gilt-rgb:       216, 176, 90;
+  --sk-gilt-lit:       #E8C46E;
+  --sk-gilt-lit-rgb:   232, 196, 110;
+  --sk-gilt-pale:      #F4E5B6;
+
+  --sk-brass:          #B08D3A;
+  --sk-brass-rgb:      176, 141, 58;
+  --sk-brass-warm:     #C9A85A;
+  --sk-brass-warm-soft:#E0BE6A;
+  --sk-brass-mid:      #A07832;
+  --sk-brass-deep:     #8C6A1F;
+  --sk-brass-dark:     #4A3812;
+  --sk-brass-line-rgb: 140, 106, 31;
+  --sk-brass-shadow-rgb: 74, 56, 18;
+
+  --sk-copper:         #B86A2A;
+  --sk-copper-rgb:     184, 106, 42;
+  --sk-copper-deep-rgb:122, 74, 26;
+  --sk-mustard:        #D89B3A;
+  --sk-mustard-rgb:    216, 155, 58;
+  --sk-gold-deep-rgb:  150, 104, 30;
+  --sk-mid:            #14040A;
+  --sk-mist:           #C9BAA3;
+  --sk-mist-deep:      #A89A82;
+  --sk-navy-rgb:       14, 31, 51;
+  --sk-navy-deep-rgb:  8, 20, 36;
+  --sk-slate-hi:       #1A1612;
+  --sk-slate:          #0E0C0A;
+  --sk-slate-lo:       #050402;
+  --sk-slate-rgb:      20, 18, 16;
+  --sk-wax:            #C7372A;
+  --sk-wax-deep:       #7B1E2D;
+  --sk-wax-dark:       #3A0810;
+
+  --sk-sheen:          #FFF1B5;
+  --sk-sheen-rgb:      255, 241, 181;
+  --sk-flame-rgb:      232, 184, 106;
+  --sk-fire-hot-rgb:   255, 110, 55;
+  --sk-fire-mid-rgb:   190, 55, 20;
+  --sk-fire-low-rgb:   110, 25, 12;
+  --sk-parchment:      #F4EFE3;
+  --sk-brown-deep:     #2A1505;
+  --sk-brown-dark:     #1A0A05;
+
+  --sk-ink:            #050204;
+  --sk-ink-rgb:        10, 2, 7;
+  --sk-ink-top:        #0A0207;
+  --sk-deep:           #1A050B;
+  --sk-deep-rgb:       26, 5, 11;
+  --sk-velvet:         #2B0A12;
+  --sk-velvet-rgb:     43, 10, 18;
+  --sk-panel-rgb:      19, 8, 11;
+  --sk-ruby-rgb:       123, 30, 45;
+  --sk-oxblood-rgb:    107, 31, 31;
+  --sk-wood-rgb:       60, 30, 8;
+
+  /* Les braises du festival lisent ces deux nombres (EmberCanvas). */
+  --sk-ember-hue:      28;
+  --sk-ember-sat:      90;
+}
+
 /* ── Base ─────────────────────────────────────────────────────────── */
 @layer base {
   html {
@@ -92,10 +175,10 @@
     /* Neutral deep base: works for both Caravan (velvet-deep) and
        Midnight palettes, so nothing blue flashes between sections
        during scroll. */
-    background-color: #050204;
+    background-color: var(--sk-ink);
   }
   body {
-    background-color: #050204;
+    background-color: var(--sk-ink);
     color: var(--color-ivory);
     font-family: var(--font-sans);
   }
@@ -123,17 +206,17 @@
    `glass-deep`: even deeper midnight panel for footer-like areas. */
 @layer components {
   .glass-on-photo {
-    background: rgb(14 31 51 / 0.78);
+    background: rgba(var(--sk-navy-rgb), 0.78);
     backdrop-filter: blur(18px) saturate(140%);
     -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border: 1px solid rgb(176 141 58 / 0.22);
+    border: 1px solid rgba(var(--sk-brass-rgb), 0.22);
     box-shadow: var(--shadow-glass);
   }
   .glass-light {
-    background: rgb(244 239 227 / 0.08);
+    background: rgba(var(--sk-parchment-rgb), 0.08);
     backdrop-filter: blur(16px) saturate(130%);
     -webkit-backdrop-filter: blur(16px) saturate(130%);
-    border: 1px solid rgb(244 239 227 / 0.14);
+    border: 1px solid rgba(var(--sk-parchment-rgb), 0.14);
   }
   .glass-frost {
     background: rgb(255 255 255 / 0.05);
@@ -142,10 +225,10 @@
     border: 1px solid rgb(255 255 255 / 0.14);
   }
   .glass-deep {
-    background: rgb(8 20 36 / 0.92);
+    background: rgba(var(--sk-navy-deep-rgb), 0.92);
     backdrop-filter: blur(20px) saturate(140%);
     -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid rgb(176 141 58 / 0.18);
+    border: 1px solid rgba(var(--sk-brass-rgb), 0.18);
   }
 }
 
@@ -244,9 +327,9 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(232, 184, 106, 0.55), transparent 70%),
-    radial-gradient(ellipse 90% 55% at 50% 100%, rgba(176, 80, 32, 0.45), transparent 75%),
-    radial-gradient(ellipse 120% 70% at 50% 100%, rgba(70, 14, 4, 0.55), transparent 80%);
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(var(--sk-flame-rgb), 0.55), transparent 70%),
+    radial-gradient(ellipse 90% 55% at 50% 100%, rgba(var(--sk-fire-mid-rgb), 0.45), transparent 75%),
+    radial-gradient(ellipse 120% 70% at 50% 100%, rgba(var(--sk-fire-low-rgb), 0.55), transparent 80%);
   animation: fire-flicker 4.5s ease-in-out infinite;
   mix-blend-mode: screen;
 }
@@ -266,11 +349,11 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(circle 1px at 20% 90%, rgba(232, 184, 106, 0.9) 0, transparent 100%),
-    radial-gradient(circle 1.5px at 35% 80%, rgba(232, 184, 106, 0.7) 0, transparent 100%),
-    radial-gradient(circle 1px at 55% 95%, rgba(232, 184, 106, 0.85) 0, transparent 100%),
-    radial-gradient(circle 1.5px at 70% 85%, rgba(232, 184, 106, 0.65) 0, transparent 100%),
-    radial-gradient(circle 1px at 85% 92%, rgba(232, 184, 106, 0.8) 0, transparent 100%);
+    radial-gradient(circle 1px at 20% 90%, rgba(var(--sk-flame-rgb), 0.9) 0, transparent 100%),
+    radial-gradient(circle 1.5px at 35% 80%, rgba(var(--sk-flame-rgb), 0.7) 0, transparent 100%),
+    radial-gradient(circle 1px at 55% 95%, rgba(var(--sk-flame-rgb), 0.85) 0, transparent 100%),
+    radial-gradient(circle 1.5px at 70% 85%, rgba(var(--sk-flame-rgb), 0.65) 0, transparent 100%),
+    radial-gradient(circle 1px at 85% 92%, rgba(var(--sk-flame-rgb), 0.8) 0, transparent 100%);
   background-size: 100% 100%;
   animation: ember-rise 9s linear infinite;
 }
@@ -284,15 +367,15 @@
 /* ── Subtle vignette: used between cinematic acts ─────────────── */
 .vignette-radial {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgb(8 20 36 / 0.85) 100%);
+  background: radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(var(--sk-navy-deep-rgb), 0.85) 100%);
 }
 
 /* ── Cabaret stage: velvet curtain backdrop with center spotlight.
    Used by the vendor quest section, replacing the cold midnight wash. */
 .cabaret-stage {
   background:
-    radial-gradient(ellipse 70% 55% at 50% 35%, rgba(216, 155, 58, 0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 110% 80% at 50% 100%, var(--color-velvet) 0%, var(--color-velvet-deep) 75%, #0A0207 100%);
+    radial-gradient(ellipse 70% 55% at 50% 35%, rgba(var(--sk-mustard-rgb), 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 110% 80% at 50% 100%, var(--color-velvet) 0%, var(--color-velvet-deep) 75%, var(--sk-ink-top) 100%);
 }
 .cabaret-curtain-l, .cabaret-curtain-r {
   position: absolute; top: 0; bottom: 0; pointer-events: none;
@@ -300,7 +383,7 @@
   background:
     repeating-linear-gradient(90deg,
       rgba(0,0,0,0.45) 0px, rgba(0,0,0,0.45) 4px,
-      rgba(74, 12, 22, 0.55) 6px, rgba(43, 10, 18, 0.85) 22px,
+      rgba(74, 12, 22, 0.55) 6px, rgba(var(--sk-velvet-rgb), 0.85) 22px,
       rgba(0,0,0,0.45) 30px, rgba(0,0,0,0.45) 34px);
   filter: blur(0.4px);
   mix-blend-mode: multiply;
@@ -313,15 +396,15 @@
    Deep wine fill with copper inner glow + multi-layer shadow. */
 .velvet-card {
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(216, 155, 58, 0.10), transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(var(--sk-mustard-rgb), 0.10), transparent 60%),
     linear-gradient(180deg, rgba(255, 230, 180, 0.04), rgba(0, 0, 0, 0.35)),
-    rgb(43 10 18 / 0.85);
-  border: 1px solid rgba(216, 155, 58, 0.30);
+    rgba(var(--sk-velvet-rgb), 0.85);
+  border: 1px solid rgba(var(--sk-mustard-rgb), 0.30);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.6) inset,
-    0 0 60px -10px rgba(216, 155, 58, 0.18) inset,
+    0 0 60px -10px rgba(var(--sk-mustard-rgb), 0.18) inset,
     0 24px 60px -20px rgba(0, 0, 0, 0.85),
-    0 50px 120px -40px rgba(123, 30, 45, 0.55);
+    0 50px 120px -40px rgba(var(--sk-ruby-rgb), 0.55);
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
 }
@@ -334,7 +417,7 @@
 .copper-sheen {
   background: linear-gradient(95deg,
     var(--color-copper) 0%, var(--color-amber-glow) 35%,
-    #FFF6D5 50%, var(--color-amber-glow) 65%, var(--color-copper) 100%);
+    var(--sk-sheen) 50%, var(--color-amber-glow) 65%, var(--color-copper) 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -401,25 +484,25 @@
    etc. inside the caravan body flips to the velvet/oxblood/copper
    register automatically. No per-page rewrites required. */
 .fmm-caravan-page {
-  background-color: #050204;
+  background-color: var(--sk-ink);
   background-image:
-    radial-gradient(ellipse 90% 50% at 50% 25%, rgba(184, 106, 42, 0.10), transparent 60%),
-    radial-gradient(ellipse 80% 60% at 50% 75%, rgba(123, 30, 45, 0.10), transparent 60%),
-    linear-gradient(180deg, #0A0207 0%, #1A050B 35%, #14040A 65%, #050204 100%);
+    radial-gradient(ellipse 90% 50% at 50% 25%, rgba(var(--sk-copper-rgb), 0.10), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 75%, rgba(var(--sk-ruby-rgb), 0.10), transparent 60%),
+    linear-gradient(180deg, var(--sk-ink-top) 0%, var(--sk-deep) 35%, var(--sk-mid) 65%, var(--sk-ink) 100%);
   background-attachment: fixed;
 
   /* Midnight → velvet/oxblood */
-  --color-midnight:      #1A050B;
-  --color-midnight-deep: #050204;
-  --color-midnight-soft: #2B0A12;
-  --color-midnight-glass: rgb(26 5 11 / 0.65);
+  --color-midnight:      var(--sk-deep);
+  --color-midnight-deep: var(--sk-ink);
+  --color-midnight-soft: var(--sk-velvet);
+  --color-midnight-glass: rgba(var(--sk-deep-rgb), 0.65);
   /* Brass → warmer caravan amber */
-  --color-brass:         #C9A85A;
-  --color-brass-soft:    #E0BE6A;
+  --color-brass:         var(--sk-brass-warm);
+  --color-brass-soft:    var(--sk-brass-warm-soft);
   /* Mist → keep, but warmed slightly so light editorial blocks tint
      toward parchment rather than steel. */
-  --color-mist:          #C9BAA3;
-  --color-mist-deep:     #A89A82;
+  --color-mist:          var(--sk-mist);
+  --color-mist-deep:     var(--sk-mist-deep);
 }
 
 /* ── Caravan-palette shim ───────────────────────────────────────
@@ -468,24 +551,24 @@
    panels with amber rims, red reserved for the backdrop. */
 .fmm-caravan-page .glass-light {
   background:
-    linear-gradient(180deg, rgba(232, 184, 106, 0.04), rgba(32, 13, 16, 0.5)),
-    rgba(19, 8, 11, 0.72) !important;
-  border-color: rgba(216, 155, 58, 0.22) !important;
+    linear-gradient(180deg, rgba(var(--sk-flame-rgb), 0.04), rgba(var(--sk-velvet-rgb), 0.5)),
+    rgba(var(--sk-panel-rgb), 0.72) !important;
+  border-color: rgba(var(--sk-mustard-rgb), 0.22) !important;
   box-shadow:
-    inset 0 1px 0 rgba(232, 177, 74, 0.12),
+    inset 0 1px 0 rgba(var(--sk-glow-rgb), 0.12),
     0 18px 40px -22px rgba(0, 0, 0, 0.7) !important;
 }
 .fmm-caravan-page .glass-on-photo {
-  background: rgba(19, 8, 11, 0.73) !important;
-  border-color: rgba(216, 155, 58, 0.25) !important;
+  background: rgba(var(--sk-panel-rgb), 0.73) !important;
+  border-color: rgba(var(--sk-mustard-rgb), 0.25) !important;
 }
 .fmm-caravan-page .glass-deep {
   background: rgba(9, 4, 6, 0.92) !important;
-  border-color: rgba(216, 155, 58, 0.22) !important;
+  border-color: rgba(var(--sk-mustard-rgb), 0.22) !important;
 }
 .fmm-caravan-page .glass-frost {
-  background: rgba(232, 177, 74, 0.05) !important;
-  border-color: rgba(232, 177, 74, 0.18) !important;
+  background: rgba(var(--sk-glow-rgb), 0.05) !important;
+  border-color: rgba(var(--sk-glow-rgb), 0.18) !important;
 }
 
 /* Brass text → warmer amber-glow that matches the caravan accent. */
@@ -512,12 +595,12 @@
 .fmm-caravan-page .border-brass\/30,
 .fmm-caravan-page .border-brass\/50,
 .fmm-caravan-page .border-brass {
-  border-color: rgba(232, 177, 74, 0.45) !important;
+  border-color: rgba(var(--sk-glow-rgb), 0.45) !important;
 }
 .fmm-caravan-page .bg-brass\/10,
 .fmm-caravan-page .bg-brass\/15,
 .fmm-caravan-page .bg-brass\/20 {
-  background-color: rgba(232, 177, 74, 0.10) !important;
+  background-color: rgba(var(--sk-glow-rgb), 0.10) !important;
 }
 
 /* Divider hairlines: re-tone to copper. */
@@ -529,7 +612,7 @@
    velvet base. */
 .fmm-caravan-page .text-stone,
 .fmm-caravan-page .text-stone-light {
-  color: rgba(244, 239, 227, 0.55) !important;
+  color: rgba(var(--sk-parchment-rgb), 0.55) !important;
 }
 /* Kill the grain overlay on /marche: visible film noise was reading
    as a render artifact once the body gradient cleaned up. Real fire
@@ -586,12 +669,12 @@
   height: 2px;
   background: linear-gradient(180deg,
     transparent 0,
-    #6E5318 0,
-    #E0BE6A 50%,
-    #FFF1B5 50%,
-    #6E5318 100%,
+    var(--sk-brass-deep) 0,
+    var(--sk-brass-warm-soft) 50%,
+    var(--sk-sheen) 50%,
+    var(--sk-brass-deep) 100%,
     transparent 100%);
-  box-shadow: 0 0 6px rgba(232, 177, 74, 0.25);
+  box-shadow: 0 0 6px rgba(var(--sk-glow-rgb), 0.25);
 }
 .fmm-chapter-mark .fmm-cm-flourish.fmm-cm-left {
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 100%);
@@ -607,10 +690,10 @@
   width: 5px;
   height: 5px;
   transform: rotate(45deg);
-  background: linear-gradient(135deg, #FFF1B5 0%, #C9A85A 60%, #6E5318 100%);
+  background: linear-gradient(135deg, var(--sk-sheen) 0%, var(--sk-brass-warm) 60%, var(--sk-brass-deep) 100%);
   box-shadow:
-    0 0 0 1px #4A3812,
-    0 0 6px rgba(232, 177, 74, 0.6);
+    0 0 0 1px var(--sk-brass-dark),
+    0 0 6px rgba(var(--sk-glow-rgb), 0.6);
 }
 /* Center diamond: larger forged piece with bevel + carved inner echo. */
 .fmm-chapter-mark .fmm-cm-diamond {
@@ -619,20 +702,20 @@
   width: 18px;
   height: 18px;
   transform: rotate(45deg);
-  background: linear-gradient(135deg, #FFF1B5 0%, #E0BE6A 35%, #C9A85A 60%, #6E5318 100%);
+  background: linear-gradient(135deg, var(--sk-sheen) 0%, var(--sk-brass-warm-soft) 35%, var(--sk-brass-warm) 60%, var(--sk-brass-deep) 100%);
   box-shadow:
-    0 0 0 1px #4A3812,
-    inset 1px 1px 0 rgba(255, 241, 181, 0.75),
-    inset -1px -1px 0 rgba(74, 56, 18, 0.75),
-    0 0 18px rgba(232, 177, 74, 0.55);
+    0 0 0 1px var(--sk-brass-dark),
+    inset 1px 1px 0 rgba(var(--sk-sheen-rgb), 0.75),
+    inset -1px -1px 0 rgba(var(--sk-brass-shadow-rgb), 0.75),
+    0 0 18px rgba(var(--sk-glow-rgb), 0.55);
 }
 .fmm-chapter-mark .fmm-cm-diamond::after {
   content: "";
   position: absolute;
   inset: 4px;
   box-shadow:
-    inset 0 0 0 1px rgba(74, 56, 18, 0.7),
-    inset 0 0 0 2px rgba(255, 241, 181, 0.28);
+    inset 0 0 0 1px rgba(var(--sk-brass-shadow-rgb), 0.7),
+    inset 0 0 0 2px rgba(var(--sk-sheen-rgb), 0.28);
 }
 
 /* ── Caravan grade: unified color treatment for photography ─────
@@ -677,7 +760,7 @@
   background:
     linear-gradient(110deg,
       transparent 38%,
-      rgba(255, 241, 181, 0.22) 50%,
+      rgba(var(--sk-sheen-rgb), 0.22) 50%,
       transparent 62%);
   transform: translateX(-110%);
   mix-blend-mode: screen;
@@ -691,7 +774,7 @@
   background:
     linear-gradient(110deg,
       transparent 38%,
-      rgba(255, 241, 181, 0.55) 50%,
+      rgba(var(--sk-sheen-rgb), 0.55) 50%,
       transparent 62%);
 }
 
@@ -734,50 +817,393 @@ html.sans-animations-fond .brume,
 html.sans-animations-fond .fmm-fx-canvas,
 html.sans-animations-fond .fire-bed,
 html.sans-animations-fond .embers,
+html.sans-animations-fond .fmm-fond-particules,
 html.sans-animations-fond .fmm-fire-backdrop {
   display: none;
 }
 
+/* ── Le fond de particules des peaux ───────────────────────────────
+   Alex, 2026-08-31 : sous la peau bleue, la flamme filmée cède la place
+   à une neige qui souffle vers la droite; sous la peau dorée, à des
+   bulles qui montent comme dans un verre. Le canevas est dessiné par
+   src/components/layout/FondParticules.tsx; ici on ne pose que la
+   scène : le cadre plein écran, le fondu haut et bas, et pour la bière
+   l'intérieur du verre (le fond qui se réchauffe vers le bas et la
+   mousse floue tout en haut).
+
+   Le cadre passe en inset 0 : la flamme, elle, ne couvrait que les
+   70 % du bas, mais une neige qui commence à mi-écran se voit. */
+.fmm-fond-particules {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.fmm-fire-backdrop.fmm-fond-particules { position: fixed; }
+.fmm-fond-particules-toile {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.fmm-fond-particules[data-variante="neige"] .fmm-fond-particules-toile {
+  opacity: 0.88;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 34%, #000 84%, transparent 100%);
+  mask-image:         linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 34%, #000 84%, transparent 100%);
+}
+.fmm-fond-particules[data-variante="bulles"] {
+  background:
+    linear-gradient(180deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(var(--sk-copper-deep-rgb), 0.26) 72%,
+      rgba(var(--sk-gold-deep-rgb), 0.38) 91%,
+      rgba(var(--sk-mustard-rgb), 0.30) 100%);
+}
+/* La mousse : une bande claire et floue qui ferme le haut du verre. */
+.fmm-fond-particules[data-variante="bulles"]::before {
+  content: "";
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: -8px;
+  height: 96px;
+  background:
+    linear-gradient(180deg,
+      rgba(var(--sk-sheen-rgb), 0.42) 0%,
+      rgba(var(--sk-gilt-lit-rgb), 0.20) 52%,
+      transparent 100%);
+  filter: blur(11px);
+  opacity: 0.8;
+  pointer-events: none;
+}
+.fmm-fond-particules[data-variante="bulles"] .fmm-fond-particules-toile {
+  opacity: 0.92;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 100%);
+  mask-image:         linear-gradient(180deg, transparent 0%, #000 9%, #000 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fmm-fond-particules { display: none; }
+}
+
+/* La pièce de Montpellois est une gravure, pas un jeton de couleur :
+   sous une peau froide elle se contente de perdre sa chaleur, sinon
+   elle reste la seule tache d'or de la barre de navigation. */
+html.skin-bleu .fmm-piece { filter: saturate(0.12) brightness(1.18); }
+html.skin-vert .fmm-piece { filter: hue-rotate(58deg) saturate(0.65) brightness(1.05); }
+
 /* ── Skins VIP ────────────────────────────────────────────────────
    Réservé aux comptes sans-publicité (Espace VIP). « Rouge » est la
-   palette d'origine et n'a pas besoin d'override. Même technique que
-   .fmm-caravan-page et [data-admin-skin="parchment"] plus haut : on
-   redéfinit les jetons de couleur, toutes les classes Tailwind qui
-   les lisent (bg-brass, text-brass…) suivent automatiquement. */
-/* Bleu et argent, refait le 2026-08-30 (Alex : « affreux ») : une nuit
-   de velours bleu profond, presque noire, et l'accent est un argent
-   poli légèrement chaud, jamais un bleu ciel qui délave le site. */
+   palette d'origine : elle ne redéfinit rien, elle EST la couche de
+   peau par défaut déclarée en haut de cette feuille.
+
+   Chaque skin réécrit deux étages. D'abord la couche --sk-* : c'est
+   elle que lisent maintenant les mille couleurs qui vivaient en dur
+   dans les styles en ligne, donc les cadres, les filets, les lueurs
+   et les icônes suivent sans qu'aucune page soit retouchée. Ensuite
+   les jetons --color-*, pour les classes Tailwind (bg-brass,
+   text-amber-glow). Le shim caravane, sur <body>, va lui aussi
+   chercher ses valeurs dans --sk-*, ce qui l'empêche de réimposer le
+   rouge par-dessus la peau choisie. */
+
+/* Bleu et argent : une nuit d'hiver, bleu de velours presque noire, et
+   pour seul métal un argent poli. Aucun or, aucun cuivre, aucun rouge :
+   tout ce qui brillait chaud passe au froid, et les lueurs deviennent
+   des halos bleu-argent. */
 html.skin-bleu {
-  --color-velvet:        #0A1322;
-  --color-velvet-deep:   #050A13;
-  --color-amber-glow:    #E9EEF4;
-  --color-brass:         #B9C4D2;
-  --color-brass-soft:    #DCE3EB;
-  --color-copper:        #7D8FA6;
-  --color-mustard:       #C9D3DF;
+  --sk-parchment-rgb:  226, 234, 244;
+  --sk-bone-rgb:       219, 229, 240;
+
+  --sk-glow:           #E9EEF4;
+  --sk-glow-rgb:       233, 238, 244;
+  --sk-gilt:           #C3D0DF;
+  --sk-gilt-rgb:       195, 208, 223;
+  --sk-gilt-lit:       #E4EBF3;
+  --sk-gilt-lit-rgb:   228, 235, 243;
+  --sk-gilt-pale:      #EEF3F9;
+
+  --sk-brass:          #A8B7C8;
+  --sk-brass-rgb:      168, 183, 200;
+  --sk-brass-warm:     #B9C4D2;
+  --sk-brass-warm-soft:#DCE3EB;
+  --sk-brass-mid:      #7D8FA6;
+  --sk-brass-deep:     #5C6F86;
+  --sk-brass-dark:     #22303F;
+  --sk-brass-line-rgb: 120, 140, 166;
+  --sk-brass-shadow-rgb: 30, 46, 66;
+
+  --sk-copper:         #7D8FA6;
+  --sk-copper-rgb:     125, 143, 166;
+  --sk-copper-deep-rgb:70, 90, 114;
+  --sk-mustard:        #C9D3DF;
+  --sk-mustard-rgb:    201, 211, 223;
+  --sk-gold-deep-rgb:  110, 130, 152;
+
+  --sk-sheen:          #F2F8FF;
+  --sk-sheen-rgb:      236, 244, 255;
+  --sk-flame-rgb:      186, 210, 236;
+  --sk-fire-hot-rgb:   200, 226, 250;
+  --sk-fire-mid-rgb:   120, 158, 200;
+  --sk-fire-low-rgb:   40, 70, 108;
+  --sk-parchment:      #E8EEF6;
+  --sk-brown-deep:     #0A1422;
+  --sk-brown-dark:     #060D18;
+
+  --sk-ink:            #030710;
+  --sk-ink-rgb:        5, 10, 20;
+  --sk-ink-top:        #050B16;
+  --sk-mid:            #071021;
+  --sk-deep:           #050A13;
+  --sk-deep-rgb:       8, 16, 30;
+  --sk-velvet:         #0A1322;
+  --sk-velvet-rgb:     12, 20, 36;
+  --sk-panel-rgb:      10, 18, 32;
+  --sk-ruby-rgb:       26, 54, 90;
+  --sk-oxblood-rgb:    30, 58, 92;
+  --sk-wood-rgb:       16, 26, 40;
+  --sk-navy-rgb:       12, 24, 42;
+  --sk-navy-deep-rgb:  7, 14, 26;
+
+  --sk-mist:           #C3D2E2;
+  --sk-mist-deep:      #93A6BA;
+  --sk-slate-hi:       #121A24;
+  --sk-slate:          #0A0F16;
+  --sk-slate-lo:       #04070C;
+  --sk-slate-rgb:      16, 22, 30;
+  --sk-wax:            #6D8AA8;
+  --sk-wax-deep:       #2E4D6E;
+  --sk-wax-dark:       #0B1A2A;
+
+  --sk-ember-hue:      208;
+  --sk-ember-sat:      30;
+
+  --color-velvet:        var(--sk-velvet);
+  --color-velvet-deep:   var(--sk-deep);
+  --color-amber-glow:    var(--sk-glow);
+  --color-brass:         var(--sk-brass-warm);
+  --color-brass-soft:    var(--sk-brass-warm-soft);
+  --color-copper:        var(--sk-copper);
+  --color-mustard:       var(--sk-mustard);
+  --color-ivory:         #E8EEF6;
+  --color-ivory-soft:    #AEBDCE;
+  --color-bone:          #DBE5F0;
+  --color-ruby:          #1E3A5C;
+  --color-oxblood:       #1C3552;
+  --color-blush:         #8FA8C4;
+  /* Les utilitaires Tailwind par défaut (text-amber-300, border-amber-200)
+     traînent encore dans une poignée de composants : on les retone ici
+     plutôt que d'aller les chercher un par un. */
+  --color-amber-100:     #EEF3F9;
+  --color-amber-200:     #DCE3EB;
+  --color-amber-300:     #C3D0DF;
+  --color-amber-500:     #8FA3BA;
+  /* L'accueil-orbe n'est pas une page caravane : les jetons midnight y
+     restent visibles, donc la peau les emmène avec elle. */
+  --color-midnight:      var(--sk-velvet);
+  --color-midnight-deep: var(--sk-ink);
+  --color-midnight-soft: var(--sk-deep);
+  --color-midnight-glass: rgba(var(--sk-deep-rgb), 0.65);
+  --color-mist:          var(--sk-mist);
+  --color-mist-deep:     var(--sk-mist-deep);
 }
-/* Vert de forêt et vieil étain (Alex, 2026-08-28), le skin à un
+
+/* Vert de forêt et vieil étain (Alex, 2026-08-28), le skin qui coûte un
    Montpellois. */
 html.skin-vert {
-  --color-velvet:        #10241A;
-  --color-velvet-deep:   #08150F;
-  --color-amber-glow:    #C9E3C2;
-  --color-brass:         #7FA982;
-  --color-brass-soft:    #A3C6A2;
-  --color-copper:        #4E7550;
-  --color-mustard:       #96BE96;
+  --sk-parchment-rgb:  232, 240, 228;
+  --sk-bone-rgb:       224, 240, 216;
+
+  --sk-glow:           #C9E3C2;
+  --sk-glow-rgb:       201, 227, 194;
+  --sk-gilt:           #A3C6A2;
+  --sk-gilt-rgb:       163, 198, 162;
+  --sk-gilt-lit:       #C9E3C2;
+  --sk-gilt-lit-rgb:   201, 227, 194;
+  --sk-gilt-pale:      #E0F0DC;
+
+  --sk-brass:          #7FA982;
+  --sk-brass-rgb:      127, 169, 130;
+  --sk-brass-warm:     #7FA982;
+  --sk-brass-warm-soft:#A3C6A2;
+  --sk-brass-mid:      #4E7550;
+  --sk-brass-deep:     #3C5C3E;
+  --sk-brass-dark:     #16281A;
+  --sk-brass-line-rgb: 96, 138, 98;
+  --sk-brass-shadow-rgb: 26, 52, 30;
+
+  --sk-copper:         #4E7550;
+  --sk-copper-rgb:     78, 117, 80;
+  --sk-copper-deep-rgb:48, 76, 50;
+  --sk-mustard:        #96BE96;
+  --sk-mustard-rgb:    150, 190, 150;
+  --sk-gold-deep-rgb:  70, 108, 72;
+
+  --sk-sheen:          #EAF7E6;
+  --sk-sheen-rgb:      234, 247, 230;
+  --sk-flame-rgb:      176, 214, 170;
+  --sk-fire-hot-rgb:   198, 236, 190;
+  --sk-fire-mid-rgb:   96, 158, 104;
+  --sk-fire-low-rgb:   28, 74, 40;
+  --sk-parchment:      #EAF2E6;
+  --sk-brown-deep:     #0C1E14;
+  --sk-brown-dark:     #07130C;
+
+  --sk-ink:            #04100A;
+  --sk-ink-rgb:        6, 16, 10;
+  --sk-ink-top:        #061309;
+  --sk-mid:            #071A11;
+  --sk-deep:           #08150F;
+  --sk-deep-rgb:       8, 21, 15;
+  --sk-velvet:         #10241A;
+  --sk-velvet-rgb:     16, 36, 26;
+  --sk-panel-rgb:      10, 24, 16;
+  --sk-ruby-rgb:       26, 72, 48;
+  --sk-oxblood-rgb:    24, 66, 44;
+  --sk-wood-rgb:       14, 32, 20;
+  --sk-navy-rgb:       12, 30, 22;
+  --sk-navy-deep-rgb:  7, 20, 14;
+
+  --sk-mist:           #BFD5BE;
+  --sk-mist-deep:      #92AC92;
+  --sk-slate-hi:       #131A14;
+  --sk-slate:          #0B100C;
+  --sk-slate-lo:       #040703;
+  --sk-slate-rgb:      18, 24, 18;
+  --sk-wax:            #4E8A5A;
+  --sk-wax-deep:       #22522F;
+  --sk-wax-dark:       #0A1D12;
+
+  --sk-ember-hue:      116;
+  --sk-ember-sat:      40;
+
+  --color-velvet:        var(--sk-velvet);
+  --color-velvet-deep:   var(--sk-deep);
+  --color-amber-glow:    var(--sk-glow);
+  --color-brass:         var(--sk-brass-warm);
+  --color-brass-soft:    var(--sk-brass-warm-soft);
+  --color-copper:        var(--sk-copper);
+  --color-mustard:       var(--sk-mustard);
+  --color-ivory:         #EAF2E6;
+  --color-ivory-soft:    #B7C9B4;
+  --color-bone:          #DDEBD6;
+  --color-ruby:          #1A4830;
+  --color-oxblood:       #18422C;
+  --color-blush:         #8FBF9C;
+  --color-amber-100:     #E0F0DC;
+  --color-amber-200:     #C9E3C2;
+  --color-amber-300:     #A3C6A2;
+  --color-amber-500:     #6E9A70;
+  --color-midnight:      var(--sk-velvet);
+  --color-midnight-deep: var(--sk-ink);
+  --color-midnight-soft: var(--sk-deep);
+  --color-midnight-glass: rgba(var(--sk-deep-rgb), 0.65);
+  --color-mist:          var(--sk-mist);
+  --color-mist-deep:     var(--sk-mist-deep);
+  --color-stone:         #6E8272;
+  --color-stone-light:   #9AAE9E;
 }
-/* Doré du festin, refait le 2026-08-30 : un noir chaud très sombre
-   (jamais le brun clair d'avant) pour que l'or se lise comme du métal
-   sur du velours, et un vrai or de dorure à la feuille. */
+
+/* Doré et noir (Alex, 2026-08-31, renommé du « doré du festin ») : un
+   noir chaud très sombre pour que l'or se lise comme du métal, un or de
+   dorure à la feuille, et plus un seul rouge nulle part. Ce qui était
+   bordeaux devient de l'or rabattu. */
 html.skin-dore {
-  --color-velvet:        #120D07;
-  --color-velvet-deep:   #080503;
-  --color-amber-glow:    #F6DFA3;
-  --color-brass:         #D9B44A;
-  --color-brass-soft:    #EBCF7E;
-  --color-copper:        #A6782C;
-  --color-mustard:       #E3C468;
+  --sk-parchment-rgb:  246, 240, 224;
+  --sk-bone-rgb:       240, 228, 196;
+
+  --sk-glow:           #F6DFA3;
+  --sk-glow-rgb:       246, 223, 163;
+  --sk-gilt:           #D9B44A;
+  --sk-gilt-rgb:       217, 180, 74;
+  --sk-gilt-lit:       #EBCF7E;
+  --sk-gilt-lit-rgb:   235, 207, 126;
+  --sk-gilt-pale:      #F7E9BE;
+
+  --sk-brass:          #BE9A3E;
+  --sk-brass-rgb:      190, 154, 62;
+  --sk-brass-warm:     #D9B44A;
+  --sk-brass-warm-soft:#EBCF7E;
+  --sk-brass-mid:      #A6782C;
+  --sk-brass-deep:     #8A6A22;
+  --sk-brass-dark:     #3A2C0E;
+  --sk-brass-line-rgb: 150, 116, 38;
+  --sk-brass-shadow-rgb: 60, 44, 14;
+
+  --sk-copper:         #A6782C;
+  --sk-copper-rgb:     166, 120, 44;
+  --sk-copper-deep-rgb:110, 80, 28;
+  --sk-mustard:        #E3C468;
+  --sk-mustard-rgb:    227, 196, 104;
+  --sk-gold-deep-rgb:  140, 100, 34;
+
+  --sk-sheen:          #FFF4CE;
+  --sk-sheen-rgb:      255, 244, 206;
+  --sk-flame-rgb:      246, 223, 163;
+  --sk-fire-hot-rgb:   255, 226, 150;
+  --sk-fire-mid-rgb:   200, 158, 62;
+  --sk-fire-low-rgb:   96, 68, 20;
+  --sk-parchment:      #F6EFDC;
+  --sk-brown-deep:     #1E1608;
+  --sk-brown-dark:     #120C05;
+
+  --sk-ink:            #080503;
+  --sk-ink-rgb:        12, 8, 4;
+  --sk-ink-top:        #0C0804;
+  --sk-mid:            #150F07;
+  --sk-deep:           #120D07;
+  --sk-deep-rgb:       18, 13, 7;
+  --sk-velvet:         #1C1409;
+  --sk-velvet-rgb:     28, 20, 9;
+  --sk-panel-rgb:      20, 15, 8;
+  --sk-ruby-rgb:       96, 70, 24;
+  --sk-oxblood-rgb:    84, 62, 20;
+  --sk-wood-rgb:       40, 28, 8;
+  --sk-navy-rgb:       22, 16, 8;
+  --sk-navy-deep-rgb:  14, 10, 5;
+
+  --sk-mist:           #D8C79C;
+  --sk-mist-deep:      #AC9B72;
+  --sk-slate-hi:       #1A1408;
+  --sk-slate:          #0E0A05;
+  --sk-slate-lo:       #040301;
+  --sk-slate-rgb:      22, 17, 9;
+  --sk-wax:            #E3C468;
+  --sk-wax-deep:       #A6782C;
+  --sk-wax-dark:       #3A2C0E;
+
+  --sk-ember-hue:      44;
+  --sk-ember-sat:      80;
+
+  --color-velvet:        var(--sk-velvet);
+  --color-velvet-deep:   var(--sk-deep);
+  --color-amber-glow:    var(--sk-glow);
+  --color-brass:         var(--sk-brass-warm);
+  --color-brass-soft:    var(--sk-brass-warm-soft);
+  --color-copper:        var(--sk-copper);
+  --color-mustard:       var(--sk-mustard);
+  --color-ivory:         #F6EFDC;
+  --color-ivory-soft:    #C8B893;
+  --color-bone:          #F0E4C4;
+  --color-ruby:          #604618;
+  --color-oxblood:       #543E14;
+  --color-blush:         #D9B44A;
+  --color-amber-100:     #F7E9BE;
+  --color-amber-200:     #EBCF7E;
+  --color-amber-300:     #D9B44A;
+  --color-amber-500:     #A6782C;
+  --color-midnight:      var(--sk-velvet);
+  --color-midnight-deep: var(--sk-ink);
+  --color-midnight-soft: var(--sk-deep);
+  --color-midnight-glass: rgba(var(--sk-deep-rgb), 0.65);
+  --color-mist:          var(--sk-mist);
+  --color-mist-deep:     var(--sk-mist-deep);
+  /* Le gris de pierre du site est bleuté : sous le doré et noir il doit
+     virer au grès chaud, sinon un filet froid traverse la page. */
+  --color-stone:         #7C6C4E;
+  --color-stone-light:   #A4937A;
 }
 
 /* ── Admin : registre Thronebreaker ────────────────────────────────
@@ -1338,17 +1764,17 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
    palette throughout: no midnight-navy. */
 .fmm-nav-top {
   background:
-    linear-gradient(180deg, rgba(10, 2, 7, 0.55) 0%, rgba(10, 2, 7, 0.15) 70%, transparent 100%);
+    linear-gradient(180deg, rgba(var(--sk-ink-rgb), 0.55) 0%, rgba(var(--sk-ink-rgb), 0.15) 70%, transparent 100%);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
 .fmm-nav-scrolled {
   background:
-    linear-gradient(180deg, rgba(10, 2, 7, 0.88), rgba(26, 5, 11, 0.78));
+    linear-gradient(180deg, rgba(var(--sk-ink-rgb), 0.88), rgba(var(--sk-deep-rgb), 0.78));
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   box-shadow:
-    0 1px 0 rgba(232, 177, 74, 0.10) inset,
+    0 1px 0 rgba(var(--sk-glow-rgb), 0.10) inset,
     0 12px 30px -18px rgba(0, 0, 0, 0.85);
 }
 
@@ -1364,8 +1790,8 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   position: relative;
   width: 88px; height: 88px;
   transform: rotate(45deg);
-  background: rgba(244, 239, 227, 0.04);
-  border: 1px solid rgba(244, 239, 227, 0.16);
+  background: rgba(var(--sk-parchment-rgb), 0.04);
+  border: 1px solid rgba(var(--sk-parchment-rgb), 0.16);
   transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
 }
 .witcher-tile-inner {
@@ -1375,11 +1801,11 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 }
 .witcher-tile:hover,
 .witcher-tile[data-active="true"] {
-  background: rgba(216, 176, 90, 0.16);
-  border-color: rgba(216, 176, 90, 0.85);
+  background: rgba(var(--sk-gilt-rgb), 0.16);
+  border-color: rgba(var(--sk-gilt-rgb), 0.85);
   box-shadow:
-    0 0 0 1px rgba(216, 176, 90, 0.45),
-    0 0 28px -6px rgba(216, 176, 90, 0.45);
+    0 0 0 1px rgba(var(--sk-gilt-rgb), 0.45),
+    0 0 28px -6px rgba(var(--sk-gilt-rgb), 0.45);
 }
 
 /* Witcher tab: top-of-screen section nav. Active state gets a solid
@@ -1391,16 +1817,16 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   text-transform: uppercase;
   letter-spacing: 0.3em;
   font-size: 11px;
-  color: rgba(244, 239, 227, 0.65);
+  color: rgba(var(--sk-parchment-rgb), 0.65);
   transition: color 200ms ease;
 }
-.witcher-tab:hover { color: rgba(244, 239, 227, 0.95); }
+.witcher-tab:hover { color: rgba(var(--sk-parchment-rgb), 0.95); }
 .witcher-tab[data-active="true"] {
   color: var(--color-velvet-deep);
   background:
-    linear-gradient(180deg, #E0BE6A 0%, #C9A85A 50%, #B08D3A 100%);
+    linear-gradient(180deg, var(--sk-brass-warm-soft) 0%, var(--sk-brass-warm) 50%, var(--sk-brass) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 240, 200, 0.45),
+    inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.45),
     inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
@@ -1422,7 +1848,7 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   text-transform: uppercase;
   letter-spacing: 0.35em;
   font-size: 10px;
-  color: rgba(244, 239, 227, 0.55);
+  color: rgba(var(--sk-parchment-rgb), 0.55);
 }
 
 /* Witcher action prompt: controller-style HUD CTA. Small glyph in a
@@ -1443,34 +1869,34 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 .witcher-prompt-glyph {
   width: 26px; height: 26px;
   display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(244, 239, 227, 0.45);
+  border: 1px solid rgba(var(--sk-parchment-rgb), 0.45);
   transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
   transform: rotate(45deg);
   font-size: 12px;
 }
 .witcher-prompt-glyph > span { transform: rotate(-45deg); display: block; line-height: 1; }
-.witcher-prompt:hover { color: #D8B05A; }
+.witcher-prompt:hover { color: var(--sk-gilt); }
 .witcher-prompt:hover .witcher-prompt-glyph {
-  border-color: #D8B05A;
-  background: rgba(216, 176, 90, 0.10);
-  color: #D8B05A;
+  border-color: var(--sk-gilt);
+  background: rgba(var(--sk-gilt-rgb), 0.10);
+  color: var(--sk-gilt);
 }
 .witcher-prompt[data-primary="true"] .witcher-prompt-glyph {
-  border-color: #D8B05A;
-  background: #D8B05A;
+  border-color: var(--sk-gilt);
+  background: var(--sk-gilt);
   color: var(--color-velvet-deep);
 }
 .witcher-prompt[data-primary="true"]:hover .witcher-prompt-glyph {
-  background: #E0BE6A;
-  border-color: #E0BE6A;
+  background: var(--sk-brass-warm-soft);
+  border-color: var(--sk-brass-warm-soft);
 }
 
 /* Slate texture: dark stone backdrop for the Witcher panel. Subtle
    noise + radial vignette. */
 .witcher-slate {
   background:
-    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(20, 18, 16, 0.6), rgba(0, 0, 0, 0.92) 100%),
-    linear-gradient(180deg, #1a1612 0%, #0e0c0a 60%, #050402 100%);
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(var(--sk-slate-rgb), 0.6), rgba(0, 0, 0, 0.92) 100%),
+    linear-gradient(180deg, var(--sk-slate-hi) 0%, var(--sk-slate) 60%, var(--sk-slate-lo) 100%);
 }
 .witcher-slate::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -1485,7 +1911,7 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 .parchment-plate {
   position: relative;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232, 184, 106, 0.20), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--sk-flame-rgb), 0.20), transparent 70%),
     radial-gradient(ellipse 100% 70% at 50% 100%, rgba(122, 78, 38, 0.10), transparent 70%),
     linear-gradient(180deg, #EFE2C0 0%, #E2D0A6 60%, #D4BE89 100%);
   color: #3a2a18;
@@ -1503,7 +1929,7 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   content: ""; position: absolute; inset: 0; pointer-events: none;
   box-shadow:
     inset 0 0 80px rgba(82, 50, 20, 0.40),
-    inset 0 0 18px rgba(60, 30, 8, 0.45);
+    inset 0 0 18px rgba(var(--sk-wood-rgb), 0.45);
 }
 
 /* Charter ornate gold border: thick outer gold stroke + thin inner
@@ -1513,18 +1939,18 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   position: relative;
   box-shadow:
     /* Outer dark wooden stroke */
-    0 0 0 1px rgba(60, 30, 8, 0.85),
+    0 0 0 1px rgba(var(--sk-wood-rgb), 0.85),
     /* Thick gold band */
     0 0 0 6px var(--color-brass),
     /* Inner dark echo */
-    0 0 0 7px rgba(60, 30, 8, 0.85),
+    0 0 0 7px rgba(var(--sk-wood-rgb), 0.85),
     /* Outer drop */
     0 30px 90px -28px rgba(0, 0, 0, 0.95);
 }
 /* Inner thin gold echo */
 .charter-frame > .charter-inner {
   position: absolute; inset: 14px; pointer-events: none; z-index: 1;
-  border: 1px solid rgba(140, 106, 31, 0.55);
+  border: 1px solid rgba(var(--sk-brass-line-rgb), 0.55);
 }
 
 /* Beveled rivet: small gold dome dropped at corner crossings to
@@ -1532,10 +1958,10 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 .charter-rivet {
   width: 16px; height: 16px; border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 30%, #F4E5B6 0%, #C9A85A 35%, #8C6A1F 75%, #4A3812 100%);
+    radial-gradient(circle at 30% 30%, var(--sk-gilt-pale) 0%, var(--sk-brass-warm) 35%, var(--sk-brass-deep) 75%, var(--sk-brass-dark) 100%);
   box-shadow:
     inset 0 -1px 2px rgba(0,0,0,0.4),
-    inset 0 1px 1px rgba(255, 240, 200, 0.7),
+    inset 0 1px 1px rgba(var(--sk-sheen-rgb), 0.7),
     0 1px 3px rgba(0,0,0,0.6);
 }
 
@@ -1543,8 +1969,8 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 .charter-numeral {
   font-family: var(--font-display);
   letter-spacing: 0.08em;
-  color: #4A3812;
-  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.4);
+  color: var(--sk-brass-dark);
+  text-shadow: 0 1px 0 rgba(var(--sk-sheen-rgb), 0.4);
 }
 
 /* Wax seal: real-feeling stamp with hatching. */
@@ -1552,7 +1978,7 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   position: relative;
   width: 88px; height: 88px;
   background:
-    radial-gradient(circle at 32% 28%, #C7372A 0%, #7B1E2D 50%, #3A0810 100%);
+    radial-gradient(circle at 32% 28%, var(--sk-wax) 0%, var(--sk-wax-deep) 50%, var(--sk-wax-dark) 100%);
   border-radius: 50%;
   box-shadow:
     0 0 0 1px rgba(0,0,0,0.55),
@@ -1564,9 +1990,9 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   /* Hatching at the edge to suggest dripped wax */
   content: ""; position: absolute; inset: -4px; border-radius: 50%;
   background:
-    radial-gradient(circle at 70% 78%, rgba(123, 30, 45, 0.55) 0 8%, transparent 12%),
-    radial-gradient(circle at 22% 80%, rgba(123, 30, 45, 0.45) 0 6%, transparent 10%),
-    radial-gradient(circle at 86% 22%, rgba(123, 30, 45, 0.40) 0 5%, transparent 9%);
+    radial-gradient(circle at 70% 78%, rgba(var(--sk-ruby-rgb), 0.55) 0 8%, transparent 12%),
+    radial-gradient(circle at 22% 80%, rgba(var(--sk-ruby-rgb), 0.45) 0 6%, transparent 10%),
+    radial-gradient(circle at 86% 22%, rgba(var(--sk-ruby-rgb), 0.40) 0 5%, transparent 9%);
   pointer-events: none;
 }
 .wax-seal::after {
@@ -1630,14 +2056,14 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
    layer so it's not repainted on every scroll frame. */
 .caravan-glass {
   background:
-    linear-gradient(180deg, rgba(232, 184, 106, 0.05), rgba(32, 13, 16, 0.55)),
-    rgb(19 8 11 / 0.88);
+    linear-gradient(180deg, rgba(var(--sk-flame-rgb), 0.05), rgba(var(--sk-velvet-rgb), 0.55)),
+    rgba(var(--sk-panel-rgb), 0.88);
   backdrop-filter: blur(8px) saturate(115%);
   -webkit-backdrop-filter: blur(8px) saturate(115%);
-  border: 1px solid rgba(216, 155, 58, 0.28);
+  border: 1px solid rgba(var(--sk-mustard-rgb), 0.28);
   box-shadow:
-    inset 0 1px 0 rgba(232, 177, 74, 0.18),
-    inset 0 0 80px -30px rgba(184, 106, 42, 0.27),
+    inset 0 1px 0 rgba(var(--sk-glow-rgb), 0.18),
+    inset 0 0 80px -30px rgba(var(--sk-copper-rgb), 0.27),
     0 30px 80px -30px rgba(0, 0, 0, 0.85),
     0 0 0 1px rgba(0, 0, 0, 0.6);
   transform: translate3d(0, 0, 0);
@@ -1763,11 +2189,11 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   width: 55%; pointer-events: none;
   background: linear-gradient(105deg,
     transparent 0%,
-    rgba(232,177,74,0.0) 30%,
-    rgba(232,177,74,0.45) 50%,
-    rgba(255,240,200,0.85) 52%,
-    rgba(232,177,74,0.45) 54%,
-    rgba(232,177,74,0.0) 70%,
+    rgba(var(--sk-glow-rgb),0.0) 30%,
+    rgba(var(--sk-glow-rgb),0.45) 50%,
+    rgba(var(--sk-sheen-rgb),0.85) 52%,
+    rgba(var(--sk-glow-rgb),0.45) 54%,
+    rgba(var(--sk-glow-rgb),0.0) 70%,
     transparent 100%
   );
   filter: blur(2px); mix-blend-mode: screen;
@@ -1783,9 +2209,9 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
   background:
     linear-gradient(180deg,
       transparent 0%,
-      rgba(232,177,74,0.14) 30%,
-      rgba(232,177,74,0.22) 55%,
-      rgba(184,106,42,0.14) 80%,
+      rgba(var(--sk-glow-rgb),0.14) 30%,
+      rgba(var(--sk-glow-rgb),0.22) 55%,
+      rgba(var(--sk-copper-rgb),0.14) 80%,
       transparent 100%
     );
   width: 60%; left: 20%;
@@ -1803,9 +2229,9 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 /* Subtle hot-rim drop-shadow for focused tiles. */
 .caravan-rim {
   box-shadow:
-    0 0 0 1px rgba(232, 177, 74, 0.65),
-    0 0 32px -4px rgba(232, 177, 74, 0.55),
-    0 0 80px -20px rgba(184, 106, 42, 0.5),
+    0 0 0 1px rgba(var(--sk-glow-rgb), 0.65),
+    0 0 32px -4px rgba(var(--sk-glow-rgb), 0.55),
+    0 0 80px -20px rgba(var(--sk-copper-rgb), 0.5),
     0 30px 60px -30px rgba(0, 0, 0, 0.85);
 }
 
@@ -1866,23 +2292,23 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
    formulaire d'inscription, décision d'Alex). */
 .witcher-input {
   width: 100%;
-  background: rgba(26, 5, 11, 0.55);
-  border: 1px solid rgba(244, 239, 227, 0.16);
-  color: #F4EFE3;
+  background: rgba(var(--sk-deep-rgb), 0.55);
+  border: 1px solid rgba(var(--sk-parchment-rgb), 0.16);
+  color: var(--sk-parchment);
   padding: 0.8rem 0.95rem;
   font-size: 0.875rem;
   border-radius: 0;
   transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
 }
-.witcher-input::placeholder { color: rgba(244, 239, 227, 0.35); }
+.witcher-input::placeholder { color: rgba(var(--sk-parchment-rgb), 0.35); }
 .witcher-input:focus {
   outline: none;
-  border-color: rgba(216, 176, 90, 0.8);
-  background: rgba(26, 5, 11, 0.78);
-  box-shadow: 0 0 0 1px rgba(216, 176, 90, 0.3), 0 0 26px -8px rgba(216, 176, 90, 0.45);
+  border-color: rgba(var(--sk-gilt-rgb), 0.8);
+  background: rgba(var(--sk-deep-rgb), 0.78);
+  box-shadow: 0 0 0 1px rgba(var(--sk-gilt-rgb), 0.3), 0 0 26px -8px rgba(var(--sk-gilt-rgb), 0.45);
 }
 select.witcher-input { cursor: pointer; }
-select.witcher-input option { background: #1a050b; color: #F4EFE3; }
+select.witcher-input option { background: var(--sk-deep); color: var(--sk-parchment); }
 
 /* ── Cartes de billet, registre Gwent ──────────────────────────────
    Format tarot (2:3), dos ouvragé, recto au retournement. Le cadre
@@ -1905,9 +2331,9 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   /* Le filet intérieur prend la teinte du billet (--gwent-tint), le
      filet extérieur reste laiton : le jeu garde son unité. */
   box-shadow:
-    inset 0 0 0 1px rgba(216,176,90,0.55),
-    inset 0 0 0 5px rgba(10,2,7,0.92),
-    inset 0 0 0 6px var(--gwent-tint, rgba(216,176,90,0.30)),
+    inset 0 0 0 1px rgba(var(--sk-gilt-rgb),0.55),
+    inset 0 0 0 5px rgba(var(--sk-ink-rgb),0.92),
+    inset 0 0 0 6px var(--gwent-tint, rgba(var(--sk-gilt-rgb),0.30)),
     0 18px 42px -14px rgba(0,0,0,0.9);
 }
 .gwent-back { transform: rotateY(0deg); }
@@ -1930,7 +2356,7 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   position: absolute;
   width: 7px; height: 7px;
   border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, #E8C87A 0%, #A9853C 55%, #4a3617 100%);
+  background: radial-gradient(circle at 34% 30%, var(--sk-gilt-lit) 0%, var(--sk-brass-mid) 55%, #4a3617 100%);
   box-shadow: 0 1px 2px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 
@@ -2003,13 +2429,13 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
    cartouche sombre. On voit que ça se clique. */
 .prog-anchor {
   position: relative;
-  color: rgba(244, 239, 227, .82);
-  background: rgba(19, 8, 11, .55);
+  color: rgba(var(--sk-parchment-rgb), .82);
+  background: rgba(var(--sk-panel-rgb), .55);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(216, 155, 58, .18);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .18);
   border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .06), 0 12px 28px -18px rgba(0, 0, 0, .9);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .06), 0 12px 28px -18px rgba(0, 0, 0, .9);
   transition: background .28s ease, color .28s ease, transform .28s ease,
               box-shadow .28s ease, border-color .28s ease;
   cursor: pointer;
@@ -2018,14 +2444,14 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 .prog-anchor:focus-visible {
   transform: translateY(-2px);
   color: var(--color-bone);
-  border-color: rgba(232, 177, 74, .55);
-  background: linear-gradient(180deg, rgba(232, 177, 74, .10), rgba(19, 8, 11, .78));
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .18), 0 0 28px -10px rgba(232, 177, 74, .55);
+  border-color: rgba(var(--sk-glow-rgb), .55);
+  background: linear-gradient(180deg, rgba(var(--sk-glow-rgb), .10), rgba(var(--sk-panel-rgb), .78));
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .18), 0 0 28px -10px rgba(var(--sk-glow-rgb), .55);
 }
 .prog-anchor-glyph {
   display: inline-flex; align-items: center; justify-content: center;
   width: 30px; height: 30px;
-  border: 1px solid rgba(216, 155, 58, .28);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .28);
   border-radius: 10px;
   background: rgba(10, 4, 6, .45);
   color: var(--color-amber-glow);
@@ -2033,8 +2459,8 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 }
 .prog-anchor:hover .prog-anchor-glyph,
 .prog-anchor:focus-visible .prog-anchor-glyph {
-  border-color: rgba(232, 177, 74, .55);
-  background: rgba(232, 177, 74, .12);
+  border-color: rgba(var(--sk-glow-rgb), .55);
+  background: rgba(var(--sk-glow-rgb), .12);
 }
 
 /* ── Bestiaire des groupes ─────────────────────────────────────────
@@ -2049,45 +2475,45 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   display: flex; align-items: center; gap: .7rem; width: 100%;
   padding: .55rem .8rem .55rem .55rem;
   text-align: left;
-  background: rgba(19, 8, 11, .55);
+  background: rgba(var(--sk-panel-rgb), .55);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(216, 155, 58, .18);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .18);
   border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .05);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .05);
   transition: background .24s ease, border-color .24s ease, transform .24s ease, box-shadow .24s ease;
   cursor: pointer;
 }
 .bestiary-row + .bestiary-row { margin-top: .5rem; }
 .bestiary-row:hover {
   transform: translateY(-2px);
-  border-color: rgba(232, 177, 74, .45);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .12), 0 0 24px -12px rgba(232, 177, 74, .5);
+  border-color: rgba(var(--sk-glow-rgb), .45);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .12), 0 0 24px -12px rgba(var(--sk-glow-rgb), .5);
 }
 .bestiary-row[data-on="true"] {
-  background: linear-gradient(180deg, rgba(232, 177, 74, .10), rgba(19, 8, 11, .78));
-  border-color: rgba(232, 177, 74, .55);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .18), 0 0 28px -10px rgba(232, 177, 74, .55);
+  background: linear-gradient(180deg, rgba(var(--sk-glow-rgb), .10), rgba(var(--sk-panel-rgb), .78));
+  border-color: rgba(var(--sk-glow-rgb), .55);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .18), 0 0 28px -10px rgba(var(--sk-glow-rgb), .55);
 }
 .bestiary-row-thumb {
   flex: 0 0 auto; width: 46px; height: 34px; overflow: hidden;
-  border: 1px solid rgba(216, 155, 58, .3);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .3);
   border-radius: 9px;
   background: rgba(10, 4, 6, .6);
 }
 .bestiary-row-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .bestiary-row-thumb-empty { display: block; width: 100%; height: 100%;
-  background: radial-gradient(circle at 50% 40%, rgba(232, 177, 74, .2), transparent 70%); }
+  background: radial-gradient(circle at 50% 40%, rgba(var(--sk-glow-rgb), .2), transparent 70%); }
 .bestiary-row-name {
   flex: 1 1 auto; min-width: 0;
   font-family: var(--font-display); font-size: 13px; line-height: 1.2;
-  color: rgba(244, 239, 227, .82);
+  color: rgba(var(--sk-parchment-rgb), .82);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .bestiary-row[data-on="true"] .bestiary-row-name { color: var(--color-bone); }
 .bestiary-row-mark {
   flex: 0 0 auto; width: 7px; height: 7px; transform: rotate(45deg);
-  border: 1px solid rgba(216, 155, 58, .35);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .35);
   transition: background .24s ease, border-color .24s ease;
 }
 .bestiary-row[data-on="true"] .bestiary-row-mark { background: var(--color-amber-glow); border-color: var(--color-amber-glow); }
@@ -2095,7 +2521,7 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 .bestiary-portrait {
   position: relative; aspect-ratio: 16 / 10; overflow: hidden;
   background: #0d0906;
-  border: 1px solid rgba(216,155,58,.3);
+  border: 1px solid rgba(var(--sk-mustard-rgb),.3);
   border-radius: 16px;
   box-shadow: 0 34px 70px -26px rgba(0,0,0,.92);
 }
@@ -2109,7 +2535,7 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 /* Ferrures d'angle : la même quincaillerie que les cadres du festival. */
 .bestiary-portrait-corner {
   position: absolute; width: 20px; height: 20px; pointer-events: none;
-  border-color: rgba(232,200,122,.75); border-style: solid; border-width: 0;
+  border-color: rgba(var(--sk-gilt-lit-rgb),.75); border-style: solid; border-width: 0;
 }
 .bestiary-portrait-corner.tl { top: 12px; left: 12px;  border-top-width: 1px; border-left-width: 1px; }
 .bestiary-portrait-corner.tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
@@ -2125,23 +2551,23 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
   position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem;
   border-radius: 16px;
-  background: rgba(19, 8, 11, .55);
+  background: rgba(var(--sk-panel-rgb), .55);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(216, 155, 58, .2);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .06), 0 16px 34px -22px rgba(0, 0, 0, .95);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .2);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .06), 0 16px 34px -22px rgba(0, 0, 0, .95);
   cursor: pointer;
   transition: background .28s ease, border-color .28s ease, box-shadow .28s ease;
 }
 .fmm-glass-btn:hover, .fmm-glass-btn:focus-visible {
-  border-color: rgba(232, 177, 74, .55);
-  background: linear-gradient(180deg, rgba(232, 177, 74, .12), rgba(19, 8, 11, .8));
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .2), 0 0 34px -10px rgba(232, 177, 74, .6);
+  border-color: rgba(var(--sk-glow-rgb), .55);
+  background: linear-gradient(180deg, rgba(var(--sk-glow-rgb), .12), rgba(var(--sk-panel-rgb), .8));
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .2), 0 0 34px -10px rgba(var(--sk-glow-rgb), .6);
 }
 .fmm-glass-btn.is-primary {
-  background: linear-gradient(180deg, rgba(232, 177, 74, .16), rgba(19, 8, 11, .8));
-  border-color: rgba(232, 177, 74, .5);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .22), 0 0 30px -12px rgba(232, 177, 74, .55);
+  background: linear-gradient(180deg, rgba(var(--sk-glow-rgb), .16), rgba(var(--sk-panel-rgb), .8));
+  border-color: rgba(var(--sk-glow-rgb), .5);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .22), 0 0 30px -12px rgba(var(--sk-glow-rgb), .55);
 }
 .fmm-glass-btn-label {
   font-family: var(--font-display);
@@ -2151,7 +2577,7 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 .fmm-glass-btn-note {
   font-family: var(--font-sans);
   font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(244, 239, 227, .55);
+  color: rgba(var(--sk-parchment-rgb), .55);
 }
 .fmm-glass-btn.is-primary .fmm-glass-btn-note { color: var(--color-amber-glow); }
 
@@ -2162,43 +2588,43 @@ select.witcher-input option { background: #1a050b; color: #F4EFE3; }
 .fmm-menu-card {
   border-radius: 16px;
   padding: 1.35rem 1.4rem 1.5rem;
-  background: rgba(19, 8, 11, .45);
+  background: rgba(var(--sk-panel-rgb), .45);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(216, 155, 58, .16);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .05), 0 18px 40px -30px rgba(0, 0, 0, .9);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .16);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .05), 0 18px 40px -30px rgba(0, 0, 0, .9);
 }
 .fmm-banquet-shell {
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(9, 4, 6, .82), rgba(14, 6, 9, .68));
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(232, 177, 74, .22);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .1), 0 40px 90px -50px rgba(0, 0, 0, .95);
+  border: 1px solid rgba(var(--sk-glow-rgb), .22);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .1), 0 40px 90px -50px rgba(0, 0, 0, .95);
 }
 
 /* ── Les cartes d'année (table de jeux) ─────────────────────────── */
 .fmm-annee-carte {
-  background: rgba(19, 8, 11, .55);
+  background: rgba(var(--sk-panel-rgb), .55);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .06), 0 24px 50px -34px rgba(0, 0, 0, .95);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .06), 0 24px 50px -34px rgba(0, 0, 0, .95);
   transition: border-color .28s ease, box-shadow .28s ease, transform .28s ease;
 }
 a:hover > .fmm-annee-carte {
-  border-color: rgba(232, 177, 74, .6);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .18), 0 0 40px -14px rgba(232, 177, 74, .55);
+  border-color: rgba(var(--sk-glow-rgb), .6);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .18), 0 0 40px -14px rgba(var(--sk-glow-rgb), .55);
 }
 
 /* ── La console de jeux (rail des années, esprit menu de Gwent) ── */
 .fmm-console {
   background: linear-gradient(180deg, rgba(14, 6, 9, .78), rgba(10, 4, 6, .92));
-  border: 1px solid rgba(216, 155, 58, .22);
-  box-shadow: inset 0 1px 0 rgba(232, 177, 74, .08), 0 40px 90px -50px rgba(0, 0, 0, .95);
+  border: 1px solid rgba(var(--sk-mustard-rgb), .22);
+  box-shadow: inset 0 1px 0 rgba(var(--sk-glow-rgb), .08), 0 40px 90px -50px rgba(0, 0, 0, .95);
 }
-.fmm-rail { scrollbar-width: thin; scrollbar-color: rgba(216,155,58,.4) transparent; }
+.fmm-rail { scrollbar-width: thin; scrollbar-color: rgba(var(--sk-mustard-rgb),.4) transparent; }
 .fmm-rail::-webkit-scrollbar { height: 6px; }
-.fmm-rail::-webkit-scrollbar-thumb { background: rgba(216,155,58,.35); border-radius: 3px; }
+.fmm-rail::-webkit-scrollbar-thumb { background: rgba(var(--sk-mustard-rgb),.35); border-radius: 3px; }
 
 /* La tuile choisie s'allume, comme la tuile sélectionnée de Gwent. */
 a:focus-visible > .fmm-annee-carte { outline: none; border-color: var(--color-amber-glow); }
@@ -2206,11 +2632,11 @@ a:focus-visible > .fmm-annee-carte { outline: none; border-color: var(--color-am
   content: '';
   position: absolute; inset: 0; pointer-events: none;
   border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(232, 177, 74, .08);
+  box-shadow: inset 0 0 0 1px rgba(var(--sk-glow-rgb), .08);
   transition: box-shadow .3s ease;
 }
 a:hover > .fmm-annee-carte::after {
-  box-shadow: inset 0 0 0 1px rgba(232, 177, 74, .45), inset 0 -40px 60px -30px rgba(232, 177, 74, .35);
+  box-shadow: inset 0 0 0 1px rgba(var(--sk-glow-rgb), .45), inset 0 -40px 60px -30px rgba(var(--sk-glow-rgb), .35);
 }
 
 /* ── Les sections respirent : fondu à l'entrée et brume au raccord ──
@@ -2235,7 +2661,7 @@ a:hover > .fmm-annee-carte::after {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 60% 100% at 30% 0%, rgba(184, 106, 42, .16), transparent 70%),
+    radial-gradient(ellipse 60% 100% at 30% 0%, rgba(var(--sk-copper-rgb), .16), transparent 70%),
     radial-gradient(ellipse 55% 100% at 78% 6%, rgba(120, 60, 30, .13), transparent 72%);
   opacity: 0;
   animation: fmm-brume-entree 1.6s ease forwards;

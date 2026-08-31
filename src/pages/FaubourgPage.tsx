@@ -61,7 +61,7 @@ const FaubourgPage: React.FC = () => {
   };
 
   const label = (q: Q) => (
-    <span className="block font-display text-xs md:text-sm mb-3 tracking-[0.12em] leading-relaxed whitespace-pre-line" style={{ color: '#D8B05A' }}>
+    <span className="block font-display text-xs md:text-sm mb-3 tracking-[0.12em] leading-relaxed whitespace-pre-line" style={{ color: 'var(--sk-gilt)' }}>
       {q.label}{q.req && <span className="ml-1" style={{ color: '#E07A7A' }}>*</span>}
     </span>
   );
@@ -73,8 +73,8 @@ const FaubourgPage: React.FC = () => {
         <EmberCanvas />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
 
-          <div className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
-            <Link to={addLocale('/marche', lang)} className="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.3em] text-[var(--color-bone)]/60 hover:text-[#D8B05A] transition">
+          <div className="flex items-center justify-between gap-4 mb-12 md:mb-16 pb-2" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
+            <Link to={addLocale('/marche', lang)} className="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.3em] text-[var(--color-bone)]/60 hover:text-[var(--sk-gilt)] transition">
               <ArrowLeft size={13} /> {lang === 'FR' ? 'Retour au marché' : 'Back to the market'}
             </Link>
             <span className="witcher-stat-label hidden md:block">{lang === 'FR' ? 'Kiosques · Édition 2026' : 'Kiosks · 2026 edition'}</span>
@@ -88,22 +88,22 @@ const FaubourgPage: React.FC = () => {
           >
             <h1
               className="font-display leading-[1.1] text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-10"
-              style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 0 24px rgba(232,177,74,0.28), 0 0 60px rgba(184,106,42,0.22)' }}
+              style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 0 24px rgba(var(--sk-glow-rgb),0.28), 0 0 60px rgba(var(--sk-copper-rgb),0.22)' }}
             >
               {FORM.title}
             </h1>
-            <div className="font-sans text-sm md:text-base leading-[1.8] whitespace-pre-line" style={{ color: 'rgba(244,239,227,0.8)', fontWeight: 300 }}>
+            <div className="font-sans text-sm md:text-base leading-[1.8] whitespace-pre-line" style={{ color: 'rgba(var(--sk-parchment-rgb),0.8)', fontWeight: 300 }}>
               {FORM.intro}
             </div>
           </motion.div>
 
           {state === 'done' ? (
-            <div className="max-w-3xl py-16" style={{ borderTop: '1px solid rgba(244,239,227,0.10)' }}>
-              <p className="font-display text-2xl md:text-4xl mb-5" style={{ color: '#D8B05A' }}>Votre réponse a été enregistrée.</p>
-              <p className="font-sans text-base leading-[1.75]" style={{ color: 'rgba(244,239,227,0.78)', fontWeight: 300 }}>Merci et au plaisir de festoyer ensemble encore!</p>
+            <div className="max-w-3xl py-16" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.10)' }}>
+              <p className="font-display text-2xl md:text-4xl mb-5" style={{ color: 'var(--sk-gilt)' }}>Votre réponse a été enregistrée.</p>
+              <p className="font-sans text-base leading-[1.75]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.78)', fontWeight: 300 }}>Merci et au plaisir de festoyer ensemble encore!</p>
             </div>
           ) : (
-            <form onSubmit={submit} noValidate className="grid gap-10 max-w-3xl pt-12" style={{ borderTop: '1px solid rgba(244,239,227,0.10)' }}>
+            <form onSubmit={submit} noValidate className="grid gap-10 max-w-3xl pt-12" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.10)' }}>
               {ALL.map((q) => (
                 <div key={q.id} data-missing={err(q) ? 'true' : undefined}>
                   {label(q)}
@@ -123,16 +123,16 @@ const FaubourgPage: React.FC = () => {
                             whileTap={{ scale: 0.985 }}
                             className="relative cursor-pointer text-left px-4 py-3 border font-sans text-sm transition-all flex items-center gap-3"
                             style={{
-                              background: active ? 'rgba(216,176,90,0.15)' : 'rgba(26,5,11,0.4)',
-                              borderColor: active ? '#D8B05A' : 'rgba(244,239,227,0.15)',
-                              color: active ? '#D8B05A' : 'rgba(244,239,227,0.85)',
-                              boxShadow: active ? '0 0 20px rgba(196,164,90,0.18)' : 'none',
+                              background: active ? 'rgba(var(--sk-gilt-rgb),0.15)' : 'rgba(var(--sk-deep-rgb),0.4)',
+                              borderColor: active ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.15)',
+                              color: active ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.85)',
+                              boxShadow: active ? '0 0 20px rgba(var(--sk-brass-rgb),0.18)' : 'none',
                             }}
                           >
                             <input type="radio" name={q.id} value={o} checked={active} onChange={() => set(q.id, o)} className="sr-only" />
                             <span className="shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center"
-                              style={{ borderColor: active ? '#D8B05A' : 'rgba(244,239,227,0.35)', background: active ? '#D8B05A' : 'transparent' }}>
-                              {active && <Check size={10} color="#1a050b" />}
+                              style={{ borderColor: active ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.35)', background: active ? 'var(--sk-gilt)' : 'transparent' }}>
+                              {active && <Check size={10} color="var(--sk-deep)" />}
                             </span>
                             <span>{o}</span>
                           </motion.label>
@@ -144,7 +144,7 @@ const FaubourgPage: React.FC = () => {
                 </div>
               ))}
 
-              <div className="pt-8 flex flex-col items-start gap-4" style={{ borderTop: '1px solid rgba(244,239,227,0.10)' }}>
+              <div className="pt-8 flex flex-col items-start gap-4" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.10)' }}>
                 <motion.button
                   type="submit"
                   disabled={state === 'sending'}
@@ -153,14 +153,14 @@ const FaubourgPage: React.FC = () => {
                   transition={{ type: 'spring', stiffness: 320, damping: 22 }}
                   className="group inline-flex items-center gap-4 px-10 md:px-14 py-5 font-sans uppercase tracking-[0.3em] text-sm disabled:opacity-60"
                   style={{
-                    color: '#1a050b', fontWeight: 600,
-                    background: 'linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%)',
+                    color: 'var(--sk-deep)', fontWeight: 600,
+                    background: 'linear-gradient(180deg, var(--sk-gilt-lit) 0%, var(--sk-gilt) 55%, #B98F3E 100%)',
                     borderRadius: 16,
-                    boxShadow: '0 0 48px -8px rgba(216,176,90,0.65), 0 18px 40px -14px rgba(0,0,0,0.8)',
+                    boxShadow: '0 0 48px -8px rgba(var(--sk-gilt-rgb),0.65), 0 18px 40px -14px rgba(0,0,0,0.8)',
                   }}
                 >
                   {state === 'sending' ? 'Envoi…' : 'Envoyer'}
-                  <span aria-hidden className="inline-block w-6 h-px bg-[#1a050b]/70 transition-all group-hover:w-12" />
+                  <span aria-hidden className="inline-block w-6 h-px bg-[var(--sk-deep)]/70 transition-all group-hover:w-12" />
                 </motion.button>
                 {state === 'error' && <p className="font-sans text-sm" style={{ color: '#E07A7A' }}>L’envoi n’a pas passé. Vérifiez votre connexion et réessayez.</p>}
                 {touched && missing.length > 0 && <p className="font-sans text-sm" style={{ color: '#E07A7A' }}>Des questions obligatoires sont sans réponse.</p>}

@@ -170,9 +170,9 @@ export const ROLE_ACCENT: Record<AdminRole, {
   line:       string;  // hairline rgba: replaces --admin-line
   rail:       string;  // sidebar background tint: applied as overlay
 }> = {
-  super:          { accent: '#D4A857', accentDim: '#A07832', line: 'rgba(212, 168, 87, 0.22)', rail: 'rgba(168, 128, 48, 0.04)' },
+  super:          { accent: 'var(--sk-brass-warm)', accentDim: 'var(--sk-brass-mid)', line: 'rgba(var(--sk-gilt-rgb), 0.22)', rail: 'rgba(var(--sk-brass-rgb), 0.04)' },
   ca:             { accent: '#5A8FD6', accentDim: '#1F365A', line: 'rgba(90, 143, 214, 0.22)', rail: 'rgba(31, 54, 90, 0.07)'   },
-  organisateur:   { accent: '#D4A857', accentDim: '#A07832', line: 'rgba(212, 168, 87, 0.22)', rail: 'rgba(168, 128, 48, 0.04)' },
+  organisateur:   { accent: 'var(--sk-brass-warm)', accentDim: 'var(--sk-brass-mid)', line: 'rgba(var(--sk-gilt-rgb), 0.22)', rail: 'rgba(var(--sk-brass-rgb), 0.04)' },
   super_benevole: { accent: '#5BA372', accentDim: '#1A4429', line: 'rgba(91, 163, 114, 0.22)', rail: 'rgba(26, 68, 41, 0.07)'   },
   benevole:       { accent: '#B0B0BA', accentDim: '#5A5A60', line: 'rgba(176, 176, 186, 0.22)', rail: 'rgba(120, 120, 130, 0.04)' },
   kitchen:        { accent: '#E3593D', accentDim: '#7A1A0F', line: 'rgba(227, 89, 61, 0.22)',  rail: 'rgba(196, 53, 30, 0.06)'  },

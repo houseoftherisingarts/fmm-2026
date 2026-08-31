@@ -86,7 +86,7 @@ const OrdrePage: React.FC = () => {
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           {!user ? (
             <div className="max-w-lg mx-auto text-center rounded-lg-card border border-brass/35 px-7 py-12"
-                 style={{ background: 'rgba(26, 5, 11, 0.5)' }}>
+                 style={{ background: 'rgba(var(--sk-deep-rgb), 0.5)' }}>
               <h2 className="font-display title-medieval text-2xl text-ivory mb-3">
                 {fr ? 'Le registre s’ouvre aux membres' : 'The roll opens to members'}
               </h2>
@@ -110,7 +110,7 @@ const OrdrePage: React.FC = () => {
                     onChange={(e) => setTerme(e.target.value)}
                     placeholder={fr ? 'Chercher un membre par son nom' : 'Search a member by name'}
                     className="w-full pl-11 pr-4 py-3.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40"
-                    style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.25)' }}
+                    style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.25)' }}
                   />
                 </label>
                 <span className="font-sans uppercase tracking-[0.2em] text-[10px] text-ivory-soft/55 inline-flex items-center gap-2">
@@ -221,7 +221,7 @@ const CarteMembre: React.FC<{
 
   return (
     <article className="relative rounded-lg-card border border-brass/25 p-6 flex flex-col"
-             style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+             style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
       {/* Le « i » de la fiche importée, visible de l'équipe seulement.
           Il disparaît dès que la personne réclame son compte. */}
       {isAdmin && m.importe && (
@@ -284,7 +284,7 @@ const CarteMembre: React.FC<{
         )}
       </div>
       {choixDefi && !partieLancee && (
-        <div className="mt-3 pt-3 flex flex-wrap items-center gap-2" style={{ borderTop: '1px solid rgba(244,239,227,0.10)' }}>
+        <div className="mt-3 pt-3 flex flex-wrap items-center gap-2" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.10)' }}>
           <span className="font-sans uppercase tracking-[0.2em] text-[10px] text-brass mr-1">{fr ? 'Quel jeu ?' : 'Which game?'}</span>
           <button type="button" onClick={() => lancer('tafl')} disabled={defiEnCours !== null}
                   className="px-3 py-2 rounded-card border border-brass/40 font-sans text-[10px] uppercase tracking-[0.16em] text-ivory hover:bg-brass/15 transition-colors inline-flex items-center gap-2 disabled:opacity-60">
@@ -300,7 +300,7 @@ const CarteMembre: React.FC<{
             {DELAIS_DEFI.map((d) => (
               <button key={d.ms} type="button" onClick={() => setDelaiMs(d.ms)} aria-pressed={delaiMs === d.ms}
                       className="px-2.5 py-1 rounded-full font-sans text-[9px] uppercase tracking-[0.14em] transition-colors"
-                      style={{ border: `1px solid ${delaiMs === d.ms ? '#D8B05A' : 'rgba(244,239,227,0.2)'}`, color: delaiMs === d.ms ? '#F4EFE3' : 'rgba(244,239,227,0.55)', background: delaiMs === d.ms ? 'rgba(216,176,90,0.16)' : 'transparent' }}>
+                      style={{ border: `1px solid ${delaiMs === d.ms ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.2)'}`, color: delaiMs === d.ms ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.55)', background: delaiMs === d.ms ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent' }}>
                 {fr ? d.FR : d.EN}
               </button>
             ))}

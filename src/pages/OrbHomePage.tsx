@@ -1,6 +1,8 @@
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EmberCanvas from '../components/vendor/EmberCanvas';
+import FondParticules from '../components/layout/FondParticules';
+import { useSkinActif } from '../lib/useSkinActif';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSiteFlags } from '../contexts/SiteFlagsContext';
@@ -181,6 +183,18 @@ LiveCountdown.displayName = 'LiveCountdown';
 // of time for the actual frames to stream in.
 const FireCanvas: React.FC = memo(() => {
   const { lite } = usePerfTier();
+  const skin = useSkinActif();
+  // La peau décide du ciel de l'accueil, comme sur le reste du site :
+  // neige d'hiver sous le bleu et argent, bulles qui montent sous le
+  // doré et noir (Alex, 2026-08-31).
+  if (!lite && (skin === 'bleu' || skin === 'dore')) {
+    return (
+      <FondParticules
+        variante={skin === 'bleu' ? 'neige' : 'bulles'}
+        className="fmm-fond-particules absolute inset-0 pointer-events-none"
+      />
+    );
+  }
   // Always-on mix-blend video, the single most repaint-heavy layer. On
   // budget machines we drop it; the brass ring + static glow carry the look.
   // 🚨 On ne la coupe PLUS sur prefers-reduced-motion (décision d'Alex,
@@ -672,7 +686,7 @@ const OrbHomePage: React.FC = () => {
             className="absolute inset-0 opacity-70"
             style={{
               background:
-                'radial-gradient(ellipse at 75% 50%, rgba(176,141,58,0.22), transparent 55%), radial-gradient(ellipse at 18% 80%, rgba(107,31,31,0.28), transparent 60%), radial-gradient(ellipse at 50% 0%, rgba(184,106,42,0.14), transparent 70%)',
+                'radial-gradient(ellipse at 75% 50%, rgba(var(--sk-brass-rgb),0.22), transparent 55%), radial-gradient(ellipse at 18% 80%, rgba(var(--sk-oxblood-rgb),0.28), transparent 60%), radial-gradient(ellipse at 50% 0%, rgba(var(--sk-copper-rgb),0.14), transparent 70%)',
             }}
           />
 
@@ -754,13 +768,13 @@ const OrbHomePage: React.FC = () => {
             aria-hidden="true"
             style={{
               background:
-                'radial-gradient(ellipse 90% 60% at 50% 110%, rgba(255,110,55,0.45) 0%, rgba(190,55,20,0.28) 32%, rgba(110,25,12,0.12) 55%, transparent 78%)',
+                'radial-gradient(ellipse 90% 60% at 50% 110%, rgba(var(--sk-fire-hot-rgb),0.45) 0%, rgba(var(--sk-fire-mid-rgb),0.28) 32%, rgba(var(--sk-fire-low-rgb),0.12) 55%, transparent 78%)',
               mixBlendMode: 'screen',
             }}
           />
 
           {/* Bottom ember: kisses the caravan's wheels, ties it to the page */}
-          <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[rgba(107,31,31,0.22)] via-[rgba(184,106,42,0.05)] to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[rgba(var(--sk-oxblood-rgb),0.22)] via-[rgba(var(--sk-copper-rgb),0.05)] to-transparent" />
         </div>
 
         {/* On mobile the two blocks stack taller than the viewport, so the
@@ -879,8 +893,8 @@ const OrbHomePage: React.FC = () => {
                       aria-pressed={isSelected}
                       className={`group relative w-full h-full text-left overflow-hidden rounded-[15px] border backdrop-blur-md flex items-center gap-3 px-4 py-3 md:px-5 md:py-3.5 transition-all duration-300 hover:translate-x-[3px] ${
                         isSelected
-                          ? 'border-brass/70 bg-black/60 shadow-[0_0_30px_rgba(232,177,74,0.26),inset_0_1px_0_rgba(255,235,190,0.16)]'
-                          : 'border-white/12 bg-black/45 hover:border-brass/55 hover:bg-black/60 hover:shadow-[0_0_24px_rgba(232,177,74,0.18)]'
+                          ? 'border-brass/70 bg-black/60 shadow-[0_0_30px_rgba(var(--sk-glow-rgb),0.26),inset_0_1px_0_rgba(255,235,190,0.16)]'
+                          : 'border-white/12 bg-black/45 hover:border-brass/55 hover:bg-black/60 hover:shadow-[0_0_24px_rgba(var(--sk-glow-rgb),0.18)]'
                       }`}
                     >
                       {/* Liseré de laiton : allumé quand le pilier est
@@ -898,7 +912,7 @@ const OrbHomePage: React.FC = () => {
                       <span
                         className={`relative shrink-0 w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                           isSelected
-                            ? 'bg-[var(--color-amber-glow)] shadow-[0_0_14px_rgba(232,177,74,0.95)]'
+                            ? 'bg-[var(--color-amber-glow)] shadow-[0_0_14px_rgba(var(--sk-glow-rgb),0.95)]'
                             : 'bg-ivory/40 group-hover:bg-[var(--color-amber-glow)]'
                         }`}
                       />
@@ -949,7 +963,7 @@ const OrbHomePage: React.FC = () => {
                 }`}
                 style={{
                   boxShadow:
-                    '0 6px 24px rgba(176,141,58,0.32), 0 0 0 1px rgba(232,177,74,0.18) inset, 0 1px 0 rgba(255,255,255,0.18) inset',
+                    '0 6px 24px rgba(var(--sk-brass-rgb),0.32), 0 0 0 1px rgba(var(--sk-glow-rgb),0.18) inset, 0 1px 0 rgba(255,255,255,0.18) inset',
                 }}
               >
                 {confirming
@@ -978,7 +992,7 @@ const OrbHomePage: React.FC = () => {
                 className="absolute -inset-[35%] rounded-full pointer-events-none"
                 style={{
                   background:
-                    'radial-gradient(circle at 50% 50%, rgba(184,106,42,0.22) 0%, rgba(176,141,58,0.14) 28%, rgba(184,106,42,0.06) 48%, transparent 62%)',
+                    'radial-gradient(circle at 50% 50%, rgba(var(--sk-copper-rgb),0.22) 0%, rgba(var(--sk-brass-rgb),0.14) 28%, rgba(var(--sk-copper-rgb),0.06) 48%, transparent 62%)',
                 }}
               />
 
@@ -1054,7 +1068,7 @@ const OrbHomePage: React.FC = () => {
                     className="orb-sweep-secondary absolute inset-0"
                     style={{
                       background:
-                        'linear-gradient(110deg, transparent 0%, rgba(232,177,74,0.45) 50%, transparent 100%)',
+                        'linear-gradient(110deg, transparent 0%, rgba(var(--sk-glow-rgb),0.45) 50%, transparent 100%)',
                       mixBlendMode: 'screen',
                     }}
                   />
@@ -1118,9 +1132,9 @@ const OrbHomePage: React.FC = () => {
                 <div
                   className="absolute inset-0 rounded-full pointer-events-none"
                   style={{
-                    border: '1px solid rgba(232,177,74,0.55)',
+                    border: '1px solid rgba(var(--sk-glow-rgb),0.55)',
                     boxShadow:
-                      'inset 0 0 0 5px rgba(8,20,36,0.6), inset 0 0 0 6px rgba(176,141,58,0.7), inset 0 0 70px rgba(184,106,42,0.22), 0 0 80px rgba(176,141,58,0.22), 0 0 200px rgba(107,31,31,0.18), 0 30px 80px rgba(0,0,0,0.6)',
+                      'inset 0 0 0 5px rgba(8,20,36,0.6), inset 0 0 0 6px rgba(var(--sk-brass-rgb),0.7), inset 0 0 70px rgba(var(--sk-copper-rgb),0.22), 0 0 80px rgba(var(--sk-brass-rgb),0.22), 0 0 200px rgba(var(--sk-oxblood-rgb),0.18), 0 30px 80px rgba(0,0,0,0.6)',
                   }}
                 />
 
@@ -1287,9 +1301,9 @@ const OrbHomePage: React.FC = () => {
               <div
                 className="absolute inset-0 rounded-2xl pointer-events-none"
                 style={{
-                  border: '1px solid rgba(232,177,74,0.4)',
+                  border: '1px solid rgba(var(--sk-glow-rgb),0.4)',
                   boxShadow:
-                    'inset 0 0 0 2px rgba(8,20,36,0.45), inset 0 0 0 3px rgba(176,141,58,0.42), inset 0 0 30px rgba(184,106,42,0.14), 0 0 30px rgba(176,141,58,0.14), 0 12px 30px rgba(0,0,0,0.5)',
+                    'inset 0 0 0 2px rgba(8,20,36,0.45), inset 0 0 0 3px rgba(var(--sk-brass-rgb),0.42), inset 0 0 30px rgba(var(--sk-copper-rgb),0.14), 0 0 30px rgba(var(--sk-brass-rgb),0.14), 0 12px 30px rgba(0,0,0,0.5)',
                 }}
               />
             </div>
@@ -1465,9 +1479,9 @@ const OrbHomePage: React.FC = () => {
             width: 5px;
             background: linear-gradient(to right,
               transparent 0%,
-              rgba(232,177,74,0.55) 30%,
+              rgba(var(--sk-glow-rgb),0.55) 30%,
               rgba(255,243,210,0.95) 50%,
-              rgba(232,177,74,0.55) 70%,
+              rgba(var(--sk-glow-rgb),0.55) 70%,
               transparent 100%);
             filter: blur(3px);
             opacity: 0;
@@ -1542,8 +1556,8 @@ const OrbHomePage: React.FC = () => {
           /* Discreet brass-tinted scrollbar for the choices list */
           .orb-list::-webkit-scrollbar { width: 4px; }
           .orb-list::-webkit-scrollbar-track { background: transparent; }
-          .orb-list::-webkit-scrollbar-thumb { background: rgba(176,141,58,0.3); border-radius: 2px; }
-          .orb-list::-webkit-scrollbar-thumb:hover { background: rgba(176,141,58,0.55); }
+          .orb-list::-webkit-scrollbar-thumb { background: rgba(var(--sk-brass-rgb),0.3); border-radius: 2px; }
+          .orb-list::-webkit-scrollbar-thumb:hover { background: rgba(var(--sk-brass-rgb),0.55); }
 
           /* ── Short-viewport treatment (landscape phones) ─────────────
              A phone in landscape is wide (trips md:) but only ~390 px tall.
@@ -1749,11 +1763,11 @@ const OrbHomePage: React.FC = () => {
       <section
         className="relative py-16 md:py-24 overflow-x-clip"
         style={{
-          backgroundColor: '#0A0207',
+          backgroundColor: 'var(--sk-ink-top)',
           backgroundImage: [
             'radial-gradient(ellipse 70% 45% at 50% 18%, rgba(201, 118, 42, 0.16), transparent 62%)',
-            'radial-gradient(ellipse 85% 55% at 50% 92%, rgba(123, 30, 45, 0.20), transparent 68%)',
-            'linear-gradient(180deg, #060104 0%, #14040A 38%, #1A050B 66%, #0A0207 100%)',
+            'radial-gradient(ellipse 85% 55% at 50% 92%, rgba(var(--sk-ruby-rgb), 0.20), transparent 68%)',
+            'linear-gradient(180deg, #060104 0%, #14040A 38%, var(--sk-deep) 66%, var(--sk-ink-top) 100%)',
           ].join(', '),
         }}
       >

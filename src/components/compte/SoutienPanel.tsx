@@ -66,11 +66,11 @@ const SoutienPanel: React.FC<{
   return (
     <section
       className="relative p-6 md:p-8 overflow-hidden"
-      style={{ background: 'rgba(26, 5, 11, 0.55)', border: '1px solid rgba(244, 239, 227, 0.10)' }}
+      style={{ background: 'rgba(var(--sk-deep-rgb), 0.55)', border: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
     >
       <header className="flex items-start gap-4 mb-5">
         <span className="witcher-tile shrink-0" style={{ width: 46, height: 46 }}>
-          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
             <LifeBuoy size={16} />
           </span>
         </span>
@@ -88,12 +88,12 @@ const SoutienPanel: React.FC<{
       {sent ? (
         <div className="py-6 text-center">
           <span className="witcher-tile mx-auto mb-5 block" style={{ width: 48, height: 48 }}>
-            <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Check size={17} /></span>
+            <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Check size={17} /></span>
           </span>
           <p className="font-display text-xl mb-2" style={{ color: 'var(--color-bone)', fontWeight: 400 }}>
             {t.sentTitle}
           </p>
-          <p className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.6)', fontWeight: 300 }}>
+          <p className="font-sans text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)', fontWeight: 300 }}>
             {t.sentBody}
           </p>
           <button
@@ -109,13 +109,13 @@ const SoutienPanel: React.FC<{
         <form onSubmit={onSubmit}>
           <p
             className="font-sans text-sm md:text-[15px] leading-[1.7] mb-6"
-            style={{ color: 'rgba(244, 239, 227, 0.7)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.7)', fontWeight: 300 }}
           >
             {t.lead}
           </p>
 
           <label className="block mb-4">
-            <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: '#D8B05A' }}>
+            <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: 'var(--sk-gilt)' }}>
               {t.deptLabel}
             </span>
             {/* Aucun nom de responsable ici non plus : on choisit un sujet. */}
@@ -129,14 +129,14 @@ const SoutienPanel: React.FC<{
               ))}
             </select>
             {(fr ? dept.hintFR : dept.hintEN) && (
-              <span className="block font-sans text-xs mt-2" style={{ color: 'rgba(244,239,227,0.42)', fontWeight: 300 }}>
+              <span className="block font-sans text-xs mt-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.42)', fontWeight: 300 }}>
                 {fr ? dept.hintFR : dept.hintEN}
               </span>
             )}
           </label>
 
           <label className="block mb-4">
-            <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: '#D8B05A' }}>
+            <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: 'var(--sk-gilt)' }}>
               {t.subjectLabel}
             </span>
             <input
@@ -149,7 +149,7 @@ const SoutienPanel: React.FC<{
           </label>
 
           <label className="block mb-5">
-            <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: '#D8B05A' }}>
+            <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: 'var(--sk-gilt)' }}>
               {t.bodyLabel}
             </span>
             <textarea
@@ -173,16 +173,16 @@ const SoutienPanel: React.FC<{
             <a
               href={`tel:${SITE.contact.phone.replace(/[^\d+]/g, '')}`}
               className="group inline-flex items-center gap-2.5 font-sans text-sm transition-colors"
-              style={{ color: 'rgba(244,239,227,0.6)' }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}
             >
-              <Phone size={14} style={{ color: '#D8B05A' }} />
-              <span className="group-hover:text-[#D8B05A] transition-colors">
+              <Phone size={14} style={{ color: 'var(--sk-gilt)' }} />
+              <span className="group-hover:text-[var(--sk-gilt)] transition-colors">
                 {t.urgent} {SITE.contact.phone}
               </span>
             </a>
           </div>
 
-          <p className="font-sans text-xs mt-5" style={{ color: 'rgba(244,239,227,0.38)', fontWeight: 300 }}>
+          <p className="font-sans text-xs mt-5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.38)', fontWeight: 300 }}>
             {t.asNote} {userEmail}
           </p>
         </form>

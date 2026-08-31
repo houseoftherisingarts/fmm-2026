@@ -31,7 +31,7 @@ const Orb: React.FC<Props> = ({ image, position = 'center', video, label, classN
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 50% 50%, rgba(184, 106, 42, 0.32), rgba(176, 141, 58, 0.18) 40%, transparent 65%)',
+            'radial-gradient(circle at 50% 50%, rgba(var(--sk-copper-rgb), 0.32), rgba(var(--sk-brass-rgb), 0.18) 40%, transparent 65%)',
           filter: 'blur(55px)',
         }}
       />
@@ -76,7 +76,7 @@ const Orb: React.FC<Props> = ({ image, position = 'center', video, label, classN
             className="fmm-orb-sweep-2 absolute inset-0"
             style={{
               background:
-                'linear-gradient(110deg, transparent 0%, rgba(232, 177, 74, 0.45) 50%, transparent 100%)',
+                'linear-gradient(110deg, transparent 0%, rgba(var(--sk-glow-rgb), 0.45) 50%, transparent 100%)',
               mixBlendMode: 'screen',
             }}
           />
@@ -88,7 +88,7 @@ const Orb: React.FC<Props> = ({ image, position = 'center', video, label, classN
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle at 50% 50%, transparent 55%, rgba(10, 2, 7, 0.7) 100%)',
+              'radial-gradient(circle at 50% 50%, transparent 55%, rgba(var(--sk-ink-rgb), 0.7) 100%)',
           }}
         />
 
@@ -108,13 +108,13 @@ const Orb: React.FC<Props> = ({ image, position = 'center', video, label, classN
           aria-hidden
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
-            border: '1px solid rgba(232, 177, 74, 0.55)',
+            border: '1px solid rgba(var(--sk-glow-rgb), 0.55)',
             boxShadow:
-              'inset 0 0 0 5px rgba(10, 2, 7, 0.6),' +
-              'inset 0 0 0 6px rgba(176, 141, 58, 0.7),' +
-              'inset 0 0 70px rgba(184, 106, 42, 0.22),' +
-              '0 0 80px rgba(176, 141, 58, 0.22),' +
-              '0 0 200px rgba(107, 31, 31, 0.18),' +
+              'inset 0 0 0 5px rgba(var(--sk-ink-rgb), 0.6),' +
+              'inset 0 0 0 6px rgba(var(--sk-brass-rgb), 0.7),' +
+              'inset 0 0 70px rgba(var(--sk-copper-rgb), 0.22),' +
+              '0 0 80px rgba(var(--sk-brass-rgb), 0.22),' +
+              '0 0 200px rgba(var(--sk-oxblood-rgb), 0.18),' +
               '0 30px 80px rgba(0, 0, 0, 0.6)',
           }}
         />

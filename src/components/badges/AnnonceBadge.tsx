@@ -46,7 +46,7 @@ const AnnonceBadge: React.FC = () => {
             style={{
               background: 'linear-gradient(165deg, rgba(24,12,8,0.94), rgba(8,3,5,0.97))',
               backdropFilter: 'blur(14px)',
-              boxShadow: '0 30px 90px rgba(0,0,0,0.65), 0 0 60px rgba(232,177,74,0.12) inset',
+              boxShadow: '0 30px 90px rgba(0,0,0,0.65), 0 0 60px rgba(var(--sk-glow-rgb),0.12) inset',
             }}
             initial={{ scale: 0.86, y: 18, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -63,13 +63,13 @@ const AnnonceBadge: React.FC = () => {
 
             <motion.div
               className="mx-auto mb-5 w-28 h-28 md:w-32 md:h-32"
-              style={{ filter: 'drop-shadow(0 0 34px rgba(232,177,74,0.35))' }}
+              style={{ filter: 'drop-shadow(0 0 34px rgba(var(--sk-glow-rgb),0.35))' }}
               initial={{ rotate: -14, scale: 0.7 }}
               animate={{ rotate: 0, scale: 1 }}
               transition={{ type: 'spring', stiffness: 180, damping: 14, delay: 0.08 }}
             >
               {sceauCasse ? (
-                <span aria-hidden className="w-full h-full flex items-center justify-center text-6xl" style={{ color: '#D8B05A' }}>
+                <span aria-hidden className="w-full h-full flex items-center justify-center text-6xl" style={{ color: 'var(--sk-gilt)' }}>
                   {annonce.badge.glyphe}
                 </span>
               ) : (

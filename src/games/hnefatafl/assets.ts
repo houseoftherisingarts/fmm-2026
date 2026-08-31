@@ -167,7 +167,13 @@ export const PIECE_SETS: PieceSet[] = [
       2: '/games/hnefatafl/models/caravane-femme.glb',
       3: '/games/hnefatafl/models/caravane-roulotte.glb',
     },
-    scales: { 1: 0.58, 2: 0.58, 3: 0.72 },
+    // Calage mesuré à l'écran le 2026-08-31. Les deux figurines sortent
+    // de Meshy à 1,9 de haut : 0,54 les met à 1,03, la taille des
+    // guerriers du Jarl. La roulotte, elle, est normalisée sur sa
+    // LONGUEUR (1,89 en x pour 1,35 en y), donc 0,80 lui donne 1,08 de
+    // haut, un cheveu au-dessus des gens, et 1,5 de long : elle déborde
+    // sur les cases voisines sans jamais toucher une pièce.
+    scales: { 1: 0.54, 2: 0.54, 3: 0.80 },
     teintes: { assaillant: 0x233b5c, defenseur: 0x7a1f3a, roi: 0x8a2430 },
   },
   {

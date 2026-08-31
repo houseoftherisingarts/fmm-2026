@@ -69,7 +69,7 @@ const VoteBar: React.FC<{
         aria-label={fr ? 'Voter pour' : 'Upvote'}
         aria-pressed={monVote === 1}
         className="p-1 rounded-full transition-colors hover:bg-white/10"
-        style={{ color: monVote === 1 ? '#D8B05A' : 'rgba(244,239,227,0.4)' }}
+        style={{ color: monVote === 1 ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.4)' }}
       >
         <ChevronUp size={tailleFleche} strokeWidth={2.5} />
       </button>
@@ -82,7 +82,7 @@ const VoteBar: React.FC<{
         onFocus={ouvrirBulle}
         onBlur={() => setBulleOuverte(false)}
         className={`font-sans font-semibold tabular-nums px-0.5 cursor-default ${petit ? 'text-[11px]' : 'text-xs'}`}
-        style={{ color: score > 0 ? '#D8B05A' : score < 0 ? '#E08A6E' : 'rgba(244,239,227,0.55)' }}
+        style={{ color: score > 0 ? 'var(--sk-gilt)' : score < 0 ? '#E08A6E' : 'rgba(var(--sk-parchment-rgb),0.55)' }}
       >
         {score}
       </span>
@@ -93,7 +93,7 @@ const VoteBar: React.FC<{
         aria-label={fr ? 'Voter contre' : 'Downvote'}
         aria-pressed={monVote === -1}
         className="p-1 rounded-full transition-colors hover:bg-white/10"
-        style={{ color: monVote === -1 ? '#E08A6E' : 'rgba(244,239,227,0.4)' }}
+        style={{ color: monVote === -1 ? '#E08A6E' : 'rgba(var(--sk-parchment-rgb),0.4)' }}
       >
         <ChevronDown size={tailleFleche} strokeWidth={2.5} />
       </button>
@@ -108,13 +108,13 @@ const VoteBar: React.FC<{
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
             className="absolute z-30 left-1/2 -translate-x-1/2 top-full mt-1.5 w-56 rounded-card p-3 text-left pointer-events-none"
-            style={{ background: 'rgba(16,4,8,0.96)', border: '1px solid rgba(216,176,90,0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
+            style={{ background: 'rgba(16,4,8,0.96)', border: '1px solid rgba(var(--sk-gilt-rgb),0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
           >
             {chargement ? (
               <p className="font-sans text-[11px] text-ivory-soft/60">{fr ? 'Chargement…' : 'Loading…'}</p>
             ) : (
               <div className="space-y-2.5">
-                {groupe(fr ? 'Pour' : 'For', '#D8B05A', pour, nomsPour)}
+                {groupe(fr ? 'Pour' : 'For', 'var(--sk-gilt)', pour, nomsPour)}
                 {groupe(fr ? 'Contre' : 'Against', '#E08A6E', contre, nomsContre)}
               </div>
             )}

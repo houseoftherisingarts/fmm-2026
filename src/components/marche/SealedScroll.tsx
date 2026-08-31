@@ -113,7 +113,7 @@ const FlipCard: React.FC<{
   const [flipped, setFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
   const tilt = useTilt(8);
-  const spot = useSpotlight('rgba(232, 177, 74, 0.28)', 260);
+  const spot = useSpotlight('rgba(var(--sk-glow-rgb), 0.28)', 260);
   const playSfx = useSfx('/orb/sfx/loot.mp3', 0.4);
 
   const cta = lang === 'FR' ? (kiosk.cta?.FR ?? copy.visit) : (kiosk.cta?.EN ?? copy.visit);
@@ -189,7 +189,7 @@ const FlipCard: React.FC<{
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(180deg, rgba(184,106,42,0.15) 0%, transparent 30%, rgba(10,2,7,0.55) 62%, rgba(10,2,7,0.97) 100%)',
+                      'linear-gradient(180deg, rgba(var(--sk-copper-rgb),0.15) 0%, transparent 30%, rgba(var(--sk-ink-rgb),0.55) 62%, rgba(var(--sk-ink-rgb),0.97) 100%)',
                   }}
                 />
                 <motion.div
@@ -258,7 +258,7 @@ const FlipCard: React.FC<{
                     style={{
                       color: 'var(--color-amber-glow)',
                       fontWeight: 400,
-                      textShadow: '0 0 28px rgba(232, 177, 74, 0.45)',
+                      textShadow: '0 0 28px rgba(var(--sk-glow-rgb), 0.45)',
                     }}
                   >
                     {kiosk.promo}
@@ -269,8 +269,8 @@ const FlipCard: React.FC<{
                     className="inline-flex items-center gap-2 px-4 py-2 font-sans uppercase tracking-[0.3em] text-[10px] hover:scale-[1.02] transition"
                     style={{
                       color: copied ? 'var(--color-bone)' : 'var(--color-amber-glow)',
-                      border: '1px solid rgba(232,177,74,0.5)',
-                      background: copied ? 'rgba(232,177,74,0.18)' : 'rgba(232,177,74,0.06)',
+                      border: '1px solid rgba(var(--sk-glow-rgb),0.5)',
+                      background: copied ? 'rgba(var(--sk-glow-rgb),0.18)' : 'rgba(var(--sk-glow-rgb),0.06)',
                     }}
                   >
                     {copied ? copy.copied : copy.copyAction}

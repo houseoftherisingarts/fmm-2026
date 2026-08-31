@@ -46,11 +46,11 @@ const Interrupteur: React.FC<{ actif: boolean; onClick: () => void; label: strin
   <button
     type="button" role="switch" aria-checked={actif} disabled={disabled} onClick={onClick}
     className="relative w-10 h-[22px] rounded-full transition-colors shrink-0 disabled:opacity-60"
-    style={{ background: actif ? '#D8B05A' : 'rgba(244,239,227,0.18)' }}
+    style={{ background: actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.18)' }}
     aria-label={label}
   >
     <span className="absolute left-0 top-0.5 w-[18px] h-[18px] rounded-full transition-transform"
-          style={{ background: '#F4EFE3', transform: actif ? 'translateX(20px)' : 'translateX(2px)' }} />
+          style={{ background: 'var(--sk-parchment)', transform: actif ? 'translateX(20px)' : 'translateX(2px)' }} />
   </button>
 );
 
@@ -86,12 +86,12 @@ const AlertesPanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang 
       <div className="flex flex-wrap gap-2 mb-6">
         <button type="button" onClick={toutRecevoir}
                 className="px-3.5 py-2 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
-                style={{ color: '#D8B05A', background: 'rgba(216,176,90,0.14)', border: '1px solid rgba(216,176,90,0.5)' }}>
+                style={{ color: 'var(--sk-gilt)', background: 'rgba(var(--sk-gilt-rgb),0.14)', border: '1px solid rgba(var(--sk-gilt-rgb),0.5)' }}>
           {fr ? 'Tout recevoir' : 'Receive everything'}
         </button>
         <button type="button" onClick={essentielSeulement}
                 className="px-3.5 py-2 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
-                style={{ color: 'rgba(244,239,227,0.7)', background: 'transparent', border: '1px solid rgba(244,239,227,0.18)' }}>
+                style={{ color: 'rgba(var(--sk-parchment-rgb),0.7)', background: 'transparent', border: '1px solid rgba(var(--sk-parchment-rgb),0.18)' }}>
           {fr ? 'Garder l’essentiel seulement' : 'Keep only the essentials'}
         </button>
       </div>
@@ -131,7 +131,7 @@ const AlertesPanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang 
                 </p>
               </div>
             </div>
-            <span className="inline-flex items-center gap-1.5 shrink-0 text-[10px] font-sans uppercase tracking-[0.16em]" style={{ color: '#D8B05A' }}>
+            <span className="inline-flex items-center gap-1.5 shrink-0 text-[10px] font-sans uppercase tracking-[0.16em]" style={{ color: 'var(--sk-gilt)' }}>
               <Check size={13} /> {fr ? 'Toujours' : 'Always'}
             </span>
           </div>

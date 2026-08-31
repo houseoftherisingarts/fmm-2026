@@ -42,7 +42,7 @@ const TarotCard: React.FC<{ glyph: TarotGlyph; className?: string }> = ({ glyph,
 
     {/* Brass border + inner double-line: preserved from the original
         design so the card sits on the velvet stage as a framed object. */}
-    <div className="absolute inset-0 rounded-card border border-brass/60 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.6),0_0_0_1px_rgba(176,141,58,0.15)_inset]" />
+    <div className="absolute inset-0 rounded-card border border-brass/60 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.6),0_0_0_1px_rgba(var(--sk-brass-rgb),0.15)_inset]" />
     <div className="absolute inset-1 rounded-[10px] border border-brass/25" />
 
     {/* Faint corner filigree (decorative SVG, not text). */}

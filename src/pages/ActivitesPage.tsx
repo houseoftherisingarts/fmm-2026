@@ -237,7 +237,7 @@ const CornerTicks: React.FC = () => {
     width: 10,
     height: 10,
     borderColor: 'var(--color-amber-glow)',
-    filter: 'drop-shadow(0 0 4px rgba(232, 177, 74, 0.7))',
+    filter: 'drop-shadow(0 0 4px rgba(var(--sk-glow-rgb), 0.7))',
     pointerEvents: 'none',
   };
   return (
@@ -265,10 +265,10 @@ const HudArrow: React.FC<{
     aria-label={ariaLabel}
     className="inline-flex items-center justify-center w-9 h-9 sm:w-7 sm:h-7 rounded-full transition hover:scale-110"
     style={{
-      background: 'linear-gradient(180deg, rgba(232, 177, 74, 0.10), rgba(232, 177, 74, 0.02))',
+      background: 'linear-gradient(180deg, rgba(var(--sk-glow-rgb), 0.10), rgba(var(--sk-glow-rgb), 0.02))',
       color: 'var(--color-amber-glow)',
-      border: '1px solid rgba(232, 177, 74, 0.35)',
-      boxShadow: 'inset 0 1px 0 rgba(255, 241, 181, 0.18)',
+      border: '1px solid rgba(var(--sk-glow-rgb), 0.35)',
+      boxShadow: 'inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.18)',
     }}
   >
     {icon}
@@ -286,7 +286,7 @@ const HudMeter: React.FC<{
     <div className={`flex flex-col gap-1.5 ${align === 'right' ? 'md:items-end md:text-right' : ''}`}>
       <div className="flex items-baseline justify-between gap-3">
         <span className="font-sans uppercase tracking-[0.3em] text-[10px]"
-              style={{ color: 'rgba(244, 239, 227, 0.65)' }}>
+              style={{ color: 'rgba(var(--sk-parchment-rgb), 0.65)' }}>
           {label}
         </span>
         <span className="font-display title-medieval text-sm" style={{ color }}>
@@ -296,8 +296,8 @@ const HudMeter: React.FC<{
       <div
         className="relative h-1.5 w-full overflow-hidden"
         style={{
-          background: 'rgba(244, 239, 227, 0.08)',
-          border: '1px solid rgba(216, 155, 58, 0.15)',
+          background: 'rgba(var(--sk-parchment-rgb), 0.08)',
+          border: '1px solid rgba(var(--sk-mustard-rgb), 0.15)',
         }}
       >
         <span
@@ -305,7 +305,7 @@ const HudMeter: React.FC<{
           className="acti-meter-fill absolute inset-y-0 left-0 transition-all"
           style={{
             width: `${value}%`,
-            background: `linear-gradient(90deg, ${color}, ${color === 'var(--color-amber-glow)' ? 'rgba(232, 177, 74, 0.6)' : 'rgba(184, 106, 42, 0.6)'})`,
+            background: `linear-gradient(90deg, ${color}, ${color === 'var(--color-amber-glow)' ? 'rgba(var(--sk-glow-rgb), 0.6)' : 'rgba(var(--sk-copper-rgb), 0.6)'})`,
             boxShadow: `0 0 10px ${color}`,
           }}
         />
@@ -681,7 +681,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
           <div className="sec-head text-center mb-8 md:mb-10">
             <DisplayTitle size="lg" className="mb-4">{t.activitiesTitle}</DisplayTitle>
             <p className="font-editorial text-base md:text-lg max-w-2xl mx-auto"
-               style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
+               style={{ color: 'rgba(var(--sk-parchment-rgb), 0.78)' }}>
               {t.activitiesLead}
             </p>
           </div>
@@ -693,23 +693,23 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               both drive the same `filter` state. */}
           <div
             className="acti-hud-top mb-4"
-            style={{ borderTop: '1px solid rgba(216, 155, 58, 0.22)', borderBottom: '1px solid rgba(216, 155, 58, 0.22)' }}
+            style={{ borderTop: '1px solid rgba(var(--sk-mustard-rgb), 0.22)', borderBottom: '1px solid rgba(var(--sk-mustard-rgb), 0.22)' }}
           >
             {/* Row 1: title centered, stat readouts on the right. */}
             <div
               className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-2 py-2.5"
-              style={{ borderBottom: '1px solid rgba(216, 155, 58, 0.10)' }}
+              style={{ borderBottom: '1px solid rgba(var(--sk-mustard-rgb), 0.10)' }}
             >
               <span aria-hidden />
               <span
                 className="font-display title-medieval uppercase tracking-[0.5em] text-[11px] md:text-xs text-center whitespace-nowrap"
-                style={{ color: 'var(--color-amber-glow)', textShadow: '0 0 12px rgba(232, 177, 74, 0.4)' }}
+                style={{ color: 'var(--color-amber-glow)', textShadow: '0 0 12px rgba(var(--sk-glow-rgb), 0.4)' }}
               >
                 {t.activitiesTitle}
               </span>
               <div
                 className="flex items-center justify-end gap-3 md:gap-4 font-sans uppercase tracking-[0.22em] text-[10px]"
-                style={{ color: 'rgba(244, 239, 227, 0.7)' }}
+                style={{ color: 'rgba(var(--sk-parchment-rgb), 0.7)' }}
               >
                 <span className="inline-flex items-baseline gap-1.5">
                   <span aria-hidden className="w-1.5 h-1.5 rotate-45 self-center" style={{ background: 'var(--color-amber-glow)' }} />
@@ -735,7 +735,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     onPointerEnter={(e) => { if (e.pointerType === 'mouse' && !isActive) playHover(); }}
                     className="acti-chip inline-flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 font-sans uppercase tracking-[0.18em] sm:tracking-[0.22em] text-[10px] sm:text-[9px] md:text-[10px] transition whitespace-nowrap cursor-pointer hover:!opacity-100"
                     style={{
-                      color: isActive ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.55)',
+                      color: isActive ? 'var(--color-amber-glow)' : 'rgba(var(--sk-parchment-rgb), 0.55)',
                       borderBottom: isActive ? '1px solid var(--color-amber-glow)' : '1px solid transparent',
                     }}
                   >
@@ -765,8 +765,8 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 className="acti-knight-glow absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    'radial-gradient(ellipse 60% 65% at 50% 55%, rgba(184, 106, 42, 0.22), transparent 70%),' +
-                    'radial-gradient(ellipse 45% 55% at 50% 60%, rgba(232, 177, 74, 0.12), transparent 75%)',
+                    'radial-gradient(ellipse 60% 65% at 50% 55%, rgba(var(--sk-copper-rgb), 0.22), transparent 70%),' +
+                    'radial-gradient(ellipse 45% 55% at 50% 60%, rgba(var(--sk-glow-rgb), 0.12), transparent 75%)',
                 }}
               />
               <img
@@ -775,7 +775,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 className="acti-knight-img fmm-no-grade relative w-full h-full object-contain"
                 style={{
                   filter:
-                    'drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(184, 106, 42, 0.4))',
+                    'drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(var(--sk-copper-rgb), 0.4))',
                   // Fade the bottom 30% gradually to transparent so the
                   // knight dissolves into the page rather than sitting
                   // on a hard edge. Gradient: opaque from the top down
@@ -815,9 +815,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     className="relative h-full overflow-hidden"
                     style={{
                       borderRadius: 15,
-                      border: `1px solid ${active ? 'rgba(232, 177, 74, 0.55)' : 'rgba(216, 155, 58, 0.20)'}`,
+                      border: `1px solid ${active ? 'rgba(var(--sk-glow-rgb), 0.55)' : 'rgba(var(--sk-mustard-rgb), 0.20)'}`,
                       boxShadow: active
-                        ? 'inset 0 0 0 1px rgba(232, 177, 74, 0.35), 0 0 24px -8px rgba(232, 177, 74, 0.45)'
+                        ? 'inset 0 0 0 1px rgba(var(--sk-glow-rgb), 0.35), 0 0 24px -8px rgba(var(--sk-glow-rgb), 0.45)'
                         : '0 12px 30px -18px rgba(0, 0, 0, 0.7)',
                     }}
                   >
@@ -841,9 +841,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       <span
                         className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] px-3 py-1.5 font-display title-medieval uppercase tracking-[0.28em] text-[10px] md:text-[11px] whitespace-nowrap"
                         style={{
-                          color: 'rgba(244, 239, 227, 0.85)',
-                          border: '1px solid rgba(244, 239, 227, 0.45)',
-                          background: 'rgba(10, 2, 7, 0.55)',
+                          color: 'rgba(var(--sk-parchment-rgb), 0.85)',
+                          border: '1px solid rgba(var(--sk-parchment-rgb), 0.45)',
+                          background: 'rgba(var(--sk-ink-rgb), 0.55)',
                           borderRadius: 4,
                         }}
                       >
@@ -871,7 +871,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         background:
-                          'linear-gradient(180deg, rgba(10, 2, 7, 0) 35%, rgba(10, 2, 7, 0.55) 65%, rgba(10, 2, 7, 0.92) 100%)',
+                          'linear-gradient(180deg, rgba(var(--sk-ink-rgb), 0) 35%, rgba(var(--sk-ink-rgb), 0.55) 65%, rgba(var(--sk-ink-rgb), 0.92) 100%)',
                       }}
                     />
 
@@ -883,9 +883,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     <span
                       className="absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2 py-1 font-display title-medieval text-[10px] tracking-[0.3em]"
                       style={{
-                        background: 'rgba(10, 2, 7, 0.7)',
+                        background: 'rgba(var(--sk-ink-rgb), 0.7)',
                         color: 'var(--color-amber-glow)',
-                        border: '1px solid rgba(232, 177, 74, 0.35)',
+                        border: '1px solid rgba(var(--sk-glow-rgb), 0.35)',
                         borderRadius: 6,
                       }}
                     >
@@ -902,7 +902,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       </h3>
                       <p
                         className="font-editorial italic text-xs md:text-sm leading-snug"
-                        style={{ color: 'rgba(244, 239, 227, 0.75)' }}
+                        style={{ color: 'rgba(var(--sk-parchment-rgb), 0.75)' }}
                       >
                         {lang === 'FR' ? a.bodyFR : a.bodyEN}
                       </p>
@@ -924,7 +924,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               l'édition (1er mars 2026). */}
           <div
             className="acti-hud-bottom mt-6 px-2 py-4"
-            style={{ borderTop: '1px solid rgba(216, 155, 58, 0.22)' }}
+            style={{ borderTop: '1px solid rgba(var(--sk-mustard-rgb), 0.22)' }}
           >
             {(() => {
               const debut = new Date('2026-03-01T00:00:00-05:00').getTime();
@@ -977,7 +977,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                   {t.schedule2026Soon}
                 </p>
                 <p className="font-editorial italic text-sm md:text-base mt-2 max-w-2xl mx-auto"
-                   style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
+                   style={{ color: 'rgba(var(--sk-parchment-rgb), 0.6)' }}>
                   {t.scheduleSouvenir}
                 </p>
               </>
@@ -1047,12 +1047,12 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     style={{
                       borderRadius: 12,
                       background: isActive
-                        ? 'linear-gradient(180deg, rgba(232, 177, 74, 0.10), rgba(19, 8, 11, 0.78))'
-                        : 'rgba(19, 8, 11, 0.55)',
-                      border: `1px solid ${isActive ? 'rgba(232, 177, 74, 0.55)' : 'rgba(216, 155, 58, 0.18)'}`,
+                        ? 'linear-gradient(180deg, rgba(var(--sk-glow-rgb), 0.10), rgba(var(--sk-panel-rgb), 0.78))'
+                        : 'rgba(var(--sk-panel-rgb), 0.55)',
+                      border: `1px solid ${isActive ? 'rgba(var(--sk-glow-rgb), 0.55)' : 'rgba(var(--sk-mustard-rgb), 0.18)'}`,
                       boxShadow: isActive
-                        ? 'inset 0 1px 0 rgba(232, 177, 74, 0.18), 0 0 28px -10px rgba(232, 177, 74, 0.55)'
-                        : 'inset 0 1px 0 rgba(232, 177, 74, 0.05)',
+                        ? 'inset 0 1px 0 rgba(var(--sk-glow-rgb), 0.18), 0 0 28px -10px rgba(var(--sk-glow-rgb), 0.55)'
+                        : 'inset 0 1px 0 rgba(var(--sk-glow-rgb), 0.05)',
                     }}
                   >
                     {isActive && <CornerTicks />}
@@ -1061,15 +1061,15 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       <span
                         className="font-display title-medieval text-2xl md:text-3xl leading-none"
                         style={{
-                          color: isActive ? 'var(--color-amber-glow)' : 'rgba(244, 239, 227, 0.45)',
-                          textShadow: isActive ? '0 0 14px rgba(232, 177, 74, 0.45)' : undefined,
+                          color: isActive ? 'var(--color-amber-glow)' : 'rgba(var(--sk-parchment-rgb), 0.45)',
+                          textShadow: isActive ? '0 0 14px rgba(var(--sk-glow-rgb), 0.45)' : undefined,
                         }}
                       >
                         {ROMAN[idx]}
                       </span>
                       <span
                         className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.25em] text-[10px]"
-                        style={{ color: isActive ? 'var(--color-bone)' : 'rgba(244, 239, 227, 0.45)' }}
+                        style={{ color: isActive ? 'var(--color-bone)' : 'rgba(var(--sk-parchment-rgb), 0.45)' }}
                       >
                         <span aria-hidden className="w-1.5 h-1.5 rotate-45"
                               style={{ background: isActive ? 'var(--color-amber-glow)' : 'var(--color-copper)' }} />
@@ -1079,13 +1079,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
 
                     <p
                       className="font-display title-medieval uppercase tracking-[0.12em] sm:tracking-[0.18em] text-[11px] sm:text-sm md:text-base"
-                      style={{ color: isActive ? 'var(--color-bone)' : 'rgba(244, 239, 227, 0.7)' }}
+                      style={{ color: isActive ? 'var(--color-bone)' : 'rgba(var(--sk-parchment-rgb), 0.7)' }}
                     >
                       {dayName}
                     </p>
                     <p
                       className="font-editorial italic text-xs md:text-sm mt-0.5"
-                      style={{ color: isActive ? 'rgba(244, 239, 227, 0.7)' : 'rgba(244, 239, 227, 0.45)' }}
+                      style={{ color: isActive ? 'rgba(var(--sk-parchment-rgb), 0.7)' : 'rgba(var(--sk-parchment-rgb), 0.45)' }}
                     >
                       {dayDate}
                     </p>
@@ -1105,10 +1105,10 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
               <div className="caravan-glass relative p-5 md:p-8 lg:p-10">
                 {/* Header strip: day title + meta */}
                 <div className="flex items-baseline justify-between gap-4 flex-wrap pb-4 mb-6"
-                     style={{ borderBottom: '1px solid rgba(216, 155, 58, 0.22)' }}>
+                     style={{ borderBottom: '1px solid rgba(var(--sk-mustard-rgb), 0.22)' }}>
                   <div className="flex items-baseline gap-3">
                     <span className="font-display title-medieval text-3xl md:text-4xl leading-none"
-                          style={{ color: 'var(--color-amber-glow)', textShadow: '0 0 14px rgba(232, 177, 74, 0.45)' }}>
+                          style={{ color: 'var(--color-amber-glow)', textShadow: '0 0 14px rgba(var(--sk-glow-rgb), 0.45)' }}>
                       {ROMAN[activeDay]}
                     </span>
                     <h3 className="font-display title-medieval text-lg sm:text-xl md:text-2xl"
@@ -1117,7 +1117,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     </h3>
                   </div>
                   <div className="flex items-center gap-3 font-sans uppercase tracking-[0.25em] text-[10px]"
-                       style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
+                       style={{ color: 'rgba(var(--sk-parchment-rgb), 0.6)' }}>
                     <span>{day.items.length} {t.scheduleMeta}</span>
                     {/* Une journée peut être vide (horaire 2026 saisi à moitié
                         dans l'admin) : sans cette garde, toute la page tombe. */}
@@ -1190,7 +1190,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                                 className="sched-pip relative mt-2 w-2 h-2 rotate-45 transition group-hover/row:scale-125"
                                 style={{
                                   background: 'var(--color-amber-glow)',
-                                  boxShadow: '0 0 8px rgba(232, 177, 74, 0.55)',
+                                  boxShadow: '0 0 8px rgba(var(--sk-glow-rgb), 0.55)',
                                 }} />
                         </span>
 
@@ -1218,7 +1218,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                                 aria-haspopup="dialog"
                               >
                                 <span className="border-b border-dotted transition group-hover/info:text-[var(--color-amber-glow)]"
-                                      style={{ borderColor: 'rgba(216, 155, 58, 0.45)' }}>
+                                      style={{ borderColor: 'rgba(var(--sk-mustard-rgb), 0.45)' }}>
                                   {item.label}
                                 </span>
                                 <span aria-hidden className="ml-1.5 font-sans text-[10px] align-top"
@@ -1229,9 +1229,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                           <span
                             className="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 font-sans uppercase tracking-[0.2em] text-[9px] md:text-[10px]"
                             style={{
-                              color: 'rgba(244, 239, 227, 0.65)',
-                              background: 'rgba(232, 177, 74, 0.05)',
-                              border: '1px solid rgba(216, 155, 58, 0.22)',
+                              color: 'rgba(var(--sk-parchment-rgb), 0.65)',
+                              background: 'rgba(var(--sk-glow-rgb), 0.05)',
+                              border: '1px solid rgba(var(--sk-mustard-rgb), 0.22)',
                               borderRadius: 4,
                             }}
                           >
@@ -1319,7 +1319,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     {t.banquetTitle}
                   </DisplayTitle>
                   <p className="font-editorial text-base md:text-lg leading-relaxed"
-                     style={{ color: 'rgba(244, 239, 227, 0.75)' }}>
+                     style={{ color: 'rgba(var(--sk-parchment-rgb), 0.75)' }}>
                     {t.banquetBody}
                   </p>
                 </div>
@@ -1364,7 +1364,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 </Eyebrow>
                 <DisplayTitle size="lg" glow className="mb-6">{t.behourdTitle}</DisplayTitle>
                 <p className="font-editorial text-base md:text-lg leading-relaxed mb-8"
-                   style={{ color: 'rgba(244, 239, 227, 0.85)' }}>
+                   style={{ color: 'rgba(var(--sk-parchment-rgb), 0.85)' }}>
                   {t.behourdBody}
                 </p>
                 <BehourdRegistrationForm lang={lang} />
@@ -1416,7 +1416,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     <X size={18} />
                   </button>
                   <div className="flex items-center gap-2.5 font-sans uppercase tracking-[0.25em] text-[10px] mb-3"
-                       style={{ color: 'rgba(244, 239, 227, 0.6)' }}>
+                       style={{ color: 'rgba(var(--sk-parchment-rgb), 0.6)' }}>
                     <span style={{ color: 'var(--color-amber-glow)' }}>{infoItem.time}</span>
                     <span className="opacity-50">·</span>
                     <span className="inline-flex items-center gap-1"><MapPin size={9} style={{ color: 'var(--color-copper)' }} />{infoItem.where}</span>
@@ -1426,7 +1426,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                     {infoItem.label}
                   </h3>
                   <p className="font-editorial text-base leading-relaxed"
-                     style={{ color: 'rgba(244, 239, 227, 0.8)' }}>
+                     style={{ color: 'rgba(var(--sk-parchment-rgb), 0.8)' }}>
                     {infoItem.body}
                   </p>
                 </div>
@@ -1447,7 +1447,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 overflow-y-auto"
             style={{
-              background: 'rgba(10, 2, 7, 0.85)',
+              background: 'rgba(var(--sk-ink-rgb), 0.85)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
             }}
@@ -1464,12 +1464,12 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 transformStyle: 'preserve-3d',
                 transformPerspective: 1400,
                 background:
-                  `linear-gradient(180deg, rgba(232, 177, 74, 0.04) 0%, transparent 30%, rgba(184, 106, 42, 0.05) 100%),` +
+                  `linear-gradient(180deg, rgba(var(--sk-glow-rgb), 0.04) 0%, transparent 30%, rgba(var(--sk-copper-rgb), 0.05) 100%),` +
                   `linear-gradient(180deg, #1a0e10 0%, #0d0608 100%)`,
-                border: '1px solid rgba(232, 177, 74, 0.45)',
+                border: '1px solid rgba(var(--sk-glow-rgb), 0.45)',
                 borderRadius: 15,
                 boxShadow:
-                  'inset 0 1px 0 rgba(232, 177, 74, 0.18), 0 30px 80px -20px rgba(232, 177, 74, 0.4), 0 0 60px -20px rgba(184, 106, 42, 0.45)',
+                  'inset 0 1px 0 rgba(var(--sk-glow-rgb), 0.18), 0 30px 80px -20px rgba(var(--sk-glow-rgb), 0.4), 0 0 60px -20px rgba(var(--sk-copper-rgb), 0.45)',
               }}
             >
               {/* Hero image */}
@@ -1486,16 +1486,16 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     background:
-                      'linear-gradient(180deg, rgba(10,2,7,0) 30%, rgba(10,2,7,0.55) 70%, rgba(10,2,7,0.95) 100%)',
+                      'linear-gradient(180deg, rgba(var(--sk-ink-rgb),0) 30%, rgba(var(--sk-ink-rgb),0.55) 70%, rgba(var(--sk-ink-rgb),0.95) 100%)',
                   }}
                 />
                 {/* N° chip: top-left */}
                 <span
                   className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2 py-1 font-display title-medieval text-[10px] tracking-[0.3em]"
                   style={{
-                    background: 'rgba(10, 2, 7, 0.7)',
+                    background: 'rgba(var(--sk-ink-rgb), 0.7)',
                     color: 'var(--color-amber-glow)',
-                    border: '1px solid rgba(232, 177, 74, 0.45)',
+                    border: '1px solid rgba(var(--sk-glow-rgb), 0.45)',
                     borderRadius: 6,
                   }}
                 >
@@ -1505,9 +1505,9 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 <span
                   className="absolute top-3 right-12 inline-flex items-center gap-1.5 px-2 py-1 font-sans uppercase tracking-[0.25em] text-[9px]"
                   style={{
-                    background: 'rgba(10, 2, 7, 0.7)',
-                    color: 'rgba(244, 239, 227, 0.75)',
-                    border: '1px solid rgba(216, 155, 58, 0.30)',
+                    background: 'rgba(var(--sk-ink-rgb), 0.7)',
+                    color: 'rgba(var(--sk-parchment-rgb), 0.75)',
+                    border: '1px solid rgba(var(--sk-mustard-rgb), 0.30)',
                     borderRadius: 6,
                   }}
                 >
@@ -1525,7 +1525,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 </h2>
                 <p
                   className="font-editorial italic text-base mb-4"
-                  style={{ color: 'rgba(244, 239, 227, 0.65)' }}
+                  style={{ color: 'rgba(var(--sk-parchment-rgb), 0.65)' }}
                 >
                   {lang === 'FR' ? activeActivity.bodyFR : activeActivity.bodyEN}
                 </p>
@@ -1536,7 +1536,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 />
                 <p
                   className="font-editorial text-base md:text-lg leading-relaxed mb-6"
-                  style={{ color: 'rgba(244, 239, 227, 0.85)' }}
+                  style={{ color: 'rgba(var(--sk-parchment-rgb), 0.85)' }}
                 >
                   {lang === 'FR' ? activeActivity.descFR : activeActivity.descEN}
                 </p>
@@ -1550,7 +1550,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                       'linear-gradient(180deg, var(--color-amber-glow) 0%, var(--color-mustard) 55%, var(--color-copper) 100%)',
                     borderRadius: 14,
                     boxShadow:
-                      'inset 0 1px 0 rgba(255, 240, 200, 0.4), 0 8px 22px -8px rgba(216, 155, 58, 0.55)',
+                      'inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.4), 0 8px 22px -8px rgba(var(--sk-mustard-rgb), 0.55)',
                   }}
                 >
                   {lang === 'FR' ? 'Fermer' : 'Close'}
@@ -1564,13 +1564,13 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
                 aria-label={lang === 'FR' ? 'Fermer' : 'Close'}
                 className="absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 transition-colors"
                 style={{
-                  color: 'rgba(244, 239, 227, 0.85)',
-                  background: 'rgba(10, 2, 7, 0.7)',
-                  border: '1px solid rgba(232, 177, 74, 0.35)',
+                  color: 'rgba(var(--sk-parchment-rgb), 0.85)',
+                  background: 'rgba(var(--sk-ink-rgb), 0.7)',
+                  border: '1px solid rgba(var(--sk-glow-rgb), 0.35)',
                   borderRadius: 6,
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-amber-glow)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(244, 239, 227, 0.85)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(var(--sk-parchment-rgb), 0.85)'; }}
               >
                 <X size={16} />
               </button>

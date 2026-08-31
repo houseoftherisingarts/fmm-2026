@@ -86,7 +86,7 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
           className: 'wjw-pin',
           html: `<span style="
             display:block;width:${taille}px;height:${taille}px;border-radius:50%;
-            background:${couleur};border:2px solid rgba(244,239,227,.9);
+            background:${couleur};border:2px solid rgba(var(--sk-parchment-rgb),.9);
             box-shadow:0 0 0 4px ${halo}, 0 4px 10px rgba(0,0,0,.55);"></span>`,
           iconSize: [taille, taille],
           iconAnchor: [taille / 2, taille / 2],
@@ -97,9 +97,9 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
         const proche = b.region === 'Outaouais';
         L.marker([b.lat, b.lon], {
           icon: punaise(
-            proche ? 'var(--color-amber-glow)' : '#B08D3A',
+            proche ? 'var(--color-amber-glow)' : 'var(--sk-brass)',
             proche ? 15 : 11,
-            proche ? 'rgba(232,177,74,.28)' : 'rgba(176,141,58,.18)',
+            proche ? 'rgba(var(--sk-glow-rgb),.28)' : 'rgba(var(--sk-brass-rgb),.18)',
           ),
           title: b.ville,
         })
@@ -173,7 +173,7 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             style={{
               borderRadius: 'var(--radius-card)',
-              border: '1px solid rgba(176, 141, 58, .45)',
+              border: '1px solid rgba(var(--sk-brass-rgb), .45)',
               background: 'var(--color-midnight-deep)',
               boxShadow: 'var(--shadow-glass)',
             }}
@@ -200,7 +200,7 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
                 className="shrink-0 grid place-items-center rounded-full transition"
                 style={{
                   width: 38, height: 38,
-                  border: '1px solid rgba(176,141,58,.5)',
+                  border: '1px solid rgba(var(--sk-brass-rgb),.5)',
                   color: 'var(--color-amber-glow)',
                   background: 'rgba(14,31,51,.6)',
                 }}
@@ -217,8 +217,8 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
               style={{
                 height: 'min(62vh, 30rem)',
                 filter: 'sepia(.34) saturate(.9) hue-rotate(-8deg) brightness(1.02) contrast(1.04)',
-                borderTop: '1px solid rgba(176,141,58,.28)',
-                borderBottom: '1px solid rgba(176,141,58,.28)',
+                borderTop: '1px solid rgba(var(--sk-brass-rgb),.28)',
+                borderBottom: '1px solid rgba(var(--sk-brass-rgb),.28)',
               }}
             />
 
@@ -227,15 +227,15 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
               style={{ color: 'var(--color-ivory-soft)', fontSize: 12 }}
             >
               <span className="inline-flex items-center gap-2">
-                <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#8E2230', display: 'inline-block', border: '1.5px solid rgba(244,239,227,.85)' }} />
+                <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#8E2230', display: 'inline-block', border: '1.5px solid rgba(var(--sk-parchment-rgb),.85)' }} />
                 Le festival
               </span>
               <span className="inline-flex items-center gap-2">
-                <span style={{ width: 11, height: 11, borderRadius: '50%', background: 'var(--color-amber-glow)', display: 'inline-block', border: '1.5px solid rgba(244,239,227,.85)' }} />
+                <span style={{ width: 11, height: 11, borderRadius: '50%', background: 'var(--color-amber-glow)', display: 'inline-block', border: '1.5px solid rgba(var(--sk-parchment-rgb),.85)' }} />
                 Les quatre boutiques de l’Outaouais
               </span>
               <span className="inline-flex items-center gap-2">
-                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#B08D3A', display: 'inline-block', border: '1.5px solid rgba(244,239,227,.7)' }} />
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: 'var(--sk-brass)', display: 'inline-block', border: '1.5px solid rgba(var(--sk-parchment-rgb),.7)' }} />
                 Les autres boutiques
               </span>
             </footer>

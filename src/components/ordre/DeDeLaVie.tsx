@@ -275,7 +275,7 @@ const DeDeLaVie: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   return (
     <div
       className="rounded-lg-card border border-brass/25 p-6 text-center"
-      style={{ background: 'rgba(26, 5, 11, 0.45)' }}
+      style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}
     >
       <p className="witcher-stat-label mb-1.5 inline-flex items-center gap-2">
         <Dices size={11} /> {fr ? 'Le dé de la vie' : 'The die of life'}
@@ -292,10 +292,10 @@ const DeDeLaVie: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         aria-label={fr ? 'Lancer le dé' : 'Roll the die'}
         className="mx-auto mb-3 block w-full max-w-[16rem] h-52 rounded-[15px] border overflow-hidden"
         style={{
-          borderColor: critique ? 'rgba(232,177,74,0.85)'
-            : echec ? 'rgba(160,50,40,0.8)' : 'rgba(232,177,74,0.32)',
-          background: 'radial-gradient(circle at 40% 28%, rgba(232,177,74,0.14), rgba(18,8,6,0.95) 72%)',
-          boxShadow: critique ? '0 0 42px rgba(232,177,74,0.45)'
+          borderColor: critique ? 'rgba(var(--sk-glow-rgb),0.85)'
+            : echec ? 'rgba(160,50,40,0.8)' : 'rgba(var(--sk-glow-rgb),0.32)',
+          background: 'radial-gradient(circle at 40% 28%, rgba(var(--sk-glow-rgb),0.14), rgba(18,8,6,0.95) 72%)',
+          boxShadow: critique ? '0 0 42px rgba(var(--sk-glow-rgb),0.45)'
             : echec ? '0 0 34px rgba(160,50,40,0.4)' : 'none',
         }}
       >
@@ -313,7 +313,7 @@ const DeDeLaVie: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         className="font-sans uppercase tracking-[0.2em] text-[10px] h-4"
         style={{
           color: critique ? 'var(--color-amber-glow)'
-            : echec ? '#c85a48' : 'rgba(244,239,227,0.45)',
+            : echec ? '#c85a48' : 'rgba(var(--sk-parchment-rgb),0.45)',
         }}
       >
         {roule ? (fr ? 'Le dé roule…' : 'Rolling…')

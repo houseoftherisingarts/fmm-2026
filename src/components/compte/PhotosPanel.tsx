@@ -16,7 +16,7 @@ import VisionneusePhoto from './VisionneusePhoto';
 // photo (Alex, 2026-08-23).
 
 const STATUT_COULEUR: Record<StatutPhoto, string> = {
-  attente: '#D8B05A',
+  attente: 'var(--sk-gilt)',
   retenue: '#8FD6B4',
   refusee: '#E08A6E',
 };
@@ -60,14 +60,14 @@ const Case: React.FC<{ id: string; checked: boolean; onChange: (v: boolean) => v
         aria-hidden
         className="flex items-center justify-center w-5 h-5 border transition-colors"
         style={{
-          borderColor: checked ? '#D8B05A' : 'rgba(244,239,227,0.35)',
-          background: checked ? 'rgba(216,176,90,0.18)' : 'transparent',
+          borderColor: checked ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.35)',
+          background: checked ? 'rgba(var(--sk-gilt-rgb),0.18)' : 'transparent',
         }}
       >
-        {checked && <Check size={13} style={{ color: '#D8B05A' }} />}
+        {checked && <Check size={13} style={{ color: 'var(--sk-gilt)' }} />}
       </span>
     </span>
-    <span className="font-sans text-sm leading-relaxed" style={{ color: 'rgba(244,239,227,0.85)', fontWeight: 300 }}>
+    <span className="font-sans text-sm leading-relaxed" style={{ color: 'rgba(var(--sk-parchment-rgb),0.85)', fontWeight: 300 }}>
       {children}
     </span>
   </label>
@@ -145,11 +145,11 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
   return (
     <section
       className="relative p-6 md:p-8 overflow-hidden"
-      style={{ background: 'rgba(26, 5, 11, 0.55)', border: '1px solid rgba(244, 239, 227, 0.10)' }}
+      style={{ background: 'rgba(var(--sk-deep-rgb), 0.55)', border: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
     >
       <header className="flex items-start gap-4 mb-5">
         <span className="witcher-tile shrink-0" style={{ width: 46, height: 46 }}>
-          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
             <Camera size={16} />
           </span>
         </span>
@@ -161,12 +161,12 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
         </div>
       </header>
 
-      <p className="font-sans text-sm md:text-[15px] leading-[1.7] mb-6" style={{ color: 'rgba(244, 239, 227, 0.7)', fontWeight: 300 }}>
+      <p className="font-sans text-sm md:text-[15px] leading-[1.7] mb-6" style={{ color: 'rgba(var(--sk-parchment-rgb), 0.7)', fontWeight: 300 }}>
         {t.lead}
       </p>
 
       {/* Consentement, explicite, obligatoire avant le premier envoi */}
-      <div className="mb-6 p-4 space-y-3" style={{ background: 'rgba(216, 176, 90, 0.06)', border: '1px solid rgba(216, 176, 90, 0.3)' }}>
+      <div className="mb-6 p-4 space-y-3" style={{ background: 'rgba(var(--sk-gilt-rgb), 0.06)', border: '1px solid rgba(var(--sk-gilt-rgb), 0.3)' }}>
         <Case id="photos-consentement" checked={consentement} onChange={setConsentement}>
           {t.consentText}
         </Case>
@@ -176,7 +176,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
       </div>
 
       <label className="block mb-4">
-        <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: '#D8B05A' }}>
+        <span className="block font-sans uppercase tracking-[0.25em] text-[10px] mb-2" style={{ color: 'var(--sk-gilt)' }}>
           {t.legendeLabel}
         </span>
         <input
@@ -191,7 +191,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
       {/* Publique ou privée : le choix se fait avant l'envoi, et se
           change après coup sur chaque photo. */}
       <div role="radiogroup" aria-label={t.visibiliteLabel} className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="font-sans uppercase tracking-[0.25em] text-[10px] mr-2" style={{ color: '#D8B05A' }}>
+        <span className="font-sans uppercase tracking-[0.25em] text-[10px] mr-2" style={{ color: 'var(--sk-gilt)' }}>
           {t.visibiliteLabel}
         </span>
         {(['publique', 'privee'] as VisibilitePhoto[]).map((v) => {
@@ -206,16 +206,16 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
               onClick={() => setVisibilite(v)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] transition-colors"
               style={{
-                border: `1px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.22)'}`,
-                background: actif ? 'rgba(216,176,90,0.16)' : 'transparent',
-                color: actif ? '#F4EFE3' : 'rgba(244,239,227,0.55)',
+                border: `1px solid ${actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.22)'}`,
+                background: actif ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent',
+                color: actif ? 'var(--sk-parchment)' : 'rgba(var(--sk-parchment-rgb),0.55)',
               }}
             >
               <Icone size={12} /> {t.visibilite[v]}
             </button>
           );
         })}
-        <span className="basis-full font-sans text-xs mt-1" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>
+        <span className="basis-full font-sans text-xs mt-1" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)', fontWeight: 300 }}>
           {t.visibiliteAide[visibilite]}
         </span>
       </div>
@@ -226,15 +226,15 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
         onDrop={(e) => { e.preventDefault(); setSurvol(false); handleFiles(e.dataTransfer.files); }}
         className="relative rounded-card border-2 border-dashed transition-colors"
         style={{
-          borderColor: survol ? '#D8B05A' : 'rgba(244,239,227,0.22)',
-          background: survol ? 'rgba(216,176,90,0.08)' : 'rgba(10,2,7,0.35)',
+          borderColor: survol ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.22)',
+          background: survol ? 'rgba(var(--sk-gilt-rgb),0.08)' : 'rgba(var(--sk-ink-rgb),0.35)',
         }}
       >
         <label htmlFor="photos-input" className="flex flex-col items-center justify-center gap-3 py-10 px-6 cursor-pointer text-center">
           <span className="witcher-tile" style={{ width: 56, height: 56 }}>
-            <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Upload size={18} /></span>
+            <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Upload size={18} /></span>
           </span>
-          <span className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.75)' }}>
+          <span className="font-sans text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.75)' }}>
             {survol ? t.deposezIci : t.glissezOuChoisissez}
           </span>
           <span className="witcher-prompt" data-primary="true">
@@ -261,14 +261,14 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
       {queue.length > 0 && (
         <ul className="mt-4 space-y-2">
           {queue.map((f) => (
-            <li key={f.id} className="flex items-center gap-3 px-3 py-2" style={{ background: 'rgba(26,5,11,0.5)', border: '1px solid rgba(244,239,227,0.12)' }}>
-              <span className="font-sans text-xs truncate flex-1" style={{ color: 'rgba(244,239,227,0.75)' }}>{f.nom}</span>
+            <li key={f.id} className="flex items-center gap-3 px-3 py-2" style={{ background: 'rgba(var(--sk-deep-rgb),0.5)', border: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }}>
+              <span className="font-sans text-xs truncate flex-1" style={{ color: 'rgba(var(--sk-parchment-rgb),0.75)' }}>{f.nom}</span>
               {f.statut === 'envoi' ? (
                 <>
-                  <span className="w-24 h-1 overflow-hidden shrink-0" style={{ background: 'rgba(244,239,227,0.12)' }}>
-                    <span className="block h-full transition-all" style={{ width: `${Math.round(f.progres * 100)}%`, background: '#D8B05A' }} />
+                  <span className="w-24 h-1 overflow-hidden shrink-0" style={{ background: 'rgba(var(--sk-parchment-rgb),0.12)' }}>
+                    <span className="block h-full transition-all" style={{ width: `${Math.round(f.progres * 100)}%`, background: 'var(--sk-gilt)' }} />
                   </span>
-                  <Loader2 size={13} className="animate-spin shrink-0" style={{ color: '#D8B05A' }} />
+                  <Loader2 size={13} className="animate-spin shrink-0" style={{ color: 'var(--sk-gilt)' }} />
                 </>
               ) : (
                 <span className="inline-flex items-center gap-1.5 font-sans text-xs shrink-0" style={{ color: '#E08A6E' }}>
@@ -283,12 +283,12 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
       <div className="mt-8">
         <p className="witcher-stat-label mb-1">{t.envoyeesTitre}</p>
         {photos.length > 1 && (
-          <p className="font-sans text-xs mb-3" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>{t.reorganiser}</p>
+          <p className="font-sans text-xs mb-3" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)', fontWeight: 300 }}>{t.reorganiser}</p>
         )}
         {loading ? (
-          <p className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>{t.chargement}</p>
+          <p className="font-sans text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)', fontWeight: 300 }}>{t.chargement}</p>
         ) : photos.length === 0 ? (
-          <p className="font-sans text-sm" style={{ color: 'rgba(244,239,227,0.5)', fontWeight: 300 }}>{t.aucune}</p>
+          <p className="font-sans text-sm" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)', fontWeight: 300 }}>{t.aucune}</p>
         ) : (
           <div className="grid grid-cols-3 gap-[3px] md:gap-1">
             {photos.map((p) => (
@@ -303,7 +303,7 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                 onClick={() => setOuvertId(p.id)}
                 className="relative aspect-square overflow-hidden cursor-grab active:cursor-grabbing transition-transform"
                 style={{
-                  outline: survolId === p.id && traine && traine !== p.id ? '2px solid #D8B05A' : 'none',
+                  outline: survolId === p.id && traine && traine !== p.id ? '2px solid var(--sk-gilt)' : 'none',
                   outlineOffset: -2,
                   opacity: traine === p.id ? 0.45 : 1,
                   transform: survolId === p.id && traine && traine !== p.id ? 'scale(0.96)' : undefined,
@@ -326,9 +326,9 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                   title={p.vedette ? t.retirerVedette : t.mettreVedette}
                   className="absolute top-1.5 left-1.5 flex items-center justify-center w-7 h-7 rounded-full"
                   style={{
-                    background: p.vedette ? '#D8B05A' : 'rgba(10,2,7,0.78)',
-                    border: `1px solid ${p.vedette ? '#D8B05A' : 'rgba(244,239,227,0.25)'}`,
-                    color: p.vedette ? '#1a050b' : 'rgba(244,239,227,0.6)',
+                    background: p.vedette ? 'var(--sk-gilt)' : 'rgba(var(--sk-ink-rgb),0.78)',
+                    border: `1px solid ${p.vedette ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.25)'}`,
+                    color: p.vedette ? 'var(--sk-deep)' : 'rgba(var(--sk-parchment-rgb),0.6)',
                   }}
                 >
                   <Star size={12} fill={p.vedette ? 'currentColor' : 'none'} />
@@ -339,9 +339,9 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                   aria-label={`${t.basculer} · ${t.visibilite[p.visibilite === 'publique' ? 'publique' : 'privee']}`}
                   className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-full font-sans uppercase tracking-[0.15em] text-[9px]"
                   style={{
-                    background: 'rgba(10,2,7,0.78)',
-                    border: `1px solid ${p.visibilite === 'publique' ? '#D8B05A' : 'rgba(244,239,227,0.25)'}`,
-                    color: p.visibilite === 'publique' ? '#D8B05A' : 'rgba(244,239,227,0.6)',
+                    background: 'rgba(var(--sk-ink-rgb),0.78)',
+                    border: `1px solid ${p.visibilite === 'publique' ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.25)'}`,
+                    color: p.visibilite === 'publique' ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.6)',
                   }}
                 >
                   {p.visibilite === 'publique' ? <Eye size={11} /> : <EyeOff size={11} />}
@@ -349,10 +349,10 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
                 </button>
                 <span
                   className="absolute bottom-0 left-0 right-0 px-2 py-1.5 font-sans uppercase tracking-[0.15em] text-[9px] flex items-center justify-between gap-2"
-                  style={{ background: 'rgba(10,2,7,0.78)', color: STATUT_COULEUR[p.statut] }}
+                  style={{ background: 'rgba(var(--sk-ink-rgb),0.78)', color: STATUT_COULEUR[p.statut] }}
                 >
                   <span>{t.statut[p.statut]}</span>
-                  <span style={{ color: 'rgba(244,239,227,0.5)' }}>{fmtDate(p.envoyeeLe, lang)}</span>
+                  <span style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>{fmtDate(p.envoyeeLe, lang)}</span>
                 </span>
               </div>
             ))}

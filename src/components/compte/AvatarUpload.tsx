@@ -71,9 +71,9 @@ async function toSquareWebp(file: File): Promise<Blob> {
 // publique (Alex, 2026-08-23).
 const MEDAILLON = 'relative block w-60 h-60 md:w-80 md:h-80 rounded-full overflow-hidden';
 const MEDAILLON_STYLE: React.CSSProperties = {
-  border: '1px solid rgba(216, 176, 90, 0.75)',
-  boxShadow: '0 0 32px -6px rgba(216,176,90,0.55), 0 10px 26px -10px rgba(0,0,0,0.85)',
-  background: 'radial-gradient(circle at 35% 28%, rgba(216,176,90,0.20), rgba(26,5,11,0.9))',
+  border: '1px solid rgba(var(--sk-gilt-rgb), 0.75)',
+  boxShadow: '0 0 32px -6px rgba(var(--sk-gilt-rgb),0.55), 0 10px 26px -10px rgba(0,0,0,0.85)',
+  background: 'radial-gradient(circle at 35% 28%, rgba(var(--sk-gilt-rgb),0.20), rgba(var(--sk-deep-rgb),0.9))',
 };
 
 const AvatarUpload: React.FC<{
@@ -261,13 +261,13 @@ const AvatarUpload: React.FC<{
                    decoding="async" loading="lazy" />
             ) : (
               <span className="absolute inset-0 flex items-center justify-center font-display text-6xl md:text-7xl"
-                    style={{ color: 'rgba(216,176,90,0.9)' }}>
+                    style={{ color: 'rgba(var(--sk-gilt-rgb),0.9)' }}>
                 {initials}
               </span>
             )}
           </div>
           <span aria-hidden className="absolute -inset-2 rounded-full pointer-events-none"
-                style={{ border: '1px solid rgba(216, 176, 90, 0.28)' }} />
+                style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.28)' }} />
         </div>
       </div>
     );
@@ -283,7 +283,7 @@ const AvatarUpload: React.FC<{
             aria-label={t.cadrer}
             aria-describedby="cadrage-instructions"
             tabIndex={0}
-            className={`${MEDAILLON} cursor-grab active:cursor-grabbing outline-none focus-visible:ring-2 focus-visible:ring-[#D8B05A] focus-visible:ring-offset-2 focus-visible:ring-offset-black`}
+            className={`${MEDAILLON} cursor-grab active:cursor-grabbing outline-none focus-visible:ring-2 focus-visible:ring-[var(--sk-gilt)] focus-visible:ring-offset-2 focus-visible:ring-offset-black`}
             style={{ ...MEDAILLON_STYLE, touchAction: 'none' }}
             onPointerDown={surPointerDown}
             onPointerMove={surPointerMove}
@@ -302,7 +302,7 @@ const AvatarUpload: React.FC<{
               />
             )}
             {busy && (
-              <span className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ background: 'rgba(10,2,7,0.55)' }}>
+              <span className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ background: 'rgba(var(--sk-ink-rgb),0.55)' }}>
                 <span className="w-8 h-8 rounded-full border-2 border-t-transparent border-amber-300 animate-spin" />
               </span>
             )}
@@ -325,13 +325,13 @@ const AvatarUpload: React.FC<{
             ) : (
               <span
                 className="absolute inset-0 flex items-center justify-center font-display text-6xl md:text-7xl"
-                style={{ color: 'rgba(216,176,90,0.9)' }}
+                style={{ color: 'rgba(var(--sk-gilt-rgb),0.9)' }}
               >
                 {initials}
               </span>
             )}
             {busy && (
-              <span className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(10,2,7,0.7)' }}>
+              <span className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(var(--sk-ink-rgb),0.7)' }}>
                 <span className="w-8 h-8 rounded-full border-2 border-t-transparent border-amber-300 animate-spin" />
               </span>
             )}
@@ -342,7 +342,7 @@ const AvatarUpload: React.FC<{
         <span
           aria-hidden
           className="absolute -inset-2 rounded-full pointer-events-none"
-          style={{ border: '1px solid rgba(216, 176, 90, 0.28)' }}
+          style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.28)' }}
         />
 
         {!editing && (
@@ -353,9 +353,9 @@ const AvatarUpload: React.FC<{
               aria-hidden
               className="absolute bottom-[7%] right-[7%] w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition hover:brightness-125"
               style={{
-                background: 'rgba(10,2,7,0.85)',
-                border: '1px solid rgba(216,176,90,0.7)',
-                color: '#D8B05A',
+                background: 'rgba(var(--sk-ink-rgb),0.85)',
+                border: '1px solid rgba(var(--sk-gilt-rgb),0.7)',
+                color: 'var(--sk-gilt)',
                 boxShadow: '0 8px 20px -10px rgba(0,0,0,0.95)',
               }}
             >
@@ -372,9 +372,9 @@ const AvatarUpload: React.FC<{
                 aria-label={t.voirPublic}
                 className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center transition hover:brightness-125"
                 style={{
-                  background: 'rgba(10,2,7,0.85)',
-                  border: '1px solid rgba(216,176,90,0.7)',
-                  color: '#D8B05A',
+                  background: 'rgba(var(--sk-ink-rgb),0.85)',
+                  border: '1px solid rgba(var(--sk-gilt-rgb),0.7)',
+                  color: 'var(--sk-gilt)',
                   boxShadow: '0 8px 20px -10px rgba(0,0,0,0.95)',
                 }}
               >
@@ -392,9 +392,9 @@ const AvatarUpload: React.FC<{
                 aria-label={t.cadrer}
                 className="absolute bottom-[7%] left-[7%] w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition hover:brightness-125"
                 style={{
-                  background: 'rgba(10,2,7,0.85)',
-                  border: '1px solid rgba(216,176,90,0.7)',
-                  color: '#D8B05A',
+                  background: 'rgba(var(--sk-ink-rgb),0.85)',
+                  border: '1px solid rgba(var(--sk-gilt-rgb),0.7)',
+                  color: 'var(--sk-gilt)',
                   boxShadow: '0 8px 20px -10px rgba(0,0,0,0.95)',
                 }}
               >
@@ -418,18 +418,18 @@ const AvatarUpload: React.FC<{
       {editing ? (
         <div
           className="w-full max-w-[18rem] flex flex-col items-center gap-3 rounded-[15px] border backdrop-blur-md px-4 py-4"
-          style={{ background: 'rgba(10,2,7,0.72)', borderColor: 'rgba(216,176,90,0.35)' }}
+          style={{ background: 'rgba(var(--sk-ink-rgb),0.72)', borderColor: 'rgba(var(--sk-gilt-rgb),0.35)' }}
         >
           <p
             id="cadrage-instructions"
             className="font-sans text-[11px] text-center leading-relaxed"
-            style={{ color: 'rgba(244,239,227,0.6)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)', fontWeight: 300 }}
           >
             {t.instructions}
           </p>
 
           <div className="w-full flex items-center gap-2">
-            <ZoomOut size={14} aria-hidden style={{ color: 'rgba(216,176,90,0.7)' }} />
+            <ZoomOut size={14} aria-hidden style={{ color: 'rgba(var(--sk-gilt-rgb),0.7)' }} />
             <input
               type="range"
               min={1}
@@ -439,9 +439,9 @@ const AvatarUpload: React.FC<{
               onChange={(e) => setBrouillon((b0) => borner(Number(e.target.value), b0.x, b0.y))}
               aria-label={t.zoomLabel}
               className="flex-1"
-              style={{ accentColor: '#D8B05A' }}
+              style={{ accentColor: 'var(--sk-gilt)' }}
             />
-            <ZoomIn size={14} aria-hidden style={{ color: 'rgba(216,176,90,0.7)' }} />
+            <ZoomIn size={14} aria-hidden style={{ color: 'rgba(var(--sk-gilt-rgb),0.7)' }} />
           </div>
 
           <div className="flex items-center gap-4">
@@ -450,7 +450,7 @@ const AvatarUpload: React.FC<{
               onClick={revenirOrigine}
               title={t.revenirTitle}
               className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.2em] text-[10px] opacity-70 hover:opacity-100 transition"
-              style={{ color: 'rgba(244,239,227,0.8)' }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb),0.8)' }}
             >
               <RotateCcw size={12} /> {t.revenir}
             </button>
@@ -460,14 +460,14 @@ const AvatarUpload: React.FC<{
               title={t.enregistrerCadrageTitle}
               disabled={busy}
               className="inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.2em] text-[10px] transition disabled:opacity-40"
-              style={{ color: '#D8B05A' }}
+              style={{ color: 'var(--sk-gilt)' }}
             >
               <Check size={12} /> {t.enregistrerCadrage}
             </button>
           </div>
         </div>
       ) : avatarUrl ? null : (
-        <p className="font-sans text-xs text-center max-w-[15rem]" style={{ color: 'rgba(244,239,227,0.42)', fontWeight: 300 }}>
+        <p className="font-sans text-xs text-center max-w-[15rem]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.42)', fontWeight: 300 }}>
           {t.hint}
         </p>
       )}

@@ -56,7 +56,7 @@ const DonnerRoleAdmin: React.FC<{ uid: string; nom: string; lang: 'FR' | 'EN' }>
 
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
-      <div className="flex items-center justify-between gap-4 mb-4 pb-2" style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+      <div className="flex items-center justify-between gap-4 mb-4 pb-2" style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-stat-label inline-flex items-center gap-2"><ShieldCheck size={13} /> {fr ? 'Les portes de l’équipe' : 'The team doors'}</span>
         {fait && <span className="inline-flex items-center gap-1.5 font-sans text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--color-amber-glow)' }}><Check size={12} /> {fr ? 'Enregistré' : 'Saved'}</span>}
       </div>
@@ -82,13 +82,13 @@ const DonnerRoleAdmin: React.FC<{ uid: string; nom: string; lang: 'FR' | 'EN' }>
                 <li key={r}>
                   <button type="button" onClick={() => poser(actif ? null : r)} disabled={envoi !== null}
                           className="w-full flex items-center gap-3 px-4 py-3 rounded-card text-left transition-colors disabled:opacity-60"
-                          style={{ background: actif ? `${teinte.accentDim}44` : 'rgba(26,5,11,0.4)', border: `1px solid ${actif ? teinte.accent : teinte.line}` }}>
+                          style={{ background: actif ? `${teinte.accentDim}44` : 'rgba(var(--sk-deep-rgb),0.4)', border: `1px solid ${actif ? teinte.accent : teinte.line}` }}>
                     <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: teinte.accent }} />
                     <span className="min-w-0 flex-1">
-                      <span className="block font-sans uppercase tracking-[0.16em] text-[11px]" style={{ color: actif ? teinte.accent : '#F4EFE3' }}>
+                      <span className="block font-sans uppercase tracking-[0.16em] text-[11px]" style={{ color: actif ? teinte.accent : 'var(--sk-parchment)' }}>
                         {ROLE_LABELS[r][lang]}
                       </span>
-                      <span className="block font-editorial text-xs mt-0.5" style={{ color: 'rgba(244,239,227,0.55)' }}>
+                      <span className="block font-editorial text-xs mt-0.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>
                         {ROLE_DESCRIPTIONS[r][lang]}
                       </span>
                     </span>

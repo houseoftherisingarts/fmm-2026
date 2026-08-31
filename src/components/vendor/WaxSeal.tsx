@@ -7,8 +7,8 @@ export const WaxSeal: React.FC<{ size?: number }> = ({ size = 24 }) => (
     <defs>
       <radialGradient id="wax-rg" cx="40%" cy="35%" r="65%">
         <stop offset="0%"  stopColor="#E5C679" />
-        <stop offset="55%" stopColor="#C4A45A" />
-        <stop offset="100%" stopColor="#7A6534" />
+        <stop offset="55%" stopColor="var(--sk-brass-warm)" />
+        <stop offset="100%" stopColor="var(--sk-brass-deep)" />
       </radialGradient>
     </defs>
     {/* Outer scallop (12 rays) */}

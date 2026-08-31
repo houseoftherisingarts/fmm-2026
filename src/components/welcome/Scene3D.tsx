@@ -21,7 +21,7 @@ const Scene3D: React.FC<SceneProps> = ({ coinTextureUrl }) => (
     <Suspense fallback={null}>
       <ambientLight intensity={0.55} color="#F4EFE3" />
       <pointLight position={[0, 0, 5]} intensity={6} color="#E8B86A" distance={20} decay={1.4} />
-      <pointLight position={[-4, 2.5, 3]} intensity={3} color="#B08D3A" distance={14} decay={1.6} />
+      <pointLight position={[-4, 2.5, 3]} intensity={3} color="var(--sk-brass)" distance={14} decay={1.6} />
       <pointLight position={[4, -2.5, 4]} intensity={2} color="#6B1F1F" distance={14} decay={1.8} />
       <CameraParallax />
       <CoinFan textureUrl={coinTextureUrl} />
@@ -100,7 +100,7 @@ const CoinFan: React.FC<{ textureUrl: string }> = ({ textureUrl }) => {
               transparent
               metalness={0.95}
               roughness={0.22}
-              emissive="#B08D3A"
+              emissive="var(--sk-brass)"
               emissiveIntensity={0.45}
               opacity={0.92}
               side={THREE.DoubleSide}

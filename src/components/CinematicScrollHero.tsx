@@ -88,7 +88,7 @@ const CinematicScrollHero: React.FC<Props> = ({
 
         {/* Layer 1: base atmosphere */}
         <div className="absolute inset-0 bg-gradient-to-b from-midnight-deep via-midnight to-midnight-deep" />
-        <motion.div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_0%,rgba(176,141,58,0.10),transparent_70%)]" />
+        <motion.div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_60%_at_50%_0%,rgba(var(--sk-brass-rgb),0.10),transparent_70%)]" />
 
         {/* Layer 2: fire bed (act 2 onward) */}
         <motion.div
@@ -106,7 +106,7 @@ const CinematicScrollHero: React.FC<Props> = ({
         >
           <div className="relative w-[78vmin] h-[78vmin] max-w-[680px] max-h-[680px]">
             {/* Brass aura behind the helmet */}
-            <div className="absolute inset-[-15%] rounded-full bg-[radial-gradient(circle,rgba(176,141,58,0.18),transparent_60%)] blur-2xl" />
+            <div className="absolute inset-[-15%] rounded-full bg-[radial-gradient(circle,rgba(var(--sk-brass-rgb),0.18),transparent_60%)] blur-2xl" />
             <img
               src={helmetImageUrl} alt="" aria-hidden
               className="absolute inset-0 w-full h-full object-cover rounded-full opacity-95"
@@ -166,7 +166,7 @@ const CinematicScrollHero: React.FC<Props> = ({
               {dates}
             </p>
             <a href={primaryCta.href} target="_blank" rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card mb-3 shadow-[0_8px_32px_-8px_rgba(176,141,58,0.6)]">
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card mb-3 shadow-[0_8px_32px_-8px_rgba(var(--sk-brass-rgb),0.6)]">
               {primaryCta.label} <ArrowUpRight size={14} />
             </a>
             {secondaryCta && (

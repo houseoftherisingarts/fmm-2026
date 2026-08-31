@@ -26,12 +26,12 @@ const PhotosAvecMoi: React.FC<Props> = ({ uid, nom, lang }) => {
   return (
     <section className="glass-light rounded-lg-card p-7 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-6 pb-2"
-           style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+           style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
         <span className="witcher-stat-label inline-flex items-center gap-2">
           <Tag size={13} /> {fr ? 'Photos où je suis identifié' : 'Photos I’m tagged in'}
         </span>
         {photos && photos.length > 0 && (
-          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+          <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}>
             {photos.length}
           </span>
         )}

@@ -231,7 +231,7 @@ export function mockSetVendorStatus(uid: string, status: VendorStatus, adminNote
 let _teams: Team[] = [
   { id: 'team-accueil',         name: 'Accueil',                description: 'Billetterie, bracelets, premiers contacts.',         color: '#7aa6c9', icon: '🎟️', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },
   { id: 'team-accueil-camping', name: 'Accueil camping',         description: 'Accueil des campeurs, plan du site camping.',         color: '#6fb39a', icon: '🏕️', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },
-  { id: 'team-bar',             name: 'Bar / Taverne',           description: 'Service, caisse, gestion des fûts.',                  color: '#c9a05a', icon: '🍺', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },
+  { id: 'team-bar',             name: 'Bar / Taverne',           description: 'Service, caisse, gestion des fûts.',                  color: 'var(--sk-brass-warm)', icon: '🍺', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },
   { id: 'team-bar-mobile',      name: 'Bar mobile',              description: 'Plateaux mobiles servant la foule sur le site.',      color: '#e0b873', icon: '🍯', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },
   { id: 'team-securite',        name: 'Sécurité',                description: 'Patrouille, porte-fouille, premiers soins.',          color: '#d18a8a', icon: '🛡️', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },
   { id: 'team-stationnement',   name: 'Stationnement',           description: 'Placement véhicules, navettes, signalétique.',        color: '#9a7eb0', icon: '🅿️', year: 2026, createdAt: now(-30) as any, updatedAt: now(-3) as any },

@@ -141,8 +141,8 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 aria-pressed={filtre === null}
                 className="font-sans uppercase tracking-[0.14em] text-[10px] h-8 px-3.5 rounded-full border transition-colors"
                 style={filtre === null
-                  ? { borderColor: 'var(--color-amber-glow)', background: 'rgba(232,177,74,0.14)', color: 'var(--color-ivory)' }
-                  : { borderColor: 'rgba(232,177,74,0.22)', color: 'rgba(240,232,218,0.7)' }}
+                  ? { borderColor: 'var(--color-amber-glow)', background: 'rgba(var(--sk-glow-rgb),0.14)', color: 'var(--color-ivory)' }
+                  : { borderColor: 'rgba(var(--sk-glow-rgb),0.22)', color: 'rgba(240,232,218,0.7)' }}
               >
                 {fr ? 'Tout' : 'All'}
               </button>
@@ -157,8 +157,8 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                     aria-pressed={actif}
                     className="font-sans uppercase tracking-[0.14em] text-[10px] h-8 px-3.5 rounded-full border inline-flex items-center gap-1.5 transition-colors"
                     style={actif
-                      ? { borderColor: 'var(--color-amber-glow)', background: 'rgba(232,177,74,0.14)', color: 'var(--color-ivory)' }
-                      : { borderColor: 'rgba(232,177,74,0.22)', color: 'rgba(240,232,218,0.7)' }}
+                      ? { borderColor: 'var(--color-amber-glow)', background: 'rgba(var(--sk-glow-rgb),0.14)', color: 'var(--color-ivory)' }
+                      : { borderColor: 'rgba(var(--sk-glow-rgb),0.22)', color: 'rgba(240,232,218,0.7)' }}
                   >
                     <IconeFiltre size={12} />
                     {fr ? CATEGORIES[c].FR : CATEGORIES[c].EN}
@@ -177,12 +177,12 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               <div
                 aria-hidden="true"
                 className="absolute inset-x-5 top-8 -bottom-3 rounded-[15px] border pointer-events-none"
-                style={{ borderColor: 'rgba(232,177,74,0.10)', background: 'rgba(232,177,74,0.025)' }}
+                style={{ borderColor: 'rgba(var(--sk-glow-rgb),0.10)', background: 'rgba(var(--sk-glow-rgb),0.025)' }}
               />
               <div
                 aria-hidden="true"
                 className="absolute inset-x-2.5 top-4 -bottom-1.5 rounded-[15px] border pointer-events-none"
-                style={{ borderColor: 'rgba(232,177,74,0.17)', background: 'rgba(232,177,74,0.05)' }}
+                style={{ borderColor: 'rgba(var(--sk-glow-rgb),0.17)', background: 'rgba(var(--sk-glow-rgb),0.05)' }}
               />
 
               <div
@@ -209,7 +209,7 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                       </span>
                       <span
                         className="font-display title-medieval text-xs shrink-0 tabular-nums tracking-[0.12em]"
-                        style={{ color: 'rgba(232,177,74,0.55)' }}
+                        style={{ color: 'rgba(var(--sk-glow-rgb),0.55)' }}
                       >
                         {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
                       </span>
@@ -229,7 +229,7 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                     </div>
 
                     {/* La provenance, discrète mais toujours consultable. */}
-                    <div className="pt-5 border-t" style={{ borderColor: 'rgba(232,177,74,0.16)' }}>
+                    <div className="pt-5 border-t" style={{ borderColor: 'rgba(var(--sk-glow-rgb),0.16)' }}>
                       {fait.origine === 'festival' && (
                         <p className="font-sans text-[11px] text-ivory-soft/60 mb-2">
                           {fr ? 'Publié par le festival le ' : 'Published by the festival on '}
@@ -277,7 +277,7 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 type="button"
                 onClick={avancer}
                 className="inline-flex items-center gap-2.5 h-12 px-6 rounded-full border font-sans uppercase tracking-[0.16em] text-[11px] text-ivory transition-colors"
-                style={{ borderColor: 'var(--color-amber-glow)', background: 'rgba(232,177,74,0.12)' }}
+                style={{ borderColor: 'var(--color-amber-glow)', background: 'rgba(var(--sk-glow-rgb),0.12)' }}
               >
                 {fr ? 'Encore un' : 'One more'}
                 <ArrowRight size={14} />
@@ -295,7 +295,7 @@ const SaviezVous: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               {/* Le fil qui se remplit : où vous en êtes dans le paquet. */}
               <div
                 className="hidden sm:block flex-1 h-px ml-3"
-                style={{ background: 'rgba(232,177,74,0.16)' }}
+                style={{ background: 'rgba(var(--sk-glow-rgb),0.16)' }}
                 aria-hidden="true"
               >
                 <motion.div

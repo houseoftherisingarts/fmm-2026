@@ -169,8 +169,8 @@ const Bulle: React.FC<{ texte: string | null; soi?: boolean }> = ({ texte, soi }
   return (
     <div className="mb-1.5 max-w-[160px] px-3 py-1.5 rounded-2xl text-[11px] leading-snug text-center font-sans"
          style={{
-           background: soi ? 'rgba(216,176,90,0.95)' : 'rgba(244,239,227,0.95)',
-           color: '#1A050B',
+           background: soi ? 'rgba(var(--sk-gilt-rgb),0.95)' : 'rgba(var(--sk-parchment-rgb),0.95)',
+           color: 'var(--sk-deep)',
          }}>
       {texte}
     </div>
@@ -193,8 +193,8 @@ const SceneSVG: React.FC = () => (
         <rect width="28" height="13" x="16" y="16" fill="#241A15" />
       </pattern>
       <radialGradient id="lueur" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="rgba(232,177,74,0.55)" />
-        <stop offset="100%" stopColor="rgba(232,177,74,0)" />
+        <stop offset="0%" stopColor="rgba(var(--sk-glow-rgb),0.55)" />
+        <stop offset="100%" stopColor="rgba(var(--sk-glow-rgb),0)" />
       </radialGradient>
     </defs>
     <rect width={LARGEUR} height="140" fill="url(#pierre)" />
@@ -204,7 +204,7 @@ const SceneSVG: React.FC = () => (
       <g key={x}>
         <circle cx={x} cy="70" r="46" fill="url(#lueur)" />
         <rect x={x - 3} y="52" width="6" height="26" fill="#4A3420" />
-        <ellipse cx={x} cy="48" rx="7" ry="11" fill="#E8B14A" />
+        <ellipse cx={x} cy="48" rx="7" ry="11" fill="var(--sk-glow)" />
       </g>
     ))}
   </svg>

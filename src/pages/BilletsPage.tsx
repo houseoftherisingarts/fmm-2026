@@ -66,7 +66,7 @@ const BilletsPage: React.FC = () => {
       <section className="relative caravan-stage bleed-edges pb-24 md:pb-32">
         <p
           className="relative max-w-3xl mx-auto px-4 md:px-8 font-sans text-sm text-center leading-relaxed"
-          style={{ color: 'rgba(244, 239, 227, 0.45)', fontWeight: 300 }}
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.45)', fontWeight: 300 }}
         >
           {showBeforeTax ? t.taxNote : t.taxNoteIncl}
         </p>
@@ -93,7 +93,7 @@ const Section: React.FC<{
         <DisplayTitle size="lg" glow className="mb-4">{title}</DisplayTitle>
         <p
           className="font-sans text-base md:text-lg leading-[1.75] mx-auto max-w-2xl"
-          style={{ color: 'rgba(244, 239, 227, 0.75)', fontWeight: 300 }}
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.75)', fontWeight: 300 }}
         >
           {lead}
         </p>
@@ -152,7 +152,7 @@ const Carte: React.FC<{
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped((v) => !v); }
         }}
-        className="gwent-card cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#D8B05A]/70 rounded"
+        className="gwent-card cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--sk-gilt)]/70 rounded"
         style={{
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
           // teinte du filet intérieur de la plaque, propre à chaque billet
@@ -171,7 +171,7 @@ const Carte: React.FC<{
 
           <p
             className="font-sans uppercase tracking-[0.4em] text-[9px] pt-1"
-            style={{ color: 'rgba(216,176,90,0.6)' }}
+            style={{ color: 'rgba(var(--sk-gilt-rgb),0.6)' }}
           >
             {t.eyebrowCarte}
           </p>
@@ -192,7 +192,7 @@ const Carte: React.FC<{
 
           <div className="w-full">
             <span aria-hidden className="block h-px w-2/3 mx-auto mb-2 sm:mb-3"
-              style={{ background: 'linear-gradient(90deg, transparent, rgba(216,176,90,0.6), transparent)' }} />
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(var(--sk-gilt-rgb),0.6), transparent)' }} />
             <h3
               className="font-display leading-[1.12] text-[13px] sm:text-base md:text-xl mb-1"
               style={{ color: 'var(--color-bone)', fontWeight: 400, textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
@@ -201,12 +201,12 @@ const Carte: React.FC<{
             </h3>
             {note && (
               <p className="font-sans uppercase tracking-[0.16em] sm:tracking-[0.22em] text-[8px] sm:text-[9px] leading-snug"
-                 style={{ color: 'rgba(244,239,227,0.42)' }}>
+                 style={{ color: 'rgba(var(--sk-parchment-rgb),0.42)' }}>
                 {note}
               </p>
             )}
             <p className="font-sans uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[8px] sm:text-[9px] mt-2 sm:mt-3.5"
-               style={{ color: 'rgba(216,176,90,0.75)' }}>
+               style={{ color: 'rgba(var(--sk-gilt-rgb),0.75)' }}>
               {t.devoiler}
             </p>
           </div>
@@ -226,8 +226,8 @@ const Carte: React.FC<{
             <span
               className="self-start px-2.5 py-1 mb-3 font-sans uppercase tracking-[0.28em] text-[8px]"
               style={{
-                color: '#1a050b',
-                background: 'linear-gradient(180deg, #E8C87A, #C79E4A)',
+                color: 'var(--sk-deep)',
+                background: 'linear-gradient(180deg, var(--sk-gilt-lit), #C79E4A)',
                 borderRadius: 14,
               }}
             >
@@ -246,17 +246,17 @@ const Carte: React.FC<{
             <span
               className="font-display leading-none block"
               style={{
-                color: '#E8C87A',
+                color: 'var(--sk-gilt-lit)',
                 fontSize: 'clamp(1.9rem, 2.6vw, 2.5rem)',
                 fontWeight: 400,
-                textShadow: '0 0 26px rgba(232,200,122,0.4)',
+                textShadow: '0 0 26px rgba(var(--sk-gilt-lit-rgb),0.4)',
               }}
             >
               {formatAmount(displayAmount(billet, surcharge), lang)}
             </span>
             <span
               className="font-sans uppercase tracking-[0.24em] text-[9px] block"
-              style={{ color: 'rgba(244,239,227,0.45)' }}
+              style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}
             >
               {showBeforeTax ? t.avantTaxes : t.taxesIncluses}
             </span>
@@ -266,7 +266,7 @@ const Carte: React.FC<{
             {showBeforeTax && (
               <span
                 className="font-sans text-[10px] block mt-1.5"
-                style={{ color: 'rgba(244,239,227,0.38)', fontWeight: 300 }}
+                style={{ color: 'rgba(var(--sk-parchment-rgb),0.38)', fontWeight: 300 }}
               >
                 {formatAmount(billet.zeffyAmount + surcharge, lang)} {t.auPaiement}
               </span>
@@ -275,7 +275,7 @@ const Carte: React.FC<{
 
           <p
             className="font-sans text-[11px] sm:text-[13px] leading-[1.6] flex-1 overflow-hidden"
-            style={{ color: 'rgba(244, 239, 227, 0.72)', fontWeight: 300 }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb), 0.72)', fontWeight: 300 }}
           >
             {fr ? billet.descFR : billet.descEN}
           </p>
@@ -291,8 +291,8 @@ const Carte: React.FC<{
             }}
             className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 font-sans uppercase tracking-[0.26em] text-[10px] transition-transform hover:scale-[1.02]"
             style={{
-              color: '#1a050b',
-              background: 'linear-gradient(180deg, #E8C87A 0%, #D8B05A 55%, #B98F3E 100%)',
+              color: 'var(--sk-deep)',
+              background: 'linear-gradient(180deg, var(--sk-gilt-lit) 0%, var(--sk-gilt) 55%, #B98F3E 100%)',
               borderRadius: 16,
             }}
           >
@@ -305,7 +305,7 @@ const Carte: React.FC<{
             type="button"
             onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
             className="mt-2.5 hidden sm:block font-sans uppercase tracking-[0.26em] text-[9px] opacity-55 hover:opacity-100 transition"
-            style={{ color: 'rgba(244,239,227,0.8)' }}
+            style={{ color: 'rgba(var(--sk-parchment-rgb),0.8)' }}
           >
             {t.retourner}
           </button>

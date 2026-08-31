@@ -45,17 +45,17 @@ const Repliable: React.FC<Props> = ({ id, titre, icone, resume, ouvertParDefaut 
       >
         {icone && (
           <span className="witcher-tile shrink-0" style={{ width: 40, height: 40 }}>
-            <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>{icone}</span>
+            <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>{icone}</span>
           </span>
         )}
         <span className="witcher-stat-label flex-1 min-w-0 truncate">{titre}</span>
         {resume && (
-          <span className="font-sans text-sm shrink-0" style={{ color: '#D8B05A' }}>{resume}</span>
+          <span className="font-sans text-sm shrink-0" style={{ color: 'var(--sk-gilt)' }}>{resume}</span>
         )}
         <ChevronDown
           size={16}
           className="shrink-0 transition-transform duration-300"
-          style={{ color: 'rgba(244,239,227,0.6)', transform: ouvert ? 'rotate(180deg)' : undefined }}
+          style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)', transform: ouvert ? 'rotate(180deg)' : undefined }}
         />
       </button>
       <AnimatePresence initial={false}>

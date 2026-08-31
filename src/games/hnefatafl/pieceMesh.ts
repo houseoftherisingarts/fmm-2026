@@ -22,9 +22,11 @@ import { CELL, MID, type CellValue } from './gameLogic';
 import { pieceSet, PIECES_DEFAUT, type PieceSet } from './assets';
 
 // Les URL et les échelles vivent dans assets.ts, un bloc par jeu de
-// pièces. Meshy normalise ses sorties à une hauteur de 1.9 (y de -0.95
-// à 0.95), d'où une base locale commune.
-const MODEL_BASE = -0.95;
+// pièces. Meshy normalise sa PLUS GRANDE dimension à 1.9, pas la
+// hauteur : un bonhomme debout sort bien avec y ∈ [-0.95, 0.95], mais
+// une roulotte plus longue que haute sort à y ∈ [-0.74, 0.73] et
+// flottait de deux dixièmes au-dessus du plateau. La base se mesure
+// donc sur le modèle, une fois par type, au chargement.
 
 export interface PieceMaterials {
   a: THREE.MeshPhongMaterial;
@@ -117,6 +119,8 @@ export function createPieceSystem(
   // procédurales, le jeu reste entier.
   const invisibleMat = new THREE.MeshBasicMaterial({ visible: false });
   const loadedModels: Partial<Record<number, THREE.Object3D>> = {};
+  /** Le bas de la boîte englobante du modèle, dans son repère à lui. */
+  const modelBase: Partial<Record<number, number>> = {};
 
   const attachModel = (entry: PieceEntry) => {
     const proto = loadedModels[entry.pType as number];
@@ -128,7 +132,7 @@ export function createPieceSystem(
     clone.scale.setScalar(s);
     // Base du modèle posée au niveau du plateau (0.1), exprimée dans le
     // repère local du corps (centré à 0.1 + bh/2).
-    clone.position.y = -bh / 2 - MODEL_BASE * s;
+    clone.position.y = -bh / 2 - (modelBase[entry.pType as number] ?? -0.95) * s;
     // Les loups regardent le roi, les défenseurs font face au dehors,
     // le roi fait face à la caméra.
     const { r, c } = entry.body.userData as { r: number; c: number };
@@ -161,6 +165,7 @@ export function createPieceSystem(
         (gltf) => {
           if (disposed) return;
           loadedModels[t] = gltf.scene;
+          modelBase[t] = new THREE.Box3().setFromObject(gltf.scene).min.y;
           for (const k of Object.keys(map)) {
             if (map[k].pType === t) attachModel(map[k]);
           }

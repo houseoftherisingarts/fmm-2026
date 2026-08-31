@@ -185,7 +185,7 @@ const FriseHistoire: React.FC = () => {
                   className="absolute -left-8 top-1.5 w-3.5 h-3.5 rounded-full"
                   style={{
                     background: s.current ? 'var(--color-amber-glow)' : 'var(--color-brass)',
-                    boxShadow: `0 0 12px ${s.current ? 'rgba(232,177,74,0.6)' : 'rgba(176,141,58,0.4)'}`,
+                    boxShadow: `0 0 12px ${s.current ? 'rgba(var(--sk-glow-rgb),0.6)' : 'rgba(var(--sk-brass-rgb),0.4)'}`,
                   }}
                 />
                 <div className="flex items-baseline gap-3 flex-wrap">
@@ -215,7 +215,7 @@ const FriseHistoire: React.FC = () => {
       <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ background: 'var(--color-midnight-deep)' }}>
         {/* Fond atmosphérique */}
         <div className="absolute inset-0 z-0" style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(184,106,42,0.14), transparent 62%), radial-gradient(ellipse 70% 50% at 50% 90%, rgba(107,31,31,0.16), transparent 65%), var(--color-midnight-deep)',
+          background: 'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(var(--sk-copper-rgb),0.14), transparent 62%), radial-gradient(ellipse 70% 50% at 50% 90%, rgba(var(--sk-oxblood-rgb),0.16), transparent 65%), var(--color-midnight-deep)',
         }} />
         <EmberCanvas className="opacity-50" count={24} />
 
@@ -253,7 +253,7 @@ const FriseHistoire: React.FC = () => {
                     width: size, height: size,
                     fontSize: s.current ? '1.4rem' : '1.15rem',
                     color: 'var(--color-ivory)',
-                    background: 'radial-gradient(circle at 50% 34%, rgba(232,177,74,0.14), var(--color-midnight-deep) 74%)',
+                    background: 'radial-gradient(circle at 50% 34%, rgba(var(--sk-glow-rgb),0.14), var(--color-midnight-deep) 74%)',
                     boxShadow: `0 0 0 2px ${ring}, 0 0 0 6px rgba(8,20,36,0.6), 0 0 30px 4px ${ring}55, 0 18px 40px rgba(0,0,0,0.55)`,
                   }}
                 >

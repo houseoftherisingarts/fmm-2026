@@ -114,7 +114,7 @@ const BoissonsPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
                     className="absolute inset-0"
                     style={{
                       background:
-                        'linear-gradient(180deg, rgba(184,106,42,0.15) 0%, transparent 40%, rgba(10,2,7,0.9) 100%)',
+                        'linear-gradient(180deg, rgba(var(--sk-copper-rgb),0.15) 0%, transparent 40%, rgba(var(--sk-ink-rgb),0.9) 100%)',
                     }}
                   />
                   <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">

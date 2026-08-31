@@ -143,8 +143,8 @@ const BugReportModal: React.FC<Props> = ({ open, onClose }) => {
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             style={{
               background: 'linear-gradient(160deg, #140a10 0%, #0c0509 100%)',
-              border: '1px solid rgba(232, 177, 74, 0.32)',
-              boxShadow: '0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(232,177,74,0.06)',
+              border: '1px solid rgba(var(--sk-glow-rgb), 0.32)',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(var(--sk-glow-rgb),0.06)',
               clipPath: 'polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px)',
             }}
           >
@@ -163,7 +163,7 @@ const BugReportModal: React.FC<Props> = ({ open, onClose }) => {
                 <div className="text-center py-10">
                   <span
                     className="inline-flex items-center justify-center w-14 h-14 mb-5"
-                    style={{ border: '1px solid rgba(232,177,74,0.4)', color: 'var(--color-amber-glow)' }}
+                    style={{ border: '1px solid rgba(var(--sk-glow-rgb),0.4)', color: 'var(--color-amber-glow)' }}
                   >
                     <Check size={26} />
                   </span>
@@ -176,7 +176,7 @@ const BugReportModal: React.FC<Props> = ({ open, onClose }) => {
                   <button
                     type="button" onClick={handleClose}
                     className="font-sans uppercase tracking-[0.3em] text-xs px-6 py-3 transition-colors"
-                    style={{ color: 'var(--color-amber-glow)', border: '1px solid rgba(232,177,74,0.4)' }}
+                    style={{ color: 'var(--color-amber-glow)', border: '1px solid rgba(var(--sk-glow-rgb),0.4)' }}
                   >
                     {t.close}
                   </button>
@@ -204,8 +204,8 @@ const BugReportModal: React.FC<Props> = ({ open, onClose }) => {
                           className="px-3 py-2 text-left font-sans text-xs transition-colors"
                           style={{
                             color: active ? 'var(--color-amber-glow)' : 'var(--color-bone)',
-                            background: active ? 'rgba(232,177,74,0.12)' : 'rgba(255,255,255,0.02)',
-                            border: `1px solid ${active ? 'rgba(232,177,74,0.55)' : 'rgba(232,177,74,0.18)'}`,
+                            background: active ? 'rgba(var(--sk-glow-rgb),0.12)' : 'rgba(255,255,255,0.02)',
+                            border: `1px solid ${active ? 'rgba(var(--sk-glow-rgb),0.55)' : 'rgba(var(--sk-glow-rgb),0.18)'}`,
                           }}
                         >
                           {CATEGORY_LABELS[c][lang]}
@@ -269,11 +269,11 @@ const BugReportModal: React.FC<Props> = ({ open, onClose }) => {
 
 const inputStyle: React.CSSProperties = {
   color: 'var(--color-bone)',
-  background: 'rgba(10, 2, 7, 0.6)',
-  border: '1px solid rgba(232, 177, 74, 0.3)',
+  background: 'rgba(var(--sk-ink-rgb), 0.6)',
+  border: '1px solid rgba(var(--sk-glow-rgb), 0.3)',
 };
 const focusBorder = (e: React.FocusEvent<HTMLElement>) => { e.currentTarget.style.borderColor = 'var(--color-amber-glow)'; };
-const blurBorder  = (e: React.FocusEvent<HTMLElement>) => { e.currentTarget.style.borderColor = 'rgba(232, 177, 74, 0.3)'; };
+const blurBorder  = (e: React.FocusEvent<HTMLElement>) => { e.currentTarget.style.borderColor = 'rgba(var(--sk-glow-rgb), 0.3)'; };
 
 const FieldLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <label

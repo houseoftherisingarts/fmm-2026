@@ -208,7 +208,7 @@ export const SponsorOffer: React.FC = () => {
                   as="article"
                   className={
                     plan.featured
-                      ? 'relative rounded-card p-7 md:p-9 flex flex-col glass-light border-2 border-brass shadow-[0_0_60px_rgba(232,177,74,0.12)] lg:-translate-y-2'
+                      ? 'relative rounded-card p-7 md:p-9 flex flex-col glass-light border-2 border-brass shadow-[0_0_60px_rgba(var(--sk-glow-rgb),0.12)] lg:-translate-y-2'
                       : 'relative rounded-card p-7 md:p-9 flex flex-col glass-light border border-white/10'
                   }
                 >

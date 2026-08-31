@@ -162,7 +162,7 @@ const HebergementHostPanel: React.FC<{ t: HostStrings }> = ({ t }) => {
           href={ZEFFY_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-7 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition-colors rounded-pill shadow-[0_0_30px_rgba(196,164,90,0.22)]"
+          className="inline-flex items-center gap-2 px-7 py-3.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition-colors rounded-pill shadow-[0_0_30px_rgba(var(--sk-brass-rgb),0.22)]"
         >
           {t.hostPayCta} <ArrowUpRight size={15} />
         </a>

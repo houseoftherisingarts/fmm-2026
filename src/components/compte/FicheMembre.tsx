@@ -494,11 +494,11 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               <button type="button" onClick={basculerVisionAdmin} aria-pressed={visionAdmin}
                       title={visionAdmin ? (fr ? 'Vision admin : allumée. Cliquer pour voir comme un membre.' : 'Admin view: on. Click to see as a member.') : (fr ? 'Vision admin : éteinte. Cliquer pour voir en admin.' : 'Admin view: off. Click to see as admin.')}
                       className="inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-full transition-colors"
-                      style={{ border: `1px solid ${visionAdmin ? 'rgba(216,176,90,0.8)' : 'rgba(244,239,227,0.25)'}`, background: visionAdmin ? 'rgba(216,176,90,0.16)' : 'transparent' }}>
-                <Shield size={13} style={{ color: visionAdmin ? '#D8B05A' : 'rgba(244,239,227,0.6)' }} />
-                <span className="font-sans uppercase tracking-[0.16em] text-[9px]" style={{ color: visionAdmin ? '#D8B05A' : 'rgba(244,239,227,0.6)' }}>Admin</span>
-                <span aria-hidden className="relative w-8 h-4 rounded-full transition-colors" style={{ background: visionAdmin ? 'rgba(216,176,90,0.55)' : 'rgba(244,239,227,0.18)' }}>
-                  <span className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all" style={{ left: visionAdmin ? 'calc(100% - 0.85rem)' : '0.15rem', background: '#F4EFE3' }} />
+                      style={{ border: `1px solid ${visionAdmin ? 'rgba(var(--sk-gilt-rgb),0.8)' : 'rgba(var(--sk-parchment-rgb),0.25)'}`, background: visionAdmin ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'transparent' }}>
+                <Shield size={13} style={{ color: visionAdmin ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.6)' }} />
+                <span className="font-sans uppercase tracking-[0.16em] text-[9px]" style={{ color: visionAdmin ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.6)' }}>Admin</span>
+                <span aria-hidden className="relative w-8 h-4 rounded-full transition-colors" style={{ background: visionAdmin ? 'rgba(var(--sk-gilt-rgb),0.55)' : 'rgba(var(--sk-parchment-rgb),0.18)' }}>
+                  <span className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all" style={{ left: visionAdmin ? 'calc(100% - 0.85rem)' : '0.15rem', background: 'var(--sk-parchment)' }} />
                 </span>
               </button>
             )}
@@ -553,9 +553,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                           <li key={r}
                             className="inline-flex items-center px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px]"
                             style={{
-                              color: '#D8B05A',
-                              background: 'rgba(216,176,90,0.10)',
-                              border: '1px solid rgba(216,176,90,0.32)',
+                              color: 'var(--sk-gilt)',
+                              background: 'rgba(var(--sk-gilt-rgb),0.10)',
+                              border: '1px solid rgba(var(--sk-gilt-rgb),0.32)',
                             }}>
                             {LIBELLE_ROLE[r][lang]}
                           </li>
@@ -584,14 +584,14 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                         {/* VIP (partout) ou l'invitation à le devenir (privé seulement). */}
                         {vip ? (
                           <li className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px]"
-                              style={{ color: '#241505', background: 'linear-gradient(135deg, #F4E5B6, #D8B05A)', border: '1px solid rgba(216,176,90,0.6)' }}>
+                              style={{ color: '#241505', background: 'linear-gradient(135deg, var(--sk-gilt-pale), var(--sk-gilt))', border: '1px solid rgba(var(--sk-gilt-rgb),0.6)' }}>
                             <Crown size={11} /> VIP
                           </li>
                         ) : prive && (
                           <li>
                             <button type="button" onClick={allerVersSansPub}
                                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-card font-sans uppercase tracking-[0.18em] text-[10px] hover:brightness-110 transition"
-                                    style={{ color: '#241505', background: 'linear-gradient(135deg, #F4E5B6, #D8B05A)', border: '1px solid rgba(216,176,90,0.6)' }}>
+                                    style={{ color: '#241505', background: 'linear-gradient(135deg, var(--sk-gilt-pale), var(--sk-gilt))', border: '1px solid rgba(var(--sk-gilt-rgb),0.6)' }}>
                               <Sparkles size={11} /> {t.upgrade}
                             </button>
                           </li>
@@ -600,13 +600,13 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
                       {fiche?.ville && (
                         <p className="font-sans text-xs mt-3 flex items-center justify-center md:justify-start gap-2"
-                           style={{ color: 'rgba(244,239,227,0.5)' }}>
+                           style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
                           <MapPin size={13} className="text-brass" /> {fiche.ville}
                         </p>
                       )}
                       {prive && compte?.email && (
                         <p className="font-sans text-xs mt-2 flex items-center justify-center md:justify-start gap-2"
-                           style={{ color: 'rgba(244,239,227,0.5)' }}>
+                           style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
                           <Mail size={13} className="text-brass" /> {compte.email}
                         </p>
                       )}
@@ -626,18 +626,18 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     <>
                       <div ref={zoneHautRef}
                            className="absolute inset-x-0 bottom-full mb-3 h-28 md:h-32 rounded-2xl border-2 border-dashed flex items-center justify-center z-30 pointer-events-none transition-colors"
-                           style={{ borderColor: zoneSurvolee === 'haut' ? '#D8B05A' : 'rgba(216,176,90,0.4)', background: zoneSurvolee === 'haut' ? 'rgba(216,176,90,0.16)' : 'rgba(10,2,7,0.6)' }}>
-                        <Plus size={28} style={{ color: '#D8B05A' }} />
+                           style={{ borderColor: zoneSurvolee === 'haut' ? 'var(--sk-gilt)' : 'rgba(var(--sk-gilt-rgb),0.4)', background: zoneSurvolee === 'haut' ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'rgba(var(--sk-ink-rgb),0.6)' }}>
+                        <Plus size={28} style={{ color: 'var(--sk-gilt)' }} />
                       </div>
                       <div ref={zoneBasRef}
                            className="absolute inset-x-0 top-full mt-3 h-28 md:h-32 rounded-2xl border-2 border-dashed flex items-center justify-center z-30 pointer-events-none transition-colors"
-                           style={{ borderColor: zoneSurvolee === 'bas' ? '#D8B05A' : 'rgba(216,176,90,0.4)', background: zoneSurvolee === 'bas' ? 'rgba(216,176,90,0.16)' : 'rgba(10,2,7,0.6)' }}>
-                        <Plus size={28} style={{ color: '#D8B05A' }} />
+                           style={{ borderColor: zoneSurvolee === 'bas' ? 'var(--sk-gilt)' : 'rgba(var(--sk-gilt-rgb),0.4)', background: zoneSurvolee === 'bas' ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'rgba(var(--sk-ink-rgb),0.6)' }}>
+                        <Plus size={28} style={{ color: 'var(--sk-gilt)' }} />
                       </div>
                       <div ref={zoneDroiteRef}
                            className="hidden md:flex absolute top-0 bottom-0 left-full ml-3 w-[220px] rounded-2xl border-2 border-dashed items-center justify-center z-30 pointer-events-none transition-colors"
-                           style={{ borderColor: zoneSurvolee === 'droite' ? '#D8B05A' : 'rgba(216,176,90,0.4)', background: zoneSurvolee === 'droite' ? 'rgba(216,176,90,0.16)' : 'rgba(10,2,7,0.6)' }}>
-                        <Plus size={28} style={{ color: '#D8B05A' }} />
+                           style={{ borderColor: zoneSurvolee === 'droite' ? 'var(--sk-gilt)' : 'rgba(var(--sk-gilt-rgb),0.4)', background: zoneSurvolee === 'droite' ? 'rgba(var(--sk-gilt-rgb),0.16)' : 'rgba(var(--sk-ink-rgb),0.6)' }}>
+                        <Plus size={28} style={{ color: 'var(--sk-gilt)' }} />
                       </div>
                     </>
                   )}
@@ -653,7 +653,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               En mode public, la personne qui regarde peut écrire au
               membre et l'ajouter comme ami. Rien d'autre. */}
           <div className="mt-9 pt-7 flex flex-wrap items-center justify-center md:justify-start gap-2"
-               style={{ borderTop: '1px solid rgba(244, 239, 227, 0.10)' }}>
+               style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
             {prive ? (
               <>
                 {/* Alex, 2026-08-28 : la bande ne garde que le registre et
@@ -740,7 +740,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             aria-label={t.onglets}
             onKeyDown={flecher}
             className="flex flex-wrap items-center gap-1.5 pb-3 mb-8"
-            style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}
+            style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
           >
             {onglets.map((o) => {
               const Icone = ICONE_ONGLET[o];
@@ -919,7 +919,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                               <ul className="flex flex-wrap gap-2">
                                 {siens.map((e) => (
                                   <li key={e.id} className="px-3 py-1.5 rounded-full font-sans text-xs text-ivory"
-                                      style={{ border: '1px solid rgba(232,177,74,0.3)', background: 'rgba(232,177,74,0.08)' }}>
+                                      style={{ border: '1px solid rgba(var(--sk-glow-rgb),0.3)', background: 'rgba(var(--sk-glow-rgb),0.08)' }}>
                                     {e.nom}{e.lieu ? <span className="text-ivory-soft/55"> · {e.lieu}</span> : null}
                                   </li>
                                 ))}
@@ -939,7 +939,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 {fiche?.stats && (
                   <div>
                     <section className="rounded-lg-card border border-brass/25 p-7 md:p-8"
-                             style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+                             style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
                       <p className="witcher-stat-label mb-4">{t.aptitudes}</p>
                       <ul className="space-y-2.5">
                         {APTITUDES.map(([cle, nomFR, nomEN]) => (
@@ -947,10 +947,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                             <span className="font-sans uppercase tracking-[0.16em] text-[10px] text-ivory-soft/60 w-24 shrink-0">
                               {lang === 'FR' ? nomFR : nomEN}
                             </span>
-                            <span className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(244,239,227,0.1)' }}>
+                            <span className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(var(--sk-parchment-rgb),0.1)' }}>
                               <span className="block h-full" style={{
                                 width: `${Math.max(0, Math.min(20, fiche.stats![cle])) * 5}%`,
-                                background: 'linear-gradient(90deg, rgba(232,177,74,0.5), var(--color-amber-glow))',
+                                background: 'linear-gradient(90deg, rgba(var(--sk-glow-rgb),0.5), var(--color-amber-glow))',
                               }} />
                             </span>
                             <span className="font-display text-sm text-ivory w-6 text-right">{fiche.stats![cle]}</span>
@@ -1038,9 +1038,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     <MesBadges lang={lang} obtenus={badgesVus} titre={t.sesBadges} />
                   <section className="glass-light rounded-lg-card p-7 md:p-8">
                     <div className="flex items-center justify-between gap-4 mb-6 pb-2"
-                         style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.10)' }}>
+                         style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}>
                       <span className="witcher-stat-label">{t.saCollection}</span>
-                      <span className="font-sans text-sm tracking-[0.2em]" style={{ color: '#D8B05A', fontWeight: 300 }}>
+                      <span className="font-sans text-sm tracking-[0.2em]" style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}>
                         {avisPris.length} / {ANNONCES.length}
                       </span>
                     </div>
@@ -1078,7 +1078,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               <section className="glass-light rounded-lg-card p-7 md:p-8">
                 <div className="flex items-center gap-4 mb-5">
                   <span className="witcher-tile shrink-0" style={{ width: 46, height: 46 }}>
-                    <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}><Dices size={16} /></span>
+                    <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Dices size={16} /></span>
                   </span>
                   <div className="min-w-0">
                     <p className="witcher-stat-label mb-1">{t.statParties}</p>
@@ -1134,7 +1134,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative w-full max-w-5xl rounded-lg-card p-6 md:p-8 my-6"
-              style={{ background: 'linear-gradient(180deg, rgba(20,10,8,0.98), rgba(10,5,4,0.98))', border: '1px solid rgba(216,176,90,0.35)', boxShadow: '0 30px 80px rgba(0,0,0,0.8)' }}
+              style={{ background: 'linear-gradient(180deg, rgba(20,10,8,0.98), rgba(10,5,4,0.98))', border: '1px solid rgba(var(--sk-gilt-rgb),0.35)', boxShadow: '0 30px 80px rgba(0,0,0,0.8)' }}
               onClick={(e) => e.stopPropagation()}
             >
               <button type="button" onClick={() => setReglagesOuverts(false)} aria-label={fr ? 'Fermer' : 'Close'}
@@ -1289,7 +1289,7 @@ const FR = {
   // absorbe la collection. Plus de possessif nulle part : les mots
   // tiennent sur une ligne, en bureau comme en mobile.
   onglet: {
-    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Badges et coffre', jeux: 'Jeux',
+    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Coffre et badges', jeux: 'Jeux',
     messages: 'Boîte de réception', boutique: 'Boutique',
   } as Record<Onglet, string>,
   ongletPublic: {
@@ -1343,7 +1343,7 @@ const EN: typeof FR = {
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
-    profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Badges and vault', jeux: 'Games',
+    profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Vault and badges', jeux: 'Games',
     messages: 'Inbox', boutique: 'Shop',
   } as Record<Onglet, string>,
   ongletPublic: {

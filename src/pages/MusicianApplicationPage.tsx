@@ -50,7 +50,7 @@ const MusicianApplicationPage: React.FC = () => {
 
           {!user && !DEV_BYPASS ? (
             <div className="velvet-card rounded-lg-card p-10 md:p-12 text-center relative overflow-hidden max-w-2xl mx-auto">
-              <div className="w-16 h-16 rounded-full bg-brass/15 border border-brass/45 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(212,168,87,0.4)]">
+              <div className="w-16 h-16 rounded-full bg-brass/15 border border-brass/45 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(var(--sk-gilt-rgb),0.4)]">
                 <LogIn size={28} className="text-brass" />
               </div>
               <h2 className="font-display title-medieval text-3xl md:text-4xl text-ivory mb-4">{t.authTitle}</h2>

@@ -143,7 +143,7 @@ const PALETTE: Record<Billet['teinte'], Record<Billet['nuance'], { halo: string;
     profond: { halo: 'rgba(28,74,54,0.58)',   fond: '#06110c', bord: 'rgba(78,132,98,0.34)' },
   },
   cuivre: {
-    clair:   { halo: 'rgba(154,96,44,0.50)',  fond: '#241407', bord: 'rgba(216,176,90,0.38)' },
+    clair:   { halo: 'rgba(154,96,44,0.50)',  fond: '#241407', bord: 'rgba(var(--sk-gilt-rgb),0.38)' },
     moyen:   { halo: 'rgba(132,80,36,0.52)',  fond: '#1d1006', bord: 'rgba(200,158,78,0.36)' },
     profond: { halo: 'rgba(110,64,28,0.55)',  fond: '#160c05', bord: 'rgba(184,142,66,0.34)' },
   },

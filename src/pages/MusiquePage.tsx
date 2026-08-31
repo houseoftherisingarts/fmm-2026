@@ -232,7 +232,7 @@ const MusiquePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             <p className="font-editorial italic uppercase tracking-[0.4em] text-[11px] md:text-xs text-[var(--color-amber-glow)] mb-4">{t.eyebrow}</p>
             <DisplayTitle size="xl" glow>{t.title}</DisplayTitle>
             <p className="font-editorial text-base md:text-lg max-w-2xl mx-auto mt-5"
-               style={{ color: 'rgba(244, 239, 227, 0.78)' }}>
+               style={{ color: 'rgba(var(--sk-parchment-rgb), 0.78)' }}>
               {t.intro1}
             </p>
           </div>

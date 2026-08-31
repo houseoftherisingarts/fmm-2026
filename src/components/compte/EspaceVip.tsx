@@ -8,10 +8,13 @@ import type { PrefsMembre, SkinMembre } from '../../firebase/ordre';
 // même snapshot Firestore que lit usePrefsFond.ts reflète l'écriture
 // locale avant même la confirmation du serveur.
 
+// Les vraies couleurs des trois peaux (src/index.css, html.skin-*). Les
+// pastilles gardent des valeurs en dur : une pastille qui suivrait la
+// peau active montrerait trois fois la même chose.
 const SKINS: { id: SkinMembre; swatch: string }[] = [
   { id: 'rouge', swatch: 'linear-gradient(135deg, #2B0A12, #E8B14A)' },
-  { id: 'bleu',  swatch: 'linear-gradient(135deg, #0B1A2E, #9FC4E8)' },
-  { id: 'dore',  swatch: 'linear-gradient(135deg, #3A2412, #F2D08A)' },
+  { id: 'bleu',  swatch: 'linear-gradient(135deg, #050A13, #DCE3EB)' },
+  { id: 'dore',  swatch: 'linear-gradient(135deg, #080503, #EBCF7E)' },
 ];
 
 const EspaceVip: React.FC<{
@@ -27,7 +30,7 @@ const EspaceVip: React.FC<{
   if (!vip) {
     return (
       <section className="glass-light rounded-lg-card p-7 md:p-8 text-center">
-        <Crown size={22} className="mx-auto mb-3" style={{ color: '#D8B05A' }} />
+        <Crown size={22} className="mx-auto mb-3" style={{ color: 'var(--sk-gilt)' }} />
         <h2 className="font-display title-medieval text-xl text-ivory mb-2">{t.devenez}</h2>
         <p className="font-editorial text-sm text-ivory-soft leading-relaxed mb-5">{t.pitch}</p>
         <button type="button" onClick={onDevenirVip}
@@ -53,11 +56,11 @@ const EspaceVip: React.FC<{
           return (
             <button key={s.id} type="button" onClick={() => onChange({ skin: s.id })}
                     aria-pressed={actif}
-                    className="w-24 rounded-card overflow-hidden transition"
-                    style={{ border: `2px solid ${actif ? '#D8B05A' : 'rgba(244,239,227,0.18)'}` }}>
+                    className="w-28 rounded-card overflow-hidden transition"
+                    style={{ border: `2px solid ${actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.18)'}` }}>
               <span className="block h-14 w-full" style={{ background: s.swatch }} />
-              <span className="flex items-center justify-center gap-1 py-2 font-sans uppercase tracking-[0.16em] text-[10px]"
-                    style={{ color: actif ? '#D8B05A' : 'rgba(244,239,227,0.7)', background: 'rgba(10,2,7,0.5)' }}>
+              <span className="flex items-center justify-center gap-1 px-1.5 py-2 font-sans uppercase tracking-[0.12em] text-[10px] leading-tight text-center"
+                    style={{ color: actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.7)', background: 'rgba(var(--sk-ink-rgb),0.5)' }}>
                 {actif && <Check size={11} />} {t.skins[s.id]}
               </span>
             </button>
@@ -73,14 +76,14 @@ const FR = {
   cta: 'Retirer les publicités',
   eyebrow: 'Espace VIP', titre: 'Le skin du site',
   intro: 'Choisissez la teinte du festival, rien que pour votre compte. Le changement s’applique tout de suite, sur toutes les pages.',
-  skins: { rouge: 'Rouge', bleu: 'Bleu', dore: 'Doré' } as Record<SkinMembre, string>,
+  skins: { rouge: 'Rouge et or', bleu: 'Bleu et argent', dore: 'Doré et noir' } as Record<SkinMembre, string>,
 };
 const EN: typeof FR = {
   devenez: 'Become VIP', pitch: 'A one-time gift to remove ads forever, and unlock an animated banner plus your own site skin.',
   cta: 'Remove the ads',
   eyebrow: 'VIP space', titre: 'The site skin',
   intro: 'Choose the festival’s hue, just for your account. The change applies right away, on every page.',
-  skins: { rouge: 'Red', bleu: 'Blue', dore: 'Gold' } as Record<SkinMembre, string>,
+  skins: { rouge: 'Red and gold', bleu: 'Blue and silver', dore: 'Gold and black' } as Record<SkinMembre, string>,
 };
 
 export default EspaceVip;

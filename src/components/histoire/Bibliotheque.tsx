@@ -42,7 +42,7 @@ const Bibliotheque: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                   ? 'border-brass text-ivory'
                   : 'border-brass/25 text-ivory-soft/70 hover:border-brass/60'
               }`}
-              style={ouvert === r.id ? { background: 'rgba(232,177,74,0.14)' } : undefined}
+              style={ouvert === r.id ? { background: 'rgba(var(--sk-glow-rgb),0.14)' } : undefined}
             >
               {fr ? r.anneeFR : r.anneeEN}
             </button>
@@ -63,7 +63,7 @@ const Bibliotheque: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                 {r.livres.map((l, i) => (
                   <li key={l.titre} className="flex gap-5">
                     <span className="font-display title-medieval text-2xl shrink-0 pt-0.5"
-                          style={{ color: 'rgba(232,177,74,0.45)' }}>
+                          style={{ color: 'rgba(var(--sk-glow-rgb),0.45)' }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <div className="min-w-0">

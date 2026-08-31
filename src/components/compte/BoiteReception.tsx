@@ -49,7 +49,7 @@ const BoiteReception: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lan
   if (fils.length === 0) {
     return (
       <div className="rounded-lg-card border border-brass/25 p-8 text-center"
-           style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+           style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
         <MessageCircle size={22} className="text-brass/70 mx-auto mb-4" />
         <p className="font-editorial text-[15px] text-ivory-soft leading-relaxed max-w-md mx-auto">
           {fr

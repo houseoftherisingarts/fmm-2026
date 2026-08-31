@@ -334,7 +334,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
           <audio ref={ambientRef} src="/orb/sfx/ambient-forge.mp3" loop preload="auto" />
 
           {phase === 'scroll' && (
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-[3px]" style={{ background: 'rgba(232,221,193,0.08)' }}>
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-[3px]" style={{ background: 'rgba(var(--sk-bone-rgb),0.08)' }}>
               <motion.div className="h-full origin-left" style={{ scaleX: progress, background: 'linear-gradient(to right, #8C97A6, #D7DEE8)' }} />
             </div>
           )}

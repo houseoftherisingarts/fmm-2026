@@ -52,7 +52,7 @@ const VotesBancEssai: React.FC = () => {
 
         {/* ── Le billet, épinglé, avec sa barre de vote et sa bulle ── */}
         <article className="rounded-lg-card p-5 md:p-6" style={{ background: 'rgba(38, 30, 52, 0.45)', border: '1px solid rgba(120, 130, 190, 0.32)' }}>
-          <p className="flex items-center gap-1.5 mb-3 font-sans uppercase tracking-[0.18em] text-[9px]" style={{ color: '#D8B05A' }}>
+          <p className="flex items-center gap-1.5 mb-3 font-sans uppercase tracking-[0.18em] text-[9px]" style={{ color: 'var(--sk-gilt)' }}>
             <Pin size={11} /> Épinglé par l’équipe
           </p>
           <div className="flex items-center gap-3 mb-3">
@@ -62,7 +62,7 @@ const VotesBancEssai: React.FC = () => {
               <span className="flex items-center gap-2 min-w-0">
                 <span className="font-display text-base text-ivory truncate">Gwendal le Brave</span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-sans uppercase tracking-[0.16em] text-[9px] shrink-0"
-                      style={{ background: 'rgba(216,176,90,0.16)', border: '1px solid #D8B05A', color: '#D8B05A' }}>
+                      style={{ background: 'rgba(var(--sk-gilt-rgb),0.16)', border: '1px solid var(--sk-gilt)', color: 'var(--sk-gilt)' }}>
                   <ShieldCheck size={10} /> Admin · Modérateur
                 </span>
               </span>
@@ -74,7 +74,7 @@ const VotesBancEssai: React.FC = () => {
           </p>
 
           {/* Carte de partage citée */}
-          <div className="mt-4 rounded-card p-4" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(244,239,227,0.14)' }}>
+          <div className="mt-4 rounded-card p-4" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}>
             <p className="font-sans text-[11px] text-ivory-soft/60 mb-1.5">Partagé de Morgane la Sage</p>
             <p className="font-display text-sm text-brass mb-1">Tarot de Marseille</p>
             <p className="font-editorial text-[13px] text-ivory-soft leading-relaxed">
@@ -141,9 +141,9 @@ const VotesBancEssai: React.FC = () => {
           </p>
           <a href="#apercu-demo" onClick={(e) => e.preventDefault()}
              className="flex gap-3 rounded-card overflow-hidden hover:opacity-90 transition-opacity"
-             style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(244,239,227,0.14)' }}>
+             style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}>
             <span className="w-28 h-28 shrink-0 flex items-center justify-center font-display text-ivory-soft/40 text-xs"
-                  style={{ background: 'rgba(216,176,90,0.12)' }}>image</span>
+                  style={{ background: 'rgba(var(--sk-gilt-rgb),0.12)' }}>image</span>
             <div className="min-w-0 py-3 pr-3 flex flex-col justify-center">
               <p className="font-sans uppercase tracking-[0.16em] text-[9px] text-ivory-soft/50 mb-1">ledroit.com</p>
               <p className="font-display text-sm text-ivory truncate">Le Festival Médiéval de Montpellier revient en force</p>

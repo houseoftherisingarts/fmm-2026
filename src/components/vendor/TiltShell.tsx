@@ -47,7 +47,7 @@ const TiltShell: React.FC<{ children: React.ReactNode; max?: number; className?:
           style={{
             background: useTransform(
               [glareX, glareY] as any,
-              ([x, y]: any) => `radial-gradient(ellipse 60% 50% at ${x} ${y}, rgba(255, 235, 180, 0.18) 0%, transparent 55%)`,
+              ([x, y]: any) => `radial-gradient(ellipse 60% 50% at ${x} ${y}, rgba(var(--sk-sheen-rgb), 0.18) 0%, transparent 55%)`,
             ) as any,
           }}
           className="absolute inset-0 pointer-events-none rounded-[inherit] mix-blend-screen"

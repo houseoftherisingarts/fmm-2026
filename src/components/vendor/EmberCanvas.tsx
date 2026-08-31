@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useSkinActif } from '../../lib/useSkinActif';
 
 // Les braises du festival : elles montent du bas avec un balancement de
 // vent, cuivre vers ambre, halo additif. C'est l'effet des premières
@@ -27,10 +28,23 @@ interface Ember {
 
 const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
   const ref = useRef<HTMLCanvasElement>(null);
+  // La peau du compte décide de la teinte des braises : cuivre sous la
+  // palette d'origine, bleu froid sous le bleu et argent, vert sous le
+  // vert, or sous le doré et noir (Alex, 2026-08-31). Les deux nombres
+  // vivent dans --sk-ember-hue / --sk-ember-sat, src/index.css.
+  const skin = useSkinActif();
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
+
+    const jetons = getComputedStyle(document.documentElement);
+    const nombre = (nom: string, repli: number) => {
+      const v = parseFloat(jetons.getPropertyValue(nom));
+      return Number.isFinite(v) ? v : repli;
+    };
+    const teinte = nombre('--sk-ember-hue', 28);
+    const chroma = nombre('--sk-ember-sat', 88);
 
     let raf = 0;
     let visible = true;
@@ -75,7 +89,7 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
         // `count` braises apparaissent et s'éteignent en choeur.
         life: seed ? Math.random() * maxLife * 0.8 : 0,
         maxLife,
-        hue: 28 + Math.random() * 18,            // cuivre vers ambre
+        hue: teinte + Math.random() * 18,        // la rampe de la peau
       });
     };
 
@@ -114,13 +128,13 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
         const rr = e.r * (1 + (1 - t) * 0.35);
         // Halo
         const grad = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, rr * 6);
-        grad.addColorStop(0,    `hsla(${e.hue}, 90%, 65%, ${0.55 * alpha})`);
-        grad.addColorStop(0.45, `hsla(${e.hue}, 85%, 50%, ${0.18 * alpha})`);
+        grad.addColorStop(0,    `hsla(${e.hue}, ${chroma}%, 65%, ${0.55 * alpha})`);
+        grad.addColorStop(0.45, `hsla(${e.hue}, ${chroma * 0.94}%, 50%, ${0.18 * alpha})`);
         grad.addColorStop(1,    'hsla(0, 0%, 0%, 0)');
         ctx.fillStyle = grad;
         ctx.beginPath(); ctx.arc(e.x, e.y, rr * 6, 0, Math.PI * 2); ctx.fill();
         // Hot core
-        ctx.fillStyle = `hsla(${e.hue + 12}, 100%, 78%, ${0.95 * alpha})`;
+        ctx.fillStyle = `hsla(${e.hue + 12}, ${Math.min(100, chroma * 1.1)}%, 78%, ${0.95 * alpha})`;
         ctx.beginPath(); ctx.arc(e.x, e.y, rr, 0, Math.PI * 2); ctx.fill();
       }
       raf = requestAnimationFrame(tick);
@@ -128,7 +142,7 @@ const EmberCanvas: React.FC<Props> = ({ count = 28, className = '' }) => {
     raf = requestAnimationFrame(tick);
 
     return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
-  }, [count]);
+  }, [count, skin]);
 
   return (
     <canvas

@@ -39,7 +39,7 @@ const CandleSpotlight: React.FC<{ className?: string }> = ({ className = '' }) =
       aria-hidden
       className={`fixed top-0 left-0 w-[640px] h-[640px] pointer-events-none z-0 ${className}`}
       style={{
-        background: 'radial-gradient(circle at center, rgba(232, 177, 74, 0.18) 0%, rgba(184, 106, 42, 0.08) 30%, transparent 65%)',
+        background: 'radial-gradient(circle at center, rgba(var(--sk-glow-rgb), 0.18) 0%, rgba(var(--sk-copper-rgb), 0.08) 30%, transparent 65%)',
         mixBlendMode: 'screen',
         willChange: 'transform',
       }}

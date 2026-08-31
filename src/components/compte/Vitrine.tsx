@@ -27,14 +27,14 @@ const Vitrine: React.FC<{ ids: string[]; lang: 'FR' | 'EN' }> = ({ ids, lang }) 
           title={`${fr ? b.nomFR : b.nomEN} · ${fr ? b.texteFR : b.texteEN}`}
           aria-label={fr ? b.nomFR : b.nomEN}
           className="inline-flex items-center justify-center w-9 h-9 rounded-full"
-          style={{ background: 'rgba(216,176,90,0.08)', border: '1px solid rgba(216,176,90,0.32)' }}
+          style={{ background: 'rgba(var(--sk-gilt-rgb),0.08)', border: '1px solid rgba(var(--sk-gilt-rgb),0.32)' }}
         >
           {sceauxCasses.has(b.id) ? (
-            <span aria-hidden className="text-base" style={{ color: '#D8B05A' }}>{b.glyphe}</span>
+            <span aria-hidden className="text-base" style={{ color: 'var(--sk-gilt)' }}>{b.glyphe}</span>
           ) : (
             <img src={sceauDe(b.id)} alt="" aria-hidden className="w-7 h-7 object-contain"
                  onError={() => setSceauxCasses((s) => new Set(s).add(b.id))}
-                 style={{ filter: 'drop-shadow(0 0 8px rgba(232,177,74,0.35))' }} />
+                 style={{ filter: 'drop-shadow(0 0 8px rgba(var(--sk-glow-rgb),0.35))' }} />
           )}
         </motion.li>
       ))}

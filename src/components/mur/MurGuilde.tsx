@@ -86,14 +86,14 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
             rows={3}
             placeholder={fr ? 'Quoi de neuf dans la guilde ?' : 'What’s new in the guild?'}
             className="w-full px-4 py-3 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 leading-relaxed"
-            style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+            style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}
           />
           {apercu && (
             <div className="relative mt-3 inline-block">
               <img src={apercu} alt="" className="max-h-56 rounded-card object-cover" />
               <button type="button" onClick={() => setPhoto(null)} aria-label={fr ? 'Retirer la photo' : 'Remove photo'}
                       className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
+                      style={{ background: 'rgba(var(--sk-ink-rgb),0.8)', color: 'var(--sk-parchment)' }}><X size={13} /></button>
             </div>
           )}
           {apercuVideo && (
@@ -101,14 +101,14 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
               <video src={apercuVideo} className="max-h-56 rounded-card" controls />
               <button type="button" onClick={() => setVideo(null)} aria-label={fr ? 'Retirer la vidéo' : 'Remove video'}
                       className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(10,2,7,0.8)', color: '#F4EFE3' }}><X size={13} /></button>
+                      style={{ background: 'rgba(var(--sk-ink-rgb),0.8)', color: 'var(--sk-parchment)' }}><X size={13} /></button>
             </div>
           )}
           {erreurVideo && <p className="mt-2 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurVideo}</p>}
           <div className="mt-3 flex items-center justify-between gap-3">
             <button type="button" onClick={() => fichier.current?.click()}
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
-                    style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                    style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
               <ImageIcon size={13} /> {fr ? 'Photo' : 'Photo'}
             </button>
             <input ref={fichier} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
@@ -124,7 +124,7 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
                       fichierVideo.current?.click();
                     }}
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px] text-ivory-soft hover:text-brass transition-colors"
-                    style={{ border: '1px solid rgba(244,239,227,0.2)' }}>
+                    style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
               <Video size={13} /> {fr ? 'Vidéo' : 'Video'}
             </button>
             <input ref={fichierVideo} type="file" accept="video/mp4,video/webm" className="sr-only"
@@ -157,8 +157,8 @@ const MurGuilde: React.FC<{ lang: 'FR' | 'EN'; guildeId: string; peutEcrire: boo
           lang={lang}
           post={post}
           delaiIndex={i}
-          fond="rgba(26, 5, 11, 0.45)"
-          bord="rgba(232,177,74,0.2)"
+          fond="rgba(var(--sk-deep-rgb), 0.45)"
+          bord="rgba(var(--sk-glow-rgb),0.2)"
           peutEpingler={peutEpingler}
           bandeauEpingle={fr ? 'Épinglé dans la guilde' : 'Pinned in the guild'}
         />

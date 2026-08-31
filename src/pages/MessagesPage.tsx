@@ -219,7 +219,7 @@ const MessagesPage: React.FC = () => {
           <div className="grid lg:grid-cols-12 gap-4 h-[calc(100vh-10rem)] min-h-[36rem]">
             {/* ── La liste des conversations ── */}
             <aside className={`lg:col-span-4 ${autreUid ? 'hidden lg:flex' : 'flex'} flex-col rounded-lg-card border border-brass/25 overflow-hidden`}
-                   style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+                   style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
               <div className="px-4 py-3.5">
                 <h1 className="font-display title-medieval text-sm text-ivory mb-2.5 flex items-center gap-2">
                   <MessageCircle size={14} className="text-brass" /> {t.conversations}
@@ -230,7 +230,7 @@ const MessagesPage: React.FC = () => {
                   <input id="chercher-fil" value={recherche} onChange={(e) => setRecherche(e.target.value)}
                     placeholder={t.chercher}
                     className="w-full pl-8 pr-3 py-2 rounded-card text-xs font-sans text-ivory placeholder:text-ivory-soft/40 focus:outline-none focus:border-brass/60 transition-colors"
-                    style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }} />
+                    style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto">
@@ -249,7 +249,7 @@ const MessagesPage: React.FC = () => {
                       className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors ${
                         actif ? 'bg-brass/10' : 'hover:bg-ivory-soft/[0.04]'
                       }`}
-                      style={{ borderBottom: '1px solid rgba(244, 239, 227, 0.06)' }}>
+                      style={{ borderBottom: '1px solid rgba(var(--sk-parchment-rgb), 0.06)' }}>
                       <Portrait nom={nom} url={f.participantPhotos?.[u]}
                                 teinte={f.participantHues?.[u] ?? teinteDe(nom)} taille={40} />
                       <div className="flex-1 min-w-0">
@@ -272,7 +272,7 @@ const MessagesPage: React.FC = () => {
 
             {/* ── La conversation ── */}
             <section className={`lg:col-span-8 ${autreUid ? 'flex' : 'hidden lg:flex'} flex-col rounded-lg-card border border-brass/25 overflow-hidden`}
-                     style={{ background: 'rgba(26, 5, 11, 0.45)' }}>
+                     style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
               {!autreUid ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center text-ivory-soft/60 px-8">
                   <MessageCircle size={36} className="opacity-30 mb-4" />
@@ -281,7 +281,7 @@ const MessagesPage: React.FC = () => {
               ) : (
                 <>
                   <header className="px-4 py-3 flex items-center gap-3"
-                          style={{ borderBottom: '1px solid rgba(232, 177, 74, 0.18)' }}>
+                          style={{ borderBottom: '1px solid rgba(var(--sk-glow-rgb), 0.18)' }}>
                     <button onClick={() => navigate(addLocale('/messages', lang))}
                       aria-label={t.retourListe}
                       className="lg:hidden text-ivory-soft hover:text-brass transition-colors">
@@ -348,14 +348,14 @@ const MessagesPage: React.FC = () => {
 
                   {avis && (
                     <p role="status" className="px-4 md:px-6 py-2 font-sans text-[11px] text-brass/90"
-                       style={{ borderTop: '1px solid rgba(244, 239, 227, 0.08)' }}>
+                       style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb), 0.08)' }}>
                       {avis}
                     </p>
                   )}
 
                   {bloque ? (
                     <div className="px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3"
-                         style={{ borderTop: '1px solid rgba(232, 177, 74, 0.18)' }}>
+                         style={{ borderTop: '1px solid rgba(var(--sk-glow-rgb), 0.18)' }}>
                       <p className="font-editorial text-sm text-ivory-soft/70">{t.silenceEnCours(nomAutre)}</p>
                       <button type="button" onClick={basculerSilence}
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-card border border-brass/40 font-sans uppercase tracking-[0.16em] text-[10px] text-ivory hover:bg-brass/15 transition-colors">
@@ -364,7 +364,7 @@ const MessagesPage: React.FC = () => {
                     </div>
                   ) : (
                     <form onSubmit={envoyer} className="px-4 md:px-6 py-4 flex items-end gap-3"
-                          style={{ borderTop: '1px solid rgba(232, 177, 74, 0.18)' }}>
+                          style={{ borderTop: '1px solid rgba(var(--sk-glow-rgb), 0.18)' }}>
                       <label htmlFor="mot-prive" className="sr-only">{t.champ}</label>
                       <textarea
                         id="mot-prive"
@@ -380,7 +380,7 @@ const MessagesPage: React.FC = () => {
                         }}
                         placeholder={t.champ}
                         className="flex-1 px-4 py-2.5 rounded-card text-sm font-sans text-ivory placeholder:text-ivory-soft/40 resize-none max-h-36 focus:outline-none focus:border-brass/60 transition-colors"
-                        style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(232,177,74,0.22)' }}
+                        style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }}
                       />
                       <div className="flex flex-col items-end gap-1.5">
                         {reste < 200 && (

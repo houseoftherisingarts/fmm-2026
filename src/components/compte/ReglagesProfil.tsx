@@ -17,11 +17,11 @@ const Interrupteur: React.FC<{ actif: boolean; onClick: () => void; label: strin
   <button
     type="button" role="switch" aria-checked={actif} onClick={onClick}
     className="relative w-10 h-[22px] rounded-full transition-colors shrink-0"
-    style={{ background: actif ? '#D8B05A' : 'rgba(244,239,227,0.18)' }}
+    style={{ background: actif ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.18)' }}
     aria-label={label}
   >
     <span className="absolute left-0 top-0.5 w-[18px] h-[18px] rounded-full transition-transform"
-          style={{ background: '#F4EFE3', transform: actif ? 'translateX(20px)' : 'translateX(2px)' }} />
+          style={{ background: 'var(--sk-parchment)', transform: actif ? 'translateX(20px)' : 'translateX(2px)' }} />
   </button>
 );
 
@@ -53,9 +53,9 @@ const ReglagesProfil: React.FC<{
                 onClick={() => onChange({ positionBanniere: id })}
                 className="px-3.5 py-2 rounded-card font-sans uppercase tracking-[0.16em] text-[10px] transition-colors"
                 style={{
-                  color: position === id ? '#D8B05A' : 'rgba(244,239,227,0.6)',
-                  background: position === id ? 'rgba(216,176,90,0.14)' : 'transparent',
-                  border: `1px solid ${position === id ? 'rgba(216,176,90,0.5)' : 'rgba(244,239,227,0.18)'}`,
+                  color: position === id ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.6)',
+                  background: position === id ? 'rgba(var(--sk-gilt-rgb),0.14)' : 'transparent',
+                  border: `1px solid ${position === id ? 'rgba(var(--sk-gilt-rgb),0.5)' : 'rgba(var(--sk-parchment-rgb),0.18)'}`,
                 }}
               >
                 {t.positions[id]}

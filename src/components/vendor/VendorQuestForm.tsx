@@ -586,7 +586,7 @@ const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'sent' | 
               onClick={goNext}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-brass-soft to-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold rounded-card shadow-[0_8px_22px_-6px_rgba(216,155,58,0.55)] border border-amber-200/40"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-brass-soft to-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold rounded-card shadow-[0_8px_22px_-6px_rgba(var(--sk-mustard-rgb),0.55)] border border-amber-200/40"
               style={{ transformStyle: 'preserve-3d' }}
             >
               {t.next} <ArrowRight size={14} />
@@ -743,7 +743,7 @@ const ChipRadio: React.FC<{
           whileTap={{ scale: 0.97 }}
           className={`relative cursor-pointer text-center py-3.5 border font-sans text-sm transition-all ${
             active
-              ? 'bg-brass/15 border-brass text-brass shadow-[0_0_20px_rgba(196,164,90,0.18)]'
+              ? 'bg-brass/15 border-brass text-brass shadow-[0_0_20px_rgba(var(--sk-brass-rgb),0.18)]'
               : 'bg-midnight-deep/40 border-ivory-soft/15 text-ivory-soft hover:border-brass/50 hover:text-ivory'
           }`}
         >
@@ -781,7 +781,7 @@ const ChipColumn: React.FC<{
           whileTap={{ scale: 0.985 }}
           className={`relative cursor-pointer text-left px-4 py-3 rounded-card border font-sans text-sm transition-all flex items-center gap-3 ${
             active
-              ? 'bg-brass/15 border-brass text-brass shadow-[0_0_20px_rgba(196,164,90,0.18)]'
+              ? 'bg-brass/15 border-brass text-brass shadow-[0_0_20px_rgba(var(--sk-brass-rgb),0.18)]'
               : 'bg-midnight-deep/40 border-ivory-soft/15 text-ivory-soft hover:border-brass/50 hover:text-ivory'
           }`}
         >
@@ -980,7 +980,7 @@ const InvoicePanel: React.FC<{
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.12 }}
-      className="mt-6 relative border border-amber-300/30 bg-[rgba(26,5,11,0.45)] p-5 md:p-6 overflow-hidden"
+      className="mt-6 relative border border-amber-300/30 bg-[rgba(var(--sk-deep-rgb),0.45)] p-5 md:p-6 overflow-hidden"
     >
       <div className="relative">
         <div className="flex items-center justify-between gap-3 mb-4">
@@ -1026,13 +1026,13 @@ const UnitsSwitch: React.FC<{
   <button
     type="button"
     onClick={() => onChange(!metric)}
-    className="relative inline-flex items-center bg-[rgba(26,5,11,0.6)] border border-ivory-soft/20 p-0.5 font-sans text-[10px] uppercase tracking-widest text-ivory-soft"
+    className="relative inline-flex items-center bg-[rgba(var(--sk-deep-rgb),0.6)] border border-ivory-soft/20 p-0.5 font-sans text-[10px] uppercase tracking-widest text-ivory-soft"
     aria-label="Units toggle"
   >
     <motion.span
       layout
       transition={{ type: 'spring', stiffness: 480, damping: 32 }}
-      className="absolute top-0.5 bottom-0.5 bg-brass shadow-[0_0_14px_rgba(232,177,74,0.4)]"
+      className="absolute top-0.5 bottom-0.5 bg-brass shadow-[0_0_14px_rgba(var(--sk-glow-rgb),0.4)]"
       style={{ left: metric ? '50%' : '0.125rem', right: metric ? '0.125rem' : '50%' }}
     />
     <span className={`relative px-3 py-1.5 transition-colors ${!metric ? 'text-midnight-deep' : ''}`}>{labelImperial}</span>

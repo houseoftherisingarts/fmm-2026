@@ -105,10 +105,10 @@ const SoukTeaser: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         <Link
           to={addLocale('/souk', lang)}
           className="glass-light rounded-lg-card p-6 md:p-7 flex items-center justify-between gap-4 flex-wrap hover:border-brass/40 transition group"
-          style={{ border: '1px solid rgba(216, 176, 90, 0.16)' }}
+          style={{ border: '1px solid rgba(var(--sk-gilt-rgb), 0.16)' }}
         >
           <span>
-            <span className="font-sans uppercase tracking-[0.4em] text-[10px] mb-1.5 block" style={{ color: '#D8B05A' }}>
+            <span className="font-sans uppercase tracking-[0.4em] text-[10px] mb-1.5 block" style={{ color: 'var(--sk-gilt)' }}>
               {fr ? 'Entre membres' : 'Members only'}
             </span>
             <span className="font-display text-xl md:text-2xl" style={{ color: 'var(--color-bone)', fontWeight: 400 }}>

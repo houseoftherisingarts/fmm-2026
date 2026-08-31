@@ -62,11 +62,11 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
   return (
     <section
       className="relative p-6 md:p-8 overflow-hidden"
-      style={{ background: 'rgba(26, 5, 11, 0.55)', border: '1px solid rgba(244, 239, 227, 0.10)' }}
+      style={{ background: 'rgba(var(--sk-deep-rgb), 0.55)', border: '1px solid rgba(var(--sk-parchment-rgb), 0.10)' }}
     >
       <header className="flex items-start gap-4 mb-6">
         <span className="witcher-tile shrink-0" style={{ width: 46, height: 46 }}>
-          <span className="witcher-tile-inner" style={{ color: '#D8B05A' }}>
+          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
             <Ticket size={16} />
           </span>
         </span>
@@ -84,8 +84,8 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
       <ol className="mb-6 space-y-2">
         {t.steps.map((s, i) => (
           <li key={i} className="flex gap-3 font-sans text-sm leading-relaxed"
-              style={{ color: 'rgba(244, 239, 227, 0.72)', fontWeight: 300 }}>
-            <span className="font-sans text-[11px] tracking-[0.3em] shrink-0 mt-0.5" style={{ color: '#D8B05A' }}>
+              style={{ color: 'rgba(var(--sk-parchment-rgb), 0.72)', fontWeight: 300 }}>
+            <span className="font-sans text-[11px] tracking-[0.3em] shrink-0 mt-0.5" style={{ color: 'var(--sk-gilt)' }}>
               {String(i + 1).padStart(2, '0')}
             </span>
             {s}
@@ -96,7 +96,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
       {/* Clin d'œil au Seigneur des Anneaux : Gollum sur l'Anneau. */}
       <p
         className="font-editorial italic text-sm md:text-base mb-6 pl-4"
-        style={{ color: '#D8B05A', borderLeft: '1px solid rgba(216, 176, 90, 0.45)' }}
+        style={{ color: 'var(--sk-gilt)', borderLeft: '1px solid rgba(var(--sk-gilt-rgb), 0.45)' }}
       >
         {t.precious}
       </p>
@@ -108,8 +108,8 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
         onDrop={(e) => { e.preventDefault(); setDragOver(false); accept(e.dataTransfer.files); }}
         className="relative p-7 md:p-9 text-center transition-colors"
         style={{
-          border: `1px dashed ${dragOver ? 'rgba(216,176,90,0.85)' : 'rgba(244,239,227,0.22)'}`,
-          background: dragOver ? 'rgba(216,176,90,0.08)' : 'transparent',
+          border: `1px dashed ${dragOver ? 'rgba(var(--sk-gilt-rgb),0.85)' : 'rgba(var(--sk-parchment-rgb),0.22)'}`,
+          background: dragOver ? 'rgba(var(--sk-gilt-rgb),0.08)' : 'transparent',
         }}
       >
         <input
@@ -121,7 +121,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
           id="billet-input"
           onChange={(e) => accept(e.target.files)}
         />
-        <Upload size={22} className="mx-auto mb-3" style={{ color: '#D8B05A', opacity: 0.8 }} />
+        <Upload size={22} className="mx-auto mb-3" style={{ color: 'var(--sk-gilt)', opacity: 0.8 }} />
         <label
           htmlFor="billet-input"
           className="witcher-prompt cursor-pointer inline-flex"
@@ -130,7 +130,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
           <span className="witcher-prompt-glyph"><span>A</span></span>
           {busy ? t.uploading : t.choose}
         </label>
-        <p className="font-sans text-xs mt-4" style={{ color: 'rgba(244,239,227,0.4)', fontWeight: 300 }}>
+        <p className="font-sans text-xs mt-4" style={{ color: 'rgba(var(--sk-parchment-rgb),0.4)', fontWeight: 300 }}>
           {t.hint}
         </p>
       </div>
@@ -160,9 +160,9 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
                 exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                 transition={{ duration: 0.25 }}
                 className="flex items-center gap-4 p-3.5"
-                style={{ background: 'rgba(10, 2, 7, 0.6)', border: '1px solid rgba(244,239,227,0.10)' }}
+                style={{ background: 'rgba(var(--sk-ink-rgb), 0.6)', border: '1px solid rgba(var(--sk-parchment-rgb),0.10)' }}
               >
-                <FileText size={16} className="shrink-0" style={{ color: '#D8B05A' }} />
+                <FileText size={16} className="shrink-0" style={{ color: 'var(--sk-gilt)' }} />
                 <span className="flex-1 min-w-0">
                   <span
                     className="block font-sans text-sm truncate"
@@ -172,7 +172,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
                   </span>
                   <span
                     className="block font-sans text-[11px] tracking-wider"
-                    style={{ color: 'rgba(244,239,227,0.42)', fontWeight: 300 }}
+                    style={{ color: 'rgba(var(--sk-parchment-rgb),0.42)', fontWeight: 300 }}
                   >
                     {formatSize(b.size)}
                     {b.uploaded ? ` · ${new Date(b.uploaded).toLocaleDateString(fr ? 'fr-CA' : 'en-CA')}` : ''}
@@ -183,7 +183,7 @@ const CoffreBillets: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, lang
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 inline-flex items-center gap-1.5 font-sans uppercase tracking-[0.2em] text-[10px] transition"
-                  style={{ color: '#D8B05A' }}
+                  style={{ color: 'var(--sk-gilt)' }}
                 >
                   {t.open} <ArrowUpRight size={12} />
                 </a>
