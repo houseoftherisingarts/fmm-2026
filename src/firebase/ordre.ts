@@ -82,6 +82,11 @@ export interface PrefsMembre {
    *  qu'elle ne veut plus, à la Facebook. Voir AlertesPanel.tsx et
    *  ALERTES_ESSENTIELLES ci-dessous (Alex, 2026-08-28). */
   alertes?: AlertesMembre;
+  /** Une adresse de contact que la personne CHOISIT de montrer sur sa
+   *  fiche (Alex, 2026-08-31). Le courriel du compte, lui, ne paraît
+   *  jamais nulle part : il sert à ouvrir la session, pas à être lu par
+   *  les autres membres. Vide ou absent, la fiche n'affiche rien. */
+  courrielPublic?: string;
 }
 
 /** Chaque drapeau vaut vrai quand il est absent : seule une valeur

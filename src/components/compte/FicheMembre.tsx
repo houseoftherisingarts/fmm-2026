@@ -240,6 +240,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
   // ── Le compte : nom affiché, téléphone, photo, candidatures ──
   const [nomForm, setNomForm]   = useState('');
   const [phone, setPhone]       = useState('');
+  /** L'adresse de contact que la personne accepte de montrer. Vide par
+   *  défaut : rien ne s'affiche tant qu'elle n'a rien écrit. */
+  const [courrielPublic, setCourrielPublic] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
   const [enregistre, setEnregistre] = useState(false);
   const [enregistrement, setEnregistrement] = useState(false);
@@ -300,6 +303,13 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
       void gagner('profil-complet', uid);
     }
   }, [prive, uid, chargement, fiche, avatarUrl]);
+
+  // Le champ suit la fiche tant que la personne n'y a pas touché.
+  const courrielTouche = useRef(false);
+  useEffect(() => {
+    if (courrielTouche.current) return;
+    setCourrielPublic(fiche?.prefs?.courrielPublic || '');
+  }, [fiche?.prefs?.courrielPublic]);
 
   // ── Les réglages personnels (prefs) : un seul point d'écriture,
   //    utilisé par Réglages, la bannière et l'Espace VIP.
@@ -422,6 +432,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
         lang,
         ...(avatarUrl ? { avatarUrl } : {}),
       });
+      // L'adresse publique vit dans les préférences de la fiche, en
+      // chemin pointé comme tous les autres réglages.
+      const adresse = courrielPublic.trim();
+      if (adresse !== (fiche?.prefs?.courrielPublic || '')) majPrefs({ courrielPublic: adresse });
       // Le même nom des deux côtés : la fiche de l'Ordre est ce que les
       // autres membres lisent.
       if (nomPropre) {
@@ -491,8 +505,6 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
             className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass mb-8 transition">
             <ArrowLeft size={14} /> {prive ? t.accueil : t.retour}
           </Link>
-            {/* La cloche et les messages, en haut à droite de l'espace. */}
-            {prive && <Cloche uid={uid} lang={lang} />}
             {isSuperAdmin && (
               <button type="button" onClick={basculerVisionAdmin} aria-pressed={visionAdmin}
                       title={visionAdmin ? (fr ? 'Vision admin : allumée. Cliquer pour voir comme un membre.' : 'Admin view: on. Click to see as a member.') : (fr ? 'Vision admin : éteinte. Cliquer pour voir en admin.' : 'Admin view: off. Click to see as admin.')}
@@ -607,18 +619,36 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                           <MapPin size={13} className="text-brass" /> {fiche.ville}
                         </p>
                       )}
-                      {prive && compte?.email && (
+                      {/* Le courriel du compte ne paraît nulle part : il sert
+                          à ouvrir la session, pas à être lu. Seule l'adresse
+                          que la personne pose elle-même dans « Vos
+                          informations » s'affiche ici (Alex, 2026-08-31). */}
+                      {fiche?.prefs?.courrielPublic && (
                         <p className="font-sans text-xs mt-2 flex items-center justify-center md:justify-start gap-2"
                            style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
-                          <Mail size={13} className="text-brass" /> {compte.email}
+                          <Mail size={13} className="text-brass" />
+                          <a href={`mailto:${fiche.prefs.courrielPublic}`} className="hover:text-brass transition break-all">
+                            {fiche.prefs.courrielPublic}
+                          </a>
                         </p>
                       )}
 
-                      <div className="mt-7 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-9 sm:justify-center md:justify-start">
-                        <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
-                        <Chiffre n={nbAmis}    label={t.statAmis}    onClick={() => ouvrir('profil')} />
-                        <Chiffre n={nbParties} label={t.statParties} onClick={() => ouvrir('jeux')} />
-                        <Chiffre n={avisPris.length} label={t.statAvis} onClick={() => ouvrir('badges')} />
+                      {/* Les quatre chiffres, et à leur droite la cloche et
+                          la messagerie. Elles flottaient tout en haut de la
+                          page, loin de tout; elles vivent maintenant sur la
+                          même rangée que les avis (Alex, 2026-08-31). */}
+                      <div className="mt-7 flex items-center gap-3 md:gap-6 justify-center md:justify-start">
+                        <div className="grid grid-cols-4 gap-1 min-w-0 sm:flex sm:flex-wrap sm:gap-9">
+                          <Chiffre n={etatBadges.obtenus} sur={etatBadges.total} label={t.statBadges} onClick={() => ouvrir('badges')} />
+                          <Chiffre n={nbAmis}    label={t.statAmis}    onClick={() => ouvrir('profil')} />
+                          <Chiffre n={nbParties} label={t.statParties} onClick={() => ouvrir('jeux')} />
+                          <Chiffre n={avisPris.length} label={t.statAvis} onClick={() => ouvrir('badges')} />
+                        </div>
+                        {prive && (
+                          <span className="shrink-0 self-center">
+                            <Cloche uid={uid} lang={lang} />
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1170,11 +1200,25 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                              onChange={(e) => { setNomForm(e.target.value); setEnregistre(false); }}
                              className={inputCls} />
                     </label>
-                    <label className="block mb-5">
+                    <label className="block mb-4">
                       <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.phone}</span>
                       <input type="tel" value={phone}
                              onChange={(e) => { setPhone(e.target.value); setEnregistre(false); }}
                              className={inputCls} />
+                    </label>
+                    <label className="block mb-5">
+                      <span className="block font-display title-medieval text-xs text-brass mb-1.5">{t.courrielPublic}</span>
+                      <input type="email" value={courrielPublic} placeholder={t.courrielPublicVide} inputMode="email" autoComplete="email"
+                             onChange={(e) => { courrielTouche.current = true; setCourrielPublic(e.target.value); setEnregistre(false); }}
+                             className={inputCls} />
+                      <span className="block mt-1.5 font-editorial text-[11px] leading-snug text-ivory-soft/55">
+                        {t.courrielPublicAide}
+                      </span>
+                      {compte?.email && (
+                        <span className="block mt-1 font-editorial text-[11px] leading-snug text-ivory-soft/40">
+                          {t.courrielCompte} {compte.email}
+                        </span>
+                      )}
                     </label>
                     <button type="submit" disabled={enregistrement}
                       className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
@@ -1324,6 +1368,10 @@ const FR = {
   allerJouer: 'Ouvrir le plateau',
   profileEyebrow: 'Profil', profileTitle: 'Vos informations',
   displayName: 'Nom affiché', phone: 'Téléphone',
+  courrielPublic: 'Courriel de contact',
+  courrielPublicVide: 'Laissez vide pour n’en montrer aucun',
+  courrielPublicAide: 'Cette adresse paraît sur votre fiche, à la vue des autres membres. Rien ne s’affiche tant que vous n’en posez pas une.',
+  courrielCompte: 'Le courriel de votre compte, jamais affiché :',
   save: 'Enregistrer', saving: 'Enregistrement…', saved: 'Enregistré.',
   benevoleEyebrow: 'Application bénévole', benevoleTitle: 'Postuler comme bénévole',
   benevoleApply: 'Postuler', benevoleEdit: 'Voir / modifier ma candidature',
@@ -1378,6 +1426,10 @@ const EN: typeof FR = {
   allerJouer: 'Open the board',
   profileEyebrow: 'Profile', profileTitle: 'Your information',
   displayName: 'Display name', phone: 'Phone',
+  courrielPublic: 'Contact email',
+  courrielPublicVide: 'Leave empty to show none',
+  courrielPublicAide: 'This address appears on your card, in plain sight of the other members. Nothing shows until you put one there.',
+  courrielCompte: 'Your account email, never displayed:',
   save: 'Save', saving: 'Saving…', saved: 'Saved.',
   benevoleEyebrow: 'Volunteer application', benevoleTitle: 'Apply as a volunteer',
   benevoleApply: 'Apply', benevoleEdit: 'View / edit my application',

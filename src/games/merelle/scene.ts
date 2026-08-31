@@ -17,6 +17,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ARETES, POSITIONS, type Camp } from './logic';
 import { chargerSculpture } from '../sculpture';
+import { carteNormales, grainDeBois, ombreDeContact, piedTourne } from '../bois';
 
 /** Un pas de grille, en unités de scène. */
 export const CELL = 1.5;
@@ -54,50 +55,23 @@ export interface SceneMerelle {
 // ── Le bois ──────────────────────────────────────────────────────────
 // Un canevas peint plutôt qu'une image à télécharger : la page du jeu
 // ouvre sans attendre le réseau, et le grain se règle au pixel près.
+// Le tracé des fibres vit dans ../bois.ts, partagé avec le renard.
 function grainDeChene(
-  taille = 512, fond = '#6b4a29', veine = '#3a2412', densite = 1,
+  taille = 512, fond = '#6b4a29', veine = '#3a2412', repetition = 1,
 ): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = c.height = taille;
-  const g = c.getContext('2d')!;
-  g.fillStyle = fond;
-  g.fillRect(0, 0, taille, taille);
-  g.strokeStyle = veine;
-  // Le chêne se lit à la fréquence de ses veines. Trop peu de traits et
-  // le bois tourne au carton peint (constat à l'écran, 2026-08-30).
-  const traits = Math.round(150 * densite);
-  for (let i = 0; i < traits; i++) {
-    const x = Math.random() * taille;
-    g.globalAlpha = 0.03 + Math.random() * 0.11;
-    g.lineWidth = (0.5 + Math.random() * 1.6) / Math.sqrt(densite);
-    g.beginPath();
-    g.moveTo(x, 0);
-    const amp = (3 + Math.random() * 11) / Math.sqrt(densite);
-    for (let y = 0; y <= taille; y += 12) {
-      g.lineTo(x + Math.sin((y / taille) * Math.PI * (1 + Math.random())) * amp, y);
-    }
-    g.stroke();
-  }
-  // Quelques nœuds : sans eux, le bois ressemble à du carton rayé.
-  for (let k = 0; k < 3 * densite; k++) {
-    const nx = 60 + Math.random() * (taille - 120);
-    const ny = 60 + Math.random() * (taille - 120);
-    const grand = (16 + Math.random() * 14) / Math.sqrt(densite);
-    for (let r = grand; r > 1; r -= 1.8) {
-      g.globalAlpha = 0.035 + (grand - r) * 0.009;
-      g.beginPath();
-      g.ellipse(nx, ny, r, r * 0.45, Math.random() * Math.PI, 0, Math.PI * 2);
-      g.stroke();
-    }
-  }
-  g.globalAlpha = 0.05;
-  for (let i = 0; i < 4200 * densite; i++) {
-    g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
-    g.fillRect(Math.random() * taille, Math.random() * taille, 1, 1);
-  }
-  g.globalAlpha = 1;
-  return c;
+  return grainDeBois({
+    taille, fond, veine, repetition,
+    // Le chêne se lit à la finesse de ses fibres. Trop peu de traits et
+    // le bois tourne au carton peint (constat à l'écran, 2026-08-30);
+    // trop épais, il tourne au velours (2026-08-31).
+    fibres: 430, noeuds: 3, ondulation: 7,
+  });
 }
+
+/** Où tombe chaque point du plateau dans la texture du dessus. */
+const PX_DESSUS = (S: number) => (u: number) => ((u + DEMI) / (DEMI * 2)) * S;
+/** Le rayon d'une cupule, dans la texture du dessus. */
+const R_CUPULE = (S: number) => (0.31 / (DEMI * 2)) * S;
 
 /** Le dessus du plateau : le grain, les seize alignements gravés, et les
  *  vingt-quatre cupules avec leur ombre portée. */
@@ -105,8 +79,8 @@ function dessusGrave(): THREE.CanvasTexture {
   const S = 1024;
   const c = grainDeChene(S, '#7a5530', '#3a2209', 4);
   const g = c.getContext('2d')!;
-  const px = (u: number) => ((u + DEMI) / (DEMI * 2)) * S;
-  const R = (0.30 / (DEMI * 2)) * S; // rayon d'une cupule, en pixels
+  const px = PX_DESSUS(S);
+  const R = R_CUPULE(S);
 
   g.lineCap = 'round';
 
@@ -121,7 +95,8 @@ function dessusGrave(): THREE.CanvasTexture {
     g.strokeRect(px(-u), px(-u), px(u) - px(-u), px(u) - px(-u));
   }
   // La gravure : un sillon sombre, puis l'arête claire du côté de la
-  // lumière. C'est ce décalage d'un pixel ou deux qui fait creux.
+  // lumière. C'est ce décalage d'un pixel ou deux qui fait creux, et la
+  // carte de normales fait le reste quand la caméra passe au ras.
   for (const [a, b] of ARETES) {
     const [ax, az] = POSITIONS[a];
     const [bx, bz] = POSITIONS[b];
@@ -169,6 +144,67 @@ function dessusGrave(): THREE.CanvasTexture {
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 8;
   return t;
+}
+
+/**
+ * Le relief du dessus, en niveaux de gris : blanc, c'est la surface du
+ * bois; noir, c'est le fond du creux. Il sert deux fois. La carte de
+ * normales en sort par un Sobel, et c'est elle qui donne aux sillons
+ * leur vraie arête sous la lumière rasante. Et il sert tel quel de
+ * carte de rugosité : le fond des cupules, poli par mille parties,
+ * renvoie un reflet que le bois brut n'a pas.
+ */
+function reliefDuDessus(): HTMLCanvasElement {
+  // Moitié moins que la couleur : une carte de normales tolère la
+  // demi-résolution, et le Sobel qui la calcule coûte alors quatre fois
+  // moins cher au montage de la scène.
+  const S = 512;
+  const c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d')!;
+  const px = PX_DESSUS(S);
+  const R = R_CUPULE(S);
+
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 0, S, S);
+  g.lineCap = 'round';
+
+  // Le double filet du pourtour, creusé lui aussi.
+  g.strokeStyle = '#7a7a7a';
+  g.lineWidth = S * 0.006;
+  g.strokeRect(px(-3.34), px(-3.34), px(3.34) - px(-3.34), px(3.34) - px(-3.34));
+
+  // Les sillons : un trait franc, adouci d'un cheveu pour que le Sobel
+  // rende une arête et non une marche.
+  g.strokeStyle = '#4a4a4a';
+  g.lineWidth = S * 0.0075;
+  g.filter = 'blur(1.5px)';
+  for (const [a, b] of ARETES) {
+    const [ax, az] = POSITIONS[a];
+    const [bx, bz] = POSITIONS[b];
+    g.beginPath();
+    g.moveTo(px(ax), px(az));
+    g.lineTo(px(bx), px(bz));
+    g.stroke();
+  }
+  g.filter = 'none';
+
+  // Les cupules, en écuelle : le centre au plus bas, le bord affleurant.
+  for (const [x, z] of POSITIONS) {
+    const cx = px(x);
+    const cz = px(z);
+    const grad = g.createRadialGradient(cx, cz, 0, cx, cz, R);
+    grad.addColorStop(0, '#242424');
+    grad.addColorStop(0.62, '#4f4f4f');
+    grad.addColorStop(0.92, '#c8c8c8');
+    grad.addColorStop(1, '#ffffff');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.arc(cx, cz, R, 0, Math.PI * 2);
+    g.fill();
+  }
+
+  return c;
 }
 
 /** Le profil d'un pion de tourneur, en coupe : le rayon à gauche, la
@@ -313,57 +349,154 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   const tableMat = new THREE.MeshStandardMaterial({ map: boisTable, roughness: 0.7, metalness: 0.02 });
   const tableGeo = new THREE.CylinderGeometry(11.5, 12.5, 0.7, 56);
   const table = new THREE.Mesh(tableGeo, tableMat);
-  table.position.y = -0.85;
+  // Abaissée d'un quart d'unité le 2026-08-31 : le plateau a maintenant
+  // des pieds tournés, et il lui faut la place de se tenir dessus.
+  table.position.y = -1.10;
   table.receiveShadow = true;
   scene.add(table);
 
   // ── Le madrier gravé ───────────────────────────────────────────────
+  // Trois pièces de menuiserie, comme sur un vrai jeu offert : le
+  // madrier gravé, la moulure qui en cerne le bord et le protège, la
+  // plinthe biseautée dessous, et quatre pieds tournés au tour.
+  //
+  // Repères de hauteur, une fois pour toutes : le dessus de la table
+  // est à -0,75 et la surface de jeu à HAUT (0,18). Tout ce qui suit
+  // se répartit ces 0,93 unité.
   const cote = DEMI * 2 * CELL;
+  const DESSUS_TABLE = -0.75;
+
   const dessusTex = dessusGrave();
-  const chantTex = new THREE.CanvasTexture(grainDeChene(256, '#5a3b20', '#2a1809', 3));
+  const reliefCanvas = reliefDuDessus();
+  const normalesTex = carteNormales(reliefCanvas, 2.6);
+  // Le même relief sert de carte de rugosité : le bois brut reste mat,
+  // le fond des cupules et des sillons, poli à l'usage, prend un reflet.
+  const rugositeTex = new THREE.CanvasTexture(reliefCanvas);
+  rugositeTex.anisotropy = 8;
+
+  const chantTex = new THREE.CanvasTexture(grainDeChene(512, '#5a3b20', '#2a1809', 3));
   chantTex.colorSpace = THREE.SRGBColorSpace;
-  chantTex.anisotropy = 4;
-  const matDessus = new THREE.MeshStandardMaterial({ map: dessusTex, roughness: 0.62, metalness: 0.03 });
+  chantTex.wrapS = chantTex.wrapT = THREE.RepeatWrapping;
+  chantTex.repeat.set(3, 3);
+  chantTex.anisotropy = 8;
+
+  const matDessus = new THREE.MeshStandardMaterial({
+    map: dessusTex,
+    normalMap: normalesTex,
+    normalScale: new THREE.Vector2(0.85, 0.85),
+    roughnessMap: rugositeTex,
+    roughness: 0.86,
+    metalness: 0.04,
+  });
   const matChant = new THREE.MeshStandardMaterial({ map: chantTex, roughness: 0.78, metalness: 0.02 });
-  const plateauGeo = new THREE.BoxGeometry(cote, 0.36, cote);
+
+  const plateauGeo = new THREE.BoxGeometry(cote, 0.32, cote);
   // L'ordre des faces d'une boîte : +x, -x, +y, -y, +z, -z. Seul le
   // dessus porte la gravure.
   const plateau = new THREE.Mesh(plateauGeo, [
     matChant, matChant, matDessus, matChant, matChant, matChant,
   ]);
-  plateau.position.y = HAUT - 0.18;
+  plateau.position.y = HAUT - 0.16;
   plateau.castShadow = true;
   plateau.receiveShadow = true;
   scene.add(plateau);
 
-  // Un socle en retrait donne au madrier son épaisseur et sa mouluration.
-  const socleGeo = new THREE.BoxGeometry(cote + 0.8, 0.34, cote + 0.8);
-  const socleMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0x6d4c2c, roughness: 0.82, metalness: 0.02 });
-  const socle = new THREE.Mesh(socleGeo, socleMat);
-  socle.position.y = HAUT - 0.5;
-  socle.castShadow = true;
-  socle.receiveShadow = true;
-  scene.add(socle);
+  /** Un carré aux coins arrondis, en profil d'extrusion. */
+  const carre = (demi: number, rayon: number): THREE.Shape => {
+    const f = new THREE.Shape();
+    f.moveTo(-demi + rayon, -demi);
+    f.lineTo(demi - rayon, -demi);
+    f.quadraticCurveTo(demi, -demi, demi, -demi + rayon);
+    f.lineTo(demi, demi - rayon);
+    f.quadraticCurveTo(demi, demi, demi - rayon, demi);
+    f.lineTo(-demi + rayon, demi);
+    f.quadraticCurveTo(-demi, demi, -demi, demi - rayon);
+    f.lineTo(-demi, -demi + rayon);
+    f.quadraticCurveTo(-demi, -demi, -demi + rayon, -demi);
+    return f;
+  };
+
+  // La moulure : un cadre biseauté qui cerne le madrier et dépasse d'un
+  // cheveu de la surface. C'est elle qui retient un pion qui roule, et
+  // c'est elle qui fait la différence entre une planche et un plateau.
+  const moulureForme = carre(cote / 2 + 0.55, 0.22);
+  moulureForme.holes.push(new THREE.Path(carre(cote / 2 - 0.02, 0.12).getPoints(64)));
+  const MOULURE_BISEAU = 0.06;
+  const moulureGeo = new THREE.ExtrudeGeometry(moulureForme, {
+    depth: 0.34, bevelEnabled: true, bevelThickness: MOULURE_BISEAU, bevelSize: 0.075, bevelSegments: 3, curveSegments: 8,
+  });
+  moulureGeo.rotateX(-Math.PI / 2);
+  const moulureMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0xa2794c, roughness: 0.55, metalness: 0.03 });
+  const moulure = new THREE.Mesh(moulureGeo, moulureMat);
+  moulure.position.y = HAUT + 0.05 - MOULURE_BISEAU;
+  moulure.castShadow = true;
+  moulure.receiveShadow = true;
+  scene.add(moulure);
+
+  // La plinthe : un second biseau, plus large, qui donne son assise au
+  // meuble et rattrape l'ombre sous le madrier.
+  const PLINTHE_BISEAU = 0.05;
+  const plintheGeo = new THREE.ExtrudeGeometry(carre(cote / 2 + 0.78, 0.28), {
+    depth: 0.20, bevelEnabled: true, bevelThickness: PLINTHE_BISEAU, bevelSize: 0.09, bevelSegments: 3, curveSegments: 8,
+  });
+  plintheGeo.rotateX(-Math.PI / 2);
+  const plintheMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0x6d4c2c, roughness: 0.82, metalness: 0.02 });
+  const plinthe = new THREE.Mesh(plintheGeo, plintheMat);
+  plinthe.position.y = HAUT - 0.16 - PLINTHE_BISEAU;
+  plinthe.castShadow = true;
+  plinthe.receiveShadow = true;
+  scene.add(plinthe);
+
+  // Quatre pieds tournés au tour, un par coin, sous la plinthe.
+  const HAUTEUR_PIED = (HAUT - 0.36) - DESSUS_TABLE;
+  const piedGeo = piedTourne(HAUTEUR_PIED, 0.30);
+  const piedMat = new THREE.MeshStandardMaterial({ map: chantTex, color: 0x7a5530, roughness: 0.7, metalness: 0.02 });
+  const ecartPied = cote / 2 - 0.35;
+  for (const sx of [-1, 1] as const) {
+    for (const sz of [-1, 1] as const) {
+      const pied = new THREE.Mesh(piedGeo, piedMat);
+      pied.position.set(sx * ecartPied, DESSUS_TABLE, sz * ecartPied);
+      pied.castShadow = true;
+      pied.receiveShadow = true;
+      scene.add(pied);
+    }
+  }
+
+  // L'ombre de contact : le disque doux qui pose le meuble sur la table
+  // au lieu de le laisser flotter, sous la carte d'ombre du projecteur.
+  const ombreTex = ombreDeContact(256, 0.62);
+  const ombreGeo = new THREE.PlaneGeometry(cote + 3.4, cote + 3.4);
+  const ombreMat = new THREE.MeshBasicMaterial({
+    map: ombreTex, transparent: true, opacity: 0.85, depthWrite: false, fog: false,
+  });
+  const ombre = new THREE.Mesh(ombreGeo, ombreMat);
+  ombre.rotation.x = -Math.PI / 2;
+  ombre.position.y = DESSUS_TABLE + 0.004;
+  ombre.renderOrder = 1;
+  scene.add(ombre);
 
   // ── Les cupules ────────────────────────────────────────────────────
-  // Creusées pour de vrai : la peinture donne l'ombre, la géométrie
-  // donne le relief quand la caméra passe au ras du bois.
-  // Une écuelle, pas un trou : la paroi reste assez claire pour prendre
-  // la lumière, sinon les points vides se lisent comme des taches.
-  const cupuleGeo = new THREE.CylinderGeometry(0.29 * CELL, 0.23 * CELL, 0.06, 24, 1, true);
-  const cupuleFondGeo = new THREE.CircleGeometry(0.23 * CELL, 24);
-  const cupuleMat = new THREE.MeshStandardMaterial({ color: 0x6b4926, roughness: 0.72, metalness: 0.02, side: THREE.DoubleSide });
+  // Creusées pour de vrai. La lèvre affleure la surface et recouvre le
+  // bois autour du point, donc l'écuelle plonge bel et bien SOUS le
+  // plan de jeu : c'est ce qu'on voit quand la caméra passe au ras.
+  // Le fond, poli par mille parties, a sa propre rugosité.
+  const CUP = [
+    [0.00, -0.085], [0.05, -0.083], [0.12, -0.070], [0.20, -0.045],
+    [0.27, -0.014], [0.305, 0.000], [0.335, 0.004],
+  ] as const;
+  const cupuleGeo = new THREE.LatheGeometry(
+    CUP.map(([r, y]) => new THREE.Vector2(r * CELL, y)), 28,
+  );
+  cupuleGeo.computeVertexNormals();
+  const cupuleMat = new THREE.MeshStandardMaterial({
+    color: 0x7d5730, roughness: 0.34, metalness: 0.05, side: THREE.DoubleSide,
+  });
   for (let p = 0; p < 24; p++) {
     const pos = positionDe(p);
-    const paroi = new THREE.Mesh(cupuleGeo, cupuleMat);
-    paroi.position.set(pos.x, HAUT - 0.03, pos.z);
-    paroi.receiveShadow = true;
-    scene.add(paroi);
-    const fond = new THREE.Mesh(cupuleFondGeo, cupuleMat);
-    fond.rotation.x = -Math.PI / 2;
-    fond.position.set(pos.x, HAUT - 0.058, pos.z);
-    fond.receiveShadow = true;
-    scene.add(fond);
+    const ecuelle = new THREE.Mesh(cupuleGeo, cupuleMat);
+    ecuelle.position.set(pos.x, HAUT + 0.005, pos.z);
+    ecuelle.receiveShadow = true;
+    scene.add(ecuelle);
   }
 
   // ── Les pions ──────────────────────────────────────────────────────
@@ -686,14 +819,22 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     matPion[1].dispose();
     matPion[2].dispose();
     cupuleGeo.dispose();
-    cupuleFondGeo.dispose();
     cupuleMat.dispose();
     plateauGeo.dispose();
-    socleGeo.dispose();
-    socleMat.dispose();
+    moulureGeo.dispose();
+    moulureMat.dispose();
+    plintheGeo.dispose();
+    plintheMat.dispose();
+    piedGeo.dispose();
+    piedMat.dispose();
+    ombreGeo.dispose();
+    ombreMat.dispose();
+    ombreTex.dispose();
     matDessus.dispose();
     matChant.dispose();
     dessusTex.dispose();
+    normalesTex.dispose();
+    rugositeTex.dispose();
     chantTex.dispose();
     tableGeo.dispose();
     tableMat.dispose();

@@ -14,13 +14,23 @@ import gsap from 'gsap';
 import { setupScene } from '../hnefatafl/sceneSetup';
 import { PAS, POINTS, pointDe, type Coup, type Plateau } from './logic';
 import { chargerSculpture } from '../sculpture';
+import { carteNormales, grainDeBois, ombreDeContact } from '../bois';
 
 /** L'écart entre deux points du plateau. Sept points de large, donc
  *  une planche d'environ douze unités : le cadrage de sceneSetup, réglé
  *  pour le damier du tafl, la prend sans rien changer. */
 const PAS_3D = 2.0;
-const EPAISSEUR = 0.55;
-const BISEAU = 0.05;
+// Le chanfrein déborde de l'extrusion des deux côtés : l'épaisseur
+// utile de la planche vaut donc EPAISSEUR + 2 × BISEAU, et ce total
+// doit rester sous les 0,64 unité qui séparent le plan de jeu du
+// dessus de la table partagée avec le tafl (sceneSetup.ts).
+const EPAISSEUR = 0.44;
+const BISEAU = 0.09;
+
+/** La demi-largeur d'un bras de la croix, et sa demi-longueur. Les deux
+ *  servent à la fois à découper la planche et à peindre sa texture. */
+const BRAS = 2.25;
+const LONGUEUR = 6.35;
 
 /** Le jeu entier est grossi d'un quart dans la scène du tafl, moins
  *  en portrait (voir `ajusterEchelle`). */
@@ -38,96 +48,287 @@ const positionDe = (i: number): THREE.Vector3 => {
 };
 
 // ── Le bois de la planche ───────────────────────────────────────────
-// Même texture que la table des dés et du tafl, pour que les trois
-// jeux du festival soient taillés dans le même arbre.
-function boisDeLaPlanche(): THREE.MeshStandardMaterial {
-  const mat = new THREE.MeshStandardMaterial({ color: 0xf3ddbe, roughness: 0.78, metalness: 0.03 });
-  const tex = new THREE.TextureLoader().load(
-    '/jeux/des/table-bois.webp',
-    (t) => {
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(0.16, 0.16);
-      t.anisotropy = 8;
-      mat.needsUpdate = true;
-    },
-    undefined,
-    () => { mat.map = null; mat.color.set(0x8a6236); mat.needsUpdate = true; },
-  );
-  mat.map = tex;
-  return mat;
+// Alex, 2026-08-31 : la planche ne partage plus la photo de la table
+// des dés. Elle a son propre canevas, peint ici : de l'épinette
+// patinée, fibres serrées et claires, avec le liseré rouge usé du
+// pourtour, les trente-trois cupules et les lignes brûlées au fer,
+// creusées dans la carte de normales plutôt que posées à plat.
+
+/** Le contour de la croix, en coordonnées de plateau. */
+const CONTOUR: ReadonlyArray<readonly [number, number]> = (() => {
+  const a = BRAS; const L = LONGUEUR;
+  return [
+    [-a, -L], [a, -L], [a, -a], [L, -a], [L, a], [a, a],
+    [a, L], [-a, L], [-a, a], [-L, a], [-L, -a], [-a, -a],
+  ];
+})();
+
+/** Le repère de la texture : le carré englobant de la croix devient le
+ *  carré de l'image, et rien ne se déforme puisque la croix est carrée. */
+const uvPx = (S: number) => (u: number) => ((u + LONGUEUR) / (LONGUEUR * 2)) * S;
+const RAYON_CUPULE = 0.36;
+
+/** Le dessus de la planche, en couleur. */
+function dessusEpinette(): THREE.CanvasTexture {
+  const S = 1024;
+  const c = grainDeBois({
+    taille: S, fond: '#c8a878', veine: '#6a4c2a',
+    fibres: 620, noeuds: 4, ondulation: 5, repetition: 1,
+  });
+  const g = c.getContext('2d')!;
+  const px = uvPx(S);
+  const R = (RAYON_CUPULE / (LONGUEUR * 2)) * S;
+
+  // La patine : la planche a servi, elle est plus sombre aux extrémités
+  // et sur les bords, plus claire là où les mains l'ont polie.
+  const usure = g.createRadialGradient(S / 2, S / 2, S * 0.08, S / 2, S / 2, S * 0.62);
+  usure.addColorStop(0, 'rgba(255,236,200,0.16)');
+  usure.addColorStop(0.6, 'rgba(60,34,12,0.05)');
+  usure.addColorStop(1, 'rgba(40,22,8,0.34)');
+  g.fillStyle = usure;
+  g.fillRect(0, 0, S, S);
+
+  // Le liseré rouge du pourtour, peint au minium et mangé par le temps :
+  // un trait plein, puis une seconde passe qui l'écaille par endroits.
+  const tracerContour = (marge: number) => {
+    g.beginPath();
+    CONTOUR.forEach(([x, y], i) => {
+      const m = marge * Math.sign(x || 1);
+      const n = marge * Math.sign(y || 1);
+      const px0 = px(x - (Math.abs(x) === LONGUEUR || Math.abs(x) === BRAS ? m : 0));
+      const py0 = px(y - (Math.abs(y) === LONGUEUR || Math.abs(y) === BRAS ? n : 0));
+      if (i === 0) g.moveTo(px0, py0); else g.lineTo(px0, py0);
+    });
+    g.closePath();
+  };
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  g.strokeStyle = 'rgba(150,44,28,0.72)';
+  g.lineWidth = S * 0.011;
+  tracerContour(0.34);
+  g.stroke();
+  // L'écaillage : des trous dans le trait, pas un dégradé.
+  g.save();
+  g.globalCompositeOperation = 'destination-out';
+  g.lineWidth = S * 0.013;
+  g.setLineDash([S * 0.006, S * 0.055, S * 0.014, S * 0.03]);
+  g.lineDashOffset = S * 0.02;
+  g.strokeStyle = 'rgba(0,0,0,0.75)';
+  tracerContour(0.34);
+  g.stroke();
+  g.restore();
+  g.setLineDash([]);
+
+  // Les lignes brûlées au fer, une par voisinage.
+  g.strokeStyle = 'rgba(26,12,3,0.8)';
+  g.lineWidth = S * 0.006;
+  POINTS.forEach((p, i) => {
+    for (const { dr, dc } of PAS) {
+      const v = pointDe(p.r + dr, p.c + dc);
+      if (v <= i) continue;
+      g.beginPath();
+      g.moveTo(px((p.c - 3) * PAS_3D), px((p.r - 3) * PAS_3D));
+      g.lineTo(px((POINTS[v].c - 3) * PAS_3D), px((POINTS[v].r - 3) * PAS_3D));
+      g.stroke();
+    }
+  });
+
+  // Les cupules : le fond sombre, l'arête haute qui prend la lumière.
+  POINTS.forEach((p) => {
+    const cx = px((p.c - 3) * PAS_3D);
+    const cy = px((p.r - 3) * PAS_3D);
+    const grad = g.createRadialGradient(cx + R * 0.3, cy + R * 0.3, R * 0.05, cx, cy, R);
+    grad.addColorStop(0, 'rgba(42,21,8,0.5)');
+    grad.addColorStop(0.82, 'rgba(78,50,24,0.34)');
+    grad.addColorStop(1, 'rgba(120,88,52,0.1)');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.arc(cx, cy, R, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = 'rgba(240,214,168,0.4)';
+    g.lineWidth = S * 0.0028;
+    g.beginPath();
+    g.arc(cx, cy, R, Math.PI * 1.08, Math.PI * 1.92);
+    g.stroke();
+  });
+
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
 }
 
-/** La croix, taillée en deux planches croisées, plus le liseré brûlé
- *  et les cupules. Une planche de ferme, pas un damier verni. */
-function construirePlateau(): THREE.Group {
+/** Le relief du dessus : blanc, la surface; noir, le fond du creux.
+ *  Sert de source à la carte de normales et de carte de rugosité. */
+function reliefEpinette(): HTMLCanvasElement {
+  const S = 512;
+  const c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d')!;
+  const px = uvPx(S);
+  const R = (RAYON_CUPULE / (LONGUEUR * 2)) * S;
+
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 0, S, S);
+  g.lineCap = 'round';
+
+  g.strokeStyle = '#3c3c3c';
+  g.lineWidth = S * 0.0055;
+  g.filter = 'blur(1.4px)';
+  POINTS.forEach((p, i) => {
+    for (const { dr, dc } of PAS) {
+      const v = pointDe(p.r + dr, p.c + dc);
+      if (v <= i) continue;
+      g.beginPath();
+      g.moveTo(px((p.c - 3) * PAS_3D), px((p.r - 3) * PAS_3D));
+      g.lineTo(px((POINTS[v].c - 3) * PAS_3D), px((POINTS[v].r - 3) * PAS_3D));
+      g.stroke();
+    }
+  });
+  g.filter = 'none';
+
+  POINTS.forEach((p) => {
+    const cx = px((p.c - 3) * PAS_3D);
+    const cy = px((p.r - 3) * PAS_3D);
+    const grad = g.createRadialGradient(cx, cy, 0, cx, cy, R);
+    grad.addColorStop(0, '#1f1f1f');
+    grad.addColorStop(0.62, '#4a4a4a');
+    grad.addColorStop(0.92, '#c6c6c6');
+    grad.addColorStop(1, '#ffffff');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.arc(cx, cy, R, 0, Math.PI * 2);
+    g.fill();
+  });
+
+  return c;
+}
+
+/** Le chant de la planche : le même bois, vu de côté, sans gravure. */
+function chantEpinette(): THREE.CanvasTexture {
+  const t = new THREE.CanvasTexture(grainDeBois({
+    taille: 512, fond: '#b0906a', veine: '#5d3f22', fibres: 520, noeuds: 2, ondulation: 4, repetition: 3,
+  }));
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(4, 1);
+  t.anisotropy = 8;
+  return t;
+}
+
+/** Un clou forgé : une tête martelée, jamais parfaitement ronde. */
+function clouForge(mat: THREE.Material): THREE.Mesh {
+  const tete = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 7, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+  tete.scale.set(1, 0.42, 0.92);
+  tete.rotation.y = Math.random() * Math.PI;
+  tete.castShadow = true;
+  return tete;
+}
+
+/** La croix, taillée dans une seule pièce de bois, ses chants
+ *  biseautés, ses lignes en creux et ses cupules polies. */
+function construirePlateau(): { groupe: THREE.Group; ranger: () => void } {
   const groupe = new THREE.Group();
-  const bois = boisDeLaPlanche();
+
+  const dessusTex = dessusEpinette();
+  const reliefCanvas = reliefEpinette();
+  const normalesTex = carteNormales(reliefCanvas, 2.4);
+  const rugositeTex = new THREE.CanvasTexture(reliefCanvas);
+  rugositeTex.anisotropy = 8;
+  const chantTex = chantEpinette();
+
+  const matDessus = new THREE.MeshStandardMaterial({
+    map: dessusTex,
+    normalMap: normalesTex,
+    normalScale: new THREE.Vector2(0.8, 0.8),
+    roughnessMap: rugositeTex,
+    roughness: 0.92,
+    metalness: 0.03,
+  });
+  const matChant = new THREE.MeshStandardMaterial({ map: chantTex, roughness: 0.84, metalness: 0.02 });
 
   // Une seule pièce de bois, découpée en croix. Deux planches croisées
   // auraient donné deux dessus coplanaires au milieu, donc un
   // scintillement à la moindre rotation de caméra.
-  const a = 2.25;  // demi-largeur d'un bras
-  const L = 6.35;  // demi-longueur de la croix
   const forme = new THREE.Shape();
-  forme.moveTo(-a, -L);
-  forme.lineTo(a, -L); forme.lineTo(a, -a); forme.lineTo(L, -a);
-  forme.lineTo(L, a); forme.lineTo(a, a); forme.lineTo(a, L);
-  forme.lineTo(-a, L); forme.lineTo(-a, a); forme.lineTo(-L, a);
-  forme.lineTo(-L, -a); forme.lineTo(-a, -a);
+  CONTOUR.forEach(([x, y], i) => { if (i === 0) forme.moveTo(x, y); else forme.lineTo(x, y); });
   forme.closePath();
-  const planche = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(forme, {
-      depth: EPAISSEUR, bevelEnabled: true, bevelThickness: BISEAU, bevelSize: 0.06, bevelSegments: 2,
-    }),
-    bois,
-  );
+
+  const geo = new THREE.ExtrudeGeometry(forme, {
+    depth: EPAISSEUR, bevelEnabled: true, bevelThickness: BISEAU, bevelSize: 0.11, bevelSegments: 3,
+  });
+  // L'extrusion rend les faces du dessus et du dessous dans le groupe 0
+  // et les chants dans le groupe 1. Les UV du dessus sortent en unités
+  // de plateau : elles se ramènent ici dans le carré 0..1 de l'image.
+  const capot = geo.groups.find((gr) => gr.materialIndex === 0);
+  if (capot) {
+    const uv = geo.attributes.uv;
+    for (let i = capot.start; i < capot.start + capot.count; i++) {
+      uv.setXY(
+        i,
+        (uv.getX(i) + LONGUEUR) / (LONGUEUR * 2),
+        (uv.getY(i) + LONGUEUR) / (LONGUEUR * 2),
+      );
+    }
+    uv.needsUpdate = true;
+  }
+
+  const planche = new THREE.Mesh(geo, [matDessus, matChant]);
   planche.rotation.x = -Math.PI / 2;
   // Le chanfrein déborde de l'extrusion des deux côtés : sans ce
-  // décalage, le dessus de la planche montait à 0,05 et recouvrait les
-  // lignes brûlées comme les cupules.
+  // décalage, le dessus de la planche monterait au-dessus de zéro et
+  // recouvrirait les cupules.
   planche.position.y = -(EPAISSEUR + BISEAU);
   planche.castShadow = true;
   planche.receiveShadow = true;
   groupe.add(planche);
 
-  // Les lignes brûlées au fer, une par voisinage. Elles ne sont pas
-  // peintes : elles sont creusées d'un cheveu dans le bois, donc
-  // posées juste au-dessus pour rester nettes sous la lumière rase.
-  const braise = new THREE.MeshStandardMaterial({ color: 0x1a0c03, roughness: 0.98, metalness: 0 });
-  const faites = new Set<string>();
-  POINTS.forEach((p, i) => {
-    for (const { dr, dc } of PAS) {
-      const voisin = pointDe(p.r + dr, p.c + dc);
-      if (voisin < 0) continue;
-      const cle = i < voisin ? `${i}-${voisin}` : `${voisin}-${i}`;
-      if (faites.has(cle)) continue;
-      faites.add(cle);
-      const a = positionDe(i);
-      const b = positionDe(voisin);
-      const horizontal = Math.abs(a.x - b.x) > 0.01;
-      const ligne = new THREE.Mesh(
-        new THREE.BoxGeometry(horizontal ? PAS_3D : 0.13, 0.05, horizontal ? 0.13 : PAS_3D),
-        braise,
-      );
-      ligne.position.set((a.x + b.x) / 2, 0.02, (a.z + b.z) / 2);
-      groupe.add(ligne);
-    }
+  // Les cupules : une écuelle polie à chaque point, lèvre affleurante,
+  // fond nettement sous le plan de la planche.
+  const CUP = [
+    [0.00, -0.105], [0.06, -0.102], [0.15, -0.086], [0.24, -0.055],
+    [0.32, -0.016], [0.36, 0.000], [0.40, 0.005],
+  ] as const;
+  const creuxGeo = new THREE.LatheGeometry(CUP.map(([r, y]) => new THREE.Vector2(r, y)), 26);
+  creuxGeo.computeVertexNormals();
+  const creuxMat = new THREE.MeshStandardMaterial({
+    color: 0x9a7245, roughness: 0.32, metalness: 0.05, side: THREE.DoubleSide,
   });
-
-  // Les cupules : un creux au vilebrequin à chaque point, pour que le
-  // pion se cale et que le plateau se lise même de loin.
-  const creux = new THREE.MeshStandardMaterial({ color: 0x2a1508, roughness: 0.95, metalness: 0 });
-  const creuxGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.06, 24);
   POINTS.forEach((_, i) => {
-    const m = new THREE.Mesh(creuxGeo, creux);
+    const m = new THREE.Mesh(creuxGeo, creuxMat);
     m.position.copy(positionDe(i));
-    m.position.y = 0.028;
+    m.position.y = 0.006;
     m.receiveShadow = true;
     groupe.add(m);
   });
 
-  return groupe;
+  // Les clous forgés : un à chaque angle saillant de la croix, comme
+  // sur les planches de ferme où le liseré était cloué avant d'être
+  // peint.
+  const ferMat = new THREE.MeshStandardMaterial({ color: 0x4a4038, roughness: 0.48, metalness: 0.85 });
+  const a = BRAS - 0.42; const L = LONGUEUR - 0.42;
+  for (const [x, z] of [
+    [-a, -L], [a, -L], [L, -a], [L, a], [a, L], [-a, L], [-L, a], [-L, -a],
+  ] as const) {
+    const clou = clouForge(ferMat);
+    clou.position.set(x, 0.01, z);
+    groupe.add(clou);
+  }
+
+  const ranger = () => {
+    geo.dispose();
+    creuxGeo.dispose();
+    creuxMat.dispose();
+    matDessus.dispose();
+    matChant.dispose();
+    ferMat.dispose();
+    dessusTex.dispose();
+    normalesTex.dispose();
+    rugositeTex.dispose();
+    chantTex.dispose();
+  };
+
+  return { groupe, ranger };
 }
 
 // ── Le renard ───────────────────────────────────────────────────────
@@ -259,7 +460,21 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
   // faire son travail.
   const racine = new THREE.Group();
   scene.add(racine);
-  racine.add(construirePlateau());
+  const plateau = construirePlateau();
+  racine.add(plateau.groupe);
+
+  // L'ombre de contact : le disque doux qui pose la planche sur la
+  // table au lieu de la laisser flotter.
+  const ombreTex = ombreDeContact(256, 0.6);
+  const ombreGeo = new THREE.PlaneGeometry(LONGUEUR * 2 + 4.5, LONGUEUR * 2 + 4.5);
+  const ombreMat = new THREE.MeshBasicMaterial({
+    map: ombreTex, transparent: true, opacity: 0.8, depthWrite: false, fog: false,
+  });
+  const ombre = new THREE.Mesh(ombreGeo, ombreMat);
+  ombre.rotation.x = -Math.PI / 2;
+  ombre.position.y = -(EPAISSEUR + BISEAU * 2) - 0.008;
+  ombre.renderOrder = 1;
+  racine.add(ombre);
 
   // En portrait, sceneSetup ne recule pas assez la caméra pour une
   // planche aussi large que haute : la croix débordait par les côtés
@@ -520,6 +735,10 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     suiviFormat.disconnect();
     gsap.killTweensOf(renard.position);
     effacer();
+    plateau.ranger();
+    ombreGeo.dispose();
+    ombreMat.dispose();
+    ombreTex.dispose();
     disqueGeo.dispose();
     detacherTaille();
     el.removeEventListener('mousedown', surSouris.down);
