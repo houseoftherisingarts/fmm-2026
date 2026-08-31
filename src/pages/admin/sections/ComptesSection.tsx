@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Users, Mail, Phone, Languages, Download, HandHeart, ShoppingBag, Ticket, Loader2 } from 'lucide-react';
 import { Card, Badge, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
-import { listUsers, importerComptesZeffy, type AppUser, type ResultatImportZeffy } from '../../../firebase/users';
+import { listUsers, importerComptesZeffy, synchroniserRegistre, type AppUser, type ResultatImportZeffy } from '../../../firebase/users';
 import { mockUsers } from '../../../firebase/mockData';
 import FonctionsMembres from './FonctionsMembres';
 
@@ -25,6 +25,19 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
     } catch (e) {
       setImportResultat(e instanceof Error ? e.message : String(e));
     } finally { setImportEnCours(false); }
+  };
+  // Le registre se rattrape à la main aussi : une fiche par compte Auth
+  // (Alex, 2026-08-31, après un membre invisible dans la liste).
+  const [syncEnCours, setSyncEnCours] = useState(false);
+  const lancerSync = async () => {
+    setSyncEnCours(true); setImportResultat(null);
+    try {
+      const r = await synchroniserRegistre();
+      setImportResultat(`Registre synchronisé : ${r.comptes} comptes lus, ${r.corriges} fiches complétées.`);
+      setItems(await listUsers());
+    } catch (e) {
+      setImportResultat(e instanceof Error ? e.message : String(e));
+    } finally { setSyncEnCours(false); }
   };
   const [items,  setItems]  = useState<AppUser[]>([]);
   const [error,  setError]  = useState<string | null>(null);
@@ -99,6 +112,10 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
             </button>
           ))}
           <GhostButton onClick={exportCsv}><Download size={12} /> CSV</GhostButton>
+          <GhostButton onClick={lancerSync} disabled={syncEnCours}>
+            {syncEnCours ? <Loader2 size={12} className="animate-spin" /> : <Users size={12} />}
+            {syncEnCours ? 'Synchronisation…' : 'Synchroniser le registre'}
+          </GhostButton>
           <GhostButton onClick={lancerImport} disabled={importEnCours}>
             {importEnCours ? <Loader2 size={12} className="animate-spin" /> : <Ticket size={12} />}
             {importEnCours ? 'Import en cours…' : 'Créer les comptes Zeffy'}

@@ -20,7 +20,7 @@ export const CARDS = [
       kicker: 'The festival',
       hook: 'Three days on the roads of time',
       body: 'The Festival Médiéval de Montpellier pitches its caravans at 4 rue du Bosquet, in the Petite-Nation, Outaouais, Quebec.',
-      meta: 'September 25 · 26 · 27, 2026 · Montpellier, Quebec',
+      meta: 'September 25-27, 2026 · Montpellier, Quebec',
     },
   },
   {

@@ -24,13 +24,14 @@ export const GAIN_QUOTIDIEN = 1;
 
 // ── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
 // La visite quotidienne réclame la récompense du jour; un jour sauté
-// remet la roue au jour 1; après le jour 7, elle recommence. Le
+// remet la roue au jour 1; après le jour 14 (deux semaines depuis le
+// 2026-08-31), elle recommence. Le
 // serveur applique la même table (ROUE_QUOTIDIENNE, functions/index.js)
 // et c'est LUI qui donne — ceci ne sert qu'à l'affichage du panneau.
 export interface RecompenseQuotidienne {
   jour: number;
   /** 'montpellois' porte un montant; les autres sont des trésors uniques. */
-  type: 'montpellois' | 'taflPieces' | 'dosTarot' | 'chanceWJW';
+  type: 'montpellois' | 'taflPieces' | 'taflPlateaux' | 'dosTarot' | 'chanceWJW';
   montant?: number;
   nomFR: string; nomEN: string;
   texteFR: string; texteEN: string;
@@ -41,8 +42,8 @@ export const RECOMPENSES_QUOTIDIEN: RecompenseQuotidienne[] = [
     texteFR: 'Cinq pièces tombent dans votre bourse.', texteEN: 'Five coins drop into your purse.' },
   { jour: 2, type: 'montpellois', montant: 10, nomFR: '10 Montpellois', nomEN: '10 Montpellois',
     texteFR: 'Dix pièces tombent dans votre bourse.', texteEN: 'Ten coins drop into your purse.' },
-  { jour: 3, type: 'taflPieces', nomFR: 'Hnefatafl de la caravane', nomEN: 'Caravan hnefatafl',
-    texteFR: 'Une roulotte pour roi, des gens de la route pour pièces, et leur plateau peint. Le jeu d’échecs viking de la caravane, que la boutique ne vend pas.', texteEN: 'A wagon for a king, people of the road for pieces, and their painted board. The caravan’s Viking chess set, which the shop does not sell.' },
+  { jour: 3, type: 'taflPlateaux', nomFR: 'La route de la caravane', nomEN: 'The caravan road',
+    texteFR: 'Le plateau peint de la caravane pour le jeu d’échecs viking : vert de roulotte, bordeaux et filets ocre.', texteEN: 'The caravan’s painted board for Viking chess: vardo green, burgundy and ochre lines.' },
   { jour: 4, type: 'dosTarot', nomFR: 'Tarot de la caravane', nomEN: 'Caravan tarot',
     texteFR: 'Un dos de carte d’argent au saphir, bleu nuit, pour le tarot.', texteEN: 'A silver, sapphire-set, midnight-blue card back for the tarot.' },
   { jour: 5, type: 'montpellois', montant: 15, nomFR: '15 Montpellois', nomEN: '15 Montpellois',
@@ -51,7 +52,25 @@ export const RECOMPENSES_QUOTIDIEN: RecompenseQuotidienne[] = [
     texteFR: 'Vingt pièces tombent dans votre bourse.', texteEN: 'Twenty coins drop into your purse.' },
   { jour: 7, type: 'chanceWJW', nomFR: 'Seconde chance et dos William', nomEN: 'Second chance and William back',
     texteFR: 'Votre nom entre une seconde fois dans le chapeau du concours William J. Walter, et le dos de carte William entre dans votre coffre.', texteEN: 'Your name goes into the William J. Walter draw a second time, and the William card back joins your vault.' },
+  // La deuxième semaine (Alex, 2026-08-31) : les pièces de la caravane
+  // s'offrent au huitième jour, sans un Montpellois à payer.
+  { jour: 8, type: 'taflPieces', nomFR: 'Hnefatafl de la caravane', nomEN: 'Caravan hnefatafl',
+    texteFR: 'Une roulotte pour roi et des gens de la route pour pièces : le jeu d’échecs viking de la caravane, que la boutique ne vend pas.', texteEN: 'A wagon for a king and people of the road for pieces: the caravan’s Viking chess set, which the shop does not sell.' },
+  { jour: 9, type: 'montpellois', montant: 10, nomFR: '10 Montpellois', nomEN: '10 Montpellois',
+    texteFR: 'Dix pièces tombent dans votre bourse.', texteEN: 'Ten coins drop into your purse.' },
+  { jour: 10, type: 'montpellois', montant: 15, nomFR: '15 Montpellois', nomEN: '15 Montpellois',
+    texteFR: 'Quinze pièces tombent dans votre bourse.', texteEN: 'Fifteen coins drop into your purse.' },
+  { jour: 11, type: 'montpellois', montant: 20, nomFR: '20 Montpellois', nomEN: '20 Montpellois',
+    texteFR: 'Vingt pièces tombent dans votre bourse.', texteEN: 'Twenty coins drop into your purse.' },
+  { jour: 12, type: 'montpellois', montant: 25, nomFR: '25 Montpellois', nomEN: '25 Montpellois',
+    texteFR: 'Vingt-cinq pièces tombent dans votre bourse.', texteEN: 'Twenty-five coins drop into your purse.' },
+  { jour: 13, type: 'montpellois', montant: 30, nomFR: '30 Montpellois', nomEN: '30 Montpellois',
+    texteFR: 'Trente pièces tombent dans votre bourse.', texteEN: 'Thirty coins drop into your purse.' },
+  { jour: 14, type: 'chanceWJW', nomFR: 'Seconde chance', nomEN: 'Second chance',
+    texteFR: 'Votre nom entre une fois de plus dans le chapeau du concours William J. Walter. Puis la roue recommence.', texteEN: 'Your name goes into the William J. Walter draw once more. Then the wheel starts over.' },
 ];
+/** La roue compte deux semaines; le panneau montre celle en cours. */
+export const JOURS_DE_ROUE = RECOMPENSES_QUOTIDIEN.length;
 /** Le prix des skins de plateforme, gratuits pour un compte VIP
  *  (users.sansPub) — doit rester en phase avec le même nom de
  *  constante côté fonction serveur. */

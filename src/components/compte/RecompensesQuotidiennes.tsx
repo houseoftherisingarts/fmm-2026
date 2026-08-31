@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, X } from 'lucide-react';
+import { Check, X, Ticket } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { sonnerBadge } from '../../lib/fanfare';
 import DosCarte from '../../games/tarot/DosCaravane';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
-  RECOMPENSES_QUOTIDIEN, reclamerQuotidien, suivreMaBourse, type Bourse,
+  JOURS_DE_ROUE, RECOMPENSES_QUOTIDIEN, reclamerQuotidien, suivreMaBourse, type Bourse,
 } from '../../firebase/montpellois';
 
 // ─── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
@@ -38,9 +38,24 @@ function resteAvantDemain(dernierMs: number): string {
 // Les trésors se montrent avec les vrais objets du site : la pièce de
 // Montpellois, le dos de carte du tarot relevé à l'or, les teintes du
 // gens de la caravane, le blason de William J. Walter.
-export const IconeJour: React.FC<{ type: string; grande?: boolean }> = ({ type, grande }) => {
+export const IconeJour: React.FC<{ type: string; grande?: boolean; jour?: number }> = ({ type, grande, jour }) => {
   const taille = grande ? 68 : 48;
   if (type === 'montpellois') return <PieceMontpellois size={taille} image />;
+  if (type === 'taflPlateaux') {
+    // Le plateau de la caravane, capturé sur la table (jour 3).
+    return (
+      <img src="/games/hnefatafl/vignettes/route-caravane.webp" alt="" aria-hidden className="rounded-full object-cover"
+           style={{ width: taille, height: taille, border: '1px solid rgba(244,239,227,0.45)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }} />
+    );
+  }
+  if (type === 'chanceWJW' && jour === 14) {
+    // La seconde semaine finit sur une chance de plus, sans dos de carte.
+    return (
+      <span className="inline-flex items-center justify-center rounded-full" style={{ width: taille, height: taille, border: '1px solid rgba(244,239,227,0.45)', background: 'rgba(244,239,227,0.06)', boxShadow: '0 4px 12px rgba(0,0,0,0.6)' }}>
+        <Ticket size={Math.round(taille * 0.5)} style={{ color: '#E8C46E' }} />
+      </span>
+    );
+  }
   if (type === 'chanceWJW') {
     // La seconde chance vient avec le dos de carte William (Alex, 2026-08-30).
     return (
@@ -127,7 +142,11 @@ const RecompensesQuotidiennes: React.FC = () => {
   // Le jour affiché : celui servi à l'instant, sinon celui déjà pris,
   // sinon celui que la prochaine visite servira.
   const jourCourant = jourServi
-    ?? (reclameAujourdhui ? ((suite - 1) % 7) + 1 : (dernierMs > 0 && ecoule < 2 * JOUR_MS ? (suite % 7) + 1 : 1));
+    ?? (reclameAujourdhui ? ((suite - 1) % JOURS_DE_ROUE) + 1 : (dernierMs > 0 && ecoule < 2 * JOUR_MS ? (suite % JOURS_DE_ROUE) + 1 : 1));
+  // Deux semaines de roue : le panneau montre les sept jours de la
+  // semaine en cours (Alex, 2026-08-31).
+  const semaine = Math.ceil(jourCourant / 7);
+  const joursAffiches = RECOMPENSES_QUOTIDIEN.slice((semaine - 1) * 7, semaine * 7);
 
   const reclamer = useCallback(async () => {
     if (enCours) return;
@@ -234,8 +253,13 @@ const RecompensesQuotidiennes: React.FC = () => {
 
             {/* Sept colonnes comme l'écran de Gwent; sur un téléphone,
                 quatre puis trois, pour que les noms restent lisibles. */}
+            {semaine > 1 && (
+              <p className="mb-3 font-sans uppercase tracking-[0.2em] text-[10px]" style={{ color: 'rgba(232,196,110,0.85)' }}>
+                {fr ? `Deuxième semaine d’affilée · jour ${jourCourant}` : `Second week in a row · day ${jourCourant}`}
+              </p>
+            )}
             <div className="grid grid-cols-4 md:grid-cols-7 gap-2 md:gap-3">
-              {RECOMPENSES_QUOTIDIEN.map((r) => {
+              {joursAffiches.map((r, i) => {
                 const courant = r.jour === jourCourant;
                 const passe = r.jour < jourCourant;
                 const nom = fr ? r.nomFR : r.nomEN;
@@ -245,8 +269,8 @@ const RecompensesQuotidiennes: React.FC = () => {
                     title={fr ? r.texteFR : r.texteEN}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: passe ? 0.42 : 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.05 * r.jour, ease: [0.22, 1, 0.36, 1] }}
-                    className={`relative flex flex-col items-center justify-between rounded-card px-1.5 pt-3 pb-4 md:pt-4 md:pb-5 text-center min-h-[168px] md:min-h-[220px] ${r.jour === 5 ? 'col-start-1 md:col-start-auto' : ''}`}
+                    transition={{ duration: 0.4, delay: 0.05 * (i + 1), ease: [0.22, 1, 0.36, 1] }}
+                    className={`relative flex flex-col items-center justify-between rounded-card px-1.5 pt-3 pb-4 md:pt-4 md:pb-5 text-center min-h-[168px] md:min-h-[220px] ${i === 4 ? 'col-start-1 md:col-start-auto' : ''}`}
                     style={{
                       background: courant
                         ? 'linear-gradient(180deg, rgba(216,176,90,0.42) 0%, rgba(150,104,30,0.22) 55%, rgba(30,16,8,0.2) 100%)'
@@ -266,7 +290,7 @@ const RecompensesQuotidiennes: React.FC = () => {
                       transition={{ duration: 0.7, ease: 'easeOut', delay: 0.35 }}
                       className="flex items-center justify-center flex-1 py-2"
                     >
-                      <IconeJour type={r.type} grande={courant} />
+                      <IconeJour type={r.type} grande={courant} jour={r.jour} />
                     </motion.span>
                     <span className="flex flex-col items-center gap-0.5">
                       {r.montant ? (

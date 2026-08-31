@@ -11,7 +11,7 @@ import React, {
 import { useAuth } from './AuthContext';
 import {
   COLLECTIONS, avancement, badgeParId, badgesLocaux, collectionDuBadge,
-  gagner, reclamerLesLocaux, suivreBadges, type Badge, type Collection,
+  effacerAnnonces, gagner, reclamerLesLocaux, suivreBadges, type Badge, type Collection,
 } from '../firebase/badges';
 import { sonnerBadge, sonnerFanfare, preparerLeSon } from '../lib/fanfare';
 
@@ -44,7 +44,17 @@ export const BadgesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (!user?.uid) { setDistants([]); return; }
-    const stop = suivreBadges(user.uid, setDistants);
+    const uid = user.uid;
+    const stop = suivreBadges(uid, (ids, aAnnoncer) => {
+      setDistants(ids);
+      // Les badges décernés par l'équipe (vérifié, VIP, bêta-testeur)
+      // s'annoncent ici, une seule fois, avec le son du succès.
+      const neufs = aAnnoncer.filter((id) => !enCours.current.has(id) && badgeParId(id));
+      if (neufs.length === 0) return;
+      for (const id of neufs) enCours.current.add(id);
+      setFile((f) => [...f, ...neufs.map((id) => ({ badge: badgeParId(id) as Badge, aReclamer: false }))]);
+      void effacerAnnonces(uid, neufs).catch(() => { /* réessaiera à la prochaine visite */ });
+    });
     void reclamerLesLocaux(user.uid).then(() => setLocaux(badgesLocaux()));
     return stop;
   }, [user?.uid]);

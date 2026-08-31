@@ -2243,15 +2243,27 @@ function tirerRarete() {
 // = 20, jour 7 = une seconde chance au concours William J. Walter.
 // Passé le jour 7, la roue recommence. Un jour sauté remet au jour 1.
 // Doit rester en phase avec RECOMPENSES_QUOTIDIEN (src/firebase/montpellois.ts).
+// Deux semaines (Alex, 2026-08-31) : la première donne le plateau de la
+// caravane au jour 3, la seconde donne les PIÈCES de la caravane au jour
+// 8, sans Montpellois à payer. Passé le jour 14, la roue recommence; un
+// objet déjà possédé se remplace par des Montpellois (MONTPELLOIS_DE_REMPLACEMENT).
 const ROUE_QUOTIDIENNE = [
   { montpellois: 5 },
   { montpellois: 10 },
-  { taflPieces: 'caravane', taflPlateaux: 'caravane' },
+  { taflPlateaux: 'caravane' },
   { dosTarot: 'caravane' },
   { montpellois: 15 },
   { montpellois: 20 },
   { chanceWJW: 1, dosTarot: 'william' },
+  { taflPieces: 'caravane' },
+  { montpellois: 10 },
+  { montpellois: 15 },
+  { montpellois: 20 },
+  { montpellois: 25 },
+  { montpellois: 30 },
+  { chanceWJW: 1 },
 ];
+const MONTPELLOIS_DE_REMPLACEMENT = 10;
 
 exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) => {
   const uid = requete.auth && requete.auth.uid;
@@ -2271,9 +2283,15 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
     // si la dernière réclamation date de moins de 48 heures, elle repart
     // à un jour sinon (premier jour, ou un jour sauté).
     const suite = dernierMs && ecoule < 2 * JOUR_MS ? (data.quotidienSuite || 0) + 1 : 1;
-    const jour = ((suite - 1) % 7) + 1;
+    const jour = ((suite - 1) % ROUE_QUOTIDIENNE.length) + 1;
     const don = ROUE_QUOTIDIENNE[jour - 1];
-    const gain = don.montpellois || 0;
+    // Un objet déjà au coffre (deuxième tour de roue, ou reçu autrement)
+    // ne se donne pas deux fois : des Montpellois le remplacent.
+    const dejaAu = (champ, valeur) => Array.isArray(data[champ]) && data[champ].includes(valeur);
+    const dejaPossede = (don.taflPieces && dejaAu('taflPieces', don.taflPieces))
+      || (don.taflPlateaux && dejaAu('taflPlateaux', don.taflPlateaux))
+      || (don.dosTarot && dejaAu('dosTarot', don.dosTarot));
+    const gain = (don.montpellois || 0) + (dejaPossede ? MONTPELLOIS_DE_REMPLACEMENT : 0);
     const gagneAvant = data.gagne || 0;
     const gagneApres = gagneAvant + gain;
     const solde = (data.solde || 0) + gain;

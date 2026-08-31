@@ -12,7 +12,7 @@
 // Quelqu'un qui n'est pas connecté gagne quand même : le badge dort
 // dans le navigateur et se réclame à la première connexion.
 
-import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteField, onSnapshot, serverTimestamp, type FieldValue } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export type TaillePrix = 'petit' | 'moyen' | 'grand';
@@ -30,6 +30,9 @@ export interface Collection {
   nomFR: string; nomEN: string;
   prix: TaillePrix;
   badges: Badge[];
+  /** Badges décernés par l'équipe, jamais gagnés : ils ne comptent pas
+   *  dans le grand chelem (Alex, 2026-08-31). */
+  honneur?: boolean;
 }
 
 export const COLLECTIONS: Collection[] = [
@@ -192,9 +195,25 @@ export const COLLECTIONS: Collection[] = [
         texteFR: 'Les quatre avis du babillard sont à vous.', texteEN: 'All four notices on the board are yours.' },
     ],
   },
+  {
+    id: 'cour',
+    nomFR: 'La cour du festival', nomEN: 'The festival court',
+    prix: 'grand',
+    honneur: true,
+    badges: [
+      { id: 'verifie',      glyphe: '✓', nomFR: 'Membre vérifié',  nomEN: 'Verified member',
+        texteFR: 'Bravo, vous êtes vérifié. L’équipe du festival confirme que ce compte est bien le vôtre.', texteEN: 'Congratulations, you are verified. The festival team confirms this account is really yours.' },
+      { id: 'vip',          glyphe: '♛', nomFR: 'Membre VIP',      nomEN: 'VIP member',
+        texteFR: 'Le festival vous ouvre ses portes sans publicité. Merci de le soutenir.', texteEN: 'The festival opens its doors to you without ads. Thank you for supporting it.' },
+      { id: 'beta-testeur', glyphe: '⚒', nomFR: 'Bêta-testeur',    nomEN: 'Beta tester',
+        texteFR: 'Vous avez signalé un bogue et il a été corrigé grâce à vous.', texteEN: 'You reported a bug and it got fixed thanks to you.' },
+    ],
+  },
 ];
 
 export const TOUS_LES_BADGES: Badge[] = COLLECTIONS.flatMap((c) => c.badges);
+/** Ceux qu'une personne peut gagner elle-même : la mesure du grand chelem. */
+const BADGES_GAGNABLES: Badge[] = COLLECTIONS.filter((c) => !c.honneur).flatMap((c) => c.badges);
 
 /** Le sceau gravé de chaque badge, frappé pour le festival le 23 août
  *  2026 (bronze vieilli sur velours noir, une planche par collection). */
@@ -261,13 +280,29 @@ export async function reclamerLesLocaux(uid: string): Promise<string[]> {
   return gagnes;
 }
 
-export function suivreBadges(uid: string, cb: (ids: string[]) => void): () => void {
-  if (!db) { cb([]); return () => {}; }
+export function suivreBadges(
+  uid: string,
+  cb: (ids: string[], aAnnoncer: string[]) => void,
+): () => void {
+  if (!db) { cb([], []); return () => {}; }
   return onSnapshot(
     doc(db, COL, uid),
-    (snap) => cb(snap.exists() ? Object.keys((snap.data().obtenus as object) || {}) : []),
-    () => cb([]),
+    (snap) => {
+      if (!snap.exists()) { cb([], []); return; }
+      const d = snap.data();
+      cb(Object.keys((d.obtenus as object) || {}), Object.keys((d.aAnnoncer as object) || {}));
+    },
+    () => cb([], []),
   );
+}
+
+/** Un badge décerné par l'équipe s'annonce une seule fois : une fois
+ *  montré, la clé `aAnnoncer` s'efface. */
+export async function effacerAnnonces(uid: string, ids: string[]): Promise<void> {
+  if (!db || ids.length === 0) return;
+  const patch: Record<string, FieldValue> = {};
+  for (const id of ids) patch[`aAnnoncer.${id}`] = deleteField();
+  await updateDoc(doc(db, COL, uid), patch);
 }
 
 // ─── La vitrine ──────────────────────────────────────────────────────
@@ -298,7 +333,7 @@ export function avancement(ids: string[]) {
     const obtenus = c.badges.filter((b) => ids.includes(b.id)).length;
     return { collection: c, obtenus, total: c.badges.length, complete: obtenus === c.badges.length };
   });
-  const total = TOUS_LES_BADGES.length;
-  const obtenus = TOUS_LES_BADGES.filter((b) => ids.includes(b.id)).length;
+  const total = BADGES_GAGNABLES.length;
+  const obtenus = BADGES_GAGNABLES.filter((b) => ids.includes(b.id)).length;
   return { parCollection, obtenus, total, tout: obtenus === total };
 }

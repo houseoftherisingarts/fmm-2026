@@ -449,7 +449,10 @@ const TarotPage: React.FC = () => {
                 className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-brass/45 bg-black/50 backdrop-blur-md font-sans uppercase tracking-[0.18em] text-[10px] text-ivory hover:bg-brass/15 transition-colors duration-200"
               >
                 <span className="flex items-center justify-center rounded-[3px] overflow-hidden" style={{ width: 16, height: 26 }}><img src={DOS_CARTES.find((d) => d.id === (dosActuel || 'festival'))?.image} alt="" aria-hidden className="w-full h-full object-cover" /></span>
-                {nomDos(dosActuel)}
+                <span className="flex flex-col items-start leading-tight">
+                  <span>{fr ? 'Changer le dos de carte' : 'Change the card back'}</span>
+                  <span className="normal-case tracking-normal text-[10px] text-ivory/60">{nomDos(dosActuel)}</span>
+                </span>
               </button>
             ) : (
               <button

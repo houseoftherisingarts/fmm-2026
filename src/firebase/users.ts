@@ -7,7 +7,7 @@
 // a single type for both live and mock data.
 
 import {
-  collection, getDocs, query, orderBy, limit as fsLimit,
+  collection, getDocs, query, limit as fsLimit,
   type Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -29,15 +29,17 @@ const COL = 'users';
 
 // List users ordered by creation date descending, capped at pageSize.
 // Returns [] when Firestore is not configured (offline / missing env).
-export async function listUsers(pageSize = 500): Promise<AppUser[]> {
+// Sans `orderBy('createdAt')` : Firestore exclut d'une requête triée les
+// fiches qui n'ont pas le champ, et des comptes réels disparaissaient du
+// registre (Alex, 2026-08-31). Le tri se fait ici, les fiches sans date
+// en queue.
+export async function listUsers(pageSize = 2000): Promise<AppUser[]> {
   if (!db) return [];
-  const q = query(
-    collection(db, COL),
-    orderBy('createdAt', 'desc'),
-    fsLimit(pageSize),
-  );
+  const q = query(collection(db, COL), fsLimit(pageSize));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => {
+  const ms = (v: unknown) => (v && typeof (v as { toMillis?: () => number }).toMillis === 'function'
+    ? (v as { toMillis: () => number }).toMillis() : 0);
+  return snap.docs.sort((a, b) => ms(b.data().createdAt) - ms(a.data().createdAt)).map((d) => {
     const data = d.data();
     return {
       uid:            d.id,
@@ -69,4 +71,12 @@ export async function importerComptesZeffy(): Promise<ResultatImportZeffy> {
   const appeler = httpsCallable<Record<string, never>, ResultatImportZeffy>(getFunctions(firebaseApp, 'us-central1'), 'importerComptesZeffy');
   const { data } = await appeler({});
   return data;
+}
+
+/** Rattrape le registre : une fiche users + membres pour chaque compte
+ *  Auth (équipe seulement). Rend le nombre de comptes lus et corrigés. */
+export async function synchroniserRegistre(): Promise<{ comptes: number; corriges: number }> {
+  const fn = httpsCallable<void, { comptes: number; corriges: number }>(getFunctions(undefined, 'us-central1'), 'synchroniserRegistre');
+  const r = await fn();
+  return r.data;
 }

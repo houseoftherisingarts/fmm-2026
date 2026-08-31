@@ -97,8 +97,9 @@ function shell(body, extraCss = '') {
   .frame { position: relative; width: ${W}px; height: ${H}px; overflow: hidden; }
   .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .mark {
-    position: absolute; right: 62px; bottom: 34px; height: 108px; width: auto;
-    opacity: 0.92; filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
+    position: absolute; right: 58px; bottom: 34px; height: 112px; width: auto;
+    opacity: 0.94;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px rgba(0, 0, 0, 0.5));
   }
   ${extraCss}
 </style></head><body><div class="frame">${body}</div></body></html>`;
@@ -106,17 +107,26 @@ function shell(body, extraCss = '') {
 
 function cardHtml({ photoUrl, markUrl, side, kicker, hook, body, meta }) {
   const css = `
+  /* Le bandeau de verre. Sa lisière intérieure s'éteint en huit paliers
+     plutôt qu'en une rampe droite : une rampe linéaire laisse une arête
+     franche en travers du ciel, et la photo a l'air barrée. */
   .plate {
-    position: absolute; top: 0; bottom: 0; width: 42%;
+    position: absolute; top: 0; bottom: 0; width: 45%;
     display: flex; flex-direction: column; justify-content: center;
   }
   .plate.left {
-    left: 0; padding: 96px 168px 96px 92px;
-    background: linear-gradient(to right, rgba(12,10,8,0.84) 0%, rgba(12,10,8,0.80) 76%, rgba(12,10,8,0) 100%);
+    left: 0; padding: 96px 232px 96px 88px;
+    background: linear-gradient(to right,
+      rgba(12,10,8,0.84) 0%, rgba(12,10,8,0.82) 52%, rgba(12,10,8,0.74) 68%,
+      rgba(12,10,8,0.55) 80%, rgba(12,10,8,0.32) 89%, rgba(12,10,8,0.14) 95%,
+      rgba(12,10,8,0) 100%);
   }
   .plate.right {
-    right: 0; padding: 96px 92px 210px 168px;
-    background: linear-gradient(to left, rgba(12,10,8,0.84) 0%, rgba(12,10,8,0.80) 76%, rgba(12,10,8,0) 100%);
+    right: 0; padding: 96px 88px 150px 232px;
+    background: linear-gradient(to left,
+      rgba(12,10,8,0.84) 0%, rgba(12,10,8,0.82) 52%, rgba(12,10,8,0.74) 68%,
+      rgba(12,10,8,0.55) 80%, rgba(12,10,8,0.32) 89%, rgba(12,10,8,0.14) 95%,
+      rgba(12,10,8,0) 100%);
   }
   .kicker {
     font-family: 'Inter', system-ui, sans-serif; font-weight: 500; font-size: 14px;
@@ -129,12 +139,12 @@ function cardHtml({ photoUrl, markUrl, side, kicker, hook, body, meta }) {
   .rule { width: 74px; height: 1px; background: var(--amber); opacity: 0.75; margin: 34px 0 30px; }
   .body {
     font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; font-size: 31px;
-    line-height: 1.52; color: rgba(232, 221, 193, 0.84);
+    line-height: 1.52; color: rgba(232, 221, 193, 0.84); text-wrap: pretty;
   }
   .meta {
     font-family: 'Inter', system-ui, sans-serif; font-weight: 500; font-size: 13px;
     letter-spacing: 0.3em; text-transform: uppercase; color: rgba(232, 177, 74, 0.9);
-    margin-top: 44px;
+    margin-top: 44px; text-wrap: pretty;
   }`;
   return shell(
     `<img class="shot" src="${photoUrl}" alt="">
@@ -153,10 +163,10 @@ function cardHtml({ photoUrl, markUrl, side, kicker, hook, body, meta }) {
 function postcardHtml({ photoUrl, markUrl }) {
   const css = `
   .credit {
-    position: absolute; left: 62px; bottom: 60px;
+    position: absolute; left: 58px; bottom: 62px;
     font-family: 'Inter', system-ui, sans-serif; font-weight: 400; font-size: 22px;
     letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.85);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.72), 0 0 18px rgba(0, 0, 0, 0.45);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.92), 0 1px 8px rgba(0, 0, 0, 0.75), 0 0 22px rgba(0, 0, 0, 0.5);
   }`;
   return shell(
     `<img class="shot" src="${photoUrl}" alt="">
@@ -183,8 +193,14 @@ async function fitHook(page) {
   });
 }
 
+// Chromium refuse de charger une image file:// depuis une page posée
+// par setContent (origine « about:blank »). Le gabarit s'écrit donc sur
+// le disque, à côté des photos, et la page y navigue pour de vrai.
+let shotSeq = 0;
 async function shoot(page, html, dest, { fit = false } = {}) {
-  await page.setContent(html, { waitUntil: 'load' });
+  const stage = path.join(TMP, `stage-${shotSeq++}.html`);
+  fs.writeFileSync(stage, html);
+  await page.goto(url(stage), { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() =>
     Promise.all(
@@ -229,6 +245,22 @@ async function main() {
   }
 
   await browser.close();
+
+  // Vignettes web. La page /presse affiche 20 tuiles : servir les PNG
+  // pleine résolution y mettrait 45 Mo. Les tuiles montrent un WebP de
+  // 640 px, le bouton Télécharger sert le PNG d'origine.
+  console.log('\nVignettes 640 px :');
+  const thumbs = path.join(OUT, 'thumbs');
+  fs.mkdirSync(thumbs, { recursive: true });
+  let nThumbs = 0;
+  for (const f of fs.readdirSync(OUT).filter((n) => n.endsWith('.png'))) {
+    await sharp(path.join(OUT, f))
+      .resize(640)
+      .webp({ quality: 78 })
+      .toFile(path.join(thumbs, f.replace(/\.png$/, '.webp')));
+    nThumbs += 1;
+  }
+  console.log(`  ${nThumbs} vignettes`);
 
   console.log('\nLogos :');
   for (const f of ['fmm-logo-embossed-silver.png', 'fmm-logo-white.png']) {
