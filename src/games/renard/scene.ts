@@ -77,7 +77,10 @@ function construirePlateau(): THREE.Group {
     bois,
   );
   planche.rotation.x = -Math.PI / 2;
-  planche.position.y = -EPAISSEUR;
+  // Le chanfrein déborde de l'extrusion des deux côtés : sans ce
+  // décalage, le dessus de la planche montait à 0,05 et recouvrait les
+  // lignes brûlées comme les cupules.
+  planche.position.y = -(EPAISSEUR + BISEAU);
   planche.castShadow = true;
   planche.receiveShadow = true;
   groupe.add(planche);

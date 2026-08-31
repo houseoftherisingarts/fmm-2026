@@ -200,7 +200,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // carrés d'un coup d'œil, assez bas pour que les pions gardent leur
   // volume. Le rayon se recalcule au redimensionnement, sinon le plateau
   // sort du cadre en portrait, où c'est la largeur qui commande.
-  const FIT_R = 17.4;
+  const FIT_R = 16.2;
   const rayonUtile = (aspect: number) =>
     (aspect >= 1 ? FIT_R : FIT_R / Math.pow(Math.max(aspect, 0.35), 0.75));
 
@@ -214,7 +214,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
       camR * Math.cos(phi),
       camR * Math.sin(phi) * Math.cos(theta),
     );
-    camera.lookAt(0, -0.4, 0);
+    camera.lookAt(0, -0.55, 0);
   };
   majCam();
 
