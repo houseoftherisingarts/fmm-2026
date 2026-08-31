@@ -401,6 +401,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   };
 
   const reinitialiser = (points: readonly (0 | 1 | 2)[]) => {
+    selection = null;
     for (let p = 0; p < 24; p++) detruirePion(p);
     for (let p = 0; p < 24; p++) {
       const v = points[p];
