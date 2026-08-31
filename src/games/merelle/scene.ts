@@ -554,10 +554,12 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     const t = horloge.getElapsedTime();
     torcheA.intensity = 4.2 + Math.sin(t * 7.1) * 0.5 + Math.sin(t * 13.3) * 0.25;
     torcheB.intensity = 3.4 + Math.sin(t * 5.7 + 1.2) * 0.45 + Math.sin(t * 11.7) * 0.22;
-    // Le pion tenu respire, pour qu'on sache lequel on a en main.
+    // Les halos battent lentement autour de leur opacité de repos, et le
+    // pion tenu respire, pour qu'on sache lequel on a en main.
+    const battement = Math.sin(t * 3.1) * 0.11;
     for (const h of halos) {
       (h.material as THREE.MeshBasicMaterial).opacity
-        = 0.34 + Math.sin(t * 3.1) * 0.12 + ((h.material as THREE.MeshBasicMaterial).color.g > 0.5 ? 0.06 : 0.14);
+        = Math.max(0.12, (h.userData.opacite as number) + battement);
     }
     if (selection !== null) {
       const m = pions[selection];
