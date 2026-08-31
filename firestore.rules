@@ -1138,8 +1138,20 @@ service cloud.firestore {
                     // Le prix en dollars est facultatif (Alex, 2026-08-28) :
                     // sans prix ni Montpellois, l'objet est donné.
                     && request.resource.data.get('prix', 0) is number
-                    && request.resource.data.get('prix', 0) >= 0;
-      allow update, delete: if isAdmin()
+                    && request.resource.data.get('prix', 0) >= 0
+                    && prixMontpelloisValide();
+      // Le prix en Montpellois est un entier de 0 à 100 000 : un prix
+      // négatif renverserait le transfert dans acheterAuSouk.
+      function prixMontpelloisValide() {
+        return request.resource.data.get('prixMontpellois', 0) is int
+               && request.resource.data.get('prixMontpellois', 0) >= 0
+               && request.resource.data.get('prixMontpellois', 0) <= 100000;
+      }
+      allow update: if isAdmin()
+                    || (signedIn() && resource.data.uid == request.auth.uid
+                        && request.resource.data.uid == resource.data.uid
+                        && prixMontpelloisValide());
+      allow delete: if isAdmin()
                     || (signedIn() && resource.data.uid == request.auth.uid);
     }
 
