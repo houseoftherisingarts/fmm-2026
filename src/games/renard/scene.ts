@@ -246,21 +246,37 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
   const vue = setupScene(el);
   const { scene, camera, renderer } = vue;
 
-  scene.add(construirePlateau());
+  // Tout le jeu vit dans un groupe racine. Le cadrage de sceneSetup a
+  // été réglé pour le damier du tafl, bien plus large, et il recule
+  // beaucoup la caméra en portrait : la croix se grossit d'autant, ce
+  // qui évite de toucher à une scène partagée avec un autre jeu.
+  const racine = new THREE.Group();
+  scene.add(racine);
+  racine.add(construirePlateau());
+
+  const ajusterEchelle = () => {
+    const format = el.clientWidth / Math.max(el.clientHeight, 1);
+    racine.scale.setScalar(
+      format >= 1 ? 1.25 : 1.25 / Math.pow(Math.max(format, 0.35), 0.55),
+    );
+  };
+  const suiviTaille = new ResizeObserver(ajusterEchelle);
+  suiviTaille.observe(el);
+  ajusterEchelle();
 
   // Les pièces, une par point occupé. Le groupe garde son numéro de
   // point dans userData : l'animation le relit sans table annexe.
   const pieces = new Map<number, THREE.Group>();
   const renard = construireRenard();
   renard.visible = false;
-  scene.add(renard);
+  racine.add(renard);
 
   const oiesLibres: THREE.Group[] = [];
   const prendreOie = (): THREE.Group => {
     const dispo = oiesLibres.pop();
     if (dispo) { dispo.visible = true; dispo.scale.setScalar(1); return dispo; }
     const neuve = construireOie();
-    scene.add(neuve);
+    racine.add(neuve);
     return neuve;
   };
 
@@ -324,7 +340,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
   const disques: THREE.Mesh[] = [];
   const effacer = () => {
     for (const d of disques) {
-      scene.remove(d);
+      racine.remove(d);
       (d.material as THREE.Material).dispose();
     }
     disques.length = 0;
@@ -336,7 +352,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     m.rotation.x = -Math.PI / 2;
     m.position.copy(positionDe(i));
     m.position.y = HAUTEUR_SURBRILLANCE;
-    scene.add(m);
+    racine.add(m);
     disques.push(m);
   };
   const surbrillance = (choisi: number | null, cibles: number[]) => {
@@ -360,6 +376,9 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
     ecran.y = -((clientY - boite.top) / boite.height) * 2 + 1;
     rayon.setFromCamera(ecran, camera);
     if (!rayon.ray.intersectPlane(plan, contact)) return null;
+    // Le clic est mesuré dans le repère du jeu, pas dans celui de la
+    // scène : la racine est mise à l'échelle selon le format.
+    contact.divideScalar(racine.scale.x);
     let meilleur: number | null = null;
     let distance = PAS_3D * 0.62;
     POINTS.forEach((_, i) => {
@@ -436,6 +455,7 @@ export function creerTable(el: HTMLElement, surClic: (point: number) => void): T
 
   const dispose = () => {
     vivant = false;
+    suiviTaille.disconnect();
     gsap.killTweensOf(renard.position);
     effacer();
     disqueGeo.dispose();

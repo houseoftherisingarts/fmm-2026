@@ -200,11 +200,20 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   // carrés d'un coup d'œil, assez bas pour que les pions gardent leur
   // volume. Le rayon se recalcule au redimensionnement, sinon le plateau
   // sort du cadre en portrait, où c'est la largeur qui commande.
-  const FIT_R = 16.2;
-  const rayonUtile = (aspect: number) =>
-    (aspect >= 1 ? FIT_R : FIT_R / Math.pow(Math.max(aspect, 0.35), 0.75));
+  // Le madrier est carré et large. Dans une fenêtre en portrait, c'est
+  // la LARGEUR qui commande, et un simple recul ne suffit pas : on ouvre
+  // aussi l'objectif, sinon le plateau sort du cadre par les côtés
+  // (constat à l'écran sur 390 × 760, 2026-08-30).
+  const DEMI_LARGEUR = 6.5; // du centre au bord du bois, marge comprise
+  const DEMI_HAUTEUR = 5.0; // ce que le plateau incliné occupe en hauteur
+  const focalePour = (aspect: number) =>
+    (aspect >= 1 ? 38 : Math.min(60, 38 / Math.pow(Math.max(aspect, 0.3), 0.55)));
+  const rayonUtile = (aspect: number) => {
+    const t = Math.tan((camera.fov * Math.PI) / 360);
+    return 1.08 * Math.max(DEMI_HAUTEUR / t, DEMI_LARGEUR / (t * aspect));
+  };
 
-  let camR = FIT_R;
+  let camR = 16;
   let theta = 0;
   let phi = 0.66;
 
