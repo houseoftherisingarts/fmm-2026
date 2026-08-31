@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, Newspaper } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { lienBilletterie, ouvrirBilletterie } from '../lib/billetterie';
@@ -67,10 +67,19 @@ const AccueilPage: React.FC = () => {
               <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-6">
                 {t.hero.subtitle}
               </p>
-              <a href={ticketUrl} onClick={surBillets} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-7 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-                {t.hero.primaryCta} <ArrowUpRight size={14} />
-              </a>
+              {/* Les deux gestes du hero : les billets, et le kit de presse
+                  juste à côté, avec le journal (Alex, 2026-08-31). Coins ronds. */}
+              <div className="flex flex-wrap items-center gap-3">
+                <a href={ticketUrl} onClick={surBillets} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-7 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-full">
+                  {t.hero.primaryCta} <ArrowUpRight size={14} />
+                </a>
+                <Link to={addLocale('/presse', lang)}
+                  className="inline-flex items-center gap-2 px-6 py-3 font-sans uppercase tracking-wider text-xs font-semibold text-ivory hover:text-brass transition rounded-full"
+                  style={{ border: '1px solid rgba(var(--sk-glow-rgb), 0.55)', background: 'rgba(var(--sk-glow-rgb), 0.08)' }}>
+                  <Newspaper size={15} /> {lang === 'FR' ? 'Kit de presse' : 'Press kit'}
+                </Link>
+              </div>
 
               {!cd.isPast && (
                 <div className="mt-8 pt-6">

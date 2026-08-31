@@ -419,6 +419,10 @@ const App: React.FC = () => (
                     tête de la page fusionnée /partenaires (Alex,
                     2026-08-12) : les anciens slugs redirigent. */}
                 <Route path="/commanditaires" element={<Navigate to="/partenaires" replace />} />
+                {/* Le jeu d'échecs viking vit sous /jeunesse; l'adresse courte
+                    tapée à la main tombait sur la page 404 (Alex, 2026-08-31). */}
+                <Route path="/jeux/hnefatafl" element={<Navigate to="/jeunesse/hnefatafl" replace />} />
+                <Route path="/en/games/hnefatafl" element={<Navigate to="/en/youth/hnefatafl" replace />} />
                 <Route path="/en/sponsors"    element={<Navigate to="/en/partners" replace />} />
                 <Route path="/admin"  element={<AdminPage />} />
                 <Route path="/admin/personne/:slug" element={<PersonProfilePage />} />

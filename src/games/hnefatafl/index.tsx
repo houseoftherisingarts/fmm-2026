@@ -951,7 +951,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
                 comment, tant qu'elle n'est pas dans le coffre (Alex, 2026-08-30). */}
             {!taflDebloques.includes('caravane') && (
               <div className="mt-1">
-                <ApercuRecompense jour={3} lang={lang} className="!p-3" />
+                <ApercuRecompense jour={8} lang={lang} className="!p-3" />
               </div>
             )}
           </Colonne>

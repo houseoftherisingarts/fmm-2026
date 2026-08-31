@@ -370,7 +370,9 @@ export function suivreFiche(uid: string, cb: (m: Membre | null) => void): () => 
 
 /** Toute la salle, par ordre alphabétique. La recherche se fait ensuite
  *  dans le navigateur : le registre du festival tient largement. */
-export async function listerMembres(max = 300): Promise<Membre[]> {
+// Plafond passé de 300 à 3000 le 2026-08-31 : avec 300, le registre
+// s'arrêtait à la lettre M et Purazar Médiéval n'apparaissait pas.
+export async function listerMembres(max = 3000): Promise<Membre[]> {
   if (!db) return [];
   try {
     const snap = await getDocs(query(collection(db, MEMBRES), orderBy('nom'), fbLimit(max)));
