@@ -329,6 +329,8 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   scene.add(groupePions);
   /** Le pion visible à chaque point, indexé comme le plateau. */
   const pions: (THREE.Mesh | null)[] = Array(24).fill(null);
+  /** Le point tenu en main, celui dont le pion respire. */
+  let selection: number | null = null;
 
   const creerPion = (p: number, camp: Camp): THREE.Mesh => {
     const m = new THREE.Mesh(pionGeo, matPion[camp]);
