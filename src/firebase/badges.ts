@@ -259,13 +259,12 @@ function viderLocaux() {
  */
 export async function gagner(id: string, uid?: string | null): Promise<boolean> {
   if (!badgeParId(id)) return false;
-  if (!uid || !db) return poserLocal(id);
-  const ref = doc(db, COL, uid);
-  const snap = await getDoc(ref);
-  const obtenus = (snap.exists() ? (snap.data().obtenus as Record<string, unknown>) : {}) || {};
-  if (obtenus[id]) return false;
-  await setDoc(ref, { obtenus: { ...obtenus, [id]: serverTimestamp() } }, { merge: true });
-  return true;
+  if (!uid || !db || !firebaseApp) return poserLocal(id);
+  // `obtenus` ne s'écrit plus depuis le navigateur (chaque badge vaut des
+  // Montpellois) : la fonction poserBadgeClient valide l'identifiant et pose.
+  const fn = httpsCallable<{ badgeId: string }, { neuf: boolean }>(getFunctions(firebaseApp, 'us-central1'), 'poserBadgeClient');
+  const { data } = await fn({ badgeId: id });
+  return !!data.neuf;
 }
 
 /** À la connexion : ce qui a été gagné hors compte rejoint le compte. */
@@ -274,7 +273,13 @@ export async function reclamerLesLocaux(uid: string): Promise<string[]> {
   if (liste.length === 0) return [];
   const gagnes: string[] = [];
   for (const id of liste) {
-    if (await gagner(id, uid)) gagnes.push(id);
+    try {
+      if (await gagner(id, uid)) gagnes.push(id);
+    } catch (e) {
+      // Un identifiant que le serveur refuse ne doit pas bloquer les autres
+      // à chaque connexion; toute autre erreur (hors ligne) garde la liste.
+      if ((e as { code?: string }).code !== 'functions/invalid-argument') throw e;
+    }
   }
   viderLocaux();
   return gagnes;
