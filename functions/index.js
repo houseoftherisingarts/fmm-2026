@@ -2122,7 +2122,18 @@ async function poserBadge(uid, badgeId, options = {}) {
   // succès une seule fois, puis efface la clé (Alex, 2026-08-31).
   if (options.annoncer) patch.aAnnoncer = { [badgeId]: true };
   await ref.set(patch, { merge: true });
+  return true;
 }
+
+// Le client ne touche plus badges/{uid}.obtenus (chaque clé vaut des
+// Montpellois) : il demande ici, le serveur valide l'identifiant et pose.
+exports.poserBadgeClient = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous d’abord.');
+  const badgeId = String((requete.data || {}).badgeId || '');
+  if (!BADGES_CLIENT.has(badgeId)) throw new HttpsError('invalid-argument', 'Badge inconnu.');
+  return { neuf: await poserBadge(uid, badgeId) };
+});
 
 // ── Les badges de la cour : décernés, jamais gagnés ──────────────────
 // Le badge bleu vérifié suit membres/{uid}.verifie (posé par l'équipe
