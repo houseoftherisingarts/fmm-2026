@@ -53,10 +53,18 @@ service cloud.firestore {
     // signedIn() read would let any self-registered account harvest
     // every member's contact info (decision Alex 2026-07-04). The
     // community wall doesn't need it — posts embed authorName/hue.
+    // Les droits payés ou gagnés (sans publicité, filleuls, billet offert)
+    // s'écrivent depuis le serveur seulement : un membre ne se les
+    // attribue pas lui-même.
+    function userChampsServeur() {
+      return ['sansPub', 'sansPubLe', 'sansPubPaymentId', 'sansPubRaison', 'filleuls', 'filleulsMajLe', 'billetOffert'];
+    }
     match /users/{uid} {
       allow read:   if isOwner(uid) || isAdmin();
-      allow create: if isOwner(uid);
-      allow update: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid) && !request.resource.data.keys().hasAny(userChampsServeur());
+      allow update: if isAdmin()
+                    || (isOwner(uid)
+                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(userChampsServeur()));
       allow delete: if isAdmin();
     }
 
