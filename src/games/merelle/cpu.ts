@@ -162,7 +162,8 @@ function noter(e: Etat, vol: boolean): number {
   const adverse = autreCamp(camp);
   if (e.gagnant) return e.gagnant === camp ? VICTOIRE : -VICTOIRE;
 
-  const p = POIDS[phasePartie(e)];
+  const phase = phasePartie(e);
+  const p = POIDS[phase];
   const mien = alignements(e.points, camp);
   const sien = alignements(e.points, adverse);
   const moi = souffle(e.points, camp);
@@ -191,7 +192,7 @@ function noter(e: Etat, vol: boolean): number {
   // Tomber sous cinq pions est dangereux, et davantage encore quand la
   // variante du vol est coupée : le camp se retrouve alors enfermé bien
   // avant d'en perdre un de plus.
-  if (p !== POIDS.pose) {
+  if (phase !== 'pose') {
     const peur = vol ? 12 : 30;
     const fragile = (n: number): number => (n <= 4 ? (5 - n) * peur : 0);
     note += fragile(sesPions) - fragile(mesPions);

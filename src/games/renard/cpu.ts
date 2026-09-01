@@ -1,21 +1,47 @@
-// ─── L'adversaire de bois ───────────────────────────────────────────
-// Alex, 2026-08-30 : trois niveaux, la même évaluation pour les trois.
-// Facile joue au hasard, moyen prend le meilleur coup immédiat,
-// difficile regarde trois demi-coups plus loin avec un élagage alpha
-// bêta. La note est toujours donnée du point de vue du renard : les
-// oies cherchent donc à la faire baisser.
+// ─── L'adversaire du Renard et des Oies ─────────────────────────────
+// Alex, 2026-09-01 : « L'IA qui contrôle les jeux est vraiment très
+// mauvaise. » Le premier adversaire de ce jeu regardait trois
+// demi-coups devant lui avec une évaluation écrite du seul point de vue
+// du renard, et il ne connaissait aucune des règles qui empêchent une
+// partie de s'enliser. Il est remplacé par le moteur commun de
+// `src/games/moteur`, qui apporte l'approfondissement progressif, la
+// table de transposition, la quiescence et les dix niveaux.
+//
+// ⚠️ LE SIGNE. Le moteur compte tout au negamax, c'est-à-dire du point
+// de vue du camp qui a le trait. L'ancienne évaluation notait toujours
+// du point de vue du renard, et brancher l'une sur l'autre sans
+// retourner le signe fait jouer les oies POUR le renard : la machine se
+// bat contre elle-même, et cela ne se voit qu'au banc d'essai. La note
+// brute reste calculée pour le renard dans `noteRenard`, parce que
+// c'est ainsi qu'elle se lit et que l'ancienne signature `evaluer` la
+// rend encore telle quelle, et l'adaptateur la retourne quand ce sont
+// les oies qui jouent.
+//
+// L'évaluation garde ce que l'ancienne avait de juste (le nombre
+// d'oies, la prise offerte, le souffle du renard, l'avance du troupeau)
+// et ajoute ce qui lui manquait : la structure du troupeau, les trous
+// dans la ligne d'oies, l'enfermement réel du renard mesuré au parcours
+// plutôt qu'à ses quatre voisins, sa distance à la tanière, et surtout
+// le compteur de la basse-cour. C'est ce dernier terme qui règle la
+// plainte d'Alex : des oies qui campent voient la punition venir, et le
+// renard sait qu'il gagne en attendant.
 
+import { choisirAuNiveau, type ChoixOptions, type Niveau } from '../moteur/niveaux';
+import type { Adaptateur } from '../moteur/types';
 import {
-  coupsPossibles, jouer, nbOies, PAS, pointDe, POINTS, positionRenard,
-  reglement, type Camp, type Coup, type Plateau, type Variante,
+  SEUIL_BASSE_COUR, avanceDuTroupeau, clePosition, cohesionDuTroupeau, etatDepuis,
+  jouerRecherche, libertesDuRenard, menacesDuRenard, profondeurDansUnBras,
+  trousDansLaLigne, verdictArbitre,
+  type EtatRenard,
+} from './arbitre';
+import {
+  POINTS, coupEnTexte, coupsPossibles, nbOies, PAS, pointDe, positionRenard, reglement,
+  type Camp, type Coup, type Plateau, type Variante,
 } from './logic';
 
 export type Difficulte = 'facile' | 'moyen' | 'difficile';
 
-const GAGNE = 100_000;
-
-/** Le nombre de points libres autour du renard. Sa vraie liberté, sans
- *  compter les sauts, qui gonfleraient le compte. */
+/** Le nombre de points libres autour du renard, ses quatre voisins seulement. */
 function souffleDuRenard(p: Plateau): number {
   const ou = positionRenard(p);
   if (ou < 0) return 0;
@@ -28,89 +54,142 @@ function souffleDuRenard(p: Plateau): number {
   return n;
 }
 
-/** La note de la position, vue par le renard. */
-export function evaluer(p: Plateau, v: Variante): number {
+// ─── Les poids ──────────────────────────────────────────────────────
+// L'échelle est celle du moteur : une oie vaut cent, comme un pion vaut
+// cent aux échecs. C'est ce qui donne son sens à la fenêtre des petits
+// niveaux, qui se compte en centièmes de point dans `niveaux.ts`.
+
+const POIDS = {
+  /** Chaque oie encore debout pèse contre le renard. */
+  oie: 100,
+  /** Une oie qu'il peut croquer tout de suite, sans même chercher. */
+  menace: 110,
+  /** Le troupeau qui monte vers la tanière. */
+  avance: 12,
+  /** Ses quatre voisins libres. */
+  souffle: 18,
+  /** Les points qu'il atteint réellement en marchant. */
+  liberte: 7,
+  /** Chaque pas qu'il a fait dans un bras de la croix. */
+  bras: 45,
+  /** Sa distance à la tanière, en rangées. Il vit mieux loin d'elle. */
+  taniere: 5,
+  /** Les oies qui se tiennent la main. */
+  cohesion: 9,
+  /** Les trous derrière la ligne d'oies. */
+  trou: 11,
+  /** Le compteur de la basse-cour, qui travaille pour le renard. */
+  bassecour: 10,
+} as const;
+
+/**
+ * La note de la position, du point de vue du renard, en centièmes.
+ *
+ * Le compteur de la basse-cour entre dans le compte : douze coups
+ * d'oies sans progrès coûtent une oie, et un troupeau qui campe voit
+ * donc sa note se dégrader coup après coup au lieu de rester plate.
+ * C'est exactement ce qui manquait pour que les oies arrêtent de se
+ * cacher dans un coin.
+ */
+export function noteRenard(p: Plateau, v: Variante, sansProgres = 0): number {
   const reste = nbOies(p);
-  if (reste <= reglement(v).seuilRenard) return GAGNE;
-
-  const coupsRenard = coupsPossibles(p, 'renard', v);
-  if (coupsRenard.length === 0) return -GAGNE;
-
-  // Ce que le renard peut emporter tout de suite. C'est aussi ce que
-  // les oies doivent refuser de lui offrir : une oie laissée sautable
-  // fait chuter la note du camp des oies.
-  let meilleurGain = 0;
-  for (const c of coupsRenard) if (c.prises.length > meilleurGain) meilleurGain = c.prises.length;
-
-  // Les oies gagnent du terrain en montant vers la tanière. Plus elles
-  // sont hautes et serrées, plus l'étau se referme.
-  let avance = 0;
-  p.forEach((occ, i) => { if (occ === 'oie') avance += 6 - POINTS[i].r; });
-
-  return -12 * reste + 26 * meilleurGain + 4 * souffleDuRenard(p) - 1.5 * avance;
+  return (
+    -POIDS.oie * reste
+    + POIDS.menace * menacesDuRenard(p)
+    - POIDS.avance * avanceDuTroupeau(p)
+    + POIDS.souffle * souffleDuRenard(p)
+    + POIDS.liberte * libertesDuRenard(p)
+    - POIDS.bras * profondeurDansUnBras(p)
+    + POIDS.taniere * (positionRenard(p) < 0 ? 0 : POINTS[positionRenard(p)].r)
+    - POIDS.cohesion * cohesionDuTroupeau(p)
+    + POIDS.trou * trousDansLaLigne(p)
+    + POIDS.bassecour * sansProgres
+    // La variante fixe le seuil de victoire du renard : moins il reste
+    // d'oies à croquer avant ce seuil, plus la position lui sourit.
+    + POIDS.oie * reglement(v).seuilRenard
+  );
 }
 
-function ordonner(coups: Coup[]): Coup[] {
-  return [...coups].sort((a, b) => b.prises.length - a.prises.length);
+/**
+ * Le contrat que le jeu remplit pour le moteur commun.
+ *
+ * `evaluer` et `fini` rendent leur verdict du point de vue du camp qui
+ * a le trait, jamais de celui du renard. La clé de transposition porte
+ * le compteur de la basse-cour et le record d'avance, sans quoi deux
+ * positions identiques dont l'une est à un coup de la punition
+ * vaudraient la même chose.
+ */
+export function adaptateurRenard(v: Variante): Adaptateur<EtatRenard, Coup> {
+  return {
+    coups: (e) => coupsPossibles(e.plateau, e.tour, v),
+    jouer: (e, c) => jouerRecherche(e, c).etat,
+    fini: (e) => {
+      const gagnant = verdictArbitre(e);
+      if (gagnant === null) return null;
+      if (gagnant === 'nulle') return 0;
+      return gagnant === e.tour ? 1 : -1;
+    },
+    evaluer: (e) => {
+      const note = noteRenard(e.plateau, v, e.sansProgres);
+      return e.tour === 'renard' ? note : -note;
+    },
+    cle: (e) => `${clePosition(e.plateau, e.tour)}|${e.sansProgres}|${e.avanceRecord}`,
+    nomCoup: coupEnTexte,
+    // La quiescence suit les prises, et le coup d'oie qui va déclencher
+    // la punition en est une : il change la matière au coup suivant.
+    bruyant: (e, c) =>
+      c.prises.length > 0 || (e.tour === 'oies' && e.sansProgres >= SEUIL_BASSE_COUR - 1),
+    // L'ordre a priori : le renard essaie d'abord ce qui croque, les
+    // oies d'abord ce qui monte vers la tanière.
+    promesse: (e, c) =>
+      e.tour === 'renard'
+        ? c.prises.length * 20
+        : (POINTS[c.de].r - POINTS[c.vers].r) * 4 + 1,
+  };
 }
 
-function minimax(p: Plateau, tour: Camp, v: Variante, profondeur: number, alpha: number, beta: number): number {
-  const coups = coupsPossibles(p, tour, v);
-  if (coups.length === 0) return tour === 'renard' ? -GAGNE : GAGNE;
-  if (nbOies(p) <= reglement(v).seuilRenard) return GAGNE;
-  if (profondeur === 0) return evaluer(p, v);
-
-  let a = alpha;
-  let b = beta;
-  if (tour === 'renard') {
-    let meilleur = -Infinity;
-    for (const coup of ordonner(coups)) {
-      const note = minimax(jouer(p, coup), 'oies', v, profondeur - 1, a, b);
-      if (note > meilleur) meilleur = note;
-      if (meilleur > a) a = meilleur;
-      if (a >= b) break;
-    }
-    return meilleur;
-  }
-  let pire = Infinity;
-  for (const coup of coups) {
-    const note = minimax(jouer(p, coup), 'renard', v, profondeur - 1, a, b);
-    if (note < pire) pire = note;
-    if (pire < b) b = pire;
-    if (a >= b) break;
-  }
-  return pire;
+/**
+ * La porte d'entrée du jeu : le coup que la machine joue à ce niveau,
+ * en partant d'un état d'arbitre complet.
+ *
+ * Passer l'état plutôt que le seul plateau est ce qui permet à la
+ * machine de compter les coups sans progrès. Un renard qui sait que la
+ * basse-cour travaille pour lui n'a plus à se jeter sur le troupeau, et
+ * des oies qui voient la punition venir cessent de camper.
+ */
+export function choisirCoupNiveau(
+  e: EtatRenard, niveau: Niveau, options: ChoixOptions = {},
+): Coup | null {
+  return choisirAuNiveau(adaptateurRenard(e.variante), e, niveau, options);
 }
 
-/** Le coup que l'ordinateur joue pour ce camp. Rend null quand il n'a
- *  plus rien de légal, ce qui vaut défaite (la partie le voit ailleurs). */
+// ─── Les anciennes signatures ───────────────────────────────────────
+// `index.tsx` et `logic.test.ts` les appellent encore. Elles sont
+// branchées sur le nouveau moteur et ne changent pas de forme, pour que
+// rien ne casse pendant le chantier.
+//
+// Un plafond de nœuds accompagne chaque marche : le navigateur d'un
+// visiteur ne doit pas figer une seconde entière entre deux coups, et
+// le contrôle du terminal doit finir une partie complète en quelques
+// secondes.
+
+const MARCHE: Record<Difficulte, { niveau: Niveau; noeudsMax: number }> = {
+  facile: { niveau: 2, noeudsMax: 1_500 },
+  moyen: { niveau: 7, noeudsMax: 12_000 },
+  difficile: { niveau: 9, noeudsMax: 40_000 },
+};
+
+/**
+ * Le coup que l'ordinateur joue pour ce camp, à partir du seul plateau.
+ *
+ * L'état est reconstruit avec des compteurs à neuf, faute d'en recevoir
+ * un : cette porte-là ne voit donc pas où en est la basse-cour. Les
+ * pages qui tiennent l'état complet passent par `choisirCoupNiveau`.
+ */
 export function choisirCoup(p: Plateau, camp: Camp, v: Variante, d: Difficulte): Coup | null {
-  const coups = coupsPossibles(p, camp, v);
-  if (coups.length === 0) return null;
-
-  if (d === 'facile') {
-    // Assez maladroit pour être battu, jamais au point de refuser un
-    // cadeau : le renard ramasse quand même une prise offerte.
-    if (camp === 'renard') {
-      const prises = coups.filter((c) => c.prises.length > 0);
-      if (prises.length > 0 && Math.random() < 0.6) {
-        return prises[Math.floor(Math.random() * prises.length)];
-      }
-    }
-    return coups[Math.floor(Math.random() * coups.length)];
-  }
-
-  const profondeur = d === 'difficile' ? 3 : 1;
-  let meilleur: Coup = coups[0];
-  let meilleureNote = camp === 'renard' ? -Infinity : Infinity;
-
-  for (const coup of ordonner(coups)) {
-    const suite = jouer(p, coup);
-    const note = profondeur <= 1
-      ? evaluer(suite, v)
-      : minimax(suite, camp === 'renard' ? 'oies' : 'renard', v, profondeur - 1, -Infinity, Infinity);
-    const mieux = camp === 'renard' ? note > meilleureNote : note < meilleureNote;
-    if (mieux) { meilleureNote = note; meilleur = coup; }
-  }
-  return meilleur;
+  const { niveau, noeudsMax } = MARCHE[d];
+  return choisirCoupNiveau(etatDepuis(p, camp, v), niveau, { noeudsMax });
 }
+
+/** La note de la position, du point de vue du renard, comme autrefois. */
+export const evaluer = (p: Plateau, v: Variante): number => noteRenard(p, v);
