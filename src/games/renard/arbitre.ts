@@ -27,7 +27,7 @@
 // verdict, sans horloge, sans hasard et sans `Math.random`.
 
 import {
-  COTE, PAS, POINTS, jouer, nbOies, plateauInitial, pointDe, reglement,
+  COTE, PAS, POINTS, jouer, nbOies, plateauInitial, pointDe, positionRenard, reglement,
   type Camp, type Coup, type Occupant, type Plateau, type Variante,
 } from './logic';
 
@@ -101,7 +101,7 @@ export const trainarde = (p: Plateau): number => p.lastIndexOf('oie');
  */
 export function aUnCoup(p: Plateau, camp: Camp, v: Variante): boolean {
   if (camp === 'renard') {
-    const ou = p.indexOf('renard');
+    const ou = positionRenard(p);
     if (ou < 0) return false;
     const { r, c } = POINTS[ou];
     for (const { dr, dc } of PAS) {
@@ -321,7 +321,7 @@ export function cohesionDuTroupeau(p: Plateau): number {
  * les quatre mènent au fond du même bras.
  */
 export function libertesDuRenard(p: Plateau): number {
-  const depart = p.indexOf('renard');
+  const depart = positionRenard(p);
   if (depart < 0) return 0;
   const vus = new Uint8Array(p.length);
   const pile = [depart];
@@ -347,7 +347,7 @@ export function libertesDuRenard(p: Plateau): number {
  * bras se ferme avec trois oies.
  */
 export function profondeurDansUnBras(p: Plateau): number {
-  const ou = p.indexOf('renard');
+  const ou = positionRenard(p);
   if (ou < 0) return 0;
   const { r, c } = POINTS[ou];
   const hors = (x: number): number => (x < 2 ? 2 - x : x > 4 ? x - 4 : 0);
@@ -361,7 +361,7 @@ export function profondeurDansUnBras(p: Plateau): number {
  * la moitié de sa vitesse.
  */
 export function menacesDuRenard(p: Plateau): number {
-  const ou = p.indexOf('renard');
+  const ou = positionRenard(p);
   if (ou < 0) return 0;
   const { r, c } = POINTS[ou];
   let n = 0;
