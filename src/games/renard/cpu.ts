@@ -92,21 +92,22 @@ const POIDS = {
  * cacher dans un coin.
  */
 export function noteRenard(p: Plateau, v: Variante, sansProgres = 0): number {
-  const reste = nbOies(p);
+  // Ce qui compte n'est pas le nombre d'oies mais celles qu'il reste à
+  // croquer avant le seuil de la variante. La note passe ainsi par zéro
+  // au moment exact où le renard l'emporte.
+  const aCroquer = nbOies(p) - reglement(v).seuilRenard;
+  const ou = positionRenard(p);
   return (
-    -POIDS.oie * reste
+    -POIDS.oie * aCroquer
     + POIDS.menace * menacesDuRenard(p)
     - POIDS.avance * avanceDuTroupeau(p)
     + POIDS.souffle * souffleDuRenard(p)
     + POIDS.liberte * libertesDuRenard(p)
     - POIDS.bras * profondeurDansUnBras(p)
-    + POIDS.taniere * (positionRenard(p) < 0 ? 0 : POINTS[positionRenard(p)].r)
+    + POIDS.taniere * (ou < 0 ? 0 : POINTS[ou].r)
     - POIDS.cohesion * cohesionDuTroupeau(p)
     + POIDS.trou * trousDansLaLigne(p)
     + POIDS.bassecour * sansProgres
-    // La variante fixe le seuil de victoire du renard : moins il reste
-    // d'oies à croquer avant ce seuil, plus la position lui sourit.
-    + POIDS.oie * reglement(v).seuilRenard
   );
 }
 
