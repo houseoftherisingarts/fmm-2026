@@ -83,6 +83,42 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "taflParties",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "public",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "desParties",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "public",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

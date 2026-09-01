@@ -328,7 +328,34 @@ service cloud.firestore {
                     // par-dessus, et le défieur ne peut pas insister.
                     && resource.data.statut != 'refuse'
                     && resource.data.statut != 'fini';
-      allow delete: if isAdmin();
+      // Celui qui a ouvert une chambre publique et que personne n'est
+      // venu rejoindre la referme lui-même (Alex, 2026-09-01) : une
+      // table vide dans la liste des salons fait cliquer pour rien.
+      allow delete: if isAdmin()
+                    || (signedIn()
+                        && resource.data.statut == 'lobby'
+                        && request.auth.uid == resource.data.lancePar);
+
+      // ── Le clavardage de la table ────────────────────────────────
+      // Ce qui se dit pendant la partie appartient aux deux joueurs et
+      // à personne d'autre. Un message ne se corrige pas et ne
+      // s'efface pas : c'est ce qui permet de juger une plainte.
+      match /messages/{messageId} {
+        function laPartie() {
+          return get(/databases/$(database)/documents/taflParties/$(partieId)).data;
+        }
+        allow read:   if signedIn() && request.auth.uid in laPartie().joueurs;
+        allow create: if signedIn()
+                      && request.auth.uid in laPartie().joueurs
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.texte is string
+                      && request.resource.data.texte.size() > 0
+                      && request.resource.data.texte.size() <= 240
+                      && request.resource.data.nom is string
+                      && request.resource.data.nom.size() <= 60;
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
     }
 
     // ── L'Ordre : les fiches des membres ──────────────────────────
@@ -592,7 +619,27 @@ service cloud.firestore {
                     // se rouvre pas par-dessus.
                     && resource.data.statut != 'refuse'
                     && resource.data.statut != 'fini';
-      allow delete: if isAdmin();
+      // Même geste qu'au tafl : l'hôte referme la chambre que personne
+      // n'est venu rejoindre (Alex, 2026-09-01).
+      allow delete: if isAdmin()
+                    || (signedIn()
+                        && resource.data.statut == 'lobby'
+                        && request.auth.uid == resource.data.lancePar);
+
+      // Le clavardage de la table, mêmes droits qu'au tafl.
+      match /messages/{messageId} {
+        allow read:   if signedIn() && request.auth.uid in partieDes().joueurs;
+        allow create: if signedIn()
+                      && request.auth.uid in partieDes().joueurs
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.texte is string
+                      && request.resource.data.texte.size() > 0
+                      && request.resource.data.texte.size() <= 240
+                      && request.resource.data.nom is string
+                      && request.resource.data.nom.size() <= 60;
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
 
       // La main scellée d'un joueur, pour la manche en cours.
       //

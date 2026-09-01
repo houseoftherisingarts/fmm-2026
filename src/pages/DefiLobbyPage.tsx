@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { addLocale } from '../lib/locale';
-import { lirePartie, rejoindreDefiParLien, type PartieTafl } from '../firebase/tafl';
+import { lirePartie, rejoindreDefiParLien, jeuDe, JEUX_DEFIABLES, type PartieTafl } from '../firebase/tafl';
 import { lirePartieDes, rejoindreDefiDesParLien, type PartieDes } from '../firebase/desParties';
 import { REGLES } from '../games/hnefatafl/gameLogic';
 import SEO from '../components/SEO';
@@ -53,8 +53,13 @@ const DefiLobbyPage: React.FC = () => {
     return () => { vivant = false; };
   }, [id, user?.uid]);
 
-  // Une fois connecté, on prend le siège libre et on entre en jeu.
-  const chemin = jeu === 'des' ? '/jeux/des' : '/jeunesse/hnefatafl';
+  // Une fois connecté, on prend le siège libre et on entre en jeu. Le
+  // même lien mène aux quatre jeux : le document dit lequel, et la
+  // table des jeux défiables donne l'adresse (Alex, 2026-09-01, quand
+  // le Renard et la Mérelle ont eu leurs chambres publiques).
+  const chemin = jeu === 'des'
+    ? '/jeux/des'
+    : tafl ? JEUX_DEFIABLES[jeuDe(tafl)].cheminFR : '/jeunesse/hnefatafl';
   const partie: { joueurs: string[]; statut: string; noms: Record<string, string>; lancePar: string } | null =
     tafl ?? des;
 

@@ -7,6 +7,7 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { Stagger, StaggerItem, ScrollProgress } from '../components/scroll';
+import SalonsOuverts from '../components/jeux/SalonsOuverts';
 
 // ─── Jeux en ligne ──────────────────────────────────────────────────
 // Une ANNÉE par jeu, comme les années de Gwent (Alex, 2026-08-23). On
@@ -235,6 +236,11 @@ const JeuxEnLignePage: React.FC = () => {
               Gwent (référence donnée par Alex, 2026-08-23). Les tuiles
               défilent à l'horizontale, la vignette se voit en entier. */}
           <TableDeJeux />
+
+          {/* Qui attend, en ce moment même, sur l'un des jeux. Le bloc
+              disparaît quand aucune table n'est ouverte : une liste
+              vide vaut moins que rien. */}
+          <SalonsOuverts />
 
           <p className="font-editorial text-sm md:text-base text-ivory-soft/70 mt-8 max-w-2xl">
             {t.pied}

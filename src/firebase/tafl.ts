@@ -81,6 +81,8 @@ export interface PartieTafl {
   id:        string;
   /** Le jeu de la partie. Absent : hnefatafl (voir `jeuDe`). */
   jeu?:      JeuDefi;
+  /** La chambre paraît dans la liste des tables ouvertes. */
+  public?:   boolean;
   /** Les deux uid, pour la requête et pour les règles de sécurité. */
   joueurs:   string[];
   noms:      Record<string, string>;
@@ -225,7 +227,15 @@ export async function ouvrirDefiParLien(opts: {
   return ref.id;
 }
 
-/** Prend le siège libre d'un défi ouvert. La partie démarre aussitôt. */
+/**
+ * Prend le siège libre d'une partie ouverte, quel que soit le jeu.
+ *
+ * Le camp libre ne se devine pas à partir d'un nom en dur : la carte
+ * des camps porte le vocabulaire du jeu ('attacker', '1', 'oies'), et
+ * le siège vide est celui dont la valeur est une chaîne vide. C'est ce
+ * qui permet au Renard et à la Mérelle d'ouvrir des chambres sans que
+ * cette fonction ait à savoir à quoi on joue (Alex, 2026-09-01).
+ */
 export async function rejoindreDefiParLien(
   id: string, uid: string, nom: string,
 ): Promise<'ok' | 'plein' | 'introuvable' | 'moi'> {
@@ -236,7 +246,8 @@ export async function rejoindreDefiParLien(
   const p = snap.data() as PartieTafl;
   if (p.joueurs.includes(uid)) return 'moi';
   if (p.statut !== 'lobby') return 'plein';
-  const campLibre: CampTafl = p.camps.attacker ? 'defender' : 'attacker';
+  const campLibre = Object.keys(p.camps).find((c) => !p.camps[c]);
+  if (!campLibre) return 'plein';
   await updateDoc(ref, {
     joueurs: [...p.joueurs, uid],
     [`noms.${uid}`]: nom,
@@ -245,6 +256,46 @@ export async function rejoindreDefiParLien(
     updatedAt: serverTimestamp(),
   });
   return 'ok';
+}
+
+/**
+ * Ouvre une chambre publique, sans destinataire et pour n'importe
+ * lequel des trois plateaux.
+ *
+ * C'est la porte de la recherche de partie (Alex, 2026-09-01) : le
+ * document est un défi par lien, plus un drapeau `public` qui le fait
+ * paraître dans la liste des chambres ouvertes.
+ */
+export async function ouvrirSalonJeu(opts: {
+  jeu: JeuDefi;
+  moiUid: string; moiNom: string;
+  regleId: string;
+  /** Le camp que JE prends; le siège libre porte l'autre. */
+  monCamp: string;
+  delaiMs?: number;
+}): Promise<string> {
+  if (!db) throw new Error('Firestore non configuré');
+  const [a, b] = CAMPS_DU_JEU[opts.jeu];
+  const autre = opts.monCamp === a ? b : a;
+  const ref = await addDoc(collection(db, COL), {
+    jeu: opts.jeu,
+    public: true,
+    joueurs: [opts.moiUid],
+    noms: { [opts.moiUid]: opts.moiNom },
+    camps: { [opts.monCamp]: opts.moiUid, [autre]: '' },
+    regleId: opts.regleId,
+    statut: 'lobby' as StatutPartie,
+    lancePar: opts.moiUid,
+    coups: [] as string[],
+    tour: PREMIER_CAMP[opts.jeu],
+    gagnant: null,
+    abandon: null,
+    delaiMs: opts.delaiMs || null,
+    echeance: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
 }
 
 export async function repondreAuDefi(id: string, accepte: boolean, delaiMs?: number | null): Promise<void> {
