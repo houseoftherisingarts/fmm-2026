@@ -276,6 +276,22 @@ const Footer: React.FC = () => {
           <li>
             <FooterLink to={lang === 'FR' ? '/politique-de-confidentialite' : '/en/privacy'}>{t.privacy}</FooterLink>
           </li>
+          {/* Le retrait du consentement doit être aussi facile que le
+              consentement lui-même, écrit la Commission d'accès à
+              l'information. Ce lien rouvre la bannière avec les choix
+              courants, et il est la seule porte de sortie une fois la
+              première réponse donnée. */}
+          <li>
+            <button
+              type="button"
+              onClick={ouvrirBanniereConsentement}
+              className="group inline-flex items-center gap-2 font-sans text-sm hover:text-[var(--color-amber-glow)] transition text-left"
+              style={{ color: 'var(--color-bone)', opacity: 0.7 }}
+            >
+              <span aria-hidden className="inline-block w-2 h-px bg-[var(--color-copper)]/50 group-hover:bg-[var(--color-amber-glow)] group-hover:w-4 transition-all" />
+              {lang === 'FR' ? 'Témoins et vie privée' : 'Cookies and privacy'}
+            </button>
+          </li>
           <li>
             <a
               href={SITE.operatorUrl}
