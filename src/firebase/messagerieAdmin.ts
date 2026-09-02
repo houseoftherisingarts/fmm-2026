@@ -5,24 +5,29 @@
 // le message atterrit dans le fil ordinaire de /messages, celui que
 // tout le monde connaît déjà.
 //
+// Alex, 2026-09-01 : « quand on écrit à un membre, il faut que ça leur
+// envoie un courriel ET un message dans son espace client. » Le même
+// geste dépose donc les deux, et il n'existe qu'un seul chemin pour le
+// faire : la Cloud Function `messagerieDeMasse`, qui écrit les fils
+// d'abord et poste les lettres ensuite. Le navigateur n'écrit plus
+// aucun fil lui-même, faute de quoi la lettre et le message se
+// mettraient à diverger dès la première panne.
+//
 // Deux voix, et la différence est voulue.
 //
 //   • À une personne, le message part au nom de celle qui l'écrit. Le
 //     membre voit « Maïté Fournel » dans sa boîte et lui répond
-//     directement : la conversation est celle de deux personnes.
+//     directement : la conversation est celle de deux personnes, et la
+//     lettre porte son adresse en « répondre à ».
 //
 //   • À un groupe ou à tout le monde, le message part au nom du
 //     festival. Trois cents membres n'ont pas à recevoir une lettre
 //     signée d'un prénom qu'ils ne connaissent pas, et le fil du
 //     festival se distingue au premier coup d'œil dans la boîte.
 //
-// ponytail: le fil du festival est un canal d'annonces. Un membre peut
-// y répondre, et personne dans l'équipe ne lira cette réponse, puisque
-// firestore.rules réserve la lecture d'un fil à ses deux participants
-// et que « festival » n'est le compte de personne. Le jour où les
-// réponses comptent, il faudra soit ouvrir la lecture des fils du
-// festival à l'équipe dans les règles, soit envoyer les groupes au nom
-// de la personne qui écrit, comme pour un envoi à une seule personne.
+// Dans les deux cas le SIÈGE du fil appartient à la personne de
+// l'équipe qui écrit : la réponse du membre arrive dans sa boîte, et
+// firestore.rules la lui laisse lire puisqu'elle est participante.
 
 import {
   collection, limit as fbLimit, onSnapshot, orderBy, query,
@@ -30,7 +35,6 @@ import {
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, firebaseApp } from '../firebase';
-import { ensureThread, sendDM, threadId } from './dms';
 import { LONGUEUR_MAX } from './moderation';
 import type { Membre } from './ordre';
 
@@ -59,46 +63,20 @@ const REGION = 'us-central1';
  *  Le jumeau vit dans functions/index.js sous PLAFOND_REGISTRE. */
 export const PLAFOND_REGISTRE = 3000;
 
-// ── L'envoi à une seule personne ────────────────────────────────────
-
-export interface Expediteur {
-  uid: string;
-  nom: string;
-  teinte?: number;
-  photo?: string;
-}
-
-/** Écrire à un membre, en son propre nom. Le message rejoint le fil qui
- *  existe déjà entre les deux, ou en ouvre un neuf. */
-export async function ecrireAUnMembre(
-  moi: Expediteur,
-  membre: Pick<Membre, 'uid' | 'nom' | 'avatarHue' | 'avatarUrl'>,
-  texte: string,
-): Promise<void> {
-  if (!db) throw new Error('Firestore n’est pas configuré');
-  const corps = texte.trim().slice(0, LONGUEUR_MAX);
-  if (!corps) throw new Error('Le message est vide.');
-  if (moi.uid === membre.uid) throw new Error('Ce message vous serait adressé à vous.');
-
-  await ensureThread(
-    moi.uid, moi.nom, moi.teinte ?? 0, moi.photo,
-    membre.uid, (membre.nom || '').trim() || 'Membre',
-    membre.avatarHue ?? 0, membre.avatarUrl,
-  );
-  await sendDM(
-    threadId(moi.uid, membre.uid),
-    { senderUid: moi.uid, senderName: moi.nom, body: corps },
-    membre.uid,
-  );
-}
-
-// ── L'envoi en nombre, par la Cloud Function ────────────────────────
+// ── L'envoi, par la Cloud Function ──────────────────────────────────
 // Écrire deux ou trois cents fils depuis un onglet de navigateur est
 // long, fragile, et laisse la moitié du travail derrière si quelqu'un
-// ferme la fenêtre. La fonction appelable fait le tour du registre par
-// lots et rend le compte exact des fils touchés.
+// ferme la fenêtre. Un navigateur ne poste pas de courriel non plus.
+// La fonction appelable fait le tour du registre par lots, poste les
+// lettres au rythme du serveur, et rend le compte exact des fils
+// touchés et des lettres parties.
 
 export type PorteeEnvoi = 'tous' | 'selection';
+
+/** À sa propre voix ou à celle du festival. Le nom affiché dans la
+ *  boîte du membre en dépend, et l'adresse de réponse de la lettre
+ *  aussi (voir l'en-tête de ce fichier). */
+export type VoixEnvoi = 'moi' | 'festival';
 
 export interface DemandeEnvoi {
   portee: PorteeEnvoi;
@@ -108,19 +86,32 @@ export interface DemandeEnvoi {
   /** La phrase qui décrit la cible dans l'historique : « Tout le
    *  registre », « Fonction : Marchand », « Étiquette : viking ». */
   cible: string;
+  /** Par défaut le festival, comme avant. */
+  voix?: VoixEnvoi;
 }
 
 export interface ResultatEnvoi {
+  /** Les fils écrits, donc les messages posés dans les espaces clients. */
   fils: number;
   ignores: number;
   envoiId: string;
+  /** Les lettres réellement parties. */
+  lettres: number;
+  /** Les lettres refusées par le serveur de courriel, adresse par adresse. */
+  lettresEchouees: number;
+  /** Les membres qui n'ont reçu que le message : pas d'adresse au
+   *  dossier, ou l'alerte correspondante éteinte dans leur espace. */
+  sansLettre: number;
+  /** Rempli seulement quand le serveur de courriel n'a pas pu s'ouvrir
+   *  du tout. Les messages sont posés quand même. */
+  erreurCourriel?: string;
 }
 
-export async function envoyerEnNombre(demande: DemandeEnvoi): Promise<ResultatEnvoi> {
+async function appeler(demande: DemandeEnvoi): Promise<ResultatEnvoi> {
   if (!firebaseApp) throw new Error('Firebase n’est pas configuré');
   const texte = demande.texte.trim().slice(0, LONGUEUR_MAX);
   if (!texte) throw new Error('Le message est vide.');
-  const appeler = httpsCallable<DemandeEnvoi, ResultatEnvoi>(
+  const fonction = httpsCallable<DemandeEnvoi, ResultatEnvoi>(
     getFunctions(firebaseApp, REGION),
     'messagerieDeMasse',
   );
@@ -128,8 +119,31 @@ export async function envoyerEnNombre(demande: DemandeEnvoi): Promise<ResultatEn
   // le sérialiseur en `null` et brouille la lecture côté fonction.
   const charge: DemandeEnvoi = { portee: demande.portee, texte, cible: demande.cible };
   if (demande.portee === 'selection') charge.uids = demande.uids || [];
-  const { data } = await appeler(charge);
+  if (demande.voix) charge.voix = demande.voix;
+  const { data } = await fonction(charge);
   return data;
+}
+
+/** Écrire à un membre, en son propre nom. Le message rejoint le fil qui
+ *  existe déjà entre les deux, ou en ouvre un neuf, et la lettre part à
+ *  l'adresse du compte. */
+export async function ecrireAUnMembre(
+  membre: Pick<Membre, 'uid' | 'nom'>,
+  texte: string,
+): Promise<ResultatEnvoi> {
+  if (!membre.uid) throw new Error('Ce membre n’a pas de fiche.');
+  return appeler({
+    portee: 'selection',
+    uids: [membre.uid],
+    texte,
+    cible: (membre.nom || '').trim() || 'Un membre',
+    voix: 'moi',
+  });
+}
+
+/** Écrire à un groupe ou à tout le registre, au nom du festival. */
+export async function envoyerEnNombre(demande: DemandeEnvoi): Promise<ResultatEnvoi> {
+  return appeler({ ...demande, voix: 'festival' });
 }
 
 // ── L'historique des envois ─────────────────────────────────────────
