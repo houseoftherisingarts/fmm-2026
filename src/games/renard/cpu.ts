@@ -138,10 +138,25 @@ function noteBrute(p: Plateau, v: Variante, sansProgres = 0): number {
  * des parties qu'il tenait. Mesuré avant l'étalon : deux connétables
  * signaient la nulle au seizième demi-coup.
  */
-const ETALON: Record<Variante, number> = {
-  oies13: noteBrute(plateauInitial('oies13'), 'oies13'),
-  oies17: noteBrute(plateauInitial('oies17'), 'oies17'),
-};
+const ETALON = new Map<Variante, number>();
+
+function etalon(v: Variante): number {
+  let e = ETALON.get(v);
+  if (e === undefined) { e = noteBrute(plateauInitial(v), v); ETALON.set(v, e); }
+  return e;
+}
+
+/**
+ * Jette l'étalon pour qu'il se recalcule au prochain appel.
+ *
+ * Le zéro de l'échelle dépend des poids : l'entraîneur les change entre
+ * deux coups, et un étalon resté sur les anciens ferait croire à la
+ * machine qu'elle gagne ou perd deux cents points rien qu'en se mettant
+ * en place. Rien d'autre que `tools/entrainement.ts` n'a de raison
+ * d'appeler ceci, puisque les poids ne bougent plus une fois le jeu
+ * chargé.
+ */
+export const oublierEtalon = (): void => { ETALON.clear(); };
 
 /**
  * La note de la position, du point de vue du renard, en centièmes, sur
