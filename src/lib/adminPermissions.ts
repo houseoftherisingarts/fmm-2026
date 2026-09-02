@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'splash', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'concours',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'concours',
   ],
 
   // Organisateurs: total access minus the future CA-only tab.
@@ -81,7 +81,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'splash', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'concours',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'concours',
   ],
 
   // Super Bénévole: supervises normal bénévoles. Reads bénévole
