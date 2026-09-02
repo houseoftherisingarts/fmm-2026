@@ -60,7 +60,7 @@ function souffleDuRenard(p: Plateau): number {
 // cent aux échecs. C'est ce qui donne son sens à la fenêtre des petits
 // niveaux, qui se compte en centièmes de point dans `niveaux.ts`.
 
-const POIDS = {
+const POIDS_ECRITS = {
   /** Chaque oie encore debout pèse contre le renard. */
   oie: 100,
   /**
