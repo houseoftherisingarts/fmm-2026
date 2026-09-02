@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import type { AdminSectionId } from '../AdminShell';
 import type { BenevoleApp, VendorApp } from '../../../firebase/applications';
-import { listBenevoles, listVendors } from '../../../firebase/applications';
+import { listBenevoles, listVendors, CURRENT_YEAR } from '../../../firebase/applications';
 import { listSubs } from '../../../firebase/newsletter';
 import { listInbox } from '../../../firebase/mail';
 import type { MailMessage } from '../../../firebase/mail';
@@ -28,85 +28,94 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
   const [messages,  setMessages]  = useState<DashMsg[]>([]);
   const [users,     setUsers]     = useState<AppUser[]>([]);
   const [error,     setError]     = useState<string | null>(null);
+  // Les collections dont la lecture a échoué, et l'heure du dernier
+  // relevé. Un chiffre qu'on n'a pas pu lire s'affiche « — », jamais 0.
+  const [refuses,   setRefuses]   = useState<string[]>([]);
+  const [releveA,   setReleveA]   = useState<Date | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
+    // Chaque collection se lit pour elle-même. Un accès refusé sur une
+    // seule d'entre elles ne doit plus vider le tableau au complet ni
+    // transformer les autres compteurs en zéros trompeurs.
+    const lire = async <T,>(nom: string, p: Promise<T[]>): Promise<T[] | null> =>
+      p.catch((err) => { console.warn(`[Dashboard] lecture refusée (${nom}) :`, err); return null; });
+
     const fetchAll = async () => {
-      try {
-        // Always try live first
-        const [liveBens, liveVens, liveSubs, liveUsers] = await Promise.all([
-          listBenevoles(),
-          listVendors(),
-          listSubs(),
-          listUsers(),
-        ]);
+      const [liveBens, liveVens, liveSubs, liveUsers] = await Promise.all([
+        lire('bénévoles', listBenevoles()),
+        lire('marchands', listVendors()),
+        lire('infolettre', listSubs()),
+        lire('comptes', listUsers()),
+      ]);
+      const inboxArrays = await Promise.all(
+        DEPARTMENTS.map((d) => lire(`boîte ${d.id}`, listInbox({ type: 'department', departmentId: d.id }))),
+      );
+      if (cancelled) return;
 
-        // Fetch messages from all department inboxes in parallel
-        const inboxArrays = await Promise.all(
-          DEPARTMENTS.map((d) =>
-            listInbox({ type: 'department', departmentId: d.id }),
-          ),
-        );
-        const liveMessages: MailMessage[] = inboxArrays.flat();
+      const boitesLues = inboxArrays.filter((a): a is MailMessage[] => a !== null);
+      const liveMessages: MailMessage[] = boitesLues.flat();
 
+      // Un marchand garde un dossier par année. Sans ce filtre, un
+      // kiosque de 2025 resté « en attente » se comptait encore parmi
+      // les candidatures à traiter de l'édition en cours.
+      const vensAnnee = liveVens ? liveVens.filter((v) => v.year === CURRENT_YEAR) : null;
+      const liveActiveSubs = liveSubs ? liveSubs.filter((s) => !s.unsubscribed).length : 0;
+      const normMessages: DashMsg[] = liveMessages.map((m) => ({
+        id:     m.id ?? m.threadId,
+        from:   m.fromName,
+        subject: m.subject,
+        sentAt: m.createdAt,
+        read:   m.read,
+      }));
+
+      const manquants = [
+        liveBens  === null ? 'les bénévoles' : null,
+        liveVens  === null ? 'les marchands' : null,
+        liveSubs  === null ? 'l’infolettre' : null,
+        liveUsers === null ? 'les comptes' : null,
+        boitesLues.length < DEPARTMENTS.length ? 'au moins une boîte de département' : null,
+      ].filter((x): x is string => x !== null);
+
+      const rienDeVivant = (liveBens?.length ?? 0) + (vensAnnee?.length ?? 0)
+        + liveActiveSubs + (liveUsers?.length ?? 0) === 0;
+
+      // Les jeux de démonstration ne servent qu'au développement, et
+      // seulement si la base ne rend vraiment rien.
+      if (devBypass && rienDeVivant) {
+        const [mockBens, mockVens] = await Promise.all([mockListBenevoles(), mockListVendors()]);
         if (cancelled) return;
-
-        const liveActiveSubs = liveSubs.filter((s) => !s.unsubscribed).length;
-        const normMessages: DashMsg[] = liveMessages.map((m) => ({
-          id:     m.id ?? m.threadId,
-          from:   m.fromName,
-          subject: m.subject,
-          sentAt: m.createdAt,
-          read:   m.read,
-        }));
-
-        // If live returned data, use it
-        if (liveBens.length > 0 || liveVens.length > 0 || liveActiveSubs > 0 || liveUsers.length > 0) {
-          setBenevoles(liveBens);
-          setVendors(liveVens);
-          setSubs(liveActiveSubs);
-          setMessages(normMessages);
-          setUsers(liveUsers);
-          return;
-        }
-
-        // Live returned empty: fall back to mock if devBypass
-        if (devBypass) {
-          const [mockBens, mockVens] = await Promise.all([
-            mockListBenevoles(),
-            mockListVendors(),
-          ]);
-          if (!cancelled) {
-            setBenevoles(mockBens);
-            setVendors(mockVens);
-            setSubs(mockSubs.filter((s) => !s.unsubscribed).length);
-            setMessages(mockMessages.map((m) => ({ id: m.id, from: m.from, subject: m.subject, sentAt: m.sentAt, read: m.read })));
-            setUsers(mockUsers);
-          }
-        }
-      } catch (err) {
-        console.warn('[Dashboard] Live fetch failed:', err);
-        if (cancelled) return;
-        setError('Impossible de charger les données en temps réel. Affichage des données de démonstration.');
-        if (devBypass) {
-          const [mockBens, mockVens] = await Promise.all([
-            mockListBenevoles(),
-            mockListVendors(),
-          ]);
-          if (!cancelled) {
-            setBenevoles(mockBens);
-            setVendors(mockVens);
-            setSubs(mockSubs.filter((s) => !s.unsubscribed).length);
-            setMessages(mockMessages.map((m) => ({ id: m.id, from: m.from, subject: m.subject, sentAt: m.sentAt, read: m.read })));
-            setUsers(mockUsers);
-          }
-        }
+        setBenevoles(mockBens);
+        setVendors(mockVens.filter((v) => v.year === CURRENT_YEAR));
+        setSubs(mockSubs.filter((s) => !s.unsubscribed).length);
+        setMessages(mockMessages.map((m) => ({ id: m.id, from: m.from, subject: m.subject, sentAt: m.sentAt, read: m.read })));
+        setUsers(mockUsers);
+        setRefuses([]);
+        setError('Aucune donnée en base : ce tableau montre le jeu de démonstration du mode développement.');
+        setReleveA(new Date());
+        return;
       }
+
+      setBenevoles(liveBens ?? []);
+      setVendors(vensAnnee ?? []);
+      setSubs(liveActiveSubs);
+      setMessages(normMessages);
+      setUsers(liveUsers ?? []);
+      setRefuses(manquants);
+      setError(manquants.length > 0
+        ? `Votre rôle ne donne pas accès à ${manquants.join(', ')}. Ces cartes affichent « — » plutôt qu'un zéro.`
+        : null);
+      setReleveA(new Date());
     };
 
     fetchAll();
-    return () => { cancelled = true; };
+    // Le vrai « temps réel » sans lecture inutile : le tableau se
+    // rafraîchit quand on revient à l'onglet, et reste immobile quand
+    // personne ne le regarde.
+    const auRetour = () => { if (document.visibilityState === 'visible') fetchAll(); };
+    document.addEventListener('visibilitychange', auRetour);
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', auRetour); };
   }, [devBypass]);
 
   const bPending  = benevoles.filter((b) => b.status === 'pending').length;
@@ -117,14 +126,16 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
   const vRejected = vendors.filter((v) => v.status === 'rejected').length;
   const unreadMessages = messages.filter((m) => !m.read).length;
 
+  const nonLu = (quoi: string) => refuses.includes(quoi);
+
   const stats: Array<{
-    label: string; value: number; icon: React.ComponentType<{ size?: number; className?: string }>;
+    label: string; value: number | null; icon: React.ComponentType<{ size?: number; className?: string }>;
     section: AdminSectionId; hint?: string;
   }> = [
-    { label: 'Bénévoles à traiter', value: bPending,        icon: HandHeart,    section: 'benevoles', hint: `${benevoles.length} au total` },
-    { label: 'Marchands à traiter', value: vPending,        icon: ShoppingBag,  section: 'marchands', hint: `${vendors.length} au total` },
-    { label: 'Comptes',             value: users.length,    icon: Users,        section: 'comptes' },
-    { label: 'Infolettre',          value: subs,            icon: Mail,         section: 'newsletter' },
+    { label: 'Bénévoles à traiter', value: nonLu('les bénévoles') ? null : bPending, icon: HandHeart,    section: 'benevoles', hint: `${benevoles.length} au total` },
+    { label: `Marchands ${CURRENT_YEAR} à traiter`, value: nonLu('les marchands') ? null : vPending, icon: ShoppingBag,  section: 'marchands', hint: `${vendors.length} pour ${CURRENT_YEAR}` },
+    { label: 'Comptes',             value: nonLu('les comptes') ? null : users.length, icon: Users,     section: 'comptes' },
+    { label: 'Infolettre',          value: nonLu('l’infolettre') ? null : subs,        icon: Mail,      section: 'newsletter' },
     { label: 'Messages non lus',    value: unreadMessages,  icon: MessageSquare, section: 'messages',  hint: `${messages.length} au total` },
   ];
 
@@ -152,6 +163,11 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
               Survolez les candidatures, validez les marchands, gardez un œil sur l’infolettre et l’inbox.
               Cliquez une carte ci-dessous pour ouvrir la section.
             </p>
+            {releveA && (
+              <p className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft/40 mt-3">
+                Relevé à {releveA.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })} · se rafraîchit au retour sur l’onglet
+              </p>
+            )}
           </div>
           <a href="/" target="_blank" rel="noopener noreferrer"
             className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
@@ -166,9 +182,11 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
           <Card key={label} className="p-5 hover:bg-brass/10 transition cursor-pointer">
             <button onClick={() => onNavigate(section)} className="w-full text-left">
               <Icon size={22} className="text-brass mb-3" />
-              <p className="font-display title-medieval text-3xl text-ivory tabular-nums">{value}</p>
+              <p className="font-display title-medieval text-3xl text-ivory tabular-nums">{value === null ? '—' : value}</p>
               <p className="font-sans text-[10px] uppercase tracking-widest text-ivory-soft mt-1">{label}</p>
-              {hint && <p className="font-editorial italic text-[11px] text-ivory-soft/60 mt-2">{hint}</p>}
+              {value === null
+                ? <p className="font-editorial italic text-[11px] text-ivory-soft/60 mt-2">Lecture refusée</p>
+                : hint && <p className="font-editorial italic text-[11px] text-ivory-soft/60 mt-2">{hint}</p>}
             </button>
           </Card>
         ))}

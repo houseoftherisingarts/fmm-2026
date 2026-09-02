@@ -159,11 +159,19 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
             </p>
           </header>
           <ul>
-            {/* Personnel */}
+            {/* Tout le courrier d'un coup : le point de départ du tri. */}
+            <RailItem
+              icon={Layers}
+              label="Toutes les boîtes"
+              count={Object.keys(parBoite).reduce((n, cle) => n + nonLus(cle), 0)}
+              active={box.type === 'all'}
+              onClick={() => setBox({ type: 'all' })}
+            />
+            <li style={{ borderTop: '1px solid var(--admin-line)' }} />
             <RailItem
               icon={AtSign}
               label="Personnel"
-              count={counts.__personal ?? 0}
+              count={nonLus(CLE_PERSO)}
               active={box.type === 'admin' && box.adminEmail === myEmail}
               onClick={() => setBox({ type: 'admin', adminEmail: myEmail })}
             />
@@ -174,7 +182,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
                 icon={Inbox}
                 label={d.labelFR}
                 sub={`(${d.responsibleFR})`}
-                count={counts[d.id] ?? 0}
+                count={nonLus(d.id)}
                 active={box.type === 'department' && box.departmentId === d.id}
                 onClick={() => setBox({ type: 'department', departmentId: d.id })}
               />
@@ -228,6 +236,7 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
               <MessageRow
                 key={m.id}
                 message={m}
+                boiteLabel={box.type === 'all' ? nomDeBoite(m.recipient) : undefined}
                 isOpen={openId === m.id}
                 onToggle={() => onToggle(m)}
                 onReply={async (subject, body) => {
@@ -321,11 +330,14 @@ const RailItem: React.FC<{
 // ─── Message row + reader ────────────────────────────────────────────
 const MessageRow: React.FC<{
   message: MailMessage;
+  /** Nom de la boîte où le message est tombé. Affiché seulement dans la
+   *  vue « Toutes les boîtes », où l'aiguillage doit se lire d'un œil. */
+  boiteLabel?: string;
   isOpen: boolean;
   onToggle: () => void;
   onReply: (subject: string, body: string) => Promise<void>;
   onTransfer: (recipient: MailRecipient, note: string) => Promise<void>;
-}> = ({ message: m, isOpen, onToggle, onReply, onTransfer }) => {
+}> = ({ message: m, boiteLabel, isOpen, onToggle, onReply, onTransfer }) => {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyBody, setReplyBody] = useState('');
   const [replySubject, setReplySubject] = useState(`Re: ${m.subject}`);
@@ -336,9 +348,7 @@ const MessageRow: React.FC<{
   const [transferNote, setTransferNote] = useState('');
   const [transferBusy, setTransferBusy] = useState(false);
 
-  const dt = m.createdAt && typeof m.createdAt === 'object' && 'toDate' in (m.createdAt as object)
-    ? (m.createdAt as { toDate: () => Date }).toDate()
-    : (typeof m.createdAt === 'string' ? new Date(m.createdAt) : new Date());
+  const dt = enDate(m.createdAt);
 
   const kindTone =
     m.kind === 'reply'    ? 'info'    as const :
@@ -397,6 +407,7 @@ const MessageRow: React.FC<{
           {m.fromName} · {m.fromEmail}
         </p>
         <div className="col-span-12 sm:col-span-3 flex justify-end gap-2 items-center">
+          {boiteLabel && <Badge tone="neutral">{boiteLabel}</Badge>}
           {m.kind !== 'incoming' && (
             <Badge tone={kindTone}>{m.kind === 'reply' ? 'Réponse' : 'Transféré'}</Badge>
           )}

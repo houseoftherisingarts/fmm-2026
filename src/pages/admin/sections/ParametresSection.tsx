@@ -4,36 +4,161 @@ import { Card, ToggleSwitch } from '../primitives';
 import { PILLAR_PUBLISH_FLAGS, PUBLISH_FLAG_KEYS } from '../../../firebase/siteFlags';
 import { watchProgFlags, setProgFlag, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../../../firebase/programmationFlags';
 
-// Libellés FR des sections de la page publique Programmation, dans l'ordre
-// d'affichage souhaité par Tristan.
-// Les bascules générales, écrites en français plutôt qu'en nom de
-// variable : l'équipe ne lit pas le code (2026-08-23).
-const LIBELLES: Record<string, string> = {
-  ticketingOpen: 'Billetterie ouverte',
-  banquetReservationsOpen: 'Réservations du banquet',
-  volunteerSignupOpen: 'Inscriptions bénévoles',
-  vendorApplicationsOpen: 'Candidatures de marchands',
-  showCountdown: 'Compte à rebours',
-  showCommanditaire: 'Commanditaire d’honneur',
-  showHistoireFrise: 'Frise de l’histoire',
-  pubAlliance: 'L’Alliance (page des alliés, en préparation)',
-  billetsNonMembres: 'Billets non membres',
+// ─── Ce que chaque bascule fait vraiment ─────────────────────────────
+// Audit du 2 septembre 2026, à la demande d'Alex : chaque interrupteur a
+// été suivi jusqu'à la ligne de code qui le lit. Ce qui est écrit ici est
+// ce que la bascule change pour de vrai sur le site public, pas ce que
+// son nom laisse croire. L'équipe ne lit pas le code (2026-08-23), alors
+// la phrase dit aussi ce qui arrive quand on l'éteint.
+//
+// `dormante` porte le mot qui dit pourquoi l'audit la tient pour sans
+// effet. Rien n'a été supprimé : retirer un interrupteur change le site
+// pour de vrai, et cette décision appartient à Alex.
+
+type Famille = 'portes' | 'affichage' | 'regie' | 'orphelins';
+
+interface Bascule {
+  label:     string;
+  effet:     string;
+  famille:   Famille;
+  dormante?: string;
+}
+
+const BASCULES: Record<string, Bascule> = {
+  ticketingOpen: {
+    label: 'Billetterie ouverte',
+    famille: 'portes',
+    dormante: 'sans lecteur',
+    effet: "Rien ne change nulle part. Aucune page du site ne consulte cette bascule : les boutons de billets mènent à Zeffy dans les deux positions.",
+  },
+  banquetReservationsOpen: {
+    label: 'Réservations du banquet',
+    famille: 'portes',
+    dormante: 'remplacée',
+    effet: "Rien ne change nulle part. Le banquet se montre et se cache par la bascule « Banquet du Prince William » plus bas, et le nombre de places restantes vient du compteur des ventes.",
+  },
+  volunteerSignupOpen: {
+    label: 'Inscriptions bénévoles',
+    famille: 'portes',
+    dormante: 'remplacée',
+    effet: "Rien ne change nulle part. La page des bénévoles s'ouvre et se ferme par « Devenir Bénévole », dans la publication des pages.",
+  },
+  vendorApplicationsOpen: {
+    label: 'Candidatures de marchands',
+    famille: 'portes',
+    effet: "Allumée : le formulaire du marché accepte les candidatures. Éteinte : le même formulaire devient une liste d'attente et le dit à qui le remplit. Le même interrupteur se trouve aussi en haut de la section Marchands.",
+  },
+  billetsNonMembres: {
+    label: 'Billets non membres',
+    famille: 'portes',
+    effet: "Allumée : qui arrive sans compte voit les prix majorés de cinq dollars et la porte qui offre le rabais. Éteinte : tout le monde reçoit le tarif membre et la porte ne s'ouvre jamais.",
+  },
+  showCountdown: {
+    label: 'Compte à rebours',
+    famille: 'affichage',
+    dormante: 'masquée',
+    effet: "Rien ne change nulle part. Le compte à rebours a quitté la séquence d'accueil le 13 juillet 2026, et l'accueil garde son bloc éteint sans consulter cette bascule. Celui du pied de page s'affiche toujours.",
+  },
+  showCommanditaire: {
+    label: 'Commanditaire d’honneur',
+    famille: 'affichage',
+    effet: "Allumée : la page du commanditaire de l'édition suivante s'ouvre. Éteinte : son adresse renvoie à l'accueil. Elle est séparée de la page Commanditaires courante, qui se publie de son côté.",
+  },
+  showHistoireFrise: {
+    label: 'Frise de l’histoire',
+    famille: 'affichage',
+    effet: "Allumée : la frise animée apparaît sur la page Histoire & Apprendre. Éteinte : la page s'affiche sans elle, tout le reste intact.",
+  },
+  pubAlliance: {
+    label: 'L’Alliance (page des alliés)',
+    famille: 'affichage',
+    effet: "Allumée : la page des festivals, des monnaies et des lieux alliés s'ouvre. Éteinte : son adresse répond « page introuvable ». Elle attend son heure depuis le 23 août 2026.",
+  },
+  knightPlacementEditor: {
+    label: 'Éditeur de placement du chevalier',
+    famille: 'regie',
+    effet: "Allumée : les admins connectés voient sur l'accueil les poignées qui déplacent le chevalier sur l'orbe. Éteinte : plus personne ne les voit. Le public ne les voit jamais, dans un cas comme dans l'autre.",
+  },
 };
 
-// Une ligne d'explication sous le libellé, pour les bascules dont l'effet
-// ne se devine pas au nom. L'équipe ne lit pas le code (2026-08-23).
-const SOUS_TEXTES: Record<string, string> = {
-  billetsNonMembres:
-    'Allumé : qui arrive sans compte voit les prix majorés de cinq dollars et la porte qui offre le rabais. Éteint, tout le monde reçoit le tarif membre.',
-};
+// Un champ qui traîne dans Firestore sans exister dans le code se décrit
+// tout seul, pour qu'aucune bascule muette n'apparaisse sans explication.
+const decrire = (cle: string): Bascule =>
+  BASCULES[cle] ?? {
+    label: cle,
+    famille: 'orphelins',
+    dormante: 'orphelin',
+    effet: "Rien ne change nulle part. Ce champ est resté dans Firestore après une refonte, mais plus une seule ligne du code ne le lit.",
+  };
 
-const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
-  { flag: 'bestiaire',        label: 'Grille des activités' },
-  { flag: 'horaire',          label: 'Horaire (souvenir 2025)' },
-  { flag: 'banquet',          label: "Banquet du Prince William" },
-  { flag: 'behourd',          label: 'Tournoi de Béhourd' },
-  { flag: 'ateliersJeunesse', label: 'Ateliers Jeunesse (inscriptions)' },
+const FAMILLES: { id: Famille; titre: string; intro: string }[] = [
+  { id: 'portes',    titre: 'Les portes',            intro: "Ce qui ouvre et ferme une inscription ou une vente." },
+  { id: 'affichage', titre: 'L’affichage public',    intro: "Ce qui montre ou cache une page, un bloc ou une section au visiteur." },
+  { id: 'regie',     titre: 'Les outils de la régie', intro: "Des interrupteurs réservés aux admins connectés. Le public ne voit rien changer." },
+  { id: 'orphelins', titre: 'Les orphelins',         intro: "Des champs restés dans Firestore après une refonte. Plus rien ne les lit : ils attendent qu'on les efface." },
 ];
+
+// La publication d'une page dit toujours la même chose, avec son nom
+// dedans : une phrase par page plutôt qu'un paragraphe pour les neuf.
+const effetPublication = (label: string) =>
+  `Allumée : « ${label} » apparaît dans le menu principal et sa page s'ouvre, en direct. Éteinte : elle quitte le menu et son adresse renvoie à l'accueil, derrière le teaser.`;
+
+interface LigneProg {
+  flag:      keyof ProgFlags;
+  label:     string;
+  effet:     string;
+  dormante?: string;
+}
+
+const PROG_FLAG_ROWS: LigneProg[] = [
+  { flag: 'bestiaire', label: 'Grille des activités',
+    effet: "Allumée : la grille des activités du festival s'affiche. Éteinte : la page Programmation saute ce bloc." },
+  { flag: 'horaire', label: 'Horaire (souvenir 2025)',
+    effet: "Allumée : l'horaire de l'édition 2025 s'affiche en souvenir. Éteinte : il quitte la page." },
+  { flag: 'banquet', label: 'Banquet du Prince William',
+    effet: "Allumée : le banquet et le nombre de places encore libres s'affichent. Éteinte : toute la section disparaît de la page." },
+  { flag: 'behourd', label: 'Tournoi de Béhourd',
+    effet: "Allumée : le tournoi revient sur la page. Éteinte depuis le 4 août 2026, le temps que l'organisation règle ses incidents." },
+  { flag: 'ateliersJeunesse', label: 'Ateliers Jeunesse (inscriptions)',
+    dormante: 'sans lecteur',
+    effet: "Rien ne change nulle part. La page Programmation ne consulte pas cette bascule : les ateliers jeunesse n'y ont pas encore de section à cacher." },
+];
+
+// La pastille qui signale une bascule que l'audit tient pour sans effet,
+// avec le mot qui dit pourquoi.
+const Dormante: React.FC<{ mot: string }> = ({ mot }) => (
+  <span
+    className="font-display title-medieval text-[10px] uppercase tracking-widest px-2 py-0.5 shrink-0 text-blush"
+    style={{ border: '1px solid rgba(228, 236, 247, 0.18)' }}
+  >
+    Dormante · {mot}
+  </span>
+);
+
+// Une ligne d'interrupteur : le nom, la pastille s'il y a lieu, la phrase
+// qui dit ce qui arrive, et la bascule elle-même.
+const Ligne: React.FC<{
+  label: string;
+  effet: string;
+  dormante?: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  children?: React.ReactNode;
+}> = ({ label, effet, dormante, checked, onChange, children }) => (
+  <div className="flex items-start justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
+    <div className={`min-w-0 ${dormante ? 'opacity-70' : ''}`}>
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="font-sans text-sm text-ivory">{label}</span>
+        {dormante && <Dormante mot={dormante} />}
+      </div>
+      <p className="font-editorial italic text-xs text-ivory-soft/70 mt-1">{effet}</p>
+    </div>
+    <div className="flex items-center gap-3 shrink-0 pt-0.5">
+      {children}
+      <ToggleSwitch checked={checked} onChange={onChange} label={label} />
+    </div>
+  </div>
+);
 
 // Interrupteur accessible (role="switch" + aria-pressed) dans le style admin
 // existant, réimplémenté ici en <button> réel plutôt que le <span> de
@@ -82,6 +207,13 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
     });
   };
 
+  // Les bascules générales : tout ce qui est booléen, moins les drapeaux
+  // de publication, qui ont leur propre panneau juste en dessous. Les clés
+  // inconnues restent visibles, rangées parmi les orphelins.
+  const clesGenerales = Object.keys(flags).filter(
+    (k) => typeof flags[k] === 'boolean' && !PUBLISH_FLAG_KEYS.has(k),
+  );
+
   const env = {
     siteMode:   import.meta.env.VITE_SITE_MODE || 'live',
     devBypass:  import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true',
@@ -94,31 +226,40 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Site flags toggles */}
+      {/* Site flags toggles, rangés par famille */}
       <Card className="p-6 md:p-8">
         <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
           <Settings size={14} /> Drapeaux du site
         </h3>
-        <p className="font-editorial italic text-sm text-ivory-soft mb-5">
-          Bascules visibles côté public. Synchronisées en temps réel via Firestore (<code className="text-brass">siteFlags/global</code>).
+        <p className="font-editorial italic text-sm text-ivory-soft mb-6">
+          Bascules visibles côté public, synchronisées en temps réel via Firestore (<code className="text-brass">siteFlags/global</code>). Sous chaque nom, la phrase dit ce qui arrive quand on l’éteint. Une pastille « Dormante » signale un interrupteur que l’audit du 2 septembre 2026 a trouvé sans effet : il reste en place tant qu’Alex n’a pas tranché.
         </p>
-        <div className="space-y-1">
-          {Object.keys(flags).filter((k) => typeof flags[k] === 'boolean')
-            // `knightPlacementEditor` has its own dedicated toggle inside
-            // « Écran d'accueil »; the per-page publication flags get their own
-            // labeled panel below → keep both out of this generic list.
-            .filter((k) => k !== 'knightPlacementEditor' && !PUBLISH_FLAG_KEYS.has(k))
-            .map((k) => (
-              <div key={k} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
-                <div className="min-w-0">
-                  <span className="font-sans text-sm text-ivory">{LIBELLES[k] || k}</span>
-                  {SOUS_TEXTES[k] && (
-                    <p className="font-editorial italic text-xs text-ivory-soft/70 mt-1">{SOUS_TEXTES[k]}</p>
-                  )}
+        <div className="space-y-8">
+          {FAMILLES.map(({ id, titre, intro }) => {
+            const cles = clesGenerales.filter((k) => decrire(k).famille === id);
+            if (cles.length === 0) return null;
+            return (
+              <div key={id}>
+                <p className="font-display title-medieval text-xs text-brass uppercase tracking-widest">{titre}</p>
+                <p className="font-editorial italic text-xs text-ivory-soft/70 mt-1 mb-2">{intro}</p>
+                <div className="space-y-1">
+                  {cles.map((k) => {
+                    const b = decrire(k);
+                    return (
+                      <Ligne
+                        key={k}
+                        label={b.label}
+                        effet={b.effet}
+                        dormante={b.dormante}
+                        checked={!!flags[k]}
+                        onChange={(v) => setFlag(k, v)}
+                      />
+                    );
+                  })}
                 </div>
-                <ToggleSwitch checked={!!flags[k]} onChange={(v) => setFlag(k, v)} />
               </div>
-            ))}
+            );
+          })}
         </div>
       </Card>
 
@@ -132,10 +273,13 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         </p>
         <div className="space-y-1">
           {PILLAR_PUBLISH_FLAGS.map(({ flag, label }) => (
-            <div key={flag} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
-              <span className="font-sans text-sm text-ivory">{label}</span>
-              <ToggleSwitch checked={!!flags[flag]} onChange={(v) => setFlag(flag, v)} />
-            </div>
+            <Ligne
+              key={flag}
+              label={label}
+              effet={effetPublication(label)}
+              checked={!!flags[flag]}
+              onChange={(v) => setFlag(flag, v)}
+            />
           ))}
         </div>
       </Card>
@@ -154,10 +298,16 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
           </p>
         )}
         <div className="space-y-1">
-          {PROG_FLAG_ROWS.map(({ flag, label }) => (
-            <div key={flag} className="flex items-center justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
-              <span className="font-sans text-sm text-ivory">{label}</span>
-              <div className="flex items-center gap-3">
+          {PROG_FLAG_ROWS.map(({ flag, label, effet, dormante }) => (
+            <div key={flag} className="flex items-start justify-between gap-4 py-3 border-b border-ivory-soft/15 last:border-0">
+              <div className={`min-w-0 ${dormante ? 'opacity-70' : ''}`}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-sans text-sm text-ivory">{label}</span>
+                  {dormante && <Dormante mot={dormante} />}
+                </div>
+                <p className="font-editorial italic text-xs text-ivory-soft/70 mt-1">{effet}</p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0 pt-0.5">
                 <span className={`font-display title-medieval text-xs ${progFlags[flag] ? 'text-emerald-400' : 'text-ivory-soft/50'}`}>
                   {progFlags[flag] ? 'Allumé' : 'Éteint'}
                 </span>
