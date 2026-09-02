@@ -219,27 +219,25 @@ function chantiersDe(jeu: string): Chantier[] {
   const tous: Chantier[] = [];
   if (jeu === 'tous' || jeu === 'renard') {
     for (const v of VARIANTES_RENARD) {
-      tous.push(chantier<EtatRenard, ReturnType<typeof adaptateurRenard> extends Adaptateur<
-        EtatRenard, infer C> ? C : never>(
-        'renard', v, ['renard', 'oies'], (e) => e.tour,
+      tous.push(chantier(
+        'renard', v, ['renard', 'oies'] as const, (e: EtatRenard) => e.tour,
         () => ({ a: adaptateurRenard(v), depart: departRenard(v) }),
       ));
     }
   }
   if (jeu === 'tous' || jeu === 'merelle') {
     for (const vol of [true, false]) {
-      tous.push(chantier<EtatMerelle, ReturnType<typeof adaptateurMerelle> extends Adaptateur<
-        EtatMerelle, infer C> ? C : never>(
-        'merelle', vol ? 'vol' : 'sansVol', ['1', '2'], (e) => String(e.jeu.tour),
+      tous.push(chantier(
+        'merelle', vol ? 'vol' : 'sansVol', ['1', '2'] as const,
+        (e: EtatMerelle) => String(e.jeu.tour),
         () => ({ a: adaptateurMerelle(vol), depart: departMerelle(vol) }),
       ));
     }
   }
   if (jeu === 'tous' || jeu === 'tafl') {
     for (const id of REGLES_TAFL) {
-      tous.push(chantier<EtatTafl, ReturnType<typeof adaptateurTafl> extends Adaptateur<
-        EtatTafl, infer C> ? C : never>(
-        'tafl', id, ['attacker', 'defender'], (e) => e.tour,
+      tous.push(chantier(
+        'tafl', id, ['attacker', 'defender'] as const, (e: EtatTafl) => e.tour,
         () => ({ a: adaptateurTafl(id), depart: departTafl(id) }),
       ));
     }
