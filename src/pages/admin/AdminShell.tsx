@@ -51,7 +51,6 @@ export type AdminSectionId =
   | 'photos'
   | 'photosRecues'
   | 'analytics'
-  | 'splash'
   | 'parametres'
   | 'discord'
   | 'bugs'
