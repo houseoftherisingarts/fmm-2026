@@ -8,8 +8,7 @@ import { suivreSansPub } from '../../firebase/sansPub';
 import { ecouterAvatar, type AvatarChantier } from '../../chantier/avatar';
 import {
   suivreMaBourse, acheterCosmetique, acheterAmbiance, rangFortune,
-  PRIX_SKIN, PRIX_ALBUM, PRIX_AMBIANCE, type Bourse,
-} from '../../firebase/montpellois';
+  PRIX_SKIN, PRIX_ALBUM, PRIX_AMBIANCE, type Bourse, dejaReclameAujourdhui } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
 import { DOS_CARTES } from '../../games/tarot/dos';
@@ -192,10 +191,17 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 
   // La date de la dernière réclamation dit déjà si c'est fait pour
   // aujourd'hui, sans attendre un clic raté (Alex, 2026-08-28).
+  //
+  // La journée se compte dans le fuseau du festival, comme le serveur et
+  // comme la roue. Ce calcul se faisait ici dans le fuseau du
+  // NAVIGATEUR : identique pour un joueur québécois, faux pour les
+  // joueurs français que les journaux montrent (2026-09-02).
   const dejaReclame = useMemo(() => {
     const d = bourse?.dernierQuotidien;
-    const date = d && typeof (d as { toDate?: () => Date }).toDate === 'function' ? (d as { toDate: () => Date }).toDate() : null;
-    return dejaReclameLocal || (!!date && date.toDateString() === new Date().toDateString());
+    const ms = d && typeof (d as { toMillis?: () => number }).toMillis === 'function'
+      ? (d as { toMillis: () => number }).toMillis()
+      : 0;
+    return dejaReclameLocal || dejaReclameAujourdhui(ms);
   }, [bourse, dejaReclameLocal]);
 
   return (
