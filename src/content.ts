@@ -251,7 +251,7 @@ export const CONSENT = {
     decline: 'Refuser',
   },
   EN: {
-    body: 'FMM uses cookies to measure site traffic and improve your experience. You can accept or decline. Quebec Law 25 compliant.',
+    body: 'FMM may set cookies and call on services from Google, Meta and Zeffy. None of it starts until you have accepted it, one purpose at a time.',
     accept: 'Accept',
     decline: 'Decline',
   },
