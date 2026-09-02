@@ -26,7 +26,9 @@ import ErrorBoundary from './components/layout/ErrorBoundary';
 import PageLoader from './components/layout/PageLoader';
 
 // Defer below-the-fold + behind-modal chrome. SignInModal pulls
-// framer-motion eagerly; ConsentBanner only mounts pre-consent;
+// framer-motion eagerly; ConsentBanner ne peint que tant que la
+// question n'a pas été répondue, mais il reste monté partout, puisque
+// c'est lui qui remet en marche ce qui a été accepté;
 // Footer is below-the-fold on every route. Lazy = no entry-bundle hit.
 const Footer        = lazy(() => import('./components/layout/Footer'));
 const ConsentBanner = lazy(() => import('./components/layout/ConsentBanner'));
