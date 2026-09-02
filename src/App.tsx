@@ -405,6 +405,12 @@ const App: React.FC = () => (
           <Suspense fallback={null}>
             <SignInModal />
             <FinaliserLien />
+            {/* La bannière de consentement se monte au-dessus du
+                routeur, et non dans le pied de page : le pied de page
+                disparaît sur l'admin et sur les accueils cinématiques,
+                et la question du consentement, elle, se pose partout
+                (Loi 25, article 8.1). */}
+            <ConsentBanner />
           </Suspense>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
