@@ -1,15 +1,26 @@
-// FMM adaptation of the standalone "Le Pupitre Médiéval" app.
-// Differences from the upstream copy in ~/Downloads/:
-//   • Square payments stripped (no /api/checkout-link endpoint here;
-//     onPay is simply not passed → the Pay button doesn't render).
-//   • Signer-name lock: a `lockedSignerName` prop forces non-super
-//     admins to sign their own name only (rule: each person signs
-//     their own; Tristan / Alex / super get the free dropdown).
-//   • Mounted under `.pupitre-root` so the gold/dark palette + glass
-//     classes (defined in ./pupitre.css) only apply here.
+// Le Pupitre du Festival Médiéval de Montpellier.
+//
+// L'outil vient d'une application autonome, reprise ici dans la régie.
+// Ce qu'il fait n'a pas bougé : on choisit une lettre ou une facture, on
+// écrit, on signe sur la feuille, on exporte en PDF, en PNG ou en HTML.
+// Les paiements Square de la version d'origine restent débranchés (aucun
+// point d'accès /api/checkout-link de ce côté), et le verrou de signature
+// tient toujours : chacun signe son nom, seuls les super-admins peuvent
+// signer pour autrui.
+//
+// Ce qui a changé le 2026-09-02, c'est la peau. Le Pupitre arrivait avec
+// sa palette or sur noir, ses coins à trente pixels et son titre en
+// dégradé doré, posé au milieu d'une régie qui a son propre canon. Il se
+// lit maintenant comme le reste des planches : verre sombre à quinze
+// pixels, laiton du rôle connecté, titre gravé, Cinzel Decorative et
+// Cormorant. Trois arbitrages ont été tranchés en faveur de la
+// lisibilité, parce que le Pupitre sert debout pendant le festival :
+// les étiquettes montent à onze pixels, les cibles à quarante-quatre, et
+// sur téléphone l'écriture et la feuille passent en deux onglets plutôt
+// que de s'empiler sur sept mille pixels de haut.
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Download } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { EditorPanel } from './components/EditorPanel';
@@ -72,6 +83,39 @@ const fetchImageAsBase64 = async (originalUrl: string): Promise<string> => {
   }
 };
 
+// La miniature de feuille peinte sur chaque plaque du seuil. Un dessin
+// de la chose plutôt qu'un pictogramme de la chose : on voit du premier
+// coup d'œil la différence entre une lettre et une facture.
+const MiniatureFeuille: React.FC<{ variante: 'letter' | 'invoice' }> = ({ variante }) => (
+  <span aria-hidden className="pu-mini">
+    <span className="relative z-10 flex flex-col gap-[5px] h-full pt-2">
+      <span className="pu-mini-brass w-5 mx-auto" />
+      <span className="pu-mini-head mx-auto mt-1" style={{ width: variante === 'letter' ? '68%' : '46%' }} />
+      <span className="pu-mini-brass w-8 mx-auto mb-1.5" />
+      {variante === 'letter' ? (
+        <>
+          <span className="pu-mini-row w-full" />
+          <span className="pu-mini-row w-full" />
+          <span className="pu-mini-row w-[86%]" />
+          <span className="pu-mini-row w-full mt-1.5" />
+          <span className="pu-mini-row w-full" />
+          <span className="pu-mini-row w-[72%]" />
+          <span className="pu-mini-row w-[52%] ml-auto mt-auto" />
+        </>
+      ) : (
+        <>
+          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
+          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
+          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
+          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
+          <span className="pu-mini-brass w-[44%] ml-auto mt-auto" />
+          <span className="pu-mini-head w-[34%] ml-auto" />
+        </>
+      )}
+    </span>
+  </span>
+);
+
 const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerName }) => {
   const [lang, setLang] = useState<Language>('fr');
   const initialSignerName = (canSignAnyName ? PRESET_NAMES[0] : (lockedSignerName || PRESET_NAMES[0]));
@@ -80,6 +124,10 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
   const [isLoading, setIsLoading]     = useState(true);
   const [logoCache, setLogoCache]     = useState<Record<string, string>>({});
   const [hasChosenType, setHasChosenType] = useState(false);
+  // Sur téléphone, les deux moitiés deviennent deux onglets. Sur grand
+  // écran l'onglet ne sert à rien : les deux colonnes tiennent côte à
+  // côte et cet état est simplement ignoré.
+  const [voletMobile, setVoletMobile] = useState<'editeur' | 'apercu'>('editeur');
 
   const previewRef = useRef<HTMLDivElement>(null);
   const t = (key: string) => TRANSLATIONS[key][lang];
@@ -203,7 +251,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
       pdf.save(`${docState.title || 'document'}_${lang}.pdf`);
     } catch (error) {
       console.error('[pupitre] PDF error', error);
-      alert('Export failed. Voir la console.');
+      alert(t('exportFailed'));
     } finally {
       setIsExporting(false);
     }
@@ -228,7 +276,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
       masterCanvas.height = totalHeight + (canvases.length - 1) * 20;
       const ctx = masterCanvas.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = '#111';
+        ctx.fillStyle = '#05090C';
         ctx.fillRect(0, 0, masterCanvas.width, masterCanvas.height);
         let y = 0;
         canvases.forEach((c) => { ctx.drawImage(c, 0, y); y += c.height + 20; });
@@ -239,7 +287,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
       }
     } catch (error) {
       console.error('[pupitre] PNG error', error);
-      alert('PNG Export failed.');
+      alert(t('exportFailed'));
     } finally {
       setIsExporting(false);
     }
@@ -248,15 +296,18 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
   const handleExportHtml = useCallback(() => {
     if (!previewRef.current) return;
     const content = previewRef.current.innerHTML;
+    // Les fontes appelées ici sont celles du festival, pas celles de
+    // l'application d'origine : le HTML exporté doit sortir dans la même
+    // voix que le PDF et que le site.
     const fullHtml = `<!DOCTYPE html>
-<html>
+<html lang="${lang}">
   <head>
     <title>${docState.title}</title>
     <meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+SC:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-      body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 40px; }
+      body { background: #05090C; display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 40px; }
       .preview-page { margin-bottom: 40px; }
       [data-html2canvas-ignore="true"] { display: none !important; }
     </style>
@@ -276,92 +327,133 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
 
   if (isLoading) {
     return (
-      <div className="pupitre-root h-[calc(100vh-200px)] w-full bg-dark-900 flex flex-col items-center justify-center text-gold-500 gap-4">
-        <Loader2 className="w-12 h-12 animate-spin" />
-        <h2 className="font-display tracking-widest uppercase text-xl animate-pulse">
-          Initialisation du Pupitre…
-        </h2>
+      <div className="pupitre-root pu-plate min-h-[340px] flex flex-col items-center justify-center gap-5 px-6 text-center">
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--admin-accent)' }} />
+        <p className="pu-eyebrow">{t('appSubtitle')}</p>
+        <h2 className="pu-title text-xl md:text-2xl">{t('loading')}</h2>
       </div>
     );
   }
 
+  // ── Le seuil : lettre ou facture ──────────────────────────────
   if (!hasChosenType) {
     return (
-      <div className="pupitre-root w-full bg-dark-900 text-neutral-200 relative overflow-hidden rounded-card border border-white/5 py-16 md:py-20">
-        <div className="absolute inset-0 pointer-events-none">
-           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-gold-600/10 rounded-full blur-[120px]" />
-           <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-gold-900/10 rounded-full blur-[120px]" />
-        </div>
-        <div className="relative z-10 flex flex-col items-center gap-8 max-w-2xl mx-auto px-6">
-          <h1 className="font-display font-bold text-3xl md:text-5xl tracking-widest text-gold-gradient uppercase text-center">
-            {t('appTitle')}
-          </h1>
-          <p className="text-neutral-400 text-center text-lg font-serif italic">
-            Que souhaitez-vous créer aujourd’hui&nbsp;?
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
-            <button
-              type="button"
-              onClick={() => { handleStateChange({ type: 'letter' }); setHasChosenType(true); }}
-              className="glass-panel p-8 rounded-xl3 flex flex-col items-center gap-4 hover:border-gold-500/50 transition-all group"
-            >
-              <div className="w-16 h-16 rounded-full bg-dark-800 flex items-center justify-center border border-white/10 group-hover:border-gold-500/50 transition-colors">
-                <svg className="w-8 h-8 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h2 className="font-display text-xl tracking-widest text-gold-100 uppercase">Écrire une Lettre</h2>
-              <p className="text-sm text-neutral-400 text-center">Créer un document officiel, une lettre ou un mémo.</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => { handleStateChange({ type: 'invoice' }); setHasChosenType(true); }}
-              className="glass-panel p-8 rounded-xl3 flex flex-col items-center gap-4 hover:border-gold-500/50 transition-all group"
-            >
-              <div className="w-16 h-16 rounded-full bg-dark-800 flex items-center justify-center border border-white/10 group-hover:border-gold-500/50 transition-colors">
-                <svg className="w-8 h-8 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h2 className="font-display text-xl tracking-widest text-gold-100 uppercase">Facture ou Devis</h2>
-              <p className="text-sm text-neutral-400 text-center">Générer une facture ou un devis avec services et taxes.</p>
-            </button>
+      <div className="pupitre-root pu-plate-strong px-6 py-12 md:px-14 md:py-16">
+        <div className="max-w-4xl mx-auto">
+          <p className="pu-eyebrow">{t('appSubtitle')}</p>
+          <h1 className="pu-title text-3xl md:text-[2.6rem] mt-3">{t('appTitle')}</h1>
+          <hr className="pu-rule mt-4" />
+          <p className="pu-prose mt-5 max-w-xl">{t('chooseQuestion')}</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-9">
+            {(['letter', 'invoice'] as const).map((variante) => (
+              <button
+                key={variante}
+                type="button"
+                onClick={() => { handleStateChange({ type: variante }); setHasChosenType(true); }}
+                className="pu-plate pu-choice"
+              >
+                <span className="flex items-start gap-5">
+                  <MiniatureFeuille variante={variante} />
+                  <span className="flex-1 min-w-0">
+                    <span className="pu-title block text-lg md:text-xl">
+                      {variante === 'letter' ? t('chooseLetter') : t('chooseInvoice')}
+                    </span>
+                    <span className="pu-prose block mt-2.5 text-[0.95rem]">
+                      {variante === 'letter' ? t('chooseLetterNote') : t('chooseInvoiceNote')}
+                    </span>
+                  </span>
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="pupitre-root w-full bg-dark-900 text-neutral-200 rounded-card overflow-hidden flex flex-col font-sans relative border border-white/5 selection:bg-gold-500/30 min-h-[calc(100vh-160px)]">
-      <div className="absolute inset-0 pointer-events-none">
-         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-gold-600/5 rounded-full blur-[120px]" />
-         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-gold-900/5 rounded-full blur-[120px]" />
-      </div>
+  // ── Le pupitre ouvert ─────────────────────────────────────────
+  const etiquetteType = docState.type === 'invoice'
+    ? (docState.invoiceType === 'quote' ? t('quoteWord') : t('invoiceWord'))
+    : t('chooseLetter');
 
-      <nav className="h-14 border-b border-white/5 bg-black/40 backdrop-blur-md flex items-center px-4 md:px-8 z-20 sticky top-0 flex-shrink-0">
-        <h1 className="font-display font-bold text-sm md:text-base tracking-widest text-gold-gradient uppercase">
-          {t('appTitle')}
-        </h1>
-        <div className="ml-auto flex items-center gap-3">
+  return (
+    <div className="pupitre-root pu-plate-strong selection:bg-[rgba(201,168,90,0.30)]">
+      {/* Barre de l'outil. Elle ne colle pas en haut : la colonne de la
+          régie a déjà sa propre barre collante et deux bandeaux
+          superposés se marchent dessus au défilement. */}
+      <header className="pu-bar rounded-t-[15px] px-4 md:px-7 py-3.5 flex items-center gap-4 flex-wrap">
+        <div className="min-w-0">
+          <p className="pu-eyebrow truncate">{etiquetteType}</p>
+          <h2 className="pu-title text-base md:text-lg mt-1 truncate">{t('appTitle')}</h2>
+        </div>
+
+        <div className="ml-auto flex items-center gap-3 flex-wrap">
           {isExporting && (
-            <div className="flex items-center gap-2 text-gold-400 animate-pulse">
+            <span className="inline-flex items-center gap-2" style={{ color: 'var(--admin-brass-hi)' }}>
               <Loader2 className="animate-spin w-4 h-4" />
-              <span className="text-[10px] uppercase tracking-widest">{t('processing')}</span>
-            </div>
+              <span className="font-sans text-[10px] uppercase tracking-[0.28em]">{t('processing')}</span>
+            </span>
           )}
+
+          <div className="pu-seg" role="group" aria-label="Langue · Language">
+            {(['fr', 'en'] as const).map((code) => (
+              <button
+                key={code}
+                type="button"
+                data-active={lang === code}
+                onClick={() => { if (lang !== code) toggleLanguage(); }}
+                className="!min-h-[34px] !px-3"
+              >
+                {code.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
           <button
             type="button"
             onClick={() => setHasChosenType(false)}
-            className="text-[10px] uppercase tracking-widest text-neutral-400 hover:text-gold-400 transition"
+            className="admin-ghost"
           >
-            ← Changer
+            <ArrowLeft size={13} />
+            <span className="hidden sm:inline">{t('changeType')}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            disabled={isExporting}
+            className="admin-cta"
+          >
+            <Download size={14} />
+            <span className="hidden md:inline">{t('downloadPdf')}</span>
+            <span className="md:hidden">PDF</span>
           </button>
         </div>
-      </nav>
+      </header>
 
-      <main className="flex-grow flex flex-col md:flex-row relative z-10 overflow-hidden">
-        <section className="w-full md:w-[450px] lg:w-[500px] flex-shrink-0 h-full overflow-y-auto p-0 md:p-6 bg-dark-800/80 backdrop-blur-sm border-r border-white/5 scrollbar-thin">
+      <div className="pu-desk-lip" />
+
+      {/* Sur téléphone, deux onglets. La feuille A4 réduite à 0,4 sur un
+          écran de 390 pixels ne se lit pas : autant lui donner l'écran
+          entier quand on veut la regarder. */}
+      <div className="md:hidden px-4 pt-4">
+        <div className="pu-seg w-full">
+          <button type="button" data-active={voletMobile === 'editeur'} onClick={() => setVoletMobile('editeur')}>
+            {t('editor')}
+          </button>
+          <button type="button" data-active={voletMobile === 'apercu'} onClick={() => setVoletMobile('apercu')}>
+            {t('preview')}
+          </button>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-[minmax(0,430px)_minmax(0,1fr)] items-start">
+        <section
+          className={`${voletMobile === 'editeur' ? 'block' : 'hidden'} md:block ` +
+            'md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto scrollbar-thin ' +
+            'p-4 md:p-6 md:border-r md:border-[color:var(--admin-line)]'}
+        >
           <EditorPanel
             lang={lang}
             state={docState}
@@ -374,7 +466,11 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
             lockedSignerName={canSignAnyName ? null : lockedSignerName}
           />
         </section>
-        <section className="flex-grow h-full overflow-hidden bg-[#0c0c0c] relative flex flex-col items-center justify-start">
+
+        <section
+          className={`${voletMobile === 'apercu' ? 'block' : 'hidden'} md:block ` +
+            'pu-desk rounded-b-[15px] md:rounded-bl-none min-h-[420px]'}
+        >
           <PreviewPanel
             ref={previewRef}
             state={docState}
@@ -384,7 +480,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
                button only renders when onPay is supplied. */
           />
         </section>
-      </main>
+      </div>
     </div>
   );
 };

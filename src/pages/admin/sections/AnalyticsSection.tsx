@@ -45,7 +45,9 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass, onNavigate }) => {
   // Compteurs de visites first-party (siteStats/AAAA-MM-JJ), alimentés
   // par bumpPageView() sur chaque changement de route du site public.
   // Les treize journées closes se lisent une fois; celle d'aujourd'hui
-  // reste branchée sur Firestore et se met à jour toute seule.
+  // reste branchée sur Firestore et se met à jour toute seule. Un onglet
+  // laissé ouvert au-delà de minuit garde la fenêtre d'hier : il faut
+  // alors recharger la page.
   useEffect(() => {
     let cancelled = false;
     getDailyStats(14)

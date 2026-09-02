@@ -626,11 +626,113 @@ const FESTIVAL_PHOTO = '/fmm-logo-embossed-silver.webp';
 const LONGUEUR_MAX = 2000;      // le même plafond que firestore.rules
 const MEMBRES_PAR_LOT = 200;    // 200 membres font 400 écritures, sous le plafond de 500
 const PLAFOND_REGISTRE = 3000;  // au-delà, l'envoi se refuse plutôt que de ramper
+// Le pas des lettres. Vingt à la fois, comme les campagnes : c'est le
+// transport qui tient le rythme réel, ce chiffre ne fait que découper
+// l'avancement écrit dans la trace.
+const LOT_LETTRES = 20;
 
 const filId = (a, b) => [a, b].sort().join('__');
 
+// ── La lettre qui double le message ─────────────────────────────────
+// Le gabarit ne s'invente pas : ce sont les règles de l'infolettre
+// (src/lib/courrielCampagne.ts), en plus court. Des tableaux imbriqués,
+// un style écrit sur chaque cellule, une pile de polices que toutes les
+// machines portent depuis vingt ans, aucune feuille de style externe,
+// aucune image de fond, aucun dégradé. Outlook rend le courriel avec le
+// moteur de Word, qui ne connaît rien d'autre.
+//
+// Les couleurs s'écrivent en hexadécimal plein, jamais en variable CSS :
+// un client de courriel ne sait pas lire `var(--sk-brass-warm)`. Les
+// valeurs descendent de la palette caravane de src/index.css.
+const C_FOND = '#0B0509';       // le noir chaud, derrière la lettre
+const C_CARTE = '#150A10';      // le parchemin sombre
+const C_BANDE = '#100609';      // l'en-tête et le pied
+const C_BORDURE = '#3B2A1B';    // le filet de laiton éteint
+const C_TEXTE = '#EFE8DB';      // l'ivoire du corps
+const C_MUET = '#8B8072';       // le pied de page
+const C_OR = '#C9A85A';         // --sk-brass-warm, écrit en clair
+const SERIF_COURRIEL = 'Georgia, \'Times New Roman\', Times, serif';
+const SANS_COURRIEL = '-apple-system, BlinkMacSystemFont, \'Segoe UI\', Arial, Helvetica, sans-serif';
+
+const URL_MESSAGES = 'https://www.festivalmedievaldemontpellier.org/messages';
+const URL_COMPTE = 'https://www.festivalmedievaldemontpellier.org/compte';
+
+/** Le texte tapé dans l'admin devient des paragraphes. Les retours à la
+ *  ligne comptent : l'équipe écrit dans une zone de texte, pas en HTML. */
+function paragraphesDuMessage(texte) {
+  return String(texte)
+    .split(/\n{2,}/)
+    .map((bloc) => bloc.trim())
+    .filter(Boolean)
+    .map((bloc) => `<p style="margin:0 0 18px 0;font-family:${SERIF_COURRIEL};font-size:17px;line-height:27px;color:${C_TEXTE};">${echapperHtml(bloc).split('\n').join('<br />')}</p>`)
+    .join('');
+}
+
+/**
+ * La lettre, dans les deux versions que nodemailer envoie ensemble.
+ *
+ * Elle ne recopie pas la conversation : elle porte le mot, l'identité du
+ * festival, et un bouton qui ramène à l'espace client. C'est là que la
+ * personne répond, dans le fil où le message l'attend déjà.
+ *
+ * Le cadre est bilingue, en une ligne chacun, parce que rien dans nos
+ * fiches ne dit dans quelle langue la personne lit le site. Le corps,
+ * lui, reste tel que l'équipe l'a écrit.
+ */
+function lettreDuMessage(surtitre, texte) {
+  const titre = echapperHtml(surtitre);
+  const html = `<!doctype html>
+<html lang="fr"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>${titre}</title></head>
+<body style="margin:0;padding:0;background-color:${C_FOND};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${C_FOND};">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background-color:${C_CARTE};border:1px solid ${C_BORDURE};">
+      <tr><td align="center" bgcolor="${C_BANDE}" style="padding:26px 44px;border-bottom:1px solid ${C_BORDURE};">
+        <p style="margin:0;font-family:${SANS_COURRIEL};font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:${C_OR};">Festival M&eacute;di&eacute;val de Montpellier</p>
+      </td></tr>
+      <tr><td style="padding:36px 44px 8px 44px;">
+        <p style="margin:0 0 6px 0;font-family:${SANS_COURRIEL};font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:${C_OR};">${titre}</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;"><tr><td width="56" height="2" style="width:56px;height:2px;line-height:2px;font-size:2px;background-color:${C_OR};">&nbsp;</td></tr></table>
+        ${paragraphesDuMessage(texte)}
+      </td></tr>
+      <tr><td align="center" style="padding:6px 44px 38px 44px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td align="center" bgcolor="${C_OR}" style="border-radius:3px;">
+            <a href="${URL_MESSAGES}" target="_blank" style="display:inline-block;padding:15px 32px;font-family:${SANS_COURRIEL};font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:${C_CARTE};text-decoration:none;border-radius:3px;">R&eacute;pondre dans votre espace</a>
+          </td>
+        </tr></table>
+        <p style="margin:14px 0 0 0;font-family:${SANS_COURRIEL};font-size:11px;line-height:18px;color:${C_MUET};">Your reply waits for you in your account on the festival site.</p>
+      </td></tr>
+      <tr><td bgcolor="${C_BANDE}" style="padding:22px 44px;border-top:1px solid ${C_BORDURE};">
+        <p style="margin:0;font-family:${SANS_COURRIEL};font-size:11px;line-height:19px;color:${C_MUET};">Vous recevez ce mot parce que vous avez un compte au festival, et vos alertes se r&egrave;glent dans <a href="${URL_COMPTE}" target="_blank" style="color:${C_OR};text-decoration:none;">votre espace</a>.<br />You get this note because you have an account with the festival, and your alerts live in your account.</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+  const brut = `${surtitre}
+
+${String(texte).trim()}
+
+Répondez dans votre espace : ${URL_MESSAGES}
+Your reply waits for you at the same address.
+
+Vous recevez ce mot parce que vous avez un compte au festival, et vos alertes se règlent dans votre espace : ${URL_COMPTE}
+
+Le Festival Médiéval de Montpellier
+festivalmedievaldemontpellier.org`;
+
+  return { html, texte: brut };
+}
+
 exports.messagerieDeMasse = onCall(
-  { region: 'us-central1', memory: '256MiB', timeoutSeconds: 540 },
+  {
+    region: 'us-central1',
+    memory: '256MiB',
+    timeoutSeconds: 540,
+    secrets: [ZOHO_APP_PASSWORD, ZEPTO_TOKEN],
+  },
   async (requete) => {
     const auth = requete.auth;
     const courriel = auth && auth.token && auth.token.email
@@ -649,7 +751,26 @@ exports.messagerieDeMasse = onCall(
     if (!texte) throw new HttpsError('invalid-argument', 'Le message est vide.');
 
     const portee = donnees.portee === 'tous' ? 'tous' : 'selection';
+    const voix = donnees.voix === 'moi' ? 'moi' : 'festival';
     const cible = String(donnees.cible || 'Sans portée nommée').slice(0, 160);
+
+    // L'identité affichée. À sa propre voix, la personne se relit dans
+    // le registre plutôt que dans son jeton : le membre doit voir le nom
+    // et la photo qu'il connaît, jamais une adresse de connexion.
+    let auteurNom = FESTIVAL_NOM;
+    let auteurTeinte = FESTIVAL_TEINTE;
+    let auteurPhoto = FESTIVAL_PHOTO;
+    let surtitre = 'Un mot du Festival Médiéval de Montpellier';
+    if (voix === 'moi') {
+      const fiche = await db.collection('membres').doc(expediteurUid).get();
+      const f = fiche.exists ? fiche.data() : {};
+      auteurNom = String(f.nom || '').trim()
+        || String((auth.token && auth.token.name) || '').trim()
+        || courriel.split('@')[0];
+      auteurTeinte = Number(f.avatarHue) || 0;
+      auteurPhoto = f.avatarUrl ? String(f.avatarUrl) : '';
+      surtitre = `Un mot de ${auteurNom}`;
+    }
 
     // Les destinataires : soit le registre entier, soit la liste cochée.
     // La liste cochée se relit dans le registre plutôt que d'être crue
@@ -682,6 +803,33 @@ exports.messagerieDeMasse = onCall(
       throw new HttpsError('not-found', 'Personne dans le registre ne correspond.');
     }
 
+    // L'ADRESSE vit dans users/{uid} et nulle part ailleurs : la fiche
+    // publique du registre n'en porte aucune, pour qu'un membre ne
+    // puisse pas lire le courriel des autres. La fonction, elle, y a
+    // droit, et elle relit le registre par paquets de deux cents.
+    //
+    // Le drapeau d'alerte se lit au passage. Un mot à une seule personne
+    // est un message privé, un envoi de groupe est une annonce, et seul
+    // un `false` explicite retient la lettre (voir AlertesMembre dans
+    // src/firebase/ordre.ts). Le message dans l'espace client, lui,
+    // arrive dans tous les cas : ce réglage ne coupe que le courriel.
+    const drapeau = voix === 'moi' ? 'messages' : 'annonces';
+    for (let i = 0; i < vises.length; i += MEMBRES_PAR_LOT) {
+      const tranche = vises.slice(i, i + MEMBRES_PAR_LOT);
+      const lus = await db.getAll(...tranche.map((m) => db.collection('users').doc(m.uid)));
+      for (let k = 0; k < lus.length; k += 1) {
+        const d = lus[k].exists ? lus[k].data() : null;
+        const adresse = normaliserCourriel(d && d.email);
+        const alertes = (tranche[k].prefs && tranche[k].prefs.alertes) || {};
+        if (COURRIEL_VALIDE.test(adresse) && alertes[drapeau] !== false) {
+          tranche[k].courriel = adresse;
+        }
+      }
+    }
+
+    const aEcrire = vises.filter((m) => m.courriel);
+    const sansLettre = vises.length - aEcrire.length;
+
     // La trace s'ouvre AVANT le premier lot : si la fonction meurt en
     // route, Alex voit quand même qu'un envoi a commencé, ce qui est
     // parti, et où il s'est arrêté. C'est aussi ce document que la page
@@ -694,13 +842,22 @@ exports.messagerieDeMasse = onCall(
       parCourriel: courriel,
       cible,
       portee,
+      voix,
       texte,
       destinataires: vises.length,
       faits: 0,
+      lettresPrevues: aEcrire.length,
+      lettres: 0,
+      lettresEchouees: 0,
+      sansLettre,
       statut: 'en cours',
       envoyeLe: FieldValue.serverTimestamp(),
     });
 
+    // ── Premier temps : les fils ──────────────────────────────────────
+    // Le plus important, et le plus rapide. Une panne ici arrête tout
+    // avant qu'une seule lettre ne parte : personne ne reçoit un
+    // courriel qui renvoie à un message inexistant.
     let faits = 0;
     try {
       for (let i = 0; i < vises.length; i += MEMBRES_PAR_LOT) {
@@ -709,24 +866,25 @@ exports.messagerieDeMasse = onCall(
           const id = filId(expediteurUid, m.uid);
           const fil = db.collection('dms').doc(id);
           const nom = String(m.nom || '').trim() || 'Membre';
-          const photos = { [expediteurUid]: FESTIVAL_PHOTO };
+          const photos = {};
+          if (auteurPhoto) photos[expediteurUid] = auteurPhoto;
           if (m.avatarUrl) photos[m.uid] = String(m.avatarUrl);
 
           lot.set(fil, {
             participantUids:   [expediteurUid, m.uid].sort(),
-            participantNames:  { [expediteurUid]: FESTIVAL_NOM, [m.uid]: nom },
-            participantHues:   { [expediteurUid]: FESTIVAL_TEINTE, [m.uid]: Number(m.avatarHue) || 0 },
-            participantPhotos: photos,
+            participantNames:  { [expediteurUid]: auteurNom, [m.uid]: nom },
+            participantHues:   { [expediteurUid]: auteurTeinte, [m.uid]: Number(m.avatarHue) || 0 },
+            ...(Object.keys(photos).length ? { participantPhotos: photos } : {}),
             lastMessage:   texte.slice(0, 140),
             lastMessageAt: FieldValue.serverTimestamp(),
             lastSenderUid: expediteurUid,
             unread:        { [m.uid]: FieldValue.increment(1) },
-            annonce:       true,
+            annonce:       voix === 'festival',
           }, { merge: true });
 
           lot.set(fil.collection('messages').doc(), {
             senderUid:  expediteurUid,
-            senderName: FESTIVAL_NOM,
+            senderName: auteurNom,
             body:       texte,
             createdAt:  FieldValue.serverTimestamp(),
             envoiId:    trace.id,
@@ -743,9 +901,96 @@ exports.messagerieDeMasse = onCall(
       throw new HttpsError('internal', `L’envoi s’est arrêté après ${faits} fils.`);
     }
 
-    await trace.update({ statut: 'terminé', faits });
-    logger.info('[messagerie] envoi terminé', { envoi: trace.id, cible, fils: faits });
-    return { fils: faits, ignores, envoiId: trace.id };
+    // ── Second temps : les lettres ────────────────────────────────────
+    // Chacun reçoit la sienne, une seule adresse dans le champ `to`, ni
+    // copie conforme ni copie invisible : personne ne découvre l'adresse
+    // de son voisin, et une lettre adressée à trois cents personnes à la
+    // fois tombe droit dans le pourriel. Le rythme et le choix du
+    // serveur viennent d'`ouvrirTransport`, comme pour les campagnes.
+    //
+    // Une panne de courriel ne défait rien de ce qui précède : les
+    // messages sont déjà posés, la trace note l'empêchement, et l'appel
+    // rend quand même son compte au lieu de lever.
+    //
+    // ponytail: l'appel meurt à 540 secondes. La boîte Zoho pousse quatre
+    // lettres par seconde, ce qui donne un plafond utile d'environ deux
+    // mille adresses; avec le jeton ZeptoMail, dix par seconde, tout le
+    // registre passe. Au-delà, la trace reste « en cours » avec le compte
+    // exact des lettres parties, et la suite sera une file de tâches
+    // (Cloud Tasks) plutôt qu'une boucle plus longue.
+    let lettres = 0;
+    let lettresEchouees = 0;
+    let empechement = '';
+    const adressesEchouees = [];
+
+    if (aEcrire.length) {
+      let transport = null;
+      try {
+        transport = ouvrirTransport(ZOHO_APP_PASSWORD.value(), jetonZeptoOuVide());
+      } catch (err) {
+        empechement = String((err && err.message) || err).slice(0, 200);
+        logger.error('[messagerie] transport indisponible', { envoi: trace.id, empechement });
+      }
+
+      if (transport) {
+        const lettre = lettreDuMessage(surtitre, texte);
+        // Le festival reste l'expéditeur, comme pour toute lettre du
+        // site. La réponse, elle, revient à la personne qui a écrit :
+        // « Répondre » dans un client de courriel doit tomber sur
+        // quelqu'un, jamais dans le vide.
+        const repondreA = voix === 'moi' ? courriel : ZOHO_EMAIL;
+
+        for (let i = 0; i < aEcrire.length; i += LOT_LETTRES) {
+          const tranche = aEcrire.slice(i, i + LOT_LETTRES);
+          const resultats = await Promise.allSettled(
+            tranche.map((m) => transport.sendMail({
+              from: FROM,
+              to: m.courriel,
+              replyTo: repondreA,
+              subject: surtitre,
+              text: lettre.texte,
+              html: lettre.html,
+            })),
+          );
+          for (let k = 0; k < resultats.length; k += 1) {
+            if (resultats[k].status === 'fulfilled') {
+              lettres += 1;
+            } else {
+              lettresEchouees += 1;
+              if (adressesEchouees.length < 25) {
+                adressesEchouees.push({
+                  courriel: tranche[k].courriel,
+                  raison: String(
+                    (resultats[k].reason && resultats[k].reason.message) || resultats[k].reason,
+                  ).slice(0, 200),
+                });
+              }
+            }
+          }
+          await trace.update({ lettres, lettresEchouees, adressesEchouees });
+        }
+      }
+    }
+
+    await trace.update({
+      statut: 'terminé',
+      faits,
+      lettres,
+      lettresEchouees,
+      ...(empechement ? { erreurCourriel: empechement } : {}),
+    });
+    logger.info('[messagerie] envoi terminé', {
+      envoi: trace.id, cible, voix, fils: faits, lettres, lettresEchouees, sansLettre,
+    });
+    return {
+      fils: faits,
+      ignores,
+      envoiId: trace.id,
+      lettres,
+      lettresEchouees,
+      sansLettre,
+      ...(empechement ? { erreurCourriel: empechement } : {}),
+    };
   },
 );
 

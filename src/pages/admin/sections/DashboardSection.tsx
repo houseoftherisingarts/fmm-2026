@@ -104,7 +104,7 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
       setUsers(liveUsers ?? []);
       setRefuses(manquants);
       setError(manquants.length > 0
-        ? `Votre rôle ne donne pas accès à ${manquants.join(', ')}. Ces cartes affichent « — » plutôt qu'un zéro.`
+        ? `La lecture a échoué pour ${manquants.join(', ')}, faute d'accès ou de réseau. Les cartes concernées affichent « — » plutôt qu'un zéro qu'on prendrait pour un vrai résultat.`
         : null);
       setReleveA(new Date());
     };
@@ -136,7 +136,7 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
     { label: `Marchands ${CURRENT_YEAR} à traiter`, value: nonLu('les marchands') ? null : vPending, icon: ShoppingBag,  section: 'marchands', hint: `${vendors.length} pour ${CURRENT_YEAR}` },
     { label: 'Comptes',             value: nonLu('les comptes') ? null : users.length, icon: Users,     section: 'comptes' },
     { label: 'Infolettre',          value: nonLu('l’infolettre') ? null : subs,        icon: Mail,      section: 'newsletter' },
-    { label: 'Messages non lus',    value: unreadMessages,  icon: MessageSquare, section: 'messages',  hint: `${messages.length} au total` },
+    { label: 'Messages non lus',    value: nonLu('au moins une boîte de département') ? null : unreadMessages, icon: MessageSquare, section: 'messages', hint: `${messages.length} au total` },
   ];
 
   const recentBenevoles = [...benevoles].slice(0, 5);
