@@ -92,12 +92,15 @@ const OrdrePage: React.FC = () => {
     if (previewApercu) { setMembres(MEMBRES_APERCU); setCharge(false); return; }
     if (!user) { setCharge(false); return; }
     let vivant = true;
-    listerMembres()
+    // Seule l'équipe demande le registre complet. Un membre ordinaire
+    // qui poserait la même requête se la ferait refuser en entier par
+    // firestore.rules, et la page resterait vide (audit Loi 25).
+    listerMembres(3000, isAdmin)
       .then((m) => { if (vivant) setMembres(m); })
       .finally(() => { if (vivant) setCharge(false); });
     const stop = suivreMesAmities(user.uid, setLiens);
     return () => { vivant = false; stop(); };
-  }, [user?.uid, previewApercu]);
+  }, [user?.uid, previewApercu, isAdmin]);
 
   const moiUid = user?.uid || 'apercu-moi';
   const monNomAffiche = user?.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger');

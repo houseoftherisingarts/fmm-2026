@@ -83,7 +83,7 @@ const MessagerieSection: React.FC = () => {
 
   useEffect(() => {
     let mort = false;
-    Promise.all([listerMembres(PLAFOND_REGISTRE), listerEtiquettes()])
+    Promise.all([listerMembres(PLAFOND_REGISTRE, true), listerEtiquettes()])
       .then(([liste, tags]) => {
         if (mort) return;
         setMembres(liste);

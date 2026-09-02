@@ -1,5 +1,6 @@
 import { useBadges } from '../contexts/BadgesContext';
 import React, { useState } from 'react';
+import { accepte, ouvrirBanniereConsentement, useConsentement } from '../lib/consentement';
 import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send, Sparkles, ShieldCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUI } from '../contexts/AppContext';
@@ -129,6 +130,9 @@ export const SponsorOffer: React.FC = () => {
   // Le cadre de dons Zeffy attend un clic (audit Loi 25 du 2026-09-02).
   // Voir la note au-dessus du bloc, plus bas dans ce fichier.
   const [cadreZeffy, setCadreZeffy] = useState(false);
+  // Le rendu suit le consentement : un interrupteur allumé dans la
+  // bannière doit débloquer le bouton sans recharger la page.
+  useConsentement();
   return (
     <>
 
@@ -331,13 +335,28 @@ export const SponsorOffer: React.FC = () => {
                     <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed mb-6">
                       {t.magiciens.cadreCorps}
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setCadreZeffy(true)}
-                      className="inline-flex items-center gap-2 px-6 py-3 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
-                    >
-                      {t.magiciens.cadreBouton} <ArrowUpRight size={14} />
-                    </button>
+                    {/* La bannière promet un choix finalité par finalité.
+                        Le cadre de Zeffy appartient aux contenus tiers :
+                        qui a éteint cet interrupteur ne doit pas pouvoir
+                        le monter d'un clic, sinon la promesse est fausse
+                        (vérification du 2026-09-02). */}
+                    {accepte('tiers') ? (
+                      <button
+                        type="button"
+                        onClick={() => setCadreZeffy(true)}
+                        className="inline-flex items-center gap-2 px-6 py-3 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+                      >
+                        {t.magiciens.cadreBouton} <ArrowUpRight size={14} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={ouvrirBanniereConsentement}
+                        className="inline-flex items-center gap-2 px-6 py-3 border border-brass/50 text-ivory-soft hover:text-ivory hover:border-brass font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+                      >
+                        <ShieldCheck size={14} /> {t.magiciens.cadreRefus}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -462,6 +481,7 @@ const FR = {
     cadreTitre: 'Le formulaire de dons de Zeffy',
     cadreCorps: 'Notre formulaire de dons est hébergé par Zeffy, et nous le chargeons seulement si vous le demandez. En l’ouvrant, votre navigateur se connecte aux serveurs de Zeffy et à ceux de ses fournisseurs : Stripe traite le paiement, hCaptcha vérifie que vous n’êtes pas un robot, et HubSpot, Microsoft Clarity et Amplitude mesurent la visite pour le compte de Zeffy. Ces services déposent leurs propres témoins sur votre appareil et peuvent conserver leurs mesures hors du Québec. Rien de tout cela ne se charge avant votre clic.',
     cadreBouton: 'Ouvrir le formulaire',
+    cadreRefus: 'Autoriser les contenus tiers',
   },
   form: {
     eyebrow: 'Demande de commandite',
@@ -562,6 +582,7 @@ const EN = {
     cadreTitre: 'The Zeffy donation form',
     cadreCorps: 'Our donation form is hosted by Zeffy, and we load it only if you ask for it. Opening it connects your browser to Zeffy and to its providers: Stripe handles the payment, hCaptcha checks that you are not a robot, and HubSpot, Microsoft Clarity and Amplitude measure the visit on Zeffy’s behalf. These services place their own cookies on your device and may keep what they measure outside Quebec. None of it loads before you click.',
     cadreBouton: 'Open the form',
+    cadreRefus: 'Allow third-party content',
   },
   form: {
     eyebrow: 'Sponsorship request',

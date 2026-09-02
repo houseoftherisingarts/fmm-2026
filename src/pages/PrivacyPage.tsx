@@ -39,7 +39,7 @@ const PrivacyPage: React.FC = () => {
 const FR = {
   eyebrow: 'Légal',
   title: 'Politique de confidentialité',
-  intro: 'Le Festival Médiéval de Montpellier (FMM), opéré par Le Salon des Inconnus, respecte la Loi 25 du Québec sur la protection des renseignements personnels. Cette politique décrit quelles données nous recueillons et pourquoi.',
+  intro: 'Le Festival Médiéval de Montpellier (FMM), opéré par Le Salon des Inconnus, est soumis à la Loi 25 du Québec sur la protection des renseignements personnels. Cette politique décrit quelles données nous recueillons et pourquoi.',
   section1Title: 'Données recueillies',
   section1Body: 'Nous recueillons votre adresse courriel uniquement si vous vous inscrivez à notre infolettre, et des données de navigation anonymisées via Google Analytics et Meta Pixel, seulement après votre consentement explicite.',
   section2Title: 'Vos droits',
@@ -51,7 +51,7 @@ const FR = {
 const EN = {
   eyebrow: 'Legal',
   title: 'Privacy policy',
-  intro: 'Festival Médiéval de Montpellier (FMM), operated by Le Salon des Inconnus, complies with Quebec\'s Law 25 on personal data protection. This policy explains what we collect and why.',
+  intro: 'Festival Médiéval de Montpellier (FMM), operated by Le Salon des Inconnus, is subject to Quebec\'s Law 25 on personal data protection. This policy explains what we collect and why.',
   section1Title: 'Data we collect',
   section1Body: 'We collect your email address only if you sign up for our newsletter, and anonymized navigation data via Google Analytics and Meta Pixel, only after your explicit consent.',
   section2Title: 'Your rights',

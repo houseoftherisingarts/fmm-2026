@@ -25,7 +25,7 @@ const FonctionsMembres: React.FC = () => {
   const [verifBusy, setVerifBusy] = useState<string | null>(null);
 
   useEffect(() => {
-    listerMembres()
+    listerMembres(3000, true)
       .then(setMembres)
       .catch((e) => setErreur(e instanceof Error ? e.message : String(e)));
   }, []);

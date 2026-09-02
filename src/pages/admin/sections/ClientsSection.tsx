@@ -170,7 +170,7 @@ const ClientsSection: React.FC = () => {
         const [lesClients, lesComptes, lesMembres] = await Promise.all([
           listerClients(),
           listerComptes().catch(() => null),
-          listerMembres(3000).catch(() => []),
+          listerMembres(3000, true).catch(() => []),
         ]);
         if (annule) return;
         setClients(lesClients);
