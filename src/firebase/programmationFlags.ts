@@ -15,6 +15,10 @@ export interface ProgFlags {
   // public (décision d'Alex, 2026-08-04).
   behourd:           boolean;
   // Le clan qui anime les ateliers jeunesse n'est pas confirmé.
+  // Audit du 2026-09-02 : plus aucun lecteur. ActivitesPage consulte
+  // `bestiaire`, `horaire`, `banquet` et `behourd`, jamais celui-ci; les
+  // ateliers jeunesse n'ont pas encore de section à cacher sur la page.
+  // Gardé en place, signalé « Dormante » dans la section Paramètres.
   ateliersJeunesse:  boolean;
 }
 

@@ -6,11 +6,30 @@ import { doc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { PillarKey } from '../content';
 
+// ── Audit des interrupteurs, 2026-09-02 ─────────────────────────────
+// Alex a demandé de vérifier qu'aucune bascule ne survivait à ce qu'elle
+// commandait. Quatre drapeaux d'ici ne sont plus lus par une seule ligne
+// du site : `ticketingOpen`, `banquetReservationsOpen`,
+// `volunteerSignupOpen` et `showCountdown`. Ils restent en place, parce
+// que retirer un interrupteur change le site pour de vrai et que la
+// décision appartient à Alex. La section Paramètres de l'admin les
+// affiche avec une pastille « Dormante » et la raison.
 export interface SiteFlags {
+  // Plus aucun lecteur : les boutons de billets mènent à Zeffy dans les
+  // deux positions. Ce qui distingue les tarifs, c'est `billetsNonMembres`.
   ticketingOpen:           boolean;
+  // Plus aucun lecteur. Le banquet se montre et se cache par le drapeau
+  // `banquet` de siteFlags/programmation, et les places restantes viennent
+  // du compteur `banquetPlaces/compteur` alimenté par le webhook Square.
   banquetReservationsOpen: boolean;
+  // Plus aucun lecteur. La page des bénévoles s'ouvre et se ferme par
+  // `pubBenevole`, comme les huit autres pages.
   volunteerSignupOpen:     boolean;
   vendorApplicationsOpen:  boolean;
+  // Plus aucun lecteur. Le compte à rebours a quitté la séquence d'accueil
+  // le 13 juillet 2026 : OrbHomePage déclare son propre `showCountdown`
+  // local figé à false, qui masque celui-ci sans jamais le consulter.
+  // Celui du pied de page s'affiche toujours, sans drapeau.
   showCountdown:           boolean;
   // Reveals the on-page knight placement editor on the orb home. Off by
   // default: admins flip it on from Paramètres to fine-tune the orb
@@ -55,6 +74,12 @@ export interface SiteFlags {
   // vote, RALLUMÉ le 1er septembre : le conseil a tranché en sa faveur
   // (Alex, le soir même).
   billetsNonMembres:       boolean;
+  // ⚠️ Le document siteFlags/global de production porte encore deux champs
+  // qui ne sont plus déclarés ici : `pubBoissons` et `pubPetiteMonnaie`,
+  // restés d'avant que Boissons soit fondue dans Nourriture et Petite
+  // Monnaie dans Commanditaires. Rien ne les lit. L'admin les range dans
+  // « Les orphelins » plutôt que de les afficher en nom de variable, et
+  // ils s'effaceront du document quand Alex le décidera.
 }
 
 export const SITE_FLAGS_DEFAULTS: SiteFlags = {

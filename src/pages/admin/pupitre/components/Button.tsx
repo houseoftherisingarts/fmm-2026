@@ -1,31 +1,43 @@
 import React from 'react';
 
+// Les trois boutons du Pupitre, repeints sur le canon de la régie.
+// Le primaire est la plaque de laiton battu de `.admin-cta`, le
+// secondaire la plaque creuse de `.admin-ghost`. Le laiton plein reste
+// rare : sur les planches, c'est ce qui lui donne son poids.
+//
+// Quarante-quatre pixels de haut au minimum. Le Pupitre sert debout
+// pendant le festival, souvent d'une seule main, et une cible plus
+// courte se rate.
+
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost';
   icon?: React.ReactNode;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
-  children, 
-  variant = 'primary', 
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'primary',
   icon,
   className = '',
-  ...props 
+  ...props
 }) => {
-  const baseStyles = "flex items-center justify-center gap-2 px-6 py-3 rounded-xl3 transition-all duration-300 font-sans font-medium tracking-wide disabled:opacity-50 disabled:cursor-not-allowed uppercase text-sm";
-  
-  const variants = {
-    primary: "bg-gold-gradient hover:bg-gold-gradient-hover text-black shadow-[0_0_15px_rgba(191,149,63,0.3)] hover:shadow-[0_0_25px_rgba(191,149,63,0.5)] border border-gold-400/20",
-    secondary: "bg-dark-700/50 backdrop-blur-md text-gold-500 border border-gold-500/30 hover:bg-gold-900/20 hover:border-gold-400/60 hover:text-gold-200",
-    ghost: "text-neutral-400 hover:text-gold-400 hover:bg-white/5"
-  };
+  const base =
+    'inline-flex items-center justify-center gap-2.5 min-h-[44px] px-5 rounded-[10px] ' +
+    'font-sans uppercase tracking-[0.2em] text-[11px] font-semibold ' +
+    'cursor-pointer disabled:cursor-not-allowed';
+
+  const admin =
+    variant === 'primary' ? 'admin-cta' : variant === 'secondary' ? 'admin-ghost' : '';
+
+  const ghost =
+    variant === 'ghost'
+      ? 'text-[var(--admin-text-soft)] hover:text-[var(--admin-brass-hi)] ' +
+        'hover:bg-[rgba(196,214,230,0.05)] transition-colors duration-200 disabled:opacity-45'
+      : '';
 
   return (
-    <button 
-      className={`${baseStyles} ${variants[variant]} ${className}`}
-      {...props}
-    >
-      {icon && <span className="w-5 h-5">{icon}</span>}
+    <button className={`${base} ${admin} ${ghost} ${className}`} {...props}>
+      {icon && <span className="shrink-0 inline-flex items-center">{icon}</span>}
       {children}
     </button>
   );
