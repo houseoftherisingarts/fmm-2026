@@ -74,9 +74,12 @@ const Footer: React.FC = () => {
     setErreur(null); setCompteAPart(false); setEtat('envoi');
 
     // Sans configuration Firebase (développement local), le formulaire
-    // reste utilisable : la console reçoit l'adresse et l'écran répond.
+    // reste utilisable : l'écran répond comme si l'inscription était
+    // passée. L'adresse ne s'écrit nulle part, et surtout pas dans la
+    // console du navigateur, où elle traînerait à la vue de quiconque
+    // ouvre les outils de développement (Loi 25, article 10).
     if (!isFirebaseReady) {
-      console.info('[FMM] Infolettre hors ligne :', adresse);
+      console.info('[FMM] Infolettre hors ligne : inscription simulée.');
       setEtat('inscrit');
       return;
     }
