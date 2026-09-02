@@ -53,6 +53,10 @@ const ErrorBanner: React.FC<{ message: string; onClose: () => void }> = ({ messa
   </Card>
 );
 
+/** Le sceau d'allégeance ne s'affiche que sur une fiche de personne ou
+ *  d'organisme avec qui le festival entretient une relation. Dire d'une
+ *  ligne d'Hydro-Québec qu'elle est « neutre » n'apprend rien à
+ *  personne, et répété sur quinze cartes cela noie ce qui compte. */
 const AllegianceSeal: React.FC<{ allegiance: Allegiance; size?: number }> = ({ allegiance, size = 12 }) => {
   const { icon: Icon, color } = ALLEGIANCE_META[allegiance];
   return (
@@ -203,7 +207,7 @@ const CarnetContactsSection: React.FC = () => {
         {error && <ErrorBanner message={error} onClose={() => setError(null)} />}
         <button onClick={() => setSelectedId(null)}
           className="inline-flex items-center gap-1.5 font-sans text-xs uppercase tracking-wider text-ivory-soft hover:text-brass transition">
-          <ChevronLeft size={13} /> Tout le carnet
+          <ChevronLeft size={13} /> Tout le bottin
         </button>
 
         {editing ? (
@@ -237,11 +241,13 @@ const CarnetContactsSection: React.FC = () => {
 
             <div className="grid sm:grid-cols-2 gap-x-6 gap-y-4">
               <Detail label="Famille" value={ROLE_LABEL[selected.role]} />
-              <Detail label="Allégeance" value={
-                <span className="inline-flex items-center gap-1.5" style={{ color: allegianceColor }}>
-                  <AllegianceIcon size={13} /> {ALLEGIANCE_LABEL[selected.allegiance]}
-                </span>
-              } />
+              {selected.role !== 'service-public' && (
+                <Detail label="Allégeance" value={
+                  <span className="inline-flex items-center gap-1.5" style={{ color: allegianceColor }}>
+                    <AllegianceIcon size={13} /> {ALLEGIANCE_LABEL[selected.allegiance]}
+                  </span>
+                } />
+              )}
               <Detail label="Organisation" value={
                 <span className="inline-flex items-center gap-1.5"><Building2 size={12} className="text-brass shrink-0" />{selected.organisation || '—'}</span>
               } />
@@ -280,11 +286,14 @@ const CarnetContactsSection: React.FC = () => {
             <Siren size={14} className="text-blush" />
             <h3 className="font-display title-medieval text-sm text-blush uppercase tracking-widest">Urgences</h3>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-2.5">
             {urgences.map((c) => (
-              <div key={c.id} className="flex items-baseline justify-between gap-3 border-b border-blush/15 pb-2">
+              // `min-w-0` sur la case de la grille et sur le bouton : sans
+              // lui, un nom long refuse de rétrécir et pousse la rangée
+              // hors de l'écran du téléphone, où ce bandeau sert le plus.
+              <div key={c.id} className="min-w-0 flex items-baseline justify-between gap-3 border-b border-blush/15 pb-2">
                 <button onClick={() => setSelectedId(c.id)}
-                  className="font-sans text-sm text-ivory hover:text-brass transition text-left truncate">
+                  className="min-w-0 font-sans text-sm text-ivory hover:text-brass transition text-left truncate">
                   {c.name}
                 </button>
                 <LienTelephone numero={c.phone} className="font-sans text-sm shrink-0" />
@@ -337,7 +346,7 @@ const CarnetContactsSection: React.FC = () => {
               <span className="font-sans text-[11px] text-ivory-soft/50">{fiches.length}</span>
               <div className="flex-1 h-px bg-ivory-soft/10" />
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {fiches.map((c) => (
                 <Card key={c.id} className={`p-4 transition hover:border-brass/40 ${c.archived ? 'opacity-50' : ''}`}>
                   <div onClick={() => setSelectedId(c.id)} className="cursor-pointer">
@@ -350,11 +359,14 @@ const CarnetContactsSection: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-3 space-y-1.5 font-sans text-xs">
-                    <LienTelephone numero={c.phone} />
-                    <div className="truncate"><LienCourriel adresseCourriel={c.email} /></div>
+                    {c.phone && <LienTelephone numero={c.phone} />}
+                    {c.email && <div className="truncate"><LienCourriel adresseCourriel={c.email} /></div>}
+                    {!c.phone && !c.email && (
+                      <p className="font-editorial italic text-ivory-soft/50">Coordonnées à compléter, voir la fiche.</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-3 flex-wrap">
-                    <AllegianceSeal allegiance={c.allegiance} size={10} />
+                    {c.role !== 'service-public' && <AllegianceSeal allegiance={c.allegiance} size={10} />}
                     {!c.verifieLe && <AVerifier />}
                   </div>
                 </Card>
