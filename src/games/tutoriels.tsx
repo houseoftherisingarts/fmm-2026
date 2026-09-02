@@ -311,6 +311,11 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         schema: <MiniMerelle clairs={[1]} sombres={[9, 21]} cibles={[0, 2, 4]} legende="Le pion tenu et ses voisins libres" />,
       },
       {
+        titre: 'La partie qui n’avance plus',
+        corps: 'Deux joueurs qui tournent en rond finissent par une nulle. Cinquante coups sans qu’un seul pion tombe, ou la même position revenue trois fois sur le plateau, et la partie s’arrête sans vainqueur.',
+        ancre: 'plateau',
+      },
+      {
         titre: 'Les récompenses',
         corps: 'La roue des sept jours et la boutique donnent les ambiances, les plateaux et les pièces des quatre jeux. Tout ce que vous gagnez dort dans le coffre de votre espace, sous l’onglet des badges, et se choisit de là. La pastille de musique, ici en haut, ouvre les ambiances que vous possédez déjà.',
         ancre: 'musique',
@@ -340,6 +345,11 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         corps: 'Once every man is down, click one of yours and then a free neighbouring point. Down to three men you fly: your man may land on any free point of the board, which gives the losing side a way back.',
         ancre: 'plateau',
         schema: <MiniMerelle clairs={[1]} sombres={[9, 21]} cibles={[0, 2, 4]} legende="The held man and its free neighbours" />,
+      },
+      {
+        titre: 'When the game stops moving',
+        corps: 'Two players going round in circles end in a draw. Fifty moves without a single man taken, or the same position seen three times on the board, and the game stops with no winner.',
+        ancre: 'plateau',
       },
       {
         titre: 'The rewards',
@@ -375,6 +385,11 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'compteur',
       },
       {
+        titre: 'La règle de la basse-cour',
+        corps: 'Un troupeau qui campe finit par le payer. Quand les oies passent douze coups sans gagner un pouce de terrain vers la tanière, la plus traînarde du lot s’endort et le renard la croque. Cette règle existe parce qu’une bande serrée dans un bras de la croix pouvait bloquer la partie sans jamais chercher à gagner.',
+        ancre: 'compteur',
+      },
+      {
         titre: 'Les récompenses',
         corps: 'La roue des sept jours et la boutique donnent les ambiances, les plateaux et les pièces des quatre jeux. Tout ce que vous gagnez dort dans le coffre de votre espace, sous l’onglet des badges. La pastille de musique, ici en haut, ouvre les ambiances que vous possédez déjà.',
         ancre: 'musique',
@@ -402,6 +417,11 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
       {
         titre: 'How the hunt ends',
         corps: 'The geese win when the fox is hemmed in with no move left. The fox wins when the flock falls below the threshold of the chosen rule set. The counter at the bottom of the screen follows the remaining geese all game long.',
+        ancre: 'compteur',
+      },
+      {
+        titre: 'The farmyard rule',
+        corps: 'A flock that camps ends up paying for it. When the geese spend twelve moves without gaining an inch of ground toward the den, the straggler of the lot falls asleep and the fox snaps her up. The rule is there because a huddle packed into one arm of the cross could hold the game up for ever without ever trying to win.',
         ancre: 'compteur',
       },
       {
@@ -437,6 +457,11 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
         ancre: 'plateau',
       },
       {
+        titre: 'La répétition perpétuelle',
+        corps: 'Le règlement de Copenhague ne laisse personne s’installer dans une partie sans fin. Un camp qui ramène trois fois la même position sur le damier perd sur-le-champ, et cent vingt coups sans une seule prise donnent une nulle.',
+        ancre: 'plateau',
+      },
+      {
         titre: 'Plateaux et pièces',
         corps: 'La dernière colonne de cet écran tient les jeux de pièces, et celle d’à côté les plateaux. Ceux qui portent un cadenas s’ouvrent à la roue des sept jours ou à la boutique, et votre choix se retient d’une visite à l’autre.',
         ancre: 'coffre',
@@ -463,6 +488,11 @@ export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>
       {
         titre: 'How the saga ends',
         corps: 'A King who touches a corner hands victory to the Defenders. A King surrounded hands it to the Raiders. And the side with no move left loses the game on the spot.',
+        ancre: 'plateau',
+      },
+      {
+        titre: 'Perpetual repetition',
+        corps: 'The Copenhagen rule lets nobody settle into an endless game. A side that brings the same position back to the board three times loses on the spot, and a hundred and twenty moves without a single capture make a draw.',
         ancre: 'plateau',
       },
       {

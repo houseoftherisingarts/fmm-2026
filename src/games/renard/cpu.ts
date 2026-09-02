@@ -89,7 +89,24 @@ const POIDS_ECRITS = {
   trou: 11,
   /** Le compteur de la basse-cour, qui travaille pour le renard. */
   bassecour: 10,
-} as const;
+};
+
+/**
+ * Les poids en vigueur : ceux d'origine, corrigés par ce que
+ * l'entraînement a retenu.
+ *
+ * `tools/entrainement.ts` fait jouer la machine contre elle-même, monte
+ * la colline sur ces coefficients et écrit ceux qui gagnent dans
+ * `moteur/livre-donnees.ts`. Ils sont donc lus ici, à la place de ceux
+ * qui sont écrits à la main, sans que rien d'autre du fichier change.
+ * L'objet reste modifiable pour cette seule raison : pendant un match
+ * de validation, l'entraîneur y repose les poids du camp au trait avant
+ * chaque coup, puisque les deux joueurs partagent ce module.
+ */
+export const POIDS: Record<keyof typeof POIDS_ECRITS, number> = {
+  ...POIDS_ECRITS,
+  ...(POIDS_APPRIS.renard ?? {}),
+};
 
 /** La note brute, avant que l'étalon ne la ramène autour de zéro. */
 function noteBrute(p: Plateau, v: Variante, sansProgres = 0): number {
