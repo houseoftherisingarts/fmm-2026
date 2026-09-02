@@ -200,8 +200,10 @@ Le cadre d'édition de Google restylé, pour les raisons mesurées à la section
 
 ---
 
-## 7. Les trois questions posées à Alex
+## 7. Les trois réponses d'Alex, données le 2 septembre 2026
 
-1. Est-ce que le festival ouvre un compte Google Workspace pour son Drive cette année ?
-2. Est-ce que quelqu'un a besoin de vraies formules dans le tableur de la régie, ou seulement d'une grille à remplir ?
-3. Est-ce que l'horaire du festival, celui que Tristan tient aujourd'hui hors du site, devient le premier document de la suite ?
+**Aucun compte Google Workspace, ni cette année ni plus tard.** Alex : « jamais de Google Workspace, ça ne sert à rien, c'est trop cher alors qu'on peut tout coder ». Le pont vers le Drive reste donc bâti sur un compte Gmail ordinaire, avec le sélecteur de fichiers et le seul champ d'accès `drive.file`. Ni délégation à l'échelle du domaine, ni disque partagé, ni compte de service propriétaire de fichiers : rien de tout cela n'existe sans Workspace, et le plan n'en dépend nulle part. La conséquence à garder en tête est celle de la section 5 : les documents du Drive appartiennent à la personne qui détient ce compte Gmail, et le festival n'a aucun recours administratif si l'accès se perd. La suite bâtie ici, elle, vit dans la base du festival et échappe à ce risque.
+
+**Le tableur porte de vraies formules.** Alex : « oui, les vraies formules évidemment ». Le tableur se bâtit donc sur Univer, sous licence Apache 2.0, et l'étape compte trois à quatre jours plutôt qu'une, sérialisation et règles de sécurité comprises. Handsontable reste écarté : sa licence gratuite interdit l'usage commercial, et un festival qui vend des billets en est un.
+
+**Le premier document de la suite est l'horaire de Tristan.** Alex : « on peut prendre le Tristan comme le premier document de la suite ». Cet horaire vit aujourd'hui hors du site, ce qui en fait le meilleur banc d'essai : il a de vraies colonnes, de vraies heures, plusieurs personnes qui le lisent, et il souffre déjà de vivre ailleurs. Sa reprise dit tout de suite si la suite tient debout, et elle ramène dans la régie une pièce que l'équipe cherche aujourd'hui dans ses courriels.
