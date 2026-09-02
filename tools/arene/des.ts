@@ -129,7 +129,11 @@ export function jouerTableDes(
             actionsDe(j, niveau).refusees++;
             compter(j.pathologies, 'annonce-refusee');
           }
-          p = p.mise ? douter(p) : mancheSuivante(p);
+          // Sans annonce à contredire, il n'y a aucun moyen de faire
+          // avancer la manche : la table s'arrête là plutôt que de
+          // tourner à vide jusqu'au plafond.
+          if (!p.mise) break;
+          p = douter(p);
           continue;
         }
         for (const j of journaux) actionsDe(j, niveau).annonces++;

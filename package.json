@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "deploy": "npm run equipe && VITE_SITE_MODE=placeholder npm run build && node scripts/prerender-meta.mjs && firebase deploy --only hosting:festivalmedieval && node scripts/indexnow-ping.mjs",
-    "equipe": "node scripts/sync-equipe.mjs"
+    "equipe": "node scripts/sync-equipe.mjs",
+    "entrainement": "npx esbuild tools/entrainement.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/entrainement.mjs && node node_modules/.cache/entrainement.mjs",
+    "arene": "npx esbuild tools/arene.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/arene.mjs && node node_modules/.cache/arene.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.0",

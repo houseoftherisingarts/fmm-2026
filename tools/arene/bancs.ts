@@ -122,9 +122,12 @@ function issueTafl(e: EtatTafl): Issue | null {
   return { gagnant, cause: v.cause };
 }
 
-const bancTafl = (regleId: string, nom: string): Banc<EtatTafl, CpuMove> => ({
+const bancTafl = (regleId: string, nom: string, taille: number): Banc<EtatTafl, CpuMove> => ({
   jeu: 'Hnefatafl',
   variante: nom,
+  // Le grand damier coûte huit fois le nœud du Renard. Le petit
+  // damier irlandais, lui, se paie comme un plateau ordinaire.
+  budget: taille >= 11 ? 0.3 : 1,
   nomA: 'assaillants',
   nomB: 'défenseurs',
   adaptateur: () => adaptateurTafl(regleId),
@@ -145,5 +148,5 @@ export const BANCS: Array<Banc<any, any>> = [
   bancRenard('oies17'),
   bancMerelle(true),
   bancMerelle(false),
-  ...REGLES.map((r) => bancTafl(r.id, r.nomFR)),
+  ...REGLES.map((r) => bancTafl(r.id, r.nomFR, r.taille)),
 ];

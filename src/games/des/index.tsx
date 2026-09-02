@@ -5,7 +5,7 @@ import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/B
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dices, Minus, Plus, Skull, RotateCcw, Users, Target, ScrollText,
-  X, Hourglass, Flag, Check, LogIn,
+  X, Hourglass, Flag, Check, LogIn, DoorOpen, MessageSquare,
 } from 'lucide-react';
 import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useUI } from '../../contexts/AppContext';
@@ -14,6 +14,8 @@ import { useCaravanPage } from '../../lib/useCaravanPage';
 import { addLocale } from '../../lib/locale';
 import SEO from '../../components/SEO';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
+import TableOuverte from '../../components/jeux/TableOuverte';
+import Clavardage from '../../components/jeux/Clavardage';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import { jeuDes } from './jeuDefiable';
 import { creerTable, type TableDes } from './scene';
@@ -23,8 +25,12 @@ import {
 } from './skins';
 import {
   nouvellePartie, annoncer, douter, exact as appelExact, mancheSuivante, desEnJeu,
-  miseValide, coupDeLaMachine, type Partie, type Face, type Joueur,
+  miseValide, type Partie, type Face, type Joueur,
 } from './regles';
+import {
+  choisirCoupDes, marchesDes, memoireNeuve, observer, type MemoireDes,
+} from './cpu';
+import type { Niveau } from '../moteur/niveaux';
 import { sieges as siegesDe, toutLeMondeAScelle, vivants } from './enLigne';
 import {
   suivrePartieDes, scellerSaMain, lireMaMain, lireLesMains,
@@ -88,8 +94,34 @@ const DesPage: React.FC = () => {
   const [maMain, setMaMain] = useState<Face[]>([]);
   const [mainsLevees, setMainsLevees] = useState<Record<string, Face[]>>({});
   const [resteMs, setResteMs] = useState(0);
-  const [amisOuverts, setAmisOuverts] = useState(false);
+  // Un seul panneau tient le coin droit de la table : les amis, la
+  // table ouverte, ou la parole. Le plateau garde toute la largeur de
+  // la fenêtre, et rien ne se pousse sur le côté pour loger un panneau.
+  const [panneau, setPanneau] = useState<'amis' | 'table' | 'parole' | null>(null);
   const jeuDefi = useMemo(() => jeuDes(lang), [lang]);
+
+  // ── La force de la maison ───────────────────────────────────────
+  // Ce jeu n'avait aucun réglage de difficulté : la machine jouait
+  // toujours au Sergent, la cinquième marche, contre le débutant comme
+  // contre l'habitué (Alex, 2026-09-01). Les dix marches se choisissent
+  // maintenant avant de dresser la table, et le choix reste d'une
+  // visite à l'autre, comme celui des parures.
+  const [niveau, setNiveau] = useState<Niveau>(() => {
+    const n = Number(localStorage.getItem('fmm.des.niveau'));
+    return (n >= 1 && n <= 10 ? n : 5) as Niveau;
+  });
+  const marches = useMemo(() => marchesDes(fr), [fr]);
+
+  // La mémoire de table, vivante d'un coup à l'autre et d'une manche à
+  // l'autre. C'est le cœur de l'affaire : la page reconstruisait un
+  // adversaire neuf à chaque annonce, qui ne savait donc jamais qui
+  // gonfle ses mises ni qui retourne les gobelets à la première
+  // occasion. Elle ne se vide qu'au début d'une nouvelle partie.
+  const memoire = useRef<MemoireDes>(memoireNeuve());
+  // Le niveau réellement joué dans la partie en cours. Il se fige au
+  // moment où la table se dresse : changer le réglage au milieu d'une
+  // partie changerait d'adversaire en cours de route.
+  const niveauJoue = useRef<Niveau>(niveau);
 
   const [nbJoueurs, setNbJoueurs] = useState(3);
   const [solo, setSolo] = useState<Partie | null>(null);
@@ -227,12 +259,25 @@ const DesPage: React.FC = () => {
   const total = partie ? desEnJeu(partie) : 0;
   const sablier = `${Math.floor(resteMs / 60000)}:${String(Math.floor((resteMs % 60000) / 1000)).padStart(2, '0')}`;
 
-  const commencer = useCallback(() => {
+  /**
+   * Dresse la table contre la maison.
+   *
+   * `niveau` et `adversaire` ne servent qu'à la table ouverte : quand
+   * personne ne s'est présenté en une minute, la maison prend le siège
+   * au niveau du connétable, sous le nom tiré au sort, et ce nom
+   * s'affiche partout où l'adversaire est nommé.
+   */
+  const commencer = useCallback((o: { niveau?: Niveau; adversaire?: string } = {}) => {
+    const machines = o.adversaire
+      ? [o.adversaire, ...NOMS_MACHINE].slice(0, nbJoueurs - 1)
+      : NOMS_MACHINE.slice(0, nbJoueurs - 1);
     const noms = [
       { nom: fr ? 'Vous' : 'You', machine: false },
-      ...NOMS_MACHINE.slice(0, nbJoueurs - 1).map((n) => ({ nom: n, machine: true })),
+      ...machines.map((n) => ({ nom: n, machine: true })),
     ];
     const p = nouvellePartie(noms);
+    niveauJoue.current = o.niveau ?? niveau;
+    memoire.current = memoireNeuve();
     setSolo(p);
     setQuantite(Math.max(1, Math.round(desEnJeu(p) / 3)));
     setFace(3);
@@ -242,7 +287,7 @@ const DesPage: React.FC = () => {
     tableRef.current?.lancer(p.joueurs[0].des);
     tableRef.current?.remuer(p.joueurs.map((_, i) => i).filter((i) => i > 0));
     musiqueRef.current?.demarrer();
-  }, [nbJoueurs, fr]);
+  }, [nbJoueurs, fr, niveau]);
 
   // Aperçu de développement seulement : `?apercu=1&auto=1` dresse la
   // table sans clic, pour vérifier le rendu des dés à l'écran.
@@ -413,17 +458,30 @@ const DesPage: React.FC = () => {
     const minuteur = window.setTimeout(() => {
       setSolo((p) => {
         if (!p || p.phase !== 'annonces') return p;
-        const coup = coupDeLaMachine(p);
-        if (coup.action === 'doute') {
-          const apres = douter(p);
-          montrerLeDevoilement(apres);
-          return apres;
-        }
-        return annoncer(p, coup.quantite!, coup.face!);
+        // La mémoire de table passe d'un coup à l'autre, et le niveau
+        // est celui qui a été choisi avant la partie. Le vieux
+        // raccourci `coupDeLaMachine` ne connaissait ni l'un ni
+        // l'autre : il jouait au Sergent, sans mémoire, et n'appelait
+        // jamais le compte exact.
+        const coup = choisirCoupDes(p, niveauJoue.current, undefined, { memoire: memoire.current });
+        if (coup.action === 'annonce') return annoncer(p, coup.quantite!, coup.face!);
+        const apres = coup.action === 'exact' ? appelExact(p) : douter(p);
+        montrerLeDevoilement(apres);
+        return apres;
       });
     }, 1100 + Math.random() * 900);
     return () => window.clearTimeout(minuteur);
   }, [partie, enLigne]);
+
+  // Les gobelets levés sont le seul moment où l'on apprend qui a crié
+  // au menteur. La maison le range dans sa mémoire, sans quoi elle
+  // croira toujours avoir affaire à des gens patients. Ranger deux fois
+  // la même manche ne coûte rien : `observer` tient la liste de ce
+  // qu'il a déjà noté.
+  useEffect(() => {
+    if (enLigne || !solo || solo.phase !== 'devoilement') return;
+    observer(memoire.current, solo);
+  }, [solo, enLigne]);
 
   // Quand c'est à moi, la mise proposée doit rester légale.
   useEffect(() => {

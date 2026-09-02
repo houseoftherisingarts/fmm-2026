@@ -19,7 +19,7 @@
 import { chercher } from '../../src/games/moteur/recherche';
 import { choisirAuNiveau, type Niveau } from '../../src/games/moteur/niveaux';
 import type { Alea } from '../../src/games/moteur/hasard';
-import type { Adaptateur, Resultat } from '../../src/games/moteur/types';
+import type { Adaptateur } from '../../src/games/moteur/types';
 
 /** Le camp qui ouvre la partie s'appelle A, l'autre B. */
 export type Cote = 'A' | 'B';
@@ -46,6 +46,19 @@ export interface Banc<E, C> {
   jouerReel?(e: E, c: C): E;
   /** Ce que l'arbitre a fait entre ces deux états. */
   evenements?(avant: E, apres: E): readonly string[];
+  /**
+   * Ce que coûte un nœud sur cette table, rapporté au Renard.
+   *
+   * Un damier de onze sur onze relit cent vingt et une cases à chaque
+   * coup, dresse cent coups légaux et vérifie la victoire du roi à
+   * chaque nœud : mesuré ici, il descend à trente-six mille nœuds par
+   * seconde là où le Renard en fait trois cent mille. Le budget de
+   * nœuds se divise donc d'autant, sinon une seule partie de
+   * Copenhague coûte autant que dix parties de Renard et le banc ne
+   * finit jamais. La comparaison de deux marches reste juste : elle se
+   * fait toujours à l'intérieur d'une même table.
+   */
+  budget?: number;
 }
 
 // ─── Ce que le banc compte ──────────────────────────────────────────
@@ -106,6 +119,11 @@ const SEUIL_GAGNANT = 100;
 /** Un coup qui perd plus d'un demi-point est une bévue. */
 const SEUIL_BEVUE = 50;
 
+/** Le budget de nœuds de cette marche sur cette table. Le plancher
+ *  évite qu'une table lourde ne réduise le marmiton à un seul nœud. */
+export const noeudsDe = <E, C>(r: Reglages, b: Banc<E, C>, n: Niveau): number =>
+  Math.max(200, Math.round(r.noeuds[n] * (b.budget ?? 1)));
+
 const chronoDe = (j: Journal, n: Niveau): Chrono => {
   const vu = j.chrono.get(n);
   if (vu) return vu;
@@ -123,25 +141,43 @@ const bevueDe = (j: Journal, n: Niveau): Bevue => {
 };
 
 /**
- * Compare le coup joué au meilleur coup d'une recherche plus profonde.
+ * Compare le coup joué au meilleur coup d'une recherche de référence.
  *
- * La référence est jetée quand elle n'a pas fini sa deuxième marche :
- * une recherche coupée avant d'avoir vu la réponse de l'adversaire ne
- * juge personne. Le coup joué doit se retrouver dans la liste de la
- * racine, ce qui est le cas dès que les deux recherches partent de la
- * même position.
+ * DEUX RECHERCHES, ET NON UNE. Le moteur sait rendre la note de tous
+ * les coups de la racine d'un seul geste, par `notesExactes`, et ce
+ * serait deux fois moins cher. Le banc ne s'en sert pas : ce réglage,
+ * mêlé à la quiescence, rend l'infini sur tous les coups (voir le
+ * contrôle du moteur dans tools/arene.ts). La référence pèse donc la
+ * position, puis, quand le coup joué n'est pas celui qu'elle a choisi,
+ * elle repèse la position d'après, une marche moins profond pour que
+ * les deux notes se comparent.
+ *
+ * Une référence coupée avant sa deuxième marche est jetée sans être
+ * comptée : une recherche qui n'a pas vu la réponse de l'adversaire ne
+ * juge personne. La perte se plafonne à zéro par le bas, parce qu'une
+ * différence négative ne veut rien dire d'autre que le bruit des deux
+ * recherches.
  */
 function noterBevue<E, C>(
-  journaux: readonly Journal[], a: Adaptateur<E, C>,
-  ref: Resultat<C>, coup: C, niveau: Niveau,
+  journaux: readonly Journal[], a: Adaptateur<E, C>, r: Reglages,
+  etat: E, coup: C, niveau: Niveau,
 ): void {
-  if (ref.profondeur < 2 || ref.racine.length < 2) return;
-  const nom = a.nomCoup(coup);
-  const joue = ref.racine.find((x) => a.nomCoup(x.coup) === nom);
-  if (!joue) return;
-  const meilleur = borner(ref.racine[0].note);
-  const note = borner(joue.note);
-  const perte = meilleur - note;
+  const options = {
+    profondeurMax: r.bevue.profondeur, noeudsMax: r.bevue.noeuds, quiescence: true,
+  };
+  const ref = chercher(a, etat, options);
+  if (ref.profondeur < 2 || ref.coup === null) return;
+
+  const meilleur = borner(ref.note);
+  let note = meilleur;
+  if (a.nomCoup(ref.coup) !== a.nomCoup(coup)) {
+    const apres = chercher(a, a.jouer(etat, coup), {
+      ...options, profondeurMax: ref.profondeur - 1,
+    });
+    if (apres.profondeur < 1) return;
+    note = borner(-apres.note);
+  }
+  const perte = Math.max(0, meilleur - note);
   for (const j of journaux) {
     const b = bevueDe(j, niveau);
     b.mesures++;
@@ -170,17 +206,8 @@ export function jouerDuel<E, C>(
     const cote = b.auTrait(etat);
     const niveau = cote === 'A' ? nA : nB;
 
-    const ref = r.bevue.actif && demi % r.bevue.pas === 0
-      ? chercher(a, etat, {
-        profondeurMax: r.bevue.profondeur,
-        noeudsMax: r.bevue.noeuds,
-        quiescence: true,
-        notesExactes: true,
-      })
-      : null;
-
     const t0 = performance.now();
-    const coup = choisirAuNiveau(a, etat, niveau, { alea, noeudsMax: r.noeuds[niveau] });
+    const coup = choisirAuNiveau(a, etat, niveau, { alea, noeudsMax: noeudsDe(r, b, niveau) });
     const ms = performance.now() - t0;
     for (const j of journaux) {
       const c = chronoDe(j, niveau);
@@ -195,7 +222,11 @@ export function jouerDuel<E, C>(
       issue = { gagnant: null, cause: 'sans-coup' };
       break;
     }
-    if (ref) noterBevue(journaux, a, ref, coup, niveau);
+    // La mesure se fait APRÈS le choix, pour que les deux recherches de
+    // référence ne se retrouvent pas dans le chronomètre de la marche.
+    if (r.bevue.actif && demi % r.bevue.pas === 0) {
+      noterBevue(journaux, a, r, etat, coup, niveau);
+    }
 
     const suivant = jouer(etat, coup);
     if (b.evenements) {
