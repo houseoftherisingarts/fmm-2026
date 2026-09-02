@@ -51,8 +51,9 @@ export interface SiteFlags {
   pubJeux:                 boolean;
   // Le système des billets non membres : la campagne Zeffy majorée de
   // cinq dollars, la porte qui l'annonce et les prix majorés affichés à
-  // qui n'a pas de compte. ÉTEINT par défaut (Alex, 2026-08-31) : tant
-  // que l'équipe n'a pas voté, tout le monde reçoit le tarif membre.
+  // qui n'a pas de compte. Éteint le 31 août 2026 le temps que l'équipe
+  // vote, RALLUMÉ le 1er septembre : le conseil a tranché en sa faveur
+  // (Alex, le soir même).
   billetsNonMembres:       boolean;
 }
 
@@ -77,7 +78,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   pubPartenaires:          false,
   pubBenevole:             false,
   pubJeux:                 true,
-  billetsNonMembres:       false,
+  billetsNonMembres:       true,
 };
 
 // Maps each top-level pillar to its publication flag + a human label for the

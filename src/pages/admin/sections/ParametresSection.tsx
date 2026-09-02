@@ -24,7 +24,7 @@ const LIBELLES: Record<string, string> = {
 // ne se devine pas au nom. L'équipe ne lit pas le code (2026-08-23).
 const SOUS_TEXTES: Record<string, string> = {
   billetsNonMembres:
-    'Éteint : tout le monde reçoit les billets au tarif membre, jusqu’au vote de l’équipe.',
+    'Allumé : qui arrive sans compte voit les prix majorés de cinq dollars et la porte qui offre le rabais. Éteint, tout le monde reçoit le tarif membre.',
 };
 
 const PROG_FLAG_ROWS: { flag: keyof ProgFlags; label: string }[] = [
