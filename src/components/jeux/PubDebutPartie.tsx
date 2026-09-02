@@ -35,11 +35,16 @@ interface Props {
 
 const PubDebutPartie: React.FC<Props> = ({ lang, jeu, onContinuer }) => {
   const fr = lang === 'FR';
-  const slot = import.meta.env.VITE_ADSENSE_SLOT_JEUX;
+  const slotConfigure = import.meta.env.VITE_ADSENSE_SLOT_JEUX;
+  const consentement = useConsentement();
+  // Le bloc n'existe que si l'identifiant est posé ET que la publicité
+  // a été acceptée. Les deux conditions se réduisent ici à une seule,
+  // pour que tout le reste du composant reste inchangé.
+  const slot = consentement?.publicite === true ? slotConfigure : '';
   const [pret, setPret] = useState(false);
 
-  // Aucun identifiant de bloc encore : rien à montrer, on passe la main
-  // immédiatement.
+  // Aucun bloc à montrer, faute d'identifiant ou faute de
+  // consentement : on passe la main immédiatement.
   useEffect(() => {
     if (!slot) onContinuer();
     // eslint-disable-next-line react-hooks/exhaustive-deps
