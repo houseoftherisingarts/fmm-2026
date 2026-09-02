@@ -11,12 +11,17 @@ import type { MailMessage, MailRecipient } from '../../../firebase/mail';
 // les trois gestes : répondre dans le fil, transférer vers une autre
 // boîte, ou ouvrir son propre client de courriel.
 
-/** Un createdAt Firestore, une chaîne ISO ou rien : toujours une Date. */
+/**
+ * Un createdAt Firestore, une chaîne ISO ou rien : toujours une Date.
+ * Le repli sur l'heure courante vaut pour le message qui vient d'être
+ * écrit et dont le serverTimestamp n'est pas encore revenu : il est
+ * bien le plus récent, et il s'affiche à sa vraie date.
+ */
 export function enDate(v: unknown): Date {
   if (v && typeof v === 'object' && 'toDate' in (v as object)) {
     return (v as { toDate: () => Date }).toDate();
   }
-  return typeof v === 'string' ? new Date(v) : new Date(0);
+  return typeof v === 'string' ? new Date(v) : new Date();
 }
 
 const MessageRow: React.FC<{
