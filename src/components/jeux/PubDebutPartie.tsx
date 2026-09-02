@@ -1,12 +1,18 @@
 // ─── L'interstitiel publicitaire au début d'une partie ──────────────
-// Alex, 2026-08-27 : la pub AdSense (ca-pub-7365982984401895, déjà dans
-// index.html) ne s'affiche NULLE PART ailleurs sur le site que sur cet
-// écran, au moment où une partie de jeu commence. Le compte n'a pas
-// encore été approuvé : tant que VITE_ADSENSE_SLOT_JEUX est vide, ce
-// composant ne rend rien et laisse la partie démarrer tout de suite,
-// exactement comme si la pub n'existait pas.
+// Alex, 2026-08-27 : la pub AdSense (ca-pub-7365982984401895) ne
+// s'affiche NULLE PART ailleurs sur le site que sur cet écran, au
+// moment où une partie de jeu commence. Le compte n'a pas encore été
+// approuvé : tant que VITE_ADSENSE_SLOT_JEUX est vide, ce composant ne
+// rend rien et laisse la partie démarrer tout de suite, exactement
+// comme si la pub n'existait pas.
+//
+// Loi 25, article 8.1 : il en va de même quand la finalité
+// « publicité » n'a pas été acceptée dans la bannière de consentement.
+// La partie démarre alors sans écran intermédiaire, ce qui ne laisse
+// aucun trou : cet interstitiel n'occupe la place de rien.
 import React, { useEffect, useState } from 'react';
 import { bumpPubJeuxView } from '../../lib/siteStats';
+import { useConsentement } from '../../lib/consentement';
 
 declare global {
   interface Window {
