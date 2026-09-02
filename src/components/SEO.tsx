@@ -25,7 +25,7 @@ const SEO: React.FC<Props> = ({ title, description, image, noindex }) => {
   const url = `https://www.festivalmedievaldemontpellier.org${location.pathname}`;
   // Share-card fallback: a real photo card, not the embossed logo (bad OG
   // ratio). Matches the static og:image fallback in index.html.
-  const ogImage = image || 'https://www.festivalmedievaldemontpellier.org/hero/fmm-poster-card.jpg';
+  const ogImage = image || 'https://www.festivalmedievaldemontpellier.org/hero/fmm-share-2026-joute.jpg';
 
   return (
     <Helmet>
