@@ -240,6 +240,11 @@ export async function assurerFiche(
     avatarHue: hueFor(propre),
     ...(avatarUrl ? { avatarUrl } : {}),
     stats: { ...STATS_VIDES },
+    // La personne est devant son écran au moment où cette fiche naît :
+    // elle entre donc au registre tout de suite. Une fiche à qui ce
+    // drapeau manque est traitée comme importée et reste cachée, ce qui
+    // est le bon défaut de la Loi 25 (article 9.1).
+    importe: false,
   });
 }
 
@@ -356,10 +361,18 @@ export function membresParRole(membres: Membre[], role: RoleMembre): Membre[] {
   return membres.filter((m) => rolesAffiches(m.roles).includes(role));
 }
 
+/** La fiche d'une personne. Depuis le filtre de la Loi 25, la règle de
+ *  lecture refuse une fiche importée à tout le monde sauf à elle-même
+ *  et à l'équipe : le refus rend une fiche vide, comme une fiche
+ *  absente, plutôt que de faire éclater l'écran qui l'affiche. */
 export async function lireFiche(uid: string): Promise<Membre | null> {
   if (!db) return null;
-  const snap = await getDoc(doc(db, MEMBRES, uid));
-  return snap.exists() ? (snap.data() as Membre) : null;
+  try {
+    const snap = await getDoc(doc(db, MEMBRES, uid));
+    return snap.exists() ? (snap.data() as Membre) : null;
+  } catch {
+    return null;
+  }
 }
 
 /** La fiche en direct, pour les réglages qui doivent suivre le compte
@@ -374,17 +387,44 @@ export function suivreFiche(uid: string, cb: (m: Membre | null) => void): () => 
 }
 
 /** Toute la salle, par ordre alphabétique. La recherche se fait ensuite
- *  dans le navigateur : le registre du festival tient largement. */
+ *  dans le navigateur : le registre du festival tient largement.
+ *
+ *  Loi 25, articles 13 et 9.1 (audit du 2026-09-02) : les fiches versées
+ *  d'office par les outils d'import portent le vrai nom de gens qui
+ *  n'ont jamais ouvert de compte et qui n'ont jamais demandé à paraître
+ *  devant les autres membres. Elles restent donc hors du registre tant
+ *  que la personne ne s'est pas connectée elle-même, ce qui fait tomber
+ *  le drapeau `importe` à faux (voir AuthContext.tsx). La règle de
+ *  lecture de firestore.rules dit exactement la même chose, et la
+ *  requête porte le même filtre qu'elle : Firestore refuse une requête
+ *  qu'il ne peut pas prouver conforme à la règle, et il la refuse en
+ *  entier plutôt que d'en retirer les fiches interdites.
+ *
+ *  `avecImportees` sert à l'équipe seulement, pour les écrans d'admin
+ *  qui doivent continuer de voir tout le monde (messagerie de masse,
+ *  fonctions, registre des clients). La règle Firestore laisse passer
+ *  l'équipe et refuse tous les autres, donc un membre ordinaire qui
+ *  demanderait le registre complet reçoit un refus, pas une fuite.
+ *
+ *  Le tri se fait ici plutôt que dans la requête. Un `orderBy('nom')`
+ *  joint au filtre réclamerait un index composite, et il écartait au
+ *  passage toute fiche sans nom, ce qui obligeait au repli qui suivait. */
 // Plafond passé de 300 à 3000 le 2026-08-31 : avec 300, le registre
 // s'arrêtait à la lettre M et Purazar Médiéval n'apparaissait pas.
-export async function listerMembres(max = 3000): Promise<Membre[]> {
+export async function listerMembres(max = 3000, avecImportees = false): Promise<Membre[]> {
   if (!db) return [];
+  const base = collection(db, MEMBRES);
+  const requete = avecImportees
+    ? query(base, fbLimit(max))
+    : query(base, where('importe', '==', false), fbLimit(max));
   try {
-    const snap = await getDocs(query(collection(db, MEMBRES), orderBy('nom'), fbLimit(max)));
-    return snap.docs.map((d) => d.data() as Membre);
-  } catch {
-    const snap = await getDocs(query(collection(db, MEMBRES), fbLimit(max)));
-    return snap.docs.map((d) => d.data() as Membre);
+    const snap = await getDocs(requete);
+    return snap.docs
+      .map((d) => d.data() as Membre)
+      .sort((a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr'));
+  } catch (err) {
+    console.warn('[ordre] registre refusé', err);
+    return [];
   }
 }
 

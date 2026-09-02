@@ -1,6 +1,6 @@
 import { useBadges } from '../contexts/BadgesContext';
 import React, { useState } from 'react';
-import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send, Sparkles } from 'lucide-react';
+import { Shield, Castle, Crown, Check, ArrowUpRight, Handshake, Scale, X, Send, Sparkles, ShieldCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -126,6 +126,9 @@ export const SponsorOffer: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const [openPlan, setOpenPlan] = useState<SponsorPlan | null>(null);
+  // Le cadre de dons Zeffy attend un clic (audit Loi 25 du 2026-09-02).
+  // Voir la note au-dessus du bloc, plus bas dans ce fichier.
+  const [cadreZeffy, setCadreZeffy] = useState(false);
   return (
     <>
 
@@ -277,8 +280,18 @@ export const SponsorOffer: React.FC = () => {
       </section>
 
       {/* Les Magiciens du festival : levée Zeffy pour la connexion
-          astrale (l'antenne internet du site). Le formulaire de don
-          Zeffy est embarqué tel quel, chargé paresseusement. */}
+          astrale (l'antenne internet du site).
+
+          Le cadre Zeffy ne se monte plus tout seul depuis le
+          2026-09-02. L'audit de la Loi 25 a mesuré ce qu'il faisait en
+          arrivant sur la page : quarante hôtes tiers appelés et dix-sept
+          témoins déposés, sans un clic et sans que personne ait rien
+          accepté. L'article 8.1 veut que la personne soit informée
+          d'avance et pose elle-même le geste, et l'article 8 veut que
+          les tiers soient nommés. Le bloc ci-dessous les nomme et
+          attend le clic. Le lien vers le formulaire hébergé, juste
+          au-dessus, ne charge rien tant que personne ne l'ouvre : c'est
+          lui, la voie la plus discrète. */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-50" count={16} />
@@ -301,13 +314,32 @@ export const SponsorOffer: React.FC = () => {
             </Reveal>
             <Reveal from="right" delay={0.1}>
               <div className="glass-light border border-brass/30 rounded-card overflow-hidden">
-                <iframe
-                  title={t.magiciens.title}
-                  src="https://www.zeffy.com/embed/donation-form/apportez-le-reseau-a-montpellier"
-                  loading="lazy"
-                  className="w-full h-[560px] md:h-[620px] border-0"
-                  allow="payment"
-                />
+                {cadreZeffy ? (
+                  <iframe
+                    title={t.magiciens.title}
+                    src="https://www.zeffy.com/embed/donation-form/apportez-le-reseau-a-montpellier"
+                    loading="lazy"
+                    className="w-full h-[560px] md:h-[620px] border-0"
+                    allow="payment"
+                  />
+                ) : (
+                  <div className="p-7 md:p-8">
+                    <ShieldCheck size={24} className="text-brass mb-4" />
+                    <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-3">
+                      {t.magiciens.cadreTitre}
+                    </h3>
+                    <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed mb-6">
+                      {t.magiciens.cadreCorps}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setCadreZeffy(true)}
+                      className="inline-flex items-center gap-2 px-6 py-3 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card"
+                    >
+                      {t.magiciens.cadreBouton} <ArrowUpRight size={14} />
+                    </button>
+                  </div>
+                )}
               </div>
             </Reveal>
           </div>
@@ -427,6 +459,9 @@ const FR = {
     body1: 'Comme tout village dans les montagnes, Montpellier est coupé des ondes du monde extérieur. Pour que la billetterie, les terminaux et la Petite Monnaie respirent pendant le festival, nos magiciens doivent établir la connexion astrale : une antenne massive tournée vers le ciel, qui capte le signal des étoiles et l’apporte jusqu’au village.',
     body2: 'Chaque don nourrit le sortilège. En portant la lumière, vous permettez au Festival Médiéval de Montpellier, et à d’autres festivals de la Petite-Nation avec lui, de voir le jour et de survivre en territoire montagneux. Votre nom rejoint le cercle des Magiciens du festival.',
     cta: 'Porter la lumière',
+    cadreTitre: 'Le formulaire de dons de Zeffy',
+    cadreCorps: 'Notre formulaire de dons est hébergé par Zeffy, et nous le chargeons seulement si vous le demandez. En l’ouvrant, votre navigateur se connecte aux serveurs de Zeffy et à ceux de ses fournisseurs : Stripe traite le paiement, hCaptcha vérifie que vous n’êtes pas un robot, et HubSpot, Microsoft Clarity et Amplitude mesurent la visite pour le compte de Zeffy. Ces services déposent leurs propres témoins sur votre appareil et peuvent conserver leurs mesures hors du Québec. Rien de tout cela ne se charge avant votre clic.',
+    cadreBouton: 'Ouvrir le formulaire',
   },
   form: {
     eyebrow: 'Demande de commandite',
@@ -524,6 +559,9 @@ const EN = {
     body1: 'Like every village in the mountains, Montpellier is cut off from the airwaves of the outside world. For ticketing, card terminals and the Petite Monnaie to breathe during the festival, our magicians must establish the astral connection: one massive antenna turned to the sky, catching the signal of the stars and carrying it down to the village.',
     body2: 'Every gift feeds the spell. By carrying the light, you allow the Festival Médiéval de Montpellier, and other festivals of the Petite-Nation with it, to come to life and survive in mountainous country. Your name joins the circle of the Magicians of the festival.',
     cta: 'Carry the light',
+    cadreTitre: 'The Zeffy donation form',
+    cadreCorps: 'Our donation form is hosted by Zeffy, and we load it only if you ask for it. Opening it connects your browser to Zeffy and to its providers: Stripe handles the payment, hCaptcha checks that you are not a robot, and HubSpot, Microsoft Clarity and Amplitude measure the visit on Zeffy’s behalf. These services place their own cookies on your device and may keep what they measure outside Quebec. None of it loads before you click.',
+    cadreBouton: 'Open the form',
   },
   form: {
     eyebrow: 'Sponsorship request',

@@ -365,7 +365,25 @@ service cloud.firestore {
     // depuis l'espace admin. Personne ne se les donne à soi-même
     // (Alex, 2026-08-23).
     match /membres/{uid} {
-      allow read:   if signedIn();
+      // Loi 25, articles 13 et 9.1 (audit du 2026-09-02). Les outils
+      // tools/importer-profils-fmm.mjs, tools/importer-profils-zeffy.mjs
+      // et la fonction importerComptesZeffy versent au registre le vrai
+      // nom de gens tirés des exports de billetterie. Ces personnes
+      // n'ont posé aucun geste, et un `signedIn()` nu laissait n'importe
+      // quelle adresse jetable lire un millier de noms en une minute.
+      //
+      // La fiche importée ne se lit donc que par elle-même et par
+      // l'équipe, jusqu'à ce que la personne se connecte pour de vrai :
+      // AuthContext.tsx pose alors `importe: false` et la fiche entre au
+      // registre. Une fiche à qui le champ manque reste cachée, et c'est
+      // voulu : l'outil zeffy n'écrit que l'étiquette « importé » sans le
+      // drapeau, et le doute doit profiter à la personne. assurerFiche()
+      // pose le drapeau à faux dès qu'une vraie inscription crée la fiche.
+      //
+      // listerMembres() porte le même filtre `importe == false`, sans
+      // quoi Firestore refuserait la requête au complet.
+      allow read:   if isAdmin() || isOwner(uid)
+                    || (signedIn() && resource.data.importe == false);
       allow create: if isAdmin()
                     || (isOwner(uid)
                         && !('roles' in request.resource.data)

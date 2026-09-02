@@ -21,6 +21,27 @@ service firebase.storage {
         ];
     }
 
+    // ── Ce qui reste ouvert à tous, et pourquoi ─────────────────────
+    // Audit Loi 25 du 2026-09-02, article 10. Quatre coffres qui
+    // portaient des renseignements personnels se lisaient sans aucune
+    // condition : les photos envoyées par les membres, les images du mur
+    // social, celles du Souk et celles des fiches de Commerce. Ils sont
+    // refermés plus bas, chacun sur le droit que la base leur donne.
+    //
+    // Les images du site, elles, gardent leur lecture ouverte et doivent
+    // la garder : ce sont des affiches, des plateaux de jeu, des photos
+    // d'archives et des fiches publiées, et personne n'a besoin d'un
+    // compte pour voir le site. Ces coffres-là sont /media,
+    // /archives-uploads, /activites, /groupes, les blasons et bannières
+    // de /guildes, /hebergement-partenaires, /vendors, /musicians et les
+    // portraits de /users.
+    //
+    // Une précision qui compte pour la suite du dossier : une adresse
+    // obtenue par getDownloadURL() porte un jeton et ne passe pas par
+    // ces règles. Ce que la fermeture ci-dessous arrête, c'est la
+    // lecture directe par le chemin du fichier, celle qui n'a jamais
+    // demandé la permission à personne.
+
     // ── Admin-curated media library ──────────────────────────────
     // Used by the Image Picker (admin) to attach hero/illustration
     // assets to vendor cards, broadcasts, etc. Publicly readable so
@@ -43,11 +64,18 @@ service firebase.storage {
     // photosPubliques.ts) : redimensionnées côté navigateur en webp
     // avant l'envoi, donc le type est verrouillé et la taille reste
     // modeste malgré la limite large (marge de sécurité, pas un
-    // objectif). Lecture publique : une photo retenue peut nourrir une
-    // affiche ou une page, et Firestore filtre déjà qui voit quel
-    // statut. Suppression réservée à l'équipe (section Photos reçues).
+    // objectif). Suppression réservée à l'équipe (section Photos reçues).
+    //
+    // Lecture refermée le 2026-09-02 (Loi 25, article 10) : le fichier
+    // ne se lit plus par son chemin que par la personne qui l'a envoyé
+    // et par l'équipe. C'est le droit que la base donne à une photo
+    // privée, et la photo privée est désormais le défaut (PhotosPanel).
+    // Une photo que la personne ouvre aux autres membres, ou que
+    // l'équipe retient pour une affiche, continue de s'afficher : elle
+    // voyage par son adresse de téléchargement, qui porte son propre
+    // jeton et ne passe pas par cette règle.
     match /photos-publiques/{uid}/{fileName} {
-      allow read:   if true;
+      allow read:   if isOwner(uid) || isAdmin();
       allow create: if (isOwner(uid) || isAdmin())
         && request.resource.contentType == 'image/webp'
         && request.resource.size < 15 * 1024 * 1024;
@@ -60,8 +88,10 @@ service firebase.storage {
     // acceptés et une limite large (60 Mo) propre à la vidéo. Le VIP
     // qui la débloque se vérifie côté client (composeur du mur); ici,
     // seul le propriétaire écrit, quel que soit le type.
+    // Lecture alignée sur la base le 2026-09-02 (Loi 25, article 10) :
+    // le mur se lit entre membres connectés, donc son image aussi.
     match /mur/{uid}/{fileName} {
-      allow read:   if true;
+      allow read:   if signedIn();
       allow create: if isOwner(uid)
         && (
           (request.resource.contentType == 'image/webp'
@@ -175,10 +205,11 @@ service firebase.storage {
 
     // ── Le Souk : photos des objets mis en vente entre membres ────
     // Même geste que photos-publiques : redimensionnement navigateur
-    // en webp avant l'envoi. Lecture publique (les cartes affichent la
-    // photo), suppression réservée au propriétaire ou à l'équipe.
+    // en webp avant l'envoi. Suppression réservée au propriétaire ou à
+    // l'équipe. Lecture alignée sur la base le 2026-09-02 (Loi 25,
+    // article 10) : la place de marché se tient entre membres connectés.
     match /souk/{uid}/{fileName} {
-      allow read:   if true;
+      allow read:   if signedIn();
       allow create: if (isOwner(uid) || isAdmin())
         && request.resource.contentType == 'image/webp'
         && request.resource.size < 15 * 1024 * 1024;
@@ -186,8 +217,10 @@ service firebase.storage {
     }
 
     // ── Le Commerce : photos de la fiche (jusqu'à 6) ───────────────
+    // Lecture alignée sur la base le 2026-09-02 (Loi 25, article 10) :
+    // /commerces se lit par les membres connectés, ses photos aussi.
     match /commerces/{uid}/{fileName} {
-      allow read:   if true;
+      allow read:   if signedIn();
       allow create: if (isOwner(uid) || isAdmin())
         && request.resource.contentType == 'image/webp'
         && request.resource.size < 15 * 1024 * 1024;

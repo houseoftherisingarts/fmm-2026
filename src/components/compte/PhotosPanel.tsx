@@ -84,7 +84,13 @@ const PhotosPanel: React.FC<{ uid: string; nomMembre: string; lang: 'FR' | 'EN' 
   const [legende, setLegende]       = useState('');
   // Publique : paraît sur la fiche que les autres membres visitent.
   // Privée : entre la personne et l'équipe seulement (Alex, 2026-08-27).
-  const [visibilite, setVisibilite] = useState<VisibilitePhoto>('publique');
+  // Le défaut est passé de « publique » à « privée » le 2026-09-02.
+  // L'article 9.1 de la Loi 25 veut que le service assure de lui-même le
+  // plus haut niveau de confidentialité, sans que la personne ait à
+  // toucher à quoi que ce soit. Celle qui envoie une photo sans regarder
+  // ce sélecteur ne la montre donc à personne d'autre qu'à l'équipe, et
+  // c'est elle qui l'ouvre ensuite si elle le veut.
+  const [visibilite, setVisibilite] = useState<VisibilitePhoto>('privee');
   const { gagnerBadge } = useBadges();
   const [survol, setSurvol]         = useState(false);
   const [queue, setQueue]           = useState<FileEnEnvoi[]>([]);
