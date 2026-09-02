@@ -15,7 +15,7 @@ import { LONGUEUR_MAX } from '../../../firebase/moderation';
 import {
   ecrireAUnMembre, envoyerEnNombre, suivreEnvois,
   FESTIVAL_NOM, FESTIVAL_UID, PLAFOND_REGISTRE,
-  type EnvoiMasse,
+  type EnvoiMasse, type ResultatEnvoi,
 } from '../../../firebase/messagerieAdmin';
 
 // ─── La messagerie de l'équipe ───────────────────────────────────────
@@ -28,11 +28,14 @@ import {
 //     et par étiquette de groupe, et le tout se coche d'un geste.
 //   • Tout le registre.
 //
-// Dès que l'envoi vise plus d'une personne, il passe par la Cloud
-// Function `messagerieDeMasse` : le navigateur ne fait qu'appeler et
-// regarder l'avancement monter. Un panneau de confirmation rappelle le
-// compte exact avant que quoi que ce soit parte, et chaque envoi de
-// groupe laisse sa trace dans l'historique au bas de la page.
+// Alex, 2026-09-01 : le même geste dépose les deux livraisons, le
+// message dans l'espace client et la lettre à l'adresse du compte.
+// Tous les envois passent donc par la Cloud Function
+// `messagerieDeMasse`, y compris celui à une seule personne : le
+// navigateur ne fait qu'appeler et regarder l'avancement monter. Un
+// panneau de confirmation rappelle le compte exact avant que quoi que
+// ce soit parte, et chaque envoi laisse sa trace dans l'historique au
+// bas de la page.
 
 type Portee = 'une' | 'cochees' | 'tous';
 
@@ -209,15 +212,43 @@ const MessagerieSection: React.FC = () => {
     else setConfirme(true);
   };
 
+  // Les deux livraisons se racontent séparément, parce qu'elles peuvent
+  // différer : un membre sans adresse au dossier, ou qui a éteint cette
+  // alerte dans son espace, reçoit le message et pas la lettre.
+  const raconterEnvoi = (r: ResultatEnvoi, nom?: string): string => {
+    const pose = nom
+      ? `Le message attend ${nom} dans son espace.`
+      : `Le message est dans l’espace de ${r.fils} membre${r.fils > 1 ? 's' : ''}, au nom du festival.`;
+
+    if (r.erreurCourriel) {
+      return `${pose} Aucune lettre n’est partie : le serveur de courriel n’a pas répondu (${r.erreurCourriel}).`;
+    }
+    if (!r.lettres) {
+      return nom
+        ? `${pose} Aucune lettre n’est partie. Cette personne n’a pas d’adresse au dossier, ou elle a éteint cette alerte dans son espace.`
+        : `${pose} Aucune lettre n’est partie : personne dans cette liste n’a d’adresse au dossier avec l’alerte allumée.`;
+    }
+
+    const lettre = r.lettres > 1
+      ? `${r.lettres} lettres sont parties par courriel.`
+      : 'La lettre est partie par courriel.';
+    const reste: string[] = [];
+    if (r.sansLettre > 0) {
+      reste.push(`${r.sansLettre} membre${r.sansLettre > 1 ? 's n’ont' : ' n’a'} reçu que le message, faute d’adresse au dossier ou parce que l’alerte est éteinte.`);
+    }
+    if (r.lettresEchouees > 0) {
+      reste.push(`${r.lettresEchouees} lettre${r.lettresEchouees > 1 ? 's ont été refusées' : ' a été refusée'} par le serveur de courriel.`);
+    }
+    return [pose, lettre, ...reste].join(' ');
+  };
+
   const envoyer = async () => {
     setEnvoi(true); setErreur(null); setSucces(null); setConfirme(false);
     try {
-      if (portee === 'une' && seul && user?.uid) {
-        await ecrireAUnMembre(
-          { uid: user.uid, nom: monNom, teinte: maFiche?.avatarHue, photo: maFiche?.avatarUrl },
-          seul, texte,
-        );
-        setSucces(`Le message est dans la boîte de ${(seul.nom || 'ce membre').trim()}, à votre nom.`);
+      if (portee === 'une' && seul) {
+        const resultat = await ecrireAUnMembre(seul, texte);
+        setEnvoiSuivi(resultat.envoiId);
+        setSucces(raconterEnvoi(resultat, (seul.nom || 'ce membre').trim()));
       } else {
         const resultat = await envoyerEnNombre({
           portee: portee === 'tous' ? 'tous' : 'selection',
@@ -226,7 +257,7 @@ const MessagerieSection: React.FC = () => {
           cible,
         });
         setEnvoiSuivi(resultat.envoiId);
-        setSucces(`Le message est parti dans ${resultat.fils} fil${resultat.fils > 1 ? 's' : ''}, au nom du festival.`);
+        setSucces(raconterEnvoi(resultat));
       }
       setTexte('');
     } catch (e) {
@@ -245,13 +276,21 @@ const MessagerieSection: React.FC = () => {
       <div className="max-w-[68ch]">
         <p className="admin-prose">
           Écris à une personne du registre, à un groupe que tu coches, ou à tout le monde d’un
-          seul coup. Le message arrive dans la boîte de réception du membre, au même endroit que
-          les conversations qu’il a déjà.
+          seul coup. Chaque envoi dépose deux choses : le message dans la boîte de réception du
+          membre, au même endroit que les conversations qu’il a déjà, et une lettre à l’adresse
+          de son compte, aux couleurs du festival, avec un bouton qui le ramène ici pour
+          répondre.
         </p>
         <p className="admin-prose mt-3">
-          Un message à une seule personne part <strong>à ton nom</strong>. Dès qu’il vise un
-          groupe, il part au nom du festival, parce que trois cents membres n’ont pas à recevoir
-          une lettre signée d’un prénom qu’ils ne connaissent pas.
+          Un message à une seule personne part <strong>à ton nom</strong>, et la lettre porte ton
+          adresse en « répondre à ». Dès qu’il vise un groupe, il part au nom du festival, parce
+          que trois cents membres n’ont pas à recevoir une lettre signée d’un prénom qu’ils ne
+          connaissent pas.
+        </p>
+        <p className="admin-prose mt-3">
+          Un membre qui n’a pas d’adresse au dossier reçoit quand même le message dans son
+          espace. Celui qui a éteint cette alerte dans son compte le reçoit aussi, et lui seul
+          décide s’il veut la lettre par-dessus.
         </p>
       </div>
 
@@ -508,16 +547,16 @@ const MessagerieSection: React.FC = () => {
 
         <p className="admin-prose mb-4">
           {portee === 'une' && seul && (
-            <>Ce message ira dans la boîte de <strong>{(seul.nom || 'ce membre').trim()}</strong>, signé de ton nom, {monNom}.</>
+            <>Ce message ira dans la boîte de <strong>{(seul.nom || 'ce membre').trim()}</strong> et par courriel à l’adresse de son compte, signé de ton nom, {monNom}.</>
           )}
           {portee === 'une' && !seul && (
             <>Coche un nom dans le registre, puis écris.</>
           )}
           {portee === 'cochees' && (
-            <>Ce message ira dans la boîte des <strong>{nbCoches}</strong> personne{nbCoches > 1 ? 's' : ''} cochée{nbCoches > 1 ? 's' : ''}, au nom du festival.</>
+            <>Ce message ira dans la boîte et dans le courriel des <strong>{nbCoches}</strong> personne{nbCoches > 1 ? 's' : ''} cochée{nbCoches > 1 ? 's' : ''}, au nom du festival.</>
           )}
           {portee === 'tous' && (
-            <>Ce message ira dans la boîte des <strong>{destinataires}</strong> membres du registre, au nom du festival.</>
+            <>Ce message ira dans la boîte et dans le courriel des <strong>{destinataires}</strong> membres du registre, au nom du festival.</>
           )}
         </p>
 
@@ -549,8 +588,9 @@ const MessagerieSection: React.FC = () => {
                   {destinataires} personne{destinataires > 1 ? 's' : ''} vont recevoir ce message
                 </p>
                 <p className="admin-prose mt-1.5">
-                  Il arrivera dans leur boîte de réception, signé {FESTIVAL_NOM}, et rien ne le
-                  rappellera une fois parti. La portée retenue est : {cible.toLowerCase()}.
+                  Il arrivera dans leur boîte de réception et par courriel à l’adresse de leur
+                  compte, signé {FESTIVAL_NOM}, et rien ne le rappellera une fois parti. La
+                  portée retenue est : {cible.toLowerCase()}.
                 </p>
                 <div className="flex flex-wrap items-center gap-3 mt-4">
                   <PrimaryButton type="button" onClick={() => void envoyer()} disabled={envoi}>
@@ -580,22 +620,23 @@ const MessagerieSection: React.FC = () => {
         )}
 
         {/* L'avancement, tiré du document d'historique que la fonction
-            met à jour à chaque lot. */}
+            met à jour à chaque lot. Les fils s'écrivent en premier et en
+            quelques secondes; les lettres suivent, au rythme du serveur
+            de courriel, et c'est la barre qu'on regarde vraiment. */}
         {enCours && (
-          <div className="mt-5">
-            <p className="font-sans text-[11px] uppercase tracking-[0.24em] mb-2" style={{ color: 'var(--admin-text-soft)' }}>
-              {enCours.faits} fil{enCours.faits > 1 ? 's' : ''} sur {enCours.destinataires}
-            </p>
-            <div style={{ height: 4, borderRadius: 999, background: 'rgba(4, 8, 12, 0.62)', overflow: 'hidden' }}>
-              <div
-                style={{
-                  height: '100%',
-                  width: `${Math.round((enCours.faits / Math.max(1, enCours.destinataires)) * 100)}%`,
-                  background: 'linear-gradient(90deg, var(--admin-brass-lo), var(--admin-brass-hi))',
-                  transition: 'width 420ms cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
+          <div className="mt-5 space-y-3">
+            <Avancement
+              titre={`${enCours.faits} fil${enCours.faits > 1 ? 's' : ''} sur ${enCours.destinataires}`}
+              fait={enCours.faits}
+              total={enCours.destinataires}
+            />
+            {(enCours.lettresPrevues ?? 0) > 0 && (
+              <Avancement
+                titre={`${enCours.lettres ?? 0} lettre${(enCours.lettres ?? 0) > 1 ? 's' : ''} sur ${enCours.lettresPrevues}`}
+                fait={enCours.lettres ?? 0}
+                total={enCours.lettresPrevues ?? 0}
               />
-            </div>
+            )}
           </div>
         )}
 
@@ -619,9 +660,9 @@ const MessagerieSection: React.FC = () => {
           </h3>
         </div>
         <p className="admin-prose mb-4">
-          Chaque envoi de groupe laisse sa trace ici : qui l’a écrit, quand, à quelle portée, et
-          le texte exact. Les lettres à une seule personne restent dans le fil des deux et ne
-          paraissent pas dans cette liste.
+          Chaque envoi laisse sa trace ici, celui à une seule personne comme celui à tout le
+          registre : qui l’a écrit, quand, à quelle portée, le texte exact, et le compte des
+          messages posés puis des lettres parties.
         </p>
 
         {envois.length === 0 ? (
@@ -641,13 +682,28 @@ const MessagerieSection: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <Badge tone="info">{e.cible}</Badge>
                       <Badge tone={e.statut === 'terminé' ? 'accepted' : e.statut === 'échoué' ? 'rejected' : 'pending'}>
-                        {e.faits} / {e.destinataires} fils
+                        {e.faits} / {e.destinataires} messages
                       </Badge>
+                      {(e.lettresPrevues ?? 0) > 0 && (
+                        <Badge tone={(e.lettresEchouees ?? 0) > 0 ? 'rejected' : 'accepted'}>
+                          {e.lettres ?? 0} / {e.lettresPrevues} lettres
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <p className="admin-prose" style={{ whiteSpace: 'pre-wrap' }}>{e.texte}</p>
                   {e.erreur && (
                     <p className="font-sans text-xs mt-2" style={{ color: '#FCA5B0' }}>{e.erreur}</p>
+                  )}
+                  {e.erreurCourriel && (
+                    <p className="font-sans text-xs mt-2" style={{ color: '#FCA5B0' }}>
+                      Les messages sont posés, mais le serveur de courriel n’a pas répondu : {e.erreurCourriel}
+                    </p>
+                  )}
+                  {!!e.adressesEchouees?.length && (
+                    <p className="font-sans text-xs mt-2" style={{ color: '#FCA5B0' }}>
+                      Adresses refusées : {e.adressesEchouees.map((a) => a.courriel).join(', ')}
+                    </p>
                   )}
                 </Card>
               </li>

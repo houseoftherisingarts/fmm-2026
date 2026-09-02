@@ -3,6 +3,18 @@ import { LOGOS, TRANSLATIONS } from '../constants';
 import { DocumentState, Language } from '../types';
 import { SignaturePad } from './SignaturePad';
 
+// La feuille, et le bureau sur lequel elle est posée.
+//
+// Deux règles gouvernent ce fichier. La première : tout ce qui vit dans
+// `.preview-page` part dans le PDF, capturé par html2canvas, qui ne sait
+// lire ni les variables de thème ni color-mix(). Les couleurs de la
+// feuille sont donc écrites en clair, en rgba, jamais en classes
+// Tailwind à opacité (`border-gold-600/30` se compile en color-mix et
+// se perd à l'export). La seconde : la feuille est un document imprimé,
+// pas une carte de site. Aucun verre, aucune ombre portée sur le texte,
+// aucun dégradé dans une lettre. Le laiton du festival y sert de filet
+// et d'équerre, rien de plus.
+
 interface PreviewPanelProps {
   state: DocumentState;
   lang: Language;
@@ -13,11 +25,67 @@ interface PreviewPanelProps {
 // Estimates for pagination calculations (in pixels)
 const PAGE_HEIGHT = 1123; // A4 height at ~96dpi
 const PAGE_PADDING_Y = 150; // Total vertical padding (top + bottom)
-const CONTENT_HEIGHT = PAGE_HEIGHT - PAGE_PADDING_Y; 
+const CONTENT_HEIGHT = PAGE_HEIGHT - PAGE_PADDING_Y;
 const HEADER_HEIGHT = 200; // Logo + Divider + Margin
 // Title Height is now dynamic based on font size
 const SIGNATURE_HEIGHT = 380; // Expanded to fit 2 lines of role
-const CHARS_PER_LINE = 85; 
+const CHARS_PER_LINE = 85;
+
+// L'écart vertical entre deux feuilles, en pixels. Sert aussi au calcul
+// de la hauteur réservée sous la mise à l'échelle.
+const ECART_FEUILLES = 32;
+
+// Le laiton du festival, en clair pour l'export.
+const LAITON       = '#B08D3A';
+const FILET_FORT   = 'rgba(176, 141, 58, 0.48)';
+const FILET_DOUX   = 'rgba(176, 141, 58, 0.20)';
+const ENCRE_TITRE  = '#211C14';
+const ENCRE_TEXTE  = '#3A3226';
+const ENCRE_PALE   = '#6B6152';
+
+// Les quatre équerres du cadre, reprises des portraits du bestiaire.
+const EQUERRES = [
+  { top: '7mm', left: '7mm',  borderTop: true,  borderLeft: true  },
+  { top: '7mm', right: '7mm', borderTop: true,  borderRight: true },
+  { bottom: '7mm', left: '7mm',  borderBottom: true, borderLeft: true  },
+  { bottom: '7mm', right: '7mm', borderBottom: true, borderRight: true },
+] as const;
+
+const Equerres = () => (
+  <>
+    {EQUERRES.map((e, i) => (
+      <span
+        key={i}
+        className="absolute pointer-events-none"
+        style={{
+          top: 'top' in e ? e.top : undefined,
+          bottom: 'bottom' in e ? e.bottom : undefined,
+          left: 'left' in e ? e.left : undefined,
+          right: 'right' in e ? e.right : undefined,
+          width: '9mm',
+          height: '9mm',
+          borderColor: LAITON,
+          borderTopWidth: 'borderTop' in e ? 1.5 : 0,
+          borderBottomWidth: 'borderBottom' in e ? 1.5 : 0,
+          borderLeftWidth: 'borderLeft' in e ? 1.5 : 0,
+          borderRightWidth: 'borderRight' in e ? 1.5 : 0,
+          borderStyle: 'solid',
+        }}
+      />
+    ))}
+  </>
+);
+
+// Le filet à losange qui sépare l'en-tête du corps. Même geste que la
+// marque de chapitre du site : deux traits qui s'éteignent aux bouts,
+// un losange plein au milieu.
+const FiletLosange = ({ largeur = 132 }: { largeur?: number }) => (
+  <span className="flex items-center justify-center gap-2" style={{ width: largeur }}>
+    <span style={{ flex: 1, height: 1, background: `linear-gradient(90deg, rgba(176,141,58,0), ${LAITON})` }} />
+    <span style={{ width: 6, height: 6, background: LAITON, transform: 'rotate(45deg)' }} />
+    <span style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${LAITON}, rgba(176,141,58,0))` }} />
+  </span>
+);
 
 export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ state, lang, onSignatureChange, onPay }, ref) => {
   const logo = LOGOS.find(l => l.id === state.logoId) || LOGOS[0];
@@ -28,7 +96,7 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
   const [scale, setScale] = useState(1);
 
   // Dynamic Line Height estimation based on text size
-  const lineHeight = state.textSize * 1.6; 
+  const lineHeight = state.textSize * 1.6;
   // Dynamic Title Height
   const titleHeight = state.titleSize * 1.5 + 40; // line height + margins
 
@@ -52,7 +120,7 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
 
     // Helper to estimate paragraph height
     const effectiveCharsPerLine = Math.floor(CHARS_PER_LINE * (18 / state.textSize));
-    
+
     const getParaHeight = (text: string) => {
       const lines = Math.ceil(text.length / effectiveCharsPerLine);
       return Math.max(lines * lineHeight, lineHeight) + (state.textSize * 1.5); // margin bottom
@@ -98,14 +166,14 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
       if (!parent) return;
 
       const parentWidth = parent.clientWidth;
-      
+
       const docWidth = 794 + 80; // A4 width + margins
 
       // Calculate scale to fit width comfortably
-      const scaleW = (parentWidth - 40) / docWidth; 
-      
+      const scaleW = (parentWidth - 40) / docWidth;
+
       const newScale = Math.min(Math.max(scaleW, 0.4), 1.2);
-      
+
       setScale(newScale);
     };
 
@@ -116,6 +184,14 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // La pile est mise à l'échelle par transform, qui ne change pas la
+  // place qu'elle occupe dans la page : à 0,45, la moitié de la colonne
+  // restait un trou noir de plusieurs milliers de pixels. La hauteur
+  // réelle se calcule ici, une feuille faisant exactement 297 mm.
+  const hauteurPile = Math.round(
+    (pages.length * (PAGE_HEIGHT + 0.5) + (pages.length - 1) * ECART_FEUILLES) * scale,
+  );
+
   const renderInvoiceContent = () => {
     const subtotal = state.services.reduce((sum, svc) => sum + ((svc.quantity * svc.rate) - (svc.discount || 0)), 0);
     const tps = subtotal * 0.05;
@@ -123,68 +199,69 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
     const total = subtotal + tps + tvq;
 
     const hasDiscounts = state.services.some(svc => svc.discount && svc.discount > 0);
+    const enTete = 'py-3 px-2 font-semibold uppercase tracking-[0.14em] text-[11px]';
 
     return (
-      <div className="flex-grow flex flex-col font-sans text-dark-800">
-        <div className="flex justify-between items-start mb-12">
+      <div className="flex-grow flex flex-col font-sans" style={{ color: ENCRE_TEXTE }}>
+        <div className="flex justify-between items-start mb-12 gap-8">
           <div>
-            <h2 className="text-4xl font-display font-bold text-dark-900 uppercase tracking-widest mb-2">
-              {state.invoiceType === 'quote' 
-                ? (lang === 'en' ? 'Quote' : 'Devis') 
-                : (lang === 'en' ? 'Invoice' : 'Facture')}
+            <h2
+              className="text-3xl uppercase mb-3"
+              style={{ fontFamily: 'var(--font-display)', color: ENCRE_TITRE, letterSpacing: '0.07em' }}
+            >
+              {state.invoiceType === 'quote' ? t('quoteWord') : t('invoiceWord')}
             </h2>
-            <p className="text-sm text-dark-600">
-              <span className="font-semibold">
-                {state.invoiceType === 'quote'
-                  ? (lang === 'en' ? 'Quote #:' : 'Devis #:')
-                  : (lang === 'en' ? 'Invoice #:' : 'Facture #:')}
-              </span> {state.invoiceNumber || '---'}
+            <p className="text-sm">
+              <span className="font-semibold">{state.invoiceType === 'quote' ? t('quoteNumber') : t('invoiceNumber')} : </span>
+              {state.invoiceNumber || '—'}
             </p>
-            <p className="text-sm text-dark-600">
-              <span className="font-semibold">{lang === 'en' ? 'Date:' : 'Date:'}</span> {new Date(state.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR')}
+            <p className="text-sm">
+              <span className="font-semibold">{t('date')} : </span>
+              {new Date(state.date).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA')}
             </p>
           </div>
           <div className="text-right">
-            <h3 className="font-semibold text-dark-900 uppercase tracking-wider mb-1">
-              {state.invoiceType === 'quote'
-                ? (lang === 'en' ? 'Prepared For:' : 'Préparé pour:')
-                : (lang === 'en' ? 'Billed To:' : 'Facturé à:')}
+            <h3
+              className="uppercase tracking-[0.18em] text-[11px] font-semibold mb-2"
+              style={{ color: ENCRE_TITRE }}
+            >
+              {state.invoiceType === 'quote' ? t('preparedFor') : t('billedTo')}
             </h3>
-            <p className="text-dark-700">{state.clientName || '---'}</p>
-            <p className="text-dark-600 whitespace-pre-wrap">{state.clientAddress || '---'}</p>
+            <p className="text-sm">{state.clientName || '—'}</p>
+            <p className="text-sm whitespace-pre-wrap" style={{ color: ENCRE_PALE }}>{state.clientAddress || '—'}</p>
           </div>
         </div>
 
         <table className="w-full mb-8">
           <thead>
-            <tr className="border-b-2 border-gold-600/30 text-left">
-              <th className="py-3 px-2 font-semibold uppercase tracking-wider text-sm">{lang === 'en' ? 'Description' : 'Description'}</th>
-              <th className="py-3 px-2 font-semibold uppercase tracking-wider text-sm text-right">{lang === 'en' ? 'Qty' : 'Qté'}</th>
-              <th className="py-3 px-2 font-semibold uppercase tracking-wider text-sm text-right">{lang === 'en' ? 'Rate' : 'Taux'}</th>
-              {hasDiscounts && (
-                <th className="py-3 px-2 font-semibold uppercase tracking-wider text-sm text-right">{lang === 'en' ? 'Discount' : 'Rabais'}</th>
-              )}
-              <th className="py-3 px-2 font-semibold uppercase tracking-wider text-sm text-right">{lang === 'en' ? 'Amount' : 'Montant'}</th>
+            <tr className="text-left" style={{ borderBottom: `1.5px solid ${LAITON}`, color: ENCRE_TITRE }}>
+              <th className={enTete}>{t('description')}</th>
+              <th className={`${enTete} text-right`}>{t('quantity')}</th>
+              <th className={`${enTete} text-right`}>{t('rate')}</th>
+              {hasDiscounts && <th className={`${enTete} text-right`}>{t('discount')}</th>}
+              <th className={`${enTete} text-right`}>{t('amount')}</th>
             </tr>
           </thead>
           <tbody>
             {state.services.map((svc) => (
-              <tr key={svc.id} className="border-b border-gold-600/10">
-                <td className="py-3 px-2">{svc.description || '---'}</td>
-                <td className="py-3 px-2 text-right">{svc.quantity}</td>
-                <td className="py-3 px-2 text-right">${svc.rate.toFixed(2)}</td>
+              <tr key={svc.id} style={{ borderBottom: `1px solid ${FILET_DOUX}` }}>
+                <td className="py-3 px-2 text-sm">{svc.description || '—'}</td>
+                <td className="py-3 px-2 text-sm text-right tabular-nums">{svc.quantity}</td>
+                <td className="py-3 px-2 text-sm text-right tabular-nums">{svc.rate.toFixed(2)} $</td>
                 {hasDiscounts && (
-                  <td className="py-3 px-2 text-right text-red-600/80">
-                    {svc.discount ? `-$${svc.discount.toFixed(2)}` : '---'}
+                  <td className="py-3 px-2 text-sm text-right tabular-nums" style={{ color: '#8C3A2E' }}>
+                    {svc.discount ? `−${svc.discount.toFixed(2)} $` : '—'}
                   </td>
                 )}
-                <td className="py-3 px-2 text-right">${((svc.quantity * svc.rate) - (svc.discount || 0)).toFixed(2)}</td>
+                <td className="py-3 px-2 text-sm text-right tabular-nums">
+                  {((svc.quantity * svc.rate) - (svc.discount || 0)).toFixed(2)} $
+                </td>
               </tr>
             ))}
             {state.services.length === 0 && (
               <tr>
-                <td colSpan={hasDiscounts ? 5 : 4} className="py-8 text-center text-dark-400 italic">
-                  {lang === 'en' ? 'No services added.' : 'Aucun service ajouté.'}
+                <td colSpan={hasDiscounts ? 5 : 4} className="py-10 text-center text-sm" style={{ color: ENCRE_PALE }}>
+                  {t('noServices')}
                 </td>
               </tr>
             )}
@@ -192,57 +269,67 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
         </table>
 
         <div className="flex justify-end mb-12">
-          <div className="w-64 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="font-semibold">Subtotal:</span>
-              <span>${subtotal.toFixed(2)}</span>
+          <div className="w-72 space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="font-semibold">{t('subtotal')}</span>
+              <span className="tabular-nums">{subtotal.toFixed(2)} $</span>
             </div>
-            <div className="flex justify-between text-sm text-dark-600">
-              <span>TPS ({state.tpsNumber}):</span>
-              <span>${tps.toFixed(2)}</span>
+            <div className="flex justify-between" style={{ color: ENCRE_PALE }}>
+              <span>TPS ({state.tpsNumber})</span>
+              <span className="tabular-nums">{tps.toFixed(2)} $</span>
             </div>
-            <div className="flex justify-between text-sm text-dark-600">
-              <span>TVQ ({state.tvqNumber}):</span>
-              <span>${tvq.toFixed(2)}</span>
+            <div className="flex justify-between" style={{ color: ENCRE_PALE }}>
+              <span>TVQ ({state.tvqNumber})</span>
+              <span className="tabular-nums">{tvq.toFixed(2)} $</span>
             </div>
-            <div className="flex justify-between text-lg font-bold border-t-2 border-gold-600/30 pt-2 mt-2">
-              <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+            <div
+              className="flex justify-between text-lg font-bold pt-2 mt-2"
+              style={{ borderTop: `1.5px solid ${LAITON}`, color: ENCRE_TITRE }}
+            >
+              <span className="uppercase tracking-[0.12em] text-base">{t('total')}</span>
+              <span className="tabular-nums">{total.toFixed(2)} $</span>
             </div>
           </div>
         </div>
 
         {state.content && (
           <div className="mb-8">
-            <h4 className="font-semibold text-dark-900 uppercase tracking-wider mb-2 text-sm">{lang === 'en' ? 'Notes:' : 'Notes:'}</h4>
-            <p className="text-dark-700 whitespace-pre-wrap text-sm">{state.content}</p>
+            <h4 className="uppercase tracking-[0.18em] text-[11px] font-semibold mb-2" style={{ color: ENCRE_TITRE }}>
+              {t('notes')}
+            </h4>
+            <p
+              className="whitespace-pre-wrap"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: 15, lineHeight: 1.6 }}
+            >
+              {state.content}
+            </p>
           </div>
         )}
 
         {/* Payment Stub */}
-        <div className="mt-auto pt-8 border-t-2 border-gold-600/30">
-          <h4 className="font-semibold text-dark-900 uppercase tracking-wider mb-4 text-sm">
-            {lang === 'en' ? 'Détails de paiement:' : 'Détails de paiement:'}
+        <div className="mt-auto pt-8" style={{ borderTop: `1.5px solid ${FILET_FORT}` }}>
+          <h4 className="uppercase tracking-[0.18em] text-[11px] font-semibold mb-4" style={{ color: ENCRE_TITRE }}>
+            {t('paymentDetails')}
           </h4>
-          <div className="grid grid-cols-2 gap-8 text-sm text-dark-700">
+          <div className="grid grid-cols-2 gap-8 text-sm">
             <div>
-              <p className="font-bold text-dark-900 mb-1">Festival Médiéval de Montpellier</p>
+              <p className="font-bold mb-1" style={{ color: ENCRE_TITRE }}>Festival Médiéval de Montpellier</p>
               <p>Montpellier, France</p>
               <p className="mt-2">contact@festivalmedievalmontpellier.fr</p>
             </div>
             <div>
-              <p><span className="font-semibold">IBAN:</span> FR76 XXXX XXXX XXXX XXXX XXXX XXX</p>
-              <p><span className="font-semibold">BIC:</span> XXXXXXX</p>
-              <p className="mt-2 font-semibold text-dark-900">Banque Principale</p>
+              <p><span className="font-semibold">IBAN :</span> FR76 XXXX XXXX XXXX XXXX XXXX XXX</p>
+              <p><span className="font-semibold">BIC :</span> XXXXXXX</p>
+              <p className="mt-2 font-semibold" style={{ color: ENCRE_TITRE }}>Banque principale</p>
               {onPay && state.invoiceType === 'invoice' && (
                 <div className="mt-4" data-html2canvas-ignore="true">
-                  <button 
+                  <button
                     type="button"
                     onClick={async (e) => {
                       e.preventDefault();
                       const btn = e.currentTarget;
                       const originalText = btn.innerText;
-                      btn.innerText = lang === 'en' ? 'Redirecting...' : 'Redirection...';
+                      btn.innerText = t('redirecting');
                       btn.disabled = true;
                       btn.style.opacity = '0.5';
                       btn.style.cursor = 'wait';
@@ -253,9 +340,10 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
                       btn.style.opacity = '1';
                       btn.style.cursor = 'pointer';
                     }}
-                    className="inline-block px-6 py-2 bg-dark-900 text-gold-500 font-display font-bold tracking-widest uppercase text-xs rounded transition-colors hover:bg-gold-600 hover:text-dark-900 shadow-md"
+                    className="inline-block px-6 py-2.5 uppercase tracking-[0.2em] text-[11px] font-semibold rounded"
+                    style={{ background: ENCRE_TITRE, color: '#E8DDC1' }}
                   >
-                    {lang === 'en' ? 'Pay Online' : 'Payer en ligne'}
+                    {t('payOnline')}
                   </button>
                 </div>
               )}
@@ -267,57 +355,64 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
   };
 
   return (
-    <div className="h-full w-full overflow-y-auto overflow-x-hidden bg-black/40 scrollbar-thin">
-      <div className="flex flex-col items-center py-8 min-h-full">
-        <div 
+    <div className="w-full">
+      <div className="flex justify-center px-4 py-8" style={{ height: hauteurPile + 64 }}>
+        <div
           ref={containerRef}
           style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
           className="transition-transform duration-300"
         >
           {/* This ref is used by html2canvas to capture ALL pages */}
-          <div ref={ref} className="flex flex-col gap-8 items-center">
+          <div ref={ref} className="flex flex-col items-center" style={{ gap: ECART_FEUILLES }}>
             {pages.map((pageContent, pageIndex) => {
               const isFirstPage = pageIndex === 0;
               const isLastPage = pageIndex === pages.length - 1;
 
               const isParchment = state.paperStyle === 'parchment';
-              const bgStyle = isParchment 
+              const bgStyle = isParchment
                 ? {
                     // Local texture: the old CDN parchment.png 404'd, so this is
                     // transparenttextures' natural-paper served from /public.
                     backgroundImage: 'url("/textures/parchment.png"), linear-gradient(to bottom right, #f7ecd7, #dfcdab)',
-                    boxShadow: '0 0 50px rgba(0,0,0,0.5)'
+                    boxShadow: '0 30px 70px -24px rgba(0,0,0,0.85), 0 0 0 1px rgba(0,0,0,0.35)',
                   }
                 : {
                     backgroundColor: '#ffffff',
                     backgroundImage: 'none',
-                    boxShadow: '0 0 50px rgba(0,0,0,0.5)'
+                    boxShadow: '0 30px 70px -24px rgba(0,0,0,0.85), 0 0 0 1px rgba(0,0,0,0.35)',
                   };
 
               return (
-                <div 
+                <div
                   key={pageIndex}
-                  className={`preview-page text-dark-900 w-[210mm] h-[297mm] relative shadow-2xl overflow-hidden flex flex-col ${!isParchment ? 'bg-white' : ''}`}
-                  style={bgStyle}
+                  className="preview-page w-[210mm] h-[297mm] relative overflow-hidden flex flex-col"
+                  style={{ ...bgStyle, color: ENCRE_TEXTE }}
                 >
-                  {/* Decorative Borders - Absolute positioning */}
-                  <div className="absolute top-[10mm] left-[10mm] right-[10mm] bottom-[10mm] border border-gold-600/30 pointer-events-none" />
-                  <div className="absolute top-[12mm] left-[12mm] right-[12mm] bottom-[12mm] border border-gold-600/10 pointer-events-none" />
+                  {/* Cadre : deux filets et quatre équerres de laiton. */}
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{ top: '10mm', left: '10mm', right: '10mm', bottom: '10mm', border: `1px solid ${FILET_FORT}` }}
+                  />
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{ top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: `1px solid ${FILET_DOUX}` }}
+                  />
+                  <Equerres />
 
                   {/* Content Container with Padding */}
                   <div className="p-[20mm] h-full flex flex-col relative z-10">
-                    
+
                     {/* Header (First Page Only) */}
                     {isFirstPage ? (
                       <header className="flex flex-col items-center justify-center mb-10 flex-shrink-0">
-                        <div className="h-28 w-auto mb-6">
-                          <img 
-                            src={state.logoImage || logo.url} 
-                            alt={logo.name} 
-                            className="h-full w-auto object-contain filter drop-shadow-sm"
+                        <div className="h-28 w-auto mb-5">
+                          <img
+                            src={state.logoImage || logo.url}
+                            alt={logo.name}
+                            className="h-full w-auto object-contain"
                           />
                         </div>
-                        <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-gold-500 to-transparent"></div>
+                        <FiletLosange />
                       </header>
                     ) : (
                       // Spacer for subsequent pages to keep top margin clean
@@ -330,25 +425,40 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
                       <>
                         {/* Title (First Page Only) */}
                         {isFirstPage && state.title && (
-                          <h1 
-                            className="font-display text-center text-dark-800 mb-8 tracking-wide uppercase drop-shadow-sm flex-shrink-0"
-                            style={{ fontSize: `${state.titleSize}px`, lineHeight: 1.2 }}
+                          <h1
+                            className="text-center uppercase mb-9 flex-shrink-0"
+                            style={{
+                              fontFamily: 'var(--font-display)',
+                              fontSize: `${state.titleSize}px`,
+                              lineHeight: 1.2,
+                              letterSpacing: '0.045em',
+                              color: ENCRE_TITRE,
+                            }}
                           >
                             {state.title}
                           </h1>
                         )}
 
                         {/* Paragraphs */}
-                        <div 
-                           className="flex-grow font-serif text-justify text-dark-700 space-y-6"
-                           style={{ fontSize: `${state.textSize}px`, lineHeight: 1.6 }}
+                        <div
+                          className="flex-grow text-justify space-y-6"
+                          style={{
+                            fontFamily: 'var(--font-editorial)',
+                            fontSize: `${state.textSize}px`,
+                            lineHeight: 1.6,
+                            color: ENCRE_TEXTE,
+                          }}
                         >
                           {pageContent.length > 0 ? (
                             pageContent.map((para, i) => (
                               <p key={i}>{para}</p>
                             ))
                           ) : (
-                            isFirstPage && <p className="opacity-30 italic text-center pt-10">{t('documentBodyPlaceholder')}</p>
+                            isFirstPage && (
+                              <p className="text-center pt-10" style={{ color: ENCRE_PALE, opacity: 0.55 }}>
+                                {t('documentBodyPlaceholder')}
+                              </p>
+                            )
                           )}
                         </div>
                       </>
@@ -358,53 +468,67 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
                     {isLastPage && state.type !== 'invoice' && (
                       <footer className="mt-auto pt-8 flex flex-col items-end flex-shrink-0">
                         <div className="w-80 flex flex-col items-center">
-                          
+
                           {/* Date line (only for letters, invoice has date at top) */}
-                          {state.type === 'letter' && (
-                            <div className="w-full text-right mb-2 font-serif italic text-dark-600 text-lg">
-                               {state.date && (
-                                 <span>{new Date(state.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                 })}</span>
-                               )}
+                          {state.type === 'letter' && state.date && (
+                            <div
+                              className="w-full text-right mb-3 text-[17px]"
+                              style={{ fontFamily: 'var(--font-editorial)', color: ENCRE_PALE }}
+                            >
+                              {new Date(state.date).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA', {
+                                year: 'numeric', month: 'long', day: 'numeric',
+                              })}
                             </div>
                           )}
 
                           {/* Signature Area */}
                           <div className="h-32 w-full mb-2 relative">
-                             <SignaturePad 
-                               label={t('signHere')}
-                               clearLabel={t('clearSignature')}
-                               onChange={onSignatureChange}
-                               variant="paper"
-                               initialImage={state.signatureImage}
-                             />
+                            <SignaturePad
+                              label={t('signHere')}
+                              clearLabel={t('clearSignature')}
+                              onChange={onSignatureChange}
+                              variant="paper"
+                              initialImage={state.signatureImage}
+                            />
                           </div>
 
                           {/* Name and Role */}
                           <div className="w-full text-center space-y-1">
-                            <div className="h-px w-full bg-gold-600/50 mb-2"></div>
-                            <div className="font-display font-semibold text-sm tracking-wide text-dark-900 uppercase">
+                            <div className="h-px w-full mb-2.5" style={{ background: LAITON }} />
+                            <div
+                              className="uppercase tracking-[0.06em] text-[15px]"
+                              style={{ fontFamily: 'var(--font-display-alt)', color: ENCRE_TITRE, fontWeight: 600 }}
+                            >
                               {state.signerName}
                             </div>
                             {/* Handles newline in role */}
                             {roleLabel.split('\n').map((line, idx) => (
-                               <div key={idx} className={`font-sans tracking-[0.2em] text-dark-600 uppercase ${idx === 0 ? 'text-[10px] font-semibold' : 'text-[9px] opacity-80'}`}>
-                                 {line}
-                                </div>
+                              <div
+                                key={idx}
+                                className="font-sans uppercase"
+                                style={{
+                                  color: ENCRE_PALE,
+                                  letterSpacing: '0.22em',
+                                  fontSize: idx === 0 ? 10 : 9,
+                                  fontWeight: idx === 0 ? 600 : 400,
+                                }}
+                              >
+                                {line}
+                              </div>
                             ))}
                           </div>
                         </div>
                       </footer>
                     )}
-                  
+
                     {/* Page Numbering - Moved to the very bottom margin, below the decorative border */}
                     <div className="absolute bottom-[3mm] left-0 right-0 h-[6mm] flex items-center justify-center pointer-events-none">
-                       <span className="text-[10px] text-gold-700/60 font-sans tracking-widest uppercase">
-                         {t('page')} {pageIndex + 1} {t('of')} {pages.length} &bull; {t('officialDocument')}
-                       </span>
+                      <span
+                        className="font-sans uppercase"
+                        style={{ fontSize: 9, letterSpacing: '0.28em', color: 'rgba(140, 106, 31, 0.75)' }}
+                      >
+                        {t('page')} {pageIndex + 1} {t('of')} {pages.length} &nbsp;·&nbsp; {t('officialDocument')}
+                      </span>
                     </div>
 
                   </div>

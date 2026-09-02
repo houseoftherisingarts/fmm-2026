@@ -176,31 +176,36 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
       {/* ── La signature ─────────────────────────────────────── */}
       <Bloc titre={t('sectionSeal')}>
         <div className="space-y-2.5">
-          <label className="pu-label" htmlFor="pu-signataire">{t('signerNameLabel')}</label>
           {/* Non-super admins see a locked read-only field; super-admins
               (Tristan, Alex, others) get the full dropdown. */}
           {lockedSignerName ? (
-            <div className="pu-field pu-locked flex items-center justify-between gap-3" id="pu-signataire">
-              <span className="truncate">{state.signerName}</span>
-              <span
-                className="inline-flex items-center gap-1.5 shrink-0 font-sans text-[10px] uppercase tracking-[0.22em]"
-                style={{ color: 'var(--admin-text-mute)' }}
-              >
-                <Lock size={11} />
-                {t('signerLocked')}
-              </span>
-            </div>
+            <>
+              <span className="pu-label">{t('signerNameLabel')}</span>
+              <div className="pu-field pu-locked flex items-center justify-between gap-3">
+                <span className="truncate">{state.signerName}</span>
+                <span
+                  className="inline-flex items-center gap-1.5 shrink-0 font-sans text-[10px] uppercase tracking-[0.22em]"
+                  style={{ color: 'var(--admin-text-mute)' }}
+                >
+                  <Lock size={11} />
+                  {t('signerLocked')}
+                </span>
+              </div>
+            </>
           ) : (
-            <select
-              id="pu-signataire"
-              value={state.signerName}
-              onChange={(e) => onChange({ signerName: e.target.value })}
-              className="pu-field"
-            >
-              {PRESET_NAMES.map((name) => (
-                <option key={name} value={name}>{name}</option>
-              ))}
-            </select>
+            <>
+              <label className="pu-label" htmlFor="pu-signataire">{t('signerNameLabel')}</label>
+              <select
+                id="pu-signataire"
+                value={state.signerName}
+                onChange={(e) => onChange({ signerName: e.target.value })}
+                className="pu-field"
+              >
+                {PRESET_NAMES.map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+            </>
           )}
         </div>
 

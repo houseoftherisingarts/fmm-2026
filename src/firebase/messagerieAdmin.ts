@@ -147,9 +147,10 @@ export async function envoyerEnNombre(demande: DemandeEnvoi): Promise<ResultatEn
 }
 
 // ── L'historique des envois ─────────────────────────────────────────
-// Chaque envoi de groupe laisse sa trace : qui, quand, à qui, combien,
-// et le texte exact. Alex doit pouvoir savoir ce qui est parti, sans
-// avoir à fouiller les fils un par un.
+// Chaque envoi laisse sa trace, celui à une seule personne comme celui
+// à tout le registre : qui, quand, à qui, combien de fils, combien de
+// lettres, et le texte exact. Alex doit pouvoir savoir ce qui est
+// parti, sans avoir à fouiller les fils un par un.
 
 export type StatutEnvoi = 'en cours' | 'terminé' | 'échoué';
 
@@ -161,12 +162,31 @@ export interface EnvoiMasse {
   cible: string;
   portee: PorteeEnvoi;
   texte: string;
+  /** À sa propre voix, ou à celle du festival. Absent sur les traces
+   *  écrites avant le 1er septembre 2026, qui partaient toutes au nom
+   *  du festival. */
+  voix?: VoixEnvoi;
   /** Le nombre de membres visés au départ. */
   destinataires: number;
   /** Le nombre de fils réellement écrits, qui monte lot par lot. */
   faits: number;
+  /** Le nombre de lettres à poster, une fois les adresses relues et les
+   *  alertes éteintes retirées du compte. */
+  lettresPrevues?: number;
+  /** Les lettres parties, qui monte lot par lot après les fils. */
+  lettres?: number;
+  /** Les lettres refusées par le serveur de courriel. */
+  lettresEchouees?: number;
+  /** Les membres qui n'ont reçu que le message. */
+  sansLettre?: number;
+  /** Les vingt-cinq premières adresses en échec, avec la raison rendue
+   *  par le serveur de courriel. */
+  adressesEchouees?: { courriel: string; raison: string }[];
   statut: StatutEnvoi;
   erreur?: string;
+  /** Le serveur de courriel n'a pas pu s'ouvrir du tout. Les messages
+   *  sont posés quand même : c'est le sens des deux temps. */
+  erreurCourriel?: string;
   envoyeLe?: Timestamp;
 }
 
