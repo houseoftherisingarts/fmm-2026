@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Mail, Send, Check, MapPin, Phone } from 'lucide-react';
+import { Mail, Send, Check, MapPin, Phone, Bug } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { SITE } from '../content';
 import { useCaravanPage } from '../lib/useCaravanPage';
-import { DEPARTMENTS, getDepartment } from '../content/departments';
+import { getDepartment } from '../content/departments';
+import { addBugReport, CATEGORY_LABELS, type BugCategory } from '../firebase/bugReports';
 import { sendMessage } from '../firebase/mail';
 import { mockSendMessage } from '../firebase/mockMail';
 import { isFirebaseReady } from '../firebase';
@@ -14,19 +15,97 @@ import { Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmosph
 const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.meta.env.DEV;
 
 // ─── ContactPage ─────────────────────────────────────────────────────
-// Public "Nous joindre" form. Le visiteur choisit un SUJET, pas une
-// personne : le nom du responsable ne paraît plus dans la liste
-// (décision d'Alex, 2026-08-03). L'acheminement est identique, il vit
-// simplement côté admin. Le message tombe dans la boîte du département
-// correspondant, dans l'onglet Courrier.
+// Le formulaire public « Nous joindre ». Le visiteur choisit d'abord la
+// BOÎTE à laquelle il s'adresse, pas une personne : le nom du
+// responsable ne paraît plus dans la liste (décision d'Alex,
+// 2026-08-03). L'acheminement vit côté régie, où chaque boîte a son
+// entrée dans le rail de l'onglet Messages.
 //
-// Mandatory fields: email, department, subject, body. Display name is
-// optional: defaults to "Anonyme" if left empty so the admin always
-// sees a sender label. Email is mandatory because admin replies will
-// route back to that address.
+// Le choix de la boîte décide de deux choses. Il décide de la
+// destination, et il décide de ce que le formulaire demande ensuite :
+// les boîtes de courrier demandent un sujet et un message, tandis que
+// « Reporter un bug » bascule sur les champs d'un signalement.
 //
-// We deliberately keep the form simple (no captcha yet): when the
-// volume gets noisy add reCAPTCHA / hCaptcha at this seam.
+// Champs obligatoires : courriel, boîte, sujet et message. Le nom reste
+// optionnel et tombe sur « Anonyme » quand il est laissé vide, pour que
+// la régie voie toujours une signature. Le courriel est obligatoire
+// parce que la réponse repart par là.
+//
+// Le formulaire reste volontairement simple, sans captcha : le jour où
+// le bruit devient gênant, reCAPTCHA ou hCaptcha se branche ici.
+
+// ─── Les boîtes ──────────────────────────────────────────────────────
+// L'ordre vient d'Alex : le Général en premier et par défaut, puis les
+// boîtes thématiques, et le signalement de bug tout au bout. Les
+// identifiants restent ceux de DEPARTMENTS pour que le message tombe
+// dans la boîte que la régie affiche déjà dans son rail.
+const BUG_BOITE = 'bug';
+
+const ORDRE_BOITES = [
+  'general', 'programmation', 'benevoles',
+  'partenaires', 'mariages', 'medias', 'kiosques',
+];
+
+// Le public voit un nom plus large que celui du rail de la régie, et
+// une ligne qui dit ce que la boîte a besoin de savoir. Ce qui n'est pas
+// habillé ici garde le libellé et la note de DEPARTMENTS.
+const HABILLAGE: Record<string, Omit<Boite, 'id'>> = {
+  partenaires: {
+    labelFR: 'Partenaires et commandites',
+    labelEN: 'Partners and sponsorships',
+    hintFR:  'Écrivez-nous le nom de votre entreprise et le genre de présence qui vous intéresse. Nous vous enverrons la grille des paliers.',
+    hintEN:  'Tell us your company name and the kind of presence you have in mind. We will send you the tiers.',
+  },
+  mariages: {
+    labelFR: 'Mariages et groupes',
+    labelEN: 'Weddings and groups',
+    hintFR:  'Nous célébrons des mariages sur le site et nous accueillons les groupes. Donnez-nous la date que vous visez et le nombre de personnes.',
+    hintEN:  'We hold weddings on site and we welcome groups. Give us the date you have in mind and how many people are coming.',
+  },
+  medias: {
+    labelFR: 'Médias et presse',
+    labelEN: 'Media and press',
+    hintFR:  'Nous répondons aux demandes d\u2019entrevue et nous délivrons les accréditations. Précisez votre média et votre échéance.',
+    hintEN:  'We handle interview requests and press accreditation. Tell us which outlet you write for and your deadline.',
+  },
+};
+
+interface Boite {
+  id:      string;
+  labelFR: string;
+  labelEN: string;
+  hintFR:  string;
+  hintEN:  string;
+}
+
+const BOITES: Boite[] = [
+  ...ORDRE_BOITES.flatMap((id) => {
+    const d = getDepartment(id);
+    if (!d) return [];
+    const h = HABILLAGE[id];
+    return [{
+      id,
+      labelFR: h?.labelFR ?? d.labelFR,
+      labelEN: h?.labelEN ?? d.labelEN,
+      hintFR:  h?.hintFR  ?? d.hintFR ?? '',
+      hintEN:  h?.hintEN  ?? d.hintEN ?? '',
+    }];
+  }),
+  // Le bug ne passe pas par le courrier. Il emprunte le chemin qui
+  // existe déjà (addBugReport → collection bugReports → onglet Bugs de
+  // la régie), le même que la fenêtre « Signaler un bug » du pied de
+  // page. Rien n'est dédoublé ici.
+  {
+    id:      BUG_BOITE,
+    labelFR: 'Reporter un bug',
+    labelEN: 'Report a bug',
+    hintFR:  'Le site vous a joué un tour. Décrivez ce qui s\u2019est passé et votre signalement se rend directement à l\u2019équipe technique.',
+    hintEN:  'The site misbehaved. Describe what happened and your report goes straight to the technical team.',
+  },
+];
+
+const CATEGORIES_BUG: BugCategory[] =
+  ['affichage', 'lien', 'formulaire', 'performance', 'contenu', 'autre'];
 
 const ContactPage: React.FC = () => {
   useCaravanPage();
@@ -34,31 +113,59 @@ const ContactPage: React.FC = () => {
   const t = lang === 'FR' ? FR : EN;
 
   const [form, setForm] = useState({
-    name:        '',
-    email:       '',
-    departmentId: DEPARTMENTS[0].id,
-    subject:     '',
-    body:        '',
+    name:     '',
+    email:    '',
+    boiteId:  BOITES[0].id,
+    subject:  '',
+    body:     '',
+    // Champs propres au signalement de bug. Ils restent inertes tant
+    // qu'une autre boîte est choisie.
+    category: 'affichage' as BugCategory,
+    page:     '',
+    expected: '',
   });
   const [busy, setBusy] = useState(false);
   const [err, setErr]   = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  const dept = getDepartment(form.departmentId);
+  const boite = BOITES.find((b) => b.id === form.boiteId) ?? BOITES[0];
+  const isBug = form.boiteId === BUG_BOITE;
 
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((prev) => ({ ...prev, [k]: v }));
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.email.includes('@'))      { setErr(t.errEmail);   return; }
-    if (form.subject.trim().length < 3) { setErr(t.errSubject); return; }
-    if (form.body.trim().length < 10)   { setErr(t.errBody);    return; }
+    if (!form.email.includes('@')) { setErr(t.errEmail); return; }
+    if (isBug) {
+      if (form.body.trim().length < 10) { setErr(t.errBugDesc); return; }
+    } else {
+      if (form.subject.trim().length < 3) { setErr(t.errSubject); return; }
+      if (form.body.trim().length < 10)   { setErr(t.errBody);    return; }
+    }
 
     setBusy(true); setErr(null);
     try {
+      if (isBug) {
+        // Exactement le chemin de la fenêtre du pied de page : le
+        // signalement s'écrit dans bugReports, une copie part par
+        // courriel, et l'onglet Bugs de la régie le voit arriver.
+        await addBugReport({
+          category:    form.category,
+          page:        form.page.trim() || (lang === 'FR' ? 'Non précisé' : 'Not specified'),
+          description: form.body.trim(),
+          lang,
+          email:       form.email.trim().toLowerCase(),
+          ...(form.expected.trim() ? { expected: form.expected.trim() } : {}),
+          url:       typeof window    !== 'undefined' ? window.location.href : undefined,
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent  : undefined,
+          viewport:  typeof window    !== 'undefined' ? `${window.innerWidth}×${window.innerHeight}` : undefined,
+        });
+        setDone(true);
+        return;
+      }
       const payload = {
-        recipient: { type: 'department' as const, departmentId: form.departmentId },
+        recipient: { type: 'department' as const, departmentId: form.boiteId },
         fromEmail: form.email.trim().toLowerCase(),
         fromName:  form.name.trim() || (lang === 'FR' ? 'Anonyme' : 'Anonymous'),
         subject:   form.subject.trim(),
@@ -99,13 +206,21 @@ const ContactPage: React.FC = () => {
                       filter: 'drop-shadow(0 0 14px rgba(var(--sk-glow-rgb), 0.45))',
                     }}
                   >
-                    <Check size={28} style={{ color: 'var(--color-amber-glow)' }} />
+                    {isBug
+                      ? <Bug   size={26} style={{ color: 'var(--color-amber-glow)' }} />
+                      : <Check size={28} style={{ color: 'var(--color-amber-glow)' }} />}
                   </span>
-                  <Eyebrow tone="amber" className="mb-3">{t.sentEyebrow}</Eyebrow>
-                  <DisplayTitle size="lg" className="mb-3">{t.sentTitle}</DisplayTitle>
+                  <Eyebrow tone="amber" className="mb-3">
+                    {isBug ? t.sentBugEyebrow : t.sentEyebrow}
+                  </Eyebrow>
+                  <DisplayTitle size="lg" className="mb-3">
+                    {isBug ? t.sentBugTitle : t.sentTitle}
+                  </DisplayTitle>
                   <p className="font-editorial italic text-base md:text-lg max-w-xl mx-auto"
                      style={{ color: 'rgba(var(--sk-parchment-rgb), 0.78)' }}>
-                    {t.sentBody.replace('{dept}', dept ? (lang === 'FR' ? dept.labelFR : dept.labelEN) : '')}
+                    {isBug
+                      ? t.sentBugBody
+                      : t.sentBody.replace('{dept}', lang === 'FR' ? boite.labelFR : boite.labelEN)}
                   </p>
                 </div>
               ) : (
@@ -120,27 +235,30 @@ const ContactPage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Choix du sujet. On n'affiche AUCUN nom : personne
-                      n'écrit à quelqu'un en particulier, et un nom
-                      affiché vieillit mal (départs, remplacements). */}
+                  {/* La première question : à quelle boîte le message
+                      s'adresse. On n'affiche AUCUN nom de responsable,
+                      parce que personne n'écrit à quelqu'un en
+                      particulier et qu'un nom affiché vieillit mal
+                      (départs, remplacements). Ce choix décide de la
+                      destination et de la suite du formulaire. */}
                   <div className="md:col-span-2">
-                    <FieldLabel required>{t.deptLabel}</FieldLabel>
+                    <FieldLabel required>{t.boiteLabel}</FieldLabel>
                     <select
                       required
-                      value={form.departmentId}
-                      onChange={(e) => set('departmentId', e.target.value)}
+                      value={form.boiteId}
+                      onChange={(e) => set('boiteId', e.target.value)}
                       className={inputCls}
                     >
-                      {DEPARTMENTS.map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {lang === 'FR' ? d.labelFR : d.labelEN}
+                      {BOITES.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {lang === 'FR' ? b.labelFR : b.labelEN}
                         </option>
                       ))}
                     </select>
-                    {dept && (lang === 'FR' ? dept.hintFR : dept.hintEN) && (
+                    {(lang === 'FR' ? boite.hintFR : boite.hintEN) && (
                       <p className="mt-1.5 font-editorial italic text-[12px]"
                          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.55)' }}>
-                        {lang === 'FR' ? dept.hintFR : dept.hintEN}
+                        {lang === 'FR' ? boite.hintFR : boite.hintEN}
                       </p>
                     )}
                   </div>
@@ -170,33 +288,77 @@ const ContactPage: React.FC = () => {
                     />
                   </div>
 
-                  {/* Subject */}
-                  <div className="md:col-span-2">
-                    <FieldLabel required>{t.subjectLabel}</FieldLabel>
-                    <input
-                      type="text"
-                      required
-                      minLength={3}
-                      value={form.subject}
-                      onChange={(e) => set('subject', e.target.value)}
-                      placeholder={t.subjectPh}
-                      className={inputCls}
-                    />
-                  </div>
+                  {/* La suite dépend de la boîte. Le signalement de bug
+                      demande la nature du problème et l'endroit où il
+                      se produit; toutes les autres boîtes demandent un
+                      sujet et un message. */}
+                  {isBug ? (
+                    <>
+                      <div>
+                        <FieldLabel required>{t.bugCategoryLabel}</FieldLabel>
+                        <select
+                          required
+                          value={form.category}
+                          onChange={(e) => set('category', e.target.value as BugCategory)}
+                          className={inputCls}
+                        >
+                          {CATEGORIES_BUG.map((c) => (
+                            <option key={c} value={c}>{CATEGORY_LABELS[c][lang]}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <FieldLabel>{t.bugPageLabel}</FieldLabel>
+                        <input
+                          type="text"
+                          value={form.page}
+                          onChange={(e) => set('page', e.target.value)}
+                          placeholder={t.bugPagePh}
+                          className={inputCls}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="md:col-span-2">
+                      <FieldLabel required>{t.subjectLabel}</FieldLabel>
+                      <input
+                        type="text"
+                        required
+                        minLength={3}
+                        value={form.subject}
+                        onChange={(e) => set('subject', e.target.value)}
+                        placeholder={t.subjectPh}
+                        className={inputCls}
+                      />
+                    </div>
+                  )}
 
-                  {/* Body */}
+                  {/* Le corps du message, ou la description du bug. */}
                   <div className="md:col-span-2">
-                    <FieldLabel required>{t.bodyLabel}</FieldLabel>
+                    <FieldLabel required>{isBug ? t.bugDescLabel : t.bodyLabel}</FieldLabel>
                     <textarea
                       required
                       minLength={10}
-                      rows={8}
+                      rows={isBug ? 6 : 8}
                       value={form.body}
                       onChange={(e) => set('body', e.target.value)}
-                      placeholder={t.bodyPh}
+                      placeholder={isBug ? t.bugDescPh : t.bodyPh}
                       className={`${inputCls} resize-y`}
                     />
                   </div>
+
+                  {isBug && (
+                    <div className="md:col-span-2">
+                      <FieldLabel>{t.bugExpectedLabel}</FieldLabel>
+                      <textarea
+                        rows={3}
+                        value={form.expected}
+                        onChange={(e) => set('expected', e.target.value)}
+                        placeholder={t.bugExpectedPh}
+                        className={`${inputCls} resize-y`}
+                      />
+                    </div>
+                  )}
 
                   {err && (
                     <p className="md:col-span-2 font-editorial italic text-sm"
@@ -223,7 +385,7 @@ const ContactPage: React.FC = () => {
                           'inset 0 1px 0 rgba(var(--sk-sheen-rgb), 0.45), 0 14px 32px -10px rgba(var(--sk-mustard-rgb), 0.7)',
                       }}
                     >
-                      <Send size={13} /> {busy ? t.sending : t.send}
+                      <Send size={13} /> {busy ? t.sending : (isBug ? t.sendBug : t.send)}
                     </button>
                   </div>
                 </form>
@@ -276,11 +438,11 @@ const ChannelCard: React.FC<{
 const FR = {
   eyebrow:   'Écrire au festival',
   title:     'Nous joindre',
-  intro:     'Un mot pour la cour ? Choisissez le département, et votre message atterrira directement dans la bonne boîte.',
+  intro:     'Dites-nous d’abord à quelle boîte vous écrivez. Votre message atterrira chez la personne qui s’en occupe, et le formulaire se règle sur votre choix.',
   formEyebrow: 'Formulaire',
   formTitle: 'Frappez à la bonne porte',
-  formIntro: 'Choisissez le département : votre message ira directement dans la bonne boîte. La personne qui s’en occupe vous répondra par courriel.',
-  deptLabel: 'Département',
+  formIntro: 'Choisissez la boîte : votre message ira directement au bon endroit et la personne qui s’en occupe vous répondra par courriel. Un problème sur le site se signale par la dernière entrée de la liste.',
+  boiteLabel: 'À quelle boîte écrivez-vous ?',
   nameLabel: 'Votre nom',
   namePh:    'Optionnel',
   emailLabel:'Courriel',
@@ -289,24 +451,37 @@ const FR = {
   bodyLabel:    'Message',
   bodyPh:       'Dites-nous tout. Nous lisons chaque message.',
   send:         'Envoyer',
+  sendBug:      'Envoyer le signalement',
   sending:      'Envoi…',
   privacyNote:  'Votre courriel sert uniquement à notre réponse, et à rien d\u2019autre.',
   errEmail:     'Courriel invalide.',
   errSubject:   'Le sujet doit contenir au moins 3 caractères.',
   errBody:      'Le message doit contenir au moins 10 caractères.',
+  errBugDesc:   'Décrivez le problème en quelques mots avant d\u2019envoyer.',
   sentEyebrow:  'Message envoyé',
   sentTitle:    'Le messager part au galop',
   sentBody:     'Votre message a été déposé dans la boîte de {dept}. Vous recevrez une réponse par courriel sous peu.',
+  // Champs et confirmation du signalement de bug.
+  bugCategoryLabel: 'Nature du problème',
+  bugPageLabel:     'Où ça se passe',
+  bugPagePh:        'Page ou section concernée',
+  bugDescLabel:     'Qu\u2019est-ce qui s\u2019est passé ?',
+  bugDescPh:        'Décrivez le bug le plus précisément possible…',
+  bugExpectedLabel: 'À quoi vous attendiez-vous ? (optionnel)',
+  bugExpectedPh:    'Ce qui aurait dû se produire…',
+  sentBugEyebrow:   'Signalement envoyé',
+  sentBugTitle:     'Le rapport est entre nos mains',
+  sentBugBody:      'Votre signalement est arrivé chez l\u2019équipe technique, avec la page et l\u2019appareil d\u2019où vous nous écrivez. Nous vous répondrons si nous avons besoin de précisions.',
 };
 
 const EN: typeof FR = {
   eyebrow:   'Write to the festival',
   title:     'Contact us',
-  intro:     'A word for the court? Pick the right department and your message will land directly in the right inbox.',
+  intro:     'Tell us first which inbox you are writing to. Your message lands with whoever handles it, and the form adjusts to your choice.',
   formEyebrow: 'Form',
   formTitle: 'Knock on the right door',
-  formIntro: 'Pick the department: your message goes straight to the right inbox. Whoever handles it will reply by email.',
-  deptLabel: 'Department',
+  formIntro: 'Pick the inbox: your message goes straight to the right place and whoever handles it will reply by email. A problem with the site goes through the last entry on the list.',
+  boiteLabel: 'Which inbox are you writing to?',
   nameLabel: 'Your name',
   namePh:    'Optional',
   emailLabel:'Email',
@@ -315,14 +490,26 @@ const EN: typeof FR = {
   bodyLabel:    'Message',
   bodyPh:       'Tell us everything. We read every message.',
   send:         'Send',
+  sendBug:      'Send report',
   sending:      'Sending…',
   privacyNote:  'Your email is used only for our reply, and for nothing else.',
   errEmail:     'Invalid email.',
   errSubject:   'Subject must be at least 3 characters.',
   errBody:      'Message must be at least 10 characters.',
+  errBugDesc:   'Describe the problem in a few words before sending.',
   sentEyebrow:  'Message sent',
   sentTitle:    'The messenger rides off',
   sentBody:     'Your message was placed in the {dept} inbox. You’ll get a reply by email shortly.',
+  bugCategoryLabel: 'Type of issue',
+  bugPageLabel:     'Where it happens',
+  bugPagePh:        'Page or section involved',
+  bugDescLabel:     'What happened?',
+  bugDescPh:        'Describe the bug as precisely as you can…',
+  bugExpectedLabel: 'What did you expect? (optional)',
+  bugExpectedPh:    'What should have happened…',
+  sentBugEyebrow:   'Report sent',
+  sentBugTitle:     'The report is in our hands',
+  sentBugBody:      'Your report reached the technical team, along with the page and the device you wrote from. We will get back to you if we need more detail.',
 };
 
 export default ContactPage;

@@ -4,6 +4,7 @@ import { Card, Badge, EmptyState, GhostButton, downloadCsv, fmtDate } from '../p
 import { listUsers, importerComptesZeffy, synchroniserRegistre, type AppUser, type ResultatImportZeffy } from '../../../firebase/users';
 import { mockUsers } from '../../../firebase/mockData';
 import FonctionsMembres from './FonctionsMembres';
+import FicheCompte from '../../../components/admin/FicheCompte';
 
 interface Props { devBypass: boolean }
 
@@ -41,6 +42,10 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
   };
   const [items,  setItems]  = useState<AppUser[]>([]);
   const [error,  setError]  = useState<string | null>(null);
+  // Le compte ouvert en fiche : un clic sur un nom donne ce que le
+  // festival sait de la personne, ses fonctions et de quoi lui écrire
+  // (Alex, 2026-09-02).
+  const [ouvert, setOuvert] = useState<AppUser | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -139,17 +144,24 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
         <div className="space-y-2">
           {filtered.map((u) => (
             <Card key={u.uid} className="p-5 grid md:grid-cols-12 gap-3 items-center">
-              <div className="md:col-span-1">
-                <div className="w-10 h-10 rounded-card bg-brass/15 border border-brass/40 flex items-center justify-center text-brass font-display title-medieval text-sm">
-                  {u.displayName.charAt(0).toUpperCase()}
-                </div>
-              </div>
-              <div className="md:col-span-4 min-w-0">
-                <p className="font-display title-medieval text-sm text-ivory truncate">{u.displayName}</p>
-                <p className="font-editorial italic text-xs text-ivory-soft/70 truncate flex items-center gap-1.5">
-                  <Mail size={10} className="text-brass" />{u.email}
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setOuvert(u)}
+                title="Ouvrir la fiche du compte"
+                className="md:col-span-5 flex items-center gap-3 min-w-0 text-left group"
+              >
+                <span className="shrink-0 w-10 h-10 rounded-card bg-brass/15 border border-brass/40 flex items-center justify-center text-brass font-display title-medieval text-sm">
+                  {(u.displayName || u.email).charAt(0).toUpperCase()}
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-display title-medieval text-sm text-ivory truncate group-hover:text-brass transition-colors">
+                    {u.displayName || 'Sans nom'}
+                  </span>
+                  <span className="block font-editorial italic text-xs text-ivory-soft/70 truncate">
+                    <Mail size={10} className="inline mr-1.5 -mt-0.5 text-brass" />{u.email}
+                  </span>
+                </span>
+              </button>
               <div className="md:col-span-3 min-w-0 space-y-1">
                 {u.phone && <p className="font-sans text-xs text-ivory-soft/80 flex items-center gap-1.5"><Phone size={10} className="text-brass" />{u.phone}</p>}
                 {u.lang && <p className="font-sans text-xs text-ivory-soft/80 flex items-center gap-1.5"><Languages size={10} className="text-brass" />{u.lang}</p>}
@@ -168,6 +180,8 @@ const ComptesSection: React.FC<Props> = ({ devBypass }) => {
           ))}
         </div>
       )}
+
+      {ouvert && <FicheCompte compte={ouvert} onFermer={() => setOuvert(null)} />}
     </div>
   );
 };

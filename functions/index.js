@@ -49,6 +49,14 @@ const ZOHO_APP_PASSWORD = defineSecret('ZOHO_APP_PASSWORD');
 const SQUARE_ACCESS_TOKEN = defineSecret('SQUARE_ACCESS_TOKEN');
 const SQUARE_WEBHOOK_KEY = defineSecret('SQUARE_WEBHOOK_KEY');
 
+// ZeptoMail, le service d'envoi en nombre de Zoho. Une boîte Zoho
+// ordinaire refuse au-delà d'une poignée de lettres et rend
+// « Unusual sending activity detected » : elle n'est pas faite pour
+// une infolettre (constat du 2026-08-24, 25 lettres parties sur 126).
+// Le jeton reste facultatif : sans lui, tout retombe sur la boîte Zoho.
+const ZEPTO_TOKEN = defineSecret('ZEPTO_TOKEN');
+const ZEPTO_HOST = 'smtp.zeptomail.ca';
+
 // Boîte du festival, centre de données canadien de Zoho.
 const ZOHO_EMAIL = 'admin@festivalmedievaldemontpellier.org';
 const ZOHO_SMTP_HOST = 'smtp.zohocloud.ca';
@@ -763,14 +771,6 @@ exports.messagerieDeMasse = onCall(
 // (Cloud Tasks) plutôt qu'une boucle plus longue.
 
 const CAMPAGNE_CLE = defineSecret('CAMPAGNE_CLE');
-// ZeptoMail, le service d'envoi en nombre de Zoho. Une boîte Zoho
-// ordinaire refuse au-delà d'une poignée de lettres et rend
-// « Unusual sending activity detected » : elle n'est pas faite pour
-// une infolettre (constat du 2026-08-24, 25 lettres parties sur 126).
-// Le jeton reste facultatif : sans lui, tout retombe sur la boîte Zoho.
-const ZEPTO_TOKEN = defineSecret('ZEPTO_TOKEN');
-const ZEPTO_HOST = 'smtp.zeptomail.ca';
-
 const CAMPAGNES = 'campagnes';
 const DESABONNEMENTS = 'desabonnements';
 

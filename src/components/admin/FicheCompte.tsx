@@ -325,8 +325,8 @@ const FicheCompte: React.FC<Props> = ({ compte, onFermer }) => {
                     </p>
                     <p className="admin-prose mt-1.5">
                       La pastille « Admin · Modérateur » paraîtra sous son nom devant tout le
-                      registre, et son nom entrera dans le bandeau de l’équipe. Les clés de
-                      l’espace admin, elles, se donnent ailleurs, dans l’écran des rôles.
+                      registre, et le cadre de sa bannière passera à l’or. Les clés de l’espace
+                      admin, elles, se donnent ailleurs, dans l’écran des rôles.
                     </p>
                     <div className="flex flex-wrap items-center gap-3 mt-4">
                       <PrimaryButton type="button" onClick={() => void enregistrer()} disabled={busy}>
