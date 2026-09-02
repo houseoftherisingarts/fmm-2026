@@ -70,12 +70,14 @@ interface NavItem {
 
 export const NAV: NavItem[] = [
   { id: 'dashboard',  label: 'Tableau de bord', icon: LayoutDashboard, group: 'Vue d’ensemble' },
+  // Le babillard se consulte comme un tableau de bord : il ouvre la
+  // journée plutôt qu'il ne gère les bénévoles (Alex, 2026-09-01).
+  { id: 'badges',     label: 'Babillard et badges', icon: Award,       group: 'Vue d’ensemble' },
 
   { id: 'benevoles',  label: 'Bénévoles',       icon: HandHeart,       group: 'Bénévoles' },
   { id: 'equipes',    label: 'Équipes',         icon: UsersRound,      group: 'Bénévoles' },
   { id: 'dispos',     label: 'Disponibilités',  icon: CalendarCheck2,  group: 'Bénévoles' },
   { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3,       group: 'Bénévoles' },
-  { id: 'badges',     label: 'Babillard et badges', icon: Award,       group: 'Bénévoles' },
 
   { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag,     group: 'Participants' },
   // La ruelle du Souk : commerces non officiels créés par les membres,
@@ -85,33 +87,38 @@ export const NAV: NavItem[] = [
   { id: 'musiciens',  label: 'Musique',         icon: Music,           group: 'Participants' },
   { id: 'mariages',   label: 'Mariages',        icon: Heart,           group: 'Participants' },
   { id: 'invites',    label: 'Invités',         icon: TicketCheck,     group: 'Participants' },
-  // La liste du concours William J. Walter, remise au commanditaire (Alex, 2026-08-30).
-  { id: 'concours',   label: 'Concours William', icon: Gift,           group: 'Participants' },
+
+  // Ce qui se boit et ce qui se mange tient dans un même groupe : le
+  // bar et le concours William J. Walter, dont la liste est remise au
+  // commanditaire, relèvent du même monde (Alex, 2026-09-01).
+  { id: 'bar',        label: 'Bar',             icon: Beer,            group: 'Nourriture et Bar' },
+  { id: 'concours',   label: 'Concours William', icon: Gift,           group: 'Nourriture et Bar' },
 
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
-  { id: 'bar',        label: 'Bar',             icon: Beer,            group: 'Opérations' },
   { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather,         group: 'Opérations' },
   { id: 'signature',  label: 'Atelier de signature', icon: PenLine,    group: 'Opérations' },
 
-  { id: 'commanditaires', label: 'Commanditaires', icon: Landmark,     group: 'Partenaires et deniers' },
-  { id: 'finances',   label: 'Finances',        icon: Wallet,          group: 'Partenaires et deniers' },
+  { id: 'commanditaires', label: 'Commanditaires', icon: Landmark,     group: 'Finances' },
+  { id: 'finances',   label: 'Finances',        icon: Wallet,          group: 'Finances' },
 
   { id: 'messages',   label: 'Messages',        icon: MessageSquare,   group: 'Communications' },
   // Écrire dans la boîte de réception des membres : une personne, un
   // groupe coché, ou tout le registre (Alex, 2026-08-24).
   { id: 'messagerie', label: 'Écrire aux membres', icon: Send,         group: 'Communications' },
-  { id: 'campagnes',  label: 'Campagnes courriel', icon: MailPlus, group: 'Communications' },
-  { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Communications' },
-  { id: 'social',     label: 'Médias sociaux',  icon: Megaphone,       group: 'Communications' },
   { id: 'discord',    label: 'Discord',         icon: Hash,            group: 'Communications' },
-  { id: 'pubs',       label: 'Publicité',       icon: Target,          group: 'Communications' },
+
+  // Ce qui va chercher du monde, par opposition à ce qui répond au
+  // monde qui écrit déjà (Alex, 2026-09-01).
+  { id: 'campagnes',  label: 'Campagnes courriel', icon: MailPlus,     group: 'Marketing' },
+  { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Marketing' },
+  { id: 'pubs',       label: 'Publicité',       icon: Target,          group: 'Marketing' },
 
   { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon,       group: 'Contenu' },
   { id: 'photos',     label: 'Photos',          icon: Camera,          group: 'Contenu' },
   // Photos envoyées par les membres depuis leur espace compte (à ne
   // pas confondre avec 'photos' ci-dessus : les archives Histoire).
   { id: 'photosRecues', label: 'Photos reçues', icon: Images,          group: 'Contenu' },
-  { id: 'splash',     label: 'Écran d’accueil', icon: Sparkles,        group: 'Contenu' },
+  { id: 'social',     label: 'Médias sociaux',  icon: Megaphone,       group: 'Contenu' },
 
   { id: 'comptes',    label: 'Comptes',         icon: Users,           group: 'Régie' },
   { id: 'guildes',    label: 'Guildes',         icon: Shield,          group: 'Régie' },
