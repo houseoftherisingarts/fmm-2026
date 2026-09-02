@@ -15,7 +15,13 @@ import {
   retraitsPossibles, voisins, coupEnTexte, coupDepuisTexte,
   type Camp, type Case, type Etat,
 } from './logic';
-import { choisirCoup } from './cpu';
+import { choisirCoup, choisirCoupNiveau } from './cpu';
+import {
+  coupsArbitre, depuisJeu, jouerArbitre, texteArbitre, verdictArbitre,
+  etatInitial as etatInitialArbitre, type EtatMerelle,
+} from './arbitre';
+import { graine } from '../moteur/hasard';
+import type { Niveau } from '../moteur/niveaux';
 import type { Coup } from './logic';
 
 let faits = 0;
@@ -190,25 +196,55 @@ essai('la pose ne fait jamais perdre, même à deux pions sur le plateau', () =>
 
 // ── L'ordinateur ─────────────────────────────────────────────────────
 
-essai('le moyen ferme le moulin qu\'il a sous la main', () => {
+/** Le plafond de nœuds du banc. Sans lui, le connétable réfléchit
+ *  jusqu'à sa seconde et demie et le fichier prend plusieurs minutes;
+ *  avec lui, il joue vite ET rend toujours exactement le même coup. */
+const NOEUDS_BANC = 20_000;
+
+/** Le coup du connétable, sans fenêtre ni bévue : il n'y a rien à
+ *  tirer au sort, donc l'attente peut être exacte. */
+function coupDuConnetable(e: Etat): Coup | null {
+  return choisirCoupNiveau(depuisJeu(e), 10, { noeudsMax: NOEUDS_BANC });
+}
+
+essai('le connétable ferme le moulin qu\'il a sous la main', () => {
   const e = poser([0, 1], [9, 10], [7, 7], 1);
-  const coup = choisirCoup(e, 'moyen');
-  assert.deepEqual(coup, { type: 'pose', vers: 2 });
+  assert.deepEqual(coupDuConnetable(e), { type: 'pose', vers: 2 });
 });
 
-essai('le moyen bloque le moulin adverse quand il n\'a rien à fermer', () => {
+essai('le connétable bloque le moulin adverse quand il n\'a rien à fermer', () => {
   const e = poser([5], [9, 10], [7, 7], 1);
-  const coup = choisirCoup(e, 'moyen');
-  assert.deepEqual(coup, { type: 'pose', vers: 11 });
+  assert.deepEqual(coupDuConnetable(e), { type: 'pose', vers: 11 });
 });
 
-essai('le difficile ferme aussi le moulin, et retire un pion utile', () => {
+essai('le moulin fermé, le connétable enchaîne sur le retrait', () => {
   const e = poser([0, 1], [9, 10], [7, 7], 1);
-  const coup = choisirCoup(e, 'difficile');
+  const coup = coupDuConnetable(e);
   assert.deepEqual(coup, { type: 'pose', vers: 2 });
   const apres = jouer(e, coup!);
-  const retrait = choisirCoup(apres, 'difficile');
-  assert.equal(retrait?.type, 'retrait');
+  assert.equal(coupDuConnetable(apres)?.type, 'retrait');
+});
+
+essai('les trois anciennes difficultés rendent toujours un coup légal', () => {
+  // La page de jeu appelle encore `choisirCoup`. Les petites marches
+  // piochent au hasard, donc rien ne se prédit ici : ce qui se vérifie,
+  // c'est que le coup rendu passe la règle.
+  const e = poser([0, 1], [9, 10], [7, 7], 1);
+  for (const d of ['facile', 'moyen', 'difficile'] as const) {
+    const coup = choisirCoup(e, d);
+    assert.ok(coup, `aucun coup au niveau ${d}`);
+    assert.notEqual(jouer(e, coup!), e, `coup refusé au niveau ${d}`);
+  }
+  // `index.tsx` rappelle ensuite `choisirCoup` sur l'état qui doit un
+  // retrait, le seul moment de la partie où la main ne change pas de camp.
+  const apres = jouer(e, { type: 'pose', vers: 2 });
+  assert.equal(apres.doitRetirer, true);
+  for (const d of ['facile', 'moyen', 'difficile'] as const) {
+    const retrait = choisirCoup(apres, d);
+    assert.equal(retrait?.type, 'retrait', `le niveau ${d} ne retire pas`);
+    assert.notEqual(jouer(apres, retrait!), apres, `retrait refusé au niveau ${d}`);
+  }
+  assert.equal(choisirCoup({ ...e, gagnant: 1 }, 'difficile'), null);
 });
 
 essai('une partie complète ordinateur contre ordinateur se termine', () => {
@@ -269,6 +305,195 @@ essai('une partie entière survit à l’aller-retour par le texte', () => {
     tours++;
   }
   assert.ok(tours > 18);
+});
+
+// ── L'arbitre : les deux nulles ──────────────────────────────────────
+// Alex, 2026-09-01 : deux joueurs prudents peuvent glisser leurs pions
+// jusqu'à la fin des temps. L'arbitre empile deux règles de tournoi
+// par-dessus la règle du jeu, et ces deux règles doivent tomber au bon
+// moment, ni avant ni jamais.
+
+/** Deux circuits fermés qui ne se touchent pas et sur lesquels aucun
+ *  moulin ne peut se fermer. Six points d'un côté, huit de l'autre : les
+ *  deux promeneurs ne se retrouvent donc dans la même configuration
+ *  qu'au bout de vingt-quatre tours, soit quarante-huit demi-coups. La
+ *  règle des cinquante tombe avant la triple répétition, et c'est
+ *  exactement ce que cet essai veut prouver. */
+const CERCLE_CLAIR = [0, 1, 4, 3, 10, 9];
+const CERCLE_SOMBRE = [6, 7, 8, 12, 17, 16, 15, 11];
+
+essai('trois pions qui tournent en rond finissent en nulle au cinquantième demi-coup', () => {
+  let e = depuisJeu({ ...poser([0, 21, 5], [6, 23, 19], [0, 0], 1), vol: false });
+  let iClair = 0;
+  let iSombre = 0;
+  for (let n = 1; n <= 50; n++) {
+    const auClair = n % 2 === 1;
+    const cercle = auClair ? CERCLE_CLAIR : CERCLE_SOMBRE;
+    const i = auClair ? iClair : iSombre;
+    const j = (i + 1) % cercle.length;
+    const avant = e;
+    e = jouerArbitre(e, { type: 'deplacement', de: cercle[i], vers: cercle[j] });
+    assert.notEqual(e, avant, `demi-coup ${n} refusé par la règle`);
+    assert.equal(e.jeu.doitRetirer, false, `un moulin s'est fermé au demi-coup ${n}`);
+    assert.equal(e.sansPrise, n, `le compteur a sauté au demi-coup ${n}`);
+    if (auClair) iClair = j; else iSombre = j;
+    if (n < 50) assert.equal(e.nulle, null, `nulle prématurée au demi-coup ${n}`);
+  }
+  assert.equal(e.nulle, 'compteur');
+  const v = verdictArbitre(e);
+  assert.equal(v.finie, true);
+  assert.equal(v.gagnant, null);
+  // La partie est close : même un coup parfaitement légal ne la rouvre pas.
+  const suivant = { type: 'deplacement' as const, de: CERCLE_CLAIR[iClair], vers: CERCLE_CLAIR[(iClair + 1) % 6] };
+  assert.equal(jouerArbitre(e, suivant), e, 'une partie nulle ne se rejoue pas');
+});
+
+essai('la même position pour la troisième fois : la partie est nulle', () => {
+  // Quatre pions de chaque côté, deux d'entre eux qui font la navette.
+  // La position revient tous les quatre demi-coups, donc la troisième
+  // visite tombe au huitième, bien avant la règle des cinquante.
+  let e = depuisJeu({ ...poser([0, 21, 5, 22], [6, 23, 19, 13], [0, 0], 1), vol: false });
+  const navette: Coup[] = [
+    { type: 'deplacement', de: 0, vers: 1 },
+    { type: 'deplacement', de: 6, vers: 7 },
+    { type: 'deplacement', de: 1, vers: 0 },
+    { type: 'deplacement', de: 7, vers: 6 },
+  ];
+  for (let n = 1; n <= 8; n++) {
+    const avant = e;
+    e = jouerArbitre(e, navette[(n - 1) % 4]);
+    assert.notEqual(e, avant, `demi-coup ${n} refusé par la règle`);
+    if (n < 8) assert.equal(e.nulle, null, `nulle prématurée au demi-coup ${n}`);
+  }
+  assert.equal(e.nulle, 'repetition');
+  assert.equal(e.sansPrise, 8, 'la règle des cinquante n\'a rien à voir ici');
+  assert.equal(verdictArbitre(e).finie, true);
+  assert.deepEqual(coupsArbitre(e), [], 'une partie nulle n\'offre plus de coup');
+});
+
+essai('un retrait remet le compteur et la mémoire des positions à zéro', () => {
+  let e = depuisJeu({ ...poser([0, 1, 14, 22], [9, 21, 23, 13], [0, 0], 1), vol: false });
+  e = jouerArbitre(e, { type: 'deplacement', de: 22, vers: 19 });
+  assert.equal(e.sansPrise, 1);
+  e = jouerArbitre(e, { type: 'deplacement', de: 13, vers: 12 });
+  assert.equal(e.sansPrise, 2);
+  assert.equal(e.vues.length, 3, 'la position de départ et les deux suivantes');
+
+  e = jouerArbitre(e, { type: 'deplacement', de: 14, vers: 2 });
+  assert.equal(e.jeu.doitRetirer, true, '0-1-2 vient de se fermer');
+  assert.equal(e.sansPrise, 3, 'le coup qui ferme le moulin est encore un glissement');
+
+  e = jouerArbitre(e, { type: 'retrait', p: 9 });
+  assert.equal(e.sansPrise, 0);
+  assert.equal(e.vues.length, 1, 'plus aucune position d\'avant ne peut revenir');
+  assert.equal(e.nulle, null);
+});
+
+essai('la pose remet elle aussi le compteur à zéro', () => {
+  const e = jouerArbitre(etatInitialArbitre(true), { type: 'pose', vers: 4 });
+  assert.equal(e.sansPrise, 0);
+  assert.equal(e.vues.length, 1);
+  assert.equal(e.jeu.points[4], 1);
+});
+
+essai('la règle des cinquante arrête une vraie partie de la machine', () => {
+  // Les autres essais poussent des coups écrits à la main. Celui-ci laisse
+  // jouer deux connétables : la règle doit arrêter la machine elle-même.
+  const plateau = { ...poser([9, 0, 6, 12], [14, 8, 17, 22], [0, 0], 1), vol: false };
+  let e: EtatMerelle = { ...depuisJeu(plateau), sansPrise: 46 };
+  let n = 0;
+  while (!verdictArbitre(e).finie && n < 20) {
+    const coup = choisirCoupNiveau(e, 10, { noeudsMax: NOEUDS_BANC });
+    assert.ok(coup, `plus aucun coup au demi-coup ${n}`);
+    e = jouerArbitre(e, coup!);
+    n++;
+    assert.equal(e.sansPrise, 46 + n, `coup refusé ou moulin fermé au demi-coup ${n}`);
+  }
+  assert.equal(n, 4, 'quatre demi-coups pour aller de quarante-six à cinquante');
+  assert.equal(e.nulle, 'compteur');
+  assert.equal(verdictArbitre(e).gagnant, null);
+});
+
+essai('les deux verdicts se disent en français et en anglais', () => {
+  for (const raison of ['compteur', 'repetition'] as const) {
+    const e: EtatMerelle = { ...etatInitialArbitre(true), nulle: raison };
+    const fr = texteArbitre(e, true);
+    const en = texteArbitre(e, false);
+    assert.ok(fr && fr.length > 20, `pas de phrase française pour ${raison}`);
+    assert.ok(en && en.length > 20, `pas de phrase anglaise pour ${raison}`);
+    assert.notEqual(fr, en);
+    assert.ok(!fr!.includes('—'), 'jamais de tiret cadratin');
+  }
+  assert.equal(texteArbitre(etatInitialArbitre(true), true), null);
+});
+
+// ── La force de la machine ───────────────────────────────────────────
+// Alex, 2026-09-01 : « L'IA qui contrôle les jeux est vraiment très
+// mauvaise. » Une échelle de niveaux ne vaut rien tant qu'on n'a pas
+// montré que le haut bat le bas. Et comme le moteur est en negamax,
+// c'est aussi le seul essai qui attrape une erreur de signe : un
+// adaptateur qui note du mauvais point de vue joue contre lui-même, et
+// le connétable perd alors contre le palefrenier.
+
+interface Duel { gagnant: Camp | null; nulle: string | null; demiCoups: number }
+
+function duel(clair: Niveau, sombre: Niveau, semence: number, plafond = 300): Duel {
+  const alea = graine(semence);
+  let e = etatInitialArbitre(true);
+  let n = 0;
+  while (!verdictArbitre(e).finie && n < plafond) {
+    const niveau = e.jeu.tour === 1 ? clair : sombre;
+    const coup = choisirCoupNiveau(e, niveau, { alea, noeudsMax: NOEUDS_BANC });
+    if (!coup) break;
+    const avant = e;
+    e = jouerArbitre(e, coup);
+    assert.notEqual(e, avant, `coup refusé au demi-coup ${n} : ${JSON.stringify(coup)}`);
+    n++;
+  }
+  return { gagnant: e.jeu.gagnant, nulle: e.nulle, demiCoups: n };
+}
+
+essai('la partie témoin : le connétable bat le palefrenier', () => {
+  const p = duel(10, 3, 1);
+  console.log(`      témoin : ${p.demiCoups} demi-coups, gagnant ${p.gagnant ?? 'aucun'}${p.nulle ? ` (${p.nulle})` : ''}`);
+  assert.equal(p.gagnant, 1, 'le niveau 10 doit gagner contre le niveau 3');
+});
+
+essai('cinq parties à graine fixe : le connétable ne perd jamais', () => {
+  let victoires = 0;
+  let defaites = 0;
+  let nulles = 0;
+  for (let i = 0; i < 5; i++) {
+    // Le connétable prend le trait une partie sur deux : une machine qui
+    // ne gagne qu'avec les clairs n'a pas prouvé grand-chose.
+    const dixEnPremier = i % 2 === 0;
+    const p = dixEnPremier ? duel(10, 3, i + 1) : duel(3, 10, i + 1);
+    const campDix: Camp = dixEnPremier ? 1 : 2;
+    if (p.nulle) nulles++;
+    else if (p.gagnant === campDix) victoires++;
+    else defaites++;
+    console.log(`      partie ${i + 1} : ${p.demiCoups} demi-coups, ${p.nulle ?? (p.gagnant === campDix ? 'le connétable gagne' : 'le palefrenier gagne')}`);
+  }
+  console.log(`      bilan : ${victoires} victoires, ${nulles} nulles, ${defaites} défaites`);
+  // Mesuré : cinq sur cinq ici, et vingt sur vingt sur un banc plus large.
+  assert.equal(defaites, 0, 'le connétable ne doit jamais perdre contre le palefrenier');
+  assert.equal(nulles, 0, 'une nulle contre le palefrenier serait déjà un aveu');
+  assert.equal(victoires, 5, `le connétable n'a gagné que ${victoires} parties sur cinq`);
+});
+
+essai('le connétable ne laisse pas un pion partir pour rien', () => {
+  // Le sombre tient 9 et 10 et n'attend que 11 pour fermer, en amenant
+  // son pion de 15. Le clair n'a aucun moulin à lui à fermer et un seul
+  // pion capable d'atteindre 11 : celui de 6. S'il joue ailleurs, il
+  // perd un pion au coup suivant sans rien recevoir en échange.
+  const e = depuisJeu(poser([6, 0, 4, 22], [9, 10, 15, 12], [0, 0], 1));
+  const coup = choisirCoupNiveau(e, 10, { noeudsMax: NOEUDS_BANC });
+  assert.deepEqual(coup, { type: 'deplacement', de: 6, vers: 11 });
+  const apres = jouerArbitre(e, coup!);
+  for (const c of coupsArbitre(apres)) {
+    const suite = jouerArbitre(apres, c);
+    assert.equal(suite.jeu.doitRetirer, false, `le sombre ferme encore par ${JSON.stringify(c)}`);
+  }
 });
 
 console.log(`\n${faits} essais passés.`);

@@ -63,9 +63,11 @@ export interface EtatRenard {
   /**
    * Les demi-coups joués. Le plafond des quatre cents en a besoin, et
    * il ne se déduit pas du registre des positions, que les prises
-   * vident. Il ne rentre pas dans la clé de transposition : deux
-   * positions identiques au même compteur de basse-cour valent la même
-   * chose, même arrivées par des chemins de longueurs différentes.
+   * vident. Il n'entre dans la clé de transposition qu'à l'approche du
+   * plafond, là où il change vraiment la valeur d'une position : loin
+   * de lui, deux positions identiques au même compteur de basse-cour
+   * valent la même chose, même arrivées par des chemins de longueurs
+   * différentes.
    */
   readonly demiCoups: number;
 }
@@ -162,16 +164,17 @@ export interface CoupArbitre {
 }
 
 /**
- * Le coup joué, la basse-cour appliquée, le plafond compté, mais le
- * registre des positions laissé tel quel.
+ * Le coup joué et la basse-cour appliquée, mais le registre des
+ * positions laissé tel quel.
  *
  * C'est la porte de la recherche. Un negamax ouvre des centaines de
  * milliers de nœuds, et recopier le registre à chacun d'eux coûterait
  * plus cher que tout le reste. L'objet `vues` est partagé et jamais
  * modifié en place, ce qui reste sans danger tant que l'arbre ne fait
- * que le lire. La répétition triple se juge au vrai plateau, dans
- * `jouerArbitre`, et la règle de la basse-cour suffit largement à faire
- * bouger les oies pendant la recherche.
+ * que le lire, et la recherche s'en sert quand même pour reconnaître
+ * une position déjà jouée deux fois. Elle ne voit donc pas les
+ * répétitions qu'elle fabrique elle-même à l'intérieur de son arbre :
+ * celles-là sont comptées par `jouerArbitre`, sur le vrai plateau.
  */
 export function jouerRecherche(e: EtatRenard, c: Coup): CoupArbitre {
   if (e.verdict !== null) return { etat: e, evenement: null };
@@ -208,9 +211,20 @@ export function jouerRecherche(e: EtatRenard, c: Coup): CoupArbitre {
   const tour: Camp = joueur === 'renard' ? 'oies' : 'renard';
   const demiCoups = e.demiCoups + 1;
   let verdict = verdictDeBase(plateau, tour, e.variante);
-  if (verdict === null && demiCoups >= PLAFOND_DEMI_COUPS) {
-    verdict = 'nulle';
-    evenement = 'nulle-plafond';
+  if (verdict === null) {
+    // La recherche ne tient pas son propre registre, mais elle LIT celui
+    // de la vraie partie. Revenir une troisième fois sur une position
+    // déjà jouée deux fois clôt la partie, et un camp qui gagne doit
+    // pouvoir refuser de s'y engager. Sans cette lecture, deux machines
+    // qui se valent tournent en rond et l'arbitre annule une partie que
+    // l'une des deux tenait.
+    if ((e.vues[clePosition(plateau, tour)] ?? 0) >= LIMITE_REPETITION - 1) {
+      verdict = 'nulle';
+      evenement = 'nulle-repetition';
+    } else if (demiCoups >= PLAFOND_DEMI_COUPS) {
+      verdict = 'nulle';
+      evenement = 'nulle-plafond';
+    }
   }
 
   return {

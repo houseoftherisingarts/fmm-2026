@@ -177,9 +177,18 @@ export function chercher<E, C>(
   // la précédente : elle coûte peu et trie l'arbre pour la suivante. La
   // dernière marche ENTIÈREMENT finie fait foi; celle que l'horloge a
   // coupée est jetée, sauf le meilleur coup déjà confirmé.
-  let racine: CoupNote<C>[] = coupsRacine.map((c) => ({ coup: c, note: 0 }));
-  let meilleur: C = coupsRacine[0];
-  let noteFinale = 0;
+  // Le premier tri se fait à l'évaluation seule, avant toute descente.
+  // Il sert deux fois : il ordonne la première marche, et il tient lieu
+  // de réponse quand l'horloge tombe avant même que la profondeur un
+  // soit finie. Sans ce filet, la recherche rendait le premier coup de
+  // la liste, toujours le même, et deux machines pressées se
+  // renvoyaient la balle jusqu'à la nulle par répétition (mesuré au
+  // banc du Renard le 2026-09-01, huit parties sur huit).
+  let racine: CoupNote<C>[] = coupsRacine
+    .map((c) => ({ coup: c, note: -a.evaluer(a.jouer(etat, c)) }))
+    .sort((x, y) => y.note - x.note);
+  let meilleur: C = racine[0].coup;
+  let noteFinale = racine[0].note;
   let atteinte = 0;
 
   for (let prof = 1; prof <= o.profondeurMax; prof++) {
@@ -191,7 +200,10 @@ export function chercher<E, C>(
       // connu fait tomber les autres tout de suite.
       const ordre = [meilleur, ...racine.map((r) => r.coup).filter((c) => c !== meilleur)];
       for (const c of ordre) {
-        const note = -negamax(a.jouer(etat, c), prof - 1, -Infinity, -alpha, 1);
+        // À fenêtre pleine quand l'appelant a besoin de notes justes
+        // pour TOUS les coups, et non seulement du meilleur.
+        const borne = o.notesExactes ? -Infinity : -alpha;
+        const note = -negamax(a.jouer(etat, c), prof - 1, -Infinity, borne, 1);
         tour.push({ coup: c, note });
         if (note > alpha) alpha = note;
       }

@@ -7,6 +7,8 @@
 // Ce fichier ne connaît ni la 3D ni React : c'est le règlement, rien
 // d'autre, et il se vérifie tout seul (tools/des-check.mjs).
 
+import { choisirCoupDes } from './cpu';
+
 export type Face = 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface Joueur {
@@ -58,6 +60,14 @@ export const DES_AU_DEPART = 5;
 
 const hasard = (n: number) => Math.floor(Math.random() * n);
 export const lancerUnDe = (): Face => ((hasard(6) + 1) as Face);
+
+/** Le dé repris par un calzar réussi ne se lance pas à table : il
+ *  retourne au gobelet et sera relancé à la manche suivante. Lui tirer
+ *  une face rendrait l'arbitre impur, et deux joueurs en ligne qui
+ *  rejouent la même liste de coups n'obtiendraient plus le même état.
+ *  Six est la face neutre déjà employée par `versMoteur` dans
+ *  ./enLigne, là où seule la LONGUEUR des mains fait foi. */
+const DE_REPRIS: Face = 6;
 
 export function lancerLesDes(nb: number): Face[] {
   return Array.from({ length: nb }, lancerUnDe);
@@ -213,7 +223,7 @@ export function exact(p: Partie): Partie {
   const joueurs = p.joueurs.map((j) => {
     if (j.id !== appelant.id) return j;
     if (juste) {
-      return j.des.length >= DES_AU_DEPART ? j : { ...j, des: [...j.des, lancerUnDe()] };
+      return j.des.length >= DES_AU_DEPART ? j : { ...j, des: [...j.des, DE_REPRIS] };
     }
     return { ...j, des: j.des.slice(0, -1) };
   });
@@ -270,19 +280,14 @@ export function mancheSuivante(p: Partie): Partie {
 }
 
 // ─── L'adversaire tenu par la maison ────────────────────────────────
-// Il compte ce qu'il voit, estime ce qu'il ne voit pas, et ment juste
-// ce qu'il faut. Pas d'omniscience : il ne connaît que ses propres dés.
-
-const probaAuMoins = (inconnus: number, cible: number, chance: number): number => {
-  // Probabilité binomiale d'avoir AU MOINS `cible` succès.
-  let p = 0;
-  for (let k = cible; k <= inconnus; k++) {
-    let c = 1;
-    for (let i = 0; i < k; i++) c = (c * (inconnus - i)) / (i + 1);
-    p += c * Math.pow(chance, k) * Math.pow(1 - chance, inconnus - k);
-  }
-  return Math.min(1, Math.max(0, p));
-};
+// Le tempérament de la machine a déménagé dans ./cpu, qui compte la
+// loi binomiale au lieu de se fier à un seuil fixe, tient les dix
+// marches de force et sait appeler le compte exact.
+//
+// Ce raccourci reste ici pour les appelants qui ne connaissent que
+// deux réponses, l'annonce et le doute. Il joue au niveau du Sergent,
+// la cinquième marche, et l'appel du compte exact lui est retiré
+// puisqu'ils ne sauraient pas quoi en faire.
 
 export interface CoupMachine {
   action: 'annonce' | 'doute';
@@ -291,47 +296,8 @@ export interface CoupMachine {
 }
 
 export function coupDeLaMachine(p: Partie): CoupMachine {
-  const moi = p.joueurs[p.tour];
-  const total = desEnJeu(p);
-  const inconnus = total - moi.des.length;
-  const chance = 1 / 3; // la face visée ou un as
-
-  const compteChezMoi = (face: Face) =>
-    moi.des.filter((d) => d === face || (face !== 1 && d === 1)).length;
-
-  if (p.mise) {
-    const manquants = Math.max(0, p.mise.quantite - compteChezMoi(p.mise.face));
-    const credibilite = probaAuMoins(inconnus, manquants, p.mise.face === 1 ? 1 / 6 : chance);
-    // Sous 22 % de chances que l'annonce tienne, on crie au menteur.
-    if (credibilite < 0.22) return { action: 'doute' };
-  }
-
-  // Sinon on monte, sur la face qu'on a le plus en main.
-  const faces: Face[] = [2, 3, 4, 5, 6, 1];
-  let meilleure: Face = 2;
-  let meilleurCompte = -1;
-  for (const f of faces) {
-    const c = compteChezMoi(f);
-    if (c > meilleurCompte) { meilleurCompte = c; meilleure = f; }
-  }
-
-  const plancher = p.mise ? p.mise.quantite : Math.max(1, Math.round(total / 3));
-  let quantite = plancher;
-  let face = meilleure;
-  if (p.mise) {
-    if (meilleure > p.mise.face && miseValide(p.mise, p.mise.quantite, meilleure, total)) {
-      quantite = p.mise.quantite;
-    } else {
-      quantite = p.mise.quantite + 1;
-      if (quantite > total) return { action: 'doute' };
-    }
-  }
-  if (!miseValide(p.mise, quantite, face, total)) {
-    // Dernier recours : une face plus haute à quantité égale, sinon doute.
-    const plusHaute = ([6, 5, 4, 3, 2] as Face[]).find((f) =>
-      miseValide(p.mise, p.mise ? p.mise.quantite : 1, f, total));
-    if (plusHaute) { quantite = p.mise ? p.mise.quantite : 1; face = plusHaute; }
-    else return { action: 'doute' };
-  }
-  return { action: 'annonce', quantite, face };
+  const coup = choisirCoupDes(p, 5, undefined, { autoriserExact: false });
+  return coup.action === 'annonce'
+    ? { action: 'annonce', quantite: coup.quantite, face: coup.face }
+    : { action: 'doute' };
 }

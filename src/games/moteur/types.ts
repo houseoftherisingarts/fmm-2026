@@ -54,6 +54,25 @@ export interface OptionsRecherche {
   livre?: Record<string, string>;
   /** Un signal d'arrêt, lu entre deux nœuds (le travailleur s'en sert). */
   arret?: () => boolean;
+  /**
+   * Pèse CHAQUE coup de la racine à fenêtre pleine.
+   *
+   * Sans ce réglage, seul le premier coup reçoit une note exacte : les
+   * suivants sont cherchés dans une fenêtre déjà fermée par l'alpha
+   * courant, et leur note n'est plus qu'une borne supérieure. Le
+   * meilleur coup reste juste, donc une machine qui joue toujours le
+   * meilleur ne voit pas la différence. Les marches intermédiaires,
+   * elles, piochent dans une fenêtre autour du meilleur : avec des
+   * bornes au lieu de notes, elles tiennent pour équivalents des coups
+   * qui ne le sont pas, et le niveau 3 se met à jouer comme le niveau
+   * 1. Mesuré au banc d'essai du Renard le 2026-09-01 : 5 victoires et
+   * 5 défaites du niveau 3 contre le niveau 1, au lieu d'une
+   * domination nette.
+   *
+   * La fenêtre pleine coûte le gain de l'élagage à la racine
+   * seulement : l'élagage continue de jouer dans chaque sous-arbre.
+   */
+  notesExactes?: boolean;
 }
 
 export interface CoupNote<C> { coup: C; note: number }

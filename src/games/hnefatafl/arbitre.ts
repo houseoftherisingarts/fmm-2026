@@ -130,8 +130,13 @@ export function verdictArbitre(e: EtatTafl): VerdictTafl | null {
   const gagnant = checkWin(e.board);
   if (gagnant === 'defender') return { issue: 'defender', cause: 'fuite' };
   if (gagnant === 'attacker') {
+    // Nommer la bonne cause sans récrire le test de prise : un roi pris
+    // par quatre lances n'a plus une seule case autour de lui, donc
+    // l'eau ne mouille que la sienne. Une poche fermée, elle, en compte
+    // toujours plusieurs. C'est ce qui sépare les deux fins.
+    const r = REGLE.encerclement ? respiration(e.board) : null;
     const cause: CauseFin =
-      REGLE.encerclement && respiration(e.board).bords === 0 ? 'encerclement' : 'roiPris';
+      r && r.bords === 0 && r.cases > 1 ? 'encerclement' : 'roiPris';
     return { issue: 'attacker', cause };
   }
 
@@ -167,7 +172,8 @@ export function etatInitial(regleId: string): EtatTafl {
   return { ...base, vues: { [clePosition(base)]: 1 } };
 }
 
-/** Le coup est-il légal ? Vérification directe, sans dresser la liste. */
+/** Le coup est-il légal ? La vérification ne dresse que les coups de
+ *  la pièce nommée, pas ceux de tout le camp. */
 export function coupLegal(b: Board, tour: Side, from: Coord, to: Coord): boolean {
   const [fr, fc] = from;
   const [tr, tc] = to;
@@ -250,10 +256,6 @@ export const texteVerdict = (v: VerdictTafl, fr: boolean): string =>
 /** Le camp vainqueur sous la forme attendue par les pages, ou null si nulle. */
 export const gagnantDe = (v: VerdictTafl | null): Side | null =>
   (v && v.issue !== 'nulle' ? v.issue : null);
-
-/** Les quatre coins du damier courant, dans l'ordre de lecture. */
-export const coins = (): Coord[] =>
-  [[0, 0], [0, N - 1], [N - 1, 0], [N - 1, N - 1]];
 
 /** Rendu utile à l'évaluation : la case fait-elle office d'enclume ? */
 export const caseHostile = (b: Board, r: number, c: number, contre: Side): boolean => {

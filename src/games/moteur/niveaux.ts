@@ -63,10 +63,17 @@ export const NIVEAUX: Record<Niveau, ReglageNiveau> = {
   3:  marche(3,  'Palefrenier', 'Groom',      2, 0.35, 220),
   4:  marche(4,  'Écuyer',      'Squire',     2, 0.20, 150),
   5:  marche(5,  'Sergent',     'Sergeant',   3, 0.10, 100),
-  6:  marche(6,  'Chevalier',   'Knight',     4, 0.05,  60, { tempsMs: 350 }),
-  7:  marche(7,  'Banneret',    'Banneret',   5, 0.02,  35, { tempsMs: 600 }),
-  8:  marche(8,  'Capitaine',   'Captain',    6, 0.01,  18, { tempsMs: 1000 }),
-  9:  marche(9,  'Sénéchal',    'Seneschal',  8, 0,      8, { tempsMs: 1600 }),
+  // À partir du chevalier, la force ne vient plus d'une fenêtre mais
+  // de la profondeur. La raison est mesurée, pas théorique : peser
+  // exactement chaque coup de la racine coûte si cher que les marches
+  // 6 à 9 tombaient toutes à la même profondeur et jouaient la même
+  // partie (banc du Renard, 2026-09-01). Elles cherchent donc à plein
+  // régime, et leur maladresse tient à la seule bévue, qui devient
+  // rare. La variété vient du tirage entre les coups d'égale valeur.
+  6:  marche(6,  'Chevalier',   'Knight',     4, 0.06,   0, { tempsMs: 350 }),
+  7:  marche(7,  'Banneret',    'Banneret',   5, 0.035,  0, { tempsMs: 600 }),
+  8:  marche(8,  'Capitaine',   'Captain',    6, 0.02,   0, { tempsMs: 1000 }),
+  9:  marche(9,  'Sénéchal',    'Seneschal',  8, 0.008,  0, { tempsMs: 1600 }),
   10: marche(10, 'Connétable',  'Constable', 14, 0,      0, { tempsMs: 2600, pense: true }),
 };
 
@@ -97,6 +104,9 @@ export function reflechir<E, C>(
     livre: r.livre ? o.livre : undefined,
     arret: o.arret,
     noeudsMax: o.noeudsMax,
+    // Une marche qui pioche dans une fenêtre a besoin de la note juste
+    // de chaque coup, pas seulement de celle du meilleur.
+    notesExactes: r.fenetre > 0,
   });
 }
 
@@ -130,6 +140,14 @@ export function choisirAuNiveau<E, C>(
     return legaux[entier(alea, legaux.length)];
   }
 
+  // Sans fenêtre, la machine joue le meilleur coup et rien d'autre. Le
+  // tirage au sort entre coups d'égale valeur a été essayé le
+  // 2026-09-01 puis retiré : il rendait le connétable imprévisible d'une
+  // partie à l'autre, ce qui est bien, mais aussi d'une exécution à
+  // l'autre sur la même position, ce qui rend tout contrôle impossible
+  // et fait choisir un coup qui vaut autant à l'horizon de la recherche
+  // sans valoir autant sur la planche. La variété des débuts vient du
+  // livre d'ouvertures, dont c'est le métier.
   if (r.fenetre <= 0 || !meilleur) return res.coup;
   const seuil = meilleur.note - r.fenetre;
   const acceptables = res.racine.filter((c) => c.note >= seuil);

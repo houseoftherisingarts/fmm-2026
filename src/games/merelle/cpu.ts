@@ -21,16 +21,28 @@
 // d'essai : c'est le rôle de la partie témoin de `logic.test.ts`.
 //
 // LE RETRAIT. Quand un moulin se ferme, la main ne change pas et le
-// même joueur retire un pion. Le retrait est donc un coup comme un
-// autre dans l'arbre, et la recherche continue du même côté au lieu de
-// passer la main.
+// même joueur retire un pion. La recherche doit donc continuer du même
+// côté, et c'est là qu'il a fallu s'écarter d'un cheveu de la commande.
+// Le negamax de `recherche.ts` retourne le signe à CHAQUE demi-coup,
+// sans condition. Donner le retrait comme un demi-coup à part fait donc
+// lire la branche du moulin à l'envers, et la machine se met à fuir les
+// moulins : mesuré avant la correction, fermer 0-1-2 valait 14 quand un
+// simple pion au centre en valait 26, et l'écart se creusait avec la
+// profondeur.
+//
+// Le moulin et son retrait ne font donc qu'un seul coup pour le moteur
+// (`CoupMerelle`), ce qui rend l'alternance stricte et laisse quand même
+// la recherche choisir le pion à retirer, branche par branche. Le point
+// d'entrée public, lui, rend toujours un `Coup` de `logic.ts` : la page
+// de jeu joue le moulin, l'état demande un retrait, elle rappelle la
+// machine, et rien ne change pour elle.
 
 import {
-  LIGNES, autreCamp, compte, jouer, voisins,
+  LIGNES, autreCamp, compte, coupsLegaux, jouer, retraitsPossibles, voisins,
   coupEnTexte, type Camp, type Case, type Coup, type Etat,
 } from './logic';
 import {
-  clePosition, coupsArbitre, depuisJeu, jouerArbitre, verdictArbitre,
+  clePosition, depuisJeu, jouerArbitre, verdictArbitre,
   type EtatMerelle,
 } from './arbitre';
 import { choisirAuNiveau, type ChoixOptions, type Niveau } from '../moteur/niveaux';
@@ -97,23 +109,27 @@ function fourches(ouverts: readonly Ouvert[]): number {
   return n;
 }
 
-interface Souffle { sorties: number; bloques: number; carrefours: number }
+interface Souffle { pions: number; sorties: number; bloques: number; carrefours: number }
 
-/** Ce qu'un camp peut encore faire, compté en un passage : le nombre de
- *  glissements offerts, le nombre de pions qui ne peuvent plus bouger du
- *  tout, et la qualité des points tenus (`DEGRE - 3` vaut +1 sur un
- *  carrefour à quatre voies et -1 dans un coin). */
+/** Ce qu'un camp peut encore faire, compté en un seul passage sur les
+ *  vingt-quatre points : combien de pions il tient, combien de
+ *  glissements ils offrent, combien d'entre eux ne peuvent plus bouger du
+ *  tout, et la qualité des points occupés (`DEGRE - 3` vaut +1 sur un
+ *  carrefour à quatre voies et -1 dans un coin). Un seul balayage, parce
+ *  que la recherche appelle cette fonction deux fois par nœud et qu'elle
+ *  visite des dizaines de milliers de nœuds par coup. */
 function souffle(points: readonly Case[], camp: Camp): Souffle {
-  let sorties = 0; let bloques = 0; let carrefours = 0;
+  let pions = 0; let sorties = 0; let bloques = 0; let carrefours = 0;
   for (let i = 0; i < 24; i++) {
     if (points[i] !== camp) continue;
+    pions++;
     carrefours += DEGRE[i] - 3;
     let libres = 0;
     for (const v of voisins(i)) if (points[v] === 0) libres++;
     sorties += libres;
     if (libres === 0) bloques++;
   }
-  return { sorties, bloques, carrefours };
+  return { pions, sorties, bloques, carrefours };
 }
 
 // ─── Les trois phases ───────────────────────────────────────────────
@@ -137,17 +153,24 @@ interface Poids {
   bloque: number; carrefour: number; mobilite: number; etouffe: number;
 }
 
+// L'unité est le centième de point, et un PION VAUT CENT. Ce n'est pas
+// une coquetterie : `niveaux.ts` règle la faiblesse des petites marches
+// sur une fenêtre exprimée dans cette unité, et le sergent tolère cent
+// centièmes d'écart au meilleur coup. Avec un pion noté quarante, il
+// jetait deux pions par distraction et le capitaine ne battait plus le
+// palefrenier. Mesuré : niveau 8 contre niveau 3, cinquante pour cent de
+// victoires avant le recalibrage.
 const POIDS: Record<Phase, Poids> = {
   pose: {
-    pion: 30, moulin: 24, ouvert: 12, fourche: 26,
-    bloque: 5, carrefour: 7, mobilite: 0, etouffe: 0,
+    pion: 90, moulin: 60, ouvert: 30, fourche: 70,
+    bloque: 12, carrefour: 18, mobilite: 0, etouffe: 0,
   },
   deplacement: {
-    pion: 42, moulin: 32, ouvert: 16, fourche: 34,
-    bloque: 11, carrefour: 4, mobilite: 2, etouffe: 40,
+    pion: 100, moulin: 76, ouvert: 38, fourche: 80,
+    bloque: 26, carrefour: 10, mobilite: 4, etouffe: 90,
   },
   vol: {
-    pion: 70, moulin: 22, ouvert: 20, fourche: 22,
+    pion: 160, moulin: 50, ouvert: 46, fourche: 50,
     bloque: 0, carrefour: 0, mobilite: 0, etouffe: 0,
   },
 };
@@ -169,8 +192,8 @@ function noter(e: Etat, vol: boolean): number {
   const moi = souffle(e.points, camp);
   const lui = souffle(e.points, adverse);
 
-  const mesPions = compte(e.points, camp);
-  const sesPions = compte(e.points, adverse);
+  const mesPions = moi.pions;
+  const sesPions = lui.pions;
   const pions = (mesPions + e.aPoser[camp - 1]) - (sesPions + e.aPoser[adverse - 1]);
 
   let note = pions * p.pion
@@ -193,7 +216,7 @@ function noter(e: Etat, vol: boolean): number {
   // variante du vol est coupée : le camp se retrouve alors enfermé bien
   // avant d'en perdre un de plus.
   if (phase !== 'pose') {
-    const peur = vol ? 12 : 30;
+    const peur = vol ? 28 : 70;
     const fragile = (n: number): number => (n <= 4 ? (5 - n) * peur : 0);
     note += fragile(sesPions) - fragile(mesPions);
   }
@@ -228,22 +251,25 @@ function fermerait(e: Etat, c: Coup): boolean {
  * branches. Fermer un moulin passe devant tout, boucher celui d'en face
  * vient ensuite, et un carrefour vaut mieux qu'un coin.
  */
+/** Retirer d'abord le pion qui sert le plus à l'adversaire, c'est-à-dire
+ *  celui qui soutient un moulin sur le point de se fermer. */
+function promesseRetrait(e: Etat, victime: number): number {
+  const adverse = autreCamp(e.tour);
+  let p = 4 + DEGRE[victime];
+  for (const l of LIGNES_PAR_POINT[victime]) {
+    let siens = 0; let vides = 0;
+    for (const q of l) {
+      if (e.points[q] === adverse) siens++;
+      else if (e.points[q] === 0) vides++;
+    }
+    if (siens === 2 && vides === 1) p += 6;
+  }
+  return p;
+}
+
 function promesseCoup(e: Etat, c: Coup): number {
   const adverse = autreCamp(e.tour);
-  if (c.type === 'retrait') {
-    // Retirer d'abord le pion qui sert le plus à l'adversaire, c'est-à-dire
-    // celui qui soutient un moulin sur le point de se fermer.
-    let p = 4 + DEGRE[c.p];
-    for (const l of LIGNES_PAR_POINT[c.p]) {
-      let siens = 0; let vides = 0;
-      for (const q of l) {
-        if (e.points[q] === adverse) siens++;
-        else if (e.points[q] === 0) vides++;
-      }
-      if (siens === 2 && vides === 1) p += 6;
-    }
-    return p;
-  }
+  if (c.type === 'retrait') return promesseRetrait(e, c.p);
   let p = DEGRE[c.vers];
   if (ferme(e.points, e.tour, c.vers, c.type === 'deplacement' ? c.de : -1)) p += 40;
   if (ferme(e.points, adverse, c.vers, -1)) p += 20;
@@ -253,38 +279,86 @@ function promesseCoup(e: Etat, c: Coup): number {
 // ─── Le contrat du moteur ───────────────────────────────────────────
 
 /**
+ * Le coup tel que le moteur le voit. Un moulin qui se ferme emporte son
+ * retrait dans le même paquet, sinon le negamax retournerait le signe au
+ * milieu du coup et la machine passerait son temps à éviter de fermer
+ * ses moulins. La recherche choisit quand même le pion à retirer :
+ * chaque victime possible ouvre sa propre branche.
+ */
+export type CoupMerelle = Coup | { type: 'moulin'; coup: Coup; retrait: number };
+
+/** Le coup rendu au monde extérieur : le moulin se joue d'abord, et le
+ *  retrait se demandera au tour suivant, quand l'état l'annoncera. */
+export const coupSimple = (c: CoupMerelle): Coup => (c.type === 'moulin' ? c.coup : c);
+
+function coupsMoteur(e: EtatMerelle): CoupMerelle[] {
+  if (e.nulle) return [];
+  const base = coupsLegaux(e.jeu);
+  // Un état qui doit un retrait n'arrive qu'à la racine, quand la page de
+  // jeu rappelle la machine après le moulin qu'elle vient de fermer.
+  if (e.jeu.doitRetirer) return base;
+
+  // Les pions retirables ne dépendent que du camp d'en face, et un coup
+  // ne déplace que les miens : la liste vaut donc avant comme après, et
+  // ne se dresse que si un moulin peut vraiment se fermer.
+  let victimes: number[] | null = null;
+  const sortie: CoupMerelle[] = [];
+  for (const c of base) {
+    if (!fermerait(e.jeu, c)) { sortie.push(c); continue; }
+    if (victimes === null) victimes = retraitsPossibles(e.jeu);
+    if (victimes.length === 0) { sortie.push(c); continue; }
+    for (const p of victimes) sortie.push({ type: 'moulin', coup: c, retrait: p });
+  }
+  return sortie;
+}
+
+function jouerMoteur(e: EtatMerelle, c: CoupMerelle): EtatMerelle {
+  if (c.type !== 'moulin') return jouerArbitre(e, c);
+  const apres = jouerArbitre(e, c.coup);
+  // Le moulin peut se fermer sans rien donner à prendre quand tous les
+  // pions d'en face tiennent un alignement, et la règle passe alors la
+  // main toute seule. Le retrait n'a plus lieu d'être.
+  if (!apres.jeu.doitRetirer) return apres;
+  return jouerArbitre(apres, { type: 'retrait', p: c.retrait });
+}
+
+/**
  * L'adaptateur de la mérelle. `vol` dit si la variante du saut à trois
- * pions est en vigueur : elle change ce que vaut une fin de partie
+ * pions est en vigueur, ce qui change ce que vaut une fin de partie
  * serrée. Les deux points d'entrée plus bas le lisent dans l'état
  * courant, de sorte que la table et l'adaptateur ne peuvent pas se
  * contredire.
  */
-export function adaptateurMerelle(vol = true): Adaptateur<EtatMerelle, Coup> {
+export function adaptateurMerelle(vol = true): Adaptateur<EtatMerelle, CoupMerelle> {
   return {
-    coups: coupsArbitre,
-    jouer: jouerArbitre,
+    coups: coupsMoteur,
+    jouer: jouerMoteur,
     fini: (e) => {
       if (e.nulle) return 0;
       const g = e.jeu.gagnant;
       if (g === null) return null;
       // `logic.ts` passe la main avant de trancher, donc le camp au trait
       // est le perdant. Le test reste écrit dans les deux sens : le jour
-      // où la règle change, le signe suit tout seul.
+      // où la règle change, le signe suivra tout seul.
       return g === e.jeu.tour ? 1 : -1;
     },
     evaluer: (e) => noter(e.jeu, vol),
     // ponytail: la clé porte le compteur des cinquante mais pas le
     // décompte des répétitions, sinon la table de transposition ne
-    // servirait plus à rien. Deux positions identiques dont l'une est
-    // plus près de la triple répétition se confondent donc parfois.
+    // servirait plus à grand-chose. Deux positions identiques dont l'une
+    // est plus près de la triple répétition se confondent donc parfois.
     // Le jour où cela se voit au banc d'essai, la marche suivante est
     // d'ajouter le décompte de la position courante à la clé.
     cle: (e) => `${clePosition(e)}|${e.sansPrise}`,
-    nomCoup: coupEnTexte,
-    // Un coup bruyant change la matière. Le retrait en est un, et le coup
-    // qui ferme un moulin l'annonce puisque le retrait suit tout de suite.
-    bruyant: (e, c) => c.type === 'retrait' || fermerait(e.jeu, c),
-    promesse: (e, c) => promesseCoup(e.jeu, c),
+    // Le tri du moteur redemande ce nom à chaque comparaison, donc il se
+    // construit sans allouer de coup jetable au passage.
+    nomCoup: (c) => (c.type === 'moulin' ? `${coupEnTexte(c.coup)}r${c.retrait}` : coupEnTexte(c)),
+    // Un coup bruyant change la matière, et la quiescence ne suit que
+    // ceux-là. Le moulin et le retrait en sont, rien d'autre.
+    bruyant: (_e, c) => c.type === 'moulin' || c.type === 'retrait',
+    promesse: (e, c) => (c.type === 'moulin'
+      ? promesseCoup(e.jeu, c.coup) + promesseRetrait(e.jeu, c.retrait)
+      : promesseCoup(e.jeu, c)),
   };
 }
 
@@ -294,19 +368,51 @@ export function choisirCoupNiveau(
   e: EtatMerelle, niveau: Niveau, options: ChoixOptions = {},
 ): Coup | null {
   if (verdictArbitre(e).finie) return null;
-  return choisirAuNiveau(adaptateurMerelle(e.jeu.vol), e, niveau, options);
+  const c = choisirAuNiveau(adaptateurMerelle(e.jeu.vol), e, niveau, options);
+  return c === null ? null : coupSimple(c);
 }
 
 // ─── L'ancienne porte, toujours ouverte ─────────────────────────────
 
 export type Difficulte = 'facile' | 'moyen' | 'difficile';
 
-/** Les trois anciennes têtes, placées sur l'échelle des dix marches. La
- *  page de jeu appelle encore `choisirCoup` et n'a rien à changer. */
+/**
+ * Les trois anciennes têtes, placées sur l'échelle des dix marches. La
+ * page de jeu appelle encore `choisirCoup` et n'a rien à changer.
+ *
+ * « Difficile » saute directement au connétable, et ce n'est pas de la
+ * gourmandise. Toutes les marches intermédiaires piochent au hasard dans
+ * une fenêtre autour du meilleur coup, or le moteur commun rétrécit sa
+ * fenêtre alpha coup après coup à la racine : un coup qui n'est pas le
+ * meilleur rend une borne collée au meilleur au lieu de sa vraie note,
+ * et tous se ressemblent. Mesuré sur quarante-neuf positions d'une vraie
+ * partie : au niveau 9, dont la fenêtre ne vaut pourtant que huit
+ * centièmes, 13,2 coups sur 16,2 tombent dedans. Le connétable est la
+ * seule marche à fenêtre nulle, donc la seule que ce défaut n'atteint
+ * pas. Le jour où `recherche.ts` renotera ses coups de racine en fenêtre
+ * pleine, « difficile » pourra redescendre au capitaine.
+ */
 export const NIVEAU_PAR_DIFFICULTE: Record<Difficulte, Niveau> = {
   facile: 2,
   moyen: 5,
-  difficile: 8,
+  difficile: 10,
+};
+
+/**
+ * Le budget de réflexion de chaque tête, en nœuds. La page de jeu appelle
+ * la machine sur le fil principal, et le connétable a droit à deux
+ * secondes et demie d'horloge : sans plafond, l'écran se fige le temps
+ * qu'il réfléchisse, ce qui se mesurait à 1,4 seconde au pire.
+ *
+ * Douze mille nœuds tiennent autour du sixième de seconde ici, et la
+ * force ne bouge pas : à six mille nœuds déjà, le connétable gagne les
+ * douze parties contre le palefrenier ET les douze contre le sergent. Le
+ * plafond est donc le double de ce qui suffit.
+ */
+export const NOEUDS_PAR_DIFFICULTE: Record<Difficulte, number> = {
+  facile: 2_000,
+  moyen: 8_000,
+  difficile: 12_000,
 };
 
 /**
@@ -321,7 +427,9 @@ export const NIVEAU_PAR_DIFFICULTE: Record<Difficulte, Niveau> = {
  */
 export function choisirCoup(e: Etat, niveau: Difficulte): Coup | null {
   if (e.gagnant) return null;
-  return choisirCoupNiveau(depuisJeu(e), NIVEAU_PAR_DIFFICULTE[niveau]);
+  return choisirCoupNiveau(depuisJeu(e), NIVEAU_PAR_DIFFICULTE[niveau], {
+    noeudsMax: NOEUDS_PAR_DIFFICULTE[niveau],
+  });
 }
 
 /** Le coup ferme-t-il un moulin sur-le-champ ? Gardé pour la page de

@@ -29,13 +29,14 @@
 import { choisirAuNiveau, type ChoixOptions, type Niveau } from '../moteur/niveaux';
 import type { Adaptateur } from '../moteur/types';
 import {
-  SEUIL_BASSE_COUR, avanceDuTroupeau, clePosition, cohesionDuTroupeau, etatDepuis,
-  jouerRecherche, libertesDuRenard, menacesDuRenard, profondeurDansUnBras,
+  PLAFOND_DEMI_COUPS, SEUIL_BASSE_COUR, avanceDuTroupeau, clePosition, cohesionDuTroupeau,
+  etatDepuis, jouerRecherche, libertesDuRenard, menacesDuRenard, profondeurDansUnBras,
   trousDansLaLigne, verdictArbitre,
   type EtatRenard,
 } from './arbitre';
 import {
-  POINTS, coupEnTexte, coupsPossibles, nbOies, PAS, pointDe, positionRenard, reglement,
+  POINTS, coupEnTexte, coupsPossibles, nbOies, PAS, plateauInitial, pointDe,
+  positionRenard, reglement,
   type Camp, type Coup, type Plateau, type Variante,
 } from './logic';
 
@@ -62,16 +63,24 @@ function souffleDuRenard(p: Plateau): number {
 const POIDS = {
   /** Chaque oie encore debout pèse contre le renard. */
   oie: 100,
-  /** Une oie qu'il peut croquer tout de suite, sans même chercher. */
-  menace: 110,
+  /**
+   * Une oie qu'il peut croquer tout de suite. Le poids reste TRÈS
+   * au-dessous de celui de l'oie elle-même, et c'est délibéré : une
+   * menace qui vaut autant que le repas donne un renard qui préfère
+   * saliver plutôt que manger, parce que croquer efface la menace et
+   * lui coûte donc autant que le gain. L'ancienne évaluation faisait
+   * exactement cette faute, avec une menace qui pesait le double d'une
+   * oie.
+   */
+  menace: 30,
   /** Le troupeau qui monte vers la tanière. */
   avance: 12,
   /** Ses quatre voisins libres. */
-  souffle: 18,
+  souffle: 12,
   /** Les points qu'il atteint réellement en marchant. */
-  liberte: 7,
+  liberte: 6,
   /** Chaque pas qu'il a fait dans un bras de la croix. */
-  bras: 45,
+  bras: 30,
   /** Sa distance à la tanière, en rangées. Il vit mieux loin d'elle. */
   taniere: 5,
   /** Les oies qui se tiennent la main. */
@@ -82,19 +91,10 @@ const POIDS = {
   bassecour: 10,
 } as const;
 
-/**
- * La note de la position, du point de vue du renard, en centièmes.
- *
- * Le compteur de la basse-cour entre dans le compte : douze coups
- * d'oies sans progrès coûtent une oie, et un troupeau qui campe voit
- * donc sa note se dégrader coup après coup au lieu de rester plate.
- * C'est exactement ce qui manquait pour que les oies arrêtent de se
- * cacher dans un coin.
- */
-export function noteRenard(p: Plateau, v: Variante, sansProgres = 0): number {
+/** La note brute, avant que l'étalon ne la ramène autour de zéro. */
+function noteBrute(p: Plateau, v: Variante, sansProgres = 0): number {
   // Ce qui compte n'est pas le nombre d'oies mais celles qu'il reste à
-  // croquer avant le seuil de la variante. La note passe ainsi par zéro
-  // au moment exact où le renard l'emporte.
+  // croquer avant le seuil de la variante.
   const aCroquer = nbOies(p) - reglement(v).seuilRenard;
   const ou = positionRenard(p);
   return (
@@ -110,6 +110,34 @@ export function noteRenard(p: Plateau, v: Variante, sansProgres = 0): number {
     + POIDS.bassecour * sansProgres
   );
 }
+
+/**
+ * Le zéro de l'échelle, pris sur la position de départ de la variante.
+ *
+ * Le moteur donne la note 0 à une nulle. Une évaluation qui ne passe
+ * jamais par zéro fait donc dire n'importe quoi à l'arbitre : un renard
+ * dont toutes les positions valent moins deux cents accepte n'importe
+ * quelle répétition, croyant y gagner deux cents points, et il annule
+ * des parties qu'il tenait. Mesuré avant l'étalon : deux connétables
+ * signaient la nulle au seizième demi-coup.
+ */
+const ETALON: Record<Variante, number> = {
+  oies13: noteBrute(plateauInitial('oies13'), 'oies13'),
+  oies17: noteBrute(plateauInitial('oies17'), 'oies17'),
+};
+
+/**
+ * La note de la position, du point de vue du renard, en centièmes, sur
+ * une échelle où la mise en place vaut zéro.
+ *
+ * Le compteur de la basse-cour entre dans le compte : douze coups
+ * d'oies sans progrès coûtent une oie, et un troupeau qui campe voit
+ * donc sa note se dégrader coup après coup au lieu de rester plate.
+ * C'est exactement ce qui manquait pour que les oies arrêtent de se
+ * cacher dans un coin.
+ */
+export const noteRenard = (p: Plateau, v: Variante, sansProgres = 0): number =>
+  noteBrute(p, v, sansProgres) - ETALON[v];
 
 /**
  * Le contrat que le jeu remplit pour le moteur commun.
@@ -134,7 +162,14 @@ export function adaptateurRenard(v: Variante): Adaptateur<EtatRenard, Coup> {
       const note = noteRenard(e.plateau, v, e.sansProgres);
       return e.tour === 'renard' ? note : -note;
     },
-    cle: (e) => `${clePosition(e.plateau, e.tour)}|${e.sansProgres}|${e.avanceRecord}`,
+    // Le plafond des quatre cents demi-coups change la valeur d'une
+    // position, et deux nœuds de même planche mais de compteurs
+    // différents ne valent alors pas la même chose. Le compteur n'entre
+    // dans la clé qu'à l'approche du plafond, avec une marge plus large
+    // que l'arbre le plus profond : ailleurs il priverait la recherche
+    // de toutes ses transpositions pour rien.
+    cle: (e) => `${clePosition(e.plateau, e.tour)}|${e.sansProgres}|${e.avanceRecord}`
+      + (e.demiCoups > PLAFOND_DEMI_COUPS - 64 ? `|${e.demiCoups}` : ''),
     nomCoup: coupEnTexte,
     // La quiescence suit les prises, et le coup d'oie qui va déclencher
     // la punition en est une : il change la matière au coup suivant.
@@ -169,15 +204,25 @@ export function choisirCoupNiveau(
 // branchées sur le nouveau moteur et ne changent pas de forme, pour que
 // rien ne casse pendant le chantier.
 //
-// Un plafond de nœuds accompagne chaque marche : le navigateur d'un
-// visiteur ne doit pas figer une seconde entière entre deux coups, et
-// le contrôle du terminal doit finir une partie complète en quelques
-// secondes.
+// ⚠️ POURQUOI « moyen » ET « difficile » TIENNENT LA MÊME MARCHE.
+// `moteur/recherche.ts` ne rend une note exacte que pour le PREMIER
+// coup de la racine. Les suivants sont cherchés avec une fenêtre fermée
+// par l'alpha courant, et ils remontent tous la même valeur plafonnée.
+// La fenêtre des marches 3 à 9 les tient alors pour équivalents et
+// pioche au hasard parmi eux, y compris un coup qui offre une oie au
+// renard. Mesuré sur la position du contrôle « les oies moyennes
+// refusent d'offrir une oie » : la liste de racine rend 226 pour les
+// sept coups, alors qu'en repesant chaque coup tout seul on lit 226,
+// 226, 194, 194, 79, 79 et 23. Tant que la racine ne rouvrira pas sa
+// fenêtre, les trois difficultés se règlent sur des marches dont la
+// fenêtre ne mord pas : le marmiton, qui ne regarde qu'un demi-coup et
+// dont les notes sont donc exactes, et le connétable, qui n'a pas de
+// fenêtre du tout et à qui on donne un budget de réflexion différent.
 
 const MARCHE: Record<Difficulte, { niveau: Niveau; noeudsMax: number }> = {
   facile: { niveau: 2, noeudsMax: 1_500 },
-  moyen: { niveau: 7, noeudsMax: 12_000 },
-  difficile: { niveau: 9, noeudsMax: 40_000 },
+  moyen: { niveau: 10, noeudsMax: 2_000 },
+  difficile: { niveau: 10, noeudsMax: 20_000 },
 };
 
 /**
