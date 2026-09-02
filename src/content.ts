@@ -246,7 +246,7 @@ export const FOOTER = {
 // ─── Consent banner (LOI 25 Quebec) ──────────────────────────────────
 export const CONSENT = {
   FR: {
-    body: 'Le FMM utilise des témoins (cookies) pour mesurer l\'audience du site et améliorer votre expérience. Vous pouvez accepter ou refuser. Conforme à la Loi 25 du Québec.',
+    body: 'Le FMM peut déposer des témoins (cookies) et faire appel à des services de Google, de Meta et de Zeffy. Rien de tout cela ne se met en marche tant que vous ne l\'avez pas accepté, finalité par finalité.',
     accept: 'J\'accepte',
     decline: 'Refuser',
   },
