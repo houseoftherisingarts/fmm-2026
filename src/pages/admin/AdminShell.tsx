@@ -124,7 +124,7 @@ export const NAV: NavItem[] = [
   // Tout ce que le festival a vendu depuis 2023, une personne par
   // ligne, versé par tools/importer-clients.mjs (Alex, 2026-08-24).
   { id: 'clients',    label: 'Clients',         icon: Receipt,         group: 'Régie' },
-  { id: 'carnet',     label: 'Carnet de contacts', icon: BookUser,     group: 'Régie' },
+  { id: 'carnet',     label: 'Bottin et contacts', icon: BookUser,     group: 'Régie' },
   { id: 'analytics',  label: 'Analytics',       icon: BarChart3,       group: 'Régie' },
   { id: 'parametres', label: 'Paramètres',      icon: Settings,        group: 'Régie' },
   { id: 'bugs',       label: 'Bugs',            icon: Bug,             group: 'Régie' },
