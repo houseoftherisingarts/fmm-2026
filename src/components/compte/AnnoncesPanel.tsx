@@ -48,7 +48,13 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     );
   };
 
-  const restants = ANNONCES.filter((a) => !pris.includes(a.id));
+  // Un règlement reste épinglé et n'entre pas dans la collection : le
+  // compte des avis à décrocher ne parle que des avis décrochables
+  // (Alex, 2026-09-02, quand le règlement des armes est arrivé).
+  const permanents = ANNONCES.filter((a) => a.permanent);
+  const collectionnables = ANNONCES.filter((a) => !a.permanent);
+  const restants = collectionnables.filter((a) => !pris.includes(a.id));
+  const affiches = [...permanents, ...restants];
   if (ANNONCES.length === 0) return null;
 
   return (
@@ -64,7 +70,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           className="font-sans text-sm tracking-[0.2em]"
           style={{ color: 'var(--sk-gilt)', fontWeight: 300 }}
         >
-          {restants.length} / {ANNONCES.length}
+          {restants.length} / {collectionnables.length}
         </span>
       </div>
 
@@ -78,7 +84,7 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             {fr ? 'Mes avis décrochés' : 'Notices I have taken'}
           </p>
           <ul className="space-y-2">
-            {ANNONCES.filter((a) => pris.includes(a.id)).map((a) => (
+            {collectionnables.filter((a) => pris.includes(a.id)).map((a) => (
               <li key={a.id} className="font-editorial text-sm text-ivory-soft flex items-start gap-2.5">
                 <Check size={14} className="text-brass shrink-0 mt-0.5" />
                 <span>
@@ -92,16 +98,19 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           </ul>
           <p className="font-sans text-[11px] text-ivory-soft/55 mt-4">
             {fr
-              ? `${pris.length} sur ${ANNONCES.length}. Les quatre réunis ouvrent la collection du babillard.`
-              : `${pris.length} of ${ANNONCES.length}. All four open the notice board collection.`}
+              ? `${pris.length} sur ${collectionnables.length}. Les quatre réunis ouvrent la collection du babillard.`
+              : `${pris.length} of ${collectionnables.length}. All four open the notice board collection.`}
           </p>
         </div>
       )}
 
-      {restants.length > 0 ? (
+      {affiches.length > 0 ? (
         <NoticeBoard className="w-full" gridClassName="sm:grid-cols-2">
-          {restants.map((a, i) => (
-            <AnnonceNotice key={a.id} a={a} lang={lang} index={i} onAccepter={() => accepter(a.id)} />
+          {affiches.map((a, i) => (
+            <AnnonceNotice
+              key={a.id} a={a} lang={lang} index={i}
+              onAccepter={a.permanent ? undefined : () => accepter(a.id)}
+            />
           ))}
         </NoticeBoard>
       ) : (
@@ -184,7 +193,16 @@ const AnnonceNotice: React.FC<{
     // Marge plus large que sur le tableau des marchands : les avis sont de
     // vrais paragraphes, et le parchemin a des bords déchirés. Le texte
     // doit rester dans la zone plate de la feuille.
-    <Parchment tilt={seedTilt(a.id)} pin={PIN_PAR_TON[a.tone]} className="px-9 py-9 md:px-12 md:py-10">
+    <Parchment
+      tilt={seedTilt(a.id)}
+      pin={PIN_PAR_TON[a.tone]}
+      // Un parchemin large a une déchirure large : la marge suit, sinon
+      // les derniers articles du règlement tombent dans le bord brûlé
+      // (vu à la capture du 2026-09-02).
+      className={a.pleineLargeur
+        ? 'px-12 py-10 md:px-20 md:py-14 sm:col-span-2'
+        : 'px-9 py-9 md:px-12 md:py-10'}
+    >
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -205,7 +223,7 @@ const AnnonceNotice: React.FC<{
         </h3>
         {/* Les alinéas de l'auteur sont respectés : un avis long se lit
             en paragraphes, pas en pavé. Séparateur : une ligne vide. */}
-        {(fr ? a.bodyFR : a.bodyEN).split('\n\n').map((para, i) => (
+        {(fr ? a.bodyFR : a.bodyEN).split('\n\n').filter(Boolean).map((para, i) => (
           <p
             key={i}
             className="font-sans text-[13px] md:text-sm text-[#3a2618] leading-[1.65] text-pretty mt-3 first:mt-0"
@@ -213,6 +231,28 @@ const AnnonceNotice: React.FC<{
             {para}
           </p>
         ))}
+
+        {/* Un règlement se lit en articles numérotés. Le compteur est
+            dessiné à la main plutôt que laissé au navigateur : la puce
+            par défaut se place hors de la marge du parchemin déchiré. */}
+        {(fr ? a.listeFR : a.listeEN) && (
+          <ol className="mt-4 space-y-2.5" style={{ counterReset: 'article' }}>
+            {(fr ? a.listeFR! : a.listeEN!).map((point, i) => (
+              <li
+                key={i}
+                className="font-sans text-[13px] md:text-sm text-[#3a2618] leading-[1.6] text-pretty flex gap-3"
+              >
+                <span
+                  className="shrink-0 font-display text-[13px] md:text-sm tabular-nums"
+                  style={{ color: 'var(--sk-brass-deep)' }}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ol>
+        )}
 
         {onAccepter && (
           <div className="text-center mt-5">

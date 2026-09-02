@@ -2292,6 +2292,44 @@ function tirerRarete() {
   return 'commune';
 }
 
+// ── La journée du festival (Alex, 2026-09-02) ────────────────────────
+// La roue compte par JOURNÉE CIVILE dans le fuseau du festival, jamais
+// par fenêtre de 24 heures glissantes. La fenêtre repoussait l'heure
+// d'ouverture un peu plus tard chaque jour : qui réclamait à 21 h un
+// soir se faisait refuser à 13 h le lendemain, revenait le surlendemain,
+// et l'écart dépassait alors 48 heures, ce qui remettait la roue au jour
+// 1 alors que la personne était venue tous les jours. Relevé le
+// 2026-09-02 sur les trente-quatre bourses qui avaient déjà réclamé :
+// trente étaient au jour 1, quatre au jour 2, aucune plus loin. Personne
+// n'avait jamais vu le troisième jour de la roue. Le fuseau règle du
+// même coup ce qui avait fait poser la fenêtre le 2026-08-30 : minuit
+// UTC tombait à 20 h au Québec et servait deux récompenses le même soir.
+//
+// JUMELLES des fonctions du même nom dans src/firebase/montpellois.ts,
+// dont se sert le panneau pour annoncer ce que le serveur va donner. Si
+// l'une des deux moitiés change, l'autre doit suivre le jour même.
+// Le banc tools/roue-quotidienne.test.mjs rejoue les deux.
+const FUSEAU_FESTIVAL = 'America/Toronto';
+
+// formatToParts plutôt que format : les parties sont nommées, donc le
+// résultat tient même là où la locale « en-CA » n'est pas installée.
+const JOURNEE_FESTIVAL = new Intl.DateTimeFormat('en-CA', {
+  timeZone: FUSEAU_FESTIVAL, year: 'numeric', month: '2-digit', day: '2-digit',
+});
+
+/** La journée civile du festival, en « AAAA-MM-JJ », pour un instant donné. */
+function journeeFestival(ms) {
+  const p = {};
+  for (const m of JOURNEE_FESTIVAL.formatToParts(new Date(ms))) p[m.type] = m.value;
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+/** La journée d'avant. La chaîne est une date pure, donc le calcul se
+ *  fait en UTC : ni le fuseau ni l'heure d'été n'y changent rien. */
+function veilleDe(journee) {
+  return new Date(Date.parse(`${journee}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+}
+
 // ── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
 // Chaque visite quotidienne réclame la récompense du jour de la roue :
 // jour 1 = 5 Montpellois, jour 2 = 10, jour 3 = le hnefatafl de la
@@ -2329,17 +2367,18 @@ exports.reclamerQuotidien = onCall({ region: 'us-central1' }, async (requete) =>
   const { solde, gagneAvant, gagneApres, suite, jour } = await db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const data = snap.exists ? snap.data() : { solde: SOLDE_DEPART, gagne: SOLDE_DEPART, depense: 0 };
-    // Un vrai délai de 24 heures depuis la dernière réclamation, jamais
-    // une frontière de calendrier (Alex, 2026-08-30 : minuit UTC tombait
-    // à 20 h au Québec et servait deux récompenses le même soir).
-    const JOUR_MS = 24 * 3600000;
+    // Une réclamation par journée civile du festival (voir plus haut).
     const dernierMs = data.dernierQuotidien && data.dernierQuotidien.toMillis ? data.dernierQuotidien.toMillis() : 0;
-    const ecoule = Date.now() - dernierMs;
-    if (dernierMs && ecoule < JOUR_MS) throw new HttpsError('failed-precondition', 'Déjà réclamée : la prochaine récompense vient 24 heures après la dernière.');
+    const aujourdhui = journeeFestival(Date.now());
+    const derniereJournee = dernierMs ? journeeFestival(dernierMs) : null;
+    if (derniereJournee === aujourdhui) throw new HttpsError('failed-precondition', 'Déjà réclamée : la prochaine récompense vous attend demain.');
     // La suite (Alex, 2026-08-28, badge 'quotidien-sept') : elle continue
-    // si la dernière réclamation date de moins de 48 heures, elle repart
-    // à un jour sinon (premier jour, ou un jour sauté).
-    const suite = dernierMs && ecoule < 2 * JOUR_MS ? (data.quotidienSuite || 0) + 1 : 1;
+    // si la dernière réclamation date d'hier, elle repart à un jour sinon
+    // (première réclamation, ou une journée entière sautée). Une vieille
+    // bourse qui porte une date sans compteur valait déjà un jour : sans
+    // ce garde-fou, sa deuxième journée d'affilée retomberait au jour 1.
+    const suiteAvant = data.quotidienSuite || (derniereJournee ? 1 : 0);
+    const suite = derniereJournee === veilleDe(aujourdhui) ? suiteAvant + 1 : 1;
     const jour = ((suite - 1) % ROUE_QUOTIDIENNE.length) + 1;
     const don = ROUE_QUOTIDIENNE[jour - 1];
     // Un objet déjà au coffre (deuxième tour de roue, ou reçu autrement)

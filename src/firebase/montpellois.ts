@@ -71,6 +71,76 @@ export const RECOMPENSES_QUOTIDIEN: RecompenseQuotidienne[] = [
 ];
 /** La roue compte deux semaines; le panneau montre celle en cours. */
 export const JOURS_DE_ROUE = RECOMPENSES_QUOTIDIEN.length;
+
+// ── La journée du festival (Alex, 2026-09-02) ────────────────────────
+// La roue compte par JOURNÉE CIVILE dans le fuseau du festival, jamais
+// par fenêtre de 24 heures glissantes. La fenêtre repoussait l'heure
+// d'ouverture un peu plus tard chaque jour : qui réclamait à 21 h un
+// soir se faisait refuser à 13 h le lendemain, revenait le surlendemain,
+// et l'écart dépassait alors 48 heures, ce qui remettait la roue au jour
+// 1 alors que la personne était venue tous les jours. Le fuseau règle du
+// même coup ce qui avait fait poser la fenêtre le 2026-08-30 : minuit
+// UTC tombait à 20 h au Québec et servait deux récompenses le même soir.
+//
+// Ces trois fonctions sont les JUMELLES de celles qui portent le même
+// nom dans functions/index.js. Le serveur reste le seul juge de ce qui
+// est donné; celles-ci ne servent qu'à ce que le panneau annonce
+// exactement la même chose que lui. Si l'une des deux moitiés change,
+// l'autre doit suivre le jour même, sinon l'écran ment.
+export const FUSEAU_FESTIVAL = 'America/Toronto';
+
+// formatToParts plutôt que format : les parties sont nommées, donc le
+// résultat tient même là où la locale « en-CA » n'est pas installée.
+const JOURNEE_FESTIVAL = new Intl.DateTimeFormat('en-CA', {
+  timeZone: FUSEAU_FESTIVAL, year: 'numeric', month: '2-digit', day: '2-digit',
+});
+const HEURE_FESTIVAL = new Intl.DateTimeFormat('en-GB', {
+  timeZone: FUSEAU_FESTIVAL, hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+});
+
+function parties(format: Intl.DateTimeFormat, ms: number): Record<string, string> {
+  const p: Record<string, string> = {};
+  for (const m of format.formatToParts(new Date(ms))) p[m.type] = m.value;
+  return p;
+}
+
+/** La journée civile du festival, en « AAAA-MM-JJ », pour un instant donné. */
+export function journeeFestival(ms: number): string {
+  const p = parties(JOURNEE_FESTIVAL, ms);
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+/** La journée d'avant. La chaîne est une date pure, donc le calcul se
+ *  fait en UTC : ni le fuseau ni l'heure d'été n'y changent rien. */
+function veilleDe(journee: string): string {
+  return new Date(Date.parse(`${journee}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+}
+
+/** Vrai si la récompense du jour est déjà prise. */
+export function dejaReclameAujourdhui(dernierMs: number, maintenant = Date.now()): boolean {
+  return dernierMs > 0 && journeeFestival(dernierMs) === journeeFestival(maintenant);
+}
+
+/** La suite que donnerait une réclamation faite à l'instant : elle
+ *  continue si la dernière date d'hier, elle repart à un jour sinon
+ *  (première réclamation, ou une journée entière sautée). Une vieille
+ *  bourse qui porte une date sans compteur valait déjà un jour : sans ce
+ *  garde-fou, sa deuxième journée d'affilée retomberait au jour 1. */
+export function suiteApresReclamation(dernierMs: number, suiteEnregistree: number, maintenant = Date.now()): number {
+  const derniere = dernierMs > 0 ? journeeFestival(dernierMs) : null;
+  const suiteAvant = suiteEnregistree || (derniere ? 1 : 0);
+  return derniere === veilleDe(journeeFestival(maintenant)) ? suiteAvant + 1 : 1;
+}
+
+/** Ce qui reste avant minuit au festival, en millisecondes. */
+export function resteAvantMinuitFestival(maintenant = Date.now()): number {
+  const p = parties(HEURE_FESTIVAL, maintenant);
+  const ecoule = Number(p.hour) * 3600 + Number(p.minute) * 60 + Number(p.second);
+  // ponytail : les deux journées de changement d'heure durent 23 ou 25
+  // heures, le compte à rebours y est faux d'une heure. C'est une
+  // étiquette qui rassure, pas elle qui décide de la récompense.
+  return (86400 - ecoule) * 1000;
+}
 /** Le prix des skins de plateforme, gratuits pour un compte VIP
  *  (users.sansPub) — doit rester en phase avec le même nom de
  *  constante côté fonction serveur. */

@@ -17,6 +17,8 @@ import { chromium } from 'playwright';
 const PORT = 5199;
 const BASE = `http://localhost:${PORT}`;
 const PAGES = [
+  ['babillard', '/babillard'],
+  ['babillard-en', '/en/notice-board'],
   ['jeux-en-ligne', '/jeux-en-ligne'],
   ['merelle', '/jeux/merelle'],
   ['renard', '/jeux/renard'],

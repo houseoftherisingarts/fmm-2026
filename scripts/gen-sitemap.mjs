@@ -19,6 +19,7 @@ const extraPublic = [
   '/accueil',            '/en/accueil',
   '/communaute',         '/en/community',
   '/ressources',         '/en/resources',
+  '/babillard',          '/en/notice-board',
   '/contact',            '/en/contact',
   '/jeunesse/hnefatafl', '/en/youth/hnefatafl',
   '/billets',            '/en/tickets',

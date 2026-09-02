@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, ArrowUpRight, Newspaper } from 'lucide-react';
+import { Menu, X, User, ArrowUpRight, Newspaper, ScrollText } from 'lucide-react';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { useUI } from '../../contexts/AppContext';
@@ -495,6 +495,24 @@ const NavBar: React.FC = () => {
 
               {/* CTA: copper/gold gradient fill (the 20% accent moment).
                   Pops in last with a back-ease overshoot. */}
+              {/* Le babillard : le règlement des armes et les avis du
+                  festival se lisent sans compte (Alex, 2026-09-02), donc
+                  le tiroir leur donne une porte. */}
+              <MotionLink
+                variants={ctaVariants}
+                initial="hidden"
+                animate="shown"
+                to={addLocale('/babillard', lang)}
+                className="group relative inline-flex items-center gap-3 px-8 py-3.5 mr-3 mb-3 font-sans uppercase tracking-[0.28em] text-[11px] font-semibold"
+                style={{
+                  color: 'var(--color-bone)',
+                  borderRadius: 999,
+                  border: '1px solid rgba(var(--sk-glow-rgb), 0.5)',
+                  background: 'rgba(var(--sk-glow-rgb), 0.08)',
+                }}
+              >
+                <ScrollText size={14} /> {lang === 'FR' ? 'Le babillard' : 'Notice board'}
+              </MotionLink>
               {/* Kit de presse : dans le tiroir, juste au-dessus des billets
                   (Alex, 2026-08-31). */}
               <MotionLink

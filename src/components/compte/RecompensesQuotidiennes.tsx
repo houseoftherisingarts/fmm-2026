@@ -8,6 +8,7 @@ import DosCarte from '../../games/tarot/DosCaravane';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import {
   JOURS_DE_ROUE, RECOMPENSES_QUOTIDIEN, reclamerQuotidien, suivreMaBourse, type Bourse,
+  dejaReclameAujourdhui, journeeFestival, resteAvantMinuitFestival, suiteApresReclamation,
 } from '../../firebase/montpellois';
 
 // ─── La roue des sept jours (Alex, 2026-08-30, sur le modèle Gwent) ──
@@ -22,14 +23,10 @@ import {
 // jour » de la bourse rouvre le panneau par l'événement
 // 'fmm:ouvrir-recompenses'.
 
-const dateISO = (d: Date = new Date()) => d.toISOString().slice(0, 10);
-
-const JOUR_MS = 24 * 3600000;
-
-/** Le temps qu'il reste avant la prochaine récompense : 24 heures
- *  après la dernière réclamation, la même règle que le serveur. */
-function resteAvantDemain(dernierMs: number): string {
-  const ms = Math.max(0, dernierMs + JOUR_MS - Date.now());
+/** Le temps qu'il reste avant la prochaine récompense : jusqu'à minuit
+ *  dans le fuseau du festival, la même règle que le serveur. */
+function resteAvantDemain(): string {
+  const ms = resteAvantMinuitFestival();
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   return `${String(h).padStart(2, '0')} h ${String(m).padStart(2, '0')} min`;
@@ -134,15 +131,15 @@ const RecompensesQuotidiennes: React.FC = () => {
   }, [user?.uid]);
 
   const dernierMs = bourse?.dernierQuotidien?.toMillis ? bourse.dernierQuotidien.toMillis() : 0;
-  const ecoule = Date.now() - dernierMs;
-  // « Déjà pris » veut dire : moins de 24 heures depuis la dernière
-  // réclamation, comme le serveur. La suite tient jusqu'à 48 heures.
-  const reclameAujourdhui = dernierMs > 0 && ecoule < JOUR_MS;
+  // « Déjà pris » veut dire : la dernière réclamation tombe dans la
+  // journée d'aujourd'hui au festival, exactement comme le serveur. La
+  // suite continue tant que la dernière date d'hier.
+  const reclameAujourdhui = dejaReclameAujourdhui(dernierMs);
   const suite = bourse?.quotidienSuite || 0;
   // Le jour affiché : celui servi à l'instant, sinon celui déjà pris,
   // sinon celui que la prochaine visite servira.
   const jourCourant = jourServi
-    ?? (reclameAujourdhui ? ((suite - 1) % JOURS_DE_ROUE) + 1 : (dernierMs > 0 && ecoule < 2 * JOUR_MS ? (suite % JOURS_DE_ROUE) + 1 : 1));
+    ?? (((reclameAujourdhui ? suite : suiteApresReclamation(dernierMs, suite)) - 1) % JOURS_DE_ROUE) + 1;
   // Deux semaines de roue : le panneau montre les sept jours de la
   // semaine en cours (Alex, 2026-08-31).
   const semaine = Math.ceil(jourCourant / 7);
@@ -166,7 +163,7 @@ const RecompensesQuotidiennes: React.FC = () => {
     if (!user?.uid || !bourse || reclameAujourdhui || dejaTente.current) return;
     let vu = null;
     try { vu = sessionStorage.getItem('fmm.recompense.vue'); } catch { /* navigation privée */ }
-    if (vu === dateISO()) return;
+    if (vu === journeeFestival(Date.now())) return;
     dejaTente.current = true;
     setOuvert(true);
     void reclamer();
@@ -184,17 +181,16 @@ const RecompensesQuotidiennes: React.FC = () => {
 
   useEffect(() => {
     if (!ouvert) return;
-    // Après une réclamation à l'instant, le serveur n'a pas encore
-    // renvoyé l'horodatage : on compte depuis maintenant.
-    const depuis = jourServi && ecoule >= JOUR_MS ? Date.now() : dernierMs;
-    const t = setInterval(() => setCompte(resteAvantDemain(depuis)), 30000);
-    setCompte(resteAvantDemain(depuis));
+    // Minuit au festival ne dépend pas de l'heure de la réclamation : le
+    // compte à rebours part tel quel, sans attendre l'horodatage du serveur.
+    const t = setInterval(() => setCompte(resteAvantDemain()), 30000);
+    setCompte(resteAvantDemain());
     return () => clearInterval(t);
-  }, [ouvert, dernierMs, jourServi, ecoule]);
+  }, [ouvert]);
 
   const fermer = () => {
     setOuvert(false);
-    try { sessionStorage.setItem('fmm.recompense.vue', dateISO()); } catch { /* tant pis */ }
+    try { sessionStorage.setItem('fmm.recompense.vue', journeeFestival(Date.now())); } catch { /* tant pis */ }
   };
 
   // Aperçu de développement sans compte : /?roue=3 ouvre le panneau au

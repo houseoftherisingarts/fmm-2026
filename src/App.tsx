@@ -70,6 +70,7 @@ const ComptePage       = lazy(() => import('./pages/ComptePage'));
 const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const MurPage              = lazy(() => import('./pages/MurPage'));
+const BabillardPage        = lazy(() => import('./pages/BabillardPage'));
 const BoutiquePage         = lazy(() => import('./pages/BoutiquePage'));
 const SoukPage             = lazy(() => import('./pages/SoukPage'));
 // Le chantier : inventaire du personnage + salon 2D, réservé à l'équipe
@@ -461,6 +462,10 @@ const App: React.FC = () => (
                 <Route path="/en/shop"  element={<BoutiquePage />} />
                 <Route path="/mur"     element={<MurPage />} />
                 <Route path="/en/wall" element={<MurPage />} />
+                {/* Le babillard a son adresse depuis le 2026-09-02 : le
+                    règlement des armes doit se lire sans compte. */}
+                <Route path="/babillard"        element={<BabillardPage />} />
+                <Route path="/en/notice-board"  element={<BabillardPage />} />
                 {/* Chantier : slug identique dans les deux langues, pas
                     d'entrée dans locale.ts (comme /contact, /messages).
                     Gaté isAdmin à l'intérieur de la page elle-même. */}

@@ -24,6 +24,17 @@ export interface Annonce {
   titleEN: string;
   bodyFR:  string;
   bodyEN:  string;
+  /** Les points d'un règlement, numérotés sur le parchemin. Un avis qui
+   *  en porte se lit comme une liste et non comme un paragraphe. */
+  listeFR?: string[];
+  listeEN?: string[];
+  /** Un avis qui reste épinglé : un règlement ne se décroche pas, il
+   *  s'applique. Ces avis-là n'entrent pas dans le compte des quatre
+   *  avis à collectionner et n'offrent pas le bouton « Accepté ». */
+  permanent?: boolean;
+  /** Le parchemin occupe toute la largeur du panneau. Réservé aux avis
+   *  longs, qu'une colonne étirerait en ruban. */
+  pleineLargeur?: boolean;
   /** Affiche la pièce de la Petite Monnaie sous l'avis. */
   piece?:     boolean;
   lienPiece?: string;
@@ -36,6 +47,49 @@ export interface Annonce {
 const ZEFFY_LEVEE_URL = 'https://www.zeffy.com/fr-CA/donation-form/apportez-le-reseau-a-montpellier';
 
 const TOUTES: Annonce[] = [
+  // Le règlement des armes, adopté par le comité et affiché au babillard
+  // (Alex, 2026-09-02). Il reste épinglé : un règlement ne se décroche
+  // pas, et il ouvre le tableau parce que c'est ce qu'il faut avoir lu
+  // avant de préparer son costume.
+  {
+    id:   'reglement-armes-2026',
+    tone: 'alerte',
+    date: '2026-09-02',
+    permanent: true,
+    pleineLargeur: true,
+    titleFR: 'Règlement des épées et des armes médiévales',
+    titleEN: 'Rules for swords and medieval weapons',
+    bodyFR:
+      'Le comité organisateur applique ce règlement à toute arme apportée sur le site du festival.',
+    bodyEN:
+      'The organizing committee applies these rules to every weapon brought onto the festival grounds.',
+    listeFR: [
+      'Les épées, dagues, haches, lances et autres armes doivent être présentées au comité organisateur lors de l’arrivée sur le site, sur demande.',
+      'Les armes réelles, tranchantes ou pointues sont interdites dans les zones accessibles au public.',
+      'Les armes décoratives doivent être émoussées, non tranchantes et sécuritaires.',
+      'Les épées portées à la ceinture doivent être solidement fixées dans leur fourreau. Il est interdit de les dégainer dans les zones achalandées.',
+      'Aucun combat, duel ou maniement d’arme n’est permis dans les zones du public, sauf dans le cadre d’une activité ou d’une prestation officiellement autorisée par l’organisation.',
+      'Les démonstrations et combats doivent être réalisés dans une zone délimitée, avec une distance de sécurité suffisante entre les participants et les spectateurs.',
+      'Les armes utilisées lors des combats doivent être spécifiquement conçues ou adaptées pour le combat scénarisé et inspectées avant leur utilisation.',
+      'Le maniement d’une arme est interdit à toute personne sous l’influence de l’alcool ou de substances psychoactives.',
+      'Il est interdit de brandir, pointer, lancer ou utiliser une arme de manière à menacer ou mettre en danger une autre personne.',
+      'L’organisation se réserve le droit de refuser une arme ou d’en interdire l’utilisation si elle juge celle-ci dangereuse.',
+      'Le non-respect de ces règles peut entraîner le retrait de l’arme ou l’expulsion du site.',
+    ],
+    listeEN: [
+      'Swords, daggers, axes, spears and other weapons must be shown to the organizing committee on arrival, on request.',
+      'Real weapons, edged or pointed, are forbidden in areas open to the public.',
+      'Decorative weapons must be blunted, not sharp, and safe.',
+      'Swords worn at the belt must be firmly secured in their scabbard. Drawing them in busy areas is forbidden.',
+      'No combat, duel or handling of a weapon is allowed in public areas, except as part of an activity or a performance officially authorized by the organization.',
+      'Demonstrations and combats must take place inside a marked area, with enough safety distance between the participants and the audience.',
+      'Weapons used in combat must be specifically made or adapted for staged fighting, and inspected before use.',
+      'Handling a weapon is forbidden to anyone under the influence of alcohol or psychoactive substances.',
+      'Brandishing, pointing, throwing or using a weapon in a way that threatens or endangers another person is forbidden.',
+      'The organization reserves the right to refuse a weapon or to forbid its use if it judges it dangerous.',
+      'Breaking these rules may lead to the weapon being taken away or to expulsion from the site.',
+    ],
+  },
   {
     id:   'no-dogs-2026',
     tone: 'alerte',

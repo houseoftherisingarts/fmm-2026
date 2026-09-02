@@ -10,8 +10,7 @@
 import {
   addDoc, collection, deleteDoc, doc, getDocs, orderBy, query,
   serverTimestamp, updateDoc, limit as fsLimit,
-  type DocumentData, type QueryDocumentSnapshot,
-} from 'firebase/firestore';
+  type DocumentData, type QueryDocumentSnapshot, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { sendEmail } from './sendEmail';
 
@@ -156,6 +155,25 @@ function truncate(s: string, n: number): string {
 }
 
 // ─── Admin reads + management ──────────────────────────────────────
+
+/**
+ * Le nombre de signalements encore à traiter, en direct.
+ *
+ * La régie de l'admin l'affiche à côté de l'onglet Bugs (Alex,
+ * 2026-09-02 : « in admin, i need a place to see the reported bugs »).
+ * La page existait déjà; ce qui manquait, c'est de voir qu'il y a
+ * quelque chose à y lire sans l'ouvrir.
+ */
+export function suivreBugsNouveaux(cb: (n: number) => void): () => void {
+  if (!db) { cb(0); return () => {}; }
+  return onSnapshot(
+    query(collection(db, COL), where('status', '==', 'nouveau')),
+    (snap) => cb(snap.size),
+    // Un compte qui n'a pas le droit de lire ne doit pas casser la
+    // régie : le compteur reste à zéro.
+    () => cb(0),
+  );
+}
 
 export async function listBugReports(max = 500): Promise<BugReport[]> {
   if (!db) return [];

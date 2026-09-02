@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Swords,
   LayoutDashboard, HandHeart, ShoppingBag, Users, MessageSquare, Mail,
@@ -9,6 +9,7 @@ import {
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
+import { suivreBugsNouveaux } from '../../firebase/bugReports';
 
 // ─── FMM admin shell ──────────────────────────────────────────────
 // Sidebar layout cloned from Krystine's pattern (sidebar nav + main
@@ -160,6 +161,8 @@ const AdminShell: React.FC<Props> = ({
   previewBanner = null, onBackToGates, children,
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [bugsNouveaux, setBugsNouveaux] = useState(0);
+  useEffect(() => suivreBugsNouveaux(setBugsNouveaux), []);
   // Filter the rail to only the sections this role can open. Falls back
   // to an empty list if no role is set, at which point AdminPage should
   // already be rendering the "access refused" gate, so we never actually
@@ -235,6 +238,18 @@ const AdminShell: React.FC<Props> = ({
                 >
                   <Icon size={13} className="shrink-0" />
                   <span className="flex-1 min-w-0 truncate">{label}</span>
+                  {/* Les signalements non traités se voient depuis le
+                      rail : sans ce chiffre, il faut ouvrir l'onglet
+                      pour savoir qu'il y a quelque chose à lire. */}
+                  {id === 'bugs' && bugsNouveaux > 0 && (
+                    <span
+                      className="shrink-0 min-w-[18px] px-1.5 py-0.5 text-center font-sans text-[10px] font-semibold"
+                      style={{ borderRadius: 999, background: '#8d2f1e', color: '#fdf6e8' }}
+                      title={`${bugsNouveaux} signalement(s) à traiter`}
+                    >
+                      {bugsNouveaux}
+                    </span>
+                  )}
                 </button>
               </React.Fragment>
             );
