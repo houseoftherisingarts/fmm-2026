@@ -8,6 +8,7 @@ import { FOOTER, PILLARS, SITE, SPONSORS } from '../../content';
 import { isPillarVisible } from '../../firebase/siteFlags';
 import { addSub } from '../../firebase/newsletter';
 import { ouvrirBilletterie } from '../../lib/billetterie';
+import { ouvrirBanniereConsentement } from '../../lib/consentement';
 import { isFirebaseReady } from '../../firebase';
 import { HexPanel, ChevronButton, HexMark, Eyebrow } from '../marche/atmospherics';
 import { BubbleCanvas } from '../marche/effects';
