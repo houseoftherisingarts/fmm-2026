@@ -289,6 +289,14 @@ const DesPage: React.FC = () => {
     musiqueRef.current?.demarrer();
   }, [nbJoueurs, fr, niveau]);
 
+  // La table ouverte garde la fermeture qu'elle a saisie au clic, et
+  // elle ne rappelle `surOrdinateur` qu'une minute plus tard. Or le
+  // nombre de convives se change pendant l'attente, juste sous le
+  // panneau : sans ce renvoi, la maison s'assoirait à la table que le
+  // joueur regardait il y a une minute.
+  const dresser = useRef(commencer);
+  useEffect(() => { dresser.current = commencer; }, [commencer]);
+
   // Aperçu de développement seulement : `?apercu=1&auto=1` dresse la
   // table sans clic, pour vérifier le rendu des dés à l'écran.
   useEffect(() => {
@@ -552,6 +560,27 @@ const DesPage: React.FC = () => {
     setFace(3);
   };
 
+  /** La recherche a trouvé quelqu'un. La partie s'ouvre exactement
+   *  comme le fait le lien `?partie=` d'un défi entre amis : la page se
+   *  recharge sur la partie, et tout le fil en ligne repart propre. */
+  const ouvrirPartieTrouvee = (id: string) => {
+    window.location.assign(`${addLocale('/jeux/des', lang)}?partie=${id}`);
+  };
+
+  /** Personne ne s'est présenté en une minute. La maison prend le
+   *  siège sur-le-champ, sous le nom tiré au sort, et au niveau du
+   *  connétable : une table ouverte ne promet pas un adversaire pour
+   *  livrer un marmiton (Alex, 2026-09-01). */
+  const maisonPrendLeSiege = (nom: string) => {
+    setPanneau(null);
+    dresser.current({ niveau: 10, adversaire: nom });
+  };
+
+  /** Le nom affiché en face, au clavardage, quand la maison joue. */
+  const nomEnFace = enLigne
+    ? undefined
+    : partie?.joueurs.find((j) => j.machine && !j.elimine)?.nom;
+
   const t = useMemo(() => ({
     eyebrow: fr ? 'L’année de la Poudre' : 'The Year of the Powder',
     titre: fr ? 'Les dés du menteur' : 'Liar’s Dice',
@@ -580,6 +609,9 @@ const DesPage: React.FC = () => {
     gagne: fr ? 'Vous ramassez la mise.' : 'You take the pot.',
     perdu: fr ? 'La table vous a eu.' : 'The table got you.',
     defier: fr ? 'Défier un ami' : 'Challenge a friend',
+    tableOuverte: fr ? 'La table ouverte' : 'The open table',
+    parole: fr ? 'La parole' : 'Talk',
+    niveau: fr ? 'La maison joue' : 'The house plays',
     fermer: fr ? 'Fermer' : 'Close',
     quitter: fr ? 'Quitter la table' : 'Leave the table',
     sablierAide: fr
@@ -777,18 +809,40 @@ const DesPage: React.FC = () => {
             );
           })}
 
-          {/* ── Les amis, en overlay sur la table ──────────────────── */}
+          {/* ── Les amis, la table ouverte et la parole, en overlay ── */}
           {user && (
             <>
               <div className="absolute top-16 right-3 md:right-6 z-20 flex flex-col items-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setAmisOuverts((v) => !v)}
-                  aria-expanded={amisOuverts}
+                  onClick={() => setPanneau((v) => (v === 'amis' ? null : 'amis'))}
+                  aria-expanded={panneau === 'amis'}
                   className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
                 >
                   <Users size={13} className="text-brass" />
                   {t.defier}
+                </button>
+                {/* La recherche d'adversaire n'a plus rien à proposer
+                    une fois qu'on est assis à une partie en ligne. */}
+                {!enLigne && (
+                  <button
+                    type="button"
+                    onClick={() => setPanneau((v) => (v === 'table' ? null : 'table'))}
+                    aria-expanded={panneau === 'table'}
+                    className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                  >
+                    <DoorOpen size={13} className="text-brass" />
+                    {t.tableOuverte}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setPanneau((v) => (v === 'parole' ? null : 'parole'))}
+                  aria-expanded={panneau === 'parole'}
+                  className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/50 transition-colors font-sans text-[10px] uppercase tracking-[0.2em]"
+                >
+                  <MessageSquare size={13} className="text-brass" />
+                  {t.parole}
                 </button>
                 {enLigne && enLigne.statut === 'encours' && partieId && (
                   <button
@@ -802,23 +856,43 @@ const DesPage: React.FC = () => {
                 )}
               </div>
               <AnimatePresence>
-                {amisOuverts && (
+                {panneau && (
                   <motion.div
                     initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 24 }}
                     transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute top-16 right-3 md:right-6 z-30 w-[min(20rem,calc(100%-1.5rem))] max-h-[calc(100%-5.5rem)] overflow-y-auto rounded-[15px] border border-white/15 bg-black/55 backdrop-blur-xl p-3"
+                    className={`absolute top-16 right-3 md:right-6 z-30 w-[min(20rem,calc(100%-1.5rem))] max-h-[calc(100%-5.5rem)] overflow-y-auto rounded-[15px] border border-white/15 bg-black/55 backdrop-blur-xl p-3 ${
+                      panneau === 'amis' ? '' : 'pt-9'
+                    }`}
                   >
                     <button
                       type="button"
-                      onClick={() => setAmisOuverts(false)}
+                      onClick={() => setPanneau(null)}
                       aria-label={t.fermer}
                       className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full text-ivory-soft/70 hover:text-ivory hover:bg-white/10 transition-colors"
                     >
                       <X size={15} />
                     </button>
-                    <PanneauAmis lang={lang} jeu={jeuDefi} />
+                    {panneau === 'amis' && <PanneauAmis lang={lang} jeu={jeuDefi} />}
+                    {panneau === 'table' && (
+                      <TableOuverte
+                        lang={lang}
+                        jeu="des"
+                        regleId="des"
+                        nomRegle={() => t.titre}
+                        surPartie={ouvrirPartieTrouvee}
+                        surOrdinateur={maisonPrendLeSiege}
+                      />
+                    )}
+                    {panneau === 'parole' && (
+                      <Clavardage
+                        lang={lang}
+                        salle={enLigne && partieId ? { collection: 'desParties', partieId } : null}
+                        moi={{ uid: user.uid, nom: user.displayName?.trim() || (fr ? 'Vous' : 'You') }}
+                        adversaire={nomEnFace}
+                      />
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -845,10 +919,16 @@ const DesPage: React.FC = () => {
             </div>
           )}
 
-          {/* À droite : les trois dernières paroles */}
+          {/* À droite : les trois dernières paroles, sous la pile de
+              boutons. Celle-ci portait un seul bouton hors ligne et deux
+              en ligne, d'où les anciens 6,75 et 9,5 rems. La table
+              ouverte et la parole l'ont allongée à trois boutons dans
+              les deux cas, et la pile descend maintenant jusqu'à 11,94
+              rems (mesuré le 2026-09-01). Les boutons passent devant le
+              journal : sans ce décalage, ils couvriraient les paroles. */}
           {partie && partie.journal.length > 0 && (
             <div className={`absolute right-3 md:right-6 z-10 w-44 md:w-64 text-right ${
-              user ? (enLigne ? 'top-[9.5rem] md:top-[10rem]' : 'top-[6.75rem] md:top-[7.25rem]') : 'top-16 md:top-20'
+              user ? 'top-[12.5rem] md:top-[12.75rem]' : 'top-16 md:top-20'
             }`}>
               <AnimatePresence initial={false}>
                 {[...partie.journal].reverse().slice(0, 3).map((l, i) => (
@@ -1044,6 +1124,23 @@ const DesPage: React.FC = () => {
                     actif={skinTable}
                     onChoisir={(id) => setSkinTable(id as IdSkinTable)}
                   />
+                  {/* Les dix marches, du marmiton au connétable. Elles
+                      portent les mêmes noms que sur les trois plateaux :
+                      un Sergent aux dés vaut à peu près un Sergent à la
+                      mérelle, et le joueur n'a qu'une échelle à retenir. */}
+                  <Parures
+                    titre={t.niveau}
+                    choix={marches.map((m) => ({ id: String(m.niveau), nom: m.nom }))}
+                    actif={String(niveau)}
+                    onChoisir={(id) => {
+                      const n = Number(id) as Niveau;
+                      setNiveau(n);
+                      localStorage.setItem('fmm.des.niveau', String(n));
+                    }}
+                  />
+                  <p className="w-full text-center font-editorial text-[13px] text-ivory-soft/70 leading-relaxed">
+                    {marches.find((m) => m.niveau === niveau)?.humeur}
+                  </p>
                 </div>
               </div>
             ) : partie.phase === 'devoilement' ? (

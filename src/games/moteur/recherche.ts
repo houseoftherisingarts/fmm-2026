@@ -202,7 +202,14 @@ export function chercher<E, C>(
       for (const c of ordre) {
         // À fenêtre pleine quand l'appelant a besoin de notes justes
         // pour TOUS les coups, et non seulement du meilleur.
-        const borne = o.notesExactes ? -Infinity : -alpha;
+        //
+        // Le bêta du fils vaut PLUS l'infini, pas moins. Avec moins
+        // l'infini, la coupure `alpha >= beta` tombe dès le premier
+        // coup de chaque nœud et la recherche ne suit plus qu'une
+        // seule ligne, tandis que la quiescence remonte l'infini pour
+        // tout le monde. Le banc d'essai du 2026-09-01 a mesuré les
+        // deux effets, aucun ne se voyait à la lecture.
+        const borne = o.notesExactes ? Infinity : -alpha;
         const note = -negamax(a.jouer(etat, c), prof - 1, -Infinity, borne, 1);
         tour.push({ coup: c, note });
         if (note > alpha) alpha = note;

@@ -30,12 +30,18 @@ import {
   suivrePartie, repondreAuDefi, abandonner,
   jouerCoup as pousserLeCoup, type PartieTafl,
 } from '../../firebase/tafl';
+import RenardPanneaux from '../../components/jeux/RenardPanneaux';
 import {
-  coupDepuisTexte, coupEnTexte, coupsPossibles, jouer, nbOies, plateauInitial,
-  REGLEMENTS, reglement, verdict, VARIANTE_DEFAUT,
-  type Camp, type Coup, type Plateau, type Variante,
+  coupDepuisTexte, coupEnTexte, coupsPossibles, jouer, nbOies, positionRenard,
+  REGLEMENTS, reglement, VARIANTE_DEFAUT,
+  type Camp, type Coup, type Variante,
 } from './logic';
-import { choisirCoup, type Difficulte } from './cpu';
+import {
+  etatInitial, jouerArbitre, texteEvenement, trainarde,
+  type EvenementArbitre, type VerdictArbitre,
+} from './arbitre';
+import { nomNiveau, type Niveau } from '../moteur/niveaux';
+import { nouveauPenseur, type Penseur } from '../moteur/penseur';
 import { creerTable, type Table3D } from './scene';
 
 type Mode = 'deux-joueurs' | 'ordinateur';
@@ -44,14 +50,24 @@ interface Reglages {
   variante: Variante;
   mode: Mode;
   campHumain: Camp;
-  difficulte: Difficulte;
+  /** La marche de force de la machine, du marmiton au connétable. */
+  niveau: Niveau;
 }
+
+/** La marche par défaut. Le chevalier est la première qui cherche à
+ *  plein régime, sans fenêtre d'à-peu-près : la plainte d'Alex était
+ *  qu'on battait la machine du premier coup. */
+const NIVEAU_DEFAUT: Niveau = 6;
+
+/** La maison ne s'assoit jamais pour perdre. Quand personne ne se
+ *  présente à la table ouverte, c'est le connétable qui prend le siège. */
+const NIVEAU_MAISON: Niveau = 10;
 
 const REGLAGES_DEFAUT: Reglages = {
   variante: VARIANTE_DEFAUT,
   mode: 'deux-joueurs',
   campHumain: 'oies',
-  difficulte: 'moyen',
+  niveau: NIVEAU_DEFAUT,
 };
 
 // ── Les textes ──────────────────────────────────────────────────────
@@ -64,21 +80,23 @@ interface Textes {
   labelVariante: string;
   labelMode: string;
   labelCamp: string;
-  labelDifficulte: string;
+  labelNiveau: string;
   modeDeux: string;
   modeOrdi: string;
   campRenard: string;
   campOies: string;
-  diffFacile: string;
-  diffMoyen: string;
-  diffDifficile: string;
+  niveauAide: string;
+  niveauMarche: (n: number, nom: string) => string;
+  machine: string;
+  unInconnu: string;
   commencer: string;
   tablePrete: string;
   tourRenard: string;
   tourOies: string;
-  reflechit: string;
+  reflechit: (nom: string) => string;
   gagneRenard: string;
   gagneOies: string;
+  gagneNulle: string;
   finTitre: string;
   rejouer: string;
   indice: string;
@@ -115,7 +133,7 @@ interface Textes {
   aidePreparer: string;
   aideFini: string;
   aideAttente: (nom: string) => string;
-  aideOrdinateur: string;
+  aideOrdinateur: (nom: string) => string;
   aideOies: string;
   aideRenard: string;
   aideAVous: string;
@@ -132,21 +150,23 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
     labelVariante: 'La forme du jeu',
     labelMode: 'Mode',
     labelCamp: 'Votre camp',
-    labelDifficulte: 'Difficulté',
+    labelNiveau: 'La force de la machine',
     modeDeux: 'Deux joueurs',
     modeOrdi: 'Contre l’ordinateur',
     campRenard: 'Le renard',
     campOies: 'Les oies',
-    diffFacile: 'Facile',
-    diffMoyen: 'Intermédiaire',
-    diffDifficile: 'Difficile',
+    niveauAide: 'Dix marches, du marmiton au connétable. Le connétable ne se laisse pas battre.',
+    niveauMarche: (n, nom) => `${n} · ${nom}`,
+    machine: 'L’ordinateur',
+    unInconnu: 'Un inconnu',
     commencer: 'Commencer la partie',
     tablePrete: 'La planche est prête',
     tourRenard: 'Au renard de jouer',
     tourOies: 'Aux oies de jouer',
-    reflechit: 'L’ordinateur réfléchit…',
+    reflechit: (nom) => `${nom} réfléchit…`,
     gagneRenard: 'Le troupeau est trop maigre. Le renard l’emporte',
     gagneOies: 'Le renard est cerné. Les oies l’emportent',
+    gagneNulle: 'Ni le renard ni les oies. La partie est nulle',
     finTitre: 'La chasse se termine',
     rejouer: 'Nouvelle partie',
     indice: 'Cliquez une pièce · Cliquez un point vert · Glissez pour pivoter',
@@ -194,7 +214,7 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
     aidePreparer: 'Choisissez la forme du jeu et votre camp, puis dressez la planche.',
     aideFini: 'La chasse est terminée.',
     aideAttente: (nom) => `À ${nom} de jouer.`,
-    aideOrdinateur: 'À l’ordinateur de jouer.',
+    aideOrdinateur: (nom) => `À ${nom} de jouer.`,
     aideOies: 'Les oies avancent d’un point; encerclez le renard.',
     aideRenard: 'Le renard peut sauter par-dessus une oie voisine : gare aux prises.',
     aideAVous: 'À vous.',
@@ -209,21 +229,23 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
     labelVariante: 'Form of the game',
     labelMode: 'Mode',
     labelCamp: 'Your side',
-    labelDifficulte: 'Difficulty',
+    labelNiveau: 'How hard the machine plays',
     modeDeux: 'Two players',
     modeOrdi: 'Against the computer',
     campRenard: 'The fox',
     campOies: 'The geese',
-    diffFacile: 'Easy',
-    diffMoyen: 'Medium',
-    diffDifficile: 'Hard',
+    niveauAide: 'Ten steps, from scullion to constable. The constable does not let anyone beat him.',
+    niveauMarche: (n, nom) => `${n} · ${nom}`,
+    machine: 'The computer',
+    unInconnu: 'A stranger',
     commencer: 'Begin the game',
     tablePrete: 'The plank is ready',
     tourRenard: 'The fox to play',
     tourOies: 'The geese to play',
-    reflechit: 'The computer is thinking…',
+    reflechit: (nom) => `${nom} is thinking…`,
     gagneRenard: 'The flock is too thin. The fox wins',
     gagneOies: 'The fox is hemmed in. The geese win',
+    gagneNulle: 'Neither the fox nor the geese. The game is a draw',
     finTitre: 'The hunt is over',
     rejouer: 'New game',
     indice: 'Click a piece · Click a green point · Drag to orbit',
@@ -271,7 +293,7 @@ const TEXTES: Record<'FR' | 'EN', Textes> = {
     aidePreparer: 'Pick the form of the game and your side, then set the plank.',
     aideFini: 'The hunt is over.',
     aideAttente: (nom) => `${nom} to play.`,
-    aideOrdinateur: 'The computer is playing.',
+    aideOrdinateur: (nom) => `${nom} is playing.`,
     aideOies: 'The geese move one point at a time; ring the fox in.',
     aideRenard: 'The fox may leap over a neighbouring goose: watch the captures.',
     aideAVous: 'Your move.',
@@ -320,7 +342,7 @@ const EcranPreparation: React.FC<{
   const [variante, setVariante] = useState<Variante>(depart.variante);
   const [mode, setMode] = useState<Mode>(depart.mode);
   const [campHumain, setCampHumain] = useState<Camp>(depart.campHumain);
-  const [difficulte, setDifficulte] = useState<Difficulte>(depart.difficulte);
+  const [niveau, setNiveau] = useState<Niveau>(depart.niveau);
   const choisie = reglement(variante);
 
   return (
@@ -378,17 +400,35 @@ const EcranPreparation: React.FC<{
             )}
           </Colonne>
 
-          <Colonne num="IV" label={t.labelDifficulte}>
-            <Pastille actif={difficulte === 'facile'} onClick={() => setDifficulte('facile')}>{t.diffFacile}</Pastille>
-            <Pastille actif={difficulte === 'moyen'} onClick={() => setDifficulte('moyen')}>{t.diffMoyen}</Pastille>
-            <Pastille actif={difficulte === 'difficile'} onClick={() => setDifficulte('difficile')}>{t.diffDifficile}</Pastille>
-            {mode === 'deux-joueurs' && (
-              <p className="font-editorial text-[12px] text-ivory-soft/60 mt-1 leading-snug">
-                {lang === 'FR'
+          {/* Les dix marches tiennent sur un seul réglage. Dix pastilles
+              auraient débordé de la colonne sur un téléphone : le curseur
+              se prend au pouce, et le chiffre porte le nom de la marche. */}
+          <Colonne num="IV" label={t.labelNiveau}>
+            <p className="font-display title-medieval text-lg text-ivory leading-none">
+              {t.niveauMarche(niveau, nomNiveau(niveau, lang === 'FR'))}
+            </p>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              value={niveau}
+              onChange={(e) => setNiveau(Number(e.target.value) as Niveau)}
+              aria-label={t.labelNiveau}
+              className="w-full h-8 bg-transparent cursor-pointer"
+              style={{ accentColor: '#E8B14A' }}
+            />
+            <p className="flex justify-between gap-2 font-sans text-[9px] uppercase tracking-[0.16em] text-ivory-soft/50">
+              <span>{nomNiveau(1, lang === 'FR')}</span>
+              <span>{nomNiveau(10, lang === 'FR')}</span>
+            </p>
+            <p className="font-editorial text-[12px] text-ivory-soft/60 mt-1 leading-snug">
+              {mode === 'deux-joueurs'
+                ? (lang === 'FR'
                   ? 'Ce réglage attend la partie contre l’ordinateur.'
-                  : 'This setting waits for a game against the computer.'}
-              </p>
-            )}
+                  : 'This setting waits for a game against the computer.')
+                : t.niveauAide}
+            </p>
           </Colonne>
         </div>
       </div>
@@ -402,7 +442,7 @@ const EcranPreparation: React.FC<{
         <BoutonTutoriel onClick={onTutoriel} lang={lang} className="min-h-[48px]" />
         <button
           type="button"
-          onClick={() => onCommencer({ variante, mode, campHumain, difficulte })}
+          onClick={() => onCommencer({ variante, mode, campHumain, niveau })}
           className="inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-[15px] bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
         >
           <Swords size={15} />
@@ -418,9 +458,19 @@ const EcranPreparation: React.FC<{
 interface EtatPartie {
   tour: Camp;
   oies: number;
-  gagnant: Camp | null;
+  /** Le verdict de l'arbitre : un camp, la nulle, ou rien tant que ça dure. */
+  gagnant: VerdictArbitre | null;
   attente: boolean;
+  /** Ce que l'arbitre vient de faire, quand il a eu à faire quelque chose. */
+  evenement: EvenementArbitre | null;
+  /** Les demi-coups joués, pour distinguer deux avis identiques de suite. */
+  demiCoups: number;
 }
+
+/** Une planche qu'on vient de dresser, avant le premier coup. */
+const etatNeuf = (oies: number): EtatPartie => ({
+  tour: 'oies', oies, gagnant: null, attente: false, evenement: null, demiCoups: 0,
+});
 
 /** Ce qu'une partie à deux ajoute à la planche : mon camp, la liste des
  *  coups déjà écrits dans le document, et où envoyer les miens. */
@@ -430,7 +480,7 @@ interface FilEnLigne {
   fige: boolean;
   /** Tous les coups du document, dans l'ordre. */
   coups: string[];
-  surMonCoup: (texte: string, tourSuivant: Camp, gagnant: Camp | null) => void;
+  surMonCoup: (texte: string, tourSuivant: Camp, gagnant: VerdictArbitre | null) => void;
 }
 
 const Planche: React.FC<{
@@ -440,25 +490,34 @@ const Planche: React.FC<{
 }> = ({ reglages, onEtat, enLigne }) => {
   const boite = useRef<HTMLDivElement>(null);
   const table = useRef<Table3D | null>(null);
+  const penseur = useRef<Penseur | null>(null);
+
+  // L'ÉTAT DE L'ARBITRE, tenu vivant d'un coup à l'autre, humain comme
+  // machine. La page reconstruisait autrefois une position neuve à
+  // chaque coup : la machine était alors aveugle au registre des
+  // positions et au compteur de la basse-cour, et six parties sur six
+  // tapaient le plafond des quatre cents demi-coups sans qu'une seule
+  // oie soit croquée. Les oies ouvrent, le renard réagit.
   const partie = useRef({
-    plateau: plateauInitial(reglages.variante) as Plateau,
-    tour: 'oies' as Camp,
+    etat: etatInitial(reglages.variante),
     choisi: null as number | null,
     occupe: false,
     fini: false,
   });
 
-  // Les oies ouvrent : c'est le troupeau qui se met en marche, le
-  // renard réagit. Réglé une fois, jamais changé en cours de partie.
-  const annoncer = useCallback(() => {
+  const annoncer = useCallback((evenement: EvenementArbitre | null = null) => {
     const p = partie.current;
     onEtat({
-      tour: p.tour,
-      oies: nbOies(p.plateau),
-      gagnant: p.fini ? (verdict(p.plateau, p.tour, reglages.variante) ?? null) : null,
+      tour: p.etat.tour,
+      oies: nbOies(p.etat.plateau),
+      // Le verdict attend la fin de l'animation : autrement l'écran de
+      // fin tomberait sur une pièce encore en vol.
+      gagnant: p.fini ? p.etat.verdict : null,
       attente: p.occupe,
+      evenement,
+      demiCoups: p.etat.demiCoups,
     });
-  }, [onEtat, reglages.variante]);
+  }, [onEtat]);
 
   // ── La partie à deux ─────────────────────────────────────────────
   // Le fil est lu par référence : la planche se monte une seule fois et
@@ -472,49 +531,81 @@ const Planche: React.FC<{
   const appliques = useRef(0);
   const pomperRef = useRef<() => void>(() => {});
 
+  /**
+   * Le tour de la machine, confié au penseur.
+   *
+   * Rien n'est plus calculé sur le fil de la page : au dixième niveau la
+   * recherche dure deux secondes et demie, et un appel direct figerait
+   * la planche tout ce temps. Quand la main passe au joueur, la machine
+   * ne dort pas non plus : elle étudie les positions qu'il va lui donner.
+   */
+  const jouerRef = useRef<(c: Coup, distant?: boolean) => void>(() => {});
+  /** Le temps mort qui précède la demande. Il est tenu ici pour qu'une
+   *  page qu'on quitte n'aille pas réveiller un penseur déjà enterré. */
+  const reveil = useRef(0);
+  const reveillerLaMachine = useCallback(() => {
+    if (filRef.current || reglages.mode !== 'ordinateur') return;
+    const etat = partie.current.etat;
+    if (etat.verdict) return;
+    if (etat.tour === reglages.campHumain) {
+      penseur.current?.anticiper('renard', etat.variante, etat, reglages.niveau);
+      return;
+    }
+    // Un temps mort avant la demande, pour que l'animation précédente
+    // respire. La position est relue au réveil : elle a pu changer.
+    window.clearTimeout(reveil.current);
+    reveil.current = window.setTimeout(() => {
+      if (partie.current.etat !== etat) return;
+      void penseur.current?.demanderCoup<Coup>('renard', etat.variante, etat, reglages.niveau)
+        .then((coup) => { if (coup && partie.current.etat === etat) jouerRef.current(coup); });
+    }, 420);
+  }, [reglages.campHumain, reglages.mode, reglages.niveau]);
+
   const jouerLeCoup = useCallback((coup: Coup, distant = false) => {
     const p = partie.current;
     if (p.occupe || p.fini) return;
     p.occupe = true;
     p.choisi = null;
     table.current?.surbrillance(null, []);
-    const avantTour = p.tour;
-    p.plateau = jouer(p.plateau, coup);
+    const avant = p.etat;
+    // TOUT passe par l'arbitre : le coup de l'humain comme celui de la
+    // machine, et les coups reçus de l'autre bout. C'est lui qui tient
+    // le compteur de la basse-cour, le registre des positions et le
+    // verdict, la nulle comprise.
+    const { etat, evenement } = jouerArbitre(avant, coup);
+    p.etat = etat;
     annoncer();
 
     // Mon coup part vers l'autre bout, avec le verdict s'il y en a un.
     // Un coup REÇU ne repart jamais : il ferait l'aller-retour sans fin.
+    // L'autre bout rejoue la liste à travers le même arbitre, donc les
+    // deux planches punissent la même oie au même coup.
     const fil = filRef.current;
     if (!distant && fil) {
-      const apresTour: Camp = avantTour === 'renard' ? 'oies' : 'renard';
       appliques.current += 1;
-      fil.surMonCoup(
-        coupEnTexte(coup),
-        apresTour,
-        verdict(p.plateau, apresTour, reglages.variante),
-      );
+      fil.surMonCoup(coupEnTexte(coup), etat.tour, etat.verdict);
     }
 
     table.current?.animer(coup, () => {
-      const suivant: Camp = p.tour === 'renard' ? 'oies' : 'renard';
-      p.tour = suivant;
-      p.occupe = false;
-      const fin = verdict(p.plateau, suivant, reglages.variante);
-      if (fin) { p.fini = true; annoncer(); return; }
-      annoncer();
-      pomperRef.current();
-
-      // Au tour de l'ordinateur : il réfléchit dans un temps mort pour
-      // que l'animation précédente respire avant la suivante. Une partie
-      // à deux n'a pas d'ordinateur du tout.
-      if (!filRef.current && reglages.mode === 'ordinateur' && suivant !== reglages.campHumain) {
-        window.setTimeout(() => {
-          const choix = choisirCoup(p.plateau, suivant, reglages.variante, reglages.difficulte);
-          if (choix) jouerLeCoup(choix);
-        }, 480);
-      }
+      const suite = () => {
+        p.occupe = false;
+        if (etat.verdict) p.fini = true;
+        annoncer(evenement);
+        if (p.fini) return;
+        pomperRef.current();
+        reveillerLaMachine();
+      };
+      // La traînarde s'en va comme une oie croquée : le renard happe sur
+      // place, elle s'envole et disparaît. C'est l'animation de prise
+      // ordinaire, à qui on donne un saut de longueur nulle.
+      const perdue = evenement === 'oie-punie' ? trainarde(jouer(avant.plateau, coup)) : -1;
+      const ou = positionRenard(etat.plateau);
+      if (perdue >= 0 && ou >= 0 && table.current) {
+        table.current.animer({ de: ou, vers: ou, prises: [perdue], etapes: [ou] }, suite);
+      } else suite();
     });
-  }, [annoncer, reglages.campHumain, reglages.difficulte, reglages.mode, reglages.variante]);
+  }, [annoncer, reveillerLaMachine]);
+  jouerRef.current = jouerLeCoup;
 
   /** Sort le prochain coup reçu et le relit sur la planche telle qu'elle
    *  est maintenant : c'est la position courante qui lui rend ses
@@ -524,7 +615,7 @@ const Planche: React.FC<{
     if (p.occupe || p.fini) return;
     const texte = file.current.shift();
     if (!texte) return;
-    const coup = coupDepuisTexte(texte, p.plateau, p.tour, reglages.variante);
+    const coup = coupDepuisTexte(texte, p.etat.plateau, p.etat.tour, reglages.variante);
     if (coup) jouerLeCoup(coup, true);
   }, [jouerLeCoup, reglages.variante]);
   pomperRef.current = pomper;
@@ -544,10 +635,10 @@ const Planche: React.FC<{
     if (p.occupe || p.fini) return;
     const fil = filRef.current;
     if (fil) {
-      if (fil.fige || p.tour !== fil.monCamp) return;
-    } else if (reglages.mode === 'ordinateur' && p.tour !== reglages.campHumain) return;
+      if (fil.fige || p.etat.tour !== fil.monCamp) return;
+    } else if (reglages.mode === 'ordinateur' && p.etat.tour !== reglages.campHumain) return;
 
-    const coups = coupsPossibles(p.plateau, p.tour, reglages.variante);
+    const coups = coupsPossibles(p.etat.plateau, p.etat.tour, reglages.variante);
 
     if (p.choisi !== null) {
       // Plusieurs enchaînements peuvent finir sur le même point : on
@@ -561,8 +652,8 @@ const Planche: React.FC<{
       }
     }
 
-    const sien = p.plateau[point];
-    const aMoi = p.tour === 'renard' ? sien === 'renard' : sien === 'oie';
+    const sien = p.etat.plateau[point];
+    const aMoi = p.etat.tour === 'renard' ? sien === 'renard' : sien === 'oie';
     if (aMoi && coups.some((c) => c.de === point)) {
       p.choisi = point;
       table.current?.surbrillance(point, coups.filter((c) => c.de === point).map((c) => c.vers));
@@ -579,23 +670,20 @@ const Planche: React.FC<{
 
   useEffect(() => {
     if (!boite.current) return;
+    penseur.current = nouveauPenseur();
     const t = creerTable(boite.current, (pt) => clicRef.current(pt));
     table.current = t;
-    t.poser(partie.current.plateau);
+    t.poser(partie.current.etat.plateau);
     annoncer();
 
-    // Si l'ordinateur tient les oies, c'est lui qui ouvre. Une partie à
-    // deux n'a pas d'ordinateur : les oies attendent leur joueur.
-    let depart = 0;
-    if (!filRef.current && reglages.mode === 'ordinateur' && reglages.campHumain === 'renard') {
-      depart = window.setTimeout(() => {
-        const choix = choisirCoup(partie.current.plateau, 'oies', reglages.variante, reglages.difficulte);
-        if (choix) jouerLeCoup(choix);
-      }, 700);
-    }
+    // Si l'ordinateur tient les oies, c'est lui qui ouvre. Sinon il
+    // prend de l'avance pendant que le joueur cherche son premier coup.
+    reveillerLaMachine();
 
     return () => {
-      window.clearTimeout(depart);
+      window.clearTimeout(reveil.current);
+      penseur.current?.fermer();
+      penseur.current = null;
       table.current = null;
       t.dispose();
     };
@@ -621,12 +709,20 @@ const RenardPage: React.FC = () => {
   useBadgeJeu('renard');
 
   const [reglages, setReglages] = useState<Reglages>(REGLAGES_DEFAUT);
+  /** La recherche d'adversaire retient sa fonction de rappel au moment
+   *  du clic et la garde une minute entière. Les réglages se relisent
+   *  donc par référence : ceux du clic peuvent être périmés quand la
+   *  maison finit par s'asseoir. */
+  const reglagesRef = useRef(reglages);
+  reglagesRef.current = reglages;
   const [enPartie, setEnPartie] = useState(false);
   const [cle, setCle] = useState(0);
   const [pubEnAttente, setPubEnAttente] = useState<(() => void) | null>(null);
   const [reglesOuvertes, setReglesOuvertes] = useState(false);
   const [pleinEcran, setPleinEcran] = useState(false);
-  const [etat, setEtat] = useState<EtatPartie>({ tour: 'oies', oies: 13, gagnant: null, attente: false });
+  /** Le nom tiré au sort quand la maison prend le siège à la table ouverte. */
+  const [nomMaison, setNomMaison] = useState<string | null>(null);
+  const [etat, setEtat] = useState<EtatPartie>(etatNeuf(13));
 
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -635,7 +731,7 @@ const RenardPage: React.FC = () => {
   // /jeux/renard?partie=<id> ouvre le défi accepté depuis la fiche de
   // l'autre personne. Le document ne porte que la liste des coups : les
   // deux moteurs la rejouent, exactement comme au tafl.
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const partieId = params.get('partie');
   // La visite guidée s'offre d'elle-même à la première venue, jamais
   // quand un défi attend à l'autre bout du fil.
@@ -664,9 +760,16 @@ const RenardPage: React.FC = () => {
     enPartie && reglages.mode === 'ordinateur' && etat.gagnant === reglages.campHumain;
   useGagnerBadge('renard-victoire', victoireContreOrdinateur);
 
-  const commencer = (r: Reglages) => {
+  /** Le nom lisible d'un règlement, pour les lignes de la table ouverte. */
+  const nomRegle = useCallback((id: string) => {
+    const r = REGLEMENTS.find((x) => x.id === id);
+    return r ? (lang === 'FR' ? r.nomFR : r.nomEN) : id;
+  }, [lang]);
+
+  const commencer = (r: Reglages, nom: string | null = null) => {
     setReglages(r);
-    setEtat({ tour: 'oies', oies: reglement(r.variante).oies, gagnant: null, attente: false });
+    setNomMaison(nom);
+    setEtat(etatNeuf(reglement(r.variante).oies));
     setCle((k) => k + 1);
     setEnPartie(true);
     // Le clic sur « Commencer la partie » est le geste utilisateur qui
@@ -676,7 +779,8 @@ const RenardPage: React.FC = () => {
 
   const retourAuMenu = () => {
     setEnPartie(false);
-    setEtat({ tour: 'oies', oies: reglement(reglages.variante).oies, gagnant: null, attente: false });
+    setNomMaison(null);
+    setEtat(etatNeuf(reglement(reglages.variante).oies));
   };
 
   // Les réglages ont été choisis au moment du défi : l'écran de
@@ -688,7 +792,7 @@ const RenardPage: React.FC = () => {
       variante,
       mode: 'deux-joueurs',
       campHumain: monCamp ?? 'oies',
-      difficulte: 'moyen',
+      niveau: NIVEAU_DEFAUT,
     });
     // `commencer` remonte la planche et ne dépend que de ce qu'on lui passe.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -698,7 +802,9 @@ const RenardPage: React.FC = () => {
     monCamp,
     fige: partie.statut !== 'encours',
     coups: partie.coups,
-    surMonCoup: (texte: string, tourSuivant: Camp, gagnant: Camp | null) => {
+    // Le verdict poussé au document est celui de l'arbitre, la nulle
+    // comprise : une partie peut désormais se terminer sans vainqueur.
+    surMonCoup: (texte: string, tourSuivant: Camp, gagnant: VerdictArbitre | null) => {
       void pousserLeCoup(partie.id, partie.coups ?? [], texte, tourSuivant, gagnant);
     },
   } : null;
@@ -715,11 +821,19 @@ const RenardPage: React.FC = () => {
     else sceneRef.current.requestFullscreen().catch(() => {});
   };
 
+  /** Le nom de celui d'en face quand c'est la machine. La maison joue
+   *  sous un nom tiré au sort, et ce nom s'affiche partout où
+   *  l'adversaire est nommé. */
+  const nomMachine = nomMaison ?? t.machine;
+  const texteFin = etat.gagnant === 'nulle'
+    ? t.gagneNulle
+    : etat.gagnant === 'renard' ? t.gagneRenard : t.gagneOies;
+
   const messageTour = (() => {
     if (!enPartie) return t.tablePrete;
-    if (etat.gagnant) return etat.gagnant === 'renard' ? t.gagneRenard : t.gagneOies;
+    if (etat.gagnant) return texteFin;
     if (enLigne) return monCamp && etat.tour === monCamp ? t.aVousDeJouer : t.enAttente;
-    if (reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.reflechit;
+    if (reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.reflechit(nomMachine);
     return etat.tour === 'renard' ? t.tourRenard : t.tourOies;
   })();
   /** Ce que la boîte d'aide affiche : le geste attendu MAINTENANT, lu
@@ -728,7 +842,7 @@ const RenardPage: React.FC = () => {
     if (!enPartie) return t.aidePreparer;
     if (etat.gagnant) return t.aideFini;
     if (enLigne && monCamp && etat.tour !== monCamp) return t.aideAttente(nomAdverse);
-    if (!enLigne && reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.aideOrdinateur;
+    if (!enLigne && reglages.mode === 'ordinateur' && etat.tour !== reglages.campHumain) return t.aideOrdinateur(nomMachine);
     const prefixe = enLigne ? `${t.aideAVous} ` : '';
     return prefixe + (etat.tour === 'oies' ? t.aideOies : t.aideRenard);
   })();
@@ -856,8 +970,13 @@ const RenardPage: React.FC = () => {
                 {t.finTitre}
               </p>
               <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-[1.15] max-w-xl">
-                {etat.gagnant === 'renard' ? t.gagneRenard : t.gagneOies}
+                {texteFin}
               </h2>
+              {etat.evenement && (
+                <p className="font-editorial text-[13px] md:text-sm text-ivory-soft/80 mt-3 max-w-md leading-relaxed">
+                  {texteEvenement(etat.evenement, lang === 'FR')}
+                </p>
+              )}
               <div className="divider-brass w-24 mx-auto my-7" />
               {enLigne ? (
                 <Link
@@ -919,6 +1038,49 @@ const RenardPage: React.FC = () => {
             )}
           </span>
         </div>
+
+        {/* ── L'arbitre parle : la traînarde, la répétition, le plafond ── */}
+        <AnimatePresence>
+          {etat.evenement && !etat.gagnant && (
+            <motion.p
+              key={`${etat.evenement}-${etat.demiCoups}`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className={`absolute ${enLigne ? 'top-32' : 'top-16'} left-1/2 -translate-x-1/2 z-30 w-[min(24rem,calc(100%-2rem))] text-center px-4 py-2.5 rounded-[15px] border border-brass/40 bg-black/70 backdrop-blur-md font-editorial text-[13px] text-ivory`}
+            >
+              {texteEvenement(etat.evenement, lang === 'FR')}
+            </motion.p>
+          )}
+        </AnimatePresence>
+
+        {/* ── La table ouverte et la parole, posées sur la planche ─── */}
+        {user && (
+          <RenardPanneaux
+            lang={lang}
+            regleId={reglages.variante}
+            monCamp={reglages.campHumain}
+            nomRegle={nomRegle}
+            table={!enLigne}
+            parole={enPartie}
+            decale={enLigne}
+            salle={partieId ? { collection: 'taflParties', partieId } : null}
+            moi={{ uid: user.uid, nom: user.displayName?.trim() || t.unInconnu }}
+            adversaire={nomMaison ?? (enLigne ? nomAdverse : undefined)}
+            // La planche qui tourne redescend au menu AVANT que le lien
+            // de la partie ne se pose. Sans ce retour, une partie contre
+            // la machine restait montée pendant que les coups de l'autre
+            // bout se déversaient dessus : l'effet du défi accepté ne
+            // dresse la planche en ligne que si aucune partie ne tourne.
+            surPartie={(id) => { retourAuMenu(); setParams({ partie: id }); }}
+            // Personne en une minute : la partie part sur-le-champ, au
+            // connétable, sans écran de réglages et sans rien demander.
+            surOrdinateur={(nom) => commencer(
+              { ...reglagesRef.current, mode: 'ordinateur', niveau: NIVEAU_MAISON }, nom,
+            )}
+          />
+        )}
 
         {/* ── Les règles, dans un panneau posé sur la planche ──────── */}
         <AnimatePresence>

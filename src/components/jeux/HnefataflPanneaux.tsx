@@ -33,7 +33,11 @@ interface Props {
   /** La salle Firestore d'une partie en ligne. Nulle contre la maison. */
   salle: Salle | null;
   moi: { uid: string; nom: string };
-  /** Vrai quand la personne a un compte : la table ouverte en demande un. */
+  /** Vrai quand la table ouverte a lieu d'être : la personne a un
+   *  compte, et aucune partie en ligne ne l'attend déjà ailleurs. Une
+   *  recherche lancée pendant une partie en ligne finissait par asseoir
+   *  la maison à une table déjà prise, et l'ordinateur se mettait alors
+   *  à écrire les coups de la personne dans Firestore. */
   connecte: boolean;
   /** Le nom affiché en face, dans le clavardage. */
   adversaire: string;

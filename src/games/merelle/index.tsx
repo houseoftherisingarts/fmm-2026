@@ -34,10 +34,16 @@ import {
 } from '../../firebase/tafl';
 
 import {
-  aPoserDe, compte, coupDepuisTexte, coupEnTexte, destinations, etatInitial,
-  jouer, phaseDe, retraitsPossibles, type Camp, type Coup, type Etat,
+  aPoserDe, compte, coupDepuisTexte, coupEnTexte, destinations,
+  phaseDe, retraitsPossibles, type Camp, type Coup, type Etat,
 } from './logic';
-import { choisirCoup, type Difficulte } from './cpu';
+import {
+  ARBITRE_EN, ARBITRE_FR, etatInitial as etatArbitre, jouerArbitre,
+  texteArbitre, verdictArbitre, type EtatMerelle,
+} from './arbitre';
+import { nomNiveau, NIVEAUX_POSSIBLES, type Niveau } from '../moteur/niveaux';
+import { nouveauPenseur, type Penseur } from '../moteur/penseur';
+import MerellePanneaux from '../../components/jeux/MerellePanneaux';
 import { monterScene, type SceneMerelle } from './scene';
 
 type Mode = 'deux-joueurs' | 'ordinateur';
@@ -46,14 +52,19 @@ interface Reglage {
   mode: Mode;
   /** Le camp de la personne, quand elle joue contre la machine. */
   camp: Camp;
-  difficulte: Difficulte;
+  /** La marche de l'adversaire de bois, du marmiton au connétable. */
+  niveau: Niveau;
   /** La variante du vol : à trois pions, on saute où l'on veut. */
   vol: boolean;
 }
 
 const REGLAGE_DEFAUT: Reglage = {
-  mode: 'ordinateur', camp: 1, difficulte: 'moyen', vol: true,
+  mode: 'ordinateur', camp: 1, niveau: 5, vol: true,
 };
+
+/** La mérelle porte sa variante dans son propre état. Le champ que le
+ *  penseur nomme « variante » ne sert qu'au tafl, et reste vide ici. */
+const SANS_VARIANTE = '';
 
 /** Le temps que la machine fait mine de réfléchir. Une réponse
  *  instantanée donne l'impression d'un mur, pas d'un adversaire. */
@@ -76,9 +87,7 @@ interface Textes {
   volTexte: string;
   modeDeux: string;
   modeOrdi: string;
-  facile: string;
-  moyen: string;
-  difficile: string;
+  niveauTexte: string;
   campClair: string;
   campSombre: string;
   commencer: string;
@@ -87,6 +96,7 @@ interface Textes {
   clairJoue: string;
   sombreJoue: string;
   reflechit: string;
+  reflechitNom: (nom: string) => string;
   posez: string;
   deplacez: string;
   volez: string;
@@ -155,9 +165,8 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
       'Réduit à trois pions, un joueur peut poser son homme sur n’importe quel point libre au lieu de suivre les lignes. C’est la règle la plus répandue, et elle laisse une chance au camp qui perd.',
     modeDeux: 'Deux joueurs',
     modeOrdi: 'Contre l’ordinateur',
-    facile: 'Facile',
-    moyen: 'Intermédiaire',
-    difficile: 'Difficile',
+    niveauTexte:
+      'Dix marches, du marmiton au connétable. Les premières se laissent battre parce qu’elles regardent à peine devant elles. Le connétable, lui, cherche loin, il tient son livre d’ouvertures et il réfléchit pendant votre tour.',
     campClair: 'Chêne clair',
     campSombre: 'Bois teint',
     commencer: 'Commencer la partie',
@@ -166,6 +175,7 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
     clairJoue: 'Au chêne clair',
     sombreJoue: 'Au bois teint',
     reflechit: 'L’adversaire réfléchit…',
+    reflechitNom: (nom) => `${nom} réfléchit…`,
     posez: 'Posez un pion sur un point libre',
     deplacez: 'Glissez un pion vers un point voisin',
     volez: 'Trois pions : posez-vous où vous voulez',
@@ -247,9 +257,8 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
       'Down to three men, a player may set a man on any free point instead of following the lines. It is the most common rule, and it gives the losing side a way back.',
     modeDeux: 'Two players',
     modeOrdi: 'Against the computer',
-    facile: 'Easy',
-    moyen: 'Intermediate',
-    difficile: 'Hard',
+    niveauTexte:
+      'Ten rungs, from the scullion to the constable. The first ones lose because they barely look ahead. The constable searches deep, keeps his book of openings, and thinks while it is your turn.',
     campClair: 'Pale oak',
     campSombre: 'Stained wood',
     commencer: 'Start the game',
@@ -258,6 +267,7 @@ const MOTS: Record<'FR' | 'EN', Textes> = {
     clairJoue: 'Pale oak to move',
     sombreJoue: 'Stained wood to move',
     reflechit: 'Your opponent is thinking…',
+    reflechitNom: (nom) => `${nom} is thinking…`,
     posez: 'Set a man on a free point',
     deplacez: 'Slide a man to a neighbouring point',
     volez: 'Three men left: land anywhere you like',
@@ -365,7 +375,7 @@ const EcranDepart: React.FC<{
 }> = ({ initial, t, lang, onCommencer, onTutoriel }) => {
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [camp, setCamp] = useState<Camp>(initial.camp);
-  const [difficulte, setDifficulte] = useState<Difficulte>(initial.difficulte);
+  const [niveau, setNiveau] = useState<Niveau>(initial.niveau);
   const [vol, setVol] = useState<boolean>(initial.vol);
 
   return (
@@ -404,10 +414,35 @@ const EcranDepart: React.FC<{
           </Colonne>
 
           <Colonne num="III" label={t.colDifficulte}>
-            <div className={mode === 'ordinateur' ? 'flex flex-col gap-2' : 'flex flex-col gap-2 opacity-40 pointer-events-none'}>
-              <Pastille actif={difficulte === 'facile'} onClick={() => setDifficulte('facile')}>{t.facile}</Pastille>
-              <Pastille actif={difficulte === 'moyen'} onClick={() => setDifficulte('moyen')}>{t.moyen}</Pastille>
-              <Pastille actif={difficulte === 'difficile'} onClick={() => setDifficulte('difficile')}>{t.difficile}</Pastille>
+            {/* Dix pastilles alignées les unes sous les autres feraient
+                une colonne interminable sur un téléphone. Les marches
+                se donnent donc par leur chiffre, sur deux rangées, et
+                le nom de celle qui est choisie s'écrit en dessous. */}
+            <div className={mode === 'ordinateur' ? '' : 'opacity-40 pointer-events-none'}>
+              <div className="grid grid-cols-5 gap-1.5">
+                {NIVEAUX_POSSIBLES.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setNiveau(n)}
+                    aria-pressed={niveau === n}
+                    aria-label={nomNiveau(n, lang === 'FR')}
+                    className={`min-h-[40px] rounded-card border font-sans text-[11px] tabular-nums transition-colors duration-200 ${
+                      niveau === n
+                        ? 'bg-brass text-[#1A0A05] border-brass'
+                        : 'bg-black/30 text-ivory-soft border-brass/35 hover:border-brass hover:text-ivory'
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-brass mt-3">
+                {nomNiveau(niveau, lang === 'FR')}
+              </p>
+              <p className="font-editorial text-[12px] md:text-[13px] text-ivory-soft/75 mt-1.5 leading-snug">
+                {t.niveauTexte}
+              </p>
             </div>
           </Colonne>
 
@@ -434,7 +469,7 @@ const EcranDepart: React.FC<{
         <BoutonTutoriel onClick={onTutoriel} lang={lang} className="min-h-[48px]" />
         <button
           type="button"
-          onClick={() => onCommencer({ mode, camp, difficulte, vol })}
+          onClick={() => onCommencer({ mode, camp, niveau, vol })}
           className="inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
         >
           <Swords size={15} />
@@ -467,9 +502,23 @@ const MerellePage: React.FC = () => {
   const [reglesOuvertes, setReglesOuvertes] = useState(false);
   const [pleinEcran, setPleinEcran] = useState(false);
 
-  const etatRef = useRef<Etat>(etatInitial(REGLAGE_DEFAUT.vol));
-  const [etat, setEtat] = useState<Etat>(etatRef.current);
+  // L'ARBITRE, ET NON LA SEULE RÈGLE DU JEU. La page tenait autrefois
+  // un `Etat` nu et reconstruisait des compteurs neufs à chaque coup :
+  // la machine ne voyait donc jamais venir la triple répétition ni les
+  // cinquante demi-coups sans prise, et deux joueurs prudents pouvaient
+  // glisser leurs pions jusqu'à la fin des temps. L'état de l'arbitre
+  // vit maintenant d'un coup à l'autre, il avance par `jouerArbitre`
+  // pour les deux camps, et c'est lui que la machine reçoit. La partie
+  // en ligne passe par le même chemin, donc les deux joueurs tombent
+  // sur le même verdict.
+  const arbitreRef = useRef<EtatMerelle>(etatArbitre(REGLAGE_DEFAUT.vol));
+  const [arbitre, setArbitre] = useState<EtatMerelle>(arbitreRef.current);
+  const etat = arbitre.jeu;
   const [selection, setSelection] = useState<number | null>(null);
+  /** Le nom que la maison a tiré au sort quand personne n'est venu
+   *  s'asseoir. Il remplace « l'ordinateur » partout où l'adversaire
+   *  est nommé. */
+  const [nomMaison, setNomMaison] = useState<string | null>(null);
   const selectionRef = useRef<number | null>(null);
   selectionRef.current = selection;
   const animeRef = useRef(false);
@@ -479,11 +528,18 @@ const MerellePage: React.FC = () => {
   const tableRef = useRef<HTMLDivElement>(null);
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
 
+  // La réflexion part dans un travailleur, hors du fil de l'écran. Le
+  // penseur naît au premier coup demandé et s'enterre au démontage; la
+  // référence repasse à `null` pour qu'un remontage en reparte un neuf.
+  const penseurRef = useRef<Penseur | null>(null);
+  const penseur = (): Penseur => (penseurRef.current ??= nouveauPenseur());
+  useEffect(() => () => { penseurRef.current?.fermer(); penseurRef.current = null; }, []);
+
   // ── La partie à deux, chacun chez soi ────────────────────────────
   // /jeux/merelle?partie=<id> ouvre le défi accepté depuis la fiche de
   // l'autre personne. Le document ne porte que la liste des coups : les
   // deux moteurs la rejouent, exactement comme au tafl.
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const partieId = params.get('partie');
   // La visite guidée s'offre d'elle-même à la première venue, jamais
   // quand un défi attend à l'autre bout du fil.
@@ -527,13 +583,13 @@ const MerellePage: React.FC = () => {
   const appliques = useRef(0);
   const jouerCoupRef = useRef<(c: Coup, distant?: boolean) => void>(() => {});
 
-  const majEtat = useCallback((e: Etat) => { etatRef.current = e; setEtat(e); }, []);
+  const majEtat = useCallback((a: EtatMerelle) => { arbitreRef.current = a; setArbitre(a); }, []);
 
   /** Joue un coup : la scène anime, l'état ne bascule qu'une fois le
    *  pion posé. Le verrou d'animation ferme la table entre les deux. */
   const jouerCoup = useCallback((coup: Coup, distant = false) => {
-    const avant = etatRef.current;
-    const apres = jouer(avant, coup);
+    const avant = arbitreRef.current;
+    const apres = jouerArbitre(avant, coup);
     if (apres === avant) return;
     animeRef.current = true;
     setSelection(null);
@@ -544,12 +600,12 @@ const MerellePage: React.FC = () => {
     const p = partieRef.current;
     if (!distant && p) {
       appliques.current += 1;
-      const avant = coupsRef.current;
+      const liste = coupsRef.current;
       const texte = coupEnTexte(coup);
-      coupsRef.current = [...avant, texte];
+      coupsRef.current = [...liste, texte];
       void pousserLeCoup(
-        p.id, avant, texte,
-        String(apres.tour), apres.gagnant ? String(apres.gagnant) : null,
+        p.id, liste, texte,
+        String(apres.jeu.tour), apres.jeu.gagnant ? String(apres.jeu.gagnant) : null,
       );
     }
 
@@ -561,7 +617,7 @@ const MerellePage: React.FC = () => {
     };
     const sc = sceneRef.current;
     if (!sc) { fini(); return; }
-    if (coup.type === 'pose') sc.poser(coup.vers, avant.tour, fini);
+    if (coup.type === 'pose') sc.poser(coup.vers, avant.jeu.tour, fini);
     else if (coup.type === 'deplacement') sc.deplacer(coup.de, coup.vers, fini);
     else sc.retirer(coup.p, fini);
   }, [majEtat]);
@@ -578,9 +634,10 @@ const MerellePage: React.FC = () => {
   // ── Le clic sur un point ─────────────────────────────────────────
   const surPoint = useCallback((p: number) => {
     if (animeRef.current) return;
-    const e = etatRef.current;
+    const a = arbitreRef.current;
+    const e = a.jeu;
     const r = reglageRef.current;
-    if (e.gagnant || !humainJoue(e, r)) return;
+    if (a.nulle || e.gagnant || !humainJoue(e, r)) return;
 
     if (e.doitRetirer) {
       if (retraitsPossibles(e).includes(p)) jouerCoup({ type: 'retrait', p });
@@ -607,7 +664,7 @@ const MerellePage: React.FC = () => {
     if (!el) return;
     const sc = monterScene(el);
     sceneRef.current = sc;
-    sc.reinitialiser(etatRef.current.points);
+    sc.reinitialiser(arbitreRef.current.jeu.points);
     const detacherEntrees = sc.attacherEntrees(surPoint);
     const detacherResize = sc.attacherResize();
     return () => {
@@ -622,25 +679,37 @@ const MerellePage: React.FC = () => {
   useEffect(() => {
     const sc = sceneRef.current;
     if (!sc) return;
-    if (etat.gagnant || !humainJoue(etat, reglage)) { sc.allumer({}); return; }
+    if (arbitre.nulle || etat.gagnant || !humainJoue(etat, reglage)) { sc.allumer({}); return; }
     if (etat.doitRetirer) { sc.allumer({ retraits: retraitsPossibles(etat) }); return; }
     if (selection !== null) {
       sc.allumer({ selection, destinations: destinations(etat, selection) });
       return;
     }
     sc.allumer({});
-  }, [etat, selection, reglage, humainJoue]);
+  }, [arbitre, etat, selection, reglage, humainJoue]);
 
   // ── Le tour de la machine ────────────────────────────────────────
+  // Le coup se demande au penseur, qui le calcule dans un travailleur :
+  // l'écran ne se fige plus pendant que le connétable cherche. Et tant
+  // que la personne réfléchit, la machine étudie de son côté la position
+  // qu'elle a devant elle, de sorte que sa réponse parte sur-le-champ.
   useEffect(() => {
     if (!commencee || reglage.mode !== 'ordinateur') return;
-    if (etat.gagnant || etat.tour === reglage.camp) return;
+    if (verdictArbitre(arbitre).finie) return;
+    if (etat.tour === reglage.camp) {
+      penseur().anticiper('merelle', SANS_VARIANTE, arbitre, reglage.niveau);
+      return;
+    }
+    let vivant = true;
     const minuteur = window.setTimeout(() => {
-      const coup = choisirCoup(etatRef.current, reglageRef.current.difficulte);
-      if (coup) jouerCoup(coup);
+      void penseur()
+        .demanderCoup<Coup>('merelle', SANS_VARIANTE, arbitreRef.current, reglageRef.current.niveau)
+        .then((coup) => { if (vivant && coup) jouerCoup(coup); });
     }, DELAI_ORDINATEUR);
-    return () => window.clearTimeout(minuteur);
-  }, [etat, commencee, reglage.mode, reglage.camp, jouerCoup]);
+    return () => { vivant = false; window.clearTimeout(minuteur); };
+    // `penseur` lit une référence et ne change jamais d'une passe à l'autre.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arbitre, etat, commencee, reglage.mode, reglage.camp, reglage.niveau, jouerCoup]);
 
   // ── Le badge de victoire ─────────────────────────────────────────
   const victoireContreOrdinateur = commencee
@@ -665,14 +734,16 @@ const MerellePage: React.FC = () => {
   };
 
   // ── Départ et retour au menu ─────────────────────────────────────
-  const demarrer = (r: Reglage) => {
+  const demarrer = (r: Reglage, nomAdversaire: string | null = null) => {
     setReglage(r);
     reglageRef.current = r;
-    const neuf = etatInitial(r.vol);
-    etatRef.current = neuf;
-    setEtat(neuf);
+    const neuf = etatArbitre(r.vol);
+    arbitreRef.current = neuf;
+    setArbitre(neuf);
+    setNomMaison(nomAdversaire);
     setSelection(null);
     animeRef.current = false;
+    penseurRef.current?.arreter();
     setCle((k) => k + 1);
     setCommencee(true);
     // Le clic sur « Commencer la partie » est le vrai geste qui autorise
@@ -682,11 +753,13 @@ const MerellePage: React.FC = () => {
 
   const retourAuMenu = () => {
     setCommencee(false);
-    const neuf = etatInitial(reglageRef.current.vol);
-    etatRef.current = neuf;
-    setEtat(neuf);
+    const neuf = etatArbitre(reglageRef.current.vol);
+    arbitreRef.current = neuf;
+    setArbitre(neuf);
+    setNomMaison(null);
     setSelection(null);
     animeRef.current = false;
+    penseurRef.current?.arreter();
   };
 
   // ── Le défi accepté dresse le plateau tout seul ──────────────────
@@ -700,7 +773,7 @@ const MerellePage: React.FC = () => {
     demarrer({
       mode: 'deux-joueurs',
       camp: monCamp ?? 1,
-      difficulte: 'moyen',
+      niveau: 10,
       vol: partie.regleId !== 'sans-vol',
     });
     // `demarrer` remonte la scène et ne dépend que de ce qu'on lui passe.
@@ -727,11 +800,29 @@ const MerellePage: React.FC = () => {
 
   // ── Ce qui s'écrit dans le bandeau ───────────────────────────────
   const nomCamp = (c: Camp) => (c === 1 ? t.campClair : t.campSombre);
+
+  /** Le verdict de l'arbitre : la victoire d'un camp, ou la nulle et sa
+   *  raison. Il remplace le seul `etat.gagnant` partout où la page
+   *  demandait si la partie était terminée. */
+  const fin = verdictArbitre(arbitre);
+  const motsArbitre = lang === 'FR' ? ARBITRE_FR : ARBITRE_EN;
+  const titreFin = etat.gagnant ? t.gagne(nomCamp(etat.gagnant)) : motsArbitre.titre;
+
+  /** Qui est assis en face : la vraie personne d'une partie en ligne, ou
+   *  le nom que la maison a tiré au sort. */
+  const nomEnFace = (partie && user
+    ? partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? '']
+    : nomMaison) || null;
+
   const messageTour = (): string => {
     if (!commencee) return t.tablePrete;
+    if (fin.nulle) return motsArbitre.titre;
     if (etat.gagnant) return t.gagne(nomCamp(etat.gagnant));
     const aMoi = humainJoue(etat, reglage);
-    if (!aMoi) return enLigne ? t.enAttente : t.reflechit;
+    if (!aMoi) {
+      if (enLigne) return t.enAttente;
+      return nomMaison ? t.reflechitNom(nomMaison) : t.reflechit;
+    }
     if (etat.doitRetirer) return t.retirez;
     if (reglage.mode === 'deux-joueurs') {
       const qui = etat.tour === 1 ? t.clairJoue : t.sombreJoue;
@@ -746,13 +837,10 @@ const MerellePage: React.FC = () => {
    *  sur l'état réel du moteur. */
   const aideAction = (): string => {
     if (!commencee) return t.aidePreparer;
-    if (etat.gagnant) return t.aideFini;
+    if (fin.finie) return t.aideFini;
     if (!humainJoue(etat, reglage)) {
-      if (!enLigne) return t.aideOrdinateur;
-      const autre = partie && user
-        ? (partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—')
-        : '—';
-      return t.aideAttente(autre);
+      if (!enLigne && !nomEnFace) return t.aideOrdinateur;
+      return t.aideAttente(nomEnFace ?? '—');
     }
     const prefixe = enLigne ? `${t.aideAVous} ` : '';
     if (etat.doitRetirer) return prefixe + t.aideRetirer;
@@ -863,7 +951,7 @@ const MerellePage: React.FC = () => {
             />
           )}
 
-          {etat.gagnant && (
+          {fin.finie && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -874,8 +962,13 @@ const MerellePage: React.FC = () => {
                 {t.fin}
               </p>
               <h2 className="font-display title-medieval text-2xl md:text-4xl text-ivory leading-[1.15] max-w-xl">
-                {t.gagne(nomCamp(etat.gagnant))}
+                {titreFin}
               </h2>
+              {fin.nulle && (
+                <p className="font-editorial text-[13px] md:text-sm text-ivory-soft/85 leading-relaxed max-w-md mt-4">
+                  {texteArbitre(arbitre, lang === 'FR')}
+                </p>
+              )}
               <div className="divider-brass w-24 mx-auto my-7" />
               {enLigne ? (
                 <Link
@@ -954,7 +1047,7 @@ const MerellePage: React.FC = () => {
           <div className="absolute left-3 md:left-6 top-16 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-3">
             <span className="min-w-0">
               <span className="block font-display text-[13px] text-ivory truncate">
-                {t.contre} {partie.noms[partie.joueurs.find((u) => u !== user.uid) ?? ''] ?? '—'}
+                {t.contre} {nomEnFace ?? '—'}
               </span>
               <span className="block font-sans text-[9px] uppercase tracking-[0.16em] text-ivory-soft/60 mt-1">
                 {t.vousTenez} {nomCamp(monCamp)}
@@ -976,7 +1069,39 @@ const MerellePage: React.FC = () => {
           </div>
         )}
 
-        {commencee && !etat.gagnant && (
+        {/* ── La table ouverte et la parole, posées sur le bois ──── */}
+        {/* Alex : « pas proposer, juste partir une partie contre
+            l'ordinateur et randomiser le nom de l'adversaire. Par contre
+            il faut que l'adversaire soit très fort. » Personne ne se
+            présente en une minute, la maison prend donc le siège au
+            connétable, sous un nom tiré au sort, et le plateau se dresse
+            sans rien demander. */}
+        {user && (
+          <MerellePanneaux
+            lang={lang}
+            moi={{
+              uid: user.uid,
+              nom: user.displayName?.trim() || (lang === 'FR' ? 'Un inconnu' : 'A stranger'),
+            }}
+            regleId={reglage.vol ? 'vol' : 'sans-vol'}
+            nomRegle={(id) => (id === 'sans-vol' ? t.volSans : t.vol)}
+            partieId={partieId}
+            adversaire={nomEnFace ?? undefined}
+            enPartie={commencee}
+            surPartie={(id) => {
+              // Le même chemin que le lien ?partie=<id> : la partie
+              // reprend au menu, et l'effet du défi accepté dresse le
+              // plateau dès que le document passe à « encours ».
+              setCommencee(false);
+              setParams({ partie: id });
+            }}
+            surOrdinateur={(nom) => demarrer(
+              { ...reglageRef.current, mode: 'ordinateur', niveau: 10 }, nom,
+            )}
+          />
+        )}
+
+        {commencee && !fin.finie && (
           <div data-tuto="compteur" className={`pointer-events-none absolute left-3 md:left-6 ${enLigne ? 'top-36' : 'top-16'} z-20 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em]`}>
             {([1, 2] as Camp[]).map((c) => (
               <span key={c} className="flex items-center gap-2.5 py-0.5">
@@ -1072,7 +1197,7 @@ const MerellePage: React.FC = () => {
           </span>
         </div>
         {/* ── « Je ne sais pas quoi faire » ───────────────────────── */}
-        {!etat.gagnant && (
+        {!fin.finie && (
           <BoiteAide
             but={t.aideBut}
             action={aideAction()}

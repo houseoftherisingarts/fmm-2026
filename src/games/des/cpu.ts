@@ -337,7 +337,17 @@ export function choisirCoupDes(
   // ferait plus que risquer un dé pour rien, et il ne se joue pas.
   const gainDe = moi.des.length < DES_AU_DEPART ? 1 : 0;
   const pExact = probaExactement(inconnus, besoin, ch);
+  // Deux barrières avant d'ouvrir la bouche, posées après le banc du
+  // 2026-09-01 : le connétable criait « c'est exactement ça » cent deux
+  // fois pour avoir raison dix, parce que l'appel gagnait par défaut
+  // dès que le doute valait encore moins. Un appel désespéré coûte un
+  // dé et donne l'air de ne pas savoir compter. L'appel ne se joue donc
+  // que s'il peut rapporter quelque chose, c'est-à-dire si le gobelet
+  // n'est pas déjà plein, et que le compte exact a une chance
+  // respectable de tomber.
+  const SEUIL_EXACT = 0.2;
   const evExact = t.appelleExact && o.autoriserExact !== false
+    && gainDe > 0 && pExact >= SEUIL_EXACT
     ? pExact * gainDe - (1 - pExact) * coutMonDe
     : -Infinity;
 

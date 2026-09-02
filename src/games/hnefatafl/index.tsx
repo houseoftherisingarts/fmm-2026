@@ -24,9 +24,6 @@ import {
   CELL,
   MID,
   N,
-  checkWin,
-  hasAnyMoves,
-  initBoard,
   validMoves,
   REGLES,
   REGLE_DEFAUT,
@@ -40,7 +37,13 @@ import { setupScene } from './sceneSetup';
 import { buildBoard } from './boardMesh';
 import { createPieceSystem } from './pieceMesh';
 import { createHighlightSystem } from './highlightSystem';
-import { pickMove, type Difficulty } from './cpuPlayer';
+import type { CpuMove } from './cpuPlayer';
+import {
+  coupLegal, etatInitial, gagnantDe, jouerArbitre, texteVerdict,
+  type EtatTafl,
+} from './arbitre';
+import { nouveauPenseur } from '../moteur/penseur';
+import { nomNiveau, NIVEAUX_POSSIBLES, type Niveau } from '../moteur/niveaux';
 import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
 import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -52,6 +55,7 @@ import {
   type PartieTafl,
 } from '../../firebase/tafl';
 import PanneauAmis from '../../components/jeux/PanneauAmis';
+import HnefataflPanneaux from '../../components/jeux/HnefataflPanneaux';
 import PubDebutPartie from '../../components/jeux/PubDebutPartie';
 import BoiteAide from '../../components/jeux/BoiteAide';
 import Tutoriel, { BoutonTutoriel, useTutoriel } from '../Tutoriel';
@@ -62,7 +66,8 @@ type Mode = 'two-player' | 'vs-cpu';
 interface GameConfig {
   mode: Mode;
   humanSide: Side; // ignored when mode === 'two-player'
-  difficulty: Difficulty;
+  /** La marche de force de l'adversaire de bois, du marmiton au connétable. */
+  niveau: Niveau;
   /** Le règlement choisi : Copenhague, Fetlar, Tawlbwrdd, Brandubh. */
   regleId: string;
 }
@@ -82,11 +87,6 @@ interface GameStrings {
   defendersMove: string;
   raidersThinking: string;
   defendersThinking: string;
-  kingEscapes: string;
-  kingFalls: string;
-  noMoves: (winner: string) => string;
-  defenders: string;
-  raiders: string;
   ending: string;
   newSaga: string;
   hint: string;
@@ -102,9 +102,6 @@ interface GameStrings {
   sideDefenders: string;
   sideRaiders: string;
   difficultyLabel: string;
-  diffEasy: string;
-  diffMedium: string;
-  diffHard: string;
   begin: string;
   // Habillage de page (ajouté avec la refonte du 2026-08-03)
   pageEyebrow: string;
@@ -148,11 +145,6 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     defendersMove: 'Tour des Défenseurs',
     raidersThinking: 'Les Raiders réfléchissent…',
     defendersThinking: 'Les Défenseurs réfléchissent…',
-    kingEscapes: 'Le Roi s\'échappe. Victoire des Défenseurs',
-    kingFalls: 'Le Roi tombe. Victoire des Raiders',
-    noMoves: (winner) => `Plus aucun coup possible : ${winner} l'emportent`,
-    defenders: 'les Défenseurs',
-    raiders: 'les Raiders',
     ending: 'La saga se termine',
     newSaga: 'Nouvelle saga',
     hint: 'Cliquez une pièce · Cliquez une case verte · Glissez pour pivoter',
@@ -167,10 +159,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     sideLabel: 'VOTRE CAMP',
     sideDefenders: 'Défenseurs',
     sideRaiders: 'Raiders',
-    difficultyLabel: 'DIFFICULTÉ',
-    diffEasy: 'Facile',
-    diffMedium: 'Intermédiaire',
-    diffHard: 'Difficile',
+    difficultyLabel: 'LA MARCHE DE L’ADVERSAIRE',
     begin: 'Commencer la partie',
     pageEyebrow: 'Jeunesse · Jeu de plateau',
     pageTitle: 'Hnefatafl',
@@ -223,11 +212,6 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     defendersMove: 'Defenders move',
     raidersThinking: 'Raiders thinking…',
     defendersThinking: 'Defenders thinking…',
-    kingEscapes: 'The King has escaped. Defenders win',
-    kingFalls: 'The King falls. Raiders win',
-    noMoves: (winner) => `No moves left: ${winner} win`,
-    defenders: 'Defenders',
-    raiders: 'Raiders',
     ending: 'The saga ends',
     newSaga: 'New saga',
     hint: 'Click piece · Click green to move · Drag to orbit',
@@ -242,10 +226,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     sideLabel: 'YOUR SIDE',
     sideDefenders: 'Defenders',
     sideRaiders: 'Raiders',
-    difficultyLabel: 'DIFFICULTY',
-    diffEasy: 'Easy',
-    diffMedium: 'Medium',
-    diffHard: 'Hard',
+    difficultyLabel: 'THE OPPONENT’S STEP',
     begin: 'Begin the game',
     pageEyebrow: 'Youth · Board game',
     pageTitle: 'Hnefatafl',
@@ -294,8 +275,6 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
   },
 };
 
-const CPU_THINK_MS = 500;
-
 /** Le fil d'une partie en ligne, branché sur Firestore par la page. */
 export interface FilEnLigne {
   /** Mon camp : je ne peux toucher que mes pièces, à mon tour. */
@@ -315,6 +294,8 @@ export interface CanvasHandle {
 interface GameCanvasProps {
   gameKey: number;
   onUi: (ui: UIState) => void;
+  /** La langue du verdict de l'arbitre, que `strings` ne porte pas. */
+  langue: 'FR' | 'EN';
   /** Présent = partie en ligne contre une vraie personne. */
   enLigne?: FilEnLigne | null;
   strings: GameStrings;
@@ -327,7 +308,7 @@ interface GameCanvasProps {
   pieceSetId: string;
 }
 
-const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, strings, config, onLoad, boardSetId, pieceSetId, enLigne }, ref) => {
+const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, langue, strings, config, onLoad, boardSetId, pieceSetId, enLigne }, ref) => {
   // La poignée doit survivre aux re-rendus : le moteur vit dans un
   // effet, il publie sa fonction ici.
   const distantRef = useRef<((fr: number, fc: number, tr: number, tc: number) => void) | null>(null);
@@ -341,6 +322,8 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
   stringsRef.current = strings;
   const configRef = useRef(config);
   configRef.current = config;
+  const langueRef = useRef(langue);
+  langueRef.current = langue;
 
   useEffect(() => {
     const el = mountRef.current;
@@ -407,7 +390,15 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
       };
     }
 
-    const board0: Board = initBoard();
+    // ── L'arbitre de la table ───────────────────────────────────────
+    // Il ne se reconstruit JAMAIS à partir du damier seul. C'est lui
+    // qui porte le registre des positions déjà parues et le compteur
+    // des demi-coups sans prise, et un état neuf à chaque coup rendrait
+    // la machine aveugle aux deux règles qui closent une partie
+    // enlisée. La partie en ligne rejoue ses coups par le même chemin,
+    // sans quoi les deux joueurs ne verraient pas le même verdict.
+    let arb: EtatTafl = etatInitial(configRef.current.regleId);
+    const board0: Board = arb.board;
     for (let r = 0; r < board0.length; r++) {
       for (let c = 0; c < board0[r].length; c++) {
         if (board0[r][c]) pieces.mkPiece(r, c, board0[r][c]);
@@ -430,13 +421,17 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
       animating: false,
     };
 
-    // ── CPU scheduling: single in-flight timeout, cancellable ─────
-    let cpuTimer: ReturnType<typeof setTimeout> | null = null;
+    // ── La réflexion de la machine ──────────────────────────────────
+    // Elle part dans le travailleur du penseur, jamais sur le fil qui
+    // dessine la scène : c'est ce qui laisse au connétable ses deux
+    // secondes et demie sans figer le plateau. Chaque demande porte un
+    // numéro, et une réponse dont le numéro a été dépassé se jette,
+    // parce que la partie a changé de position pendant la recherche.
+    const penseur = nouveauPenseur();
+    let demande = 0;
     const cancelCpu = () => {
-      if (cpuTimer !== null) {
-        clearTimeout(cpuTimer);
-        cpuTimer = null;
-      }
+      demande += 1;
+      penseur.arreter();
     };
 
     const cpuShouldMove = (): boolean => {
@@ -459,46 +454,50 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
 
     const scheduleCpu = () => {
       cancelCpu();
-      if (!cpuShouldMove()) return;
+      const cfg = configRef.current;
+      if (!cpuShouldMove()) {
+        // La main passe à la personne. La machine profite de son tour
+        // pour préparer sa réponse, et jouera sans la faire attendre.
+        if (cfg.mode === 'vs-cpu' && !gs.over) {
+          penseur.anticiper('tafl', cfg.regleId, arb, cfg.niveau);
+        }
+        return;
+      }
       onUi({ turn: gs.turn, over: false, msg: turnMsg(gs.turn, true) });
-      cpuTimer = setTimeout(() => {
-        cpuTimer = null;
-        if (!cpuShouldMove()) return;
-        const cfg = configRef.current;
-        const move = pickMove(gs.board, gs.turn, cfg.difficulty);
-        if (!move) return; // hasAnyMoves was true, but be defensive
-        commitMove(move.from[0], move.from[1], move.to[0], move.to[1]);
-      }, CPU_THINK_MS);
+      const mienne = demande;
+      void penseur
+        .demanderCoup<CpuMove>('tafl', cfg.regleId, arb, cfg.niveau)
+        .then((coup) => {
+          if (!alive || demande !== mienne || !coup) return;
+          if (!cpuShouldMove()) return;
+          commitMove(coup.from[0], coup.from[1], coup.to[0], coup.to[1]);
+        });
     };
 
     const finishMove = () => {
       if (!alive) return;
       gs.animating = false;
-      const w = checkWin(gs.board);
-      if (w) {
+      // L'arbitre est seul juge de la fin : la fuite du roi, la prise,
+      // le camp qui n'a plus un coup, la répétition triple qui fait
+      // perdre celui qui la provoque, et les cent vingt demi-coups sans
+      // prise qui rendent la partie nulle.
+      const v = arb.verdict;
+      if (v) {
         gs.over = true;
         cancelCpu();
-        const s = stringsRef.current;
-        const isKingEscape = w === 'defender';
-        if (isKingEscape) scene.pushCameraIn(0.78, 1.6);
+        const vfx: VfxKind = v.issue === 'defender'
+          ? 'king-escape'
+          : v.issue === 'attacker' ? 'king-fall' : null;
+        if (vfx === 'king-escape') scene.pushCameraIn(0.78, 1.6);
         onUi({
           turn: gs.turn,
           over: true,
-          msg: isKingEscape ? s.kingEscapes : s.kingFalls,
-          vfx: isKingEscape ? 'king-escape' : 'king-fall',
+          msg: texteVerdict(v, langueRef.current === 'FR'),
+          vfx,
         });
         return;
       }
-      const nextTurn: Side = gs.turn === 'attacker' ? 'defender' : 'attacker';
-      if (!hasAnyMoves(gs.board, nextTurn)) {
-        gs.over = true;
-        cancelCpu();
-        const s = stringsRef.current;
-        const winnerLabel = nextTurn === 'attacker' ? s.defenders : s.raiders;
-        onUi({ turn: nextTurn, over: true, msg: s.noMoves(winnerLabel), vfx: null });
-        return;
-      }
-      gs.turn = nextTurn;
+      gs.turn = arb.tour;
       onUi({ turn: gs.turn, over: false, msg: turnMsg(gs.turn, false), vfx: null });
       scheduleCpu();
     };
@@ -511,19 +510,22 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
       // Garde defensive : jamais commettre depuis une case vide (un
       // commit fantome basculerait le tour sans bouger le plateau).
       if (!gs.board[fr]?.[fc]) return;
-      const { board: nb, removed } = applyMove(gs.board, fr, fc, tr, tc);
+      // `applyMove` ne sert plus qu'à savoir QUI disparaît du plateau,
+      // pour les animations. L'état de la partie, lui, avance par
+      // l'arbitre, et il n'avance que par là.
+      const { removed } = applyMove(gs.board, fr, fc, tr, tc);
+      arb = jouerArbitre(arb, [fr, fc], [tr, tc]);
       // Partie en ligne : mon coup part vers l'autre. Le coup reçu de
       // l'adversaire, lui, ne repart pas (sinon il ferait la navette).
       const fil = enLigneRef.current;
       if (fil && !distant) {
-        const gagnant = checkWin(nb);
         fil.surMonCoup({
           fr, fc, tr, tc,
-          tourSuivant: gs.turn === 'attacker' ? 'defender' : 'attacker',
-          gagnant,
+          tourSuivant: arb.tour,
+          gagnant: gagnantDe(arb.verdict),
         });
       }
-      gs.board = nb;
+      gs.board = arb.board;
       gs.sel = null;
       gs.moves = [];
       hl.clearHL();
@@ -550,6 +552,13 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
     // La page rejoue ici les coups de l'adversaire.
     distantRef.current = (fr: number, fc: number, tr: number, tc: number) => {
       if (gs.over) return;
+      // Le coup vient du réseau. L'arbitre refuse un coup illégal en
+      // levant une erreur, ce qui arrêterait la page : on le pèse donc
+      // avant, et un coup impossible se signale plutôt que de passer.
+      if (!coupLegal(arb.board, arb.tour, [fr, fc], [tr, tc])) {
+        console.warn('[hnefatafl] coup distant refusé par l’arbitre', { fr, fc, tr, tc });
+        return;
+      }
       commitMove(fr, fc, tr, tc, true);
     };
 
@@ -735,6 +744,7 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, s
       clearTimeout(secours);
       cancelAnimationFrame(raf);
       cancelCpu();
+      penseur.fermer();
       detachResize();
       el.removeEventListener('mousedown', onMouseDown);
       el.removeEventListener('mousemove', onMouseMove);
@@ -872,7 +882,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
 
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [humanSide, setHumanSide] = useState<Side>(initial.humanSide);
-  const [difficulty, setDifficulty] = useState<Difficulty>(initial.difficulty);
+  const [niveau, setNiveau] = useState<Niveau>(initial.niveau);
   // Le tafl n'a jamais eu un règlement unique : on choisit le sien
   // avant de dresser la table (Alex, 2026-08-22).
   const [regleId, setRegleId] = useState<string>(initial.regleId);
@@ -939,12 +949,34 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
                 <Pill active={humanSide === 'attacker'} onClick={() => setHumanSide('attacker')} icon={<Swords size={13} />}>
                   {s.sideRaiders}
                 </Pill>
+                {/* Les dix marches, du marmiton au connétable. Elles
+                    tiennent en deux rangées de cinq chiffres, et le nom
+                    de celle qu'on a choisie s'écrit dessous : dix
+                    pastilles nommées auraient poussé le bouton de départ
+                    hors de l'écran. */}
                 <SousTitre>{s.difficultyLabel}</SousTitre>
-                <div className="flex flex-wrap gap-2">
-                  <Pill active={difficulty === 'easy'} onClick={() => setDifficulty('easy')}>{s.diffEasy}</Pill>
-                  <Pill active={difficulty === 'medium'} onClick={() => setDifficulty('medium')}>{s.diffMedium}</Pill>
-                  <Pill active={difficulty === 'hard'} onClick={() => setDifficulty('hard')}>{s.diffHard}</Pill>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {NIVEAUX_POSSIBLES.map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => setNiveau(n)}
+                      aria-pressed={niveau === n}
+                      aria-label={nomNiveau(n, lang === 'FR')}
+                      title={nomNiveau(n, lang === 'FR')}
+                      className={`min-h-[40px] rounded-card border font-sans text-xs tracking-[0.08em] transition-colors duration-200 ${
+                        niveau === n
+                          ? 'bg-brass text-[#1A0A05] border-brass'
+                          : 'bg-black/30 text-ivory-soft border-brass/35 hover:border-brass hover:text-ivory'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
                 </div>
+                <p className="font-editorial text-[12px] md:text-[13px] text-ivory-soft/75 leading-snug">
+                  {nomNiveau(niveau, lang === 'FR')}
+                </p>
               </>
             )}
           </Colonne>
@@ -996,7 +1028,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
         <BoutonTutoriel onClick={onTutoriel} lang={lang} className="min-h-[48px]" />
         <button
           type="button"
-          onClick={() => onBegin({ mode, humanSide, difficulty, regleId })}
+          onClick={() => onBegin({ mode, humanSide, niveau, regleId })}
           className="inline-flex items-center gap-2.5 px-8 py-3.5 min-h-[48px] rounded-card bg-brass text-[#1A0A05] border border-brass font-sans text-xs md:text-sm uppercase tracking-[0.22em] hover:bg-brass-soft transition-colors duration-200"
         >
           <Swords size={15} />
@@ -1022,7 +1054,7 @@ const HnefataflPage: React.FC = () => {
   // Lu par le routeur, pas figé au premier rendu : un deuxième lien
   // ?partie= sur la même route ouvre bien la nouvelle partie
   // (vérification du 2026-08-27).
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const partieId = params.get('partie');
   // La visite guidée s'offre d'elle-même à la première venue, jamais
   // quand un défi attend à l'autre bout du fil.
@@ -1030,6 +1062,10 @@ const HnefataflPage: React.FC = () => {
   const [partie, setPartie] = useState<PartieTafl | null>(null);
   const canvasRef = useRef<CanvasHandle>(null);
   const appliques = useRef(0);
+  // Les coups reçus se rejouent en file, un toutes les sept dixièmes de
+  // seconde. Les minuteurs encore en vol vivent ici pour pouvoir être
+  // éteints quand la table change.
+  const rejeux = useRef<number[]>([]);
   const monCamp: Side | null = useMemo(() => {
     if (!partie || !user) return null;
     if (partie.camps.attacker === user.uid) return 'attacker';
@@ -1039,7 +1075,7 @@ const HnefataflPage: React.FC = () => {
 
   const [gameStarted, setGameStarted] = useState(false);
   // Nouvelle partie dans l'URL : on repart de zéro.
-  useEffect(() => { setGameStarted(false); setPartie(null); appliques.current = 0; }, [partieId]);
+  useEffect(() => { setGameStarted(false); setPartie(null); setMaison(null); appliques.current = 0; }, [partieId]);
   // Le minuteur du coup (Alex, 2026-08-27) : le temps restant se relit
   // chaque minute; écoulé sur le tour de l'autre, je peux réclamer.
   const [tic, setTic] = useState(0);
@@ -1064,13 +1100,17 @@ const HnefataflPage: React.FC = () => {
   const [pleinEcran, setPleinEcran] = useState(false);
   // Le panneau des amis s'ouvre par-dessus la table, sans la rétrécir.
   const [amisOuverts, setAmisOuverts] = useState(false);
+  // Le nom que porte la maison quand elle a pris le siège au bout de la
+  // minute d'attente. Nul tout le reste du temps, et c'est lui qui dit
+  // à la page qu'elle joue contre l'ordinateur sous un nom d'emprunt.
+  const [maison, setMaison] = useState<string | null>(null);
   // Les trois choses à savoir et la signature de l'atelier vivent dans
   // un panneau posé sur la table, plus dans une section sous la page.
   const [reglesOuvertes, setReglesOuvertes] = useState(false);
   const [config, setConfig] = useState<GameConfig>({
     mode: 'two-player',
     humanSide: 'defender',
-    difficulty: 'medium',
+    niveau: 5,
     regleId: REGLE_DEFAUT,
   });
   const [gameKey, setGameKey] = useState(0);
@@ -1119,7 +1159,7 @@ const HnefataflPage: React.FC = () => {
     if (!partie || partie.statut !== 'encours' || gameStarted) return;
     setRegle(partie.regleId);
     appliques.current = 0;
-    setConfig({ mode: 'two-player', humanSide: 'defender', difficulty: 'medium', regleId: partie.regleId });
+    setConfig({ mode: 'two-player', humanSide: 'defender', niveau: 5, regleId: partie.regleId });
     setGameKey((k) => k + 1);
     setCharge(0);
     setPret(false);
@@ -1135,16 +1175,31 @@ const HnefataflPage: React.FC = () => {
     restants.forEach((coup, i) => {
       const [fr, fc, tr, tc] = coupDepuisTexte(coup);
       // Un coup par tranche : les animations s'enchaînent proprement.
-      setTimeout(() => canvasRef.current?.jouerDistant(fr, fc, tr, tc), i * 700);
+      rejeux.current.push(window.setTimeout(
+        () => canvasRef.current?.jouerDistant(fr, fc, tr, tc), i * 700,
+      ));
     });
     appliques.current = partie.coups.length;
   }, [partie, pret, gameStarted]);
 
-  const handleBegin = (next: GameConfig) => {
+  // La table change (nouvelle saga, bascule sur la maison, autre lien
+  // ?partie=) : les coups encore en file s'éteignent avec elle. Sans
+  // cela, un coup de la partie d'avant tombait sur le damier neuf, où
+  // l'arbitre le refusait sans que personne ne sache pourquoi.
+  useEffect(() => () => {
+    rejeux.current.forEach((m) => window.clearTimeout(m));
+    rejeux.current = [];
+  }, [gameKey]);
+
+  const handleBegin = (next: GameConfig, nomMaison: string | null = null) => {
     // Le règlement s'applique AVANT que la scène ne se monte : il fixe
     // la taille du damier et la mise en place.
     setRegle(next.regleId);
     setConfig(next);
+    // Le nom d'emprunt se pose ici et nulle part ailleurs : toute
+    // partie qui commence autrement que par la maison le retire, sinon
+    // la carte « Contre X » survivait à la saga suivante.
+    setMaison(nomMaison);
     setGameKey((k) => k + 1);
     setCharge(0);
     setPret(false);
@@ -1156,6 +1211,30 @@ const HnefataflPage: React.FC = () => {
     // 2026-08-04.
     musiqueRef.current?.demarrer();
   };
+
+  // La maison prend le siège. Alex, 2026-09-01 : « pas proposer, juste
+  // partir une partie contre l'ordinateur et randomiser le nom de
+  // l'adversaire. Par contre il faut que l'adversaire soit très fort. »
+  // La partie s'ouvre donc sur-le-champ, à la dixième marche, sans
+  // écran de choix et sans réclame, et le nom tiré au sort remplace
+  // « l'ordinateur » partout où l'adversaire est nommé.
+  const prendreLaMaison = (nom: string) => {
+    // Aucune réclame ne s'interpose : la minute d'attente a déjà été
+    // longue. Un interstitiel resté en attente s'efface avec elle.
+    setPubEnAttente(null);
+    handleBegin({ ...config, mode: 'vs-cpu', niveau: 10 }, nom);
+  };
+
+  // Qui je suis à la table. Une personne sans compte parle quand même
+  // pendant une partie contre la maison : son fil ne quitte jamais la
+  // page, et la table ouverte, elle, reste réservée aux comptes.
+  const moi = useMemo(() => ({
+    uid: user?.uid ?? 'invite',
+    nom: user?.displayName?.trim() || (lang === 'FR' ? 'Vous' : 'You'),
+  }), [user?.uid, user?.displayName, lang]);
+  const nomEnFace = partie
+    ? (partie.noms[partie.joueurs.find((u) => u !== user?.uid) ?? ''] ?? '—')
+    : (maison ?? '');
 
   const returnToMenu = () => {
     setGameStarted(false);
@@ -1209,7 +1288,7 @@ const HnefataflPage: React.FC = () => {
       return `${tour} · ${s.aideAttente(autre)}`;
     }
     if (!partieId && config.mode === 'vs-cpu' && ui.turn !== config.humanSide) {
-      return `${tour} · ${s.aideOrdinateur}`;
+      return `${tour} · ${maison ? s.aideAttente(maison) : s.aideOrdinateur}`;
     }
     const prefixe = partieId ? `${s.aideAVous} ` : '';
     return `${tour} · ${prefixe}${ui.turn === 'defender' ? s.aideRoi : s.aideRaiders}`;
@@ -1255,6 +1334,7 @@ const HnefataflPage: React.FC = () => {
               ref={canvasRef}
               gameKey={gameKey}
               onUi={setUi}
+              langue={lang}
               strings={s}
               config={config}
               enLigne={partieId && monCamp ? {
@@ -1599,6 +1679,23 @@ const HnefataflPage: React.FC = () => {
             </AnimatePresence>
           </>
         )}
+
+        {/* ── La table ouverte et la parole, en overlay elles aussi ──
+            Le plateau garde toute sa largeur : les deux panneaux se
+            posent DESSUS, dans le patron du panneau des amis. */}
+        <HnefataflPanneaux
+          lang={lang}
+          regleId={config.regleId}
+          monCamp={config.humanSide}
+          nomRegle={(id) => { const r = regle(id); return lang === 'FR' ? r.nomFR : r.nomEN; }}
+          surPartie={(id) => setParams({ partie: id })}
+          surOrdinateur={prendreLaMaison}
+          salle={partieId ? { collection: 'taflParties' as const, partieId } : null}
+          moi={moi}
+          connecte={!!user && !partieId}
+          adversaire={nomEnFace}
+          maison={maison}
+        />
 
         {/* ── Les règles, dans un panneau posé sur la table ────────── */}
         <AnimatePresence>
