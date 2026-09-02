@@ -25,6 +25,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { EditorPanel } from './components/EditorPanel';
 import { PreviewPanel } from './components/PreviewPanel';
+import { MiniatureFeuille } from './components/MiniatureFeuille';
 import { DocumentState, Language } from './types';
 import { TRANSLATIONS, LOGOS, PRESET_NAMES, PRESET_ROLES } from './constants';
 import './pupitre.css';
@@ -82,39 +83,6 @@ const fetchImageAsBase64 = async (originalUrl: string): Promise<string> => {
     return originalUrl;
   }
 };
-
-// La miniature de feuille peinte sur chaque plaque du seuil. Un dessin
-// de la chose plutôt qu'un pictogramme de la chose : on voit du premier
-// coup d'œil la différence entre une lettre et une facture.
-const MiniatureFeuille: React.FC<{ variante: 'letter' | 'invoice' }> = ({ variante }) => (
-  <span aria-hidden className="pu-mini">
-    <span className="relative z-10 flex flex-col gap-[5px] h-full pt-2">
-      <span className="pu-mini-brass w-5 mx-auto" />
-      <span className="pu-mini-head mx-auto mt-1" style={{ width: variante === 'letter' ? '68%' : '46%' }} />
-      <span className="pu-mini-brass w-8 mx-auto mb-1.5" />
-      {variante === 'letter' ? (
-        <>
-          <span className="pu-mini-row w-full" />
-          <span className="pu-mini-row w-full" />
-          <span className="pu-mini-row w-[86%]" />
-          <span className="pu-mini-row w-full mt-1.5" />
-          <span className="pu-mini-row w-full" />
-          <span className="pu-mini-row w-[72%]" />
-          <span className="pu-mini-row w-[52%] ml-auto mt-auto" />
-        </>
-      ) : (
-        <>
-          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
-          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
-          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
-          <span className="flex gap-1"><span className="pu-mini-row flex-1" /><span className="pu-mini-row w-3" /></span>
-          <span className="pu-mini-brass w-[44%] ml-auto mt-auto" />
-          <span className="pu-mini-head w-[34%] ml-auto" />
-        </>
-      )}
-    </span>
-  </span>
-);
 
 const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerName }) => {
   const [lang, setLang] = useState<Language>('fr');
@@ -353,7 +321,10 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
                 onClick={() => { handleStateChange({ type: variante }); setHasChosenType(true); }}
                 className="pu-plate pu-choice"
               >
-                <span className="flex items-start gap-5">
+                {/* Sur téléphone, la miniature passe au-dessus du texte :
+                    côte à côte, il ne restait que cent quarante pixels au
+                    titre, qui tombait sur trois lignes. */}
+                <span className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                   <MiniatureFeuille variante={variante} />
                   <span className="flex-1 min-w-0">
                     <span className="pu-title block text-lg md:text-xl">
@@ -363,6 +334,9 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
                       {variante === 'letter' ? t('chooseLetterNote') : t('chooseInvoiceNote')}
                     </span>
                   </span>
+                  {/* Le losange des rampes d'action de la régie : il dit
+                      que la plaque se clique, sans écrire « cliquez ici ». */}
+                  <span aria-hidden className="pu-choice-glyph hidden sm:inline-flex"><span>→</span></span>
                 </span>
               </button>
             ))}
@@ -375,7 +349,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
   // ── Le pupitre ouvert ─────────────────────────────────────────
   const etiquetteType = docState.type === 'invoice'
     ? (docState.invoiceType === 'quote' ? t('quoteWord') : t('invoiceWord'))
-    : t('chooseLetter');
+    : t('letterWord');
 
   return (
     <div className="pupitre-root pu-plate-strong selection:bg-[rgba(201,168,90,0.30)]">
@@ -414,6 +388,11 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
             type="button"
             onClick={() => setHasChosenType(false)}
             className="admin-ghost"
+            /* Sur téléphone le libellé disparaît et il ne reste que la
+               flèche : sans nom accessible, le bouton devient muet pour
+               un lecteur d'écran. */
+            aria-label={t('changeType')}
+            title={t('changeType')}
           >
             <ArrowLeft size={13} />
             <span className="hidden sm:inline">{t('changeType')}</span>
@@ -424,6 +403,8 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
             onClick={handleExportPdf}
             disabled={isExporting}
             className="admin-cta"
+            aria-label={t('downloadPdf')}
+            title={t('downloadPdf')}
           >
             <Download size={14} />
             <span className="hidden md:inline">{t('downloadPdf')}</span>
@@ -451,7 +432,7 @@ const PupitreApp: React.FC<PupitreAppProps> = ({ canSignAnyName, lockedSignerNam
       <div className="grid md:grid-cols-[minmax(0,430px)_minmax(0,1fr)] items-start">
         <section
           className={`${voletMobile === 'editeur' ? 'block' : 'hidden'} md:block ` +
-            'md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto scrollbar-thin ' +
+            'md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto scrollbar-thin pu-fondu-bas ' +
             'p-4 md:p-6 md:border-r md:border-[color:var(--admin-line)]'}
         >
           <EditorPanel

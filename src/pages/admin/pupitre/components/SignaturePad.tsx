@@ -1,6 +1,20 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Eraser } from 'lucide-react';
 
+// Le carré où l'on signe, à la souris ou au doigt.
+//
+// Deux variantes : `paper`, posée sur la feuille du Pupitre et sur
+// l'atelier de signature de la régie, et `glass`, sur fond sombre.
+// Rien ici ne dépend de la feuille du Pupitre : l'atelier de signature
+// importe ce composant sans jamais charger pupitre.css, donc le curseur
+// en plume et les couleurs sont posés en ligne plutôt que par une
+// classe scopée sous `.pupitre-root`.
+
+// Curseur en plume, encodé une fois.
+const PLUME = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 19l7-7 3 3-7 7-3-3z\"></path><path d=\"M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z\"></path><path d=\"M2 2l7.586 7.586\"></path><circle cx=\"11\" cy=\"11\" r=\"2\"></circle></svg>') 0 24, crosshair";
+
+const LAITON = '#B08D3A';
+
 interface SignaturePadProps {
   onChange: (dataUrl: string | null) => void;
   label?: string;
@@ -129,16 +143,46 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     }
   };
 
-  const containerClasses = variant === 'paper' 
-    ? "bg-transparent border-2 border-dashed border-gold-600/20 hover:border-gold-600/40 rounded-lg signature-paper" 
-    : "glass-input rounded-xl hover:border-gold-500/40";
+  // Sur la feuille, l'aire de signature n'est pas une boîte en pointillé
+  // (ça se voit à l'impression et ça n'existe sur aucun document réel) :
+  // c'est un creux de papier fermé par deux ticks de laiton, comme les
+  // équerres du cadre. Sur fond sombre, on garde le champ de la régie.
+  const styleConteneur: React.CSSProperties = variant === 'paper'
+    ? {
+        // Aucun fond : sur un document officiel, un rectangle teinté
+        // s'imprime et se voit. Il ne reste qu'une ligne de laiton et
+        // ses deux ticks, c'est-à-dire une ligne de signature.
+        background: 'transparent',
+        borderBottom: `1px solid ${LAITON}`,
+      }
+    : {
+        background: 'rgba(4, 8, 12, 0.62)',
+        border: '1px solid var(--admin-line-soft)',
+        borderRadius: 10,
+        boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.5)',
+      };
 
   return (
     <div className="relative w-full h-full group">
-      <div className={`relative w-full h-full overflow-hidden transition-colors ${containerClasses}`}>
+      <div className="relative w-full h-full overflow-hidden transition-colors" style={styleConteneur}>
+        {variant === 'paper' && (
+          <>
+            <span
+              aria-hidden
+              className="absolute bottom-0 left-0 pointer-events-none"
+              style={{ width: 10, height: 10, borderLeft: `1.5px solid ${LAITON}`, borderBottom: `1.5px solid ${LAITON}` }}
+            />
+            <span
+              aria-hidden
+              className="absolute bottom-0 right-0 pointer-events-none"
+              style={{ width: 10, height: 10, borderRight: `1.5px solid ${LAITON}`, borderBottom: `1.5px solid ${LAITON}` }}
+            />
+          </>
+        )}
         <canvas
           ref={canvasRef}
           className="w-full h-full touch-none"
+          style={{ cursor: variant === 'paper' ? PLUME : 'crosshair' }}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -150,10 +194,16 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
         
         {/* Placeholder text */}
         {!hasSignature && label && (
-          <div className={`absolute inset-0 flex items-center justify-center pointer-events-none font-display text-sm tracking-widest uppercase
-            ${variant === 'paper' ? 'text-dark-900/30' : 'text-neutral-600 opacity-50'}
-          `}>
-             ~ {label} ~
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none uppercase"
+            style={{
+              fontFamily: 'var(--font-display-alt)',
+              fontSize: 13,
+              letterSpacing: '0.3em',
+              color: variant === 'paper' ? 'rgba(58, 50, 38, 0.35)' : 'var(--admin-text-mute)',
+            }}
+          >
+            {label}
           </div>
         )}
 
@@ -162,14 +212,15 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           className={`absolute top-2 right-2 transition-opacity duration-200 ${hasSignature ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           data-html2canvas-ignore="true"
         >
-          <button 
+          <button
+            type="button"
             onClick={clear}
-            className={`flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full
-              ${variant === 'paper' 
-                ? 'bg-red-50 text-red-800 hover:bg-red-100 border border-red-200' 
-                : 'text-gold-500 hover:text-gold-300'}
-            `}
+            className="flex items-center justify-center w-7 h-7 rounded-full transition-colors"
+            style={variant === 'paper'
+              ? { background: 'rgba(176, 141, 58, 0.14)', color: '#6B4A12', border: `1px solid ${LAITON}` }
+              : { background: 'rgba(196, 214, 230, 0.06)', color: 'var(--admin-text-soft)', border: '1px solid var(--admin-line)' }}
             title={clearLabel}
+            aria-label={clearLabel}
           >
             <Eraser size={12} />
           </button>

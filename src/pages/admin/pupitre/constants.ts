@@ -58,6 +58,10 @@ export const TRANSLATIONS: Translation = {
     en: "An official notice, a letter or a memo, on festival letterhead, signed and sealed.",
     fr: "Un avis officiel, une lettre ou un mémo, sur le papier du festival, signé de votre main."
   },
+  letterWord: {
+    en: "Letter",
+    fr: "Lettre"
+  },
   chooseInvoice: {
     en: "Invoice or quote",
     fr: "Facture ou devis"
@@ -131,8 +135,8 @@ export const TRANSLATIONS: Translation = {
     fr: "Date"
   },
   editor: {
-    en: "Writing desk",
-    fr: "Le pupitre"
+    en: "Write",
+    fr: "Écrire"
   },
   preview: {
     en: "The sheet",

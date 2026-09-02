@@ -933,41 +933,55 @@ exports.messagerieDeMasse = onCall(
       }
 
       if (transport) {
-        const lettre = lettreDuMessage(surtitre, texte);
-        // Le festival reste l'expéditeur, comme pour toute lettre du
-        // site. La réponse, elle, revient à la personne qui a écrit :
-        // « Répondre » dans un client de courriel doit tomber sur
-        // quelqu'un, jamais dans le vide.
-        const repondreA = voix === 'moi' ? courriel : ZOHO_EMAIL;
+        // Rien de ce qui suit ne doit défaire le premier temps. Une
+        // panne au milieu des lettres se note et s'arrête là : les
+        // messages restent posés, et la trace dit combien de lettres
+        // étaient parties.
+        try {
+          const lettre = lettreDuMessage(surtitre, texte);
+          // Le festival reste l'expéditeur, comme pour toute lettre du
+          // site. La réponse, elle, revient à la personne qui a écrit :
+          // « Répondre » dans un client de courriel doit tomber sur
+          // quelqu'un, jamais dans le vide.
+          const repondreA = voix === 'moi' ? courriel : ZOHO_EMAIL;
 
-        for (let i = 0; i < aEcrire.length; i += LOT_LETTRES) {
-          const tranche = aEcrire.slice(i, i + LOT_LETTRES);
-          const resultats = await Promise.allSettled(
-            tranche.map((m) => transport.sendMail({
-              from: FROM,
-              to: m.courriel,
-              replyTo: repondreA,
-              subject: surtitre,
-              text: lettre.texte,
-              html: lettre.html,
-            })),
-          );
-          for (let k = 0; k < resultats.length; k += 1) {
-            if (resultats[k].status === 'fulfilled') {
-              lettres += 1;
-            } else {
-              lettresEchouees += 1;
-              if (adressesEchouees.length < 25) {
-                adressesEchouees.push({
-                  courriel: tranche[k].courriel,
-                  raison: String(
-                    (resultats[k].reason && resultats[k].reason.message) || resultats[k].reason,
-                  ).slice(0, 200),
-                });
+          for (let i = 0; i < aEcrire.length; i += LOT_LETTRES) {
+            const tranche = aEcrire.slice(i, i + LOT_LETTRES);
+            const resultats = await Promise.allSettled(
+              tranche.map((m) => transport.sendMail({
+                from: FROM,
+                to: m.courriel,
+                replyTo: repondreA,
+                subject: surtitre,
+                text: lettre.texte,
+                html: lettre.html,
+              })),
+            );
+            for (let k = 0; k < resultats.length; k += 1) {
+              if (resultats[k].status === 'fulfilled') {
+                lettres += 1;
+              } else {
+                lettresEchouees += 1;
+                if (adressesEchouees.length < 25) {
+                  adressesEchouees.push({
+                    courriel: tranche[k].courriel,
+                    raison: String(
+                      (resultats[k].reason && resultats[k].reason.message) || resultats[k].reason,
+                    ).slice(0, 200),
+                  });
+                }
               }
             }
+            await trace.update({ lettres, lettresEchouees, adressesEchouees });
           }
-          await trace.update({ lettres, lettresEchouees, adressesEchouees });
+        } catch (err) {
+          empechement = String((err && err.message) || err).slice(0, 200);
+          logger.error('[messagerie] les lettres se sont arrêtées', { envoi: trace.id, lettres, empechement });
+        } finally {
+          // Le bassin de connexions se referme, comme après une
+          // campagne : des sockets laissées ouvertes retiennent
+          // l'instance en vie et se font couper au tour suivant.
+          try { transport.close(); } catch { /* le bassin était déjà tombé */ }
         }
       }
     }

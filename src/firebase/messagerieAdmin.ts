@@ -97,13 +97,15 @@ export interface ResultatEnvoi {
   envoiId: string;
   /** Les lettres réellement parties. */
   lettres: number;
-  /** Les lettres refusées par le serveur de courriel, adresse par adresse. */
+  /** Les lettres que le serveur de courriel a refusées. Les vingt-cinq
+   *  premières adresses en cause sont dans la trace de l'historique. */
   lettresEchouees: number;
   /** Les membres qui n'ont reçu que le message : pas d'adresse au
    *  dossier, ou l'alerte correspondante éteinte dans leur espace. */
   sansLettre: number;
-  /** Rempli seulement quand le serveur de courriel n'a pas pu s'ouvrir
-   *  du tout. Les messages sont posés quand même. */
+  /** Rempli quand le serveur de courriel n'a pas pu s'ouvrir, ou qu'il
+   *  s'est arrêté en cours de route. Les messages sont posés quand même,
+   *  puisqu'ils s'écrivent avant que la première lettre ne parte. */
   erreurCourriel?: string;
 }
 
@@ -139,6 +141,44 @@ export async function ecrireAUnMembre(
     cible: (membre.nom || '').trim() || 'Un membre',
     voix: 'moi',
   });
+}
+
+/**
+ * Ce qui s'est vraiment passé, à montrer à l'équipe une fois l'envoi
+ * fini.
+ *
+ * Les deux livraisons se racontent séparément, parce qu'elles peuvent
+ * différer : un membre sans adresse au dossier, ou qui a éteint cette
+ * alerte dans son espace, reçoit le message et pas la lettre. Passer
+ * `nom` quand l'envoi ne visait qu'une personne.
+ */
+export function resumerEnvoi(r: ResultatEnvoi, nom?: string): string {
+  const phrases: string[] = [nom
+    ? `Le message attend ${nom} dans son espace.`
+    : `Le message est dans l’espace de ${r.fils} membre${r.fils > 1 ? 's' : ''}, au nom du festival.`];
+
+  if (r.lettres > 0) {
+    phrases.push(r.lettres > 1
+      ? `${r.lettres} lettres sont parties par courriel.`
+      : 'La lettre est partie par courriel.');
+    if (r.sansLettre > 0) {
+      phrases.push(`${r.sansLettre} membre${r.sansLettre > 1 ? 's n’ont' : ' n’a'} reçu que le message, faute d’adresse au dossier ou parce que l’alerte est éteinte.`);
+    }
+  } else if (!r.erreurCourriel) {
+    phrases.push(nom
+      ? 'Aucune lettre n’est partie. Cette personne n’a pas d’adresse au dossier, ou elle a éteint cette alerte dans son espace.'
+      : 'Aucune lettre n’est partie : personne dans cette liste n’a d’adresse au dossier avec l’alerte allumée.');
+  }
+
+  if (r.lettresEchouees > 0) {
+    phrases.push(`${r.lettresEchouees} lettre${r.lettresEchouees > 1 ? 's ont été refusées' : ' a été refusée'} par le serveur de courriel.`);
+  }
+  if (r.erreurCourriel) {
+    phrases.push(r.lettres > 0
+      ? `Le serveur de courriel s’est arrêté en route : ${r.erreurCourriel}`
+      : `Aucune lettre n’est partie : le serveur de courriel n’a pas répondu (${r.erreurCourriel}).`);
+  }
+  return phrases.join(' ');
 }
 
 /** Écrire à un groupe ou à tout le registre, au nom du festival. */

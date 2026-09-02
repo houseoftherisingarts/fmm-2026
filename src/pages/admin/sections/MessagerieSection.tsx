@@ -13,9 +13,9 @@ import {
 } from '../../../firebase/ordre';
 import { LONGUEUR_MAX } from '../../../firebase/moderation';
 import {
-  ecrireAUnMembre, envoyerEnNombre, suivreEnvois,
+  ecrireAUnMembre, envoyerEnNombre, resumerEnvoi, suivreEnvois,
   FESTIVAL_NOM, FESTIVAL_UID, PLAFOND_REGISTRE,
-  type EnvoiMasse, type ResultatEnvoi,
+  type EnvoiMasse,
 } from '../../../firebase/messagerieAdmin';
 
 // ─── La messagerie de l'équipe ───────────────────────────────────────
@@ -44,6 +44,26 @@ const PORTEES: { id: Portee; libelle: string; icone: React.ComponentType<{ size?
   { id: 'cochees', libelle: 'Les personnes cochées', icone: UserCheck },
   { id: 'tous',    libelle: 'Tout le registre',      icone: Users },
 ];
+
+/** La jauge d'un des deux temps de l'envoi. Le même filet de laiton que
+ *  partout ailleurs dans l'admin, écrit une fois plutôt que deux. */
+const Avancement: React.FC<{ titre: string; fait: number; total: number }> = ({ titre, fait, total }) => (
+  <div>
+    <p className="font-sans text-[11px] uppercase tracking-[0.24em] mb-2" style={{ color: 'var(--admin-text-soft)' }}>
+      {titre}
+    </p>
+    <div style={{ height: 4, borderRadius: 999, background: 'rgba(4, 8, 12, 0.62)', overflow: 'hidden' }}>
+      <div
+        style={{
+          height: '100%',
+          width: `${Math.round((fait / Math.max(1, total)) * 100)}%`,
+          background: 'linear-gradient(90deg, var(--admin-brass-lo), var(--admin-brass-hi))',
+          transition: 'width 420ms cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      />
+    </div>
+  </div>
+);
 
 const TOUTES_FONCTIONS = '__toutes__';
 const TOUTES_ETIQUETTES = '__toutes__';
@@ -212,43 +232,13 @@ const MessagerieSection: React.FC = () => {
     else setConfirme(true);
   };
 
-  // Les deux livraisons se racontent séparément, parce qu'elles peuvent
-  // différer : un membre sans adresse au dossier, ou qui a éteint cette
-  // alerte dans son espace, reçoit le message et pas la lettre.
-  const raconterEnvoi = (r: ResultatEnvoi, nom?: string): string => {
-    const pose = nom
-      ? `Le message attend ${nom} dans son espace.`
-      : `Le message est dans l’espace de ${r.fils} membre${r.fils > 1 ? 's' : ''}, au nom du festival.`;
-
-    if (r.erreurCourriel) {
-      return `${pose} Aucune lettre n’est partie : le serveur de courriel n’a pas répondu (${r.erreurCourriel}).`;
-    }
-    if (!r.lettres) {
-      return nom
-        ? `${pose} Aucune lettre n’est partie. Cette personne n’a pas d’adresse au dossier, ou elle a éteint cette alerte dans son espace.`
-        : `${pose} Aucune lettre n’est partie : personne dans cette liste n’a d’adresse au dossier avec l’alerte allumée.`;
-    }
-
-    const lettre = r.lettres > 1
-      ? `${r.lettres} lettres sont parties par courriel.`
-      : 'La lettre est partie par courriel.';
-    const reste: string[] = [];
-    if (r.sansLettre > 0) {
-      reste.push(`${r.sansLettre} membre${r.sansLettre > 1 ? 's n’ont' : ' n’a'} reçu que le message, faute d’adresse au dossier ou parce que l’alerte est éteinte.`);
-    }
-    if (r.lettresEchouees > 0) {
-      reste.push(`${r.lettresEchouees} lettre${r.lettresEchouees > 1 ? 's ont été refusées' : ' a été refusée'} par le serveur de courriel.`);
-    }
-    return [pose, lettre, ...reste].join(' ');
-  };
-
   const envoyer = async () => {
     setEnvoi(true); setErreur(null); setSucces(null); setConfirme(false);
     try {
       if (portee === 'une' && seul) {
         const resultat = await ecrireAUnMembre(seul, texte);
         setEnvoiSuivi(resultat.envoiId);
-        setSucces(raconterEnvoi(resultat, (seul.nom || 'ce membre').trim()));
+        setSucces(resumerEnvoi(resultat, (seul.nom || 'ce membre').trim()));
       } else {
         const resultat = await envoyerEnNombre({
           portee: portee === 'tous' ? 'tous' : 'selection',
@@ -257,7 +247,7 @@ const MessagerieSection: React.FC = () => {
           cible,
         });
         setEnvoiSuivi(resultat.envoiId);
-        setSucces(raconterEnvoi(resultat));
+        setSucces(resumerEnvoi(resultat));
       }
       setTexte('');
     } catch (e) {
@@ -622,7 +612,7 @@ const MessagerieSection: React.FC = () => {
         {/* L'avancement, tiré du document d'historique que la fonction
             met à jour à chaque lot. Les fils s'écrivent en premier et en
             quelques secondes; les lettres suivent, au rythme du serveur
-            de courriel, et c'est la barre qu'on regarde vraiment. */}
+            de courriel, et c'est la seconde barre qui prend le temps. */}
         {enCours && (
           <div className="mt-5 space-y-3">
             <Avancement
@@ -666,7 +656,7 @@ const MessagerieSection: React.FC = () => {
         </p>
 
         {envois.length === 0 ? (
-          <Card><EmptyState icon={History}>Aucun envoi de groupe pour le moment.</EmptyState></Card>
+          <Card><EmptyState icon={History}>Aucun envoi pour le moment.</EmptyState></Card>
         ) : (
           <ul className="space-y-2.5">
             {envois.map((e) => (

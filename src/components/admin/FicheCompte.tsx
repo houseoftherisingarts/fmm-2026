@@ -6,11 +6,11 @@ import {
 import { Textarea, PrimaryButton, GhostButton, Badge, fmtDate } from '../../pages/admin/primitives';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  lireFiche, rolesAffiches, ROLES_MEMBRE, LIBELLE_ROLE,
+  lireFiche, rolesAffiches, definirRoles, ROLES_MEMBRE, LIBELLE_ROLE,
   type Membre, type RoleMembre,
 } from '../../firebase/ordre';
-import { definirFonctions, type AppUser } from '../../firebase/users';
-import { ecrireAUnMembre } from '../../firebase/messagerieAdmin';
+import type { AppUser } from '../../firebase/users';
+import { ecrireAUnMembre, resumerEnvoi } from '../../firebase/messagerieAdmin';
 import { LONGUEUR_MAX } from '../../firebase/moderation';
 
 // ─── La fiche d'un compte ────────────────────────────────────────────
@@ -42,10 +42,10 @@ interface Props {
   onFermer: () => void;
 }
 
-/** Les trois champs de trace que `definirFonctions` pose sur la fiche
+/** Les trois champs de trace que `definirRoles` pose sur la fiche
  *  du membre. Ils ne figurent pas dans l'interface `Membre` : la fiche
  *  du compte est la seule à les écrire et à les lire. */
-type Trace = { rolesPar?: string; rolesParEmail?: string; rolesLe?: unknown };
+type Trace = { rolesPar?: string | null; rolesParEmail?: string | null; rolesLe?: unknown };
 
 const memesFonctions = (a: RoleMembre[], b: RoleMembre[]): boolean =>
   a.length === b.length && a.every((r) => b.includes(r));
@@ -129,7 +129,7 @@ const FicheCompte: React.FC<Props> = ({ compte, onFermer }) => {
     setBusy(true); setGarde(false); setErreur(null); setSucces(null);
     try {
       const roles = rolesAffiches(choix);
-      await definirFonctions(compte.uid, roles, { uid: user.uid, email: user.email });
+      await definirRoles(compte.uid, roles, { uid: user.uid, email: user.email });
       const courriel = user.email.trim().toLowerCase();
       setPoses(roles);
       setChoix(roles);
@@ -153,13 +153,13 @@ const FicheCompte: React.FC<Props> = ({ compte, onFermer }) => {
     if (!corps || !user?.uid) return;
     setEnvoi(true); setErreur(null); setSucces(null);
     try {
-      await ecrireAUnMembre(
-        { uid: user.uid, nom: monNom, teinte: maFiche?.avatarHue, photo: maFiche?.avatarUrl },
-        { uid: compte.uid, nom, avatarHue: fiche?.avatarHue, avatarUrl: fiche?.avatarUrl },
-        corps,
-      );
+      // Le même geste dépose les deux : le message dans l'espace de la
+      // personne et la lettre à l'adresse de son compte. Tout se passe
+      // dans `messagerieDeMasse`, qui connaît l'identité de celle qui
+      // écrit par son jeton (Alex, 2026-09-01).
+      const resultat = await ecrireAUnMembre({ uid: compte.uid, nom }, corps);
       setTexte('');
-      setSucces(`Le message est dans la boîte de ${nom}, à votre nom.`);
+      setSucces(resumerEnvoi(resultat, nom));
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
@@ -367,8 +367,8 @@ const FicheCompte: React.FC<Props> = ({ compte, onFermer }) => {
           <>
             <p className="admin-prose mb-3">
               Le message arrive dans la boîte de réception de {nom}, au même endroit que ses
-              autres conversations, et il est signé de votre nom, {monNom}. Elle vous répond
-              directement.
+              autres conversations, et une lettre part en même temps à l’adresse de son compte.
+              Les deux sont signés de votre nom, {monNom}, et elle vous répond directement.
             </p>
             <Textarea
               value={texte}

@@ -249,10 +249,27 @@ export async function assurerFiche(
 }
 
 /** Décerner les fonctions d'un membre. Réservé à l'équipe : la règle
- *  Firestore refuse le champ `roles` à tous les autres. */
-export async function definirRoles(uid: string, roles: RoleMembre[]): Promise<void> {
+ *  Firestore refuse le champ `roles` à tous les autres.
+ *
+ *  `par` signe le changement, sur le modèle des documents `adminRoles`
+ *  (assignedBy, assignedByEmail, assignedAt). Les deux écrans qui
+ *  décernent une fonction passent ici, sans quoi la signature affichée
+ *  sur la fiche du compte nommerait la mauvaise personne dès que
+ *  quelqu'un modifie les mêmes fonctions depuis l'autre écran. */
+export async function definirRoles(
+  uid: string,
+  roles: RoleMembre[],
+  par?: { uid: string; email: string | null },
+): Promise<void> {
   if (!db) return;
-  await setDoc(doc(db, MEMBRES, uid), { uid, roles, maj: serverTimestamp() }, { merge: true });
+  await setDoc(doc(db, MEMBRES, uid), {
+    uid,
+    roles,
+    rolesPar:      par?.uid ?? null,
+    rolesParEmail: par?.email ? par.email.trim().toLowerCase() : null,
+    rolesLe:       serverTimestamp(),
+    maj:           serverTimestamp(),
+  }, { merge: true });
 }
 
 /** Décerner ou retirer la coche bleue vérifiée. Réservé à l'équipe :

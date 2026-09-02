@@ -7,11 +7,10 @@
 // a single type for both live and mock data.
 
 import {
-  collection, doc, getDocs, query, limit as fsLimit, serverTimestamp, setDoc,
+  collection, getDocs, query, limit as fsLimit,
   type Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import type { RoleMembre } from './ordre';
 
 export interface AppUser {
   uid:            string;
@@ -80,32 +79,4 @@ export async function synchroniserRegistre(): Promise<{ comptes: number; corrige
   const fn = httpsCallable<void, { comptes: number; corriges: number }>(getFunctions(undefined, 'us-central1'), 'synchroniserRegistre');
   const r = await fn();
   return r.data;
-}
-
-// ── Les fonctions portées au festival, décernées depuis la fiche ─────
-// Alex, 2026-09-02 : la fiche d'un compte (FicheCompte.tsx) pose et
-// retire les fonctions sans passer par l'écran des membres. L'écriture
-// va au même endroit que `definirRoles` de ordre.ts, dans
-// `membres/{uid}`, et laisse en plus la trace de la personne qui a
-// changé quelque chose, sur le modèle des documents `adminRoles`
-// (assignedBy, assignedByEmail, assignedAt).
-//
-// La règle Firestore réserve déjà le champ `roles` à l'équipe : un
-// membre ne se décerne rien tout seul. Voir le rapport de livraison
-// pour la ligne à ajouter à cette règle afin que les trois champs de
-// trace soient protégés comme `roles` l'est.
-export async function definirFonctions(
-  uid: string,
-  roles: RoleMembre[],
-  par: { uid: string; email: string },
-): Promise<void> {
-  if (!db) throw new Error('Firebase n’est pas configuré');
-  await setDoc(doc(db, 'membres', uid), {
-    uid,
-    roles,
-    rolesPar:      par.uid,
-    rolesParEmail: par.email.trim().toLowerCase(),
-    rolesLe:       serverTimestamp(),
-    maj:           serverTimestamp(),
-  }, { merge: true });
 }

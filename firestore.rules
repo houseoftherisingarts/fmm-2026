@@ -389,7 +389,14 @@ service cloud.firestore {
                         && !('roles' in request.resource.data)
                         && !('tags'  in request.resource.data)
                         && !('verifie' in request.resource.data)
-                        && !('vip' in request.resource.data));
+                        && !('vip' in request.resource.data)
+                        // La signature du dernier changement de fonctions
+                        // (definirRoles, ordre.ts) vaut ce que vaut son
+                        // interdiction d'écriture : sans ces trois lignes,
+                        // un membre nomme lui-même qui l'a promu.
+                        && !('rolesPar' in request.resource.data)
+                        && !('rolesParEmail' in request.resource.data)
+                        && !('rolesLe' in request.resource.data));
       // `tags` suit exactement le sort de `roles` : les étiquettes de
       // groupe (viking, marchand du dimanche, municipalité) servent à
       // former les listes d'envoi de l'équipe, et personne ne se les
@@ -399,7 +406,8 @@ service cloud.firestore {
                         // `verifie` (le badge bleu, Alex 2026-08-28) suit le même sort,
                         // et `vip` aussi : le serveur le pose quand users.sansPub passe à vrai.
                         && !request.resource.data.diff(resource.data).affectedKeys()
-                              .hasAny(['roles', 'tags', 'verifie', 'vip']));
+                              .hasAny(['roles', 'tags', 'verifie', 'vip',
+                                       'rolesPar', 'rolesParEmail', 'rolesLe']));
       allow delete: if isAdmin();
     }
 

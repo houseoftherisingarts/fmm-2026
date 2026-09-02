@@ -69,6 +69,19 @@ essai('Anne ne colle rien sur la fiche de Clem',
 essai('Anne modifie encore sa devise',
   () => assertSucceeds(setDoc(doc(anne, 'membres', ANNE), { devise: 'Toujours debout.' }, { merge: true })));
 
+// ── La signature du dernier changement de fonctions ────────────────
+// definirRoles (ordre.ts) écrit rolesPar / rolesParEmail / rolesLe, et
+// la fiche du compte les affiche comme « dernier changement par X ».
+// Une signature que le membre peut écrire lui-même ne vaut rien.
+essai('L’équipe signe le changement de fonctions',
+  () => assertSucceeds(setDoc(doc(equipe, 'membres', CLEM),
+    { roles: ['membre', 'benevole'], rolesPar: ADMIN, rolesParEmail: 'm.fournel11@gmail.com' }, { merge: true })));
+essai('Anne ne signe pas un changement à la place de l’équipe',
+  () => assertFails(setDoc(doc(anne, 'membres', ANNE),
+    { rolesParEmail: 'm.fournel11@gmail.com' }, { merge: true })));
+essai('Une fiche neuve ne naît pas signée',
+  () => assertFails(setDoc(doc(anne, 'membres', 'uid-neuf'), { uid: 'uid-neuf', rolesPar: ADMIN })));
+
 // ── Le catalogue des étiquettes ────────────────────────────────────
 essai('Anne lit le catalogue',
   () => assertSucceeds(getDoc(doc(anne, 'etiquettesOrdre', 'liste'))));

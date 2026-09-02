@@ -25,10 +25,9 @@
 }
 
 /* ── Surfaces ─────────────────────────────────────────────────────
-   Même recette que .admin-card, reprise ici pour que le balisage
-   importé (`glass-panel`) tombe juste sans être réécrit ligne à
-   ligne. La variante `pu-plate-strong` sert aux plaques de choix. */
-.pupitre-root .glass-panel,
+   Même recette que .admin-card : une plaque de verre sombre à quinze
+   pixels. La variante `pu-plate-strong` porte les grands contenants,
+   la coquille de l'outil et les plaques du seuil. */
 .pupitre-root .pu-plate {
   border-radius: var(--radius-card);
   background: linear-gradient(180deg, rgba(30, 38, 46, 0.50) 0%, rgba(11, 16, 21, 0.62) 100%);
@@ -133,7 +132,6 @@
 /* ── Champs ───────────────────────────────────────────────────────
    Hauteur minimale de quarante-quatre pixels : c'est la cible qu'un
    pouce attrape du premier coup, debout, sans viser. */
-.pupitre-root .glass-input,
 .pupitre-root .pu-field {
   width: 100%;
   min-height: 44px;
@@ -150,9 +148,7 @@
     box-shadow 200ms var(--admin-ease),
     background-color 200ms var(--admin-ease);
 }
-.pupitre-root .glass-input::placeholder,
 .pupitre-root .pu-field::placeholder { color: var(--admin-text-mute); }
-.pupitre-root .glass-input:focus,
 .pupitre-root .pu-field:focus {
   outline: none;
   background: rgba(6, 11, 16, 0.85);
@@ -162,9 +158,7 @@
     0 0 0 1px color-mix(in oklab, var(--admin-accent), transparent 55%),
     0 0 18px -5px color-mix(in oklab, var(--admin-accent), transparent 55%);
 }
-.pupitre-root select.glass-input,
 .pupitre-root select.pu-field { cursor: pointer; }
-.pupitre-root select.glass-input option,
 .pupitre-root select.pu-field option { background: #0A1015; color: var(--admin-text); }
 /* Le champ de date sert souvent au pouce : sa pastille de calendrier
    passe au laiton, sinon elle reste noire sur noir. */
@@ -352,7 +346,7 @@
    CSS, aucun fichier à charger. */
 .pupitre-root .pu-mini {
   position: relative;
-  width: 92px;
+  width: 104px;
   aspect-ratio: 210 / 297;
   flex: none;
   padding: 9px 8px;
@@ -390,11 +384,49 @@
   background: #B08D3A;
 }
 
+/* Le losange d'appel, repris des rampes d'action de la régie. Il
+   s'allume quand la plaque prend le survol ou le focus. */
+.pupitre-root .pu-choice-glyph {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  /* Pas de `display` ici : le balisage le règle avec `hidden sm:inline-flex`,
+     et une règle à deux classes l'emporterait sur l'utilitaire. */
+  align-items: center;
+  justify-content: center;
+  transform: rotate(45deg);
+  border: 1px solid rgba(196, 214, 230, 0.26);
+  background: rgba(196, 214, 230, 0.04);
+  box-shadow: inset 0 1px 0 var(--admin-sheen);
+  color: var(--admin-text-soft);
+  font-size: 11px;
+  transition:
+    border-color 260ms var(--admin-ease),
+    background-color 260ms var(--admin-ease),
+    color 260ms var(--admin-ease);
+}
+.pupitre-root .pu-choice-glyph > span { transform: rotate(-45deg); display: block; line-height: 1; }
+.pupitre-root .pu-choice:hover .pu-choice-glyph,
+.pupitre-root .pu-choice:focus-visible .pu-choice-glyph {
+  color: var(--admin-brass-hi);
+  border-color: color-mix(in oklab, var(--admin-accent), transparent 50%);
+  background: color-mix(in oklab, var(--admin-accent), transparent 88%);
+}
+
+/* La colonne d'écriture défile sous la feuille. Sans rien, la dernière
+   ligne se coupe net et ça se lit comme un bogue : un fondu au pied dit
+   que ça continue, comme dans le rail de la régie. */
+@media (min-width: 768px) {
+  .pupitre-root .pu-fondu-bas {
+    mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - 30px), transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - 30px), transparent 100%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pupitre-root .pu-choice,
   .pupitre-root .pu-mini,
   .pupitre-root .pu-seg > button,
-  .pupitre-root .glass-input,
   .pupitre-root .pu-field { transition-duration: 1ms; }
   .pupitre-root .pu-choice:hover { transform: none; }
 }

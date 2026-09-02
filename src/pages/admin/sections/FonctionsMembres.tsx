@@ -6,6 +6,7 @@ import {
   type Membre, type RoleMembre,
 } from '../../../firebase/ordre';
 import { Card, Input, PrimaryButton, EmptyState } from '../primitives';
+import { useAuth } from '../../../contexts/AuthContext';
 
 // ─── Les fonctions des membres ───────────────────────────────────────
 // Alex, 2026-08-23 : une même personne porte souvent plusieurs chapeaux.
@@ -15,6 +16,7 @@ import { Card, Input, PrimaryButton, EmptyState } from '../primitives';
 // règle Firestore refuse le champ à tout le monde sauf à l'équipe.
 
 const FonctionsMembres: React.FC = () => {
+  const { user } = useAuth();
   const [membres, setMembres] = useState<Membre[]>([]);
   const [terme, setTerme]     = useState('');
   const [ouvert, setOuvert]   = useState<string | null>(null);
@@ -64,7 +66,7 @@ const FonctionsMembres: React.FC = () => {
     setBusy(true); setErreur(null);
     try {
       const roles = rolesAffiches(choix);
-      await definirRoles(m.uid, roles);
+      await definirRoles(m.uid, roles, user ? { uid: user.uid, email: user.email } : undefined);
       setMembres((liste) => liste.map((x) => (x.uid === m.uid ? { ...x, roles } : x)));
       setFait(m.uid);
     } catch (e) {

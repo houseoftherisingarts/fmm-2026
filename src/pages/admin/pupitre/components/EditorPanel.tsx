@@ -104,8 +104,12 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
             value={state.content}
             onChange={(e) => onChange({ content: e.target.value })}
             placeholder={state.type === 'invoice' ? t('invoiceNotesPlaceholder') : t('documentBodyPlaceholder')}
-            className="pu-field resize-y min-h-[230px] scrollbar-thin"
-            style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.0625rem', lineHeight: 1.6 }}
+            className="pu-field resize-y scrollbar-thin"
+            /* La hauteur passe en style : `.pupitre-root .pu-field` pose un
+               minimum de 44 px avec deux classes, et une utilitaire Tailwind
+               à une classe ne le déloge pas. Le contenu se retrouvait dans
+               une fente de deux lignes. */
+            style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.0625rem', lineHeight: 1.6, minHeight: 240 }}
           />
           <Curseur
             label={t('textSize')}

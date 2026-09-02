@@ -1,7 +1,9 @@
-import { forwardRef, useEffect, useState, useRef, useMemo } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useState, useRef, useMemo } from 'react';
 import { LOGOS, TRANSLATIONS } from '../constants';
 import { DocumentState, Language } from '../types';
 import { SignaturePad } from './SignaturePad';
+import { InvoiceSheet } from './InvoiceSheet';
+import { LAITON, FILET_FORT, FILET_DOUX, ENCRE_TITRE, ENCRE_TEXTE, ENCRE_PALE } from './encres';
 
 // La feuille, et le bureau sur lequel elle est posée.
 //
@@ -24,24 +26,34 @@ interface PreviewPanelProps {
 
 // Estimates for pagination calculations (in pixels)
 const PAGE_HEIGHT = 1123; // A4 height at ~96dpi
-const PAGE_PADDING_Y = 150; // Total vertical padding (top + bottom)
+const PAGE_PADDING_Y = 168; // 2 × 20 mm de marge, plus 16 px de sûreté
 const CONTENT_HEIGHT = PAGE_HEIGHT - PAGE_PADDING_Y;
-const HEADER_HEIGHT = 200; // Logo + Divider + Margin
+// Les feuilles qui suivent la première portent une cale de 32 px en
+// tête, pour garder la même respiration sous la marge décorative. Elle
+// manquait au calcul, et le bas de la dernière page débordait sous le
+// bord de la feuille, rogné en silence.
+const PAGE_SPACER = 32;
+// En-tête mesuré : logo 112, filet 6, marges 20 et 40. Deux cents
+// pixels étaient une estimation de l'application d'origine.
+const HEADER_HEIGHT = 180;
 // Title Height is now dynamic based on font size
-const SIGNATURE_HEIGHT = 380; // Expanded to fit 2 lines of role
-const CHARS_PER_LINE = 85;
+// Le bloc de signature mesure 220 px à l'écran, date et fonction
+// comprises. L'estimation d'origine en réservait 380 : sur une lettre
+// d'une page pleine aux trois quarts, la signature partait seule sur une
+// deuxième feuille. Mesuré, puis arrondi vers le haut avec cinquante
+// pixels de marge pour une fonction sur deux lignes.
+const SIGNATURE_HEIGHT = 270;
+// Nombre de signes par ligne dans la colonne de 170 mm. Le corps est
+// en Cormorant Garamond, plus étroit que le Georgia de la version
+// d'origine : quatre-vingt-cinq signes surestimaient la hauteur d'un
+// bon quart et exilaient la signature sur une feuille vide. Mesuré à
+// quatre-vingt-quatorze, gardé à quatre-vingt-huit : six pour cent de
+// marge, mesurés par le banc d’essai de pagination.
+const CHARS_PER_LINE = 88;
 
 // L'écart vertical entre deux feuilles, en pixels. Sert aussi au calcul
 // de la hauteur réservée sous la mise à l'échelle.
 const ECART_FEUILLES = 32;
-
-// Le laiton du festival, en clair pour l'export.
-const LAITON       = '#B08D3A';
-const FILET_FORT   = 'rgba(176, 141, 58, 0.48)';
-const FILET_DOUX   = 'rgba(176, 141, 58, 0.20)';
-const ENCRE_TITRE  = '#211C14';
-const ENCRE_TEXTE  = '#3A3226';
-const ENCRE_PALE   = '#6B6152';
 
 // Les quatre équerres du cadre, reprises des portraits du bestiaire.
 const EQUERRES = [
@@ -98,7 +110,11 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
   // Dynamic Line Height estimation based on text size
   const lineHeight = state.textSize * 1.6;
   // Dynamic Title Height
-  const titleHeight = state.titleSize * 1.5 + 40; // line height + margins
+  // Le titre est composé en interligne 1,2 et suivi d'une marge de
+  // 36 px. Un coefficient de 1,5 gonflait la réservation de vingt
+  // pixels par titre, assez pour renvoyer la signature à la page
+  // suivante sur une lettre courte.
+  const titleHeight = state.titleSize * 1.25 + 40;
 
   // --- Pagination Logic ---
   const pages = useMemo(() => {
@@ -120,10 +136,16 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
 
     // Helper to estimate paragraph height
     const effectiveCharsPerLine = Math.floor(CHARS_PER_LINE * (18 / state.textSize));
+    // L'écart entre deux paragraphes est un `space-y-6`, donc 24 px
+    // fixes. Le calculer en proportion de la taille du texte le
+    // sous-estimait sous 16 px, et le dernier paragraphe débordait sous
+    // le bord de la feuille, invisible à l'écran mais rogné à
+    // l'impression.
+    const ecart = Math.max(state.textSize * 1.5, 24);
 
     const getParaHeight = (text: string) => {
       const lines = Math.ceil(text.length / effectiveCharsPerLine);
-      return Math.max(lines * lineHeight, lineHeight) + (state.textSize * 1.5); // margin bottom
+      return Math.max(lines * lineHeight, lineHeight) + ecart;
     };
 
     for (let i = 0; i < rawParagraphs.length; i++) {
@@ -137,8 +159,8 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
         // Start new page
         currentPage = [para];
         currentHeight = h;
-        // Subsequent pages have full content height
-        availableHeight = CONTENT_HEIGHT;
+        // Subsequent pages have full content height, less the spacer
+        availableHeight = CONTENT_HEIGHT - PAGE_SPACER;
       } else {
         currentPage.push(para);
         currentHeight += h;
@@ -146,8 +168,14 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
     }
 
     // Handle Signature placement
+    // Chaque paragraphe compte son écart de queue, mais `space-y-6` ne
+    // pose un écart qu'ENTRE deux paragraphes : le dernier n'en a pas.
+    // Cet écart fantôme suffisait à renvoyer la signature sur une
+    // feuille vide alors qu'il restait un tiers de page.
+    const hauteurTexte = currentPage.length > 0 ? currentHeight - ecart : currentHeight;
+
     // Check if there is space left on the last page for the signature
-    if (currentHeight + SIGNATURE_HEIGHT > availableHeight) {
+    if (hauteurTexte + SIGNATURE_HEIGHT > availableHeight) {
       // If not, push the current content and start a new empty page for signature
       _pages.push(currentPage);
       _pages.push([]); // Empty page just for signature
@@ -184,6 +212,38 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // ── Garde-fou du débordement ──────────────────────────────────
+  // La lettre se pagine toute seule, la facture non : elle tient sur une
+  // feuille et rien de plus. Au-delà, `overflow: hidden` rognait le pied
+  // de page sans rien dire, et les coordonnées bancaires disparaissaient
+  // du PDF envoyé au client. La feuille est donc mesurée après chaque
+  // rendu, et l'excédent s'affiche au-dessus du bureau. La bannière vit
+  // hors de `.preview-page`, donc elle ne part jamais à l'export.
+  const [excedent, setExcedent] = useState(0);
+  useLayoutEffect(() => {
+    const pile = containerRef.current;
+    if (!pile) return;
+    let pire = 0;
+    pile.querySelectorAll('.preview-page').forEach((feuille) => {
+      const boite = Array.from(feuille.children)
+        .find((e) => getComputedStyle(e).position !== 'absolute') as HTMLElement | undefined;
+      if (!boite) return;
+      const echelle = feuille.getBoundingClientRect().height / PAGE_HEIGHT || 1;
+      const styles = getComputedStyle(boite);
+      const padHaut = parseFloat(styles.paddingTop);
+      const padBas  = parseFloat(styles.paddingBottom);
+      const haut = boite.getBoundingClientRect().top;
+      const flux = Array.from(boite.children).filter((e) => getComputedStyle(e).position !== 'absolute');
+      if (flux.length === 0) return;
+      const bas = Math.max(...flux.map((e) => (e.getBoundingClientRect().bottom - haut) / echelle));
+      pire = Math.max(pire, Math.round(bas - padHaut - (boite.clientHeight - padHaut - padBas)));
+    });
+    // Huit pixels de seuil : sous cette barre, ce sont les arrondis de
+    // la mise à l'échelle de l'aperçu, pas du texte perdu.
+    const mesure = pire > 8 ? pire : 0;
+    setExcedent((prev) => (prev === mesure ? prev : mesure));
+  });
+
   // La pile est mise à l'échelle par transform, qui ne change pas la
   // place qu'elle occupe dans la page : à 0,45, la moitié de la colonne
   // restait un trou noir de plusieurs milliers de pixels. La hauteur
@@ -192,171 +252,29 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
     (pages.length * (PAGE_HEIGHT + 0.5) + (pages.length - 1) * ECART_FEUILLES) * scale,
   );
 
-  const renderInvoiceContent = () => {
-    const subtotal = state.services.reduce((sum, svc) => sum + ((svc.quantity * svc.rate) - (svc.discount || 0)), 0);
-    const tps = subtotal * 0.05;
-    const tvq = subtotal * 0.09975;
-    const total = subtotal + tps + tvq;
-
-    const hasDiscounts = state.services.some(svc => svc.discount && svc.discount > 0);
-    const enTete = 'py-3 px-2 font-semibold uppercase tracking-[0.14em] text-[11px]';
-
-    return (
-      <div className="flex-grow flex flex-col font-sans" style={{ color: ENCRE_TEXTE }}>
-        <div className="flex justify-between items-start mb-12 gap-8">
-          <div>
-            <h2
-              className="text-3xl uppercase mb-3"
-              style={{ fontFamily: 'var(--font-display)', color: ENCRE_TITRE, letterSpacing: '0.07em' }}
-            >
-              {state.invoiceType === 'quote' ? t('quoteWord') : t('invoiceWord')}
-            </h2>
-            <p className="text-sm">
-              <span className="font-semibold">{state.invoiceType === 'quote' ? t('quoteNumber') : t('invoiceNumber')} : </span>
-              {state.invoiceNumber || '—'}
-            </p>
-            <p className="text-sm">
-              <span className="font-semibold">{t('date')} : </span>
-              {new Date(state.date).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA')}
-            </p>
-          </div>
-          <div className="text-right">
-            <h3
-              className="uppercase tracking-[0.18em] text-[11px] font-semibold mb-2"
-              style={{ color: ENCRE_TITRE }}
-            >
-              {state.invoiceType === 'quote' ? t('preparedFor') : t('billedTo')}
-            </h3>
-            <p className="text-sm">{state.clientName || '—'}</p>
-            <p className="text-sm whitespace-pre-wrap" style={{ color: ENCRE_PALE }}>{state.clientAddress || '—'}</p>
-          </div>
-        </div>
-
-        <table className="w-full mb-8">
-          <thead>
-            <tr className="text-left" style={{ borderBottom: `1.5px solid ${LAITON}`, color: ENCRE_TITRE }}>
-              <th className={enTete}>{t('description')}</th>
-              <th className={`${enTete} text-right`}>{t('quantity')}</th>
-              <th className={`${enTete} text-right`}>{t('rate')}</th>
-              {hasDiscounts && <th className={`${enTete} text-right`}>{t('discount')}</th>}
-              <th className={`${enTete} text-right`}>{t('amount')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {state.services.map((svc) => (
-              <tr key={svc.id} style={{ borderBottom: `1px solid ${FILET_DOUX}` }}>
-                <td className="py-3 px-2 text-sm">{svc.description || '—'}</td>
-                <td className="py-3 px-2 text-sm text-right tabular-nums">{svc.quantity}</td>
-                <td className="py-3 px-2 text-sm text-right tabular-nums">{svc.rate.toFixed(2)} $</td>
-                {hasDiscounts && (
-                  <td className="py-3 px-2 text-sm text-right tabular-nums" style={{ color: '#8C3A2E' }}>
-                    {svc.discount ? `−${svc.discount.toFixed(2)} $` : '—'}
-                  </td>
-                )}
-                <td className="py-3 px-2 text-sm text-right tabular-nums">
-                  {((svc.quantity * svc.rate) - (svc.discount || 0)).toFixed(2)} $
-                </td>
-              </tr>
-            ))}
-            {state.services.length === 0 && (
-              <tr>
-                <td colSpan={hasDiscounts ? 5 : 4} className="py-10 text-center text-sm" style={{ color: ENCRE_PALE }}>
-                  {t('noServices')}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        <div className="flex justify-end mb-12">
-          <div className="w-72 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="font-semibold">{t('subtotal')}</span>
-              <span className="tabular-nums">{subtotal.toFixed(2)} $</span>
-            </div>
-            <div className="flex justify-between" style={{ color: ENCRE_PALE }}>
-              <span>TPS ({state.tpsNumber})</span>
-              <span className="tabular-nums">{tps.toFixed(2)} $</span>
-            </div>
-            <div className="flex justify-between" style={{ color: ENCRE_PALE }}>
-              <span>TVQ ({state.tvqNumber})</span>
-              <span className="tabular-nums">{tvq.toFixed(2)} $</span>
-            </div>
-            <div
-              className="flex justify-between text-lg font-bold pt-2 mt-2"
-              style={{ borderTop: `1.5px solid ${LAITON}`, color: ENCRE_TITRE }}
-            >
-              <span className="uppercase tracking-[0.12em] text-base">{t('total')}</span>
-              <span className="tabular-nums">{total.toFixed(2)} $</span>
-            </div>
-          </div>
-        </div>
-
-        {state.content && (
-          <div className="mb-8">
-            <h4 className="uppercase tracking-[0.18em] text-[11px] font-semibold mb-2" style={{ color: ENCRE_TITRE }}>
-              {t('notes')}
-            </h4>
-            <p
-              className="whitespace-pre-wrap"
-              style={{ fontFamily: 'var(--font-editorial)', fontSize: 15, lineHeight: 1.6 }}
-            >
-              {state.content}
-            </p>
-          </div>
-        )}
-
-        {/* Payment Stub */}
-        <div className="mt-auto pt-8" style={{ borderTop: `1.5px solid ${FILET_FORT}` }}>
-          <h4 className="uppercase tracking-[0.18em] text-[11px] font-semibold mb-4" style={{ color: ENCRE_TITRE }}>
-            {t('paymentDetails')}
-          </h4>
-          <div className="grid grid-cols-2 gap-8 text-sm">
-            <div>
-              <p className="font-bold mb-1" style={{ color: ENCRE_TITRE }}>Festival Médiéval de Montpellier</p>
-              <p>Montpellier, France</p>
-              <p className="mt-2">contact@festivalmedievalmontpellier.fr</p>
-            </div>
-            <div>
-              <p><span className="font-semibold">IBAN :</span> FR76 XXXX XXXX XXXX XXXX XXXX XXX</p>
-              <p><span className="font-semibold">BIC :</span> XXXXXXX</p>
-              <p className="mt-2 font-semibold" style={{ color: ENCRE_TITRE }}>Banque principale</p>
-              {onPay && state.invoiceType === 'invoice' && (
-                <div className="mt-4" data-html2canvas-ignore="true">
-                  <button
-                    type="button"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      const btn = e.currentTarget;
-                      const originalText = btn.innerText;
-                      btn.innerText = t('redirecting');
-                      btn.disabled = true;
-                      btn.style.opacity = '0.5';
-                      btn.style.cursor = 'wait';
-                      await onPay(total);
-                      // In case it fails, revert it back
-                      btn.innerText = originalText;
-                      btn.disabled = false;
-                      btn.style.opacity = '1';
-                      btn.style.cursor = 'pointer';
-                    }}
-                    className="inline-block px-6 py-2.5 uppercase tracking-[0.2em] text-[11px] font-semibold rounded"
-                    style={{ background: ENCRE_TITRE, color: '#E8DDC1' }}
-                  >
-                    {t('payOnline')}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="w-full">
-      <div className="flex justify-center px-4 py-8" style={{ height: hauteurPile + 64 }}>
+      {excedent > 0 && (
+        <div
+          className="mx-4 mt-4 rounded-[12px] px-4 py-3 font-sans text-[12px] leading-relaxed"
+          style={{
+            background: 'rgba(216, 123, 142, 0.10)',
+            border: '1px solid rgba(216, 123, 142, 0.40)',
+            color: '#FCA5B0',
+          }}
+          role="status"
+        >
+          {lang === 'en'
+            ? 'The content runs past the bottom of the sheet and the export will cut it there. Shorten the notes.'
+            : 'Le contenu dépasse le bas de la feuille et l’export coupera à cet endroit. Raccourcissez les notes.'}
+        </div>
+      )}
+      {/* La feuille garde sa largeur de 210 mm dans la mise en page, même
+          réduite : sans ce rognage, sur téléphone la page entière
+          s'élargissait à huit cents pixels et la barre d'outils se
+          retrouvait à moitié hors de l'écran. */}
+      <div className="flex justify-center overflow-hidden px-4 py-8" style={{ height: hauteurPile + 64 }}>
         <div
           ref={containerRef}
           style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
@@ -420,7 +338,7 @@ export const PreviewPanel = forwardRef<HTMLDivElement, PreviewPanelProps>(({ sta
                     )}
 
                     {state.type === 'invoice' ? (
-                      renderInvoiceContent()
+                      <InvoiceSheet state={state} lang={lang} onPay={onPay} />
                     ) : (
                       <>
                         {/* Title (First Page Only) */}
