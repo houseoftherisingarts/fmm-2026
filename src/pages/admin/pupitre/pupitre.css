@@ -1,66 +1,400 @@
-/* Le Pupitre Médiéval: scoped styles for the admin tool.
-   Mirrors the standalone app's index.html <style> block, but scoped
-   under .pupitre-root so the gold/dark theme doesn't leak into the
-   rest of the FMM admin chrome. */
+/* ── Le Pupitre : la peau du bureau de scribe ────────────────────────
+   Le Pupitre est arrivé dans la régie comme une application étrangère,
+   avec sa propre palette or sur noir, ses coins à trente pixels et son
+   texte en dégradé doré. À côté du reste des planches, ça se voyait :
+   deux logiciels dans la même fenêtre.
+
+   Cette feuille rebranche l'outil sur le canon de la régie. Les classes
+   gardent leurs noms (le balisage importé les emploie partout), mais
+   leur peinture est maintenant celle des cartes de l'admin : verre
+   sombre à quinze pixels, arête haute éclairée, arête basse noyée, un
+   seul laiton et il vient du rôle de la personne connectée. La lumière
+   tombe toujours d'en haut.
+
+   Deux règles ont guidé les arbitrages. D'abord la lisibilité : le
+   Pupitre sert pendant le festival, debout, parfois en plein soleil,
+   donc les étiquettes ont grossi et les surfaces cliquables font
+   quarante-quatre pixels de haut. Ensuite l'export : tout ce qui vit
+   DANS `.preview-page` part dans le PDF par html2canvas, qui ne sait
+   lire ni les variables de thème complexes ni color-mix(). La feuille
+   n'emploie donc que des valeurs littérales, posées dans le composant. */
 
 .pupitre-root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--admin-text);
 }
 
-.pupitre-root .glass-panel {
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* ── Surfaces ─────────────────────────────────────────────────────
+   Même recette que .admin-card, reprise ici pour que le balisage
+   importé (`glass-panel`) tombe juste sans être réécrit ligne à
+   ligne. La variante `pu-plate-strong` sert aux plaques de choix. */
+.pupitre-root .glass-panel,
+.pupitre-root .pu-plate {
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(30, 38, 46, 0.50) 0%, rgba(11, 16, 21, 0.62) 100%);
+  backdrop-filter: blur(14px) saturate(115%);
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
+  border: 1px solid var(--admin-line);
+  box-shadow:
+    inset 0 1px 0 var(--admin-sheen),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 18px 40px -24px rgba(0, 0, 0, 0.95);
 }
 
-.pupitre-root .glass-input {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  color: #e5e5e5;
+.pupitre-root .pu-plate-strong {
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(36, 45, 54, 0.62) 0%, rgba(9, 14, 19, 0.78) 100%);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid rgba(196, 214, 230, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(214, 228, 240, 0.09),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+    0 24px 54px -26px rgba(0, 0, 0, 1);
 }
 
-.pupitre-root .glass-input:focus {
-  border-color: rgba(212, 175, 55, 0.8);
+/* Barre de tête de l'outil. Le rail de la régie a déjà sa barre
+   collante en haut de la colonne : celle-ci ne colle pas, sinon deux
+   bandeaux se chevauchent au défilement. */
+.pupitre-root .pu-bar {
+  background: linear-gradient(180deg, rgba(20, 26, 33, 0.94) 0%, rgba(9, 14, 19, 0.92) 100%);
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  border-bottom: 1px solid var(--admin-groove);
+  box-shadow:
+    0 1px 0 var(--admin-sheen),
+    0 18px 36px -30px rgba(0, 0, 0, 1);
+}
+
+/* Couture métallique : une rainure noire, un reflet clair dessous. */
+.pupitre-root .pu-seam {
+  border-top: 1px solid var(--admin-groove);
+  box-shadow: 0 -1px 0 var(--admin-sheen) inset;
+}
+
+/* ── Écriture ─────────────────────────────────────────────────────
+   Le titre est gravé, jamais rempli d'un dégradé : sur les planches,
+   l'accent se fait à la couleur et à la graisse. */
+.pupitre-root .pu-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.055em;
+  line-height: 1.08;
+  text-transform: uppercase;
+  color: #EFE9DA;
+  text-shadow:
+    0 -1px 0 rgba(232, 240, 248, 0.16),
+    0 1px 0 rgba(0, 0, 0, 0.85),
+    0 3px 6px rgba(0, 0, 0, 0.55);
+}
+
+.pupitre-root .pu-eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.42em;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--admin-accent);
+}
+
+.pupitre-root .pu-rule {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--admin-accent), transparent 30%) 0%,
+    color-mix(in oklab, var(--admin-accent), transparent 72%) 24%,
+    var(--admin-line) 55%,
+    transparent 100%
+  );
+}
+
+/* Étiquette de champ. Onze pixels et non neuf : au soleil, sur un
+   écran d'ordinateur portable posé sur une table de bois, la version
+   à neuf pixels devenait un trait gris. */
+.pupitre-root .pu-label {
+  display: block;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--admin-text-soft);
+}
+
+/* Prose de consigne, en Cormorant comme le reste de la régie. */
+.pupitre-root .pu-prose {
+  font-family: var(--font-editorial);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--admin-text-soft);
+}
+
+/* ── Champs ───────────────────────────────────────────────────────
+   Hauteur minimale de quarante-quatre pixels : c'est la cible qu'un
+   pouce attrape du premier coup, debout, sans viser. */
+.pupitre-root .glass-input,
+.pupitre-root .pu-field {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(4, 8, 12, 0.62);
+  border: 1px solid var(--admin-line-soft);
+  color: var(--admin-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition:
+    border-color 200ms var(--admin-ease),
+    box-shadow 200ms var(--admin-ease),
+    background-color 200ms var(--admin-ease);
+}
+.pupitre-root .glass-input::placeholder,
+.pupitre-root .pu-field::placeholder { color: var(--admin-text-mute); }
+.pupitre-root .glass-input:focus,
+.pupitre-root .pu-field:focus {
   outline: none;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  background: rgba(6, 11, 16, 0.85);
+  border-color: color-mix(in oklab, var(--admin-accent), transparent 25%);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in oklab, var(--admin-accent), transparent 55%),
+    0 0 18px -5px color-mix(in oklab, var(--admin-accent), transparent 55%);
+}
+.pupitre-root select.glass-input,
+.pupitre-root select.pu-field { cursor: pointer; }
+.pupitre-root select.glass-input option,
+.pupitre-root select.pu-field option { background: #0A1015; color: var(--admin-text); }
+/* Le champ de date sert souvent au pouce : sa pastille de calendrier
+   passe au laiton, sinon elle reste noire sur noir. */
+.pupitre-root input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(72%) sepia(38%) saturate(520%) hue-rotate(2deg) brightness(94%);
+  cursor: pointer;
 }
 
-.pupitre-root .text-gold-gradient {
-  background: linear-gradient(to right, #BF953F, #FBF5B7, #B38728);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+/* Champ verrouillé : le nom du signataire quand la personne n'a pas le
+   droit de signer pour autrui. Le verrou se voit, il ne se devine pas. */
+.pupitre-root .pu-locked {
+  background: rgba(4, 8, 12, 0.42);
+  border-style: dashed;
+  color: var(--admin-text);
 }
 
-.pupitre-root .bg-gold-gradient {
-  background-image: linear-gradient(135deg, #AA8C2C 0%, #FBF5B7 25%, #D4AF37 50%, #AA8C2C 75%, #806921 100%);
+/* ── Curseurs de taille ───────────────────────────────────────────
+   Rail creusé, poignée en plaque de laiton. Vingt pixels de poignée,
+   pour l'attraper au pouce sans loupe. */
+.pupitre-root input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+.pupitre-root input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(4, 8, 12, 0.85);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 1px 0 var(--admin-sheen);
+}
+.pupitre-root input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--admin-brass-hi) 0%,
+    var(--admin-accent) 46%,
+    var(--admin-brass-lo) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--admin-lit),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 2px 8px -2px rgba(0, 0, 0, 0.9);
+}
+.pupitre-root input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(4, 8, 12, 0.85);
+}
+.pupitre-root input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--admin-accent);
+  box-shadow: inset 0 1px 0 var(--admin-lit), 0 2px 8px -2px rgba(0, 0, 0, 0.9);
 }
 
-.pupitre-root .bg-gold-gradient-hover:hover {
-  background-image: linear-gradient(135deg, #D4AF37 0%, #FCF6BA 25%, #E6C200 50%, #D4AF37 75%, #AA8C2C 100%);
+/* ── Le bureau ────────────────────────────────────────────────────
+   La scène sous la feuille. Toile noire du dépôt, vignette qui referme
+   les coins, halo froid au sommet : la page se pose sur un plateau,
+   elle ne flotte plus dans le vide. Assez calme pour que l'œil aille
+   au document et pas au décor. */
+.pupitre-root .pu-desk {
+  background-color: #05090C;
+  background-image:
+    radial-gradient(ellipse 120% 90% at 50% 0%, rgba(30, 37, 43, 0.55), transparent 62%),
+    radial-gradient(ellipse 130% 95% at 50% 40%, transparent 38%, rgba(2, 5, 8, 0.80) 100%),
+    url("/textures/black-linen.png");
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: cover, cover, 220px 220px;
 }
 
-/* Custom scrollbar: only inside the pupitre to avoid affecting the
-   rest of the admin shell. */
-.pupitre-root .scrollbar-thin::-webkit-scrollbar {
-  width: 8px;
+/* Filet de laiton en tête du bureau, allumé au centre. Il sépare la
+   barre d'outils de la scène sans poser une deuxième bordure. */
+.pupitre-root .pu-desk-lip {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--admin-accent), transparent 55%) 35%,
+    color-mix(in oklab, var(--admin-accent), transparent 25%) 50%,
+    color-mix(in oklab, var(--admin-accent), transparent 55%) 65%,
+    transparent 100%
+  );
 }
-.pupitre-root .scrollbar-thin::-webkit-scrollbar-track {
-  background: #0a0a0a;
+
+/* ── Barres de défilement ─────────────────────────────────────────
+   Le filet froid du rail de la régie, jamais du doré : une barre de
+   défilement dorée attire l'œil sur un rien. */
+.pupitre-root .scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 214, 230, 0.14) transparent;
 }
+.pupitre-root .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.pupitre-root .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
 .pupitre-root .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
+  background: rgba(196, 214, 230, 0.14);
+  border-radius: 999px;
 }
-.pupitre-root .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37;
+.pupitre-root .scrollbar-thin:hover::-webkit-scrollbar-thumb { background: rgba(196, 214, 230, 0.26); }
+
+/* ── Segments : le sélecteur à deux ou trois volets ───────────────
+   Papier blanc ou parchemin, facture ou devis, rédiger ou aperçu. Une
+   seule plaque de laiton allumée à la fois, comme l'onglet actif du
+   rail. */
+.pupitre-root .pu-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 12px;
+  background: rgba(4, 8, 12, 0.62);
+  border: 1px solid var(--admin-line-soft);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.pupitre-root .pu-seg > button {
+  flex: 1;
+  min-height: 38px;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--admin-text-soft);
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 200ms var(--admin-ease), background-color 200ms var(--admin-ease);
+}
+.pupitre-root .pu-seg > button:hover { color: var(--admin-text); background: rgba(196, 214, 230, 0.05); }
+.pupitre-root .pu-seg > button[data-active="true"] {
+  color: #080D11;
+  font-weight: 600;
+  background: linear-gradient(
+    180deg,
+    var(--admin-brass-hi) 0%,
+    var(--admin-accent) 44%,
+    var(--admin-brass-lo) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--admin-lit),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+    0 5px 16px -8px color-mix(in oklab, var(--admin-accent), transparent 40%);
 }
 
-/* Signature pad: feather-edit cursor (kept from the standalone app
-   so signing-on-canvas matches the visual it was designed against). */
-.pupitre-root .signature-paper canvas {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>') 0 24, auto;
+/* ── Les deux plaques du seuil ────────────────────────────────────
+   Le premier écran demande ce qu'on veut écrire. Chaque plaque montre
+   une miniature de la feuille qu'elle produit, parce qu'un dessin de
+   la chose vaut mieux qu'un pictogramme de la chose. */
+.pupitre-root .pu-choice {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 1.6rem 1.6rem 1.75rem;
+  border: 0;
+  cursor: pointer;
+  transition:
+    transform 260ms var(--admin-ease),
+    border-color 260ms var(--admin-ease),
+    box-shadow 260ms var(--admin-ease);
+}
+.pupitre-root .pu-choice:hover,
+.pupitre-root .pu-choice:focus-visible {
+  outline: none;
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--admin-accent), transparent 52%);
+  box-shadow:
+    inset 0 1px 0 rgba(214, 228, 240, 0.10),
+    0 28px 60px -28px rgba(0, 0, 0, 1),
+    0 0 34px -14px color-mix(in oklab, var(--admin-accent), transparent 45%);
+}
+
+/* La miniature : une feuille de parchemin posée de biais, avec son
+   double filet de laiton et ses lignes d'écriture. Tout est peint en
+   CSS, aucun fichier à charger. */
+.pupitre-root .pu-mini {
+  position: relative;
+  width: 92px;
+  aspect-ratio: 210 / 297;
+  flex: none;
+  padding: 9px 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #F1E6CC 0%, #E4D5B2 62%, #D8C89F 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(176, 141, 58, 0.55),
+    inset 0 0 18px rgba(122, 88, 34, 0.22),
+    0 14px 26px -12px rgba(0, 0, 0, 0.9);
+  transform: rotate(-3deg);
+  transition: transform 320ms var(--admin-ease);
+}
+.pupitre-root .pu-choice:hover .pu-mini,
+.pupitre-root .pu-choice:focus-visible .pu-mini { transform: rotate(-1deg) translateY(-2px); }
+.pupitre-root .pu-mini::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(176, 141, 58, 0.32);
+  pointer-events: none;
+}
+.pupitre-root .pu-mini-row {
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(58, 44, 26, 0.42);
+}
+.pupitre-root .pu-mini-head {
+  height: 6px;
+  border-radius: 1px;
+  background: rgba(58, 44, 26, 0.72);
+}
+.pupitre-root .pu-mini-brass {
+  height: 2px;
+  border-radius: 1px;
+  background: #B08D3A;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pupitre-root .pu-choice,
+  .pupitre-root .pu-mini,
+  .pupitre-root .pu-seg > button,
+  .pupitre-root .glass-input,
+  .pupitre-root .pu-field { transition-duration: 1ms; }
+  .pupitre-root .pu-choice:hover { transform: none; }
 }

@@ -581,16 +581,27 @@ exports.parrainageFilleul = onDocumentCreated(
 // ce qui est parti. La fonction fait le tour par lots de deux cents
 // membres et rend le compte exact des fils touchés.
 //
-// Le message s'affiche au nom du festival, jamais au nom d'une
-// personne : un membre qui reçoit une annonce doit reconnaître d'où
-// elle vient. Le SIÈGE du fil, lui, appartient à la personne de
-// l'équipe qui écrit, sinon la réponse du membre tomberait dans le
-// compte de personne et se perdrait (corrigé le 2026-08-24). Le membre
-// lit « Le Festival Médiéval de Montpellier », et sa réponse arrive
-// dans la boîte de celle ou celui qui a lancé l'envoi.
+// DEUX VOIX, ET LA DIFFÉRENCE EST VOULUE. Un mot à une seule personne
+// part au nom de celle qui l'écrit, et la conversation est celle de
+// deux personnes. Un envoi de groupe part au nom du festival : trois
+// cents membres n'ont pas à recevoir une lettre signée d'un prénom
+// qu'ils ne connaissent pas. Le SIÈGE du fil appartient dans les deux
+// cas à la personne de l'équipe qui écrit, sinon la réponse du membre
+// tomberait dans le compte de personne et se perdrait (corrigé le
+// 2026-08-24).
 //
-// L'envoi à une seule personne ne passe PAS par ici : il part du
-// navigateur, au nom de la personne qui écrit, dans le fil ordinaire.
+// LES DEUX LIVRAISONS (Alex, 2026-09-01) : « quand on écrit à un
+// membre, il faut que ça leur envoie un courriel ET un message dans
+// son espace client. » Le même geste dépose donc les deux, et l'envoi
+// à une seule personne passe par ici lui aussi, pour qu'il n'existe
+// qu'un seul chemin, un seul gabarit de lettre et une seule trace.
+//
+// L'ORDRE COMPTE. Tous les fils s'écrivent d'abord, en quelques
+// secondes; les lettres partent ensuite, au rythme du serveur de
+// courriel. Une panne au milieu des lettres laisse donc le message
+// dans l'espace de chacun, et la trace dit exactement combien de
+// courriels étaient partis. L'inverse aurait perdu des messages pour
+// gagner des lettres.
 
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { FieldValue } = require('firebase-admin/firestore');

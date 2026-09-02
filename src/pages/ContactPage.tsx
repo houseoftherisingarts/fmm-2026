@@ -21,18 +21,13 @@ const DEV_BYPASS = import.meta.env.VITE_ADMIN_DEV_BYPASS === 'true' && import.me
 // 2026-08-03). L'acheminement vit côté régie, où chaque boîte a son
 // entrée dans le rail de l'onglet Messages.
 //
-// Le choix de la boîte décide de deux choses. Il décide de la
-// destination, et il décide de ce que le formulaire demande ensuite :
-// les boîtes de courrier demandent un sujet et un message, tandis que
-// « Reporter un bug » bascule sur les champs d'un signalement.
-//
-// Champs obligatoires : courriel, boîte, sujet et message. Le nom reste
-// optionnel et tombe sur « Anonyme » quand il est laissé vide, pour que
-// la régie voie toujours une signature. Le courriel est obligatoire
-// parce que la réponse repart par là.
-//
-// Le formulaire reste volontairement simple, sans captcha : le jour où
-// le bruit devient gênant, reCAPTCHA ou hCaptcha se branche ici.
+// Le choix de la boîte décide de la destination ET de ce que le
+// formulaire demande ensuite : les boîtes de courrier veulent un sujet
+// et un message, tandis que « Reporter un bug » bascule sur les champs
+// d'un signalement. Le nom reste optionnel et tombe sur « Anonyme »
+// quand il est vide; le courriel est obligatoire parce que la réponse
+// repart par là. Pas de captcha pour l'instant : le jour où le bruit
+// devient gênant, reCAPTCHA ou hCaptcha se branche ici.
 
 // ─── Les boîtes ──────────────────────────────────────────────────────
 // L'ordre vient d'Alex : le Général en premier et par défaut, puis les
@@ -46,9 +41,8 @@ const ORDRE_BOITES = [
   'partenaires', 'mariages', 'medias', 'kiosques',
 ];
 
-// Le public voit un nom plus large que celui du rail de la régie, et
-// une ligne qui dit ce que la boîte a besoin de savoir. Ce qui n'est pas
-// habillé ici garde le libellé et la note de DEPARTMENTS.
+// Le public voit un nom plus large que celui du rail, et une ligne qui
+// dit ce que la boîte a besoin de savoir. Le reste garde DEPARTMENTS.
 const HABILLAGE: Record<string, Omit<Boite, 'id'>> = {
   partenaires: {
     labelFR: 'Partenaires et commandites',
@@ -70,13 +64,7 @@ const HABILLAGE: Record<string, Omit<Boite, 'id'>> = {
   },
 };
 
-interface Boite {
-  id:      string;
-  labelFR: string;
-  labelEN: string;
-  hintFR:  string;
-  hintEN:  string;
-}
+interface Boite { id: string; labelFR: string; labelEN: string; hintFR: string; hintEN: string }
 
 const BOITES: Boite[] = [
   ...ORDRE_BOITES.flatMap((id) => {
@@ -91,10 +79,9 @@ const BOITES: Boite[] = [
       hintEN:  h?.hintEN  ?? d.hintEN ?? '',
     }];
   }),
-  // Le bug ne passe pas par le courrier. Il emprunte le chemin qui
-  // existe déjà (addBugReport → collection bugReports → onglet Bugs de
-  // la régie), le même que la fenêtre « Signaler un bug » du pied de
-  // page. Rien n'est dédoublé ici.
+  // Le bug ne passe pas par le courrier : il emprunte le chemin déjà
+  // en place (addBugReport → bugReports → onglet Bugs), celui de la
+  // fenêtre « Signaler un bug » du pied de page. Rien n'est dédoublé.
   {
     id:      BUG_BOITE,
     labelFR: 'Reporter un bug',
@@ -104,8 +91,7 @@ const BOITES: Boite[] = [
   },
 ];
 
-const CATEGORIES_BUG: BugCategory[] =
-  ['affichage', 'lien', 'formulaire', 'performance', 'contenu', 'autre'];
+const CATEGORIES_BUG: BugCategory[] = ['affichage', 'lien', 'formulaire', 'performance', 'contenu', 'autre'];
 
 const ContactPage: React.FC = () => {
   useCaravanPage();
@@ -236,11 +222,9 @@ const ContactPage: React.FC = () => {
                   </div>
 
                   {/* La première question : à quelle boîte le message
-                      s'adresse. On n'affiche AUCUN nom de responsable,
-                      parce que personne n'écrit à quelqu'un en
-                      particulier et qu'un nom affiché vieillit mal
-                      (départs, remplacements). Ce choix décide de la
-                      destination et de la suite du formulaire. */}
+                      s'adresse. Aucun nom de responsable n'est affiché,
+                      parce qu'un nom vieillit mal (départs,
+                      remplacements). */}
                   <div className="md:col-span-2">
                     <FieldLabel required>{t.boiteLabel}</FieldLabel>
                     <select
@@ -288,10 +272,9 @@ const ContactPage: React.FC = () => {
                     />
                   </div>
 
-                  {/* La suite dépend de la boîte. Le signalement de bug
-                      demande la nature du problème et l'endroit où il
-                      se produit; toutes les autres boîtes demandent un
-                      sujet et un message. */}
+                  {/* La suite dépend de la boîte : le signalement veut
+                      la nature du problème et l'endroit, les autres
+                      boîtes veulent un sujet. */}
                   {isBug ? (
                     <>
                       <div>

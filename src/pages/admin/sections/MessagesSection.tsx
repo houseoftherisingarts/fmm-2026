@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MessageSquare, Mail, Reply, Forward, Inbox, ChevronRight, X, Check, AtSign,
+  MessageSquare, Mail, Reply, Forward, Inbox, ChevronRight, X, Check, AtSign, Layers,
 } from 'lucide-react';
 import { Card, EmptyState, Badge, fmtDate } from '../primitives';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -26,12 +26,45 @@ import {
 // the actual customer-facing email from their own client (no SMTP
 // infra yet). The reply is also stored as a `mail/` doc with the same
 // threadId so the thread history is intact.
+//
+// Le rail est le filtre par boîte. « Toutes les boîtes » ouvre le tri en
+// entier et chaque message y porte le nom de la boîte où il est tombé,
+// pour qu'un courriel mal aiguillé se voie tout de suite. Une seule
+// grappe d'abonnements alimente le compteur du rail et la liste
+// affichée : ce que la régie montre est ce qu'elle a déjà en main.
 
 interface Props {
   devBypass: boolean;
 }
 
-type SelectedBox = MailRecipient;
+/** Boîte affichée : une boîte précise, ou tout le courrier d'un coup. */
+type SelectedBox = MailRecipient | { type: 'all' };
+
+/** Clé de la boîte personnelle dans la table des messages par boîte. */
+const CLE_PERSO = '__personal';
+
+/** Sous quelle clé un abonnement range ses messages. */
+function cleDeBoite(box: SelectedBox): string | null {
+  if (box.type === 'all')        return null;
+  if (box.type === 'department') return box.departmentId;
+  return CLE_PERSO;
+}
+
+/** Le nom lisible d'une boîte destinataire, pour l'étiquette d'un message. */
+function nomDeBoite(r: MailRecipient | undefined): string {
+  if (!r) return 'Boîte inconnue';
+  return r.type === 'department'
+    ? (getDepartment(r.departmentId)?.labelFR ?? r.departmentId)
+    : r.adminEmail;
+}
+
+/** Un createdAt Firestore, une chaîne ISO ou rien : toujours une Date. */
+function enDate(v: unknown): Date {
+  if (v && typeof v === 'object' && 'toDate' in (v as object)) {
+    return (v as { toDate: () => Date }).toDate();
+  }
+  return typeof v === 'string' ? new Date(v) : new Date(0);
+}
 
 const MessagesSection: React.FC<Props> = ({ devBypass }) => {
   const { user } = useAuth();
@@ -39,44 +72,42 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
   const myName  = user?.displayName ?? 'Admin';
   const myUid   = user?.uid ?? 'dev';
 
-  // Default selection: first department box. Switching to "personnel"
-  // is one click away in the rail.
-  const [box, setBox] = useState<SelectedBox>({ type: 'department', departmentId: DEPARTMENTS[0].id });
-  const [items, setItems] = useState<MailMessage[]>([]);
+  // La vue par défaut montre tout le courrier : le rail sert ensuite à
+  // le filtrer boîte par boîte.
+  const [box, setBox] = useState<SelectedBox>({ type: 'all' });
   const [openId, setOpenId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
   // Surfaces transient write failures (markRead/reply/transfer) so admins
   // notice when an action didn't actually land server-side.
   const [error, setError] = useState<string | null>(null);
 
-  // Live subscription to the selected mailbox.
-  useEffect(() => {
-    setOpenId(null);
-    const unsub = (devBypass ? mockWatchInbox : watchInbox)(box, setItems);
-    return () => unsub();
-  }, [box, devBypass]);
+  useEffect(() => { setOpenId(null); }, [box]);
 
-  // Counts per department for the rail badges. We watch each
-  // department box separately so the counts stay fresh as new mail
-  // arrives. Compact and efficient enough at this scale.
-  const [counts, setCounts] = useState<Record<string, number>>({});
+  // Un abonnement par boîte, rangé sous sa clé. Le rail y prend ses
+  // compteurs et le panneau de droite y prend sa liste, sans jamais
+  // écouter deux fois la même boîte.
+  const [parBoite, setParBoite] = useState<Record<string, MailMessage[]>>({});
   useEffect(() => {
-    const unsubs: Array<() => void> = [];
-    for (const d of DEPARTMENTS) {
-      const recipient: MailRecipient = { type: 'department', departmentId: d.id };
-      const handler = (msgs: MailMessage[]) => {
-        setCounts((prev) => ({ ...prev, [d.id]: msgs.filter((m) => !m.read).length }));
-      };
-      unsubs.push((devBypass ? mockWatchInbox : watchInbox)(recipient, handler));
-    }
-    // Personal box unread count
-    const personal: MailRecipient = { type: 'admin', adminEmail: myEmail };
-    const personalHandler = (msgs: MailMessage[]) => {
-      setCounts((prev) => ({ ...prev, __personal: msgs.filter((m) => !m.read).length }));
-    };
-    unsubs.push((devBypass ? mockWatchInbox : watchInbox)(personal, personalHandler));
-    return () => { unsubs.forEach((fn) => fn()); };
+    const surveiller = devBypass ? mockWatchInbox : watchInbox;
+    const ranger = (cle: string) => (msgs: MailMessage[]) =>
+      setParBoite((prev) => ({ ...prev, [cle]: msgs }));
+    const unsubs = DEPARTMENTS.map((d) =>
+      surveiller({ type: 'department', departmentId: d.id }, ranger(d.id)),
+    );
+    unsubs.push(surveiller({ type: 'admin', adminEmail: myEmail }, ranger(CLE_PERSO)));
+    return () => { unsubs.forEach((fn) => fn()); setParBoite({}); };
   }, [devBypass, myEmail]);
+
+  const nonLus = (cle: string) => (parBoite[cle] ?? []).filter((m) => !m.read).length;
+
+  // Le courrier de la boîte choisie, ou tout le courrier remis en ordre
+  // de date quand le rail est sur « Toutes les boîtes ».
+  const items = useMemo<MailMessage[]>(() => {
+    const cle = cleDeBoite(box);
+    if (cle) return parBoite[cle] ?? [];
+    return Object.values(parBoite).flat()
+      .sort((a, b) => enDate(b.createdAt).getTime() - enDate(a.createdAt).getTime());
+  }, [box, parBoite]);
 
   const filtered = useMemo(
     () => items.filter((m) =>
@@ -99,9 +130,9 @@ const MessagesSection: React.FC<Props> = ({ devBypass }) => {
   };
 
   const boxLabel =
-    box.type === 'department'
-      ? `${getDepartment(box.departmentId)?.labelFR ?? box.departmentId}`
-      : 'Personnel';
+    box.type === 'all'        ? 'Toutes les boîtes'
+    : box.type === 'department' ? (getDepartment(box.departmentId)?.labelFR ?? box.departmentId)
+    : 'Personnel';
 
   return (
     <div className="space-y-3">
