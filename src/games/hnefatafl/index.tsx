@@ -50,7 +50,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { ApercuRecompense } from '../../components/compte/RecompensesQuotidiennes';
 import {
-  suivrePartie, jouerCoup, abandonner, coupEnTexte, coupDepuisTexte,
+  suivrePartie, jouerCoup, abandonner, terminerParNulle, coupEnTexte, coupDepuisTexte,
   repondreAuDefi, reclamerForfait, tempsRestant, formatDelai,
   type PartieTafl,
 } from '../../firebase/tafl';
@@ -282,7 +282,12 @@ export interface FilEnLigne {
   /** Partie terminée ou abandonnée : plus personne ne bouge rien. */
   fige?: boolean;
   /** Appelé quand JE joue : la page pousse le coup à l'autre. */
-  surMonCoup: (coup: { fr: number; fc: number; tr: number; tc: number; tourSuivant: Side; gagnant: 'attacker' | 'defender' | null }) => void;
+  surMonCoup: (coup: {
+    fr: number; fc: number; tr: number; tc: number; tourSuivant: Side;
+    gagnant: 'attacker' | 'defender' | null;
+    /** L'arbitre a rendu une nulle : la partie se ferme sans vainqueur. */
+    nulle?: boolean;
+  }) => void;
 }
 
 /** Ce que la page peut demander au damier. */
@@ -523,6 +528,7 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, l
           fr, fc, tr, tc,
           tourSuivant: arb.tour,
           gagnant: gagnantDe(arb.verdict),
+          nulle: arb.verdict?.issue === 'nulle',
         });
       }
       gs.board = arb.board;
@@ -1340,11 +1346,11 @@ const HnefataflPage: React.FC = () => {
               enLigne={partieId && monCamp ? {
                 monCamp,
                 fige: partie?.statut !== 'encours',
-                surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant }) => {
+                surMonCoup: ({ fr, fc, tr, tc, tourSuivant, gagnant, nulle }) => {
                   appliques.current += 1;
                   // Une partie menée jusqu'au bout vaut son badge,
                   // gagnée ou perdue : c'est d'aller au bout qui compte.
-                  if (gagnant) gagnerBadge('tafl');
+                  if (gagnant || nulle) gagnerBadge('tafl');
                   void jouerCoup(
                     partieId,
                     partie?.coups ?? [],
@@ -1352,7 +1358,10 @@ const HnefataflPage: React.FC = () => {
                     tourSuivant,
                     gagnant,
                     partie?.delaiMs,
-                  );
+                  // Une nulle ne porte aucun vainqueur, donc `jouerCoup`
+                  // laisserait la partie ouverte et son minuteur courir.
+                  // Le document se ferme dans la foulée du dernier coup.
+                  ).then(() => { if (nulle) return terminerParNulle(partieId); });
                 },
               } : null}
               boardSetId={choix.plateau}

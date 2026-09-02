@@ -336,6 +336,25 @@ export async function jouerCoup(
   });
 }
 
+/**
+ * Ferme une partie sur une nulle.
+ *
+ * `jouerCoup` ne clôt le document que lorsqu'un camp l'emporte. Les
+ * arbitres, eux, savent depuis le 1er septembre 2026 rendre une partie
+ * nulle (répétition, cinquante coups sans prise, plafond). Sans ce
+ * geste, le document restait au statut `encours` et le minuteur du
+ * coup continuait de courir sur une partie terminée.
+ */
+export async function terminerParNulle(id: string): Promise<void> {
+  if (!db) throw new Error('Firestore non configuré');
+  await updateDoc(doc(db, COL, id), {
+    statut: 'fini' as StatutPartie,
+    gagnant: null,
+    echeance: null,
+    updatedAt: serverTimestamp(),
+  });
+}
+
 export async function abandonner(id: string, uid: string, campGagnant: string): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), {

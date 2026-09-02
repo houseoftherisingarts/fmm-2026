@@ -30,7 +30,7 @@ import { useBadgeJeu, useGagnerBadge } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   suivrePartie, repondreAuDefi, abandonner,
-  jouerCoup as pousserLeCoup, type PartieTafl,
+  jouerCoup as pousserLeCoup, terminerParNulle, type PartieTafl,
 } from '../../firebase/tafl';
 
 import {
@@ -606,7 +606,11 @@ const MerellePage: React.FC = () => {
       void pousserLeCoup(
         p.id, liste, texte,
         String(apres.jeu.tour), apres.jeu.gagnant ? String(apres.jeu.gagnant) : null,
-      );
+        p.delaiMs,
+      // Une nulle n'a pas de vainqueur, donc `jouerCoup` laisserait le
+      // document ouvert et son minuteur courir sur une partie finie.
+      // Le dernier coup la referme dans la foulée.
+      ).then(() => { if (apres.nulle) return terminerParNulle(p.id); });
     }
 
     const fini = () => {
@@ -1052,12 +1056,17 @@ const MerellePage: React.FC = () => {
               <span className="block font-sans text-[9px] uppercase tracking-[0.16em] text-ivory-soft/60 mt-1">
                 {t.vousTenez} {nomCamp(monCamp)}
                 {' · '}
-                {partie.statut === 'fini'
+                {/* Une nulle sifflée par l'arbitre ne passe pas par
+                    Firestore : le document reste « encours » puisque
+                    personne n'a gagné. Sans ce verdict local, la carte
+                    continuerait d'annoncer un tour de jeu sur une partie
+                    déjà finie, et l'abandon resterait offert. */}
+                {partie.statut === 'fini' || fin.finie
                   ? t.partieFinie
                   : etat.tour === monCamp ? t.aVousDeJouer : t.enAttente}
               </span>
             </span>
-            {partie.statut === 'encours' && (
+            {partie.statut === 'encours' && !fin.finie && (
               <button
                 type="button"
                 onClick={() => { void abandonner(partie.id, user.uid, String(monCamp === 1 ? 2 : 1)); }}

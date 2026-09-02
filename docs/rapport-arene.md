@@ -8,7 +8,7 @@ Le moteur a été corrigé deux fois le jour même. Les notes de racine se pèse
 
 ## Comment le banc a tourné
 
-Le banc a joué 1198 parties de machine contre machine, en 13,6 minutes, sur une graine fixe. Relancé sans rien changer au moteur, il rend exactement les mêmes chiffres.
+Le banc a joué 1198 parties de machine contre machine, en 22,6 minutes, sur une graine fixe. Relancé sans rien changer au moteur, il rend exactement les mêmes chiffres.
 
 Chaque marche joue sous un plafond de nœuds, et non sous son horloge. C'est ce qui rend le banc reproductible : une horloge donne un résultat différent selon la charge de la machine, et deux tournois ne seraient plus comparables. Le temps de réflexion réel se mesure à part, plus bas, sans plafond.
 
@@ -29,14 +29,14 @@ Le réglage `notesExactes` de `src/games/moteur/recherche.ts` demande la note ju
 
 | Table | Fenêtre pleine, sans quiescence | Fenêtre pleine, avec quiescence |
 |---|---|---|
-| Renard et Oies · 13 oies | 9 sur 9 (profondeur 4) | 0 sur 9 (profondeur 1) |
-| Renard et Oies · 17 oies | 11 sur 11 (profondeur 4) | 0 sur 11 (profondeur 1) |
-| Mérelle · avec le vol | 20 sur 20 (profondeur 4) | 0 sur 20 (profondeur 1) |
-| Mérelle · sans le vol | 20 sur 20 (profondeur 4) | 0 sur 20 (profondeur 1) |
-| Hnefatafl · Copenhague | 115 sur 115 (profondeur 4) | 0 sur 115 (profondeur 1) |
-| Hnefatafl · Fetlar | 115 sur 115 (profondeur 4) | 0 sur 115 (profondeur 1) |
-| Hnefatafl · Tawlbwrdd | 115 sur 115 (profondeur 4) | 0 sur 115 (profondeur 1) |
-| Hnefatafl · Brandubh | 40 sur 40 (profondeur 2) | 0 sur 40 (profondeur 1) |
+| Renard et Oies · 13 oies | 9 sur 9 (profondeur 4) | 9 sur 9 (profondeur 4) |
+| Renard et Oies · 17 oies | 11 sur 11 (profondeur 4) | 11 sur 11 (profondeur 4) |
+| Mérelle · avec le vol | 20 sur 20 (profondeur 4) | 20 sur 20 (profondeur 4) |
+| Mérelle · sans le vol | 20 sur 20 (profondeur 4) | 20 sur 20 (profondeur 4) |
+| Hnefatafl · Copenhague | 115 sur 115 (profondeur 3) | 115 sur 115 (profondeur 2) |
+| Hnefatafl · Fetlar | 115 sur 115 (profondeur 3) | 115 sur 115 (profondeur 2) |
+| Hnefatafl · Tawlbwrdd | 115 sur 115 (profondeur 3) | 115 sur 115 (profondeur 2) |
+| Hnefatafl · Brandubh | 40 sur 40 (profondeur 3) | 40 sur 40 (profondeur 3) |
 
 ## Ce que chaque table a donné
 
@@ -44,14 +44,14 @@ Les taux de victoire de cette colonne mélangent tous les couples de marches, y 
 
 | Table | Parties | Longueur moyenne | Longueur max | Victoires (ouvre / répond) | Nulles |
 |---|---|---|---|---|---|
-| Renard et Oies · 13 oies | 36 | 94,4 | 162 | 55,6 % / 36,1 % | 8,3 % |
-| Renard et Oies · 17 oies | 36 | 100,0 | 237 | 58,3 % / 30,6 % | 11,1 % |
-| Mérelle · avec le vol | 36 | 45,9 | 83 | 69,4 % / 30,6 % | 0,0 % |
-| Mérelle · sans le vol | 36 | 42,4 | 59 | 75,0 % / 25,0 % | 0,0 % |
-| Hnefatafl · Copenhague | 36 | 52,0 | 160 | 22,2 % / 77,8 % | 0,0 % |
-| Hnefatafl · Fetlar | 36 | 55,4 | 184 | 19,4 % / 80,6 % | 0,0 % |
-| Hnefatafl · Tawlbwrdd | 36 | 69,5 | 140 | 77,8 % / 22,2 % | 0,0 % |
-| Hnefatafl · Brandubh | 36 | 20,7 | 48 | 33,3 % / 66,7 % | 0,0 % |
+| Renard et Oies · 13 oies | 36 | 98,6 | 216 | 55,6 % / 41,7 % | 2,8 % |
+| Renard et Oies · 17 oies | 36 | 95,9 | 211 | 58,3 % / 36,1 % | 5,6 % |
+| Mérelle · avec le vol | 36 | 51,5 | 155 | 75,0 % / 25,0 % | 0,0 % |
+| Mérelle · sans le vol | 36 | 46,3 | 78 | 75,0 % / 25,0 % | 0,0 % |
+| Hnefatafl · Copenhague | 36 | 50,9 | 160 | 16,7 % / 83,3 % | 0,0 % |
+| Hnefatafl · Fetlar | 36 | 54,7 | 184 | 25,0 % / 75,0 % | 0,0 % |
+| Hnefatafl · Tawlbwrdd | 36 | 62,2 | 103 | 77,8 % / 22,2 % | 0,0 % |
+| Hnefatafl · Brandubh | 36 | 22,3 | 56 | 30,6 % / 69,4 % | 0,0 % |
 
 ## L'équilibre des camps, à niveau égal
 
@@ -76,17 +76,17 @@ Le banc joue chaque position deux fois, avec la même graine : une fois avec la 
 
 | Table | Couple | Parties | Victoires en ouvrant | Victoires en répondant | Nulles | Verdict |
 |---|---|---|---|---|---|---|
-| Renard et Oies · 13 oies | 3 contre 1 | 6 | 0 contre 0 (oies) | 2 contre 2 (renard) | 2 | tient |
-| Renard et Oies · 13 oies | 5 contre 3 | 6 | 0 contre 0 (oies) | 3 contre 2 (renard) | 1 | tient |
+| Renard et Oies · 13 oies | 3 contre 1 | 6 | 0 contre 0 (oies) | 2 contre 3 (renard) | 1 | **tient à moitié** |
+| Renard et Oies · 13 oies | 5 contre 3 | 6 | 0 contre 0 (oies) | 3 contre 3 (renard) | 0 | tient |
 | Renard et Oies · 13 oies | 8 contre 5 | 4 | 2 contre 0 (oies) | 2 contre 0 (renard) | 0 | tient |
 | Renard et Oies · 13 oies | 10 contre 8 | 4 | 2 contre 2 (oies) | 0 contre 0 (renard) | 0 | tient |
 | Renard et Oies · 13 oies | 10 contre 5 | 4 | 2 contre 0 (oies) | 2 contre 0 (renard) | 0 | tient |
 | Renard et Oies · 17 oies | 3 contre 1 | 6 | 0 contre 0 (oies) | 3 contre 2 (renard) | 1 | tient |
-| Renard et Oies · 17 oies | 5 contre 3 | 6 | 1 contre 0 (oies) | 3 contre 0 (renard) | 2 | tient |
-| Renard et Oies · 17 oies | 8 contre 5 | 4 | 2 contre 0 (oies) | 1 contre 0 (renard) | 1 | tient |
+| Renard et Oies · 17 oies | 5 contre 3 | 6 | 1 contre 0 (oies) | 3 contre 1 (renard) | 1 | tient |
+| Renard et Oies · 17 oies | 8 contre 5 | 4 | 2 contre 0 (oies) | 2 contre 0 (renard) | 0 | tient |
 | Renard et Oies · 17 oies | 10 contre 8 | 4 | 2 contre 2 (oies) | 0 contre 0 (renard) | 0 | tient |
 | Renard et Oies · 17 oies | 10 contre 5 | 4 | 2 contre 0 (oies) | 2 contre 0 (renard) | 0 | tient |
-| Mérelle · avec le vol | 3 contre 1 | 6 | 2 contre 1 (chêne clair) | 2 contre 1 (bois teint) | 0 | tient |
+| Mérelle · avec le vol | 3 contre 1 | 6 | 3 contre 2 (chêne clair) | 1 contre 0 (bois teint) | 0 | tient |
 | Mérelle · avec le vol | 5 contre 3 | 6 | 3 contre 0 (chêne clair) | 3 contre 0 (bois teint) | 0 | tient |
 | Mérelle · avec le vol | 8 contre 5 | 4 | 2 contre 0 (chêne clair) | 2 contre 0 (bois teint) | 0 | tient |
 | Mérelle · avec le vol | 10 contre 8 | 4 | 2 contre 1 (chêne clair) | 1 contre 0 (bois teint) | 0 | tient |
@@ -96,23 +96,23 @@ Le banc joue chaque position deux fois, avec la même graine : une fois avec la 
 | Mérelle · sans le vol | 8 contre 5 | 4 | 2 contre 0 (chêne clair) | 2 contre 0 (bois teint) | 0 | tient |
 | Mérelle · sans le vol | 10 contre 8 | 4 | 2 contre 2 (chêne clair) | 0 contre 0 (bois teint) | 0 | tient |
 | Mérelle · sans le vol | 10 contre 5 | 4 | 2 contre 0 (chêne clair) | 2 contre 0 (bois teint) | 0 | tient |
-| Hnefatafl · Copenhague | 3 contre 1 | 6 | 3 contre 0 (assaillants) | 3 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Copenhague | 3 contre 1 | 6 | 2 contre 0 (assaillants) | 3 contre 1 (défenseurs) | 0 | tient |
 | Hnefatafl · Copenhague | 5 contre 3 | 6 | 1 contre 0 (assaillants) | 3 contre 2 (défenseurs) | 0 | tient |
-| Hnefatafl · Copenhague | 8 contre 5 | 4 | 2 contre 0 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Copenhague | 8 contre 5 | 4 | 1 contre 0 (assaillants) | 2 contre 1 (défenseurs) | 0 | tient |
 | Hnefatafl · Copenhague | 10 contre 8 | 4 | 0 contre 0 (assaillants) | 2 contre 2 (défenseurs) | 0 | tient |
 | Hnefatafl · Copenhague | 10 contre 5 | 4 | 2 contre 0 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
 | Hnefatafl · Fetlar | 3 contre 1 | 6 | 3 contre 0 (assaillants) | 3 contre 0 (défenseurs) | 0 | tient |
-| Hnefatafl · Fetlar | 5 contre 3 | 6 | 1 contre 0 (assaillants) | 3 contre 2 (défenseurs) | 0 | tient |
-| Hnefatafl · Fetlar | 8 contre 5 | 4 | 0 contre 1 (assaillants) | 1 contre 2 (défenseurs) | 0 | **cassée** |
+| Hnefatafl · Fetlar | 5 contre 3 | 6 | 2 contre 0 (assaillants) | 3 contre 1 (défenseurs) | 0 | tient |
+| Hnefatafl · Fetlar | 8 contre 5 | 4 | 1 contre 1 (assaillants) | 1 contre 1 (défenseurs) | 0 | tient |
 | Hnefatafl · Fetlar | 10 contre 8 | 4 | 0 contre 0 (assaillants) | 2 contre 2 (défenseurs) | 0 | tient |
 | Hnefatafl · Fetlar | 10 contre 5 | 4 | 2 contre 0 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
-| Hnefatafl · Tawlbwrdd | 3 contre 1 | 6 | 3 contre 1 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
-| Hnefatafl · Tawlbwrdd | 5 contre 3 | 6 | 2 contre 2 (assaillants) | 1 contre 1 (défenseurs) | 0 | tient |
-| Hnefatafl · Tawlbwrdd | 8 contre 5 | 4 | 2 contre 0 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Tawlbwrdd | 3 contre 1 | 6 | 3 contre 0 (assaillants) | 3 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Tawlbwrdd | 5 contre 3 | 6 | 3 contre 1 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Tawlbwrdd | 8 contre 5 | 4 | 2 contre 1 (assaillants) | 1 contre 0 (défenseurs) | 0 | tient |
 | Hnefatafl · Tawlbwrdd | 10 contre 8 | 4 | 2 contre 1 (assaillants) | 1 contre 0 (défenseurs) | 0 | tient |
 | Hnefatafl · Tawlbwrdd | 10 contre 5 | 4 | 2 contre 1 (assaillants) | 1 contre 0 (défenseurs) | 0 | tient |
-| Hnefatafl · Brandubh | 3 contre 1 | 6 | 3 contre 0 (assaillants) | 3 contre 0 (défenseurs) | 0 | tient |
-| Hnefatafl · Brandubh | 5 contre 3 | 6 | 3 contre 2 (assaillants) | 1 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Brandubh | 3 contre 1 | 6 | 3 contre 1 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
+| Hnefatafl · Brandubh | 5 contre 3 | 6 | 3 contre 0 (assaillants) | 3 contre 0 (défenseurs) | 0 | tient |
 | Hnefatafl · Brandubh | 8 contre 5 | 4 | 2 contre 0 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
 | Hnefatafl · Brandubh | 10 contre 8 | 4 | 0 contre 0 (assaillants) | 2 contre 2 (défenseurs) | 0 | tient |
 | Hnefatafl · Brandubh | 10 contre 5 | 4 | 2 contre 0 (assaillants) | 2 contre 0 (défenseurs) | 0 | tient |
@@ -130,8 +130,8 @@ Une bévue grave coûte plus d'un demi-point. Un renversement jette une position
 | Marche | Coups pesés | Perte moyenne (points) | Bévues graves | Renversements |
 |---|---|---|---|---|
 | 1 | 59 | 2,5 | 40 (67,8 %) | 4 (6,8 %) |
-| 3 | 51 | 1,9 | 27 (52,9 %) | 1 (2,0 %) |
-| 5 | 44 | 0,7 | 20 (45,5 %) | 0 (0,0 %) |
+| 3 | 55 | 1,9 | 29 (52,7 %) | 1 (1,8 %) |
+| 5 | 52 | 1,0 | 19 (36,5 %) | 1 (1,9 %) |
 | 8 | 50 | 0,5 | 8 (16,0 %) | 1 (2,0 %) |
 | 10 | 56 | 0,4 | 12 (21,4 %) | 1 (1,8 %) |
 
@@ -141,16 +141,16 @@ Cette passe joue quelques coups en laissant chaque marche prendre son propre tem
 
 | Marche | Renard et Oies · 13 oies | Mérelle · avec le vol | Hnefatafl · Copenhague |
 |---|---|---|---|
-| 1 | 0,1 ms · max 0,1 ms | 0,1 ms · max 0,1 ms | 6,7 ms · max 9,1 ms |
-| 2 | 0,1 ms · max 0,2 ms | 0,1 ms · max 0,1 ms | 4,8 ms · max 5,6 ms |
-| 3 | 0,1 ms · max 0,2 ms | 1,3 ms · max 1,5 ms | 21 ms · max 28 ms |
-| 4 | 0,1 ms · max 0,2 ms | 0,8 ms · max 1,2 ms | 20 ms · max 25 ms |
-| 5 | 0,3 ms · max 0,4 ms | 3,2 ms · max 3,3 ms | 74 ms · max 90 ms |
-| 6 | 2,0 ms · max 2,6 ms | 28 ms · max 39 ms | 365 ms · max 378 ms |
-| 7 | 6,9 ms · max 8,8 ms | 102 ms · max 112 ms | 626 ms · max 638 ms |
-| 8 | 29 ms · max 47 ms | 381 ms · max 444 ms | 1,01 s · max 1,02 s |
-| 9 | 126 ms · max 184 ms | 1,60 s · max 1,60 s | 1,61 s · max 1,63 s |
-| 10 | 1,76 s · max 1,94 s | 2,13 s · max 2,26 s | 2,63 s · max 2,65 s |
+| 1 | 0,1 ms · max 0,2 ms | 0,2 ms · max 0,3 ms | 13 ms · max 17 ms |
+| 2 | 0,1 ms · max 0,1 ms | 0,2 ms · max 0,2 ms | 12 ms · max 16 ms |
+| 3 | 0,3 ms · max 0,5 ms | 2,1 ms · max 2,2 ms | 435 ms · max 465 ms |
+| 4 | 0,3 ms · max 0,5 ms | 3,7 ms · max 5,8 ms | 401 ms · max 443 ms |
+| 5 | 1,5 ms · max 2,1 ms | 28 ms · max 29 ms | 5,60 s · max 8,68 s |
+| 6 | 2,3 ms · max 2,8 ms | 47 ms · max 62 ms | 379 ms · max 393 ms |
+| 7 | 8,1 ms · max 11 ms | 235 ms · max 308 ms | 615 ms · max 616 ms |
+| 8 | 20 ms · max 28 ms | 638 ms · max 681 ms | 1,02 s · max 1,02 s |
+| 9 | 159 ms · max 243 ms | 1,60 s · max 1,60 s | 1,63 s · max 1,64 s |
+| 10 | 1,89 s · max 2,14 s | 2,55 s · max 2,62 s | 2,65 s · max 2,69 s |
 
 La promesse faite au joueur est une réponse en moins de 3 secondes.
 
@@ -160,20 +160,21 @@ La cause de fin de chaque partie de plateau du tournoi, tous couples confondus. 
 
 | Cause | Parties | Part |
 |---|---|---|
-| le roi a gagné le coin | 89 | 30,9 % |
+| le roi a gagné le coin | 90 | 31,3 % |
 | un camp est tombé à deux pions ou n’avait plus un coup | 72 | 25,0 % |
-| les lances se sont refermées sur le roi | 54 | 18,8 % |
+| les lances se sont refermées sur le roi | 51 | 17,7 % |
 | le renard était enfermé | 41 | 14,2 % |
-| le renard a croqué assez d’oies pour passer le seuil | 24 | 8,3 % |
-| nulle, la même position pour la troisième fois | 7 | 2,4 % |
+| le renard a croqué assez d’oies pour passer le seuil | 28 | 9,7 % |
+| nulle, la même position pour la troisième fois | 3 | 1,0 % |
+| l’anneau s’est fermé et le camp du roi ne respirait plus | 2 | 0,7 % |
 | le camp au trait n’avait plus un seul coup | 1 | 0,3 % |
 
 Ce que les arbitres ont eu à faire en cours de route. Une position répétée est comptée la deuxième fois qu'elle paraît, avant même qu'elle ne close quoi que ce soit : c'est le premier signe qu'un camp tourne en rond.
 
 | Événement | Occurrences |
 |---|---|
-| une position est revenue une deuxième fois | 322 |
-| la traînarde s’est fait croquer, règle de la basse-cour | 38 |
+| une position est revenue une deuxième fois | 272 |
+| la traînarde s’est fait croquer, règle de la basse-cour | 44 |
 
 ## Les dés du menteur
 
@@ -213,11 +214,9 @@ Les sièges alternent : une table porte la marche forte aux places paires, la ta
 
 ## Ce qui reste bizarre
 
-- **La marche 8 ne domine pas la marche 5 sur 1 table de 8.** Hnefatafl · Fetlar (0 contre 1 en ouvrant, 1 contre 2 en répondant). Réglage à revoir dans `src/games/moteur/niveaux.ts` : descendre la `bevue` de la marche 8 et monter son `tempsMs`, ou remonter la `bevue` de la marche 5.
+- **La marche 3 ne domine pas la marche 1 sur 1 table de 8.** Renard et Oies · 13 oies (0 contre 0 en ouvrant, 2 contre 3 en répondant). Réglage à revoir dans `src/games/moteur/niveaux.ts` : creuser l'écart de `fenetre` et de `bevue` entre les marches 1 et 3, ou donner une profondeur de plus à la marche 3.
 
 - **8 tables penchent franchement d'un côté à niveau égal : Renard et Oies · 13 oies (oies, 100,0 %) ; Renard et Oies · 17 oies (oies, 100,0 %) ; Mérelle · avec le vol (chêne clair, 100,0 %) ; Mérelle · sans le vol (chêne clair, 100,0 %) ; Hnefatafl · Copenhague (défenseurs, 100,0 %) ; Hnefatafl · Fetlar (défenseurs, 100,0 %) ; Hnefatafl · Tawlbwrdd (assaillants, 100,0 %) ; Hnefatafl · Brandubh (défenseurs, 100,0 %).** Le jeu lui-même penche, et aucun réglage de marche n'y changera rien. Ce qui se règle, c'est le camp offert au joueur : lui donner le camp faible contre une marche haute, et le camp fort contre une marche basse, plutôt que de le laisser choisir à l'aveugle.
-
-- **Le réglage `notesExactes` de `src/games/moteur/recherche.ts` ne rend plus rien d'utilisable dès que la quiescence l'accompagne : 0 note finie sur 9 coups de racine, et la recherche reste bloquée à la profondeur 1 au lieu de 4. Mesuré sur 8 tables sur 8.** La cause tient en un signe. À la racine de `chercher`, la borne de la fenêtre pleine vaut `-Infinity` là où elle devrait valoir `+Infinity` : le fils reçoit un bêta de moins l'infini, la quiescence répond aussitôt `beta` et remonte moins l'infini, et la racine rend plus l'infini pour tous les coups. Aucune marche n'a aujourd'hui la fenêtre ET la quiescence, puisque la quiescence commence à la profondeur quatre et la fenêtre s'arrête à la marche cinq, donc rien ne se voit à l'écran. Le jour où une marche du milieu recevra les deux, elle jouera au hasard : toutes les notes de racine étant égales, la fenêtre les accepte toutes et le tirage au sort choisit. Le banc mesure donc ses bévues avec deux recherches séparées, sans toucher à ce réglage.
 
 - **Aux dés, la marche 8 a crié « c'est exactement ça » 42 fois et n'a eu raison que 6 fois, soit 14,3 %.** Chaque appel manqué coûte un dé, et le règlement de la maison plafonne le gain à un dé repris. Le calcul de `evExact` dans `src/games/des/cpu.ts` ne choisit l'appel que lorsque le doute et la relance valent encore moins, ce qui revient à payer un dé pour éviter d'en payer un. Le seuil de `appelleExact` mérite d'être relevé, ou l'appel réservé aux positions où la probabilité exacte dépasse vraiment le coût.
 
@@ -226,5 +225,7 @@ Les sièges alternent : une table porte la marche forte aux places paires, la ta
 - **Aux dés, la marche 1 devine mieux le mensonge que la marche 10 : 85,6 % de doutes justes contre 46,3 %.** L'échelle de force n'en souffre pas, puisque la marche haute gagne quand même plus de tables : elle doute simplement beaucoup plus souvent, et un doute de plus se prend toujours sur les positions les moins claires. Cela reste à surveiller, parce qu'un connétable qui se trompe une fois sur deux en criant « menteur » a l'air bête devant un joueur, même quand il finit par gagner.
 
 - **La marche 10 joue plus de mauvais coups que la marche 8 : 21,4 % de coups qui perdent plus d'un demi-point contre 16,0 %.** La perte moyenne, elle, continue de descendre (0,39 point contre 0,50), donc la marche haute se trompe un peu plus souvent mais moins gravement. L'écart tient peut-être dans le bruit de 56 mesures, et la façon de trancher est de relancer le banc avec une passe de bévues plus longue avant de toucher à quoi que ce soit.
+
+- **Sans plafond de nœuds, la marche 5 met jusqu'à 8,68 s par coup sur Hnefatafl · Copenhague.** Les marches un à cinq n'ont pas de `tempsMs` dans `NIVEAUX`, donc rien ne les arrête avant le fond de leur profondeur. La page de jeu les borne aujourd'hui par un plafond de nœuds passé à la main, chaque jeu de son côté. Le réglage à faire est de donner un `tempsMs` aux marches un à cinq, court, de l'ordre de deux cents à six cents millisecondes.
 
 - **236 tables de dés se sont fermées sans vainqueur.** La règle de la maison arrête la partie dès que le premier siège tombe, parce qu'un joueur humain ne regarde pas les autres finir sans lui. Entre machines, cela laisse des convives debout et personne de proclamé. La règle est juste devant un humain, et il faut seulement que le banc la connaisse.

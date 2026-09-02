@@ -805,7 +805,9 @@ const RenardPage: React.FC = () => {
     // Le verdict poussé au document est celui de l'arbitre, la nulle
     // comprise : une partie peut désormais se terminer sans vainqueur.
     surMonCoup: (texte: string, tourSuivant: Camp, gagnant: VerdictArbitre | null) => {
-      void pousserLeCoup(partie.id, partie.coups ?? [], texte, tourSuivant, gagnant);
+      // Le délai de la partie voyage avec le coup : sans lui, `jouerCoup`
+      // efface l'échéance et le minuteur par coup ne repart jamais.
+      void pousserLeCoup(partie.id, partie.coups ?? [], texte, tourSuivant, gagnant, partie.delaiMs);
     },
   } : null;
 

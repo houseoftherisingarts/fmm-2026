@@ -50,6 +50,14 @@ const Clavardage: React.FC<Props> = ({ lang, salle, moi, adversaire, replieParDe
   const [replie, setReplie] = useState(!!replieParDefaut);
   const fond = useRef<HTMLDivElement | null>(null);
   const compteur = useRef(0);
+  // La réponse de la maison arrive après quelques secondes. Le panneau
+  // peut se refermer entretemps : le minuteur se garde donc pour être
+  // enterré au démontage, sans quoi React reçoit un état pour un
+  // composant qui n'est plus là.
+  const minuteurReponse = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (minuteurReponse.current) clearTimeout(minuteurReponse.current);
+  }, []);
 
   useEffect(() => {
     if (!salle) { setMessages([]); return; }
@@ -80,7 +88,8 @@ const Clavardage: React.FC<Props> = ({ lang, salle, moi, adversaire, replieParDe
       if (Math.random() < 0.45) {
         const phrase = reponses[Math.floor(Math.random() * reponses.length)];
         const attente = 1800 + Math.floor(Math.random() * 2600);
-        setTimeout(() => {
+        if (minuteurReponse.current) clearTimeout(minuteurReponse.current);
+        minuteurReponse.current = setTimeout(() => {
           compteur.current += 1;
           setMessages((m) => [...m, {
             id: `local-${compteur.current}`, uid: 'maison', nom: nomEnFace, texte: phrase,

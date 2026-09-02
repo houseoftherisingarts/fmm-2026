@@ -53,8 +53,11 @@ export async function envoyerMessage(
   const avant = dernierEnvoi.get(cle) ?? 0;
   if (Date.now() - avant < DELAI_MIN_MS) return 'trop-vite';
   dernierEnvoi.set(cle, Date.now());
+  // La règle de sécurité refuse un nom de plus de soixante caractères,
+  // et le refus arriverait au joueur sous la forme d'un « la table est
+  // fermée » incompréhensible. Le nom se raccourcit donc ici.
   await addDoc(collection(db, salle.collection, salle.partieId, 'messages'), {
-    uid, nom, texte: propre, at: serverTimestamp(),
+    uid, nom: nom.slice(0, 60), texte: propre, at: serverTimestamp(),
   });
   return 'ok';
 }

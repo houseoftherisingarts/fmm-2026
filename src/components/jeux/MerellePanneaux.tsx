@@ -75,7 +75,7 @@ const MerellePanneaux: React.FC<Props> = ({
 
   return (
     <>
-      <div className={`${PLACE} z-20 flex flex-col items-end gap-2`}>
+      <div className={`${place} z-20 flex flex-col items-end gap-2`}>
         {/* Chercher un adversaire n'a plus de sens quand une vraie
             personne est déjà assise en face. */}
         {!partieId && (
@@ -109,7 +109,7 @@ const MerellePanneaux: React.FC<Props> = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 24 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className={CADRE}
+            className={cadre}
           >
             {fermeture}
             <TableOuverte
@@ -135,7 +135,8 @@ const MerellePanneaux: React.FC<Props> = ({
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           style={{ pointerEvents: ouvert === 'clavardage' ? 'auto' : 'none' }}
           aria-hidden={ouvert !== 'clavardage'}
-          className={CADRE}
+          inert={ouvert !== 'clavardage'}
+          className={cadre}
         >
           {fermeture}
           <Clavardage

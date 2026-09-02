@@ -58,11 +58,18 @@ const marche = (
 });
 
 export const NIVEAUX: Record<Niveau, ReglageNiveau> = {
-  1:  marche(1,  'Marmiton',    'Scullion',   1, 0.80, 400),
-  2:  marche(2,  'Vilain',      'Villein',    1, 0.55, 300),
-  3:  marche(3,  'Palefrenier', 'Groom',      2, 0.35, 220),
-  4:  marche(4,  'Écuyer',      'Squire',     2, 0.20, 150),
-  5:  marche(5,  'Sergent',     'Sergeant',   3, 0.10, 100),
+  // Les cinq premières marches portent une horloge courte, elles
+  // aussi. Sans elle, rien ne les arrête avant le fond de leur
+  // profondeur, et le banc du 2026-09-01 a mesuré jusqu'à 8,7 secondes
+  // par coup au marmiton sur le grand damier de Copenhague, où chaque
+  // nœud dresse une centaine de coups. Un joueur qui choisit la marche
+  // la plus basse attend alors plus longtemps que devant le
+  // connétable, ce qui n'a aucun sens.
+  1:  marche(1,  'Marmiton',    'Scullion',   1, 0.80, 400, { tempsMs: 150 }),
+  2:  marche(2,  'Vilain',      'Villein',    1, 0.55, 300, { tempsMs: 150 }),
+  3:  marche(3,  'Palefrenier', 'Groom',      2, 0.35, 220, { tempsMs: 250 }),
+  4:  marche(4,  'Écuyer',      'Squire',     2, 0.20, 150, { tempsMs: 250 }),
+  5:  marche(5,  'Sergent',     'Sergeant',   3, 0.10, 100, { tempsMs: 400 }),
   // À partir du chevalier, la force ne vient plus d'une fenêtre mais
   // de la profondeur. La raison est mesurée, pas théorique : peser
   // exactement chaque coup de la racine coûte si cher que les marches
@@ -99,7 +106,11 @@ export function reflechir<E, C>(
   const r = NIVEAUX[n];
   return chercher(a, etat, {
     profondeurMax: r.profondeurMax,
-    tempsMs: r.tempsMs,
+    // Un appelant qui pose un plafond de nœuds cherche la
+    // reproductibilité, et c'est le cas de tous les bancs d'essai. Une
+    // horloge par-dessus rendrait le résultat dépendant de la charge de
+    // la machine, donc deux tournois ne seraient plus comparables.
+    tempsMs: o.noeudsMax === undefined ? r.tempsMs : undefined,
     quiescence: r.quiescence,
     livre: r.livre ? o.livre : undefined,
     arret: o.arret,
