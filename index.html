@@ -21,23 +21,19 @@
     <meta name="twitter:image" content="https://www.festivalmedievaldemontpellier.org/hero/fmm-poster-card.jpg" />
     <link rel="canonical" href="https://www.festivalmedievaldemontpellier.org/" />
 
-    <!-- Google AdSense — balise de vérification et de diffusion.
+    <!-- Google AdSense — vérification de la propriété du site seulement.
          Éditeur ca-pub-7365982984401895 (compte créé le 2026-08-03).
-         Elle doit être dans le HTML STATIQUE : le robot de vérification
-         de Google ne clique pas sur la bannière de consentement, donc
-         l'injecter après consentement ferait échouer l'examen du site.
-         🚨 Loi 25 (Québec) : le consentement se règle du côté d'AdSense,
-         par la plateforme de gestion du consentement (CMP) certifiée
-         qu'on choisit à l'étape de la demande d'examen. Ne pas bricoler
-         un blocage maison ici sans avoir réglé la CMP d'abord.
-         ⚠️ PAS d'attribut `integrity` (SRI) sur cette balise, malgré ce
-         que conseillent les linters de sécurité : Google republie ce
-         fichier en continu et ne publie aucune empreinte. Une empreinte
-         figée bloquerait le script au premier changement, et les
-         annonces cesseraient de s'afficher sans erreur visible. -->
-    <script async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7365982984401895"
-      crossorigin="anonymous"></script>
+         Cette balise ne charge rien et ne dépose aucun témoin : elle dit
+         seulement au robot de Google que ce domaine nous appartient. Le
+         fichier public/ads.txt porte la même preuve du côté des
+         annonceurs.
+         🚨 Loi 25 (Québec), article 8.1 : le script de diffusion des
+         annonces ne peut pas se trouver ici, parce qu'il se chargerait
+         avant que la personne ait répondu quoi que ce soit. Il est
+         maintenant injecté par src/components/layout/ConsentBanner.tsx,
+         et seulement quand la finalité « publicité » a été acceptée.
+         Ne pas remettre de balise <script> AdSense dans ce fichier. -->
+    <meta name="google-adsense-account" content="ca-pub-7365982984401895" />
 
     <!-- Preload navbar logo so it paints with first frame (used eagerly by NavBar). -->
     <link rel="preload" as="image" href="/fmm-logo-embossed-silver.webp" />
