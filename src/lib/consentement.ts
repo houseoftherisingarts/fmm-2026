@@ -136,13 +136,15 @@ export function abonnerConsentement(cb: (c: Consentement | null) => void): () =>
   return () => { abonnes.delete(cb); };
 }
 
-/** La décision, lue et suivie depuis un composant React. */
+/**
+ * La décision, lue et suivie depuis un composant React. La lecture se
+ * fait dès le premier rendu, sans attendre l'effet : un écran qui
+ * décide de monter ou non un bloc d'annonces ne doit pas passer par une
+ * fausse case « refusé » le temps d'une image.
+ */
 export function useConsentement(): Consentement | null {
-  const [decision, setDecision] = useState<Consentement | null>(null);
-  useEffect(() => {
-    setDecision(lireConsentement());
-    return abonnerConsentement(setDecision);
-  }, []);
+  const [decision, setDecision] = useState<Consentement | null>(lireConsentement);
+  useEffect(() => abonnerConsentement(setDecision), []);
   return decision;
 }
 
