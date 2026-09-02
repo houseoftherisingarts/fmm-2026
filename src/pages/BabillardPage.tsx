@@ -6,7 +6,6 @@ import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
-import PageHeader from '../components/layout/PageHeader';
 import Brume from '../components/Brume';
 import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 
@@ -30,13 +29,12 @@ const BabillardPage: React.FC = () => {
   return (
     <main className="min-h-screen text-ivory">
       <SEO title={t.titre} description={t.intro} />
-      <PageHeader
-        eyebrow={t.eyebrow}
-        titleA={t.titre}
-        intro={t.intro}
-        orbImage="/board/notice-parchment.webp"
-      />
-      <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
+      {/* Aucun en-tête de page ici, et pas d'orbe (Alex, 2026-09-02 :
+          « enlève le grand cercle et le titre, ça ne sert à rien, mets
+          directement le babillard »). Le panneau de bois porte déjà son
+          nom et se voit de loin, donc un titre par-dessus ne ferait que
+          repousser les avis sous la ligne de flottaison. */}
+      <section className="relative caravan-stage bleed-edges pt-28 md:pt-32 pb-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 w-full px-4 md:px-8">
           <AnnoncesPanel lang={lang} />
@@ -63,7 +61,6 @@ const BabillardPage: React.FC = () => {
 };
 
 const FR = {
-  eyebrow: 'Le festival',
   titre: 'Le babillard',
   intro: 'Les avis du festival sont épinglés ici, sur le même panneau de bois que le tableau des marchands. Le règlement des armes y reste affiché en permanence, et les autres avis se décrochent avec un compte du festival.',
   versMur: 'Le mur des membres',
@@ -71,7 +68,6 @@ const FR = {
 };
 
 const EN = {
-  eyebrow: 'The festival',
   titre: 'The notice board',
   intro: 'The festival notices are pinned here, on the same wooden board as the merchants’ table. The weapons rules stay up for good, and the other notices can be taken down with a festival account.',
   versMur: 'The members’ wall',

@@ -34,11 +34,16 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     return suivreMesAvis(user.uid, setPris);
   }, [user?.uid]);
 
-  // Un avis pris vaut un badge, et les quatre valent la collection.
+  // Un avis pris vaut un badge, et les quatre valent la collection. Un
+  // règlement accepté ne compte pas dans la collection : il reste
+  // épinglé et tout le monde l'accepte (Alex, 2026-09-02).
+  const prisCollection = pris.filter(
+    (id) => !ANNONCES.find((a) => a.id === id)?.permanent,
+  );
   useEffect(() => {
-    if (pris.length === 0) return;
-    for (let i = 1; i <= Math.min(pris.length, 4); i += 1) gagnerBadge(`billet-${i}`);
-  }, [pris.length, gagnerBadge]);
+    if (prisCollection.length === 0) return;
+    for (let i = 1; i <= Math.min(prisCollection.length, 4); i += 1) gagnerBadge(`billet-${i}`);
+  }, [prisCollection.length, gagnerBadge]);
 
   const accepter = (id: string) => {
     if (!user?.uid) { openSignIn(); return; }
@@ -77,14 +82,14 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       {/* Ma collection d'abord : le chiffre du profil pointe ici, donc
           la personne doit voir ce qu'elle a décroché avant le reste
           (Alex, 2026-08-23). */}
-      {pris.length > 0 && (
+      {prisCollection.length > 0 && (
         <div className="mb-7 rounded-lg-card border border-brass/25 px-6 py-5"
              style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
           <p className="witcher-stat-label mb-3">
             {fr ? 'Mes avis décrochés' : 'Notices I have taken'}
           </p>
           <ul className="space-y-2">
-            {collectionnables.filter((a) => pris.includes(a.id)).map((a) => (
+            {collectionnables.filter((a) => prisCollection.includes(a.id)).map((a) => (
               <li key={a.id} className="font-editorial text-sm text-ivory-soft flex items-start gap-2.5">
                 <Check size={14} className="text-brass shrink-0 mt-0.5" />
                 <span>
@@ -98,8 +103,8 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           </ul>
           <p className="font-sans text-[11px] text-ivory-soft/55 mt-4">
             {fr
-              ? `${pris.length} sur ${collectionnables.length}. Les quatre réunis ouvrent la collection du babillard.`
-              : `${pris.length} of ${collectionnables.length}. All four open the notice board collection.`}
+              ? `${prisCollection.length} sur ${collectionnables.length}. Les quatre réunis ouvrent la collection du babillard.`
+              : `${prisCollection.length} of ${collectionnables.length}. All four open the notice board collection.`}
           </p>
         </div>
       )}
@@ -109,7 +114,8 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           {affiches.map((a, i) => (
             <AnnonceNotice
               key={a.id} a={a} lang={lang} index={i}
-              onAccepter={a.permanent ? undefined : () => accepter(a.id)}
+              onAccepter={() => accepter(a.id)}
+              dejaPris={pris.includes(a.id)}
             />
           ))}
         </NoticeBoard>
@@ -179,7 +185,9 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
 // cette longueur ne se lit pas.
 const AnnonceNotice: React.FC<{
   a: Annonce; lang: 'FR' | 'EN'; index: number; onAccepter?: () => void;
-}> = ({ a, lang, index, onAccepter }) => {
+  /** L'avis est déjà dans la collection, ou le règlement est accepté. */
+  dejaPris?: boolean;
+}> = ({ a, lang, index, onAccepter, dejaPris }) => {
   const fr = lang === 'FR';
   const Icon = a.tone === 'alerte' ? AlertTriangle : a.tone === 'appel' ? Stars : Info;
   const encre = a.tone === 'alerte' ? '#8d2f1e' : 'var(--sk-brass-deep)';
@@ -256,15 +264,25 @@ const AnnonceNotice: React.FC<{
 
         {onAccepter && (
           <div className="text-center mt-5">
+            {/* Un avis déjà pris garde son bouton, éteint : la fiche
+                reste sur le tableau quand c'est un règlement, et le
+                geste ne se refait pas pour rien. */}
             <button
               type="button"
-              onClick={onAccepter}
-              className="inline-flex items-center gap-2 px-5 py-2.5 font-sans uppercase tracking-[0.2em] text-[11px] transition-colors"
-              style={{ border: '1px solid rgba(var(--sk-copper-deep-rgb), 0.55)', color: 'var(--sk-brown-deep)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(var(--sk-copper-deep-rgb), 0.12)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              onClick={dejaPris ? undefined : onAccepter}
+              disabled={dejaPris}
+              className="inline-flex items-center gap-2 px-5 py-2.5 font-sans uppercase tracking-[0.2em] text-[11px] transition-colors disabled:cursor-default"
+              style={{
+                border: '1px solid rgba(var(--sk-copper-deep-rgb), 0.55)',
+                color: 'var(--sk-brown-deep)',
+                background: dejaPris ? 'rgba(var(--sk-copper-deep-rgb), 0.18)' : 'transparent',
+                opacity: dejaPris ? 0.75 : 1,
+              }}
+              onMouseEnter={(e) => { if (!dejaPris) e.currentTarget.style.background = 'rgba(var(--sk-copper-deep-rgb), 0.12)'; }}
+              onMouseLeave={(e) => { if (!dejaPris) e.currentTarget.style.background = 'transparent'; }}
             >
-              <Check size={13} /> {fr ? 'Accepté' : 'Accepted'}
+              <Check size={13} />
+              {dejaPris ? (fr ? 'C’est accepté' : 'Accepted') : (fr ? 'Accepté' : 'Accept')}
             </button>
           </div>
         )}
