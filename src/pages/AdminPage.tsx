@@ -69,7 +69,6 @@ const NewsletterSection   = lazy(() => import('./admin/sections/NewsletterSectio
 const MediasSection       = lazy(() => import('./admin/sections/MediasSection'));
 const PhotosSection       = lazy(() => import('./admin/sections/PhotosSection'));
 const AnalyticsSection    = lazy(() => import('./admin/sections/AnalyticsSection'));
-const SplashSection       = lazy(() => import('./admin/sections/SplashSection'));
 const PubliciteSection    = lazy(() => import('./admin/sections/PubliciteSection'));
 const ParametresSection   = lazy(() => import('./admin/sections/ParametresSection'));
 const DiscordSection      = lazy(() => import('./admin/sections/DiscordSection'));
