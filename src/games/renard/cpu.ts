@@ -26,6 +26,7 @@
 // plainte d'Alex : des oies qui campent voient la punition venir, et le
 // renard sait qu'il gagne en attendant.
 
+import { POIDS_APPRIS } from '../moteur/livre-donnees';
 import { choisirAuNiveau, type ChoixOptions, type Niveau } from '../moteur/niveaux';
 import type { Adaptateur } from '../moteur/types';
 import {
@@ -128,6 +129,8 @@ function noteBrute(p: Plateau, v: Variante, sansProgres = 0): number {
   );
 }
 
+const ETALON = new Map<Variante, number>();
+
 /**
  * Le zéro de l'échelle, pris sur la position de départ de la variante.
  *
@@ -137,9 +140,11 @@ function noteBrute(p: Plateau, v: Variante, sansProgres = 0): number {
  * quelle répétition, croyant y gagner deux cents points, et il annule
  * des parties qu'il tenait. Mesuré avant l'étalon : deux connétables
  * signaient la nulle au seizième demi-coup.
+ *
+ * Il se calcule à la première demande plutôt qu'au chargement, parce
+ * qu'il dépend des poids et que l'entraîneur les change en cours de
+ * route.
  */
-const ETALON = new Map<Variante, number>();
-
 function etalon(v: Variante): number {
   let e = ETALON.get(v);
   if (e === undefined) { e = noteBrute(plateauInitial(v), v); ETALON.set(v, e); }
@@ -169,7 +174,7 @@ export const oublierEtalon = (): void => { ETALON.clear(); };
  * cacher dans un coin.
  */
 export const noteRenard = (p: Plateau, v: Variante, sansProgres = 0): number =>
-  noteBrute(p, v, sansProgres) - ETALON[v];
+  noteBrute(p, v, sansProgres) - etalon(v);
 
 /**
  * Le contrat que le jeu remplit pour le moteur commun.
