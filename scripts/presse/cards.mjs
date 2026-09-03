@@ -351,3 +351,162 @@ export const CARTES_LIGNE = [
     },
   },
 ];
+
+// ─── Cartes ajoutées le 2026-09-02 pour les publications de Léna ─────
+// Une carte par section du site, dans le gabarit du kit. Les faits
+// viennent de src/content.ts, des pages du site et du kit de presse.
+export const CARTES_SECTIONS = [
+  {
+    n: '14', key: 'programmation', src: { lena: '2024-IMG_4828', focus: 0.45 }, side: 'right',
+    credit: CREDIT_LENA,
+    qr: { fr: '/activites', en: '/en/activities' },
+    fr: {
+      kicker: 'Programmation',
+      hook: 'Tout ce qui se passe sur le site',
+      body: 'La page des activités se parcourt comme un jeu de cartes, et chacune s’ouvre sur ce qui vous attend. Vous filtrez par le combat, les métiers, les spectacles, la ripaille ou les familles.',
+      meta: 'Activités · 25 au 27 septembre 2026',
+    },
+    en: {
+      kicker: 'Program',
+      hook: 'Everything happening on the grounds',
+      body: 'The activities page reads like a deck of cards, and each one opens on what awaits you. Filter by combat, crafts, shows, feasting or families.',
+      meta: 'Activities · September 25 to 27, 2026',
+    },
+  },
+  {
+    n: '15', key: 'horaire', src: { lena: '2024-IMG_5330', focus: 0.45 }, side: 'left',
+    credit: CREDIT_LENA,
+    qr: { fr: '/horaire', en: '/en/activities' },
+    fr: {
+      kicker: 'Horaire',
+      hook: 'L’horaire officiel des trois jours',
+      body: 'Chaque activité est portée à l’horaire avec son heure et son lieu, de l’arène à la scène en passant par le village paysan. Les portes ouvrent le vendredi à 17 h.',
+      meta: 'Horaire officiel · en ligne',
+    },
+    en: {
+      kicker: 'Schedule',
+      hook: 'The official three-day schedule',
+      body: 'Every activity is listed with its time and its place, from the arena to the stage to the peasant village. Gates open Friday at 5 p.m.',
+      meta: 'Official schedule · online',
+    },
+  },
+  {
+    n: '16', key: 'nourriture', src: { lena: '2024-IMG_4600', focus: 0.45 }, side: 'right',
+    credit: CREDIT_LENA,
+    qr: { fr: '/nourriture', en: '/en/food' },
+    fr: {
+      kicker: 'Nourriture et boissons',
+      hook: 'Le village nourriture ouvre ses feux',
+      body: 'Les cuisines d’époque servent tout le week-end, et l’abreuvoir verse l’hypocras, la cervoise, le vin chaud et le café turc. Le menu se dévoile sur le site à mesure qu’il se complète.',
+      meta: 'Village nourriture · trois jours',
+    },
+    en: {
+      kicker: 'Food and drinks',
+      hook: 'The food village lights its fires',
+      body: 'Period kitchens serve all weekend, and the tavern pours hypocras, ale, mulled wine and Turkish coffee. The menu is revealed on the site as it comes together.',
+      meta: 'Food village · three days',
+    },
+  },
+  {
+    n: '17', key: 'benevoles', src: { lena: '2024-IMG_4693', focus: 0.45 }, side: 'left',
+    credit: CREDIT_LENA,
+    qr: { fr: '/benevole', en: '/en/volunteer' },
+    fr: {
+      kicker: 'Bénévoles',
+      hook: 'Le festival tient debout grâce à vous',
+      body: 'Le FMM est organisé par une équipe de bénévoles, et il manque des mains chaque année à l’accueil, au bar, au montage et au village jeunesse. Vous choisissez vos quarts et vos journées.',
+      meta: 'Candidatures ouvertes · sur le site',
+    },
+    en: {
+      kicker: 'Volunteers',
+      hook: 'The festival stands on its volunteers',
+      body: 'The FMM is run by a volunteer team, and every year hands are missing at the gate, the bar, the build and the youth village. You pick your shifts and your days.',
+      meta: 'Applications open · on the site',
+    },
+  },
+  {
+    n: '18', key: 'histoire', src: { lena: '2025-IMG_5025', focus: 0.45 }, side: 'right',
+    credit: CREDIT_LENA,
+    qr: { fr: '/histoire', en: '/en/history' },
+    fr: {
+      kicker: 'Six ans d’histoire',
+      hook: 'Six éditions gardées en archives',
+      body: 'Fondé en 2022, le festival a traversé la pandémie et reçu trois mille cent personnes l’an dernier. La page Histoire garde les photos des six éditions et les films tournés sur place.',
+      meta: 'Archives et films · en ligne',
+    },
+    en: {
+      kicker: 'Six years of history',
+      hook: 'Six editions kept in the archives',
+      body: 'Founded in 2022, the festival came through the pandemic and welcomed three thousand one hundred people last year. The History page keeps the photos of all six editions and the films shot on site.',
+      meta: 'Archives and films · online',
+    },
+  },
+  {
+    n: '19', key: 'theme', src: { lena: '2023-IMG_4341', focus: 0.45 }, side: 'left',
+    credit: CREDIT_LENA,
+    qr: { fr: '/histoire', en: '/en/history' },
+    fr: {
+      kicker: 'Le thème 2026',
+      hook: 'Caravanes et Saltimbanques',
+      body: 'Après les Vikings, la route continue. L’édition 2026 rend hommage aux peuples nomades, aux grandes salles de banquet et aux artistes itinérants qui ont donné naissance au cirque.',
+      meta: 'Édition 2026 · Caravanes et Saltimbanques',
+    },
+    en: {
+      kicker: 'The 2026 theme',
+      hook: 'Caravans and Players',
+      body: 'After the Vikings, the road goes on. The 2026 edition honours nomadic peoples, great banquet halls and the travelling performers who gave rise to the circus.',
+      meta: '2026 edition · Caravans and Players',
+    },
+  },
+  {
+    n: '20', key: 'commanditaires', src: { lena: '2025-IMG_6039', focus: 0.45 }, side: 'right',
+    credit: CREDIT_LENA,
+    qr: { fr: '/partenaires', en: '/en/partners' },
+    fr: {
+      kicker: 'Commanditaires',
+      hook: 'Prenez rang à la cour du festival',
+      body: 'Trois mille cent visiteurs sont passés sur le site l’an dernier, portés par une équipe entièrement bénévole depuis 2022. Chaque commandite finance la scène, les troupes, les artisans et les cavaliers.',
+      meta: 'Formules de commandite · sur le site',
+    },
+    en: {
+      kicker: 'Sponsors',
+      hook: 'Take your rank at the festival court',
+      body: 'Three thousand one hundred visitors came through the grounds last year, carried by a fully volunteer team since 2022. Every sponsorship funds the stage, the troupes, the artisans and the riders.',
+      meta: 'Sponsorship tiers · on the site',
+    },
+  },
+  {
+    n: '26', key: 'avant-de-venir', src: { lena: '2025-IMG_4459', focus: 0.45 }, side: 'left',
+    credit: CREDIT_LENA,
+    qr: { fr: '/ressources', en: '/en/resources' },
+    fr: {
+      kicker: 'Avant de venir',
+      hook: 'Ce qu’il faut savoir avant la route',
+      body: 'Les chiens ne sont pas admis sur le site, le billet se télécharge à la maison parce que le signal tombe à l’entrée, et le comptant vaut mieux que la carte. Les armes de costume se présentent au comité à l’arrivée.',
+      meta: 'Infos pratiques · règlement complet en ligne',
+    },
+    en: {
+      kicker: 'Before you come',
+      hook: 'What to know before the drive',
+      body: 'Dogs are not allowed on the grounds, tickets download best at home because the signal drops at the gate, and cash beats card. Costume weapons are shown to the committee on arrival.',
+      meta: 'Practical info · full rules online',
+    },
+  },
+  {
+    // La pièce de laiton du site, capturée grande sur le fond de nuit.
+    n: '25', key: 'monnaie', src: { capture: 'monnaie' }, side: 'left', credit: null,
+    qr: { fr: '/petite-monnaie', en: '/en/petite-monnaie' },
+    fr: {
+      kicker: 'La Petite Monnaie',
+      hook: 'La monnaie locale de la Petite-Nation',
+      body: 'Une petite-monnaie vaut un dollar canadien. Le réseau cellulaire est capricieux dans la forêt de Montpellier, alors vous échangez votre comptant au kiosque de l’entrée et vous payez partout sur le site.',
+      meta: 'Kiosque à l’entrée · remboursée au départ',
+    },
+    en: {
+      kicker: 'The Petite Monnaie',
+      hook: 'The local currency of Petite-Nation',
+      body: 'One petite-monnaie is worth one Canadian dollar. Cell coverage is unreliable in the Montpellier woods, so you trade your cash at the gate kiosk and pay everywhere on the grounds.',
+      meta: 'Kiosk at the gate · refunded on the way out',
+    },
+  },
+];

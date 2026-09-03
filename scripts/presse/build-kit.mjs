@@ -45,7 +45,7 @@ import sharp from 'sharp';
 import QRCode from 'qrcode';
 import { chromium } from 'playwright';
 import { PHOTOS, BASE_URL, LIEN_COURT } from './photos.mjs';
-import { CARTES_SITE, CARTES_LIGNE, CREDIT_LENA } from './cards.mjs';
+import { CARTES_SITE, CARTES_LIGNE, CARTES_SECTIONS, CREDIT_LENA } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
@@ -88,6 +88,12 @@ const VISUELS = [
   ...CARTES_LIGNE.map((c) => ({
     base: `fmm-2026-${c.n}-${c.key}`,
     famille: 'en-ligne', genre: 'carte',
+    src: c.src, side: c.side, credit: c.credit, qr: c.qr, fr: c.fr, en: c.en,
+  })),
+  // Les cartes de section, ajoutées le 2026-09-02 pour les publications.
+  ...CARTES_SECTIONS.map((c) => ({
+    base: `fmm-2026-${c.n}-${c.key}`,
+    famille: c.src.capture ? 'en-ligne' : 'sur-place', genre: 'carte',
     src: c.src, side: c.side, credit: c.credit, qr: c.qr, fr: c.fr, en: c.en,
   })),
 ];
