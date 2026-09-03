@@ -2,7 +2,7 @@ import React from 'react';
 import SEO from '../components/SEO';
 import { ScrollProgress } from '../components/scroll';
 import { useCaravanPage } from '../lib/useCaravanPage';
-import BanniereWJW from '../components/william/BanniereWJW';
+import DrapeauTisse from '../components/effets/DrapeauTisse';
 import BoutiquesProchesWJW from '../components/william/BoutiquesProchesWJW';
 import ConcoursWJW from '../components/william/ConcoursWJW';
 import NourriturePage from './NourriturePage';
@@ -28,7 +28,22 @@ const WilliamPage: React.FC = () => {
       />
       <ScrollProgress />
 
-      <BanniereWJW />
+      {/* La bannière du commanditaire est une étoffe qui ondule, tissée
+          au chargement et simulée en Verlet (Alex, 2026-09-02, essai
+          approuvé). Elle pend dans le vide, pleine largeur, et sa
+          hauteur suit les proportions du tissu. Le lettrage porte l'os
+          du logo, le cadre porte le vert du festival.
+
+          Le titre reste lisible par les lecteurs d'écran : le texte est
+          peint dans une texture, donc invisible pour eux, et la section
+          porte son nom à leur intention. */}
+      <section
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: '44 / 27' }}
+        aria-label="William J. Walter présente le Village Nourriture"
+      >
+        <DrapeauTisse legende="présente" titre={['VILLAGE NOURRITURE']} />
+      </section>
 
       <div className="pt-0">
         <NourriturePage embedded sansEntete />
