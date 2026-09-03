@@ -301,8 +301,11 @@ function shell(body, extraCss = '') {
      de la ligne meta des cartes. */
   .lien {
     font-family: 'Inter', system-ui, sans-serif; font-weight: 500; font-size: 13px;
-    letter-spacing: 0.3em; text-transform: uppercase; color: rgba(232, 177, 74, 0.9);
-    line-height: 1.2; text-shadow: var(--ombre);
+    letter-spacing: 0.3em; text-transform: uppercase; color: rgba(232, 177, 74, 0.95);
+    line-height: 1.2;
+    /* L'adresse porte le chemin depuis le 2026-09-02, donc une ligne plus
+       longue qui peut tomber sur une photo claire : l'ombre est renforcée. */
+    text-shadow: var(--ombre), 0 0 12px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 1);
   }
   ${extraCss}
 </style></head><body><div class="frame">${body}</div></body></html>`;
@@ -315,15 +318,18 @@ function cornerHeight({ qr, credit }) {
   return Math.round(Math.max(qr ? qr.side : 0, stack));
 }
 
-function cornerHtml({ qr, credit }) {
+function cornerHtml({ qr, credit, chemin }) {
   const carre = qr
     ? `<span class="qr"><img src="${url(qr.file)}" width="${qr.side}" height="${qr.side}" alt=""></span>`
     : '';
   const signature = credit ? `<p class="credit">${credit}</p>` : '';
-  return `<div class="corner">${carre}<div class="stack">${signature}<p class="lien">${LIEN_COURT}</p></div></div>`;
+  // La ligne de lien porte l'adresse exacte de la page montrée, pour
+  // qu'on puisse la taper de mémoire depuis un fil d'actualité.
+  const adresse = chemin && chemin !== '/' ? `${LIEN_COURT}${chemin}` : LIEN_COURT;
+  return `<div class="corner">${carre}<div class="stack">${signature}<p class="lien">${adresse}</p></div></div>`;
 }
 
-function carteHtml({ photoUrl, markUrl, side, credit, kicker, hook, body, meta, qr }) {
+function carteHtml({ photoUrl, markUrl, side, credit, kicker, hook, body, meta, qr, chemin }) {
   // Le coin bas gauche mange le bas du bandeau quand celui-ci est du
   // même côté : le texte remonte pour lui laisser la place.
   const bottomPad = side === 'left' ? 34 + cornerHeight({ qr, credit }) + 48 : 150;
@@ -361,7 +367,7 @@ function carteHtml({ photoUrl, markUrl, side, credit, kicker, hook, body, meta, 
        <p class="body">${body}</p>
        <p class="meta">${meta}</p>
      </div>
-     ${cornerHtml({ qr, credit })}
+     ${cornerHtml({ qr, credit, chemin })}
      <img class="mark" src="${markUrl}" alt="">`,
     css,
   );
@@ -736,7 +742,7 @@ async function main() {
         // les deux versions; sur une carte explicative elle attend la
         // version nue, où l'image est seule à parler.
         const credit = v.genre === 'photo' ? v.credit : null;
-        await shoot(page, carteHtml({ photoUrl, markUrl, side: v.side, credit, ...v[lang], qr }), dest, { fit: true });
+        await shoot(page, carteHtml({ photoUrl, markUrl, side: v.side, credit, ...v[lang], qr, chemin: v.qr?.[lang] }), dest, { fit: true });
       }
     }
     // La version nue ne porte aucun mot de langue : un seul fichier

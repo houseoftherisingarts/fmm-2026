@@ -282,7 +282,7 @@ export const CARTES_SITE = [
 // Vite local. Aucune signature de photographe, donc.
 export const CARTES_LIGNE = [
   {
-    n: '21', key: 'jeux', src: { capture: 'jeux' }, side: 'right', credit: null,
+    n: '21', key: 'jeux', src: { capture: 'tafl' }, side: 'right', credit: null,
     qr: { fr: '/jeux-en-ligne', en: '/en/online-games' },
     fr: {
       kicker: 'Jeux en ligne',
@@ -476,7 +476,7 @@ export const CARTES_SECTIONS = [
     },
   },
   {
-    n: '26', key: 'avant-de-venir', src: { lena: '2025-IMG_4459', focus: 0.45 }, side: 'left',
+    n: '26', key: 'avant-de-venir', src: { lena: '2024-IMG_4719', focus: 0.45 }, side: 'left',
     credit: CREDIT_LENA,
     qr: { fr: '/ressources', en: '/en/resources' },
     fr: {
@@ -507,6 +507,25 @@ export const CARTES_SECTIONS = [
       hook: 'The local currency of Petite-Nation',
       body: 'One petite-monnaie is worth one Canadian dollar. Cell coverage is unreliable in the Montpellier woods, so you trade your cash at the gate kiosk and pay everywhere on the grounds.',
       meta: 'Kiosk at the gate · refunded on the way out',
+    },
+  },
+  {
+    // Le dragon illuminé du soir, l'image la plus forte des archives,
+    // pour la carte que les journalistes croiseront en premier.
+    n: '27', key: 'presse', src: { lena: '2025-IMG_6338-2', focus: 0.45 }, side: 'left',
+    credit: CREDIT_LENA,
+    qr: { fr: '/presse', en: '/en/press' },
+    fr: {
+      kicker: 'Kit de presse',
+      hook: 'Tout le festival en un dossier',
+      body: 'Les journalistes, les blogueurs et les créateurs trouvent en ligne les photos en haute définition, les faits vérifiés, les prix et les cartes prêtes à publier. Le dossier se télécharge d’un seul bouton.',
+      meta: 'Kit de presse · téléchargement libre',
+    },
+    en: {
+      kicker: 'Press kit',
+      hook: 'The whole festival in one folder',
+      body: 'Journalists, bloggers and creators find high-resolution photos, verified facts, prices and ready-to-publish cards online. The folder downloads with a single button.',
+      meta: 'Press kit · free download',
     },
   },
 ];
