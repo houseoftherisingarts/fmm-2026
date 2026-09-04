@@ -1144,6 +1144,26 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // ── Ententes signées au doigt (page publique /signer-cuisine) ─
+    // Le cuisinier signe sans compte : la création est donc publique,
+    // et verrouillée sur une forme exacte. Le document ne porte que le
+    // chemin du PDF dans Storage, jamais une adresse publique : il se
+    // lit par l'équipe seulement, et l'admin résout l'adresse de
+    // téléchargement en étant connecté (contratsSignes.ts).
+    match /contratsSignes/{docId} {
+      allow create: if request.resource.data.keys().hasOnly(
+            ['contrat', 'nom', 'chemin', 'signeLe'])
+        && request.resource.data.contrat is string
+        && request.resource.data.contrat.matches('^[a-z0-9-]{3,60}$')
+        && request.resource.data.nom is string
+        && request.resource.data.nom.size() > 1
+        && request.resource.data.nom.size() < 200
+        && request.resource.data.chemin is string
+        && request.resource.data.chemin.matches('^contrats-signes/[a-z0-9-]{3,60}/[A-Za-z0-9]{1,64}[.]pdf$')
+        && request.resource.data.signeLe is timestamp;
+      allow read, update, delete: if isAdmin();
+    }
+
     // ── Admin CRM internals ──────────────────────────────────────
     // RACI matrix (MatriceRolesSection + PersonProfilePage, admin only).
     match /matriceRoles/{docId} { allow read, write: if isAdmin(); }

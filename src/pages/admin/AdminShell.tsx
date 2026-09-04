@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, MailPlus, PenLine, Target, Shield, Store, Gift } from 'lucide-react';
+  Receipt, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -37,6 +37,7 @@ export type AdminSectionId =
   | 'commanditaires'
   | 'finances'
   | 'signature'
+  | 'contrats'
   | 'carnet'
   | 'comptes'
   | 'clients'
@@ -96,6 +97,9 @@ export const NAV: NavItem[] = [
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
   { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather,         group: 'Opérations' },
   { id: 'signature',  label: 'Atelier de signature', icon: PenLine,    group: 'Opérations' },
+  // Les ententes que les cuisiniers signent au doigt sur leur téléphone
+  // et renvoient depuis /signer-cuisine (Alex, 2026-09-04).
+  { id: 'contrats',   label: 'Contrats signés', icon: FileSignature, group: 'Opérations' },
 
   { id: 'commanditaires', label: 'Commanditaires', icon: Landmark,     group: 'Finances' },
   { id: 'finances',   label: 'Finances',        icon: Wallet,          group: 'Finances' },

@@ -53,6 +53,7 @@ const DisposSection       = lazy(() => import('./admin/sections/DisposSection'))
 const MariagesSection     = lazy(() => import('./admin/sections/MariagesSection'));
 const CommanditairesSection = lazy(() => import('./admin/sections/CommanditairesSection'));
 const SignatureSection    = lazy(() => import('./admin/sections/SignatureSection'));
+const ContratsSection     = lazy(() => import('./admin/sections/ContratsSection'));
 // Les photos envoyées par le public, à retenir ou à écarter.
 const PhotosRecuesSection = lazy(() => import('../components/admin/PhotosRecues'));
 // Les infolettres aux clients du festival.
@@ -203,6 +204,7 @@ const AdminPage: React.FC = () => {
       case 'badges':     return <BadgesSection />;
       case 'pupitre':    return <PupitreSection />;
       case 'signature':  return <SignatureSection />;
+      case 'contrats':   return <ContratsSection />;
       case 'matrice':    return <MatriceRolesSection devBypass={DEV_BYPASS} />;
       case 'horaire':    return <HoraireSection      devBypass={DEV_BYPASS} />;
       case 'bar':        return <BarSection         devBypass={DEV_BYPASS} />;

@@ -3,6 +3,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { BookOpen, Check, Eraser, PenLine, Share2 } from 'lucide-react';
+import { CONTRAT_CUISINE, deposerContratSigne } from '../firebase/contratsSignes';
 import SEO from '../components/SEO';
 import { Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
 
@@ -13,8 +14,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 // colle dans la conversation Messenger, chaque cuisinier ouvre la page
 // sur son téléphone, lit l'entente, écrit son nom, signe au doigt, et
 // la feuille de partage du téléphone renvoie le PDF signé dans la même
-// conversation. Tout se passe côté client (pdf-lib) : aucune donnée ne
-// transite par un serveur. Page volontairement absente des menus.
+// conversation. Le document se fabrique entièrement dans le navigateur
+// (pdf-lib) : rien ne monte tant que personne n'appuie sur le bouton.
+//
+// Au moment de l'envoi, une copie part aussi vers l'admin du site, dans
+// la section Contrats signés (Alex, 4 septembre) : l'équipe retrouve
+// l'entente sans avoir à fouiller une conversation Messenger. La page
+// le dit à la personne avant qu'elle signe. Page absente des menus.
 
 const PDF_URL = '/contrats/entente-cuisine-2026.pdf';
 
@@ -77,6 +83,8 @@ const SignerCuisinePage: React.FC = () => {
   const [aSigne, setASigne] = useState(false);
   const [etat, setEtat] = useState<'repos' | 'travail' | 'pret' | 'erreur'>('repos');
   const [pdfSigne, setPdfSigne] = useState<Blob | null>(null);
+  // Copie déposée dans l'admin : 'repos' tant que rien n'est parti.
+  const [copie, setCopie] = useState<'repos' | 'envoi' | 'ok' | 'erreur'>('repos');
   const dessine = useRef(false);
 
   // Le canvas suit la largeur réelle de sa boîte (téléphones variés).
@@ -124,6 +132,7 @@ const SignerCuisinePage: React.FC = () => {
     c.getContext('2d')!.clearRect(0, 0, c.width, c.height);
     setASigne(false);
     setPdfSigne(null);
+    setCopie('repos');
     setEtat('repos');
   };
 
@@ -168,6 +177,19 @@ const SignerCuisinePage: React.FC = () => {
   // le PDF signé retombe dans la conversation. Repli : téléchargement.
   const partager = async () => {
     if (!pdfSigne) return;
+
+    // La copie pour l'équipe part d'abord, sans être attendue : la
+    // feuille de partage d'iOS exige le geste de la personne et se
+    // referme dès qu'elle doit patienter derrière un téléversement. Un
+    // échec du dépôt n'empêche donc jamais l'envoi dans la
+    // conversation, et le bouton reste réessayable.
+    if (copie !== 'ok' && copie !== 'envoi') {
+      setCopie('envoi');
+      deposerContratSigne(CONTRAT_CUISINE, nom, pdfSigne)
+        .then(() => setCopie('ok'))
+        .catch(() => setCopie('erreur'));
+    }
+
     const fichier = new File([pdfSigne], nomFichier(), { type: 'application/pdf' });
     if (navigator.canShare?.({ files: [fichier] })) {
       try { await navigator.share({ files: [fichier], title: 'Entente signée' }); return; } catch { /* refus : repli */ }
@@ -195,7 +217,8 @@ const SignerCuisinePage: React.FC = () => {
 
         <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-6">
           Trois gestes : lisez l'entente, écrivez votre nom, signez avec votre doigt.
-          Le document signé se renvoie ensuite dans la conversation Messenger.
+          Le document signé se renvoie ensuite dans la conversation Messenger, et une
+          copie se dépose au même moment dans le dossier de l'équipe du festival.
         </p>
 
         <a
@@ -267,6 +290,17 @@ const SignerCuisinePage: React.FC = () => {
                   <Share2 size={16} />
                   <span className="fmm-glass-btn-label">Renvoyer le document signé</span>
                 </button>
+
+                {copie === 'ok' && (
+                  <p className="font-editorial text-sm text-ivory-soft">
+                    L'équipe du festival a reçu sa copie.
+                  </p>
+                )}
+                {copie === 'erreur' && (
+                  <p className="font-editorial text-sm" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>
+                    La copie de l'équipe n'est pas passée. Appuyez de nouveau sur le bouton.
+                  </p>
+                )}
               </div>
             )}
           </div>

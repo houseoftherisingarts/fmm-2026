@@ -189,6 +189,20 @@ service firebase.storage {
       allow delete: if isOwner(uid) || isAdmin();
     }
 
+    // ── Ententes signées au doigt (page publique /signer-cuisine) ─
+    // Le cuisinier n'a pas de compte : la création reste publique,
+    // bornée à un PDF de moins de 10 Mo. Pas de lecture publique et
+    // pas d'écrasement : une entente porte un nom et une signature
+    // manuscrite, donc elle ne se lit que par l'équipe (Loi 25). Le
+    // document Firestore ne garde que ce chemin, et l'admin résout
+    // l'adresse de téléchargement en étant connecté.
+    match /contrats-signes/{contrat}/{fileName} {
+      allow read:   if isAdmin();
+      allow create: if request.resource.contentType == 'application/pdf'
+        && request.resource.size < 10 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
     // ── Documents financiers (section admin Finances) ────────────
     // États financiers, factures, rapports. Contrairement à /media et
     // /archives-uploads, PAS de lecture publique : données financières,
