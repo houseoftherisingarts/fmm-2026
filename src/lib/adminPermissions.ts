@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'concours',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'concours', 'demandeVexel',
   ],
 
   // Organisateurs: total access minus the future CA-only tab.
