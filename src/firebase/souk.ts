@@ -196,7 +196,7 @@ export async function creerObjetSouk(params: {
 
 export async function majObjetSouk(
   id: string,
-  patch: Partial<Pick<ObjetSouk, 'titre' | 'description' | 'prix' | 'prixMontpellois' | 'categorie' | 'statut'>>,
+  patch: Partial<Pick<ObjetSouk, 'titre' | 'description' | 'prix' | 'prixMontpellois' | 'categorie' | 'statut' | 'guildeId' | 'prixPieces'>>,
 ): Promise<void> {
   if (!db) throw new Error('Firestore indisponible');
   await updateDoc(doc(db, SOUK_COLL, id), { ...stripUndefined(patch), maj: serverTimestamp() });
