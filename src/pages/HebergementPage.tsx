@@ -71,6 +71,32 @@ const LODGINGS: Lodging[] = [
     website: 'https://campingmontpellier.ca/',
     area:    'Montpellier',
   },
+  // Fiche déposée par Eric Ramsden (Camping La Pinède) le 31 août 2026 par le
+  // formulaire « Affichez votre hébergement », adhésion payée sur Zeffy le
+  // même jour. Photo = la sienne (troisième du dépôt, recadrée 3:4). Faits
+  // vérifiés sur lapinede.ca et sur la fiche Bonjour Québec (140 emplacements,
+  // saison jusqu'au 5 octobre 2026); distance mesurée depuis le site : 10 km.
+  {
+    name:    'Camping La Pinède',
+    blurbFR: 'Le camping compte cent quarante emplacements sous les grands pins, sur la rive de la rivière de la Petite-Nation à Lac-Simon. La plage de sable fin donne sur des eaux calmes où les campeurs sortent canots et kayaks. Des sentiers de randonnée partent du terrain et une mini-ferme attend les enfants. Le terrain reste ouvert jusqu’au 5 octobre, bien après la fin de semaine du festival.',
+    blurbEN: 'The campground has one hundred and forty sites under tall pines, on the banks of the Petite-Nation River in Lac-Simon. A fine sand beach opens onto calm water where campers take out canoes and kayaks. Hiking trails start right on the grounds and a small farm keeps the children busy. The grounds stay open until 5 October, well past the festival weekend.',
+    image:   '/wix/hebergement/camping-la-pinede.webp',
+    website: 'https://www.lapinede.ca/',
+    area:    'Lac-Simon · 12 min',
+  },
+  // Publication Facebook repérée par Alex le 6 septembre 2026 (« Mon chalet
+  // Le petit chalet à Chénéville est maintenant à louer », CITQ 321231,
+  // 150 à 200 $ la nuit en moyenne). Photo = celle de l'annonce (façade),
+  // recadrée 3:4. Pas de site ni de contact connus : le bouton n'apparaît
+  // que lorsqu'un `website` sera posé. Distance mesurée depuis Chénéville :
+  // 11 km, 12 minutes.
+  {
+    name:    'Le petit chalet',
+    blurbFR: 'Ce petit chalet de bois se trouve à Chénéville, à douze minutes de route du site du festival. Un escalier de bois mène à l’étage, la cuisine est complète et la galerie donne sur un terrain qui descend jusqu’à un plan d’eau avec son quai. L’établissement est enregistré (CITQ 321231) et se loue entre 150 et 200 $ la nuit en moyenne.',
+    blurbEN: 'This small wooden cottage sits in Chénéville, a twelve-minute drive from the festival grounds. A wooden staircase leads upstairs, the kitchen is fully equipped and the deck looks out over a lot that slopes down to a pond with its own dock. The property is registered (CITQ 321231) and rents for $150 to $200 a night on average.',
+    image:   '/wix/hebergement/petit-chalet-cheneville.webp',
+    area:    'Chénéville · 12 min',
+  },
   {
     name:    'Manoir Montpellier',
     blurbFR: 'Un domaine au bord du lac Viceroy, loué en exclusivité à un seul groupe : 25 chambres au manoir, 4 autres dans la maison voisine, plage privée, spa nordique et salle de réception. Pensé pour les grandes tablées plutôt que pour une chambre à la nuit.',
