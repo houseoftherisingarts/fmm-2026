@@ -47,6 +47,12 @@ export interface ObjetSouk {
   photos: string[];
   chemins: string[];          // chemins Storage, pour la suppression
   statut: StatutSouk;
+  /** Réservé au marché d'une guilde (contrat 6 sept 2026) : présent,
+   *  l'annonce ne paraît que dans le Marché de cette guilde, jamais
+   *  dans le Souk public. */
+  guildeId?: string;
+  /** Prix en pièces de la guilde (guildeId requis pour avoir un sens). */
+  prixPieces?: number;
   creeLe: Timestamp | null;
   maj: Timestamp | null;
 }
