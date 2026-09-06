@@ -124,6 +124,39 @@ service firebase.storage {
             || (request.resource.contentType == 'image/webp' && request.resource.size < 6 * 1024 * 1024));
     }
 
+    // ── La pièce de la guilde (addendum du 6 septembre, ordre 4) ────
+    // L'image ronde qui remplace le glyphe de la monnaie. Même droit
+    // que le blason : un admin de la guilde, ou l'équipe.
+    match /guildes/{guildeId}/monnaie.webp {
+      allow read:  if true;
+      allow write: if signedIn()
+        && (isAdmin()
+            || request.auth.uid in firestore.get(/databases/(default)/documents/guildes/$(guildeId)).data.admins)
+        && (request.resource == null
+            || (request.resource.contentType == 'image/webp' && request.resource.size < 8 * 1024 * 1024));
+    }
+
+    // ── La vitrine publique de la guilde (addendum du 6 septembre, ordre 8) ──
+    // La page /{slug} se voit sans compte, donc ses fichiers se lisent
+    // sans condition. Un membre de la guilde (lu dans Firestore) dépose
+    // une photo webp, une vidéo mp4 ou un PDF de formation, chacun sous
+    // sa propre borne; un membre ou l'équipe retire. Pas de réécriture
+    // d'un fichier en place : chaque billet a le sien.
+    match /guildes/{guildeId}/vitrine/{fichier} {
+      function membreDeLaGuilde() {
+        return request.auth.uid in firestore.get(/databases/(default)/documents/guildes/$(guildeId)).data.membres;
+      }
+      allow read:   if true;
+      allow create: if signedIn() && membreDeLaGuilde()
+        && ((request.resource.contentType == 'image/webp'
+             && request.resource.size < 8 * 1024 * 1024)
+            || (request.resource.contentType == 'video/mp4'
+                && request.resource.size < 80 * 1024 * 1024)
+            || (request.resource.contentType == 'application/pdf'
+                && request.resource.size < 20 * 1024 * 1024));
+      allow delete: if isAdmin() || (signedIn() && membreDeLaGuilde());
+    }
+
     // ── Hébergeurs partenaires (formulaire public /hebergement) ──
     // Un hébergeur téléverse ses photos AVANT le paiement, sans compte :
     // la création est publique, bornée aux images de moins de 8 Mo. Les

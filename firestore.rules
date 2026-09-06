@@ -847,9 +847,10 @@ service cloud.firestore {
                               .hasOnly(['demandes', 'membres', 'nbMembres', 'admins', 'maj'])
                         && request.resource.data.demandes.removeAll(resource.data.demandes).size() == 0
                         && resource.data.demandes.hasAll(request.resource.data.membres.removeAll(resource.data.membres))
-                        && !(resource.data.creePar in resource.data.membres.removeAll(request.resource.data.membres))
-                        && resource.data.membres.hasAll(request.resource.data.admins)
-                        && resource.data.creePar in request.resource.data.admins)
+                        // Le fondateur (creePar) n'a plus à rester chef ni
+                        // membre : « Alex n'est pas Jarl » (addendum du
+                        // 6 septembre, ordre 5).
+                        && resource.data.membres.hasAll(request.resource.data.admins))
                     || (request.auth.uid in resource.data.admins
                         && request.resource.data.creePar == resource.data.creePar
                         && request.resource.data.diff(resource.data).affectedKeys()
@@ -978,6 +979,57 @@ service cloud.firestore {
       allow delete: if isAdmin()
                     || (signedIn() && resource.data.uid == request.auth.uid)
                     || (signedIn() && guildeAdmin(id));
+    }
+
+    // ── La vitrine publique de la guilde (addendum du 6 septembre, ordre 8) ──
+    // Un mur qui se lit sans compte, séparé du mur privé. Un membre y
+    // publie en son nom; l'auteur retouche son titre et son texte; un
+    // chef ou l'équipe épingle, corrige et retire. Les fichiers vivent
+    // dans Storage sous guildes/{id}/vitrine/ (voir storage.rules).
+    match /guildes/{id}/vitrine/{postId} {
+      function vitrineChampsValides() {
+        let d = request.resource.data;
+        return d.type in ['texte', 'photo', 'video', 'formation']
+               && d.texte is string && d.texte.size() <= 5000
+               && d.nom is string && d.nom.size() <= 80
+               && (!('titre' in d) || (d.titre is string && d.titre.size() <= 160))
+               && (!('avatarUrl' in d) || (d.avatarUrl is string && d.avatarUrl.size() <= 1000))
+               && (!('mediaUrl' in d) || (d.mediaUrl is string && d.mediaUrl.size() <= 1000))
+               && (!('videoUrl' in d) || (d.videoUrl is string && d.videoUrl.size() <= 1000))
+               && (!('fichierUrl' in d) || (d.fichierUrl is string && d.fichierUrl.size() <= 1000))
+               && (!('chemin' in d) || (d.chemin is string && d.chemin.size() <= 300))
+               && (!('duree' in d) || (d.duree is string && d.duree.size() <= 40))
+               && (!('epingle' in d) || d.epingle is bool);
+      }
+      function vitrineChefOuEquipe() { return isAdmin() || (signedIn() && guildeAdmin(id)); }
+      function vitrineAuteur() { return signedIn() && resource.data.uid == request.auth.uid; }
+
+      allow read:   if true;
+      allow create: if signedIn() && guildeMembre(id)
+                    && request.resource.data.uid == request.auth.uid
+                    && vitrineChampsValides()
+                    && request.resource.data.creeLe == request.time
+                    // L'épingle est un geste de chef, même sur son propre billet.
+                    && (!('epingle' in request.resource.data) || vitrineChefOuEquipe());
+      allow update: if vitrineChampsValides()
+                    && request.resource.data.uid == resource.data.uid
+                    && request.resource.data.creeLe == resource.data.creeLe
+                    && (vitrineChefOuEquipe()
+                        || (vitrineAuteur()
+                            && request.resource.data.diff(resource.data).affectedKeys()
+                                  .hasOnly(['titre', 'texte', 'maj'])));
+      allow delete: if vitrineChefOuEquipe() || vitrineAuteur();
+    }
+
+    // ── Le miroir public d'une guilde ────────────────────────────
+    // Écrit par le déclencheur guildeMiroir (functions/guildes.js) à
+    // chaque écriture de guildes/{id}, avec les seuls champs publics :
+    // nom, forme, slug, description, blason, bannière, nombre de
+    // membres et monnaie. C'est ce que le visiteur sans compte voit en
+    // ouvrant /{slug}. Aucun navigateur n'y écrit.
+    match /guildesPubliques/{id} {
+      allow read:  if true;
+      allow write: if false;
     }
 
     // ── La bourse en Montpellois (Alex, 2026-08-28) ──────────────
