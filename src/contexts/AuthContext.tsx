@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { publierFiche, anneesRetenues, oublierLesAnnees, ANNEES_POUR_VETERAN } from '../firebase/ordre';
 import { gagner as gagnerUnBadge } from '../firebase/badges';
 import { declarerMonParrain, codeRetenu, oublierLeCode } from '../firebase/parrainage';
+import { marquerVuAujourdhui } from '../firebase/guildes';
 import {
   GoogleAuthProvider,
   signInWithPopup,
