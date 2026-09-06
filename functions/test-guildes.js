@@ -6,7 +6,9 @@
  * Ce qui est vérifié : la courbe du taux, les 5 % de frais qui tombent
  * au trésor, le plafond de change du jour, le bonus d'entrée qui ne se
  * paie qu'une fois même si le déclencheur rejoue, et le virement qui
- * refuse quand la bourse est trop mince.
+ * refuse quand la bourse est trop mince. Depuis l'addendum du 6
+ * septembre : le miroir public qui ne laisse rien filtrer, et l'équipe
+ * qui passe partout où un chef passe.
  */
 
 const assert = require('assert');
@@ -52,6 +54,7 @@ function faireDb() {
       path: chemin,
       get: async () => instantane(chemin),
       set: async (donnees, options) => { docs.set(chemin, fondre(docs.get(chemin), donnees, !!(options && options.merge))); },
+      delete: async () => { docs.delete(chemin); },
       collection: (nom) => refCollection(`${chemin}/${nom}`),
     };
   }
@@ -108,10 +111,14 @@ function faireMonnaie() {
 
 const journeeFestival = (ms) => new Date(ms).toISOString().slice(0, 10);
 
-function monter() {
+/** `courriels` associe un uid à l'adresse que l'Admin SDK rendrait. */
+function monter(courriels = {}) {
   const db = faireDb();
   const monnaie = faireMonnaie();
-  const h = guildes.handlers({ db, FieldValue, crediter: monnaie.crediter, debiter: monnaie.debiter, journeeFestival });
+  const h = guildes.handlers({
+    db, FieldValue, crediter: monnaie.crediter, debiter: monnaie.debiter, journeeFestival,
+    lireCourriel: async (uid) => courriels[uid] || '',
+  });
   return { db, monnaie, h };
 }
 
@@ -261,6 +268,55 @@ async function testIcs() {
   assert.ok(/DTSTART:\d{8}T\d{6}Z/.test(ok.corps), 'DTSTART est en UTC');
 }
 
+// ── 9. Le miroir public ne laisse rien filtrer ──────────────────────
+async function testMiroir() {
+  const { db, h } = monter();
+  const fiche = {
+    nom: 'Vestrvegir Vikingar', forme: 'clan', slug: 'vestrvegirvikingarclan', description: 'Le clan du nord.',
+    blason: 'https://x/blason.webp', banniereUrl: 'https://x/banniere.webp', nbMembres: 3,
+    monnaie: { nom: 'Vikingar Coin', sigle: 'VIK', glyphe: '◎', imageUrl: 'https://x/monnaie.webp' },
+    creePar: 'u1', admins: ['u1'], membres: ['u1', 'u2', 'u3'], demandes: ['u9'],
+    codeInvitation: 'ABCDEFGH', taux: 1, tresor: 40, nbActifs: 3, tauxHistorique: [], membresFondateurs: [{ nom: 'Erik', chef: true }],
+  };
+  await h.miroir('g1', null, fiche);
+  const miroir = (await db.collection('guildesPubliques').doc('g1').get()).data();
+  assert.deepStrictEqual(miroir, {
+    nom: 'Vestrvegir Vikingar', forme: 'clan', slug: 'vestrvegirvikingarclan', description: 'Le clan du nord.',
+    blason: 'https://x/blason.webp', banniereUrl: 'https://x/banniere.webp', nbMembres: 3,
+    monnaie: { nom: 'Vikingar Coin', sigle: 'VIK', glyphe: '◎', imageUrl: 'https://x/monnaie.webp' },
+  }, 'le miroir porte exactement les champs publics');
+  for (const cle of ['codeInvitation', 'demandes', 'admins', 'membres', 'creePar', 'taux', 'tresor', 'membresFondateurs']) {
+    assert.ok(!(cle in miroir), `${cle} ne passe jamais dans le miroir`);
+  }
+  // Un champ absent ne devient pas `undefined` (l'Admin SDK le refuserait).
+  const mince = guildes.miroirPublic({ nom: 'Nu', membres: ['u1'] });
+  assert.deepStrictEqual(mince, { nom: 'Nu' }, 'aucune clé indéfinie');
+  // Une écriture privée ne change pas la face publique.
+  assert.deepStrictEqual(guildes.miroirPublic({ ...fiche, codeInvitation: 'ZZZZZZZZ', taux: 2 }), guildes.miroirPublic(fiche), 'le code et le taux ne bougent pas le miroir');
+  await h.miroir('g1', fiche, null);
+  assert.ok(!(await db.collection('guildesPubliques').doc('g1').get()).exists, 'le miroir part avec la fiche');
+}
+
+// ── 10. L'équipe passe partout où un chef passe ─────────────────────
+async function testEquipe() {
+  const equipe = guildes.COURRIELS_EQUIPE[0];
+  assert.ok(equipe, 'la liste de l’équipe se lit au chargement');
+  const { db, h } = monter({ u1: equipe, u2: 'quelqun@exemple.org', u3: 'autre@exemple.org' });
+  await db.collection('membres').doc('u3').set({ nom: 'Maïté', roles: ['membre', 'administrateur'] });
+  assert.strictEqual(await h.estEquipe('u1'), true, 'le courriel de config/equipe-admin.json fait l’équipe');
+  assert.strictEqual(await h.estEquipe('u2'), false, 'un courriel ordinaire ne fait pas l’équipe');
+  assert.strictEqual(await h.estEquipe('u3'), true, 'le rôle administrateur fait l’équipe');
+
+  await db.collection('guildes').doc('g1').set({ nom: 'Clan Test', membres: ['u2', 'u4'], admins: ['u4'], codeInvitation: 'ABCDEFGH', tresor: 50 });
+  await assert.rejects(() => h.nouveauCodeInvitation('u2', { guildeId: 'g1' }), /Réservé aux chefs/, 'un membre ordinaire ne régénère pas le code');
+  const { code } = await h.nouveauCodeInvitation('u1', { guildeId: 'g1' });
+  assert.strictEqual(code.length, 8, 'l’équipe régénère le code sans être chef');
+  const verse = await h.tresorVerser('u3', { guildeId: 'g1', aUid: 'u2', montant: 20 });
+  assert.strictEqual(verse.tresor, 30, 'l’équipe verse depuis le trésor sans être chef');
+  const chef = await h.tresorVerser('u4', { guildeId: 'g1', aUid: 'u2', montant: 10 });
+  assert.strictEqual(chef.tresor, 20, 'le chef verse toujours');
+}
+
 (async () => {
   await testChange();
   await testEntreeIdempotente();
@@ -268,7 +324,9 @@ async function testIcs() {
   await testFondation();
   await testNbOui();
   await testIcs();
-  console.log('taux, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS : tout tient.');
+  await testMiroir();
+  await testEquipe();
+  console.log('taux, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe : tout tient.');
   console.log('functions/test-guildes.js : OK');
 })().catch((e) => {
   console.error('ÉCHEC :', e && e.message);
