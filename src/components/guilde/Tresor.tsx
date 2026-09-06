@@ -308,13 +308,13 @@ const FormulaireChange: React.FC<{
       <p className="font-sans text-[11px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
         {sens === 'piecesVersM'
           ? (fr
-            ? `Cinq pour cent vont au trésor commun, soit ${apercu.frais} ${glyphe}.`
-            : `Five percent goes to the common treasury, that is ${apercu.frais} ${glyphe}.`)
+            ? `Cinq pour cent vont au trésor commun, soit ${apercu.frais} ${sigle}.`
+            : `Five percent goes to the common treasury, that is ${apercu.frais} ${sigle}.`)
           : (fr ? 'Ce sens ne coûte aucun frais.' : 'This direction carries no fee.')}
         {' '}
         {fr
-          ? `Il vous reste ${reste} ${glyphe} à changer aujourd’hui sur ${PLAFOND_CHANGE_JOUR}.`
-          : `You have ${reste} ${glyphe} left to exchange today out of ${PLAFOND_CHANGE_JOUR}.`}
+          ? `Il vous reste ${reste} ${sigle} à changer aujourd’hui sur ${PLAFOND_CHANGE_JOUR}.`
+          : `You have ${reste} ${sigle} left to exchange today out of ${PLAFOND_CHANGE_JOUR}.`}
       </p>
 
       {trop && (
