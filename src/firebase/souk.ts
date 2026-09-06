@@ -182,6 +182,8 @@ export async function creerObjetSouk(params: {
     prixMontpellois: params.prixMontpellois,
     genre: params.genre || 'objet',
     categorie: params.categorie,
+    guildeId: params.guildeId,
+    prixPieces: params.prixPieces,
     photos: urls,
     chemins,
     statut: 'disponible' as StatutSouk,
