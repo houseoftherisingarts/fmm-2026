@@ -40,6 +40,10 @@ export const tauxDe = (g: Cote): number => g.taux ?? tauxPour(g.nbActifs ?? g.nb
 export const valeurTresorDe = (g: Cote): number =>
   g.valeurTresorM ?? Math.floor((g.tresor ?? 0) * tauxDe(g));
 
+/** La part du trésor de la guilde dans l'ensemble, telle que le
+ *  serveur l'a écrite; zéro tant qu'il ne l'a pas fait. */
+export const partTresorDe = (g: Cote): number => g.partTresor ?? 0;
+
 /** Ce que vaut une pièce de A en pièces de B : taux_A / taux_B. */
 export function tauxCroise(tauxA: number, tauxB: number): number {
   if (tauxB <= 0) return 0;

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeftRight, Loader2, Send, Vault, ScrollText } from 'lucide-react';
+import { ArrowLeftRight, ArrowUpRight, Landmark, Loader2, Send, Vault, ScrollText } from 'lucide-react';
 import CourbeTaux from './CourbeTaux';
 import { PieceGuilde } from './SoldePieces';
 import { addLocale } from '../../lib/locale';
@@ -11,6 +11,7 @@ import {
   guildeTresorVerser, resteAChanger, tauxPour, FRAIS_CHANGE, PLAFOND_CHANGE_JOUR,
   type BourseGuilde, type Ecriture, type SensChange, type TypeEcriture,
 } from '../../firebase/guildeMonnaie';
+import { valeurTresorDe, partTresorDe } from '../../firebase/guildeChange';
 import type { Lang } from '../../content';
 
 // ─── Le trésor du groupe ─────────────────────────────────────────────
@@ -21,7 +22,9 @@ import type { Lang } from '../../content';
 //
 // Pleine largeur depuis le 6 septembre 2026 : la bourse et le cours à
 // gauche sur sept colonnes, le change et le virement à droite sur cinq,
-// le registre d'un bord à l'autre dessous.
+// le registre d'un bord à l'autre dessous. En tête, depuis l'addendum 2
+// (ordre 15d), le tableau de bord du groupe et le guichet vers le
+// bureau de change de toutes les pièces (/change).
 
 const ETIQUETTES: Record<TypeEcriture, { FR: string; EN: string }> = {
   entree:    { FR: 'Entrée',        EN: 'Joined' },
@@ -33,7 +36,7 @@ const ETIQUETTES: Record<TypeEcriture, { FR: string; EN: string }> = {
   evenement: { FR: 'Événement',     EN: 'Event' },
 };
 
-function messageErreur(e: unknown, fr: boolean): string {
+export function messageErreur(e: unknown, fr: boolean): string {
   const code = (e as { code?: string })?.code || '';
   if (/(not-found|internal|unavailable)$/.test(code)) {
     return fr
@@ -44,7 +47,7 @@ function messageErreur(e: unknown, fr: boolean): string {
   return e instanceof Error ? e.message : String(e);
 }
 
-const Cadre: React.FC<{ titre: string; icone?: React.ReactNode; children: React.ReactNode; className?: string }> = ({
+export const Cadre: React.FC<{ titre: string; icone?: React.ReactNode; children: React.ReactNode; className?: string }> = ({
   titre, icone, children, className = '',
 }) => (
   <section className={`glass-light rounded-lg-card p-5 md:p-6 ${className}`}>
@@ -53,10 +56,44 @@ const Cadre: React.FC<{ titre: string; icone?: React.ReactNode; children: React.
   </section>
 );
 
-const champ = {
+export const champ = {
   background: 'rgba(0,0,0,0.35)',
   border: '1px solid rgba(var(--sk-glow-rgb),0.22)',
 };
+
+/** Une part de zéro à un, en filet doré. Sert ici et au bureau de change. */
+export const Jauge: React.FC<{ part: number; className?: string }> = ({ part, className = '' }) => {
+  const pct = Math.min(100, Math.max(0, Math.round(part * 100)));
+  return (
+    <div
+      className={`h-1 rounded-full overflow-hidden ${className}`}
+      style={{ background: 'rgba(var(--sk-parchment-rgb),0.12)' }}
+      role="img" aria-label={`${pct} %`}
+    >
+      <div
+        className="h-full rounded-full transition-[width] duration-700"
+        style={{ width: `${pct}%`, background: 'var(--sk-gilt)', boxShadow: '0 0 8px rgba(var(--sk-gilt-rgb),0.6)' }}
+      />
+    </div>
+  );
+};
+
+const Stat: React.FC<{ label: string; valeur: React.ReactNode; suffixe?: string; children?: React.ReactNode }> = ({
+  label, valeur, suffixe, children,
+}) => (
+  <div>
+    <dt className="witcher-stat-label">{label}</dt>
+    <dd className="font-display text-3xl text-ivory tabular-nums leading-none mt-2 flex items-baseline gap-2">
+      {valeur}
+      {suffixe && (
+        <span className="font-sans uppercase tracking-[0.2em] text-[10px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+          {suffixe}
+        </span>
+      )}
+    </dd>
+    {children}
+  </div>
+);
 
 const Tresor: React.FC<{
   guilde: Guilde;
@@ -77,6 +114,7 @@ const Tresor: React.FC<{
   useEffect(() => suivreRegistre(guilde.id, setRegistre), [guilde.id]);
 
   const reste = resteAChanger(bourse);
+  const part = partTresorDe(guilde);
 
   // Chaque personne du registre mène à son profil (addendum, ordre 6).
   const nomDe = (ref: string | undefined): React.ReactNode => {
@@ -92,6 +130,36 @@ const Tresor: React.FC<{
 
   return (
     <div className="space-y-5">
+
+      {/* ── Le tableau de bord, d'un bord à l'autre, et le guichet du change ── */}
+      <section className="glass-light rounded-lg-card p-5 md:p-6 grid gap-6 lg:grid-cols-12 lg:items-center">
+        <dl className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
+          <Stat label={fr ? 'Actifs' : 'Active'} valeur={guilde.nbActifs ?? 0} suffixe={fr ? '30 jours' : '30 days'} />
+          <Stat label={fr ? 'Trésor' : 'Treasury'} valeur={Math.round(guilde.tresor ?? 0)} suffixe={sigle} />
+          <Stat label={fr ? 'Valeur' : 'Value'} valeur={valeurTresorDe(guilde)} suffixe="M" />
+          <Stat label={fr ? 'Part du trésor' : 'Treasury share'} valeur={`${Math.round(part * 100)} %`}>
+            <Jauge part={part} className="mt-3" />
+          </Stat>
+        </dl>
+        <div className="lg:col-span-4 lg:border-l lg:border-brass/20 lg:pl-6">
+          <p className="witcher-stat-label inline-flex items-center gap-2 mb-3">
+            <Landmark size={12} /> {fr ? 'Bureau de change' : 'Exchange bureau'}
+          </p>
+          <p className="font-display text-2xl text-ivory tabular-nums inline-flex items-center gap-2">
+            1 <PieceGuilde guilde={guilde} size={20} /> {sigle} = {taux} M
+          </p>
+          <p className="font-sans text-[11px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+            {fr ? 'Les autres pièces se cotent au même tableau.' : 'Every other coin is quoted on the same board.'}
+          </p>
+          <Link
+            to={addLocale('/change', lang)}
+            className="mt-3 inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[10px] text-brass hover:text-brass-soft transition"
+          >
+            {fr ? 'Convertir vers une autre pièce' : 'Convert to another coin'} <ArrowUpRight size={12} />
+          </Link>
+        </div>
+      </section>
+
       <div className="grid gap-5 lg:grid-cols-12">
 
         {/* ── Colonne gauche : ma bourse, le cours, le trésor commun ── */}
