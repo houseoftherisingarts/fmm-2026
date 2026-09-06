@@ -278,7 +278,7 @@ const LigneMembre: React.FC<{
 
   return (
     <Ligne className="flex-wrap">
-      <Link to={`${addLocale('/profil', lang)}/${m}`} className="flex items-center gap-2.5 min-w-0 flex-1 hover:text-brass transition-colors">
+      <Link to={`${addLocale('/profil', lang)}/${m}`} className="flex items-center gap-2.5 min-w-[180px] flex-1 hover:text-brass transition-colors">
         <Medaillon nom={nom} url={fiches[m]?.avatarUrl} hue={fiches[m]?.avatarHue} taille={32} />
         <span className="min-w-0">
           <span className="block font-sans text-sm text-ivory truncate">{nom}{cestMoi ? (fr ? ' (vous)' : ' (you)') : ''}</span>
