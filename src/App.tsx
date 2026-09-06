@@ -88,6 +88,7 @@ const SoukBancEssai        = lazy(() => import('./chantier/SoukBancEssai'));
 const PropositionCATestPage = lazy(() => import('./pages/PropositionCATestPage'));
 const GuildesPage          = lazy(() => import('./pages/GuildesPage'));
 const GuildePage           = lazy(() => import('./pages/GuildePage'));
+const GuildeParSlug        = lazy(() => import('./pages/GuildeParSlug'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
 const AlliancePage        = lazy(() => import('./pages/AlliancePage'));
