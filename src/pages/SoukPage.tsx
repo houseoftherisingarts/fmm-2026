@@ -222,6 +222,7 @@ export const CarteObjet: React.FC<{ objet: ObjetSouk; lang: 'FR' | 'EN'; boutonA
             {o.nom}
           </Link>
           <div className="flex items-center gap-2 shrink-0">
+            {boutonAcheter}
             {o.prixMontpellois != null && user && user.uid !== o.uid && o.statut === 'disponible' && (
               <button type="button" onClick={acheter} disabled={enCours}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-brass/50 text-brass hover:bg-brass/10 font-sans uppercase tracking-wider text-[10px] font-semibold transition rounded-card disabled:opacity-50">
