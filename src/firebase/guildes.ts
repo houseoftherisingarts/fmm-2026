@@ -136,7 +136,7 @@ export function formatPieces(n: number, g: Pick<Guilde, 'monnaie'>): string {
 export function slugDeGuilde(nom: string, forme: FormeGuilde | undefined): string {
   const base = (nom || '')
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
   return `${base}${forme || 'guilde'}`.slice(0, 80);
@@ -208,14 +208,20 @@ export const LONGUEUR_DESCRIPTION_MAX = 1000;
 const lire = (d: { id: string; data: () => Record<string, unknown> }): Guilde =>
   ({ id: d.id, ...(d.data() as Omit<Guilde, 'id'>) });
 
-export async function creerGuilde(opts: { uid: string; nom: string; description: string; forme?: FormeGuilde }): Promise<string> {
+export async function creerGuilde(opts: { uid: string; nom: string; description: string; forme?: FormeGuilde }): Promise<{ id: string; slug: string }> {
   if (!db) throw new Error('Firestore non configuré');
   const nom = opts.nom.trim().slice(0, LONGUEUR_NOM_MAX);
   if (nom.length < LONGUEUR_NOM_MIN) throw new Error('Le nom de la guilde est trop court.');
   const description = opts.description.trim().slice(0, LONGUEUR_DESCRIPTION_MAX);
+  // L'adresse se vérifie avant l'écriture : deux groupes au même nom
+  // se voleraient la page l'un à l'autre.
+  const slug = slugDeGuilde(nom, opts.forme);
+  if (!(await slugDisponible(slug))) {
+    throw new Error('Cette adresse est déjà prise. Changez un mot du nom.');
+  }
   const id = doc(collection(db, COL)).id;
   await setDoc(doc(db, COL, id), {
-    nom, description,
+    nom, description, slug,
     forme: opts.forme || 'guilde',
     creePar: opts.uid,
     admins: [opts.uid],
@@ -225,7 +231,7 @@ export async function creerGuilde(opts: { uid: string; nom: string; description:
     creeLe: serverTimestamp(),
     maj: serverTimestamp(),
   });
-  return id;
+  return { id, slug };
 }
 
 /** Toutes les guildes, les plus peuplées d'abord. */
