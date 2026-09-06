@@ -3,6 +3,7 @@ import { Settings, ShieldAlert, Globe, Database, Music, Eye } from 'lucide-react
 import { Card, ToggleSwitch } from '../primitives';
 import { PILLAR_PUBLISH_FLAGS, PUBLISH_FLAG_KEYS } from '../../../firebase/siteFlags';
 import { watchProgFlags, setProgFlag, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../../../firebase/programmationFlags';
+import { watchHebergementFlags, setHebergementFlag, HEBERGEMENT_FLAGS_DEFAULTS, type HebergementFlags } from '../../../firebase/hebergementFlags';
 
 // ─── Ce que chaque bascule fait vraiment ─────────────────────────────
 // Audit du 2 septembre 2026, à la demande d'Alex : chaque interrupteur a
@@ -200,6 +201,18 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
     return unsubscribe;
   }, []);
 
+  // Les deux heures du camping. Le champ s'écrit dans Firestore quand il
+  // perd le focus, et non à chaque frappe : une phrase de vingt lettres
+  // ne vaut pas vingt écritures.
+  const [hebFlags, setHebFlags] = useState<HebergementFlags>(HEBERGEMENT_FLAGS_DEFAULTS);
+  useEffect(() => watchHebergementFlags(setHebFlags), []);
+
+  const handleHebergementBlur = (champ: keyof HebergementFlags, valeur: string) => {
+    setHebergementFlag(champ, valeur.trim()).catch(() => {
+      // Firestore indisponible : l'avertissement du bloc couvre déjà ce cas.
+    });
+  };
+
   const handleProgToggle = (champ: keyof ProgFlags, valeur: boolean) => {
     setProgFlags((prev) => ({ ...prev, [champ]: valeur }));
     setProgFlag(champ, valeur).catch(() => {
@@ -318,6 +331,48 @@ const ParametresSection: React.FC<Props> = ({ flags, setFlag }) => {
         </div>
         <p className="font-editorial italic text-xs text-ivory-soft/70 mt-5 pt-5 border-t border-ivory-soft/15">
           Éteindre une section la retire de la page publique immédiatement. Le Béhourd et les Ateliers sont éteints par défaut.
+        </p>
+      </Card>
+
+      {/* Camping : les deux heures que Maïté confirme */}
+      <Card className="p-6 md:p-8">
+        <h3 className="font-display title-medieval text-base md:text-lg text-brass uppercase tracking-widest mb-1 flex items-center gap-2">
+          <Eye size={14} /> Camping : arrivée et départ
+        </h3>
+        <p className="font-editorial italic text-sm text-ivory-soft mb-5">
+          Deux textes libres, écrits dans Firestore (<code className="text-brass">siteFlags/hebergement</code>) et lus par la section camping de la page Hébergement. Un champ laissé vide ne montre aucune ligne au visiteur : la page reste telle qu'elle est aujourd'hui.
+        </p>
+        {!env.fbReady && (
+          <p className="flex items-center gap-2 font-sans text-xs text-blush mb-4">
+            <ShieldAlert size={13} className="shrink-0" /> Firebase indisponible : ces deux champs ne s'enregistrent pas pour le moment.
+          </p>
+        )}
+        <div className="space-y-5">
+          {([
+            { champ: 'campingArrivee' as const, label: 'Arrivée des campeurs',
+              aide: "Ce que Maïté a confirmé pour l'arrivée des campeurs.",
+              exemple: 'Par exemple : le vendredi dès 14 h' },
+            { champ: 'campingDepart' as const, label: 'Départ des campeurs',
+              aide: 'Ce que Maïté a confirmé pour le départ des campeurs.',
+              exemple: 'Par exemple : le dimanche avant 15 h' },
+          ]).map(({ champ, label, aide, exemple }) => (
+            <div key={champ}>
+              <label htmlFor={`heb-${champ}`} className="block font-sans text-sm text-ivory mb-1">{label}</label>
+              <p className="font-editorial italic text-xs text-ivory-soft/70 mb-2">{aide}</p>
+              <input
+                id={`heb-${champ}`}
+                type="text"
+                value={hebFlags[champ]}
+                placeholder={exemple}
+                onChange={(e) => setHebFlags((prev) => ({ ...prev, [champ]: e.target.value }))}
+                onBlur={(e) => handleHebergementBlur(champ, e.target.value)}
+                className="w-full bg-midnight-deep/60 border border-ivory-soft/20 rounded-card px-4 py-2.5 font-sans text-sm text-ivory placeholder:text-ivory-soft/35 focus:border-brass focus:outline-none transition-colors"
+              />
+            </div>
+          ))}
+        </div>
+        <p className="font-editorial italic text-xs text-ivory-soft/70 mt-5 pt-5 border-t border-ivory-soft/15">
+          Le champ s'enregistre quand vous le quittez, et la page publique change dans la seconde.
         </p>
       </Card>
 

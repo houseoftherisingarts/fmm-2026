@@ -9,6 +9,33 @@ import { Reveal, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
 import HebergementHostPanel from '../components/hebergement/HebergementHostPanel';
+import { watchHebergementFlags, HEBERGEMENT_FLAGS_DEFAULTS, type HebergementFlags } from '../firebase/hebergementFlags';
+
+// ─── Les trois jours du festival ──────────────────────────────────────
+// Les heures sont recopiées à l'identique du formulaire des exposants
+// (src/content/faubourg-form.json, bloc « QUAND/OÙ »), seule source
+// écrite qui les porte : « Vendredi 25 16h30-20h (portes ouvrent 17h) »,
+// « Samedi 26 9h30-19h (portes ouvrent 10h) », « Dimanche 27 9h30-16h
+// (portes ouvrent 10h) ». La plage dit la présence sur le terrain, et
+// l'heure des portes dit le moment où le public entre. Les deux
+// s'affichent parce qu'elles ne veulent pas dire la même chose.
+interface JourFestival {
+  jourFR:   string;
+  jourEN:   string;
+  siteFR:   string;
+  siteEN:   string;
+  portesFR: string;
+  portesEN: string;
+}
+
+const JOURS_FESTIVAL: JourFestival[] = [
+  { jourFR: 'Vendredi 25 septembre', jourEN: 'Friday 25 September',
+    siteFR: 'de 16 h 30 à 20 h', siteEN: '4:30 pm to 8 pm', portesFR: '17 h', portesEN: '5 pm' },
+  { jourFR: 'Samedi 26 septembre', jourEN: 'Saturday 26 September',
+    siteFR: 'de 9 h 30 à 19 h', siteEN: '9:30 am to 7 pm', portesFR: '10 h', portesEN: '10 am' },
+  { jourFR: 'Dimanche 27 septembre', jourEN: 'Sunday 27 September',
+    siteFR: 'de 9 h 30 à 16 h', siteEN: '9:30 am to 4 pm', portesFR: '10 h', portesEN: '10 am' },
+];
 
 // ─── Hébergement bestiary entries ─────────────────────────────────────
 interface Lodging {
@@ -73,8 +100,12 @@ const LODGINGS: Lodging[] = [
 // ─── Page ─────────────────────────────────────────────────────────────
 const HebergementPage: React.FC = () => {
   useCaravanPage();
+  // Les heures d'arrivée et de départ des campeurs viennent de l'admin.
+  const [hebFlags, setHebFlags] = useState<HebergementFlags>(HEBERGEMENT_FLAGS_DEFAULTS);
+  useEffect(() => watchHebergementFlags(setHebFlags), []);
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
+  const fr = lang === 'FR';
 
   return (
     <>
@@ -131,6 +162,58 @@ const HebergementPage: React.FC = () => {
               </a>
             </figure>
             <p className="font-editorial italic text-sm text-ivory-soft/70 text-center mt-3">{t.mapCaption}</p>
+          </Reveal>
+
+          {/* Dates et heures. Ce que Maïté avait demandé : le visiteur
+              qui réserve un emplacement doit savoir quand le site ouvre,
+              quand il entre et quand il repart. Les deux dernières
+              lignes ne paraissent que lorsque l'admin les a remplies. */}
+          <Reveal>
+            <div className="mt-10 md:mt-14 max-w-3xl mx-auto velvet-card rounded-card border border-brass/30 bg-midnight-deep/55 p-7 md:p-9">
+              <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory text-center">
+                {t.horairesTitle}
+              </h3>
+              <div className="divider-brass w-16 mx-auto my-4" />
+              <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed text-center mb-7">
+                {t.horairesLead}
+              </p>
+
+              <dl className="space-y-0">
+                {JOURS_FESTIVAL.map((j) => (
+                  <div
+                    key={j.jourFR}
+                    className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3 border-b border-ivory-soft/15"
+                  >
+                    <dt className="font-display title-medieval text-base md:text-lg text-brass">
+                      {fr ? j.jourFR : j.jourEN}
+                    </dt>
+                    <dd className="font-editorial text-sm md:text-base text-ivory-soft">
+                      {fr ? j.siteFR : j.siteEN}
+                      <span className="text-ivory-soft/60">
+                        {' · '}{t.horairesPortes} {fr ? j.portesFR : j.portesEN}
+                      </span>
+                    </dd>
+                  </div>
+                ))}
+
+                {hebFlags.campingArrivee && (
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3 border-b border-ivory-soft/15">
+                    <dt className="font-display title-medieval text-base md:text-lg text-brass">{t.horairesArrivee}</dt>
+                    <dd className="font-editorial text-sm md:text-base text-ivory-soft">{hebFlags.campingArrivee}</dd>
+                  </div>
+                )}
+                {hebFlags.campingDepart && (
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3 border-b border-ivory-soft/15">
+                    <dt className="font-display title-medieval text-base md:text-lg text-brass">{t.horairesDepart}</dt>
+                    <dd className="font-editorial text-sm md:text-base text-ivory-soft">{hebFlags.campingDepart}</dd>
+                  </div>
+                )}
+              </dl>
+
+              <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed mt-6">
+                {t.horairesPrix}
+              </p>
+            </div>
           </Reveal>
 
           {/* Two spot types → reserve on Zeffy. */}
@@ -354,6 +437,12 @@ const FR = {
   mapCampingTag:  'Zone camping',
   mapCaption:     'Plan du site de l’an dernier. La zone de camping est sur le terrain du festival.',
   mapDownload:    'Télécharger la carte',
+  horairesTitle:   'Dates et heures',
+  horairesLead:    'Le festival se tient du vendredi 25 au dimanche 27 septembre 2026, au 4 rue du Bosquet. Les heures ci-dessous sont celles du site, et la mention « portes » dit à quel moment le public entre.',
+  horairesPortes:  'portes à',
+  horairesArrivee: 'Arrivée des campeurs',
+  horairesDepart:  'Départ des campeurs',
+  horairesPrix:    'Un emplacement pour tente ou petit véhicule coûte 20 $, et un emplacement pour caravane ou véhicule récréatif coûte 40 $. La réservation se fait sur Zeffy.',
   optRvTitle:     'Espace caravane / VR',
   optRvBody:      'Pour les roulottes, caravanes et véhicules récréatifs. Stationnez sur place et profitez du festival dès le réveil.',
   optTentTitle:   'Espace tente / petit véhicule',
@@ -408,6 +497,12 @@ const EN: typeof FR = {
   mapCampingTag:  'Camping zone',
   mapCaption:     'Last year’s site map. The camping zone is on the festival grounds.',
   mapDownload:    'Download the map',
+  horairesTitle:   'Dates and times',
+  horairesLead:    'The festival runs from Friday 25 to Sunday 27 September 2026, at 4 rue du Bosquet. The times below are the grounds’ hours, and the “doors” note says when the public comes in.',
+  horairesPortes:  'doors at',
+  horairesArrivee: 'Campers arrive',
+  horairesDepart:  'Campers leave',
+  horairesPrix:    'A tent or small-vehicle spot costs $20, and a caravan or recreational-vehicle spot costs $40. Reservations go through Zeffy.',
   optRvTitle:     'Caravan / RV area',
   optRvBody:      'For campers, caravans and recreational vehicles. Park on site and enjoy the festival from the moment you wake up.',
   optTentTitle:   'Tent / small vehicle area',
