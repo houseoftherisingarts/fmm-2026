@@ -11,10 +11,10 @@ import type { Lang } from '../../content';
 // coup d'œil, sans descendre jusqu'au trésor.
 
 const Jeton: React.FC<{
-  emblème: React.ReactNode;
+  embleme: React.ReactNode;
   montant: number;
   legende: string;
-}> = ({ emblème, montant, legende }) => (
+}> = ({ embleme, montant, legende }) => (
   <span
     className="inline-flex items-center gap-3 px-4 py-2.5 rounded-card"
     style={{
@@ -22,7 +22,7 @@ const Jeton: React.FC<{
       border: '1px solid rgba(var(--sk-parchment-rgb),0.14)',
     }}
   >
-    {emblème}
+    {embleme}
     <span className="leading-none">
       <span className="block font-display text-xl text-ivory tabular-nums leading-none">{montant}</span>
       <span
@@ -45,12 +45,12 @@ const SoldePieces: React.FC<{ guilde: Guilde; uid: string; lang: Lang }> = ({ gu
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       <Jeton
-        emblème={<PieceMontpellois size={26} image />}
+        embleme={<PieceMontpellois size={26} image />}
         montant={bourse?.solde ?? 0}
         legende="Montpellois"
       />
       <Jeton
-        emblème={
+        embleme={
           <span
             aria-hidden
             className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-sm shrink-0"
