@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Users, Plus, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
@@ -149,7 +149,7 @@ const GuildesPage: React.FC = () => {
                       className="px-4 py-2 font-sans uppercase tracking-wider text-xs text-ivory-soft hover:text-brass transition">
                       {fr ? 'Annuler' : 'Cancel'}
                     </button>
-                    <button type="submit" disabled={creation || nom.trim().length < 2}
+                    <button type="submit" disabled={creation || nom.trim().length < 2 || libre === false}
                       className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
                       {creation ? <Loader2 size={13} className="animate-spin" /> : <Shield size={13} />} {fr ? 'Fonder' : 'Found'}
                     </button>
@@ -171,6 +171,11 @@ const GuildesPage: React.FC = () => {
     </main>
   );
 };
+
+// L'adresse d'un groupe, avec le repli sur l'ancienne forme tant que
+// les groupes fondés avant le 6 septembre 2026 n'en ont pas.
+const cheminDuGroupe = (g: Guilde, lang: 'FR' | 'EN'): string =>
+  g.slug ? addLocale(`/${g.slug}`, lang) : `${addLocale('/guildes', lang)}/${g.id}`;
 
 const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> = ({ guilde, uid, lang }) => {
   const fr = lang === 'FR';
@@ -197,7 +202,9 @@ const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> 
         </span>
       )}
       <div className="min-w-0 flex-1">
-        <h3 className="font-display title-medieval text-lg text-ivory truncate">{guilde.nom}</h3>
+        <Link to={cheminDuGroupe(guilde, lang)} className="block">
+          <h3 className="font-display title-medieval text-lg text-ivory truncate hover:text-brass transition-colors">{guilde.nom}</h3>
+        </Link>
         <span className="inline-block font-sans uppercase tracking-[0.2em] text-[9px] mb-0.5" style={{ color: 'var(--sk-gilt)' }}>
           {motDeLaForme(guilde.forme, lang)}
         </span>
@@ -209,7 +216,7 @@ const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> 
         </p>
       </div>
       {estMembre ? (
-        <button type="button" onClick={() => navigate(`${addLocale('/guildes', lang)}/${guilde.id}`)}
+        <button type="button" onClick={() => navigate(cheminDuGroupe(guilde, lang))}
                 className="shrink-0 inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
           {fr ? 'Ouvrir' : 'Open'}
         </button>

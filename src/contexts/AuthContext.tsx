@@ -300,6 +300,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .catch(() => { /* le prochain passage réessaiera */ });
   }, [user]);
 
+  // La marque de passage, une fois par jour (contrat
+  // CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026). Le taux d'une guilde
+  // suit le nombre de ses membres vus dans les trente derniers jours,
+  // et c'est cette écriture qui le dit. La garde en localStorage évite
+  // de réécrire à chaque page ouverte.
+  useEffect(() => {
+    if (!user) return;
+    void marquerVuAujourdhui(user.uid).catch(() => { /* le prochain passage réessaiera */ });
+  }, [user]);
+
   // Le parrainage : un compte qui vient de naître avec un code retenu
   // entre dans la lignée de son parrain, une seule fois (Alex,
   // 2026-08-28). Un compte ancien qui se reconnecte n'y touche pas.
