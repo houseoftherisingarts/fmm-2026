@@ -161,6 +161,7 @@ export async function creerObjetSouk(params: {
   uid: string; nom: string; avatarUrl?: string;
   titre: string; description: string; prix?: number; prixMontpellois?: number;
   genre?: GenreSouk; categorie: CategorieSouk;
+  guildeId?: string; prixPieces?: number;
   fichiers: File[];
 }): Promise<string> {
   if (!db) throw new Error('Firestore indisponible');
