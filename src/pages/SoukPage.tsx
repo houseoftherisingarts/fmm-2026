@@ -158,7 +158,7 @@ const GrilleObjets: React.FC<{ lang: 'FR' | 'EN'; uid: string }> = ({ lang, uid 
         </p>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtres.map((o) => <CarteObjet key={o.id} o={o} lang={lang} />)}
+          {filtres.map((o) => <CarteObjet key={o.id} objet={o} lang={lang} />)}
         </div>
       )}
     </div>
