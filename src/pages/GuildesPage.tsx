@@ -16,7 +16,15 @@ import {
 
 // ─── Les guildes ───────────────────────────────────────────────────
 // La liste des sous-groupes de l'Ordre et le formulaire pour en
-// fonder un (Alex, 2026-08-27).
+// fonder un (Alex, 2026-08-27). Pleine largeur depuis le 6 septembre
+// 2026 : une grille de cartes de deux à trois colonnes, le formulaire
+// d'un bord à l'autre (addendum, ordre 1).
+
+const champ = {
+  background: 'rgba(0,0,0,0.35)',
+  border: '1px solid rgba(var(--sk-glow-rgb),0.22)',
+};
+
 const GuildesPage: React.FC = () => {
   useCaravanPage();
   const { lang } = useUI();
@@ -74,10 +82,10 @@ const GuildesPage: React.FC = () => {
       />
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 space-y-5">
+        <div id="liste-guildes" className="relative z-10 px-5 md:px-10 xl:px-16 space-y-5">
           {!user ? (
-            <div className="glass-light rounded-lg-card p-8 text-center">
-              <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-5">
+            <div className="glass-light rounded-lg-card p-6 md:p-8 flex items-center justify-between gap-5 flex-wrap">
+              <p className="font-editorial text-base text-ivory-soft leading-relaxed min-w-0 flex-1">
                 {fr ? 'Les guildes se lisent entre membres. Connectez-vous pour les ouvrir.' : 'Guilds are read among members. Sign in to open them.'}
               </p>
               <button type="button" onClick={openSignIn}
@@ -99,7 +107,7 @@ const GuildesPage: React.FC = () => {
               </div>
 
               {ouvert && (
-                <form onSubmit={fonder} className="glass-light rounded-lg-card p-5 md:p-6 space-y-3">
+                <form onSubmit={fonder} className="glass-light rounded-lg-card p-5 md:p-6 space-y-4">
                   <div>
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Quel mot vous ressemble ?' : 'Which word suits you?'}</span>
                     <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={fr ? 'La forme du groupe' : 'The kind of group'}>
@@ -118,31 +126,33 @@ const GuildesPage: React.FC = () => {
                       {fr ? 'Le mot change, le fonctionnement reste le même.' : 'The word changes, everything else stays the same.'}
                     </p>
                   </div>
-                  <label className="block">
-                    <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
-                    <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))} required autoFocus
-                      placeholder={fr ? `Le nom ${['clan','ordre'].includes(forme) ? 'du' : 'de la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `The ${motDeLaForme(forme, 'EN').toLowerCase()}’s name`}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
-                  </label>
-                  <label className="block">
-                    <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
-                    <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
-                      placeholder={fr ? `Ce qui rassemble ${['clan','ordre'].includes(forme) ? 'le' : 'la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `What brings the ${motDeLaForme(forme, 'EN').toLowerCase()} together`}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 resize-y"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
-                  </label>
-                  {nom.trim().length >= 2 && (
-                    <p className="font-sans text-[11px] leading-relaxed" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
-                      {fr ? 'Votre adresse : ' : 'Your address: '}
-                      <span style={{ color: 'var(--sk-gilt)' }}>festivalmedievaldemontpellier.org/{adresse}</span>
-                      {libre === false && (
-                        <span className="block mt-1" style={{ color: '#E08A6E' }}>
-                          {fr ? 'Cette adresse est prise. Changez un mot du nom.' : 'That address is taken. Change a word of the name.'}
+                  <div className="grid gap-x-8 gap-y-3 lg:grid-cols-2">
+                    <label className="block">
+                      <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
+                      <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))} required autoFocus
+                        placeholder={fr ? `Le nom ${['clan','ordre'].includes(forme) ? 'du' : 'de la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `The ${motDeLaForme(forme, 'EN').toLowerCase()}’s name`}
+                        className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40"
+                        style={champ} />
+                      {nom.trim().length >= 2 && (
+                        <span className="block font-sans text-[11px] leading-relaxed mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+                          {fr ? 'Votre adresse : ' : 'Your address: '}
+                          <span style={{ color: 'var(--sk-gilt)' }}>festivalmedievaldemontpellier.org/{adresse}</span>
+                          {libre === false && (
+                            <span className="block mt-1" style={{ color: '#E08A6E' }}>
+                              {fr ? 'Cette adresse est prise. Changez un mot du nom.' : 'That address is taken. Change a word of the name.'}
+                            </span>
+                          )}
                         </span>
                       )}
-                    </p>
-                  )}
+                    </label>
+                    <label className="block">
+                      <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
+                      <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
+                        placeholder={fr ? `Ce qui rassemble ${['clan','ordre'].includes(forme) ? 'le' : 'la'} ${motDeLaForme(forme, 'FR').toLowerCase()}` : `What brings the ${motDeLaForme(forme, 'EN').toLowerCase()} together`}
+                        className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 resize-y"
+                        style={champ} />
+                    </label>
+                  </div>
                   {erreur && <p className="font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}
                   <div className="flex items-center justify-end gap-2">
                     <button type="button" onClick={() => setOuvert(false)}
@@ -161,9 +171,13 @@ const GuildesPage: React.FC = () => {
                 <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
                   {fr ? 'Aucune guilde encore. Fondez la première.' : 'No guild yet. Found the first one.'}
                 </p>
-              ) : guildes.map((g) => (
-                <CarteGuilde key={g.id} guilde={g} uid={user.uid} lang={lang} />
-              ))}
+              ) : (
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {guildes.map((g) => (
+                    <CarteGuilde key={g.id} guilde={g} uid={user.uid} lang={lang} />
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -177,6 +191,8 @@ const GuildesPage: React.FC = () => {
 const cheminDuGroupe = (g: Guilde, lang: 'FR' | 'EN'): string =>
   g.slug ? addLocale(`/${g.slug}`, lang) : `${addLocale('/guildes', lang)}/${g.id}`;
 
+// Une carte par groupe : la bannière en tête quand il en a une, le
+// blason, le nom, puis les gestes.
 const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> = ({ guilde, uid, lang }) => {
   const fr = lang === 'FR';
   const navigate = useNavigate();
@@ -191,43 +207,56 @@ const CarteGuilde: React.FC<{ guilde: Guilde; uid: string; lang: 'FR' | 'EN' }> 
   };
 
   return (
-    <div className="glass-light rounded-lg-card p-5 md:p-6 flex items-center gap-4">
-      {guilde.blason ? (
-        <span className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-brass/40">
-          <img src={guilde.blason} alt="" className="w-full h-full object-cover" loading="lazy" />
-        </span>
-      ) : (
-        <span className="witcher-tile shrink-0" style={{ width: 48, height: 48 }}>
-          <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Shield size={18} /></span>
-        </span>
-      )}
-      <div className="min-w-0 flex-1">
-        <Link to={cheminDuGroupe(guilde, lang)} className="block">
-          <h3 className="font-display title-medieval text-lg text-ivory truncate hover:text-brass transition-colors">{guilde.nom}</h3>
-        </Link>
-        <span className="inline-block font-sans uppercase tracking-[0.2em] text-[9px] mb-0.5" style={{ color: 'var(--sk-gilt)' }}>
-          {motDeLaForme(guilde.forme, lang)}
-        </span>
-        {guilde.description && (
-          <p className="font-editorial text-sm text-ivory-soft leading-relaxed line-clamp-2 mt-0.5">{guilde.description}</p>
+    <div className="glass-light rounded-lg-card overflow-hidden flex flex-col">
+      <Link to={cheminDuGroupe(guilde, lang)} className="block relative aspect-[21/9] overflow-hidden"
+            style={{ background: 'url(/textures/black-linen.png), rgba(var(--sk-ink-rgb),0.9)' }}>
+        {guilde.banniereUrl && (
+          <img src={guilde.banniereUrl} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover"
+               style={{ objectPosition: '65% center' }} />
         )}
-        <p className="font-sans text-[11px] text-ivory-soft/55 mt-1 inline-flex items-center gap-1.5">
-          <Users size={11} /> {guilde.nbMembres} {fr ? (guilde.nbMembres > 1 ? 'membres' : 'membre') : (guilde.nbMembres > 1 ? 'members' : 'member')}
-        </p>
+        <div className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none"
+             style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.9), transparent)' }} />
+        <span className="absolute left-5 bottom-4 flex items-center gap-3">
+          {guilde.blason ? (
+            <span className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-brass/40">
+              <img src={guilde.blason} alt="" className="w-full h-full object-cover" loading="lazy" />
+            </span>
+          ) : (
+            <span className="witcher-tile shrink-0" style={{ width: 48, height: 48 }}>
+              <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}><Shield size={18} /></span>
+            </span>
+          )}
+          <span className="min-w-0">
+            <span className="block font-sans uppercase tracking-[0.2em] text-[9px]" style={{ color: 'var(--sk-gilt)' }}>
+              {motDeLaForme(guilde.forme, lang)}
+            </span>
+            <span className="block font-display title-medieval text-lg text-ivory truncate hover:text-brass transition-colors">{guilde.nom}</span>
+          </span>
+        </span>
+      </Link>
+      <div className="p-5 flex flex-col gap-4 flex-1">
+        {guilde.description && (
+          <p className="font-editorial text-sm text-ivory-soft leading-relaxed line-clamp-3">{guilde.description}</p>
+        )}
+        <div className="mt-auto flex items-center justify-between gap-3 flex-wrap">
+          <p className="font-sans text-[11px] text-ivory-soft/55 inline-flex items-center gap-1.5">
+            <Users size={11} /> {guilde.nbMembres} {fr ? (guilde.nbMembres > 1 ? 'membres' : 'membre') : (guilde.nbMembres > 1 ? 'members' : 'member')}
+          </p>
+          {estMembre ? (
+            <button type="button" onClick={() => navigate(cheminDuGroupe(guilde, lang))}
+                    className="shrink-0 inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
+              {fr ? 'Ouvrir' : 'Open'}
+            </button>
+          ) : (
+            <button type="button" onClick={demander} disabled={busy}
+                    className={`shrink-0 inline-flex items-center gap-2 px-4 py-2 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50 ${
+                      enAttente ? 'border border-ivory-soft/25 text-ivory-soft hover:text-brass' : 'bg-brass text-midnight-deep hover:bg-brass-soft'
+                    }`}>
+              {enAttente ? (fr ? 'Demande envoyée' : 'Request sent') : (fr ? 'Demander à joindre' : 'Ask to join')}
+            </button>
+          )}
+        </div>
       </div>
-      {estMembre ? (
-        <button type="button" onClick={() => navigate(cheminDuGroupe(guilde, lang))}
-                className="shrink-0 inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card">
-          {fr ? 'Ouvrir' : 'Open'}
-        </button>
-      ) : (
-        <button type="button" onClick={demander} disabled={busy}
-                className={`shrink-0 inline-flex items-center gap-2 px-4 py-2 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50 ${
-                  enAttente ? 'border border-ivory-soft/25 text-ivory-soft hover:text-brass' : 'bg-brass text-midnight-deep hover:bg-brass-soft'
-                }`}>
-          {enAttente ? (fr ? 'Demande envoyée' : 'Request sent') : (fr ? 'Demander à joindre' : 'Ask to join')}
-        </button>
-      )}
     </div>
   );
 };
