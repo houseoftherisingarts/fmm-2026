@@ -10,7 +10,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { addLocale } from '../lib/locale';
 import {
   creerGuilde, demanderAdhesion, retirerDemande, suivreGuildes,
-  LONGUEUR_NOM_MAX, type Guilde,
+  slugDeGuilde, slugDisponible, LONGUEUR_NOM_MAX, type Guilde,
   FORMES_GUILDE, motDeLaForme, type FormeGuilde,
 } from '../firebase/guildes';
 
