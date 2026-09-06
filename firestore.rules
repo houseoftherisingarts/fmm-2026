@@ -790,6 +790,14 @@ service cloud.firestore {
     // garde la main pour modifier ou détruire n'importe quelle guilde
     // depuis l'espace admin (Alex, 2026-08-27).
     match /guildes/{id} {
+      // Champs de monnaie et d'invitation : posés/maintenus par le
+      // serveur seulement (functions/guildes.js). Un client qui pourrait
+      // les écrire s'inventerait un taux, un trésor ou un code à volonté
+      // (contrat CLAN-MONNAIE-CONTRAT.md, 6 sept 2026).
+      function guildeChampsServeur() {
+        return ['taux', 'tresor', 'nbActifs', 'tauxHistorique', 'codeInvitation'];
+      }
+
       allow read: if signedIn();
 
       allow create: if signedIn()
@@ -799,16 +807,46 @@ service cloud.firestore {
                     && request.resource.data.demandes.size() == 0
                     && request.resource.data.nom is string
                     && request.resource.data.nom.size() >= 2
-                    && request.resource.data.nom.size() <= 60;
+                    && request.resource.data.nom.size() <= 60
+                    && request.resource.data.slug is string
+                    && request.resource.data.slug.size() >= 3
+                    && request.resource.data.slug.size() <= 80
+                    && request.resource.data.slug.matches('^[a-z0-9-]+$')
+                    && !request.resource.data.keys().hasAny(guildeChampsServeur())
+                    // Une seule guilde fondée par membre (registre côté
+                    // membres/{uid}.guildesFondees, posé par le serveur).
+                    // Fiche absente = personne n'a encore rien fondé.
+                    && (!exists(/databases/$(database)/documents/membres/$(request.auth.uid))
+                        || get(/databases/$(database)/documents/membres/$(request.auth.uid)).data.get('guildesFondees', 0) == 0);
 
-      // L'équipe fait tout. L'admin de la guilde fait tout sauf
-      // changer qui l'a fondée. N'importe quel membre connecté ne
-      // peut que se demander lui-même (rejoindre / annuler sa
-      // demande) ou se retirer lui-même (quitter) : jamais bouger la
-      // ligne d'un autre.
+      // L'équipe fait tout. L'admin de la guilde édite la fiche
+      // (monnaie, adresse, portrait des fondateurs, description…) mais
+      // ne touche jamais l'argent, le code d'invitation ni la liste des
+      // membres par ce chemin : guildeRejoindreParCode, guildeNouveauCode
+      // et les callables de monnaie passent par l'Admin SDK, hors de ces
+      // règles. N'importe quel membre connecté ne peut que se demander
+      // lui-même (rejoindre / annuler sa demande) ou se retirer
+      // lui-même (quitter) : jamais bouger la ligne d'un autre.
       allow update: if isAdmin()
                     || (request.auth.uid in resource.data.admins
-                        && request.resource.data.creePar == resource.data.creePar)
+                        && request.resource.data.creePar == resource.data.creePar
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                              .hasOnly(['monnaie', 'slug', 'membresFondateurs', 'nom',
+                                        'description', 'forme', 'blason', 'banniereUrl', 'maj'])
+                        && (!('slug' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.slug is string
+                                && request.resource.data.slug.size() >= 3
+                                && request.resource.data.slug.size() <= 80
+                                && request.resource.data.slug.matches('^[a-z0-9-]+$')))
+                        && (!('monnaie' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.monnaie.nom is string
+                                && request.resource.data.monnaie.sigle is string
+                                && request.resource.data.monnaie.sigle.size() >= 2
+                                && request.resource.data.monnaie.sigle.size() <= 4
+                                && request.resource.data.monnaie.glyphe is string))
+                        && (!('membresFondateurs' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.membresFondateurs is list
+                                && request.resource.data.membresFondateurs.size() <= 50)))
                     || (signedIn()
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['demandes', 'maj'])
                         && request.resource.data.demandes.removeAll(resource.data.demandes).hasOnly([request.auth.uid])
@@ -819,6 +857,89 @@ service cloud.firestore {
                         && resource.data.membres.removeAll(request.resource.data.membres).hasOnly([request.auth.uid]));
 
       allow delete: if isAdmin() || request.auth.uid in resource.data.admins;
+    }
+
+    // ── Sous-collections de guilde : monnaie, agenda, salon ────────
+    // Toutes SERVEUR SEULEMENT en écriture sauf le clavardage (les
+    // membres y écrivent) et le RSVP d'événement (sa propre clé
+    // seulement) — contrat CLAN-MONNAIE-CONTRAT.md, 6 sept 2026.
+    function guildeMembre(guildeId) {
+      return request.auth.uid in get(/databases/$(database)/documents/guildes/$(guildeId)).data.membres;
+    }
+    function guildeAdmin(guildeId) {
+      return request.auth.uid in get(/databases/$(database)/documents/guildes/$(guildeId)).data.admins;
+    }
+
+    // La bourse en pièces de guilde : même patron que /bourses/{uid},
+    // jamais écrite par un navigateur.
+    match /guildes/{id}/bourses/{uid} {
+      allow read:  if isOwner(uid) || isAdmin()
+                   || (signedIn() && guildeAdmin(id));
+      allow write: if false;
+    }
+
+    // Le registre des transactions de la guilde : lu par ses membres,
+    // jamais écrit par un navigateur (les callables de functions/guildes.js
+    // l'écrivent via l'Admin SDK).
+    match /guildes/{id}/registre/{txId} {
+      allow read:  if signedIn() && (isAdmin() || guildeMembre(id));
+      allow write: if false;
+    }
+
+    // L'agenda de la guilde : les chefs le tiennent, les membres
+    // répondent présent seulement sur leur propre clé.
+    match /guildes/{id}/evenements/{evId} {
+      function evenementChampsValides() {
+        return request.resource.data.titre is string
+               && request.resource.data.titre.size() >= 2
+               && request.resource.data.titre.size() <= 120
+               && request.resource.data.debut is timestamp
+               && request.resource.data.fin is timestamp
+               && request.resource.data.fin >= request.resource.data.debut
+               && (!('prixPieces' in request.resource.data)
+                   || (request.resource.data.prixPieces is int
+                       && request.resource.data.prixPieces >= 0
+                       && request.resource.data.prixPieces <= 100000));
+      }
+
+      allow read: if signedIn() && (isAdmin() || guildeMembre(id));
+
+      allow create: if (isAdmin() || guildeAdmin(id))
+                    && evenementChampsValides()
+                    && !('nbOui' in request.resource.data);
+
+      // Un chef modifie l'événement (jamais nbOui, recalculé par le
+      // déclencheur serveur). Un membre ne touche que sa propre clé de
+      // rsvp; s'il y a un prix en pièces, un « oui » client est refusé,
+      // le paiement passe par guildeRsvpPayant (serveur).
+      allow update: if ((isAdmin() || guildeAdmin(id))
+                        && evenementChampsValides()
+                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['nbOui']))
+                    || (signedIn() && guildeMembre(id)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvp', 'maj'])
+                        && request.resource.data.rsvp.diff(resource.data.rsvp).affectedKeys().hasOnly([request.auth.uid])
+                        && request.resource.data.rsvp[request.auth.uid] in ['oui', 'non', 'peut-etre']
+                        && (resource.data.get('prixPieces', 0) == 0
+                            || request.resource.data.rsvp[request.auth.uid] != 'oui'));
+
+      allow delete: if isAdmin() || guildeAdmin(id);
+    }
+
+    // Le salon de clavardage de la guilde : chaque membre écrit en son
+    // nom, retire son propre mot; un chef ou l'équipe modère.
+    match /guildes/{id}/clavardage/{msgId} {
+      allow read:   if signedIn() && (isAdmin() || guildeMembre(id));
+      allow create: if signedIn() && guildeMembre(id)
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.texte is string
+                    && request.resource.data.texte.size() >= 1
+                    && request.resource.data.texte.size() <= 500
+                    && request.resource.data.nom is string
+                    && request.resource.data.creeLe == request.time;
+      allow update: if false;
+      allow delete: if isAdmin()
+                    || (signedIn() && resource.data.uid == request.auth.uid)
+                    || (signedIn() && guildeAdmin(id));
     }
 
     // ── La bourse en Montpellois (Alex, 2026-08-28) ──────────────
