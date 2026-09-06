@@ -6,6 +6,7 @@ import {
   creerObjetSouk, majObjetSouk, supprimerObjetSouk, suivreObjetsDe, estGratuit,
   MAX_PHOTOS_OBJET, type ObjetSouk, type CategorieSouk, type GenreSouk, type StatutSouk,
 } from '../../firebase/souk';
+import { listerMesGuildes, type Guilde, type MonnaieGuilde } from '../../firebase/guildes';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import PhotosPicker from './PhotosPicker';
 
@@ -35,7 +36,7 @@ const STATUT_LABEL: Record<'FR' | 'EN', Record<StatutSouk, string>> = {
 };
 
 const EMPTY = {
-  titre: '', description: '', prix: '', prixMontpellois: '',
+  titre: '', description: '', prix: '', prixMontpellois: '', prixPieces: '',
   genre: 'objet' as GenreSouk, categorie: 'autre' as CategorieSouk,
 };
 
@@ -50,18 +51,44 @@ export const DisclaimerSouk: React.FC<{ fr: boolean }> = ({ fr }) => (
   </p>
 );
 
-const MesObjets: React.FC<Props> = ({ uid, lang }) => {
+/** Une guilde déjà choisie et verrouillée (le Marché de la guilde ouvre
+ *  le formulaire avec sa propre guilde imposée, jamais un choix). */
+export interface GuildeFixe {
+  id: string;
+  nom: string;
+  monnaie?: MonnaieGuilde;
+}
+
+/** Le formulaire de mise en vente, seul (Alex/contrat 6 sept 2026) :
+ *  extrait de MesObjets pour que le Marché d'une guilde puisse l'ouvrir
+ *  avec sa guilde préchoisie et verrouillée (guildeFixe). Sans
+ *  guildeFixe, un membre qui appartient à au moins une guilde peut
+ *  réserver l'annonce à celle-ci, avec un prix en pièces. */
+export const FormulaireSouk: React.FC<{
+  uid: string;
+  lang: 'FR' | 'EN';
+  guildeFixe?: GuildeFixe;
+  onDone?: () => void;
+}> = ({ uid, lang, guildeFixe, onDone }) => {
   const fr = lang === 'FR';
   const { user } = useAuth();
   const { gagnerBadge } = useBadges();
-  const [objets, setObjets] = useState<ObjetSouk[]>([]);
-  const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY);
   const [photos, setPhotos] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [guildes, setGuildes] = useState<Guilde[]>([]);
+  const [guildeId, setGuildeId] = useState<string>(guildeFixe?.id || '');
 
-  useEffect(() => suivreObjetsDe(uid, setObjets), [uid]);
+  useEffect(() => {
+    if (guildeFixe) return;
+    listerMesGuildes(uid).then(setGuildes);
+  }, [uid, guildeFixe]);
+
+  const guildeMonnaie: MonnaieGuilde | undefined = guildeFixe
+    ? guildeFixe.monnaie
+    : guildes.find((g) => g.id === guildeId)?.monnaie;
+  const nomPieces = guildeMonnaie?.nom ?? (fr ? 'pièces' : 'coins');
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,6 +114,13 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
       setError(fr ? 'Le prix en Montpellois n’est pas valide.' : 'The Montpellois price is not valid.');
       return;
     }
+    const guildeIdFinal = guildeFixe?.id || guildeId || undefined;
+    const prixPiecesBrut = form.prixPieces.trim();
+    const prixPieces = guildeIdFinal && prixPiecesBrut ? Number(prixPiecesBrut) : undefined;
+    if (prixPieces !== undefined && (!Number.isFinite(prixPieces) || prixPieces < 0)) {
+      setError(fr ? `Le prix en ${nomPieces} n’est pas valide.` : `The ${nomPieces} price is not valid.`);
+      return;
+    }
     setBusy(true); setError(null);
     try {
       await creerObjetSouk({
@@ -99,16 +133,124 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
         prixMontpellois,
         genre: form.genre,
         categorie: form.categorie,
+        guildeId: guildeIdFinal,
+        prixPieces,
         fichiers: photos,
       });
       gagnerBadge('souk');
-      setForm(EMPTY); setPhotos([]); setShowForm(false);
+      setForm(EMPTY); setPhotos([]);
+      if (!guildeFixe) setGuildeId('');
+      onDone?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setBusy(false);
     }
   };
+
+  return (
+    <form onSubmit={onSubmit} className="glass-light rounded-lg-card p-5 md:p-6 space-y-4">
+      <DisclaimerSouk fr={fr} />
+      <label className="block">
+        <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Genre' : 'Kind'}</span>
+        <div className="flex gap-2">
+          {(['objet', 'service'] as GenreSouk[]).map((g) => (
+            <button key={g} type="button"
+                    onClick={() => setForm((p) => ({ ...p, genre: g, categorie: 'autre' }))}
+                    className={`px-4 py-2 rounded-card font-sans text-xs uppercase tracking-wider transition border ${
+                      form.genre === g ? 'bg-brass/20 border-brass text-brass' : 'border-ivory-soft/20 text-ivory-soft hover:border-brass/50 hover:text-brass'
+                    }`}>
+              {g === 'objet' ? (fr ? 'Objet' : 'Item') : (fr ? 'Service' : 'Service')}
+            </button>
+          ))}
+        </div>
+      </label>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <label className="block">
+          <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Titre' : 'Title'}</span>
+          <input className="witcher-input font-sans" value={form.titre} maxLength={80}
+                 onChange={(e) => setForm((p) => ({ ...p, titre: e.target.value }))} required />
+        </label>
+        <label className="block">
+          <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
+            {fr ? 'Prix (CAD, facultatif)' : 'Price (CAD, optional)'}
+          </span>
+          <input className="witcher-input font-sans" type="number" min={0} step="0.01" value={form.prix}
+                 placeholder={fr ? 'Laissez vide pour donner' : 'Leave blank to give away'}
+                 onChange={(e) => setForm((p) => ({ ...p, prix: e.target.value }))} />
+        </label>
+      </div>
+      <label className="block">
+        <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
+          {fr ? 'Prix en Montpellois (facultatif)' : 'Price in Montpellois (optional)'}
+        </span>
+        <input className="witcher-input font-sans" type="number" min={0} step="1" value={form.prixMontpellois}
+               placeholder={fr ? 'Laissez vide pour vendre seulement en dollars' : 'Leave blank to sell in dollars only'}
+               onChange={(e) => setForm((p) => ({ ...p, prixMontpellois: e.target.value }))} />
+      </label>
+
+      {guildeFixe ? (
+        <p className="font-sans text-xs text-ivory-soft">
+          {fr ? 'Réservé à la guilde : ' : 'Reserved to the guild: '}<span className="text-brass">{guildeFixe.nom}</span>
+        </p>
+      ) : guildes.length > 0 ? (
+        <label className="block">
+          <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
+            {fr ? 'Réserver à ma guilde (facultatif)' : 'Reserve to my guild (optional)'}
+          </span>
+          <select className="witcher-input font-sans" value={guildeId}
+                  onChange={(e) => setGuildeId(e.target.value)}>
+            <option value="">{fr ? 'Aucune, Souk public' : 'None, public Souk'}</option>
+            {guildes.map((g) => <option key={g.id} value={g.id}>{g.nom}</option>)}
+          </select>
+        </label>
+      ) : null}
+
+      {(guildeFixe?.id || guildeId) && (
+        <label className="block">
+          <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
+            {fr ? `Prix en ${nomPieces} (guilde)` : `Price in ${nomPieces} (guild)`}
+          </span>
+          <input className="witcher-input font-sans" type="number" min={0} step="1" value={form.prixPieces}
+                 onChange={(e) => setForm((p) => ({ ...p, prixPieces: e.target.value }))} />
+        </label>
+      )}
+
+      <label className="block">
+        <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Catégorie' : 'Category'}</span>
+        <select className="witcher-input font-sans" value={form.categorie}
+                onChange={(e) => setForm((p) => ({ ...p, categorie: e.target.value as CategorieSouk }))}>
+          {(form.genre === 'service' ? CATEGORIES_SERVICE : CATEGORIES_OBJET).map((c) => (
+            <option key={c} value={c}>{CAT_LABEL[lang][c]}</option>
+          ))}
+        </select>
+      </label>
+      <label className="block">
+        <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Description' : 'Description'}</span>
+        <textarea className="witcher-input font-sans resize-y min-h-[80px]" rows={3} value={form.description}
+                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+      </label>
+      <PhotosPicker
+        lang={lang} max={MAX_PHOTOS_OBJET}
+        photosExistantes={[]} onRetirerExistante={() => {}}
+        nouvellesPhotos={photos} onChangeNouvelles={setPhotos}
+      />
+      {error && <p className="font-editorial italic text-xs text-blush">{error}</p>}
+      <button type="submit" disabled={busy}
+              className="witcher-prompt disabled:opacity-50" data-primary="true">
+        {busy ? (fr ? 'Envoi…' : 'Sending…') : (fr ? 'Mettre en vente' : 'List item')}
+      </button>
+    </form>
+  );
+};
+
+const MesObjets: React.FC<Props> = ({ uid, lang }) => {
+  const fr = lang === 'FR';
+  const [objets, setObjets] = useState<ObjetSouk[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => suivreObjetsDe(uid, setObjets), [uid]);
 
   const changerStatut = (id: string, statut: StatutSouk) => majObjetSouk(id, { statut });
   const retirer = (id: string) => {
@@ -131,72 +273,8 @@ const MesObjets: React.FC<Props> = ({ uid, lang }) => {
         </button>
       </div>
 
-      {showForm && (
-        <form onSubmit={onSubmit} className="glass-light rounded-lg-card p-5 md:p-6 space-y-4">
-          <DisclaimerSouk fr={fr} />
-          <label className="block">
-            <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Genre' : 'Kind'}</span>
-            <div className="flex gap-2">
-              {(['objet', 'service'] as GenreSouk[]).map((g) => (
-                <button key={g} type="button"
-                        onClick={() => setForm((p) => ({ ...p, genre: g, categorie: 'autre' }))}
-                        className={`px-4 py-2 rounded-card font-sans text-xs uppercase tracking-wider transition border ${
-                          form.genre === g ? 'bg-brass/20 border-brass text-brass' : 'border-ivory-soft/20 text-ivory-soft hover:border-brass/50 hover:text-brass'
-                        }`}>
-                  {g === 'objet' ? (fr ? 'Objet' : 'Item') : (fr ? 'Service' : 'Service')}
-                </button>
-              ))}
-            </div>
-          </label>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <label className="block">
-              <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Titre' : 'Title'}</span>
-              <input className="witcher-input font-sans" value={form.titre} maxLength={80}
-                     onChange={(e) => setForm((p) => ({ ...p, titre: e.target.value }))} required />
-            </label>
-            <label className="block">
-              <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
-                {fr ? 'Prix (CAD, facultatif)' : 'Price (CAD, optional)'}
-              </span>
-              <input className="witcher-input font-sans" type="number" min={0} step="0.01" value={form.prix}
-                     placeholder={fr ? 'Laissez vide pour donner' : 'Leave blank to give away'}
-                     onChange={(e) => setForm((p) => ({ ...p, prix: e.target.value }))} />
-            </label>
-          </div>
-          <label className="block">
-            <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">
-              {fr ? 'Prix en Montpellois (facultatif)' : 'Price in Montpellois (optional)'}
-            </span>
-            <input className="witcher-input font-sans" type="number" min={0} step="1" value={form.prixMontpellois}
-                   placeholder={fr ? 'Laissez vide pour vendre seulement en dollars' : 'Leave blank to sell in dollars only'}
-                   onChange={(e) => setForm((p) => ({ ...p, prixMontpellois: e.target.value }))} />
-          </label>
-          <label className="block">
-            <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Catégorie' : 'Category'}</span>
-            <select className="witcher-input font-sans" value={form.categorie}
-                    onChange={(e) => setForm((p) => ({ ...p, categorie: e.target.value as CategorieSouk }))}>
-              {(form.genre === 'service' ? CATEGORIES_SERVICE : CATEGORIES_OBJET).map((c) => (
-                <option key={c} value={c}>{CAT_LABEL[lang][c]}</option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="block font-display title-medieval text-xs text-brass mb-1.5 tracking-wider">{fr ? 'Description' : 'Description'}</span>
-            <textarea className="witcher-input font-sans resize-y min-h-[80px]" rows={3} value={form.description}
-                      onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
-          </label>
-          <PhotosPicker
-            lang={lang} max={MAX_PHOTOS_OBJET}
-            photosExistantes={[]} onRetirerExistante={() => {}}
-            nouvellesPhotos={photos} onChangeNouvelles={setPhotos}
-          />
-          {error && <p className="font-editorial italic text-xs text-blush">{error}</p>}
-          <button type="submit" disabled={busy}
-                  className="witcher-prompt disabled:opacity-50" data-primary="true">
-            {busy ? (fr ? 'Envoi…' : 'Sending…') : (fr ? 'Mettre en vente' : 'List item')}
-          </button>
-        </form>
-      )}
+      {showForm && <FormulaireSouk uid={uid} lang={lang} onDone={() => setShowForm(false)} />}
+      {error && <p className="font-editorial italic text-xs text-blush">{error}</p>}
 
       {objets.length === 0 ? (
         <p className="font-editorial italic text-sm text-ivory-soft">
