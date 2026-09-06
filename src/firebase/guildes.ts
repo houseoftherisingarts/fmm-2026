@@ -10,8 +10,8 @@
 //                    membres: string[], demandes: string[], nbMembres,
 //                    creeLe, maj }
 //
-// Storage (prévu, pas encore branché — aucun bouton de téléversement
-// pour l'instant) : guildes/{id}/blason.webp
+// Storage : guildes/{id}/blason.webp, guildes/{id}/banniere.webp et,
+// depuis le 6 septembre 2026, guildes/{id}/monnaie.webp (la pièce).
 
 import {
   collection, doc, setDoc, updateDoc, deleteDoc, getDoc, getDocs, onSnapshot,
