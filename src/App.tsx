@@ -600,6 +600,19 @@ const App: React.FC = () => (
                 <Route path="/en/espace-benevole"    element={<Navigate to="/en/volunteer-space" replace />} />
                 <Route path="/en/musique/inscription" element={<Navigate to="/en/music/registration" replace />} />
 
+                {/* ── L'adresse d'un groupe (Alex, 2026-09-06) ──────
+                    « all under /groupnameclan ». Ces quatre routes
+                    passent APRÈS toutes les routes nommées et AVANT la
+                    404 : elles n'attrapent donc que ce qu'aucune page
+                    du festival n'a réclamé. Toute nouvelle route de
+                    premier niveau doit s'ajouter à SLUGS_RESERVES dans
+                    src/firebase/guildes.ts, sinon un groupe pourrait
+                    prendre son adresse. */}
+                <Route path="/:slug"              element={<GuildeParSlug />} />
+                <Route path="/:slug/:onglet"      element={<GuildeParSlug />} />
+                <Route path="/en/:slug"           element={<GuildeParSlug />} />
+                <Route path="/en/:slug/:onglet"   element={<GuildeParSlug />} />
+
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
