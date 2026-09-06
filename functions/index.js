@@ -3188,3 +3188,10 @@ exports.stripeMontpellois = onRequest(
     }
   },
 );
+
+// ── La monnaie des guildes (docs/CLAN-MONNAIE-CONTRAT.md) ────────────
+// Tout vit dans functions/guildes.js, qui ne connaît du serveur que ce
+// qu'on lui passe ici : les deux seuls chemins qui bougent des
+// Montpellois, la base et la journée du festival. Le fichier reste
+// ainsi rejouable en mémoire par functions/test-guildes.js.
+Object.assign(exports, require('./guildes')({ db, FieldValue, crediter, debiter, journeeFestival }));

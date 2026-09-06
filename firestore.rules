@@ -863,7 +863,7 @@ service cloud.firestore {
                                 && request.resource.data.nom.size() <= 60))
                         && (!('description' in request.resource.data.diff(resource.data).affectedKeys())
                             || (request.resource.data.description is string
-                                && request.resource.data.description.size() <= 2000))
+                                && request.resource.data.description.size() <= 1000))
                         && (!('forme' in request.resource.data.diff(resource.data).affectedKeys())
                             || request.resource.data.forme in
                                  ['clan', 'guilde', 'compagnie', 'confrerie', 'troupe', 'maisonnee', 'ordre'])

@@ -232,13 +232,43 @@ async function testNbOui() {
   assert.strictEqual((await db.collection('guildes').doc('g1').collection('evenements').doc('e1').get()).data().nbOui, 2, 'deux « oui » comptés');
 }
 
+// ── 8. L'agenda ICS : la clé protège, le format tient ────────────────
+async function testIcs() {
+  const { db, h } = monter();
+  await db.collection('guildes').doc('g1').set({ nom: 'Clan Test', codeInvitation: 'ABCDEFGH' });
+  await db.collection('guildes').doc('g1').collection('evenements').doc('e1').set({ titre: 'Feu; de joie', debut: Date.now(), fin: Date.now() + 3600000, lieu: 'Le Bosquet' });
+  const faireRes = () => {
+    const res = { code: 0, entetes: {}, corps: '' };
+    res.status = (c) => { res.code = c; return res; };
+    res.set = (k, v) => { res.entetes[k] = v; return res; };
+    res.send = (c) => { res.corps = c; return res; };
+    return res;
+  };
+
+  const refus = faireRes();
+  await h.ics({ query: { guilde: 'g1', cle: 'MAUVAIS1' } }, refus);
+  assert.strictEqual(refus.code, 403, 'une mauvaise clé ne donne pas l’agenda');
+
+  const ok = faireRes();
+  await h.ics({ query: { guilde: 'g1', cle: 'ABCDEFGH' } }, ok);
+  assert.strictEqual(ok.code, 200, 'la bonne clé rend l’agenda');
+  assert.match(ok.entetes['Content-Type'], /text\/calendar/, 'le type est text/calendar');
+  assert.match(ok.entetes['Cache-Control'], /max-age=300/, 'cinq minutes de cache');
+  assert.ok(ok.corps.startsWith('BEGIN:VCALENDAR\r\n'), 'les lignes sont séparées par CRLF');
+  assert.ok(ok.corps.includes('X-WR-CALNAME:Clan Test'), 'le nom de la guilde nomme l’agenda');
+  assert.ok(ok.corps.includes('UID:e1@festivalmedievaldemontpellier.org'), 'chaque événement porte son UID');
+  assert.ok(ok.corps.includes('SUMMARY:Feu\\; de joie'), 'le point-virgule est échappé');
+  assert.ok(/DTSTART:\d{8}T\d{6}Z/.test(ok.corps), 'DTSTART est en UTC');
+}
+
 (async () => {
   await testChange();
   await testEntreeIdempotente();
   await testVirement();
   await testFondation();
   await testNbOui();
-  console.log('taux, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui : tout tient.');
+  await testIcs();
+  console.log('taux, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS : tout tient.');
   console.log('functions/test-guildes.js : OK');
 })().catch((e) => {
   console.error('ÉCHEC :', e && e.message);
