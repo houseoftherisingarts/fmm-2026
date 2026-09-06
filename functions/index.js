@@ -3102,8 +3102,14 @@ exports.acheterMontpelloisLien = onCall(
           },
         }],
         // L'uid voyage dans les métadonnées : le webhook n'a que ça
-        // pour savoir quelle bourse remplir.
-        metadata: { uid, packId },
+        // pour savoir quelle bourse remplir. `entite` sépare la
+        // comptabilité : la caisse Stripe est celle du Salon des
+        // Inconnus, et ces encaissements-ci appartiennent au festival.
+        metadata: { uid, packId, entite: 'fmm' },
+        // La métadonnée de la session ne suit pas jusqu'au paiement, et
+        // c'est le paiement que lit l'export comptable. Elle se repose
+        // donc sur le paiement lui-même.
+        payment_intent_data: { metadata: { uid, packId, entite: 'fmm' } },
         client_reference_id: uid,
         success_url: `${RETOUR_BOUTIQUE}?recharge=ok`,
         cancel_url: `${RETOUR_BOUTIQUE}?recharge=annulee`,
