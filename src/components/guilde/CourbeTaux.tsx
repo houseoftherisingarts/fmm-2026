@@ -7,11 +7,13 @@ import type { Lang } from '../../content';
 // Une courbe tracée à la main en SVG, sans librairie : trente points au
 // plus, un tracé, une aire, et les trois repères de la formule posés en
 // filets horizontaux. Le cours monte avec le nombre de membres actifs,
-// entre un demi Montpellois et deux.
+// entre un demi Montpellois et deux. La boîte est large (640 sur 120)
+// parce que la carte du cours occupe sept colonnes sur douze depuis le
+// 6 septembre 2026 : un tracé étroit étiré aurait grossi les chiffres.
 
-const LARGEUR = 320;
-const HAUTEUR = 88;
-const MARGE = 4;
+const LARGEUR = 640;
+const HAUTEUR = 120;
+const MARGE = 6;
 const TAUX_MIN = 0.5;
 const TAUX_MAX = 2;
 
@@ -67,7 +69,7 @@ const CourbeTaux: React.FC<{
             <text
               x={LARGEUR - MARGE} y={enY(a.taux) - 4} textAnchor="end"
               fill="rgba(var(--sk-parchment-rgb),0.42)"
-              style={{ fontFamily: 'var(--font-sans)', fontSize: 9, letterSpacing: '0.18em' }}
+              style={{ fontFamily: 'var(--font-sans)', fontSize: 10, letterSpacing: '0.18em' }}
             >
               {a.taux}
             </text>
@@ -75,8 +77,8 @@ const CourbeTaux: React.FC<{
         ))}
 
         <path d={aire} fill="url(#courbe-taux-aire)" />
-        <path d={trace} fill="none" stroke="var(--sk-gilt)" strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
-        {dernier && <circle cx={dernier[0]} cy={dernier[1]} r="3.5" fill="var(--sk-gilt)" />}
+        <path d={trace} fill="none" stroke="var(--sk-gilt)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        {dernier && <circle cx={dernier[0]} cy={dernier[1]} r="4" fill="var(--sk-gilt)" />}
       </svg>
 
       <p className="font-sans text-[11px] leading-relaxed mt-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
