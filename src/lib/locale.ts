@@ -59,6 +59,7 @@ const EN_TO_FR: Record<string, string> = Object.fromEntries(
 // `/{slug}/{onglet}`. Le nom du groupe ne se traduit pas, seul l'onglet
 // change de langue (contrat CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026).
 export const ONGLETS_GUILDE_FR_EN: Record<string, string> = {
+  vitrine: 'showcase',
   salon: 'chat',
   evenements: 'events',
   marche: 'market',
