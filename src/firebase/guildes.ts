@@ -15,7 +15,7 @@
 
 import {
   collection, doc, setDoc, updateDoc, deleteDoc, getDoc, getDocs, onSnapshot,
-  query, orderBy, where, arrayUnion, arrayRemove, increment, serverTimestamp,
+  query, orderBy, where, limit, arrayUnion, arrayRemove, increment, serverTimestamp,
   type Timestamp,
 } from 'firebase/firestore';
 import { db, storage } from '../firebase';
