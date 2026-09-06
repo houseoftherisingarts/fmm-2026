@@ -2978,6 +2978,47 @@ exports.badgeMontpelloisEtTrouvaille = onDocumentWritten(
   },
 );
 
+// ── Votez avec votre portefeuille (Alex, 2026-09-06) ─────────────────
+// « Où voulez-vous voir votre argent travailler l'an prochain ? » Le
+// membre mise des Montpellois sur une des six enveloppes; le serveur
+// débite sa bourse et tient les compteurs. Les dollars, eux, passent
+// par Zeffy et ne touchent pas ce chemin.
+//
+// La liste doit rester la JUMELLE de CATEGORIES_BUDGET dans
+// src/content/budgetVotes.ts : une case ajoutée d'un seul côté est une
+// case morte de l'autre.
+const CATEGORIES_BUDGET = ['pourboires', 'musique', 'animations', 'village', 'bouffe', 'reseau'];
+/** Le plafond d'une mise, pour qu'une faute de frappe ne vide pas une bourse. */
+const MISE_BUDGET_MAX = 1000;
+
+exports.voterBudget = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour miser.');
+  const categorie = String((requete.data || {}).categorie || '');
+  const montant = Math.floor(Number((requete.data || {}).montant));
+  if (!CATEGORIES_BUDGET.includes(categorie)) throw new HttpsError('invalid-argument', 'Enveloppe inconnue.');
+  if (!Number.isFinite(montant) || montant < 1 || montant > MISE_BUDGET_MAX) {
+    throw new HttpsError('invalid-argument', 'Montant hors barème.');
+  }
+  // ponytail : le débit passe d'abord, les compteurs ensuite, comme
+  // pour tous les achats de la boutique. Si l'écriture des compteurs
+  // échouait, les pièces seraient parties sans que la mise paraisse.
+  // Une transaction qui tiendrait les trois documents réglerait ça le
+  // jour où le volume le justifie.
+  const solde = await debiter(uid, montant);
+  const totauxRef = db.collection('votesBudget').doc('totaux');
+  await totauxRef.set({
+    montpellois: { [categorie]: FieldValue.increment(montant) },
+    mises:       { [categorie]: FieldValue.increment(1) },
+    maj: FieldValue.serverTimestamp(),
+  }, { merge: true });
+  await totauxRef.collection('membres').doc(uid).set({
+    [categorie]: FieldValue.increment(montant),
+    maj: FieldValue.serverTimestamp(),
+  }, { merge: true });
+  return { solde };
+});
+
 // ── La bourse publique (Alex, 2026-08-28) ────────────────────────────
 // « La personne peut choisir si elle met sa bourse publique ou privée.
 // Quand elle la montre, elle gagne un badge rigolo. » Le drapeau passe

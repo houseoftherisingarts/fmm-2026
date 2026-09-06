@@ -82,6 +82,10 @@ const SoukPage             = lazy(() => import('./pages/SoukPage'));
 const ChantierPage         = lazy(() => import('./chantier/ChantierPage'));
 const VotesBancEssai       = lazy(() => import('./chantier/VotesBancEssai'));
 const SoukBancEssai        = lazy(() => import('./chantier/SoukBancEssai'));
+// La proposition au conseil : « Votez avec votre portefeuille », hors
+// des menus et derrière un mot de passe partagé, le temps qu'Alex la
+// montre au conseil (2026-09-06).
+const PropositionCATestPage = lazy(() => import('./pages/PropositionCATestPage'));
 const GuildesPage          = lazy(() => import('./pages/GuildesPage'));
 const GuildePage           = lazy(() => import('./pages/GuildePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
@@ -483,6 +487,8 @@ const App: React.FC = () => (
                 <Route path="/chantier/votes"    element={<VotesBancEssai />} />
                 <Route path="/en/chantier/votes" element={<VotesBancEssai />} />
                 <Route path="/chantier/souk"    element={<SoukBancEssai />} />
+                <Route path="/propositionCAtest"    element={<PropositionCATestPage />} />
+                <Route path="/en/propositionCAtest" element={<PropositionCATestPage />} />
                 <Route path="/en/chantier/souk" element={<SoukBancEssai />} />
                 <Route path="/souk"    element={<SoukPage />} />
                 <Route path="/en/souk" element={<SoukPage />} />

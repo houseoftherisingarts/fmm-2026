@@ -832,6 +832,23 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Votez avec votre portefeuille (Alex, 2026-09-06) ─────────
+    // Les totaux se lisent par tout le monde : la page les montre même
+    // à qui n'est pas connecté. Ils ne s'écrivent que depuis la
+    // fonction `voterBudget`, qui débite la bourse dans le même geste.
+    // Un navigateur qui pourrait écrire ici gonflerait son enveloppe
+    // préférée sans payer une pièce.
+    match /votesBudget/{docId} {
+      allow read:  if true;
+      allow write: if false;
+    }
+    // Ce qu'un membre a misé, enveloppe par enveloppe. Personne d'autre
+    // ne le lit, sauf l'équipe.
+    match /votesBudget/{docId}/membres/{uid} {
+      allow read:  if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
     // ── Le parrainage (Alex, 2026-08-28) ─────────────────────────
     // La table d'unicité des codes : chacun réserve le sien, personne
     // ne réécrit celui d'un autre.
