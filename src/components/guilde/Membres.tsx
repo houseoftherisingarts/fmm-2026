@@ -355,7 +355,7 @@ const FondateurLigne: React.FC<{
   return (
     <Ligne className="flex-wrap">
       <Medaillon nom={nom} pale />
-      <span className="min-w-0 flex-1">
+      <span className="min-w-[150px] flex-1">
         <span className="block font-sans text-sm truncate" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>{nom}</span>
         <span className="block font-sans text-[10px] uppercase tracking-widest" style={{ color: 'rgba(var(--sk-parchment-rgb),0.38)' }}>
           {fr ? 'En attente' : 'Awaiting'}{chef ? ` · ${motDuChef(guilde.forme, lang)}` : ''}
