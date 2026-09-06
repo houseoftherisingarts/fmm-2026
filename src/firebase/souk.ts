@@ -221,13 +221,32 @@ export function suivreObjetsDe(uid: string, cb: (objets: ObjetSouk[]) => void): 
   }, () => cb([]));
 }
 
-/** Tout le Souk, pour la page publique /souk (lecture ponctuelle). */
+/** Tout le Souk public, pour la page /souk (lecture ponctuelle). Les
+ *  objets réservés à une guilde (guildeId posé) n'y paraissent jamais :
+ *  filtre client, la requête reste inchangée pour éviter un index. */
 export async function listerSouk(): Promise<ObjetSouk[]> {
   if (!db) return [];
   const snap = await getDocs(collection(db, SOUK_COLL));
-  const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as object) } as ObjetSouk));
+  const rows = snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as object) } as ObjetSouk))
+    .filter((o) => !o.guildeId);
   rows.sort((a, b) => (b.creeLe?.toMillis?.() || 0) - (a.creeLe?.toMillis?.() || 0));
   return rows;
+}
+
+/** Le Marché d'une guilde, en direct : les objets qui portent son
+ *  guildeId, ni vendus (statut filtré côté client), les plus récents
+ *  d'abord. */
+export function suivreSoukDeGuilde(guildeId: string, cb: (objets: ObjetSouk[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  const q = query(collection(db, SOUK_COLL), where('guildeId', '==', guildeId));
+  return onSnapshot(q, (snap) => {
+    const rows = snap.docs
+      .map((d) => ({ id: d.id, ...(d.data() as object) } as ObjetSouk))
+      .filter((o) => o.statut !== 'vendu');
+    rows.sort((a, b) => (b.creeLe?.toMillis?.() || 0) - (a.creeLe?.toMillis?.() || 0));
+    cb(rows);
+  }, () => cb([]));
 }
 
 // ─── Commerce ─────────────────────────────────────────────────────────

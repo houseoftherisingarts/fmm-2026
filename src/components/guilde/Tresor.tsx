@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeftRight, Loader2, Send, Vault, ScrollText } from 'lucide-react';
-import PieceMontpellois from '../boutique/PieceMontpellois';
 import CourbeTaux from './CourbeTaux';
 import { formatPieces, nomMonnaie, type Guilde } from '../../firebase/guildes';
 import type { Membre } from '../../firebase/ordre';
@@ -434,7 +433,7 @@ const FormulaireVirement: React.FC<{
   }
 
   return (
-    <Cadre titre={fr ? 'Virer des pièces' : 'Send coins'} icone={<PieceMontpellois size={12} />}>
+    <Cadre titre={fr ? 'Virer des pièces' : 'Send coins'} icone={<Send size={12} />}>
       {corps}
     </Cadre>
   );
