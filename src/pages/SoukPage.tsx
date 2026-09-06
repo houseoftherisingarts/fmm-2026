@@ -165,7 +165,7 @@ const GrilleObjets: React.FC<{ lang: 'FR' | 'EN'; uid: string }> = ({ lang, uid 
   );
 };
 
-export const CarteObjet: React.FC<{ o: ObjetSouk; lang: 'FR' | 'EN' }> = ({ o, lang }) => {
+export const CarteObjet: React.FC<{ objet: ObjetSouk; lang: 'FR' | 'EN'; boutonAcheter?: React.ReactNode }> = ({ objet: o, lang, boutonAcheter }) => {
   const fr = lang === 'FR';
   const { user } = useAuth();
   const [enCours, setEnCours] = useState(false);
