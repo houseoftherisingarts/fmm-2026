@@ -1372,6 +1372,22 @@ service cloud.firestore {
                && request.resource.data.get('prixMontpellois', 0) >= 0
                && request.resource.data.get('prixMontpellois', 0) <= 100000;
       }
+      // Le prix en pièces de guilde suit le même patron que le prix en
+      // Montpellois (contrat CLAN-MONNAIE-CONTRAT.md, 6 sept 2026).
+      function prixPiecesValide() {
+        return !('prixPieces' in request.resource.data)
+               || (request.resource.data.prixPieces is int
+                   && request.resource.data.prixPieces >= 0
+                   && request.resource.data.prixPieces <= 100000);
+      }
+      // Une annonce marquée guildeId n'est postée que par un membre de
+      // cette guilde (get() sur la fiche de guilde).
+      function guildeIdValide() {
+        return !('guildeId' in request.resource.data)
+               || (request.resource.data.guildeId is string
+                   && request.auth.uid in
+                        get(/databases/$(database)/documents/guildes/$(request.resource.data.guildeId)).data.membres);
+      }
       allow read:   if signedIn();
       allow create: if signedIn()
                     && request.resource.data.uid == request.auth.uid
@@ -1382,11 +1398,15 @@ service cloud.firestore {
                     // sans prix ni Montpellois, l'objet est donné.
                     && request.resource.data.get('prix', 0) is number
                     && request.resource.data.get('prix', 0) >= 0
-                    && prixMontpelloisValide();
+                    && prixMontpelloisValide()
+                    && prixPiecesValide()
+                    && guildeIdValide();
       allow update: if isAdmin()
                     || (signedIn() && resource.data.uid == request.auth.uid
                         && request.resource.data.uid == resource.data.uid
-                        && prixMontpelloisValide());
+                        && prixMontpelloisValide()
+                        && prixPiecesValide()
+                        && guildeIdValide());
       allow delete: if isAdmin()
                     || (signedIn() && resource.data.uid == request.auth.uid);
     }
