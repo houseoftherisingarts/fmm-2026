@@ -292,12 +292,25 @@ export async function quitterGuilde(id: string, uid: string): Promise<void> {
   });
 }
 
-/** Réservé à l'équipe ou à un admin de la guilde (voir firestore.rules). */
-export async function modifierGuilde(id: string, patch: { nom?: string; description?: string; blason?: string; banniereUrl?: string; forme?: FormeGuilde }): Promise<void> {
+/** Réservé à l'équipe ou à un admin de la guilde (voir firestore.rules).
+ *
+ *  Les champs autres que le nom et la description ne partaient pas :
+ *  `changerBlason` et `changerBanniereGuilde` posaient l'image dans le
+ *  stockage, puis n'écrivaient que `maj`, et le portrait de la guilde
+ *  restait vide. Même chose pour la forme choisie dans le panneau
+ *  d'édition. La boucle ci-dessous répare les trois d'un coup. */
+export async function modifierGuilde(id: string, patch: {
+  nom?: string; description?: string; blason?: string; banniereUrl?: string;
+  forme?: FormeGuilde; slug?: string; monnaie?: MonnaieGuilde;
+  membresFondateurs?: FondateurAttendu[];
+}): Promise<void> {
   if (!db) return;
   const data: Record<string, unknown> = { maj: serverTimestamp() };
   if (patch.nom !== undefined) data.nom = patch.nom.trim().slice(0, LONGUEUR_NOM_MAX);
   if (patch.description !== undefined) data.description = patch.description.trim().slice(0, LONGUEUR_DESCRIPTION_MAX);
+  for (const cle of ['forme', 'blason', 'banniereUrl', 'slug', 'monnaie', 'membresFondateurs'] as const) {
+    if (patch[cle] !== undefined) data[cle] = patch[cle];
+  }
   await updateDoc(doc(db, COL, id), data as never);
 }
 
