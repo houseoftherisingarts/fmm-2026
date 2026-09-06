@@ -374,8 +374,8 @@ const Depot: React.FC<{ guildeId: string; uid: string; dossiers: string[]; fr: b
       <p className="witcher-stat-label inline-flex items-center gap-2 mb-1.5"><Upload size={12} /> {fr ? 'Déposer un document' : 'Drop a document'}</p>
       <p className="font-sans text-[11px] mb-4" style={sourdine}>
         {fr
-          ? 'PDF, image, Word, Excel, PowerPoint, texte ou zip, jusqu’à 25 Mo. Seuls les membres le voient.'
-          : 'PDF, image, Word, Excel, PowerPoint, text or zip, up to 25 MB. Only members see it.'}
+          ? 'Un PDF, une image, un document Office, un texte ou un zip passent, jusqu’à 25 Mo. Seuls les membres le voient.'
+          : 'A PDF, an image, an Office document, a text file or a zip will do, up to 25 MB. Only members see it.'}
       </p>
 
       <label className="block mb-3">
