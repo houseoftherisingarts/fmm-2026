@@ -396,7 +396,10 @@ service cloud.firestore {
                         // un membre nomme lui-même qui l'a promu.
                         && !('rolesPar' in request.resource.data)
                         && !('rolesParEmail' in request.resource.data)
-                        && !('rolesLe' in request.resource.data));
+                        && !('rolesLe' in request.resource.data)
+                        // Le compteur de guildes fondées (CLAN-MONNAIE-CONTRAT.md,
+                        // 6 sept 2026) : posé et incrémenté par le serveur seulement.
+                        && !('guildesFondees' in request.resource.data));
       // `tags` suit exactement le sort de `roles` : les étiquettes de
       // groupe (viking, marchand du dimanche, municipalité) servent à
       // former les listes d'envoi de l'équipe, et personne ne se les
@@ -405,9 +408,16 @@ service cloud.firestore {
                     || (isOwner(uid)
                         // `verifie` (le badge bleu, Alex 2026-08-28) suit le même sort,
                         // et `vip` aussi : le serveur le pose quand users.sansPub passe à vrai.
+                        // `guildesFondees` : le serveur seul l'incrémente à la
+                        // fondation d'une guilde.
                         && !request.resource.data.diff(resource.data).affectedKeys()
                               .hasAny(['roles', 'tags', 'verifie', 'vip',
-                                       'rolesPar', 'rolesParEmail', 'rolesLe']));
+                                       'rolesPar', 'rolesParEmail', 'rolesLe',
+                                       'guildesFondees'])
+                        // `vuLe` (présence, sert à compter les actifs de guilde) :
+                        // le propriétaire seul la pose, et seulement un timestamp.
+                        && (!('vuLe' in request.resource.data.diff(resource.data).affectedKeys())
+                            || request.resource.data.vuLe is timestamp));
       allow delete: if isAdmin();
     }
 
