@@ -856,7 +856,23 @@ service cloud.firestore {
                                 && request.resource.data.monnaie.glyphe is string))
                         && (!('membresFondateurs' in request.resource.data.diff(resource.data).affectedKeys())
                             || (request.resource.data.membresFondateurs is list
-                                && request.resource.data.membresFondateurs.size() <= 50)))
+                                && request.resource.data.membresFondateurs.size() <= 50))
+                        && (!('nom' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.nom is string
+                                && request.resource.data.nom.size() >= 2
+                                && request.resource.data.nom.size() <= 60))
+                        && (!('description' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.description is string
+                                && request.resource.data.description.size() <= 2000))
+                        && (!('forme' in request.resource.data.diff(resource.data).affectedKeys())
+                            || request.resource.data.forme in
+                                 ['clan', 'guilde', 'compagnie', 'confrerie', 'troupe', 'maisonnee', 'ordre'])
+                        && (!('blason' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.blason is string
+                                && request.resource.data.blason.size() <= 500))
+                        && (!('banniereUrl' in request.resource.data.diff(resource.data).affectedKeys())
+                            || (request.resource.data.banniereUrl is string
+                                && request.resource.data.banniereUrl.size() <= 500)))
                     || (signedIn()
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['demandes', 'maj'])
                         && request.resource.data.demandes.removeAll(resource.data.demandes).hasOnly([request.auth.uid])
