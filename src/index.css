@@ -2677,3 +2677,16 @@ a:hover > .fmm-annee-carte::after {
 @media (prefers-reduced-motion: reduce) {
   .fmm-section-attente { opacity: 1; transform: none; }
 }
+
+/* FAQ de la page Billets : la réponse arrive en fondu à l'ouverture du
+   <details>. Le pliage lui-même reste natif. */
+.fmm-faq[open] .fmm-faq-reponse {
+  animation: fmm-faq-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes fmm-faq-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fmm-faq[open] .fmm-faq-reponse { animation: none; }
+}

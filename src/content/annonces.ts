@@ -90,6 +90,23 @@ const TOUTES: Annonce[] = [
       'Breaking these rules may lead to the weapon being taken away or to expulsion from the site.',
     ],
   },
+  // Le billet d'une journée porte la date d'ouverture du festival, et des
+  // acheteurs la prennent pour la journée achetée (Alex, 2026-09-06).
+  // Épinglé : l'avis doit rester lisible jusqu'au festival, et il ne
+  // compte pas dans les quatre avis à collectionner. La même réponse vit
+  // dans la FAQ de la page Billets (src/content/faq.json).
+  {
+    id:   'billet-un-jour-2026',
+    tone: 'info',
+    date: '2026-09-06',
+    permanent: true,
+    titleFR: 'Votre billet d’une journée vaut pour le jour de votre choix',
+    titleEN: 'Your one-day ticket is good for the day you choose',
+    bodyFR:
+      'Sur les billets d’une journée, Zeffy imprime la date d’ouverture du festival, le vendredi 25 septembre. Cette date marque le début de l’événement et non la journée que vous avez achetée. Un billet d’une journée vous ouvre les portes le vendredi, le samedi ou le dimanche, selon ce qui vous arrange. Présentez-le à l’entrée le jour venu, tel quel.',
+    bodyEN:
+      'On one-day tickets, Zeffy prints the festival’s opening date, Friday 25 September. That date marks the start of the event, not the day you bought. A one-day ticket lets you in on Friday, Saturday or Sunday, whichever suits you. Show it at the gate on the day you come, as it is.',
+  },
   {
     id:   'no-dogs-2026',
     tone: 'alerte',

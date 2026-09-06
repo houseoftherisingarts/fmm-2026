@@ -1,0 +1,65 @@
+[
+  {
+    "id": "dates",
+    "qFR": "Quand a lieu le Festival Médiéval de Montpellier 2026 ?",
+    "qEN": "When does the 2026 Festival Médiéval de Montpellier take place?",
+    "rFR": "Du vendredi 25 au dimanche 27 septembre 2026. Le vendredi, le site est ouvert de 16 h 30 à 20 h et les portes ouvrent à 17 h. Le samedi, de 9 h 30 à 19 h, portes à 10 h. Le dimanche, de 9 h 30 à 16 h, portes à 10 h.",
+    "rEN": "From Friday 25 to Sunday 27 September 2026. On Friday the grounds are open from 4:30 pm to 8 pm and the gates open at 5 pm. On Saturday, 9:30 am to 7 pm, gates at 10 am. On Sunday, 9:30 am to 4 pm, gates at 10 am."
+  },
+  {
+    "id": "prix",
+    "qFR": "Combien coûtent les billets ?",
+    "qEN": "How much are tickets?",
+    "rFR": "Une journée : enfant 20 $, adulte 35 $, famille 90 $. Trois jours : enfant 25 $, adulte 55 $, famille 125 $. Ce sont les montants affichés sur Zeffy. Le banquet médiéval se vend à part, 65 $ plus taxes. Tout s’achète en ligne sur Zeffy, qui ne prélève aucune commission.",
+    "rEN": "One day: child $20, adult $35, family $90. Three days: child $25, adult $55, family $125. These are the amounts shown on Zeffy. The medieval banquet is sold separately, $65 plus tax. Everything is sold online through Zeffy, which takes no commission."
+  },
+  {
+    "id": "billet-un-jour",
+    "qFR": "Mon billet d’une journée indique le vendredi 25 septembre. Puis-je venir samedi ou dimanche ?",
+    "qEN": "My one-day ticket says Friday 25 September. Can I come on Saturday or Sunday?",
+    "rFR": "Oui. Zeffy imprime la date d’ouverture du festival sur tous les billets d’une journée, et cette date ne dit pas quel jour vous avez acheté. Votre billet vous ouvre les portes le vendredi, le samedi ou le dimanche, une seule fois, le jour que vous choisissez.",
+    "rEN": "Yes. Zeffy prints the festival’s opening date on every one-day ticket, and that date does not say which day you bought. Your ticket lets you in on Friday, Saturday or Sunday, once, on the day you choose."
+  },
+  {
+    "id": "lieu",
+    "qFR": "Où se déroule le festival ?",
+    "qEN": "Where is the festival held?",
+    "rFR": "Le festival se tient au 4, rue du Bosquet, à Montpellier, dans la Petite-Nation en Outaouais. Ottawa et Gatineau sont à environ 75 minutes de route. Il s’agit bien de Montpellier au Québec.",
+    "rEN": "The festival is held at 4 rue du Bosquet in Montpellier, in the Petite-Nation area of the Outaouais. Ottawa and Gatineau are about 75 minutes away by road. This is Montpellier in Québec."
+  },
+  {
+    "id": "camping",
+    "qFR": "Peut-on camper sur place ?",
+    "qEN": "Can we camp on site?",
+    "rFR": "Oui. Le camping festivalier se réserve sur Zeffy : 20 $ pour une tente et 40 $ pour une caravane. La page Hébergement présente aussi les hébergements partenaires de la Petite-Nation.",
+    "rEN": "Yes. Festival camping is booked on Zeffy: $20 for a tent and $40 for a trailer. The Lodging page also lists the partner lodgings of the Petite-Nation."
+  },
+  {
+    "id": "imprimer",
+    "qFR": "Faut-il imprimer son billet ?",
+    "qEN": "Should I print my ticket?",
+    "rFR": "Nous vous le conseillons. Le réseau cellulaire est faible sur le site et il n’y a pas de Wi-Fi public à l’entrée. Imprimez votre confirmation Zeffy à la maison ou téléchargez-la sur votre appareil avant de partir.",
+    "rEN": "We recommend it. Cell coverage is weak on site and there is no public Wi-Fi at the gate. Print your Zeffy confirmation at home or download it to your device before you leave."
+  },
+  {
+    "id": "chiens",
+    "qFR": "Les chiens sont-ils admis ?",
+    "qEN": "Are dogs allowed?",
+    "rFR": "Non, même en laisse. Des chevaux sont présents pendant tout le festival et notre couverture d’assurance tombe dès qu’un chien s’en approche.",
+    "rEN": "No, not even on a leash. Horses are on site for the whole festival and our insurance coverage lapses the moment a dog comes near them."
+  },
+  {
+    "id": "comptant",
+    "qFR": "Peut-on payer par carte sur le site ?",
+    "qEN": "Can I pay by card on site?",
+    "rFR": "Les terminaux deviennent capricieux quand le réseau faiblit, surtout aux heures de pointe. Apportez du comptant pour les kiosques, la nourriture et le bar. Le kiosque de la Petite Monnaie, à l’entrée, échange votre comptant contre la monnaie locale acceptée partout sur le site.",
+    "rEN": "Card terminals get temperamental when the network weakens, especially at peak hours. Bring cash for the kiosks, the food and the bar. The Petite Monnaie kiosk at the entrance trades your cash for the local currency accepted everywhere on the grounds."
+  },
+  {
+    "id": "bilingue",
+    "qFR": "Le festival est-il bilingue ?",
+    "qEN": "Is the festival bilingual?",
+    "rFR": "Oui. Le site web et le festival se vivent en français et en anglais.",
+    "rEN": "Yes. The website and the festival run in French and in English."
+  }
+]

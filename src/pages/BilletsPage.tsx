@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Ticket, Tent } from 'lucide-react';
+import { ArrowUpRight, Ticket, Tent, HelpCircle, ChevronDown } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -10,6 +10,7 @@ import { Eyebrow, DisplayTitle, SectionFog, SectionTopRail } from '../components
 import {
   BILLETS, displayAmount, formatAmount, showBeforeTax, carteFond, type Billet,
 } from '../content/billets';
+import FAQ from '../content/faq.json';
 import { useAuth } from '../contexts/AuthContext';
 import { lienBilletterie, ouvrirBilletterie, surchargeBillet, tarifMembre } from '../lib/billetterie';
 
@@ -64,6 +65,54 @@ const BilletsPage: React.FC = () => {
 
       <Section index="02" name={t.campingRail} title={t.campingTitle} lead={t.campingLead} icon={Tent}>
         <Deck billets={camping} lang={lang} t={t} href={ZEFFY_CAMPING} />
+      </Section>
+
+      {/* Questions fréquentes. Une seule source (src/content/faq.json)
+          nourrit cette liste ET le bloc JSON-LD FAQPage d'index.html
+          (tools/faq-jsonld.mjs) : Google veut que le balisage reflète un
+          contenu visible. Un <details> natif fait le pliage, sans état ni
+          bibliothèque; l'ancre #questions sert aux liens externes. */}
+      <Section index="03" name={t.faqRail} title={t.faqTitle} lead={t.faqLead} icon={HelpCircle}>
+        <div
+          id="questions"
+          className="max-w-3xl mx-auto scroll-mt-28"
+          style={{ borderTop: '1px solid rgba(var(--sk-mustard-rgb), 0.22)' }}
+        >
+          {FAQ.map((q, i) => (
+            <details
+              key={q.id}
+              className="group fmm-faq"
+              style={{ borderBottom: '1px solid rgba(var(--sk-mustard-rgb), 0.22)' }}
+            >
+              <summary className="list-none cursor-pointer flex items-start gap-4 md:gap-6 py-5 md:py-6 [&::-webkit-details-marker]:hidden">
+                <span
+                  className="font-display title-medieval text-[11px] tracking-[0.3em] shrink-0 pt-1.5 tabular-nums"
+                  style={{ color: 'var(--color-copper)' }}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="flex-1 min-w-0 font-display title-medieval text-lg md:text-xl leading-snug text-ivory transition-colors duration-300 group-open:text-brass">
+                  {fr ? q.qFR : q.qEN}
+                </span>
+                <ChevronDown
+                  size={18}
+                  strokeWidth={1.6}
+                  aria-hidden
+                  className="shrink-0 mt-1.5 transition-transform duration-300 ease-out group-open:rotate-180"
+                  style={{ color: 'var(--color-copper)' }}
+                />
+              </summary>
+              <div className="fmm-faq-reponse pb-6 md:pb-7 pl-9 md:pl-12 pr-8">
+                <p
+                  className="font-sans text-base md:text-lg leading-[1.75] max-w-[68ch]"
+                  style={{ color: 'rgba(var(--sk-parchment-rgb), 0.8)', fontWeight: 300 }}
+                >
+                  {fr ? q.rFR : q.rEN}
+                </p>
+              </div>
+            </details>
+          ))}
+        </div>
       </Section>
 
       <section className="relative caravan-stage bleed-edges pb-24 md:pb-32">
@@ -328,6 +377,9 @@ const FR = {
   campingRail:  'Camping',
   campingTitle: 'Dormir sur place',
   campingLead:  'Un emplacement sur le terrain du festival, pour se réveiller au son des forges.',
+  faqRail:      'Questions',
+  faqTitle:     'Questions fréquentes',
+  faqLead:      'Les réponses aux questions que les festivaliers nous posent le plus souvent avant de partir.',
   eyebrowCarte: 'Billet',
   devoiler: 'Toucher pour dévoiler',
   retourner: 'Retourner la carte',
@@ -349,6 +401,9 @@ const EN: typeof FR = {
   campingRail:  'Camping',
   campingTitle: 'Sleep on site',
   campingLead:  'A pitch on the festival grounds, to wake up to the sound of the forges.',
+  faqRail:      'Questions',
+  faqTitle:     'Frequently asked questions',
+  faqLead:      'Answers to the questions festival-goers ask us most often before they set out.',
   eyebrowCarte: 'Ticket',
   devoiler: 'Tap to reveal',
   retourner: 'Flip back',
