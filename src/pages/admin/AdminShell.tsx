@@ -135,6 +135,8 @@ export const NAV: NavItem[] = [
   { id: 'bugs',       label: 'Bugs',            icon: Bug,             group: 'Régie' },
   // Super-admin-only section: assign/revoke admin roles for everyone else.
   { id: 'roles',      label: 'Rôles admin',     icon: ShieldCheck,     group: 'Régie' },
+  // Le formulaire de demande de Vexel Webstudio, encadré dans l'admin.
+  { id: 'demandeVexel', label: 'Demander un changement', icon: Wrench, group: 'Régie' },
 ];
 
 const ALL_SECTION_IDS: AdminSectionId[] = NAV.map((n) => n.id);
