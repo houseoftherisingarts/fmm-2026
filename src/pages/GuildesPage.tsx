@@ -34,13 +34,28 @@ const GuildesPage: React.FC = () => {
   const [creation, setCreation] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
 
+  // L'adresse du groupe se lit pendant qu'on tape le nom, et sa
+  // disponibilité se vérifie une fois la frappe retombée : personne ne
+  // remplit le formulaire au complet pour se faire dire à la fin que
+  // l'adresse est prise (Alex, 2026-09-06).
+  const adresse = slugDeGuilde(nom, forme);
+  const [libre, setLibre] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (nom.trim().length < 2) { setLibre(null); return; }
+    setLibre(null);
+    const t = window.setTimeout(() => {
+      void slugDisponible(adresse).then(setLibre).catch(() => setLibre(null));
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [adresse, nom]);
+
   const fonder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     setCreation(true); setErreur(null);
     try {
-      const id = await creerGuilde({ uid: user.uid, nom, description, forme });
-      navigate(`${addLocale('/guildes', lang)}/${id}`);
+      const { slug } = await creerGuilde({ uid: user.uid, nom, description, forme });
+      navigate(addLocale(`/${slug}`, lang));
     } catch (err) {
       setErreur(err instanceof Error ? err.message : String(err));
     } finally { setCreation(false); }
