@@ -102,7 +102,11 @@ function translatePrefix(pathname: string, keys: string[], map: Record<string, s
 export function stripLocale(pathname: string): string {
   if (pathname === '/en') return '/';
   if (pathname.startsWith('/en/')) {
-    return translatePrefix(pathname.slice(3), EN_KEYS, EN_TO_FR);
+    const sansPrefixe = pathname.slice(3);
+    const traduit = translatePrefix(sansPrefixe, EN_KEYS, EN_TO_FR);
+    return traduit === sansPrefixe
+      ? traduireOngletGuilde(sansPrefixe, ONGLETS_GUILDE_EN_FR)
+      : traduit;
   }
   return pathname;
 }
