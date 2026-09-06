@@ -85,7 +85,7 @@ const Membres: React.FC<{
     >
       <Medaillon nom={nomDe(m)} url={fiches[m]?.avatarUrl} hue={fiches[m]?.avatarHue} taille={64} />
       <span className="min-w-0 w-full">
-        <span className="block font-display text-base text-ivory truncate">{nomDe(m)}</span>
+        <span className="block font-display text-base text-ivory leading-snug line-clamp-2 break-words">{nomDe(m)}</span>
         {fiches[m]?.ville && (
           <span className="block font-sans text-[11px] truncate mt-0.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
             {fiches[m]?.ville}
