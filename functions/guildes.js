@@ -15,6 +15,8 @@
  */
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
 const { onDocumentCreated, onDocumentUpdated, onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
@@ -65,12 +67,43 @@ function nouveauCode() {
   return code;
 }
 
+// ── L'équipe du festival ─────────────────────────────────────────────
+// La liste vit dans config/equipe-admin.json, et scripts/sync-equipe.mjs
+// la recopie partout avant chaque déploiement. Le déploiement n'envoie
+// que le dossier functions/, où ce fichier n'existe pas : on lit alors
+// la copie que le script a écrite dans index.js entre ses deux repères,
+// qui part dans le même paquet. Les deux listes sont la même.
+function lireEquipe() {
+  try {
+    const { equipe } = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'equipe-admin.json'), 'utf8'));
+    return equipe.map((m) => String(m.courriel || '').trim().toLowerCase()).filter(Boolean);
+  } catch {
+    const bloc = fs.readFileSync(path.join(__dirname, 'index.js'), 'utf8').split('// ÉQUIPE:DÉBUT')[1] || '';
+    return [...bloc.split('// ÉQUIPE:FIN')[0].matchAll(/'([^']+)'/g)].map((m) => m[1].toLowerCase());
+  }
+}
+const COURRIELS_EQUIPE = lireEquipe();
+
 /** Dernier mot du nom + « Coin », sigle sur trois lettres, glyphe ◎. */
 function monnaieParDefaut(nom) {
   const mots = String(nom || 'Guilde').trim().split(/\s+/);
   const dernier = mots[mots.length - 1] || 'Guilde';
   const lettres = (dernier.normalize('NFD').replace(/[^A-Za-z0-9]/g, '') || 'GLD').padEnd(3, 'X');
   return { nom: `${dernier} Coin`, sigle: lettres.slice(0, 3).toUpperCase(), glyphe: '◎' };
+}
+
+const sansVide = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
+
+/** Ce que la fiche montre au monde, dans guildesPubliques/{id}. Rien
+ *  qui ouvre une porte (code d'invitation, demandes, listes de membres
+ *  et de chefs, argent) n'y passe (addendum du 6 septembre, ordre 8). */
+function miroirPublic(g) {
+  const m = g.monnaie || {};
+  return sansVide({
+    nom: g.nom, forme: g.forme, slug: g.slug, description: g.description,
+    blason: g.blason, banniereUrl: g.banniereUrl, nbMembres: g.nbMembres,
+    monnaie: g.monnaie ? sansVide({ nom: m.nom, sigle: m.sigle, glyphe: m.glyphe, imageUrl: m.imageUrl }) : undefined,
+  });
 }
 
 // ── L'agenda ICS ─────────────────────────────────────────────────────
@@ -106,8 +139,22 @@ function handlers(deps) {
   function exigeMembre(guilde, uid) {
     if (!(guilde.membres || []).includes(uid)) throw new HttpsError('permission-denied', 'Vous n’êtes pas de cette guilde.');
   }
-  function exigeChef(guilde, uid) {
-    if (!(guilde.admins || []).includes(uid)) throw new HttpsError('permission-denied', 'Réservé aux chefs.');
+  // Le courriel du compte, par l'Admin SDK; test-guildes.js le remplace.
+  const lireCourriel = deps.lireCourriel
+    || ((uid) => require('firebase-admin').auth().getUser(uid).then((u) => u.email || ''));
+
+  /** L'équipe du festival : courriel dans config/equipe-admin.json, ou
+   *  `administrateur` dans membres/{uid}.roles. Elle fait tout ce qu'un
+   *  chef fait (addendum du 6 septembre, ordre 5). */
+  async function estEquipe(uid) {
+    const courriel = await lireCourriel(uid).catch(() => '');
+    if (COURRIELS_EQUIPE.includes(String(courriel).trim().toLowerCase())) return true;
+    const m = await db.collection('membres').doc(uid).get();
+    return Boolean(m.exists && (m.data().roles || []).includes('administrateur'));
+  }
+  async function exigeChefOuEquipe(guilde, uid) {
+    if ((guilde.admins || []).includes(uid) || await estEquipe(uid)) return;
+    throw new HttpsError('permission-denied', 'Réservé aux chefs.');
   }
   function entier(valeur) {
     const n = Math.floor(Number(valeur));
@@ -193,6 +240,17 @@ function handlers(deps) {
     await gRef(guildeId).collection('evenements').doc(evId).set({ nbOui }, { merge: true });
   }
 
+  /** Le miroir public, réécrit à chaque écriture de la fiche et effacé
+   *  avec elle. N'écrit que si la face publique a bougé : la fiche se
+   *  réécrit souvent pour son taux, et le miroir n'a pas à suivre. */
+  async function miroir(guildeId, avant, apres) {
+    const ref = db.collection('guildesPubliques').doc(guildeId);
+    if (!apres) { await ref.delete(); return; }
+    const neuf = miroirPublic(apres);
+    if (avant && JSON.stringify(miroirPublic(avant)) === JSON.stringify(neuf)) return;
+    await ref.set(neuf);
+  }
+
   async function recalculerTaux() {
     const snap = await db.collection('guildes').get();
     let touchees = 0;
@@ -215,7 +273,7 @@ function handlers(deps) {
 
   async function nouveauCodeInvitation(uid, data) {
     const guildeId = String(data.guildeId || '');
-    exigeChef(exigeGuilde(await gRef(guildeId).get()), uid);
+    await exigeChefOuEquipe(exigeGuilde(await gRef(guildeId).get()), uid);
     const code = nouveauCode();
     await gRef(guildeId).set({ codeInvitation: code, maj: SV() }, { merge: true });
     return { code };
@@ -314,7 +372,7 @@ function handlers(deps) {
     return db.runTransaction(async (tx) => {
       const [gSnap, aSnap] = await Promise.all([tx.get(gRef(guildeId)), tx.get(bRef(guildeId, aUid))]);
       const guilde = exigeGuilde(gSnap);
-      exigeChef(guilde, uid);
+      await exigeChefOuEquipe(guilde, uid);
       exigeMembre(guilde, aUid);
       const tresor = guilde.tresor || 0;
       if (tresor < montant) throw new HttpsError('failed-precondition', 'Le trésor est trop bas.');
@@ -384,7 +442,7 @@ function handlers(deps) {
     const cible = String(data.uid || '');
     if (!nom || !cible) throw new HttpsError('invalid-argument', 'Nom ou compte manquant.');
     const guilde = exigeGuilde(await gRef(guildeId).get());
-    exigeChef(guilde, uid);
+    await exigeChefOuEquipe(guilde, uid);
     const liste = guilde.membresFondateurs || [];
     const index = liste.findIndex((f) => f && String(f.nom || '').trim() === nom);
     if (index < 0) throw new HttpsError('not-found', 'Ce fondateur n’est pas dans la liste.');
@@ -431,7 +489,7 @@ function handlers(deps) {
   }
 
   return {
-    fondation, entrees, compterOui, recalculerTaux, majTaux, donnerPiecesEntree,
+    fondation, entrees, compterOui, miroir, estEquipe, recalculerTaux, majTaux, donnerPiecesEntree,
     rejoindreParCode, nouveauCodeInvitation, changer, virement, tresorVerser,
     acheterAuSouk, rsvpPayant, rattacherFondateur, ics,
   };
@@ -447,6 +505,9 @@ module.exports = (deps) => {
   return {
     guildeFondation: onDocumentCreated({ document: 'guildes/{id}', ...DECLENCHEUR }, (e) => (e.data ? h.fondation(e.params.id, e.data.data()) : null)),
     guildeEntrees: onDocumentUpdated({ document: 'guildes/{id}', ...DECLENCHEUR }, (e) => h.entrees(e.params.id, e.data.before.data(), e.data.after.data())),
+    guildeMiroir: onDocumentWritten({ document: 'guildes/{id}', ...DECLENCHEUR }, (e) => h.miroir(
+      e.params.id, e.data.before.exists ? e.data.before.data() : null, e.data.after.exists ? e.data.after.data() : null,
+    )),
     guildeEvenementOui: onDocumentWritten({ document: 'guildes/{id}/evenements/{evId}', ...DECLENCHEUR }, (e) => h.compterOui(
       e.params.id, e.params.evId, e.data.after.exists ? e.data.after.data() : null,
     )),
@@ -469,5 +530,7 @@ module.exports.handlers = handlers;
 module.exports.calculerTaux = calculerTaux;
 module.exports.compterActifs = compterActifs;
 module.exports.monnaieParDefaut = monnaieParDefaut;
+module.exports.miroirPublic = miroirPublic;
+module.exports.COURRIELS_EQUIPE = COURRIELS_EQUIPE;
 module.exports.PLAFOND_CHANGE_JOUR = PLAFOND_CHANGE_JOUR;
 module.exports.FRAIS_CHANGE = FRAIS_CHANGE;

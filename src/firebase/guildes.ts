@@ -67,6 +67,23 @@ export interface MonnaieGuilde {
   sigle: string;
   /** Un emoji ou un caractère; le serveur pose ◎ par défaut. */
   glyphe: string;
+  /** La pièce dessinée (guildes/{id}/monnaie.webp). Sans elle, la pièce
+   *  par défaut du site; le glyphe ne sert plus que de repli. */
+  imageUrl?: string;
+}
+
+/** La pièce que portent les guildes qui n'ont pas encore la leur. */
+export const PIECE_DEFAUT = '/guildes/piece-defaut.webp';
+
+export const imageMonnaie = (g: Pick<Guilde, 'monnaie'>): string =>
+  g.monnaie?.imageUrl || PIECE_DEFAUT;
+
+/** Ce que le serveur pose à la fondation quand personne n'a nommé la
+ *  monnaie : dernier mot du nom + « Coin », trois lettres, ◎. Sert de
+ *  repli client pour les groupes fondés avant le 6 septembre 2026. */
+export function monnaieParDefaut(nom: string): MonnaieGuilde {
+  const dernier = (nom || '').trim().split(/\s+/).pop() || 'Guilde';
+  return { nom: `${dernier} Coin`, sigle: dernier.slice(0, 3).toUpperCase(), glyphe: '◎' };
 }
 
 /** Un jour du cours de la monnaie, tel que le serveur l'archive. */
