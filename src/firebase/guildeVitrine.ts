@@ -190,9 +190,11 @@ export async function modifier(
   guildeId: string, postId: string, patch: { titre?: string; texte: string },
 ): Promise<void> {
   if (!db) return;
-  const data: Record<string, unknown> = { texte: patch.texte.trim().slice(0, LONGUEUR_MAX_TEXTE), maj: serverTimestamp() };
-  if (patch.titre !== undefined) data.titre = patch.titre.trim().slice(0, LONGUEUR_MAX_TITRE);
-  await updateDoc(doc(COL(guildeId), postId), data);
+  await updateDoc(doc(COL(guildeId), postId), {
+    texte: patch.texte.trim().slice(0, LONGUEUR_MAX_TEXTE),
+    maj: serverTimestamp(),
+    ...(patch.titre !== undefined ? { titre: patch.titre.trim().slice(0, LONGUEUR_MAX_TITRE) } : {}),
+  });
 }
 
 /** Retire le billet, et le fichier qu'il avait déposé dans Storage. */

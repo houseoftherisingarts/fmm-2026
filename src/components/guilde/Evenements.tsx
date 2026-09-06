@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   CalendarDays, CalendarPlus, Loader2, MapPin, Pencil, Plus, Trash2, X, Copy, Rss,
 } from 'lucide-react';
 import { useUI } from '../../contexts/AppContext';
+import { addLocale } from '../../lib/locale';
 import { motDeLaForme, type Guilde } from '../../firebase/guildes';
 import { guildeRsvpPayant } from '../../firebase/guildeMonnaie';
 import {
@@ -10,14 +12,17 @@ import {
   lienGoogleAgenda, lienWebcal, lienIcsHttps,
   type Evenement, type Reponse,
 } from '../../firebase/guildeEvenements';
+import type { Membre } from '../../firebase/ordre';
 import type { Lang } from '../../content';
 
 // ─── Les événements ──────────────────────────────────────────────────
-// L'agenda du groupe. Les chefs l'écrivent, les membres répondent
-// présent, et la place payante se règle en pièces avant d'être
-// confirmée (contrat CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026). Chaque
-// date part vers Google Agenda d'un clic, et le calendrier entier
-// s'abonne une fois pour toutes au bas du panneau.
+// L'agenda du groupe. Les chefs (et l'équipe) l'écrivent, les membres
+// répondent présent, et la place payante se règle en pièces avant
+// d'être confirmée (contrat CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026).
+// Chaque date part vers Google Agenda d'un clic. Sur un grand écran la
+// liste tient huit colonnes et le bloc d'abonnement reste collé à droite
+// sur quatre (addendum, ordre 1). Celui qui a posé la date mène à son
+// profil (ordre 6).
 
 const champ = {
   background: 'rgba(0,0,0,0.35)',
@@ -54,9 +59,14 @@ function messageErreur(e: unknown, fr: boolean): string {
   return e instanceof Error ? e.message : String(e);
 }
 
-const Evenements: React.FC<{ guilde: Guilde; uid: string | null; estChef: boolean }> = ({
-  guilde, uid, estChef,
-}) => {
+const Evenements: React.FC<{
+  guilde: Guilde;
+  uid: string | null;
+  estChef: boolean;
+  /** Un chef, ou l'équipe du festival : pose, modifie et efface les dates. */
+  peutGerer: boolean;
+  fiches: Record<string, Membre | null>;
+}> = ({ guilde, uid, peutGerer, fiches }) => {
   const { lang } = useUI();
   const fr = lang === 'FR';
   const estMembre = Boolean(uid && guilde.membres.includes(uid));
@@ -82,97 +92,106 @@ const Evenements: React.FC<{ guilde: Guilde; uid: string | null; estChef: boolea
 
   if (!estMembre) {
     return (
-      <section className="glass-light rounded-lg-card p-6 md:p-8 text-center">
-        <span aria-hidden className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4"
+      <section className="glass-light rounded-lg-card p-6 md:p-8 flex items-center gap-5 flex-wrap">
+        <span aria-hidden className="inline-flex items-center justify-center w-12 h-12 rounded-full shrink-0"
               style={{ background: 'rgba(var(--sk-gilt-rgb),0.12)', border: '1px solid rgba(var(--sk-gilt-rgb),0.35)', color: 'var(--sk-gilt)' }}>
           <CalendarDays size={20} />
         </span>
-        <p className="font-display text-xl text-ivory mb-2">{fr ? 'Les événements' : 'The events'}</p>
-        <p className="font-editorial text-base text-ivory-soft leading-relaxed max-w-md mx-auto">
-          {fr
-            ? `L’agenda se lit entre membres. Entrez dans ${motDeLaForme(guilde.forme, lang).toLowerCase()} pour savoir quand tout le monde se réunit.`
-            : 'The calendar is read among members. Join the group to know when everyone gathers.'}
-        </p>
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-xl text-ivory mb-1">{fr ? 'Les événements' : 'The events'}</p>
+          <p className="font-editorial text-base text-ivory-soft leading-relaxed">
+            {fr
+              ? `L’agenda se lit entre membres. Entrez dans ${motDeLaForme(guilde.forme, lang).toLowerCase()} pour savoir quand tout le monde se réunit.`
+              : 'The calendar is read among members. Join the group to know when everyone gathers.'}
+          </p>
+        </div>
       </section>
     );
   }
 
   return (
-    <div className="space-y-5">
-      {estChef && (
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={() => { setEdite(edite === 'neuf' ? null : 'neuf'); setErreur(null); }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
-          >
-            {edite === 'neuf' ? <X size={13} /> : <Plus size={13} />}
-            {edite === 'neuf' ? (fr ? 'Fermer' : 'Close') : (fr ? 'Annoncer une date' : 'Announce a date')}
-          </button>
-        </div>
-      )}
+    <div className="grid gap-5 lg:grid-cols-12">
+      <div className="lg:col-span-8 space-y-5">
+        {peutGerer && (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => { setEdite(edite === 'neuf' ? null : 'neuf'); setErreur(null); }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
+            >
+              {edite === 'neuf' ? <X size={13} /> : <Plus size={13} />}
+              {edite === 'neuf' ? (fr ? 'Fermer' : 'Close') : (fr ? 'Annoncer une date' : 'Announce a date')}
+            </button>
+          </div>
+        )}
 
-      {estChef && edite && (
-        <Formulaire
-          guilde={guilde} uid={uid!} lang={lang}
-          evenement={edite === 'neuf' ? null : edite}
-          onFini={() => setEdite(null)}
-        />
-      )}
+        {peutGerer && edite && (
+          <Formulaire
+            guilde={guilde} uid={uid!} lang={lang}
+            evenement={edite === 'neuf' ? null : edite}
+            onFini={() => setEdite(null)}
+          />
+        )}
 
-      {erreur && <p role="alert" className="font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}
+        {erreur && <p role="alert" className="font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}
 
-      {aVenir.length === 0 ? (
-        <section className="glass-light rounded-lg-card p-5 md:p-6">
-          <p className="witcher-stat-label inline-flex items-center gap-2 mb-3">
-            <CalendarDays size={12} /> {fr ? 'À venir' : 'Coming up'}
-          </p>
-          <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
-            {fr
-              ? 'Aucune date au calendrier. Les chefs du groupe en posent une dès qu’ils savent quand vous vous retrouvez.'
-              : 'No date on the calendar. The leaders will post one as soon as they know when you meet.'}
-          </p>
-        </section>
-      ) : (
-        <div className="space-y-3">
-          {aVenir.map((ev) => (
-            <Carte
-              key={ev.id} ev={ev} guilde={guilde} uid={uid!} estChef={estChef} lang={lang}
-              onModifier={() => { setEdite(ev); setErreur(null); }}
-              onErreur={setErreur}
-            />
-          ))}
-        </div>
-      )}
-
-      {passes.length > 0 && (
-        <details className="glass-light rounded-lg-card p-5 md:p-6">
-          <summary className="witcher-stat-label cursor-pointer select-none">
-            {fr ? `Ce qui est passé (${passes.length})` : `What has passed (${passes.length})`}
-          </summary>
-          <div className="space-y-3 mt-4">
-            {passes.map((ev) => (
+        {aVenir.length === 0 ? (
+          <section className="glass-light rounded-lg-card p-5 md:p-6">
+            <p className="witcher-stat-label inline-flex items-center gap-2 mb-3">
+              <CalendarDays size={12} /> {fr ? 'À venir' : 'Coming up'}
+            </p>
+            <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
+              {fr
+                ? 'Aucune date au calendrier. Les chefs du groupe en posent une dès qu’ils savent quand vous vous retrouvez.'
+                : 'No date on the calendar. The leaders will post one as soon as they know when you meet.'}
+            </p>
+          </section>
+        ) : (
+          <div className="space-y-3">
+            {aVenir.map((ev) => (
               <Carte
-                key={ev.id} ev={ev} guilde={guilde} uid={uid!} estChef={estChef} lang={lang}
-                passe onModifier={() => { setEdite(ev); setErreur(null); }} onErreur={setErreur}
+                key={ev.id} ev={ev} guilde={guilde} uid={uid!} peutGerer={peutGerer} lang={lang} fiches={fiches}
+                onModifier={() => { setEdite(ev); setErreur(null); }}
+                onErreur={setErreur}
               />
             ))}
           </div>
-        </details>
-      )}
+        )}
 
-      {guilde.codeInvitation && <Abonnement guilde={guilde} lang={lang} />}
+        {passes.length > 0 && (
+          <details className="glass-light rounded-lg-card p-5 md:p-6">
+            <summary className="witcher-stat-label cursor-pointer select-none">
+              {fr ? `Ce qui est passé (${passes.length})` : `What has passed (${passes.length})`}
+            </summary>
+            <div className="space-y-3 mt-4">
+              {passes.map((ev) => (
+                <Carte
+                  key={ev.id} ev={ev} guilde={guilde} uid={uid!} peutGerer={peutGerer} lang={lang} fiches={fiches}
+                  passe onModifier={() => { setEdite(ev); setErreur(null); }} onErreur={setErreur}
+                />
+              ))}
+            </div>
+          </details>
+        )}
+      </div>
+
+      <aside className="lg:col-span-4">
+        <div className="lg:sticky lg:top-24 space-y-5">
+          {guilde.codeInvitation && <Abonnement guilde={guilde} lang={lang} />}
+        </div>
+      </aside>
     </div>
   );
 };
 
 // ─── Une date ────────────────────────────────────────────────────────
 const Carte: React.FC<{
-  ev: Evenement; guilde: Guilde; uid: string; estChef: boolean; lang: Lang;
+  ev: Evenement; guilde: Guilde; uid: string; peutGerer: boolean; lang: Lang;
+  fiches: Record<string, Membre | null>;
   passe?: boolean;
   onModifier: () => void;
   onErreur: (m: string | null) => void;
-}> = ({ ev, guilde, uid, estChef, lang, passe, onModifier, onErreur }) => {
+}> = ({ ev, guilde, uid, peutGerer, lang, fiches, passe, onModifier, onErreur }) => {
   const fr = lang === 'FR';
   const [busy, setBusy] = useState(false);
   const debut = millis(ev.debut) || Date.now();
@@ -180,6 +199,7 @@ const Carte: React.FC<{
   const sigle = guilde.monnaie?.sigle || 'PCE';
   const prix = ev.prixPieces || 0;
   const mien = ev.rsvp?.[uid];
+  const auteur = fiches[ev.creePar]?.nom || (fr ? 'un chef' : 'a leader');
 
   const compte = Object.values(ev.rsvp || {});
   const oui = compte.filter((r) => r === 'oui').length;
@@ -221,6 +241,12 @@ const Carte: React.FC<{
             <span className="tabular-nums">{heure(debut, lang)}</span>
             {ev.lieu && <span className="inline-flex items-center gap-1 min-w-0"><MapPin size={11} /> <span className="truncate">{ev.lieu}</span></span>}
             <span>{fr ? `${oui} présents` : `${oui} coming`}{peutEtre > 0 && (fr ? ` · ${peutEtre} peut-être` : ` · ${peutEtre} maybe`)}</span>
+            <span>
+              {fr ? 'posée par ' : 'posted by '}
+              <Link to={`${addLocale('/profil', lang)}/${ev.creePar}`} className="hover:text-brass transition-colors" style={{ color: 'rgba(var(--sk-parchment-rgb),0.8)' }}>
+                {auteur}
+              </Link>
+            </span>
           </p>
           {ev.description && (
             <p className="font-editorial text-sm text-ivory-soft leading-relaxed mt-2">{ev.description}</p>
@@ -232,7 +258,7 @@ const Carte: React.FC<{
           )}
         </div>
 
-        {estChef && (
+        {peutGerer && (
           <div className="shrink-0 flex items-center gap-1">
             <button type="button" onClick={onModifier} aria-label={fr ? 'Modifier' : 'Edit'}
                     className="w-8 h-8 rounded-full flex items-center justify-center text-ivory-soft/60 hover:text-brass hover:bg-brass/10 transition">
@@ -329,21 +355,22 @@ const Formulaire: React.FC<{
         {evenement ? (fr ? 'Modifier la date' : 'Edit the date') : (fr ? 'Une nouvelle date' : 'A new date')}
       </p>
 
-      <label className="block mb-3">
-        <span className="block witcher-stat-label mb-1.5">{fr ? 'Le titre' : 'The title'}</span>
-        <input value={titre} onChange={(e) => setTitre(e.target.value.slice(0, 120))}
-               placeholder={fr ? 'La veillée du solstice' : 'The solstice gathering'}
-               className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
-      </label>
+      <div className="grid gap-3 md:grid-cols-2 mb-3">
+        <label className="block">
+          <span className="block witcher-stat-label mb-1.5">{fr ? 'Le titre' : 'The title'}</span>
+          <input value={titre} onChange={(e) => setTitre(e.target.value.slice(0, 120))}
+                 placeholder={fr ? 'La veillée du solstice' : 'The solstice gathering'}
+                 className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
+        </label>
+        <label className="block">
+          <span className="block witcher-stat-label mb-1.5">{fr ? 'Le lieu' : 'The place'}</span>
+          <input value={lieu} onChange={(e) => setLieu(e.target.value.slice(0, 160))}
+                 placeholder={fr ? '4 rue du Bosquet, Montpellier' : '4 rue du Bosquet, Montpellier'}
+                 className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
+        </label>
+      </div>
 
-      <label className="block mb-3">
-        <span className="block witcher-stat-label mb-1.5">{fr ? 'Le lieu' : 'The place'}</span>
-        <input value={lieu} onChange={(e) => setLieu(e.target.value.slice(0, 160))}
-               placeholder={fr ? '4 rue du Bosquet, Montpellier' : '4 rue du Bosquet, Montpellier'}
-               className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
-      </label>
-
-      <div className="grid gap-3 sm:grid-cols-2 mb-3">
+      <div className="grid gap-3 sm:grid-cols-3 mb-3">
         <label className="block">
           <span className="block witcher-stat-label mb-1.5">{fr ? 'Début' : 'Start'}</span>
           <input type="datetime-local" value={debut} onChange={(e) => setDebut(e.target.value)}
@@ -354,19 +381,18 @@ const Formulaire: React.FC<{
           <input type="datetime-local" value={fin} onChange={(e) => setFin(e.target.value)}
                  className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
         </label>
+        <label className="block">
+          <span className="block witcher-stat-label mb-1.5">
+            {fr ? `La place, en ${sigle}` : `The seat, in ${sigle}`}
+          </span>
+          <input type="number" min={0} inputMode="numeric" value={prixPieces}
+                 onChange={(e) => setPrixPieces(e.target.value)} placeholder="0"
+                 className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory tabular-nums placeholder:text-ivory-soft/40" style={champ} />
+          <span className="block font-sans text-[11px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+            {fr ? 'Zéro pour une soirée gratuite.' : 'Zero for a free evening.'}
+          </span>
+        </label>
       </div>
-
-      <label className="block mb-3">
-        <span className="block witcher-stat-label mb-1.5">
-          {fr ? `Le prix de la place, en ${sigle}` : `The price of a seat, in ${sigle}`}
-        </span>
-        <input type="number" min={0} inputMode="numeric" value={prixPieces}
-               onChange={(e) => setPrixPieces(e.target.value)} placeholder="0"
-               className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory tabular-nums placeholder:text-ivory-soft/40" style={champ} />
-        <span className="block font-sans text-[11px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
-          {fr ? 'Laissez à zéro pour une soirée gratuite.' : 'Leave at zero for a free evening.'}
-        </span>
-      </label>
 
       <label className="block mb-3">
         <span className="block witcher-stat-label mb-1.5">{fr ? 'Ce qu’il faut savoir' : 'What to know'}</span>
@@ -417,17 +443,17 @@ const Abonnement: React.FC<{ guilde: Guilde; lang: Lang }> = ({ guilde, lang }) 
           ? 'Une fois abonné, chaque date posée par un chef arrive toute seule dans votre agenda.'
           : 'Once subscribed, every date a leader posts lands in your calendar on its own.'}
       </p>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col items-stretch gap-2">
         <a href={webcal}
-           className="inline-flex items-center gap-2 px-4 py-2 bg-brass text-midnight-deep font-sans text-[11px] uppercase tracking-wider font-semibold hover:bg-brass-soft transition rounded-card">
+           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brass text-midnight-deep font-sans text-[11px] uppercase tracking-wider font-semibold hover:bg-brass-soft transition rounded-card">
           <CalendarPlus size={12} /> {fr ? 'Ajouter à mon agenda' : 'Add to my calendar'}
         </a>
         <button type="button" onClick={copier}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-[11px] uppercase tracking-wider transition rounded-card">
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-[11px] uppercase tracking-wider transition rounded-card">
           <Copy size={12} /> {copie ? (fr ? 'Copié' : 'Copied') : (fr ? 'Copier le lien' : 'Copy the link')}
         </button>
         <a href={https} target="_blank" rel="noopener noreferrer"
-           className="inline-flex items-center gap-2 px-4 py-2 font-sans text-[11px] uppercase tracking-wider text-ivory-soft hover:text-brass transition rounded-card"
+           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 font-sans text-[11px] uppercase tracking-wider text-ivory-soft hover:text-brass transition rounded-card"
            style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.2)' }}>
           {fr ? 'Le fichier .ics' : 'The .ics file'}
         </a>
