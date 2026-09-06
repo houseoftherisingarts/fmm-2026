@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Store, Plus, X, Loader2, Coins } from 'lucide-react';
+import { Store, Plus, X, Loader2 } from 'lucide-react';
 import { useUI } from '../../contexts/AppContext';
 import { motDeLaForme, nomMonnaie, type Guilde } from '../../firebase/guildes';
 import { suivreSoukDeGuilde, type ObjetSouk } from '../../firebase/souk';
 import { suivreMaBourseGuilde, guildeAcheterAuSouk, type BourseGuilde } from '../../firebase/guildeMonnaie';
 import { CarteSouk } from '../../pages/SoukPage';
 import { FormulaireSouk } from '../souk/MesObjets';
+import { PieceGuilde } from './SoldePieces';
 
 // ─── Le marché ───────────────────────────────────────────────────────
 // Les annonces du Souk réservées à ce groupe, payables en pièces. La
-// carte est celle du Souk public; seul le bouton change, parce que
-// l'argent qui bouge ici n'est pas le même (contrat
-// CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026).
+// carte est celle du Souk public (le vendeur y mène déjà à son profil);
+// seul le bouton change, parce que l'argent qui bouge ici n'est pas le
+// même (contrat CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026). Grille de
+// trois à quatre colonnes sur un grand écran (addendum, ordre 1).
 
 function messageErreur(e: unknown, fr: boolean): string {
   const code = (e as { code?: string })?.code || '';
@@ -30,7 +32,6 @@ const Marche: React.FC<{ guilde: Guilde; uid: string | null; estChef: boolean }>
   const { lang } = useUI();
   const fr = lang === 'FR';
   const estMembre = Boolean(uid && guilde.membres.includes(uid));
-  const glyphe = guilde.monnaie?.glyphe || '◎';
 
   const [objets, setObjets] = useState<ObjetSouk[]>([]);
   const [bourse, setBourse] = useState<BourseGuilde | null>(null);
@@ -49,17 +50,19 @@ const Marche: React.FC<{ guilde: Guilde; uid: string | null; estChef: boolean }>
 
   if (!estMembre) {
     return (
-      <section className="glass-light rounded-lg-card p-6 md:p-8 text-center">
-        <span aria-hidden className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4"
+      <section className="glass-light rounded-lg-card p-6 md:p-8 flex items-center gap-5 flex-wrap">
+        <span aria-hidden className="inline-flex items-center justify-center w-12 h-12 rounded-full shrink-0"
               style={{ background: 'rgba(var(--sk-gilt-rgb),0.12)', border: '1px solid rgba(var(--sk-gilt-rgb),0.35)', color: 'var(--sk-gilt)' }}>
           <Store size={20} />
         </span>
-        <p className="font-display text-xl text-ivory mb-2">{fr ? 'Le marché' : 'The market'}</p>
-        <p className="font-editorial text-base text-ivory-soft leading-relaxed max-w-md mx-auto">
-          {fr
-            ? `Ces annonces ne se vendent qu’entre membres. Entrez dans ${motDeLaForme(guilde.forme, lang).toLowerCase()} pour voir ce qui s’y échange.`
-            : 'These listings are traded among members only. Join the group to see what changes hands here.'}
-        </p>
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-xl text-ivory mb-1">{fr ? 'Le marché' : 'The market'}</p>
+          <p className="font-editorial text-base text-ivory-soft leading-relaxed">
+            {fr
+              ? `Ces annonces ne se vendent qu’entre membres. Entrez dans ${motDeLaForme(guilde.forme, lang).toLowerCase()} pour voir ce qui s’y échange.`
+              : 'These listings are traded among members only. Join the group to see what changes hands here.'}
+          </p>
+        </div>
       </section>
     );
   }
@@ -67,15 +70,18 @@ const Marche: React.FC<{ guilde: Guilde; uid: string | null; estChef: boolean }>
   return (
     <div className="space-y-5">
       <section className="glass-light rounded-lg-card p-5 md:p-6 flex items-center justify-between gap-4 flex-wrap">
-        <div className="min-w-0">
-          <p className="witcher-stat-label inline-flex items-center gap-2 mb-1.5">
-            <Store size={12} /> {fr ? 'Le marché du groupe' : 'The group market'}
-          </p>
-          <p className="font-sans text-[11px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.55)' }}>
-            {fr
-              ? `Vous avez ${bourse?.solde ?? 0} ${glyphe} en ${nomMonnaie(guilde, lang)}.`
-              : `You hold ${bourse?.solde ?? 0} ${glyphe} in ${nomMonnaie(guilde, lang)}.`}
-          </p>
+        <div className="min-w-0 flex items-center gap-4">
+          <PieceGuilde guilde={guilde} size={44} />
+          <div>
+            <p className="witcher-stat-label inline-flex items-center gap-2 mb-1">
+              <Store size={12} /> {fr ? 'Le marché du groupe' : 'The group market'}
+            </p>
+            <p className="font-sans text-[12px]" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}>
+              {fr
+                ? `Vous avez ${bourse?.solde ?? 0} ${guilde.monnaie?.sigle || 'PCE'} en ${nomMonnaie(guilde, lang)}.`
+                : `You hold ${bourse?.solde ?? 0} ${guilde.monnaie?.sigle || 'PCE'} in ${nomMonnaie(guilde, lang)}.`}
+            </p>
+          </div>
         </div>
         <button
           type="button"
@@ -106,7 +112,7 @@ const Marche: React.FC<{ guilde: Guilde; uid: string | null; estChef: boolean }>
           </p>
         </section>
       ) : (
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
           {objets.map((o) => (
             <CarteSouk
               key={o.id} objet={o} lang={lang}
@@ -157,7 +163,7 @@ const BoutonAcheter: React.FC<{
         : pasAssez ? (fr ? 'Votre bourse ne suffit pas.' : 'Your purse falls short.') : undefined}
       className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-brass/50 text-brass hover:bg-brass/10 font-sans uppercase tracking-wider text-[10px] font-semibold transition rounded-card disabled:opacity-40"
     >
-      {busy ? <Loader2 size={12} className="animate-spin" /> : <Coins size={12} />}
+      {busy ? <Loader2 size={12} className="animate-spin" /> : <PieceGuilde guilde={guilde} size={14} />}
       {fr ? `Acheter pour ${prix} ${sigle}` : `Buy for ${prix} ${sigle}`}
     </button>
   );
