@@ -242,6 +242,10 @@ export const CarteObjet: React.FC<{ objet: ObjetSouk; lang: 'FR' | 'EN'; boutonA
   );
 };
 
+/** Alias : le Marché d'une guilde (autre agent) importe CarteSouk pour
+ *  rendre la même carte avec un bouton « Acheter en pièces ». */
+export const CarteSouk = CarteObjet;
+
 const FiltreBouton: React.FC<{ actif: boolean; onClick: () => void; label: string }> = ({ actif, onClick, label }) => (
   <button
     type="button"
