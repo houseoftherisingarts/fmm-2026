@@ -44,12 +44,53 @@ export const motDeLaForme = (forme: FormeGuilde | undefined, lang: 'FR' | 'EN'):
   return lang === 'FR' ? f.FR : f.EN;
 };
 
+// Le titre que porte celui qui mène le groupe. Un clan a son jarl, une
+// confrérie son prieur, et la même personne s'appelle « Maître » dans
+// une guilde (contrat CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026).
+const MOTS_DU_CHEF: Record<FormeGuilde, { FR: string; EN: string }> = {
+  guilde:    { FR: 'Maître',         EN: 'Master' },
+  clan:      { FR: 'Jarl',           EN: 'Jarl' },
+  compagnie: { FR: 'Capitaine',      EN: 'Captain' },
+  confrerie: { FR: 'Prieur',         EN: 'Prior' },
+  troupe:    { FR: 'Chef de troupe', EN: 'Troupe leader' },
+  maisonnee: { FR: 'Seigneur',       EN: 'Lord' },
+  ordre:     { FR: 'Grand Maître',   EN: 'Grand Master' },
+};
+
+export const motDuChef = (forme: FormeGuilde | undefined, lang: 'FR' | 'EN'): string =>
+  MOTS_DU_CHEF[forme || 'guilde'][lang];
+
+/** La monnaie interne d'une guilde. Elle ne vaut que dans la guilde. */
+export interface MonnaieGuilde {
+  nom: string;
+  /** Deux à quatre lettres, en majuscules. */
+  sigle: string;
+  /** Un emoji ou un caractère; le serveur pose ◎ par défaut. */
+  glyphe: string;
+}
+
+/** Un jour du cours de la monnaie, tel que le serveur l'archive. */
+export interface PointTaux {
+  jour: string;
+  taux: number;
+  nbActifs: number;
+}
+
+/** Un fondateur annoncé qui n'a pas encore de compte sur le site. */
+export interface FondateurAttendu {
+  nom: string;
+  chef: boolean;
+  uid?: string;
+}
+
 export interface Guilde {
   id: string;
   nom: string;
   description: string;
   /** Le mot choisi à la fondation; absent veut dire « guilde ». */
   forme?: FormeGuilde;
+  /** L'adresse du groupe : festivalmedievaldemontpellier.org/{slug}. */
+  slug?: string;
   blason?: string;
   /** La bannière large de la guilde (guildes/{id}/banniere.webp). */
   banniereUrl?: string;
@@ -58,8 +99,105 @@ export interface Guilde {
   membres: string[];
   demandes: string[];
   nbMembres: number;
+  /** Les chefs la renomment; le serveur la pose à la fondation. */
+  monnaie?: MonnaieGuilde;
+  /** Ce que vaut une pièce en Montpellois. Serveur seulement. */
+  taux?: number;
+  nbActifs?: number;
+  tauxHistorique?: PointTaux[];
+  /** Les pièces du trésor commun. Serveur seulement. */
+  tresor?: number;
+  /** Huit caractères, posés par le serveur. Serveur seulement. */
+  codeInvitation?: string;
+  membresFondateurs?: FondateurAttendu[];
   creeLe: Timestamp | null;
   maj: Timestamp | null;
+}
+
+/** Le nom de la monnaie dans la langue de la page. Le serveur pose
+ *  « Vikingar Coin »; en français la même monnaie se lit « Pièce
+ *  Vikingar », sans qu'il faille garder deux champs. */
+export function nomMonnaie(g: Pick<Guilde, 'nom' | 'monnaie'>, lang: 'FR' | 'EN'): string {
+  const nom = g.monnaie?.nom || `${(g.nom || '').trim().split(/\s+/).pop() || 'Guilde'} Coin`;
+  if (lang === 'FR' && / Coin$/.test(nom)) return `Pièce ${nom.slice(0, -5)}`;
+  return nom;
+}
+
+/** Un montant de pièces, avec le glyphe de la guilde. */
+export function formatPieces(n: number, g: Pick<Guilde, 'monnaie'>): string {
+  return `${Math.round(n)} ${g.monnaie?.glyphe || '◎'}`;
+}
+
+// ─── L'adresse du groupe ─────────────────────────────────────────────
+// Alex, 6 septembre 2026 : « all under /groupnameclan ». Le nom perd
+// ses accents, ses espaces et sa ponctuation, puis la forme se colle au
+// bout : « Vestrvegir Vikingar » fondé en clan donne
+// vestrvegirvikingarclan.
+export function slugDeGuilde(nom: string, forme: FormeGuilde | undefined): string {
+  const base = (nom || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+  return `${base}${forme || 'guilde'}`.slice(0, 80);
+}
+
+/** Les adresses que le site s'est déjà réservées : le premier segment
+ *  de chaque route de App.tsx, plus les slugs des piliers. Une guilde
+ *  qui en prendrait une éclipserait une page du festival.
+ *
+ *  À TENIR À JOUR avec App.tsx : toute nouvelle route de premier niveau
+ *  s'ajoute ici le jour où elle est ajoutée là-bas. La liste se
+ *  reconstruit en une commande :
+ *    grep -o 'path="/[^"]*"' src/App.tsx | sed 's|path="/||;s|".*||' | cut -d/ -f1 | sort -u
+ */
+export const SLUGS_RESERVES: readonly string[] = [
+  'accueil', 'activites', 'admin', 'alliance', 'apprendre', 'archives',
+  'babillard', 'backuppage', 'banquet', 'benevole', 'benevoles', 'billets',
+  'boissons', 'boutique', 'chantier', 'chevaux', 'commanditaires',
+  'communaute', 'compte', 'contact', 'defi', 'en', 'espace-benevole',
+  'festival-medieval-de-montpellier', 'groupe', 'groupes', 'guildes',
+  'hebergement', 'histoire', 'horaire', 'jeunesse', 'jeux', 'jeux-en-ligne',
+  'labo-titre', 'marche', 'mariages', 'messages', 'mur', 'musique',
+  'nourriture', 'ordre', 'partenaires', 'partenaires-2027', 'petite-monnaie',
+  'politique-de-confidentialite', 'press-kit', 'presse', 'presskit', 'profil',
+  'propositioncatest', 'ressources', 'signer-cuisine', 'souk', 'videos',
+  'william',
+];
+
+export const SLUG_MIN = 3;
+export const SLUG_MAX = 80;
+
+/** Vrai si l'adresse est libre. `sauf` laisse un chef réenregistrer la
+ *  sienne sans se cogner à lui-même. */
+export async function slugDisponible(slug: string, sauf?: string): Promise<boolean> {
+  if (!db) return false;
+  if (!new RegExp(`^[a-z0-9-]{${SLUG_MIN},${SLUG_MAX}}$`).test(slug)) return false;
+  if (SLUGS_RESERVES.includes(slug)) return false;
+  const snap = await getDocs(query(collection(db, COL), where('slug', '==', slug)));
+  return snap.docs.every((d) => d.id === sauf);
+}
+
+export async function lireGuildeParSlug(slug: string): Promise<Guilde | null> {
+  if (!db) return null;
+  const snap = await getDocs(query(collection(db, COL), where('slug', '==', slug), limit(1)));
+  return snap.empty ? null : lire(snap.docs[0]);
+}
+
+// ─── La marque de passage ────────────────────────────────────────────
+// Le taux d'une guilde suit le nombre de ses membres actifs, et un
+// membre est actif s'il s'est montré dans les trente derniers jours.
+// Une écriture par jour et par navigateur suffit à le dire.
+const CLE_VU = 'fmm:vuLe';
+
+export async function marquerVuAujourdhui(uid: string): Promise<void> {
+  if (!db) return;
+  const jour = new Date().toISOString().slice(0, 10);
+  try {
+    if (window.localStorage.getItem(CLE_VU) === jour) return;
+  } catch { /* navigation privée : on écrit, tant pis pour l'économie */ }
+  await setDoc(doc(db, 'membres', uid), { vuLe: serverTimestamp() }, { merge: true });
+  try { window.localStorage.setItem(CLE_VU, jour); } catch { /* idem */ }
 }
 
 const COL = 'guildes';
