@@ -353,12 +353,13 @@ export async function modifierGuilde(id: string, patch: {
   nom?: string; description?: string; blason?: string; banniereUrl?: string;
   forme?: FormeGuilde; slug?: string; monnaie?: MonnaieGuilde;
   membresFondateurs?: FondateurAttendu[];
+  driveUrl?: string; titres?: Record<string, string>;
 }): Promise<void> {
   if (!db) return;
   const data: Record<string, unknown> = { maj: serverTimestamp() };
   if (patch.nom !== undefined) data.nom = patch.nom.trim().slice(0, LONGUEUR_NOM_MAX);
   if (patch.description !== undefined) data.description = patch.description.trim().slice(0, LONGUEUR_DESCRIPTION_MAX);
-  for (const cle of ['forme', 'blason', 'banniereUrl', 'slug', 'monnaie', 'membresFondateurs'] as const) {
+  for (const cle of ['forme', 'blason', 'banniereUrl', 'slug', 'monnaie', 'membresFondateurs', 'driveUrl', 'titres'] as const) {
     if (patch[cle] !== undefined) data[cle] = patch[cle];
   }
   await updateDoc(doc(db, COL, id), data as never);
