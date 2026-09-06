@@ -218,7 +218,6 @@ const FormulaireChange: React.FC<{
   guilde: Guilde; lang: Lang; taux: number; reste: number; soldePieces: number;
 }> = ({ guilde, lang, taux, reste, soldePieces }) => {
   const fr = lang === 'FR';
-  const glyphe = guilde.monnaie?.glyphe || '◎';
   const sigle = guilde.monnaie?.sigle || 'PCE';
   const [sens, setSens] = useState<SensChange>('piecesVersM');
   const [montant, setMontant] = useState('');
