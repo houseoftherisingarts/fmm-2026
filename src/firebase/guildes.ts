@@ -297,6 +297,33 @@ export async function refuserMembre(id: string, uid: string): Promise<void> {
   await updateDoc(doc(db, COL, id), { demandes: arrayRemove(uid), maj: serverTimestamp() });
 }
 
+/** Un chef (ou l'équipe) renvoie un membre : il sort des membres et
+ *  des chefs d'un coup. Jamais soi-même, jamais le fondateur (addendum
+ *  du 6 septembre 2026, ordre 7; la règle Firestore refuse aussi). */
+export async function retirerMembre(g: Pick<Guilde, 'id' | 'creePar'>, uid: string, parUid: string): Promise<void> {
+  if (!db) return;
+  if (uid === parUid) throw new Error('Pour partir, passez par « Quitter ».');
+  if (uid === g.creePar) throw new Error('Le fondateur ne se renvoie pas.');
+  await updateDoc(doc(db, COL, g.id), {
+    membres: arrayRemove(uid),
+    admins: arrayRemove(uid),
+    nbMembres: increment(-1),
+    maj: serverTimestamp(),
+  });
+}
+
+/** Un chef en nomme un autre parmi les membres. */
+export async function nommerChef(id: string, uid: string): Promise<void> {
+  if (!db) return;
+  await updateDoc(doc(db, COL, id), { admins: arrayUnion(uid), maj: serverTimestamp() });
+}
+
+/** Un chef rend son titre à un autre chef, qui reste membre. */
+export async function retirerChef(id: string, uid: string): Promise<void> {
+  if (!db) return;
+  await updateDoc(doc(db, COL, id), { admins: arrayRemove(uid), maj: serverTimestamp() });
+}
+
 /** Quitter une guilde : on se retire soi-même des membres (et des
  *  admins, si on en était). */
 export async function quitterGuilde(id: string, uid: string): Promise<void> {
