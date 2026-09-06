@@ -116,5 +116,6 @@ export function stripLocale(pathname: string): string {
 export function addLocale(pathname: string, lang: Lang): string {
   if (lang === 'FR') return pathname;
   if (pathname === '/') return '/en';
-  return `/en${translatePrefix(pathname, FR_KEYS, FR_TO_EN)}`;
+  const traduit = translatePrefix(pathname, FR_KEYS, FR_TO_EN);
+  return `/en${traduit === pathname ? traduireOngletGuilde(pathname, ONGLETS_GUILDE_FR_EN) : traduit}`;
 }
