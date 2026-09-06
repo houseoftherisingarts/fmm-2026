@@ -394,3 +394,17 @@ export async function changerBlason(id: string, fichier: File): Promise<string> 
   await modifierGuilde(id, { blason: url });
   return url;
 }
+
+/** La pièce dessinée du groupe, posée par un chef depuis le panneau de
+ *  la monnaie : 512 px, rangée sous guildes/{id}/monnaie.webp, et son
+ *  adresse écrite dans monnaie.imageUrl sans toucher au reste de la
+ *  monnaie (addendum du 6 septembre 2026, ordre 4). */
+export async function changerImageMonnaie(g: Pick<Guilde, 'id' | 'nom' | 'monnaie'>, fichier: File): Promise<string> {
+  if (!db || !storage) throw new Error('Le stockage est indisponible pour le moment.');
+  const { blob } = await versWebp(fichier, 512, 0.9);
+  const r = refStockage(storage, `guildes/${g.id}/monnaie.webp`);
+  await uploadBytes(r, blob, { contentType: 'image/webp' });
+  const url = `${await getDownloadURL(r)}&v=${Date.now()}`;
+  await modifierGuilde(g.id, { monnaie: { ...(g.monnaie || monnaieParDefaut(g.nom)), imageUrl: url } });
+  return url;
+}
