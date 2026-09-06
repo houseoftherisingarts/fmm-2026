@@ -54,6 +54,33 @@ const EN_TO_FR: Record<string, string> = Object.fromEntries(
   Object.entries(FR_TO_EN).map(([fr, en]) => [en, fr]),
 );
 
+// ─── Les onglets d'une guilde ────────────────────────────────────────
+// L'adresse d'un groupe est `/{slug}` et celle d'un de ses onglets
+// `/{slug}/{onglet}`. Le nom du groupe ne se traduit pas, seul l'onglet
+// change de langue (contrat CLAN-MONNAIE-CONTRAT.md, 6 septembre 2026).
+export const ONGLETS_GUILDE_FR_EN: Record<string, string> = {
+  salon: 'chat',
+  evenements: 'events',
+  marche: 'market',
+  tresor: 'treasury',
+  membres: 'members',
+};
+
+const ONGLETS_GUILDE_EN_FR: Record<string, string> = Object.fromEntries(
+  Object.entries(ONGLETS_GUILDE_FR_EN).map(([fr, en]) => [en, fr]),
+);
+
+// N'est appelée que sur les chemins qu'aucune route nommée n'a réclamés,
+// donc le premier segment est bien un nom de groupe et non une page du
+// festival. Les chemins à deux segments seulement : `/admin/marchands`
+// et compagnie sortent par la porte d'à côté.
+function traduireOngletGuilde(pathname: string, map: Record<string, string>): string {
+  const parts = pathname.split('/');
+  if (parts.length !== 3) return pathname;
+  const onglet = map[parts[2]];
+  return onglet ? `/${parts[1]}/${onglet}` : pathname;
+}
+
 // Longest-prefix keys first so `/marche/inscription` wins over `/marche`.
 const FR_KEYS = Object.keys(FR_TO_EN).sort((a, b) => b.length - a.length);
 const EN_KEYS = Object.keys(EN_TO_FR).sort((a, b) => b.length - a.length);
