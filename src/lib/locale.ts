@@ -48,6 +48,7 @@ const FR_TO_EN: Record<string, string> = {
   '/groupes': '/groups',
   '/chevaux': '/horses',
   '/guildes': '/guilds',
+  '/change': '/exchange',
 };
 
 const EN_TO_FR: Record<string, string> = Object.fromEntries(

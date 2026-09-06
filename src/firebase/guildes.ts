@@ -127,6 +127,12 @@ export interface Guilde {
   /** Huit caractères, posés par le serveur. Serveur seulement. */
   codeInvitation?: string;
   membresFondateurs?: FondateurAttendu[];
+  /** Le dossier Google Drive partagé du groupe, posé par un chef ou
+   *  l'équipe (addendum 2 du 6 septembre 2026, ordre 13). */
+  driveUrl?: string;
+  /** Les titres honorifiques, par uid : « Skald », « Forgeronne »
+   *  (addendum 2, ordre 15). Chef ou équipe. */
+  titres?: Record<string, string>;
   creeLe: Timestamp | null;
   maj: Timestamp | null;
 }
