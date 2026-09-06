@@ -88,7 +88,7 @@ const GuildesPage: React.FC = () => {
           ) : (
             <>
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <p className="font-editorial italic text-sm text-ivory-soft">
+                <p className="font-editorial text-sm text-ivory-soft">
                   <span className="text-brass tabular-nums font-medium">{guildes.length}</span>{' '}
                   {fr ? (guildes.length > 1 ? 'guildes' : 'guilde') : (guildes.length > 1 ? 'guilds' : 'guild')}
                 </p>

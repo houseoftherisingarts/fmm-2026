@@ -2,9 +2,12 @@
 // Même patron que src/games/des/cpu.test.ts : pas de cadre de test, un
 // fichier qui s'exécute et des assertions.
 //
-//   npx esbuild src/firebase/guildeMonnaie.test.ts --bundle --platform=node \
-//     --format=esm --define:import.meta.env='{}' --outfile=/tmp/guilde-monnaie.mjs \
-//     && node /tmp/guilde-monnaie.mjs
+//   npx esbuild src/firebase/guildeMonnaie.test.ts --bundle --platform=browser \
+//     --format=esm --external:node:assert --define:import.meta.env='{}' \
+//     --outfile=/tmp/guilde-monnaie.mjs && node /tmp/guilde-monnaie.mjs
+//
+// La plateforme reste « browser » : c'est là que ce code tourne pour de
+// vrai, et le build node du SDK Firebase traînerait grpc derrière lui.
 //
 // Il couvre ce qui casse vraiment quand on y touche : la formule du
 // taux (qui doit rester la jumelle exacte de celle du serveur), le

@@ -837,7 +837,19 @@ service cloud.firestore {
       // règles. N'importe quel membre connecté ne peut que se demander
       // lui-même (rejoindre / annuler sa demande) ou se retirer
       // lui-même (quitter) : jamais bouger la ligne d'un autre.
+      // Un chef fait passer une demande vers les membres (accepter),
+      // efface une demande (refuser) ou retire un membre (renvoyer).
+      // Il n'ajoute jamais quelqu'un qui n'a pas demandé : l'entrée
+      // directe passe par le code d'invitation, côté serveur.
       allow update: if isAdmin()
+                    || (request.auth.uid in resource.data.admins
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                              .hasOnly(['demandes', 'membres', 'nbMembres', 'admins', 'maj'])
+                        && request.resource.data.demandes.removeAll(resource.data.demandes).size() == 0
+                        && resource.data.demandes.hasAll(request.resource.data.membres.removeAll(resource.data.membres))
+                        && !(resource.data.creePar in resource.data.membres.removeAll(request.resource.data.membres))
+                        && resource.data.membres.hasAll(request.resource.data.admins)
+                        && resource.data.creePar in request.resource.data.admins)
                     || (request.auth.uid in resource.data.admins
                         && request.resource.data.creePar == resource.data.creePar
                         && request.resource.data.diff(resource.data).affectedKeys()

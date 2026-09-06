@@ -72,7 +72,7 @@ const Tresor: React.FC<{
   const reste = resteAChanger(bourse);
 
   const nomDe = (ref: string | undefined): string => {
-    if (!ref) return '—';
+    if (!ref) return '·';
     if (ref === 'tresor') return fr ? 'le trésor' : 'the treasury';
     if (ref === 'monnaie') return fr ? 'la frappe' : 'the mint';
     return fiches[ref]?.nom || (fr ? 'un membre' : 'a member');
