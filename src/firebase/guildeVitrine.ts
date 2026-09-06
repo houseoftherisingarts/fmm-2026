@@ -23,7 +23,6 @@ import { db, storage } from '../firebase';
 import { versWebp } from './photosPubliques';
 
 export type TypeVitrine = 'texte' | 'photo' | 'video' | 'formation';
-export const TYPES_VITRINE: readonly TypeVitrine[] = ['texte', 'photo', 'video', 'formation'];
 
 /** Les mêmes bornes que firestore.rules et storage.rules. */
 export const LONGUEUR_MAX_TEXTE = 5000;

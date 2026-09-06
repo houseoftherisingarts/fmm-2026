@@ -997,7 +997,11 @@ service cloud.firestore {
                && (!('mediaUrl' in d) || (d.mediaUrl is string && d.mediaUrl.size() <= 1000))
                && (!('videoUrl' in d) || (d.videoUrl is string && d.videoUrl.size() <= 1000))
                && (!('fichierUrl' in d) || (d.fichierUrl is string && d.fichierUrl.size() <= 1000))
-               && (!('chemin' in d) || (d.chemin is string && d.chemin.size() <= 300))
+               // Le fichier déposé ne peut être que celui de ce billet :
+               // supprimer() efface ce chemin, et personne ne le pointe
+               // sur le fichier d'un autre.
+               && (!('chemin' in d) || (d.chemin is string
+                                        && d.chemin.matches('^guildes/' + id + '/vitrine/' + postId + '[.](webp|mp4|pdf)$')))
                && (!('duree' in d) || (d.duree is string && d.duree.size() <= 40))
                && (!('epingle' in d) || d.epingle is bool);
       }
@@ -1011,10 +1015,15 @@ service cloud.firestore {
                     && request.resource.data.creeLe == request.time
                     // L'épingle est un geste de chef, même sur son propre billet.
                     && (!('epingle' in request.resource.data) || vitrineChefOuEquipe());
+      // Après la publication, seuls le titre, le texte et l'épingle
+      // bougent : ni l'auteur, ni les fichiers, ni la date. L'auteur
+      // retouche ses mots; un chef ou l'équipe fait de même et épingle.
       allow update: if vitrineChampsValides()
                     && request.resource.data.uid == resource.data.uid
                     && request.resource.data.creeLe == resource.data.creeLe
-                    && (vitrineChefOuEquipe()
+                    && ((vitrineChefOuEquipe()
+                         && request.resource.data.diff(resource.data).affectedKeys()
+                               .hasOnly(['titre', 'texte', 'epingle', 'maj']))
                         || (vitrineAuteur()
                             && request.resource.data.diff(resource.data).affectedKeys()
                                   .hasOnly(['titre', 'texte', 'maj'])));
