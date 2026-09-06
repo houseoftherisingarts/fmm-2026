@@ -132,6 +132,17 @@ const GuildesPage: React.FC = () => {
                       className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40 resize-y"
                       style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
                   </label>
+                  {nom.trim().length >= 2 && (
+                    <p className="font-sans text-[11px] leading-relaxed" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+                      {fr ? 'Votre adresse : ' : 'Your address: '}
+                      <span style={{ color: 'var(--sk-gilt)' }}>festivalmedievaldemontpellier.org/{adresse}</span>
+                      {libre === false && (
+                        <span className="block mt-1" style={{ color: '#E08A6E' }}>
+                          {fr ? 'Cette adresse est prise. Changez un mot du nom.' : 'That address is taken. Change a word of the name.'}
+                        </span>
+                      )}
+                    </p>
+                  )}
                   {erreur && <p className="font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}
                   <div className="flex items-center justify-end gap-2">
                     <button type="button" onClick={() => setOuvert(false)}
