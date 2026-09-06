@@ -14,13 +14,14 @@ import {
   suivreGuilde, demanderAdhesion, retirerDemande, quitterGuilde,
   modifierGuilde, supprimerGuilde, slugDeGuilde, slugDisponible,
   LONGUEUR_NOM_MAX, type Guilde, type MonnaieGuilde,
-  changerBlason, changerBanniereGuilde, motDeLaForme, motDuChef,
+  changerBlason, changerBanniereGuilde, changerImageMonnaie, motDeLaForme, motDuChef,
   nomMonnaie, FORMES_GUILDE, type FormeGuilde,
 } from '../firebase/guildes';
 import { guildeRejoindreParCode } from '../firebase/guildeMonnaie';
 import MurGuilde from '../components/mur/MurGuilde';
 import Onglets, { cheminGuilde, type OngletGuilde } from '../components/guilde/Onglets';
-import SoldePieces from '../components/guilde/SoldePieces';
+import SoldePieces, { PieceGuilde } from '../components/guilde/SoldePieces';
+import Vitrine from '../components/guilde/Vitrine';
 import Tresor from '../components/guilde/Tresor';
 import Membres from '../components/guilde/Membres';
 import Salon from '../components/guilde/Salon';
@@ -30,14 +31,34 @@ import Marche from '../components/guilde/Marche';
 // ─── La fiche d'un groupe ────────────────────────────────────────────
 // Alex, 2026-08-27 : l'en-tête, les membres et la file des demandes.
 // Depuis le 6 septembre 2026 la page vit sous l'adresse du groupe
-// (/vestrvegirvikingarclan) et se lit en six panneaux : le mur, le
-// salon, les événements, le marché, le trésor et les membres. Le
-// composant accepte la guilde déjà résolue par GuildeParSlug, pour ne
-// pas la relire une seconde fois au montage.
+// (/vestrvegirvikingarclan) et se lit en sept panneaux : la vitrine, le
+// mur, le salon, les événements, le marché, le trésor et les membres.
+// Le composant accepte la guilde déjà résolue par GuildeParSlug, pour
+// ne pas la relire une seconde fois au montage.
+//
+// L'addendum de l'après-midi du 6 septembre pose la page en pleine
+// largeur (aucune colonne centrée), la bannière d'un bord à l'autre,
+// le blason dans l'orbe du hero, la pièce dessinée partout où la
+// monnaie paraît, et sépare les rôles : les chefs (admins[]) portent le
+// mot de la forme, le fondateur (creePar) son étiquette, et l'équipe du
+// festival fait tout ce qu'un chef fait sous le nom d'Intendance.
 
 const champ = {
   background: 'rgba(0,0,0,0.35)',
   border: '1px solid rgba(var(--sk-glow-rgb),0.22)',
+};
+
+/** La photo des vikings, dans l'orbe des groupes sans blason. */
+const ORBE_PAR_DEFAUT = '/histoire/archives/lievre/2022-e9ed2ea5.webp';
+
+/** Le cadrage de la bannière : aucune préférence n'existe encore sur
+ *  la fiche, donc le réglage de l'addendum (65 % vers la droite, où
+ *  Aslak tient la proue du drakkar). */
+const CADRAGE_BANNIERE = '65% center';
+
+const bouton = {
+  plein: 'inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50',
+  filet: 'inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50',
 };
 
 const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> = ({
@@ -113,10 +134,12 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
 
   const [blasonEnvoi, setBlasonEnvoi] = useState(false);
   const [banniereEnvoi, setBanniereEnvoi] = useState(false);
+  const [pieceEnvoi, setPieceEnvoi] = useState(false);
   const [adhesion, setAdhesion] = useState(false);
   const [erreurAdhesion, setErreurAdhesion] = useState<string | null>(null);
   const fichierBanniere = useRef<HTMLInputElement>(null);
   const fichierBlason = useRef<HTMLInputElement>(null);
+  const fichierPiece = useRef<HTMLInputElement>(null);
 
   const ouvrirEdition = () => {
     if (!guilde) return;
@@ -138,7 +161,10 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
     try {
       const patch: Parameters<typeof modifierGuilde>[1] = { nom, description };
       if (monnaie.nom.trim() && monnaie.sigle.trim()) {
+        // La pièce dessinée (imageUrl) vit dans la même carte : on la
+        // garde telle quelle en récrivant le nom, le sigle et le glyphe.
         patch.monnaie = {
+          ...guilde.monnaie,
           nom: monnaie.nom.trim().slice(0, 40),
           sigle: monnaie.sigle.trim().toUpperCase().slice(0, 4),
           glyphe: monnaie.glyphe.trim().slice(0, 4) || '◎',
@@ -181,6 +207,13 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
     setBlasonEnvoi(true);
     try { await changerBlason(guilde.id, f); } finally { setBlasonEnvoi(false); }
   };
+  const choisirPiece = async (f: File | undefined) => {
+    if (!f || !guilde) return;
+    setPieceEnvoi(true); setErreurEdition(null);
+    try { await changerImageMonnaie(guilde, f); }
+    catch (e) { setErreurEdition(e instanceof Error ? e.message : String(e)); }
+    finally { setPieceEnvoi(false); }
+  };
 
   const code = params.get('code') || '';
   const rejoindreParCode = async () => {
@@ -201,13 +234,12 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
         <SEO title={fr ? 'Guilde' : 'Guild'} noindex />
         <section className="relative caravan-stage bleed-edges pt-24 pb-20 overflow-hidden">
           <Brume />
-          <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8">
-            <div className="glass-light rounded-lg-card p-8 text-center">
-              <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-5">
+          <div className="relative z-10 px-5 md:px-10 xl:px-16">
+            <div className="glass-light rounded-lg-card p-6 md:p-8 flex items-center justify-between gap-5 flex-wrap">
+              <p className="font-editorial text-base text-ivory-soft leading-relaxed min-w-0 flex-1">
                 {fr ? 'Les guildes se lisent entre membres. Connectez-vous pour les ouvrir.' : 'Guilds are read among members. Sign in to open them.'}
               </p>
-              <button type="button" onClick={openSignIn}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+              <button type="button" onClick={openSignIn} className={bouton.plein}>
                 {fr ? 'Se connecter' : 'Sign in'}
               </button>
             </div>
@@ -231,27 +263,31 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
         <SEO title={fr ? 'Guilde' : 'Guild'} noindex />
         <section className="relative caravan-stage bleed-edges pt-24 pb-20 overflow-hidden">
           <Brume />
-          <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 text-center">
-            <p className="font-editorial text-base text-ivory-soft mb-5">
-              {fr ? 'Ce groupe n’existe pas ou plus.' : 'This group no longer exists.'}
-            </p>
-            <Link to={addLocale('/guildes', lang)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
-              {fr ? 'Retour aux guildes' : 'Back to guilds'}
-            </Link>
+          <div className="relative z-10 px-5 md:px-10 xl:px-16">
+            <div className="glass-light rounded-lg-card p-6 md:p-8 flex items-center justify-between gap-5 flex-wrap">
+              <p className="font-editorial text-base text-ivory-soft min-w-0 flex-1">
+                {fr ? 'Ce groupe n’existe pas ou plus.' : 'This group no longer exists.'}
+              </p>
+              <Link to={addLocale('/guildes', lang)} className={bouton.plein}>
+                {fr ? 'Retour aux guildes' : 'Back to guilds'}
+              </Link>
+            </div>
           </div>
         </section>
       </main>
     );
   }
 
-  const estAdminGuilde = guilde.admins.includes(user.uid);
-  const peutGerer = isAdmin || estAdminGuilde;
+  // Les rôles (addendum, ordre 5) : chef = dans admins[]; l'équipe du
+  // festival fait tout ce qu'un chef fait, sous le nom d'Intendance.
+  const estChef = guilde.admins.includes(user.uid);
+  const peutGerer = estChef || isAdmin;
   const enAttente = guilde.demandes.includes(user.uid);
   const mot = motDeLaForme(guilde.forme, lang);
+  const titreGestion = estChef ? motDuChef(guilde.forme, lang) : (fr ? 'Intendance' : 'Stewardship');
 
   const reserve = (
-    <section className="glass-light rounded-lg-card p-8 text-center">
+    <section className="glass-light rounded-lg-card p-6 md:p-8">
       <p className="font-editorial text-base text-ivory-soft leading-relaxed">
         {fr
           ? `Ce panneau se lit entre membres. Entrez dans ${mot.toLowerCase()} pour l’ouvrir.`
@@ -269,37 +305,42 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
         intro={guilde.description || (fr
           ? `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'Un' : 'Une'} ${mot.toLowerCase()} de l’Ordre.`
           : `A ${mot.toLowerCase()} of the Order.`)}
-        orbImage="/histoire/archives/lievre/2022-e9ed2ea5.webp"
+        orbImage={guilde.blason || ORBE_PAR_DEFAUT}
+        orbLabel={guilde.blason ? (fr ? `Le blason de ${guilde.nom}` : `The ${guilde.nom} coat of arms`) : undefined}
       />
-      <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
+      <section className="relative caravan-stage bleed-edges pb-20 overflow-hidden">
         <Brume />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 space-y-6">
 
-          {/* ── La bannière du groupe (Alex, 2026-08-28) ── */}
-          {(guilde.banniereUrl || peutGerer) && (
-            <div className="relative rounded-[16px] p-[3px]"
-                 style={{ background: 'linear-gradient(135deg, var(--sk-gilt-pale) 0%, var(--color-brass) 40%, var(--sk-brass-deep) 70%, var(--sk-gilt-pale) 100%)',
-                          boxShadow: '0 0 0 1px rgba(var(--sk-wood-rgb),0.85), 0 20px 50px -30px rgba(0,0,0,0.9)' }}>
-              <div className="relative overflow-hidden rounded-[13px] aspect-[16/5]"
-                   style={{ background: guilde.banniereUrl ? undefined : 'url(/textures/black-linen.png), rgba(var(--sk-ink-rgb),0.9)' }}>
-                {guilde.banniereUrl && <img src={guilde.banniereUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-                <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
-                     style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.6), transparent)' }} />
-                {peutGerer && (
-                  <>
-                    <button type="button" onClick={() => fichierBanniere.current?.click()} disabled={banniereEnvoi}
-                            className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px]"
-                            style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}>
-                      {banniereEnvoi ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
-                      {guilde.banniereUrl ? (fr ? 'Changer la bannière' : 'Change the banner') : (fr ? 'Ajouter une bannière' : 'Add a banner')}
-                    </button>
-                    <input ref={fichierBanniere} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
-                           onChange={(e) => { void choisirBanniere(e.target.files?.[0]); e.target.value = ''; }} />
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+        {/* ── La bannière, d'un bord à l'autre (addendum, ordre 2) ── */}
+        {(guilde.banniereUrl || peutGerer) && (
+          <div
+            className="relative z-10 w-full overflow-hidden aspect-[16/9] md:aspect-[21/9]"
+            style={{ background: guilde.banniereUrl ? 'rgba(var(--sk-ink-rgb),0.9)' : 'url(/textures/black-linen.png), rgba(var(--sk-ink-rgb),0.9)' }}
+          >
+            {guilde.banniereUrl && (
+              <img src={guilde.banniereUrl} alt="" className="absolute inset-0 w-full h-full object-cover"
+                   style={{ objectPosition: CADRAGE_BANNIERE }} />
+            )}
+            <div className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+                 style={{ background: 'linear-gradient(to bottom, rgba(var(--sk-ink-rgb),0.55), transparent)' }} />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
+                 style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.92), rgba(var(--sk-ink-rgb),0.35) 55%, transparent)' }} />
+            {peutGerer && (
+              <>
+                <button type="button" onClick={() => fichierBanniere.current?.click()} disabled={banniereEnvoi}
+                        className="absolute bottom-4 right-5 md:right-10 xl:right-16 inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px]"
+                        style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}>
+                  {banniereEnvoi ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                  {guilde.banniereUrl ? (fr ? 'Changer la bannière' : 'Change the banner') : (fr ? 'Ajouter une bannière' : 'Add a banner')}
+                </button>
+                <input ref={fichierBanniere} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
+                       onChange={(e) => { void choisirBanniere(e.target.files?.[0]); e.target.value = ''; }} />
+              </>
+            )}
+          </div>
+        )}
+
+        <div className="relative z-10 px-5 md:px-10 xl:px-16 pt-6 space-y-6">
 
           {/* ── Le blason, le compte des membres, mes deux bourses ── */}
           <div className="flex items-center gap-4 flex-wrap">
@@ -318,10 +359,9 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
             </div>
             {peutGerer && (
               <>
-                <button type="button" onClick={() => fichierBlason.current?.click()} disabled={blasonEnvoi}
-                        className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50">
+                <button type="button" onClick={() => fichierBlason.current?.click()} disabled={blasonEnvoi} className={bouton.filet}>
                   {blasonEnvoi ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
-                  {guilde.blason ? (fr ? 'Changer la photo' : 'Change the photo') : (fr ? 'Ajouter une photo' : 'Add a photo')}
+                  {guilde.blason ? (fr ? 'Changer le blason' : 'Change the coat of arms') : (fr ? 'Ajouter un blason' : 'Add a coat of arms')}
                 </button>
                 <input ref={fichierBlason} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
                        onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
@@ -343,8 +383,7 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
                   : (fr ? 'Demandez à joindre. Un chef du groupe répondra.' : 'Ask to join. A leader of the group will answer.')}
               </p>
               {code ? (
-                <button type="button" onClick={rejoindreParCode} disabled={adhesion}
-                        className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                <button type="button" onClick={rejoindreParCode} disabled={adhesion} className={`shrink-0 ${bouton.plein}`}>
                   {adhesion ? <Loader2 size={13} className="animate-spin" /> : <KeyRound size={13} />}
                   {fr ? 'Rejoindre' : 'Join'}
                 </button>
@@ -369,10 +408,10 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
           {peutGerer && (
             <section className="glass-light rounded-lg-card p-5 md:p-6">
               {editEnCours ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'La forme du groupe' : 'The kind of group'}</span>
-                    <div className="flex flex-wrap gap-1.5 mb-3" role="radiogroup">
+                    <div className="flex flex-wrap gap-1.5" role="radiogroup">
                       {FORMES_GUILDE.map((f) => {
                         const actif = (guilde.forme || 'guilde') === f.id;
                         return (
@@ -386,44 +425,68 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
                       })}
                     </div>
                   </div>
-                  <label className="block">
-                    <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
-                    <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
-                  </label>
-                  <label className="block">
-                    <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
-                    <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory resize-y" style={champ} />
-                  </label>
 
-                  {/* L'adresse du groupe */}
-                  <label className="block">
-                    <span className="block witcher-stat-label mb-1.5">{fr ? 'L’adresse du groupe' : 'The group address'}</span>
-                    <input value={adresse}
-                      onChange={(e) => setAdresse(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
-                    <span className="block font-sans text-[11px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
-                      festivalmedievaldemontpellier.org/{adresse || '…'}
-                    </span>
-                  </label>
+                  <div className="grid gap-x-8 gap-y-4 lg:grid-cols-2">
+                    <div className="space-y-3">
+                      <label className="block">
+                        <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
+                        <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))}
+                          className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
+                      </label>
+                      <label className="block">
+                        <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
+                        <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)}
+                          className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory resize-y" style={champ} />
+                      </label>
+                      <label className="block">
+                        <span className="block witcher-stat-label mb-1.5">{fr ? 'L’adresse du groupe' : 'The group address'}</span>
+                        <input value={adresse}
+                          onChange={(e) => setAdresse(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                          className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
+                        <span className="block font-sans text-[11px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+                          festivalmedievaldemontpellier.org/{adresse || '…'}
+                        </span>
+                      </label>
+                    </div>
 
-                  {/* La monnaie du groupe */}
-                  <div>
-                    <span className="block witcher-stat-label mb-1.5">{fr ? 'La monnaie du groupe' : 'The group currency'}</span>
-                    <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
-                      <input value={monnaie.nom} onChange={(e) => setMonnaie((m) => ({ ...m, nom: e.target.value.slice(0, 40) }))}
-                        placeholder={fr ? 'Vikingar Coin' : 'Vikingar Coin'}
-                        aria-label={fr ? 'Le nom de la monnaie' : 'The currency name'}
-                        className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
-                      <input value={monnaie.sigle} onChange={(e) => setMonnaie((m) => ({ ...m, sigle: e.target.value.toUpperCase().slice(0, 4) }))}
-                        placeholder="VIK" size={5}
-                        aria-label={fr ? 'Le sigle, deux à quatre lettres' : 'The ticker, two to four letters'}
-                        className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory text-center tracking-widest placeholder:text-ivory-soft/40" style={champ} />
-                      <input value={monnaie.glyphe} onChange={(e) => setMonnaie((m) => ({ ...m, glyphe: e.target.value.slice(0, 4) }))}
-                        placeholder="◎" size={3}
-                        aria-label={fr ? 'Le glyphe' : 'The glyph'}
-                        className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory text-center placeholder:text-ivory-soft/40" style={champ} />
+                    {/* La monnaie du groupe et sa pièce dessinée */}
+                    <div className="space-y-3">
+                      <div>
+                        <span className="block witcher-stat-label mb-1.5">{fr ? 'La monnaie du groupe' : 'The group currency'}</span>
+                        <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+                          <input value={monnaie.nom} onChange={(e) => setMonnaie((m) => ({ ...m, nom: e.target.value.slice(0, 40) }))}
+                            placeholder="Vikingar Coin"
+                            aria-label={fr ? 'Le nom de la monnaie' : 'The currency name'}
+                            className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
+                          <input value={monnaie.sigle} onChange={(e) => setMonnaie((m) => ({ ...m, sigle: e.target.value.toUpperCase().slice(0, 4) }))}
+                            placeholder="VIK" size={5}
+                            aria-label={fr ? 'Le sigle, deux à quatre lettres' : 'The ticker, two to four letters'}
+                            className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory text-center tracking-widest placeholder:text-ivory-soft/40" style={champ} />
+                          <input value={monnaie.glyphe} onChange={(e) => setMonnaie((m) => ({ ...m, glyphe: e.target.value.slice(0, 4) }))}
+                            placeholder="◎" size={3}
+                            aria-label={fr ? 'Le glyphe' : 'The glyph'}
+                            className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory text-center placeholder:text-ivory-soft/40" style={champ} />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="block witcher-stat-label mb-1.5">{fr ? 'La pièce' : 'The coin'}</span>
+                        <div className="flex items-center gap-4 flex-wrap">
+                          <PieceGuilde guilde={guilde} size={64} />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-sans text-[11px] leading-relaxed mb-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+                              {fr
+                                ? 'Une image carrée, ronde de préférence, sur fond transparent. Elle remplace le glyphe partout où la pièce paraît.'
+                                : 'A square image, ideally round, on a transparent background. It replaces the glyph wherever the coin appears.'}
+                            </p>
+                            <button type="button" onClick={() => fichierPiece.current?.click()} disabled={pieceEnvoi} className={bouton.filet}>
+                              {pieceEnvoi ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
+                              {guilde.monnaie?.imageUrl ? (fr ? 'Changer la pièce' : 'Change the coin') : (fr ? 'Téléverser la pièce' : 'Upload the coin')}
+                            </button>
+                            <input ref={fichierPiece} type="file" accept="image/png,image/webp,image/jpeg" className="sr-only"
+                                   onChange={(e) => { void choisirPiece(e.target.files?.[0]); e.target.value = ''; }} />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -434,8 +497,7 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
                       className="px-4 py-2 font-sans uppercase tracking-wider text-xs text-ivory-soft hover:text-brass transition">
                       {fr ? 'Annuler' : 'Cancel'}
                     </button>
-                    <button type="button" onClick={enregistrer} disabled={busy || nom.trim().length < 2}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                    <button type="button" onClick={enregistrer} disabled={busy || nom.trim().length < 2} className={bouton.plein}>
                       {busy ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />} {fr ? 'Enregistrer' : 'Save'}
                     </button>
                   </div>
@@ -443,7 +505,7 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
               ) : (
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <p className="witcher-stat-label">
-                    {fr ? `Gestion · ${motDuChef(guilde.forme, lang)}` : `Management · ${motDuChef(guilde.forme, lang)}`}
+                    {fr ? `Gestion · ${titreGestion}` : `Management · ${titreGestion}`}
                   </p>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={ouvrirEdition}
@@ -460,19 +522,26 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
             </section>
           )}
 
-          {/* ── Les six panneaux ── */}
+          {/* ── Les sept panneaux ── */}
           <Onglets actif={onglet} lang={lang} onChoisir={allerA} />
 
           <div id={`panneau-guilde-${onglet}`} role="tabpanel" aria-labelledby={`onglet-guilde-${onglet}`}>
+            {/* La vitrine prend `estChef` au sens large : l'équipe y épingle
+                et y retire comme un chef (addendum, ordre 5). */}
+            {onglet === 'vitrine' && <Vitrine guilde={guilde} uid={user.uid} estChef={peutGerer} publique={false} />}
             {onglet === 'mur' && <MurGuilde lang={lang} guildeId={guilde.id} peutEcrire={estMembre} />}
-            {onglet === 'salon' && (estMembre ? <Salon guilde={guilde} uid={user.uid} estChef={estAdminGuilde} /> : reserve)}
-            {onglet === 'evenements' && (estMembre ? <Evenements guilde={guilde} uid={user.uid} estChef={estAdminGuilde} /> : reserve)}
-            {onglet === 'marche' && (estMembre ? <Marche guilde={guilde} uid={user.uid} estChef={estAdminGuilde} /> : reserve)}
+            {onglet === 'salon' && (estMembre
+              ? <Salon guilde={guilde} uid={user.uid} estChef={estChef} peutGerer={peutGerer} fiches={fichesRef.current} />
+              : reserve)}
+            {onglet === 'evenements' && (estMembre
+              ? <Evenements guilde={guilde} uid={user.uid} estChef={estChef} peutGerer={peutGerer} fiches={fichesRef.current} />
+              : reserve)}
+            {onglet === 'marche' && (estMembre ? <Marche guilde={guilde} uid={user.uid} estChef={estChef} /> : reserve)}
             {onglet === 'tresor' && (estMembre
-              ? <Tresor guilde={guilde} uid={user.uid} estChef={estAdminGuilde} lang={lang} fiches={fichesRef.current} />
+              ? <Tresor guilde={guilde} uid={user.uid} peutGerer={peutGerer} lang={lang} fiches={fichesRef.current} />
               : reserve)}
             {onglet === 'membres' && (
-              <Membres guilde={guilde} uid={user.uid} estChef={estAdminGuilde}
+              <Membres guilde={guilde} uid={user.uid} estChef={estChef}
                        peutGerer={peutGerer} lang={lang} fiches={fichesRef.current} />
             )}
           </div>
