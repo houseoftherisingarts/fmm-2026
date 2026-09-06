@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useBadges } from '../contexts/BadgesContext';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Users, Check, X, Pencil, Trash2, Save, LogOut, Loader2, Camera } from 'lucide-react';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { Users, Pencil, Trash2, Save, LogOut, Loader2, Camera, KeyRound } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -11,25 +11,49 @@ import PageHeader from '../components/layout/PageHeader';
 import { addLocale } from '../lib/locale';
 import { lireFiche, type Membre } from '../firebase/ordre';
 import {
-  suivreGuilde, accepterMembre, refuserMembre, quitterGuilde,
-  modifierGuilde, supprimerGuilde, LONGUEUR_NOM_MAX, type Guilde,
-  changerBlason, changerBanniereGuilde, motDeLaForme, FORMES_GUILDE, type FormeGuilde,
+  suivreGuilde, demanderAdhesion, retirerDemande, quitterGuilde,
+  modifierGuilde, supprimerGuilde, slugDeGuilde, slugDisponible,
+  LONGUEUR_NOM_MAX, type Guilde, type MonnaieGuilde,
+  changerBlason, changerBanniereGuilde, motDeLaForme, motDuChef,
+  nomMonnaie, FORMES_GUILDE, type FormeGuilde,
 } from '../firebase/guildes';
+import { guildeRejoindreParCode } from '../firebase/guildeMonnaie';
 import MurGuilde from '../components/mur/MurGuilde';
+import Onglets, { cheminGuilde, type OngletGuilde } from '../components/guilde/Onglets';
+import SoldePieces from '../components/guilde/SoldePieces';
+import Tresor from '../components/guilde/Tresor';
+import Membres from '../components/guilde/Membres';
+import Salon from '../components/guilde/Salon';
+import Evenements from '../components/guilde/Evenements';
+import Marche from '../components/guilde/Marche';
 
-// ─── La fiche d'une guilde ───────────────────────────────────────────
-// En-tête, membres, la file des demandes pour l'admin de la guilde
-// (le fondateur) ou l'équipe, et le mur propre à la guilde
-// (Alex, 2026-08-27).
-const GuildePage: React.FC = () => {
+// ─── La fiche d'un groupe ────────────────────────────────────────────
+// Alex, 2026-08-27 : l'en-tête, les membres et la file des demandes.
+// Depuis le 6 septembre 2026 la page vit sous l'adresse du groupe
+// (/vestrvegirvikingarclan) et se lit en six panneaux : le mur, le
+// salon, les événements, le marché, le trésor et les membres. Le
+// composant accepte la guilde déjà résolue par GuildeParSlug, pour ne
+// pas la relire une seconde fois au montage.
+
+const champ = {
+  background: 'rgba(0,0,0,0.35)',
+  border: '1px solid rgba(var(--sk-glow-rgb),0.22)',
+};
+
+const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> = ({
+  guildeInitiale, onglet: ongletRoute,
+}) => {
   useCaravanPage();
-  const { id } = useParams<{ id: string }>();
+  const { id: idRoute } = useParams<{ id: string }>();
   const { lang } = useUI();
   const navigate = useNavigate();
   const { user, isAdmin, openSignIn } = useAuth();
+  const { gagnerBadge } = useBadges();
+  const [params] = useSearchParams();
   const fr = lang === 'FR';
 
-  const [guilde, setGuilde] = useState<Guilde | null | undefined>(undefined);
+  const id = guildeInitiale?.id || idRoute;
+  const [guilde, setGuilde] = useState<Guilde | null | undefined>(guildeInitiale);
   useEffect(() => {
     if (!id) return;
     return suivreGuilde(id, setGuilde);
@@ -54,27 +78,121 @@ const GuildePage: React.FC = () => {
     })();
   }, [guilde]);
 
+  // Le badge du groupe tombe dès que la personne s'y voit membre
+  // (Alex, 2026-08-28).
+  const estMembre = Boolean(user && guilde?.membres.includes(user.uid));
+  useEffect(() => {
+    if (estMembre) gagnerBadge('guilde');
+  }, [estMembre, gagnerBadge]);
+
+  // L'ancienne adresse /guildes/{id} mène toujours quelque part : elle
+  // renvoie sur celle du groupe dès qu'il en a une.
+  const slug = guilde?.slug;
+  useEffect(() => {
+    if (!guildeInitiale && slug) {
+      navigate(cheminGuilde(slug, ongletRoute || 'mur', lang), { replace: true });
+    }
+  }, [guildeInitiale, slug, ongletRoute, lang, navigate]);
+
+  // Sans adresse (les groupes fondés avant le 6 septembre), l'onglet
+  // reste dans la page plutôt que dans l'URL.
+  const [ongletLocal, setOngletLocal] = useState<OngletGuilde>('mur');
+  const onglet = ongletRoute || ongletLocal;
+  const allerA = (o: OngletGuilde) => {
+    if (slug) navigate(cheminGuilde(slug, o, lang));
+    else setOngletLocal(o);
+  };
+
   const [editEnCours, setEditEnCours] = useState(false);
   const [nom, setNom] = useState('');
   const [description, setDescription] = useState('');
+  const [monnaie, setMonnaie] = useState<MonnaieGuilde>({ nom: '', sigle: '', glyphe: '◎' });
+  const [adresse, setAdresse] = useState('');
   const [busy, setBusy] = useState(false);
+  const [erreurEdition, setErreurEdition] = useState<string | null>(null);
+
+  const [blasonEnvoi, setBlasonEnvoi] = useState(false);
+  const [banniereEnvoi, setBanniereEnvoi] = useState(false);
+  const [adhesion, setAdhesion] = useState(false);
+  const [erreurAdhesion, setErreurAdhesion] = useState<string | null>(null);
+  const fichierBanniere = useRef<HTMLInputElement>(null);
+  const fichierBlason = useRef<HTMLInputElement>(null);
 
   const ouvrirEdition = () => {
     if (!guilde) return;
-    setNom(guilde.nom); setDescription(guilde.description || '');
+    setNom(guilde.nom);
+    setDescription(guilde.description || '');
+    setMonnaie({
+      nom: guilde.monnaie?.nom || '',
+      sigle: guilde.monnaie?.sigle || '',
+      glyphe: guilde.monnaie?.glyphe || '◎',
+    });
+    setAdresse(guilde.slug || slugDeGuilde(guilde.nom, guilde.forme));
+    setErreurEdition(null);
     setEditEnCours(true);
   };
+
   const enregistrer = async () => {
     if (!guilde) return;
-    setBusy(true);
-    try { await modifierGuilde(guilde.id, { nom, description }); setEditEnCours(false); }
-    finally { setBusy(false); }
+    setBusy(true); setErreurEdition(null);
+    try {
+      const patch: Parameters<typeof modifierGuilde>[1] = { nom, description };
+      if (monnaie.nom.trim() && monnaie.sigle.trim()) {
+        patch.monnaie = {
+          nom: monnaie.nom.trim().slice(0, 40),
+          sigle: monnaie.sigle.trim().toUpperCase().slice(0, 4),
+          glyphe: monnaie.glyphe.trim().slice(0, 4) || '◎',
+        };
+        if (patch.monnaie.sigle.length < 2) {
+          setErreurEdition(fr ? 'Le sigle tient en deux à quatre lettres.' : 'The ticker holds two to four letters.');
+          return;
+        }
+      }
+      const voulue = adresse.trim().toLowerCase();
+      if (voulue && voulue !== guilde.slug) {
+        if (!(await slugDisponible(voulue, guilde.id))) {
+          setErreurEdition(fr ? 'Cette adresse est prise ou réservée.' : 'That address is taken or reserved.');
+          return;
+        }
+        patch.slug = voulue;
+      }
+      await modifierGuilde(guilde.id, patch);
+      setEditEnCours(false);
+      if (patch.slug) navigate(cheminGuilde(patch.slug, onglet, lang), { replace: true });
+    } catch (e) {
+      setErreurEdition(e instanceof Error ? e.message : String(e));
+    } finally { setBusy(false); }
   };
+
   const detruire = async () => {
     if (!guilde) return;
-    if (!confirm(fr ? 'Détruire cette guilde ? C’est irréversible.' : 'Destroy this guild? This cannot be undone.')) return;
+    if (!confirm(fr ? 'Détruire ce groupe ? C’est irréversible.' : 'Destroy this group? This cannot be undone.')) return;
     await supprimerGuilde(guilde.id);
     navigate(addLocale('/guildes', lang));
+  };
+
+  const choisirBanniere = async (f: File | undefined) => {
+    if (!f || !guilde) return;
+    setBanniereEnvoi(true);
+    try { await changerBanniereGuilde(guilde.id, f); } finally { setBanniereEnvoi(false); }
+  };
+  const choisirBlason = async (f: File | undefined) => {
+    if (!f || !guilde) return;
+    setBlasonEnvoi(true);
+    try { await changerBlason(guilde.id, f); } finally { setBlasonEnvoi(false); }
+  };
+
+  const code = params.get('code') || '';
+  const rejoindreParCode = async () => {
+    setAdhesion(true); setErreurAdhesion(null);
+    try { await guildeRejoindreParCode({ code }); }
+    catch (e) {
+      const c = (e as { code?: string })?.code || '';
+      setErreurAdhesion(/(not-found|internal|unavailable)$/.test(c)
+        ? (fr ? 'Ce code ne mène à rien. Demandez-en un neuf.' : 'That code leads nowhere. Ask for a fresh one.')
+        : (e instanceof Error ? e.message : String(e)));
+    }
+    finally { setAdhesion(false); }
   };
 
   if (!user) {
@@ -115,7 +233,7 @@ const GuildePage: React.FC = () => {
           <Brume />
           <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 text-center">
             <p className="font-editorial text-base text-ivory-soft mb-5">
-              {fr ? 'Cette guilde n’existe pas ou plus.' : 'This guild no longer exists.'}
+              {fr ? 'Ce groupe n’existe pas ou plus.' : 'This group no longer exists.'}
             </p>
             <Link to={addLocale('/guildes', lang)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
@@ -127,47 +245,37 @@ const GuildePage: React.FC = () => {
     );
   }
 
-  const estMembre = guilde.membres.includes(user.uid);
   const estAdminGuilde = guilde.admins.includes(user.uid);
-  // Le badge de la guilde tombe dès que la personne s'y voit membre
-  // (Alex, 2026-08-28).
-  const { gagnerBadge } = useBadges();
-  useEffect(() => {
-    if (user && guilde.membres.includes(user.uid)) gagnerBadge('guilde');
-  }, [user, guilde.membres, gagnerBadge]);
   const peutGerer = isAdmin || estAdminGuilde;
-  // Le blason (Alex, 2026-08-28).
-  const [blasonEnvoi, setBlasonEnvoi] = useState(false);
-  const [banniereEnvoi, setBanniereEnvoi] = useState(false);
-  const fichierBanniere = useRef<HTMLInputElement>(null);
-  const choisirBanniere = async (f: File | undefined) => {
-    if (!f) return;
-    setBanniereEnvoi(true);
-    try { await changerBanniereGuilde(guilde.id, f); } finally { setBanniereEnvoi(false); }
-  };
-  const fichierBlason = useRef<HTMLInputElement>(null);
-  const choisirBlason = async (f: File | undefined) => {
-    if (!f) return;
-    setBlasonEnvoi(true);
-    try { await changerBlason(guilde.id, f); } finally { setBlasonEnvoi(false); }
-  };
+  const enAttente = guilde.demandes.includes(user.uid);
+  const mot = motDeLaForme(guilde.forme, lang);
+
+  const reserve = (
+    <section className="glass-light rounded-lg-card p-8 text-center">
+      <p className="font-editorial text-base text-ivory-soft leading-relaxed">
+        {fr
+          ? `Ce panneau se lit entre membres. Entrez dans ${mot.toLowerCase()} pour l’ouvrir.`
+          : 'This panel is read among members. Join the group to open it.'}
+      </p>
+    </section>
+  );
 
   return (
     <main className="min-h-screen text-ivory">
       <SEO title={guilde.nom} noindex />
       <PageHeader
-        eyebrow={motDeLaForme(guilde.forme, lang)}
+        eyebrow={mot}
         titleA={guilde.nom}
         intro={guilde.description || (fr
-          ? `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'Un' : 'Une'} ${motDeLaForme(guilde.forme, 'FR').toLowerCase()} de l’Ordre.`
-          : `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'A' : 'A'} ${motDeLaForme(guilde.forme, 'EN').toLowerCase()} of the Order.`)}
+          ? `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'Un' : 'Une'} ${mot.toLowerCase()} de l’Ordre.`
+          : `A ${mot.toLowerCase()} of the Order.`)}
         orbImage="/histoire/archives/lievre/2022-e9ed2ea5.webp"
       />
       <section className="relative caravan-stage bleed-edges pt-4 pb-20 overflow-hidden">
         <Brume />
         <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 space-y-6">
 
-          {/* ── La bannière de la guilde (Alex, 2026-08-28) ── */}
+          {/* ── La bannière du groupe (Alex, 2026-08-28) ── */}
           {(guilde.banniereUrl || peutGerer) && (
             <div className="relative rounded-[16px] p-[3px]"
                  style={{ background: 'linear-gradient(135deg, var(--sk-gilt-pale) 0%, var(--color-brass) 40%, var(--sk-brass-deep) 70%, var(--sk-gilt-pale) 100%)',
@@ -193,32 +301,73 @@ const GuildePage: React.FC = () => {
             </div>
           )}
 
-          {/* ── Le blason, en tête ── */}
-          {(guilde.blason || peutGerer) && (
-            <div className="flex items-center gap-4">
-              <span className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden shrink-0 border border-brass/40 flex items-center justify-center"
-                    style={{ background: 'rgba(var(--sk-deep-rgb),0.6)', boxShadow: '0 0 28px -8px rgba(var(--sk-gilt-rgb),0.5)' }}>
-                {guilde.blason
-                  ? <img src={guilde.blason} alt="" className="w-full h-full object-cover" />
-                  : <Users size={28} className="text-brass" />}
-              </span>
-              {peutGerer && (
-                <>
-                  <button type="button" onClick={() => fichierBlason.current?.click()} disabled={blasonEnvoi}
-                          className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50">
-                    {blasonEnvoi ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
-                    {guilde.blason ? (fr ? 'Changer la photo de la guilde' : 'Change the guild photo') : (fr ? 'Ajouter une photo de guilde' : 'Add a guild photo')}
-                  </button>
-                  <input ref={fichierBlason} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
-                         onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
-                </>
-              )}
+          {/* ── Le blason, le compte des membres, mes deux bourses ── */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 border border-brass/40 flex items-center justify-center"
+                  style={{ background: 'rgba(var(--sk-deep-rgb),0.6)', boxShadow: '0 0 28px -8px rgba(var(--sk-gilt-rgb),0.5)' }}>
+              {guilde.blason
+                ? <img src={guilde.blason} alt="" className="w-full h-full object-cover" />
+                : <Users size={26} className="text-brass" />}
+            </span>
+            <div className="min-w-0">
+              <p className="font-sans uppercase tracking-[0.22em] text-[10px]" style={{ color: 'var(--sk-gilt)' }}>{mot}</p>
+              <p className="font-sans text-sm text-ivory-soft mt-1 inline-flex items-center gap-1.5">
+                <Users size={12} /> {guilde.nbMembres} {fr ? (guilde.nbMembres > 1 ? 'membres' : 'membre') : (guilde.nbMembres > 1 ? 'members' : 'member')}
+                {guilde.monnaie && <span className="text-ivory-soft/50"> · {nomMonnaie(guilde, lang)}</span>}
+              </p>
             </div>
+            {peutGerer && (
+              <>
+                <button type="button" onClick={() => fichierBlason.current?.click()} disabled={blasonEnvoi}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-xs uppercase tracking-wider transition rounded-card disabled:opacity-50">
+                  {blasonEnvoi ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
+                  {guilde.blason ? (fr ? 'Changer la photo' : 'Change the photo') : (fr ? 'Ajouter une photo' : 'Add a photo')}
+                </button>
+                <input ref={fichierBlason} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
+                       onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
+              </>
+            )}
+            {estMembre && (
+              <div className="w-full sm:w-auto sm:ml-auto">
+                <SoldePieces guilde={guilde} uid={user.uid} lang={lang} />
+              </div>
+            )}
+          </div>
+
+          {/* ── Entrer dans le groupe ── */}
+          {!estMembre && (
+            <section className="glass-light rounded-lg-card p-5 md:p-6 flex items-center justify-between gap-4 flex-wrap">
+              <p className="font-editorial text-sm text-ivory-soft leading-relaxed min-w-0 flex-1">
+                {code
+                  ? (fr ? 'Vous arrivez avec une invitation. La porte s’ouvre sans attendre.' : 'You arrive with an invitation. The door opens right away.')
+                  : (fr ? 'Demandez à joindre. Un chef du groupe répondra.' : 'Ask to join. A leader of the group will answer.')}
+              </p>
+              {code ? (
+                <button type="button" onClick={rejoindreParCode} disabled={adhesion}
+                        className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50">
+                  {adhesion ? <Loader2 size={13} className="animate-spin" /> : <KeyRound size={13} />}
+                  {fr ? 'Rejoindre' : 'Join'}
+                </button>
+              ) : (
+                <button type="button" disabled={adhesion}
+                        onClick={async () => {
+                          setAdhesion(true);
+                          try { await (enAttente ? retirerDemande(guilde.id, user.uid) : demanderAdhesion(guilde.id, user.uid)); }
+                          finally { setAdhesion(false); }
+                        }}
+                        className={`shrink-0 inline-flex items-center gap-2 px-5 py-2.5 font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card disabled:opacity-50 ${
+                          enAttente ? 'border border-ivory-soft/25 text-ivory-soft hover:text-brass' : 'bg-brass text-midnight-deep hover:bg-brass-soft'
+                        }`}>
+                  {enAttente ? (fr ? 'Demande envoyée' : 'Request sent') : (fr ? 'Demander à joindre' : 'Ask to join')}
+                </button>
+              )}
+              {erreurAdhesion && <p role="alert" className="w-full font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurAdhesion}</p>}
+            </section>
           )}
 
-          {/* ── Gestion (admin de la guilde ou équipe) ── */}
+          {/* ── Gestion (chef du groupe ou équipe) ── */}
           {peutGerer && (
-            <section className="glass-light rounded-lg-card p-5 md:p-6 space-y-4">
+            <section className="glass-light rounded-lg-card p-5 md:p-6">
               {editEnCours ? (
                 <div className="space-y-3">
                   <div>
@@ -240,15 +389,46 @@ const GuildePage: React.FC = () => {
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Nom' : 'Name'}</span>
                     <input value={nom} onChange={(e) => setNom(e.target.value.slice(0, LONGUEUR_NOM_MAX))}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
+                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
                   </label>
                   <label className="block">
                     <span className="block witcher-stat-label mb-1.5">{fr ? 'Description' : 'Description'}</span>
                     <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory resize-y"
-                      style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(var(--sk-glow-rgb),0.22)' }} />
+                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory resize-y" style={champ} />
                   </label>
+
+                  {/* L'adresse du groupe */}
+                  <label className="block">
+                    <span className="block witcher-stat-label mb-1.5">{fr ? 'L’adresse du groupe' : 'The group address'}</span>
+                    <input value={adresse}
+                      onChange={(e) => setAdresse(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                      className="w-full px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory" style={champ} />
+                    <span className="block font-sans text-[11px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
+                      festivalmedievaldemontpellier.org/{adresse || '…'}
+                    </span>
+                  </label>
+
+                  {/* La monnaie du groupe */}
+                  <div>
+                    <span className="block witcher-stat-label mb-1.5">{fr ? 'La monnaie du groupe' : 'The group currency'}</span>
+                    <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+                      <input value={monnaie.nom} onChange={(e) => setMonnaie((m) => ({ ...m, nom: e.target.value.slice(0, 40) }))}
+                        placeholder={fr ? 'Vikingar Coin' : 'Vikingar Coin'}
+                        aria-label={fr ? 'Le nom de la monnaie' : 'The currency name'}
+                        className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory placeholder:text-ivory-soft/40" style={champ} />
+                      <input value={monnaie.sigle} onChange={(e) => setMonnaie((m) => ({ ...m, sigle: e.target.value.toUpperCase().slice(0, 4) }))}
+                        placeholder="VIK" size={5}
+                        aria-label={fr ? 'Le sigle, deux à quatre lettres' : 'The ticker, two to four letters'}
+                        className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory text-center tracking-widest placeholder:text-ivory-soft/40" style={champ} />
+                      <input value={monnaie.glyphe} onChange={(e) => setMonnaie((m) => ({ ...m, glyphe: e.target.value.slice(0, 4) }))}
+                        placeholder="◎" size={3}
+                        aria-label={fr ? 'Le glyphe' : 'The glyph'}
+                        className="px-3.5 py-2.5 rounded-card font-sans text-sm text-ivory text-center placeholder:text-ivory-soft/40" style={champ} />
+                    </div>
+                  </div>
+
+                  {erreurEdition && <p role="alert" className="font-sans text-xs" style={{ color: '#E08A6E' }}>{erreurEdition}</p>}
+
                   <div className="flex items-center justify-end gap-2">
                     <button type="button" onClick={() => setEditEnCours(false)}
                       className="px-4 py-2 font-sans uppercase tracking-wider text-xs text-ivory-soft hover:text-brass transition">
@@ -262,7 +442,9 @@ const GuildePage: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <p className="witcher-stat-label">{fr ? 'Gestion de la guilde' : 'Guild management'}</p>
+                  <p className="witcher-stat-label">
+                    {fr ? `Gestion · ${motDuChef(guilde.forme, lang)}` : `Management · ${motDuChef(guilde.forme, lang)}`}
+                  </p>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={ouvrirEdition}
                       className="inline-flex items-center gap-2 px-3.5 py-2 border border-brass/40 text-brass hover:bg-brass/10 font-sans text-[11px] uppercase tracking-wider transition rounded-card">
@@ -275,108 +457,38 @@ const GuildePage: React.FC = () => {
                   </div>
                 </div>
               )}
-
-              {/* Demandes en attente */}
-              {guilde.demandes.length > 0 && (
-                <div className="pt-3" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
-                  <p className="witcher-stat-label mb-2.5">
-                    {fr ? 'Demandes en attente' : 'Pending requests'} ({guilde.demandes.length})
-                  </p>
-                  <div className="space-y-2">
-                    {guilde.demandes.map((uid) => (
-                      <DemandeLigne key={uid} uid={uid} fiche={fichesRef.current[uid]} lang={lang}
-                        onAccepter={() => accepterMembre(guilde.id, uid)}
-                        onRefuser={() => refuserMembre(guilde.id, uid)} />
-                    ))}
-                  </div>
-                </div>
-              )}
             </section>
           )}
 
-          {/* ── Membres ── */}
-          <section className="glass-light rounded-lg-card p-5 md:p-6">
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <p className="witcher-stat-label inline-flex items-center gap-1.5">
-                <Users size={12} /> {fr ? 'Membres' : 'Members'} ({guilde.nbMembres})
-              </p>
-              {estMembre && (
-                <button type="button"
-                  onClick={() => { void quitterGuilde(guilde.id, user.uid); navigate(addLocale('/guildes', lang)); }}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 font-sans text-[11px] uppercase tracking-wider text-ivory-soft hover:text-[#E08A6E] transition">
-                  <LogOut size={12} /> {fr ? 'Quitter' : 'Leave'}
-                </button>
-              )}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {guilde.membres.map((uid) => (
-                <MembreLigne key={uid} uid={uid} fiche={fichesRef.current[uid]} lang={lang}
-                             admin={guilde.admins.includes(uid)} />
-              ))}
-            </div>
-          </section>
+          {/* ── Les six panneaux ── */}
+          <Onglets actif={onglet} lang={lang} onChoisir={allerA} />
 
-          {/* ── Le mur de la guilde ── */}
-          <section>
-            <p className="witcher-stat-label mb-3">{fr ? 'Le mur de la guilde' : 'The guild wall'}</p>
-            <MurGuilde lang={lang} guildeId={guilde.id} peutEcrire={estMembre} />
-          </section>
+          <div id={`panneau-guilde-${onglet}`} role="tabpanel" aria-labelledby={`onglet-guilde-${onglet}`}>
+            {onglet === 'mur' && <MurGuilde lang={lang} guildeId={guilde.id} peutEcrire={estMembre} />}
+            {onglet === 'salon' && (estMembre ? <Salon guilde={guilde} uid={user.uid} estChef={estAdminGuilde} /> : reserve)}
+            {onglet === 'evenements' && (estMembre ? <Evenements guilde={guilde} uid={user.uid} estChef={estAdminGuilde} /> : reserve)}
+            {onglet === 'marche' && (estMembre ? <Marche guilde={guilde} uid={user.uid} estChef={estAdminGuilde} /> : reserve)}
+            {onglet === 'tresor' && (estMembre
+              ? <Tresor guilde={guilde} uid={user.uid} estChef={estAdminGuilde} lang={lang} fiches={fichesRef.current} />
+              : reserve)}
+            {onglet === 'membres' && (
+              <Membres guilde={guilde} uid={user.uid} estChef={estAdminGuilde}
+                       peutGerer={peutGerer} lang={lang} fiches={fichesRef.current} />
+            )}
+          </div>
+
+          {estMembre && (
+            <div className="flex justify-end">
+              <button type="button"
+                onClick={() => { void quitterGuilde(guilde.id, user.uid); navigate(addLocale('/guildes', lang)); }}
+                className="inline-flex items-center gap-2 px-3.5 py-2 font-sans text-[11px] uppercase tracking-wider text-ivory-soft hover:text-[#E08A6E] transition">
+                <LogOut size={12} /> {fr ? 'Quitter' : 'Leave'}
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </main>
-  );
-};
-
-const Medaillon: React.FC<{ nom: string; url?: string; hue?: number }> = ({ nom, url, hue }) => (
-  <span className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-brass/30 flex items-center justify-center font-display text-sm text-ivory/85"
-        style={{ background: `hsl(${hue ?? 30} 40% 22%)` }}>
-    {url ? <img src={url} alt="" className="w-full h-full object-cover" /> : (nom || '?').slice(0, 1).toUpperCase()}
-  </span>
-);
-
-const MembreLigne: React.FC<{ uid: string; fiche: Membre | null | undefined; lang: 'FR' | 'EN'; admin: boolean }> = ({
-  uid, fiche, lang, admin,
-}) => {
-  const fr = lang === 'FR';
-  const nom = fiche?.nom || (fr ? 'Un inconnu' : 'A stranger');
-  return (
-    <Link to={`${addLocale('/profil', lang)}/${uid}`}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-card hover:bg-brass/5 transition"
-          style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
-      <Medaillon nom={nom} url={fiche?.avatarUrl} hue={fiche?.avatarHue} />
-      <span className="min-w-0 flex-1">
-        <span className="block font-sans text-sm text-ivory truncate">{nom}</span>
-        {admin && <span className="block font-sans text-[10px] uppercase tracking-widest text-brass">{fr ? 'Admin' : 'Admin'}</span>}
-      </span>
-    </Link>
-  );
-};
-
-const DemandeLigne: React.FC<{
-  uid: string; fiche: Membre | null | undefined; lang: 'FR' | 'EN';
-  onAccepter: () => void; onRefuser: () => void;
-}> = ({ uid, fiche, lang, onAccepter, onRefuser }) => {
-  const fr = lang === 'FR';
-  const nom = fiche?.nom || (fr ? 'Un inconnu' : 'A stranger');
-  const [busy, setBusy] = useState(false);
-  const agir = async (fn: () => void) => { setBusy(true); try { await fn(); } finally { setBusy(false); } };
-  return (
-    <div className="flex items-center gap-2.5 px-3 py-2 rounded-card" style={{ border: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
-      <Link to={`${addLocale('/profil', lang)}/${uid}`} className="flex items-center gap-2.5 min-w-0 flex-1">
-        <Medaillon nom={nom} url={fiche?.avatarUrl} hue={fiche?.avatarHue} />
-        <span className="font-sans text-sm text-ivory truncate">{nom}</span>
-      </Link>
-      <div className="shrink-0 flex items-center gap-1.5">
-        <button type="button" disabled={busy} onClick={() => agir(onAccepter)} aria-label={fr ? 'Accepter' : 'Accept'}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-ivory-soft/70 hover:text-emerald-400 hover:bg-emerald-400/10 transition disabled:opacity-50">
-          <Check size={14} />
-        </button>
-        <button type="button" disabled={busy} onClick={() => agir(onRefuser)} aria-label={fr ? 'Refuser' : 'Decline'}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-ivory-soft/70 hover:text-[#E08A6E] hover:bg-[#E08A6E]/10 transition disabled:opacity-50">
-          <X size={14} />
-        </button>
-      </div>
-    </div>
   );
 };
 

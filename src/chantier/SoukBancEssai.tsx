@@ -50,9 +50,9 @@ const SoukBancEssai: React.FC = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="font-display title-medieval text-2xl text-ivory">Banc d’essai — la carte du Souk</h1>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <CarteObjet o={OBJET} lang="FR" />
-          <CarteObjet o={SERVICE} lang="FR" />
-          <CarteObjet o={GRATUIT} lang="FR" />
+          <CarteObjet objet={OBJET} lang="FR" />
+          <CarteObjet objet={SERVICE} lang="FR" />
+          <CarteObjet objet={GRATUIT} lang="FR" />
         </div>
       </div>
     </main>
