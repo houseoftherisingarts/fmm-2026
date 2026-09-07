@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -42,6 +42,7 @@ export type AdminSectionId =
   | 'comptes'
   | 'clients'
   | 'invites'
+  | 'camping'
   | 'messages'
   | 'messagerie'
   | 'campagnes'
@@ -96,6 +97,8 @@ export const NAV: NavItem[] = [
   { id: 'concours',   label: 'Concours William', icon: Gift,           group: 'Nourriture et Bar' },
 
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
+  // Les places du terrain de camping, par catégorie (Alex, 2026-09-07).
+  { id: 'camping',    label: 'Camping',         icon: Tent,            group: 'Opérations' },
   { id: 'pupitre',    label: 'Le Pupitre',      icon: Feather,         group: 'Opérations' },
   { id: 'signature',  label: 'Atelier de signature', icon: PenLine,    group: 'Opérations' },
   // Les ententes que les cuisiniers signent au doigt sur leur téléphone
