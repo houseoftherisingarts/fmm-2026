@@ -41,8 +41,7 @@ const BASCULES: Record<string, Bascule> = {
   volunteerSignupOpen: {
     label: 'Inscriptions bénévoles',
     famille: 'portes',
-    dormante: 'remplacée',
-    effet: "Rien ne change nulle part. La page des bénévoles s'ouvre et se ferme par « Devenir Bénévole », dans la publication des pages.",
+    effet: "Allumée : le formulaire des bénévoles recrute pour l'édition en cours. Éteinte : la page annonce que l'équipe est complète et le même formulaire inscrit la personne sur la liste d'attente de l'édition suivante. Un compte complet reste exigé dans les deux cas. Le même interrupteur se trouve aussi en haut de la section Bénévoles.",
   },
   vendorApplicationsOpen: {
     label: 'Candidatures de marchands',

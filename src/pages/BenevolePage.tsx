@@ -1,14 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {ArrowUpRight, Check, LogIn, AlertCircle, BadgeCheck, Lock, ChevronLeft, ChevronRight, } from 'lucide-react';
+import { ArrowUpRight, Check, LogIn, AlertCircle, BadgeCheck, Lock, ChevronLeft, ChevronRight, Hourglass } from 'lucide-react';
+import { updateProfile } from 'firebase/auth';
 import { useBadges } from '../contexts/BadgesContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
+import { useSiteFlags } from '../contexts/SiteFlagsContext';
+import { publierFiche } from '../firebase/ordre';
 import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import {
-  getBenevoleApp, upsertBenevoleApp,
+  getBenevoleApp, upsertBenevoleApp, CURRENT_YEAR,
   type BenevoleApp,
   type BenevoleDay, type BenevoleStation, type BenevoleStationPref,
   type BenevoleHeardFrom, type BenevolePronouns, type BenevoleAgeRange,
@@ -121,6 +124,13 @@ const BenevolePage: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const { user, openSignIn } = useAuth();
+  // Équipe complète : la bascule « Inscriptions bénévoles » de l'admin,
+  // éteinte, garde le même formulaire mais inscrit la candidature sur la
+  // liste d'attente de l'édition suivante. Le compte reste exigé dans les
+  // deux cas (Alex, 2026-09-08).
+  const { flags } = useSiteFlags();
+  const isWaitlist = !flags.volunteerSignupOpen;
+  const targetYear = isWaitlist ? CURRENT_YEAR + 1 : CURRENT_YEAR;
   const navigate = useNavigate();
   const spaceUrl = lang === 'FR' ? '/espace-benevole' : '/en/volunteer-space';
 
@@ -219,7 +229,7 @@ const BenevolePage: React.FC = () => {
         // étudier : la laisser marquée « refusée » l'enterrait pour de
         // bon, personne ne la revoyait (Alex, 2026-08-23).
         status:      existing?.status === 'accepted' ? 'accepted' : 'pending',
-        year:        2026,
+        year:        existing?.status === 'accepted' ? existing.year : targetYear,
         createdAt:   existing?.createdAt,
         // Page 1
         daysAvailable:      form.daysAvailable,
@@ -242,6 +252,13 @@ const BenevolePage: React.FC = () => {
       };
       await upsertBenevoleApp(app);
       console.info('[benevole-form] write OK');
+      // Un compte ouvert par lien magique ou par courriel n'a pas de nom :
+      // le formulaire le complète, sur le compte et sur la fiche de l'Ordre.
+      if (!user.displayName?.trim()) {
+        const nomComplet = `${form.prenom} ${form.nom}`.trim();
+        try { await updateProfile(user, { displayName: nomComplet }); } catch { /* sans conséquence */ }
+        try { await publierFiche(user.uid, { nom: nomComplet }); } catch { /* sans conséquence */ }
+      }
       setExisting(app);
       setStatus('sent');
       gagnerBadge('benevole');
@@ -256,12 +273,12 @@ const BenevolePage: React.FC = () => {
 
   return (
     <>
-      <SEO title={t.title} description={t.intro1} />
+      <SEO title={t.title} description={isWaitlist ? t.introWaitlist : t.intro1} />
       <ScrollProgress />
       <PageHeader
         eyebrow={t.eyebrow}
         titleA={t.title}
-        intro={t.intro1}
+        intro={isWaitlist ? t.introWaitlist : t.intro1}
         orbImage="/wix/benevole/4fc431fd.jpg"
         orbImagePosition="left center"
       />
@@ -277,7 +294,7 @@ const BenevolePage: React.FC = () => {
                   <LogIn size={26} className="text-brass" />
                 </div>
                 <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.authTitle}</h2>
-                <p className="font-editorial text-base md:text-lg text-ivory-soft mb-7 max-w-md mx-auto">{t.authBody}</p>
+                <p className="font-editorial text-base md:text-lg text-ivory-soft mb-7 max-w-md mx-auto">{isWaitlist ? t.authBodyWaitlist : t.authBody}</p>
                 <button onClick={openSignIn}
                   className="inline-flex items-center gap-2 px-7 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-sm font-semibold hover:bg-brass-soft transition rounded-card">
                   {t.signInCta} <ArrowUpRight size={16} />
@@ -289,8 +306,8 @@ const BenevolePage: React.FC = () => {
                 <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
                   <Check size={26} className="text-brass" />
                 </div>
-                <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{t.thanksTitle}</h2>
-                <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-md mx-auto mb-6">{t.thanksBody}</p>
+                <h2 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">{existing?.year === CURRENT_YEAR + 1 ? t.thanksTitleWaitlist : t.thanksTitle}</h2>
+                <p className="font-editorial text-base md:text-lg text-ivory-soft max-w-md mx-auto mb-6">{existing?.year === CURRENT_YEAR + 1 ? t.thanksBodyWaitlist : t.thanksBody}</p>
                 <Link to={addLocale('/compte', lang)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
                   {t.toAccount} <ArrowUpRight size={14} />
@@ -302,6 +319,19 @@ const BenevolePage: React.FC = () => {
                     sur cette page : il n'y peut rien, et le mot ferme la
                     porte alors que le formulaire reste ouvert (Alex,
                     2026-08-23). L'équipe, elle, voit tout dans l'admin. */}
+                {isWaitlist && existing?.status !== 'accepted' && existing?.year !== CURRENT_YEAR + 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+                    className="mb-6 rounded-card border border-amber-300/40 bg-amber-300/10 p-5 flex items-start gap-3"
+                  >
+                    <Hourglass size={20} className="text-amber-300 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-display title-medieval text-sm text-amber-200 mb-1">{t.waitlistTitle}</p>
+                      <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{t.waitlistBody}</p>
+                    </div>
+                  </motion.div>
+                )}
+
                 {existing && existing.status !== 'rejected' && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
@@ -310,7 +340,7 @@ const BenevolePage: React.FC = () => {
                     <AlertCircle size={20} className={existing.status === 'accepted' ? 'text-emerald-400' : 'text-brass'} />
                     <div>
                       <p className="font-display title-medieval text-sm text-ivory">
-                        {t.statusPrefix}: <span className={existing.status === 'accepted' ? 'text-emerald-400' : 'text-brass'}>{t.status[existing.status]}</span>
+                        {t.statusPrefix}: <span className={existing.status === 'accepted' ? 'text-emerald-400' : 'text-brass'}>{existing.status === 'pending' && existing.year > CURRENT_YEAR ? t.statusWaitlist : t.status[existing.status]}</span>
                       </p>
                       <p className="font-editorial italic text-sm text-ivory-soft">{t.editLead}</p>
                     </div>
@@ -650,7 +680,7 @@ const BenevolePage: React.FC = () => {
                           </button>
                           <button type="submit" disabled={status === 'submitting' || !page2Valid}
                             className="inline-flex items-center gap-1.5 px-7 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40 disabled:cursor-not-allowed">
-                            {status === 'submitting' ? t.submitting : (existing ? t.update : t.send)}
+                            {status === 'submitting' ? t.submitting : (existing ? t.update : isWaitlist ? t.sendWaitlist : t.send)}
                             {status !== 'submitting' && <ArrowUpRight size={14} />}
                           </button>
                         </div>
@@ -754,6 +784,14 @@ const FR = {
   authBody: 'Pour postuler comme bénévole, vous devez d’abord créer un compte. Cela nous permet de garder une trace de votre candidature et de communiquer avec vous.',
   signInCta: 'Créer un compte / Se connecter',
   hydrating: 'Chargement de votre candidature…',
+  introWaitlist: `L’équipe de bénévoles de l’édition ${CURRENT_YEAR} est complète. Merci à toutes les personnes qui ont répondu à l’appel. Vous pouvez tout de même créer votre compte et remplir le formulaire : votre candidature prendra rang sur la liste d’attente de l’édition ${CURRENT_YEAR + 1}, et Maïté vous écrira dès l’ouverture du recrutement.`,
+  authBodyWaitlist: 'Pour vous inscrire sur la liste d’attente, vous devez d’abord créer votre compte au complet. C’est ce compte qui nous permet de retrouver votre candidature l’an prochain et de vous joindre.',
+  waitlistTitle: `Équipe complète pour ${CURRENT_YEAR} : liste d’attente ${CURRENT_YEAR + 1}`,
+  waitlistBody:  `Les places de cette édition sont toutes prises. Le formulaire reste le même : en l’envoyant, vous prenez rang sur la liste d’attente de l’édition ${CURRENT_YEAR + 1}.`,
+  sendWaitlist: `M’inscrire sur la liste d’attente ${CURRENT_YEAR + 1}`,
+  thanksTitleWaitlist: 'Vous êtes sur la liste d’attente !',
+  thanksBodyWaitlist: `Votre candidature est inscrite sur la liste d’attente de l’édition ${CURRENT_YEAR + 1}. Maïté ou un membre de l’équipe vous écrira à l’ouverture du recrutement.`,
+  statusWaitlist: `Liste d’attente ${CURRENT_YEAR + 1}`,
   step1: 'Préférences', step2: 'Infos personnelles',
   next: 'Suivant', prev: 'Retour',
 
@@ -823,6 +861,14 @@ const EN: typeof FR = {
   authBody: 'To apply as a volunteer, you must first create an account. This lets us track your application and stay in touch.',
   signInCta: 'Create account / sign in',
   hydrating: 'Loading your application…',
+  introWaitlist: `Our ${CURRENT_YEAR} volunteer team is complete. Thank you to everyone who answered the call. You can still create your account and fill in the form: your application will join the wait list for the ${CURRENT_YEAR + 1} edition, and Maïté will write to you as soon as recruitment opens.`,
+  authBodyWaitlist: 'To join the wait list, you first need to create a full account. That account is how we find your application next year and get in touch.',
+  waitlistTitle: `${CURRENT_YEAR} team complete: ${CURRENT_YEAR + 1} wait list`,
+  waitlistBody:  `Every spot for this edition is taken. The form is the same: by sending it, you take your place on the wait list for the ${CURRENT_YEAR + 1} edition.`,
+  sendWaitlist: `Join the ${CURRENT_YEAR + 1} wait list`,
+  thanksTitleWaitlist: 'You are on the wait list!',
+  thanksBodyWaitlist: `Your application is on the wait list for the ${CURRENT_YEAR + 1} edition. Maïté or a team member will write to you when recruitment opens.`,
+  statusWaitlist: `${CURRENT_YEAR + 1} wait list`,
   step1: 'Preferences', step2: 'Personal info',
   next: 'Next', prev: 'Back',
 

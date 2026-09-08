@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Download, HandHeart, Calendar } from 'lucide-react';
-import { getBenevoleAdminNotes, type AppStatus, type BenevoleApp } from '../../../firebase/applications';
+import { ChevronRight, Download, HandHeart, Calendar, Lock, Unlock } from 'lucide-react';
+import { getBenevoleAdminNotes, CURRENT_YEAR, type AppStatus, type BenevoleApp } from '../../../firebase/applications';
+import { useSiteFlags } from '../../../contexts/SiteFlagsContext';
 import { Badge, Card, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
 import HoraireEditor from '../../../components/admin/HoraireEditor';
 import { listTeams, type Team } from '../../../firebase/teams';
@@ -30,7 +31,12 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
   const [items, setItems]     = useState<BenevoleApp[]>([]);
   const [teams, setTeams]     = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter]   = useState<AppStatus | 'all'>('all');
+  const [filter, setFilter]   = useState<AppStatus | 'all' | 'waitlist'>('all');
+  // Même bascule que Paramètres › « Inscriptions bénévoles ». Éteinte, le
+  // formulaire public inscrit sur la liste d'attente de l'édition suivante.
+  const { flags, setFlag } = useSiteFlags();
+  const inscriptionsOpen = flags.volunteerSignupOpen;
+  const enAttenteSuivante = (b: BenevoleApp) => b.status === 'pending' && b.year > CURRENT_YEAR;
   const [search, setSearch]   = useState('');
 
   const load = async () => {
@@ -51,7 +57,7 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
   const accepted = useMemo(() => items.filter((b) => b.status === 'accepted'), [items]);
 
   const filtered = items.filter((b) =>
-    (filter === 'all' || b.status === filter) &&
+    (filter === 'all' || (filter === 'waitlist' ? enAttenteSuivante(b) : b.status === filter)) &&
     (search === '' || `${b.prenom} ${b.nom} ${b.email}`.toLowerCase().includes(search.toLowerCase())),
   );
 
@@ -74,6 +80,7 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
     pending:  items.filter((b) => b.status === 'pending').length,
     accepted: items.filter((b) => b.status === 'accepted').length,
     rejected: items.filter((b) => b.status === 'rejected').length,
+    waitlist: items.filter(enAttenteSuivante).length,
   };
 
   return (
@@ -102,6 +109,7 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
                 <span className="text-brass tabular-nums font-medium">{counts.total}</span> candidatures ·
                 <span className="text-brass tabular-nums font-medium ml-1">{counts.pending}</span> en attente ·
                 <span className="text-emerald-400 tabular-nums font-medium ml-1">{counts.accepted}</span> acceptées
+                {counts.waitlist > 0 && <> · <span className="text-amber-300 tabular-nums font-medium">{counts.waitlist}</span> en liste d’attente {CURRENT_YEAR + 1}</>}
               </p>
               <p className="font-editorial italic text-xs text-ivory-soft/60 mt-0.5">
                 Cliquez une carte pour ouvrir le profil complet du bénévole.
@@ -110,15 +118,34 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
             <div className="flex items-center gap-2 flex-wrap">
               <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Recherche…"
                 className="px-3 py-1.5 rounded-card border border-ivory-soft/20 bg-midnight-deep/50 text-ivory placeholder:text-stone focus:border-brass focus:outline-none text-xs font-sans" />
-              {(['all', 'pending', 'accepted', 'rejected'] as const).map((f) => (
+              {(['all', 'pending', 'accepted', 'rejected', 'waitlist'] as const).map((f) => (
                 <button key={f} onClick={() => setFilter(f)}
                   className={`px-3 py-1.5 font-sans uppercase tracking-wider rounded-card text-xs transition ${filter === f ? 'bg-brass text-midnight-deep' : 'border border-ivory-soft/20 text-ivory-soft hover:border-brass hover:text-brass'}`}>
-                  {f === 'all' ? 'Toutes' : STATUS_LABEL[f]}
+                  {f === 'all' ? 'Toutes' : f === 'waitlist' ? `Liste d’attente ${CURRENT_YEAR + 1}` : STATUS_LABEL[f]}
                 </button>
               ))}
               <GhostButton onClick={exportCsv}><Download size={12} /> CSV</GhostButton>
+              <button
+                onClick={() => setFlag('volunteerSignupOpen', !inscriptionsOpen)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-card font-sans uppercase tracking-wider text-xs font-semibold transition ${
+                  inscriptionsOpen
+                    ? 'bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/25'
+                    : 'bg-amber-300/15 border border-amber-300/40 text-amber-300 hover:bg-amber-300/25'
+                }`}
+              >
+                {inscriptionsOpen ? <Lock size={12} /> : <Unlock size={12} />}
+                {inscriptionsOpen ? 'Déclarer l’équipe complète' : 'Rouvrir le recrutement'}
+              </button>
             </div>
           </div>
+
+          {!inscriptionsOpen && (
+            <Card className="px-4 py-3 border border-amber-300/30">
+              <p className="font-editorial italic text-sm text-amber-300">
+                Équipe {CURRENT_YEAR} complète. La page publique le dit, et toute nouvelle candidature est versée à la liste d’attente {CURRENT_YEAR + 1}.
+              </p>
+            </Card>
+          )}
 
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -228,7 +255,9 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
 
       {/* Status badge: sits just under the medallion */}
       <div className="mt-2.5 flex justify-center">
-        <Badge tone={b.status}>{STATUS_LABEL[b.status]}</Badge>
+        {b.status === 'pending' && b.year > CURRENT_YEAR
+          ? <Badge tone="waitlist">Liste d’attente {b.year}</Badge>
+          : <Badge tone={b.status}>{STATUS_LABEL[b.status]}</Badge>}
       </div>
 
       {/* Body */}

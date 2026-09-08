@@ -8,9 +8,9 @@ import type { PillarKey } from '../content';
 
 // ── Audit des interrupteurs, 2026-09-02 ─────────────────────────────
 // Alex a demandé de vérifier qu'aucune bascule ne survivait à ce qu'elle
-// commandait. Quatre drapeaux d'ici ne sont plus lus par une seule ligne
-// du site : `ticketingOpen`, `banquetReservationsOpen`,
-// `volunteerSignupOpen` et `showCountdown`. Ils restent en place, parce
+// commandait. Trois drapeaux d'ici ne sont plus lus par une seule ligne
+// du site : `ticketingOpen`, `banquetReservationsOpen` et `showCountdown`
+// (`volunteerSignupOpen` a repris du service le 2026-09-08). Ils restent en place, parce
 // que retirer un interrupteur change le site pour de vrai et que la
 // décision appartient à Alex. La section Paramètres de l'admin les
 // affiche avec une pastille « Dormante » et la raison.
@@ -22,8 +22,10 @@ export interface SiteFlags {
   // `banquet` de siteFlags/programmation, et les places restantes viennent
   // du compteur `banquetPlaces/compteur` alimenté par le webhook Square.
   banquetReservationsOpen: boolean;
-  // Plus aucun lecteur. La page des bénévoles s'ouvre et se ferme par
-  // `pubBenevole`, comme les huit autres pages.
+  // Allumé : le formulaire des bénévoles recrute pour l'édition en cours.
+  // Éteint : la page annonce l'équipe complète et le même formulaire
+  // inscrit sur la liste d'attente de l'édition suivante (année + 1 sur
+  // la candidature). La page elle-même s'ouvre par `pubBenevole`.
   volunteerSignupOpen:     boolean;
   vendorApplicationsOpen:  boolean;
   // Plus aucun lecteur. Le compte à rebours a quitté la séquence d'accueil
