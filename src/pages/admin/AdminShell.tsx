@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -45,6 +45,7 @@ export type AdminSectionId =
   | 'invites'
   | 'camping'
   | 'inventaire'
+  | 'affichage'
   | 'messages'
   | 'messagerie'
   | 'campagnes'
@@ -124,6 +125,8 @@ export const NAV: NavItem[] = [
   { id: 'campagnes',  label: 'Campagnes courriel', icon: MailPlus,     group: 'Marketing' },
   { id: 'newsletter', label: 'Infolettre',      icon: Mail,            group: 'Marketing' },
   { id: 'pubs',       label: 'Publicité',       icon: Target,          group: 'Marketing' },
+  // La tournée des affiches, secteur par secteur (Alex, 2026-09-08).
+  { id: 'affichage',  label: 'Affichage',       icon: MapPinned,       group: 'Marketing' },
 
   { id: 'medias',     label: 'Médiathèque',     icon: ImageIcon,       group: 'Contenu' },
   { id: 'photos',     label: 'Photos',          icon: Camera,          group: 'Contenu' },

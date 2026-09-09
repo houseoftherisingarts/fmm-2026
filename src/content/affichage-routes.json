@@ -1,0 +1,83 @@
+[
+{"r":"Chénéville et Ripon","n":"Métro Chénéville","t":"epicerie","p":5,"s":"non-commence","q":"Léna"},
+{"r":"Chénéville et Ripon","n":"Ultramar Chénéville","t":"station","p":4,"s":"","q":""},
+{"r":"Chénéville et Ripon","n":"Intermarché Ripon","t":"epicerie","p":5,"s":"termine","q":""},
+{"r":"Chénéville et Ripon","n":"Coop Ripon","t":"epicerie","p":5,"s":"termine","q":""},
+{"r":"Chénéville et Ripon","n":"Café des Orteilles, Ripon","t":"cafe","p":5,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Chénéville et Ripon","n":"Ultramar Ripon","t":"station","p":4,"s":"","q":""},
+
+{"r":"Duhamel et Namur","n":"Dépanneur Duhamel","t":"depanneur","p":4,"s":"","q":""},
+{"r":"Duhamel et Namur","n":"Épicerie Namur","t":"epicerie","p":5,"s":"termine","q":"Alex"},
+{"r":"Duhamel et Namur","n":"Station de gaz 323, Namur","t":"station","p":3,"s":"bloque","q":"Alex","note":"Refus en 2026 : politique neuve sans affichage."},
+{"r":"Duhamel et Namur","n":"Koko Café, Namur","t":"cafe","p":5,"s":"termine","q":"Alex"},
+
+{"r":"Notre-Dame-de-la-Paix et Brébeuf","n":"Station de gaz Notre-Dame-de-la-Paix","t":"station","p":3,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Notre-Dame-de-la-Paix et Brébeuf","n":"Café crémerie Notre-Dame-de-la-Paix","t":"cafe","p":5,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Notre-Dame-de-la-Paix et Brébeuf","n":"Épicerie Brébeuf","t":"epicerie","p":4,"s":"","q":""},
+
+{"r":"Saint-André-Avellin","n":"Local Game Store, Saint-André-Avellin","t":"jeux","p":5,"s":"termine","q":"Alex"},
+{"r":"Saint-André-Avellin","n":"Antiquaire","t":"antiquaire","p":4,"s":"termine","q":"Alex","note":"Village à confirmer avec Alex."},
+{"r":"Saint-André-Avellin","n":"Métro Saint-André-Avellin","t":"epicerie","p":5,"s":"termine","q":"Jesse Dippy"},
+{"r":"Saint-André-Avellin","n":"Station service Saint-André-Avellin","t":"station","p":3,"s":"termine","q":"Jesse Dippy"},
+{"r":"Saint-André-Avellin","n":"Dépanneur Saint-André-Avellin","t":"depanneur","p":4,"s":"termine","q":"Jesse Dippy"},
+{"r":"Saint-André-Avellin","n":"Crémerie Saint-André-Avellin","t":"cafe","p":5,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Saint-André-Avellin","n":"Barbier et gym de Francis Larabie","t":"service","p":3,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Saint-André-Avellin","n":"La Plume, Saint-André-Avellin","t":"service","p":4,"s":"non-commence","q":"Jesse Dippy"},
+{"r":"Saint-André-Avellin","n":"Centre Whissell","t":"communautaire","p":4,"s":"non-commence","q":"Jesse Dippy"},
+{"r":"Saint-André-Avellin","n":"Service Vêtements, Saint-André-Avellin","t":"service","p":3,"s":"non-commence","q":"Jesse Dippy"},
+{"r":"Saint-André-Avellin","n":"Toquade","t":"service","p":3,"s":"non-commence","q":"Jesse Dippy","note":"À confirmer."},
+
+{"r":"Amherst et Saint-Jovite","n":"Antiquaire Amherst","t":"antiquaire","p":4,"s":"termine","q":"Alex"},
+{"r":"Amherst et Saint-Jovite","n":"Métro Saint-Jovite","t":"epicerie","p":4,"s":"en-cours","q":"Élise"},
+{"r":"Amherst et Saint-Jovite","n":"Local Game Store, Saint-Jovite","t":"jeux","p":5,"s":"termine","q":"Alex"},
+{"r":"Amherst et Saint-Jovite","n":"Henri-Bourassa, Saint-Jovite","t":"service","p":3,"s":"","q":""},
+{"r":"Amherst et Saint-Jovite","n":"Canadian Tire Saint-Jovite","t":"quincaillerie","p":2,"s":"","q":"","note":"À confirmer."},
+
+{"r":"Bobineauville et Thurso","n":"Métro Bobineauville","t":"epicerie","p":4,"s":"","q":"","note":"Nom du village à corriger avec Alex."},
+{"r":"Bobineauville et Thurso","n":"Station service Bobineauville","t":"station","p":3,"s":"","q":""},
+{"r":"Bobineauville et Thurso","n":"Métro Thurso","t":"epicerie","p":4,"s":"termine","q":"Pitch"},
+{"r":"Bobineauville et Thurso","n":"Station service Thurso","t":"station","p":3,"s":"termine","q":"Pitch"},
+{"r":"Bobineauville et Thurso","n":"Mairie de Thurso","t":"communautaire","p":4,"s":"termine","q":"Pitch"},
+
+{"r":"Plaisance et Montebello","n":"Casse-croûte Plaisance","t":"cafe","p":4,"s":"","q":""},
+{"r":"Plaisance et Montebello","n":"Station service Plaisance","t":"station","p":3,"s":"","q":""},
+{"r":"Plaisance et Montebello","n":"Station service Montebello","t":"station","p":3,"s":"termine","q":"Pitch"},
+{"r":"Plaisance et Montebello","n":"Épicerie Montebello","t":"epicerie","p":4,"s":"termine","q":"Pitch"},
+{"r":"Plaisance et Montebello","n":"Bureau d'information touristique de Montebello","t":"touristique","p":5,"s":"termine","q":"Pitch"},
+
+{"r":"Papineauville","n":"Centre Le Vallon, Papineauville","t":"communautaire","p":4,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Papineauville","n":"École Louis-Joseph-Papineau","t":"ecole","p":4,"s":"termine","q":"FMM Bénévoles"},
+
+{"r":"Buckingham et Masson-Angers","n":"Métro Buckingham","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Buckingham et Masson-Angers","n":"Super C Buckingham","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Buckingham et Masson-Angers","n":"Maxi Buckingham","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Buckingham et Masson-Angers","n":"IGA Masson-Angers","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Buckingham et Masson-Angers","n":"Station service Masson-Angers","t":"station","p":2,"s":"termine","q":"FMM Bénévoles"},
+{"r":"Buckingham et Masson-Angers","n":"Encan Masson","t":"antiquaire","p":4,"s":"","q":""},
+{"r":"Buckingham et Masson-Angers","n":"IGA Angers","t":"epicerie","p":3,"s":"termine","q":"Pitch"},
+
+{"r":"Gatineau et Hull","n":"Métro Templeton","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Super C Gatineau (148)","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Maxi Gatineau (148)","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Métro Gatineau, montée Paiement","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"IGA Gatineau, montée Paiement","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Super C Gatineau, boulevard La Vérendrye","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Maxi Hull, boulevard Saint-Joseph","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Maxi Mont-Bleu, boulevard Saint-Joseph","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Métro Hull, Cité des Jeunes","t":"epicerie","p":3,"s":"","q":""},
+{"r":"Gatineau et Hull","n":"Métro Aylmer (148)","t":"epicerie","p":3,"s":"","q":""},
+
+{"r":"Grenville et Lachute","n":"IGA Grenville","t":"epicerie","p":4,"s":"non-commence","q":"Pitch"},
+{"r":"Grenville et Lachute","n":"Quincaillerie Lachute","t":"quincaillerie","p":3,"s":"termine","q":"Pitch"},
+{"r":"Grenville et Lachute","n":"Super C Lachute, Bethany","t":"epicerie","p":3,"s":"termine","q":"Pitch"},
+
+{"r":"Gracefield et Maniwaki","n":"Métro Gracefield","t":"epicerie","p":4,"s":"termine","q":"Pitch"},
+{"r":"Gracefield et Maniwaki","n":"Station service Gracefield","t":"station","p":3,"s":"termine","q":"Pitch"},
+{"r":"Gracefield et Maniwaki","n":"Station service Messines","t":"station","p":3,"s":"termine","q":"Pitch"},
+{"r":"Gracefield et Maniwaki","n":"Maxi Maniwaki","t":"epicerie","p":3,"s":"termine","q":"Pitch"},
+
+{"r":"Villages à explorer","n":"Notre-Dame-de-la-Salette","t":"village","p":3,"s":"","q":"","note":"Commerce à trouver sur place."},
+{"r":"Villages à explorer","n":"Val-des-Bois","t":"village","p":3,"s":"","q":"","note":"Commerce à trouver sur place."},
+{"r":"Villages à explorer","n":"Notre-Dame-du-Laus","t":"village","p":3,"s":"","q":"","note":"Commerce à trouver sur place."},
+{"r":"Villages à explorer","n":"Mont-Laurier","t":"village","p":2,"s":"","q":"","note":"À décider : deux heures de route."}
+]
