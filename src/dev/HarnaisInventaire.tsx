@@ -28,6 +28,7 @@ export default function HarnaisInventaire() {
   }, []);
   return (
     <div style={{ background: '#0B1015', minHeight: '100vh', padding: 24 }}>
+      <p style={{ color: '#E8B14A', fontFamily: 'monospace', marginBottom: 12 }}>Survol : {survol ?? 'aucun'}</p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 16 }}>
           <PlanContainer comptes={comptes} selection={null} survol={survol} onSelect={() => {}} />

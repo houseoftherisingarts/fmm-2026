@@ -611,6 +611,22 @@ export const MARCHE_VENDORS: MarcheKiosk[] = [
     years: [2026],
   },
 
+  {
+    id: 'sorciere-verte',
+    name: 'La Sorcière verte',
+    tier: 'marche',
+    contact: 'À confirmer',
+    email: 'contact@lasorciereverte.example.ca',
+    category: 'Herboristerie · Magie',
+    tagFR: 'Baumes, brumes et objets enchantés',
+    tagEN: 'Balms, mists and enchanted objects',
+    bioFR: 'La Sorcière verte prépare ses baumes avec des macérats huileux de plantes à l’ancienne, une extraction lente qui laisse aux huiles le temps de pénétrer les tissus. Sur sa table, l’herboristerie médicinale voisine avec l’herboristerie magique : bouteilles enchantées, brumes, smudges d’armoise et offrandes au feu. Elle enseigne aussi un parcours initiatique, pour qui veut aller plus loin que l’étalage.',
+    bioEN: 'La Sorcière verte prepares her balms with slow oil macerations of plants, the old way, giving the oils time to sink into the tissue. On her table, medicinal herbalism sits beside magical herbalism: enchanted bottles, mists, mugwort smudges and fire offerings. She also teaches an initiatory path for anyone who wants to go further than the stall.',
+    image: '/marche/2026/sorciere-verte.webp',
+    href: 'https://www.lasorciereverte.ca',
+    years: [2026],
+  },
+
   /* ── Archives 2025 : kiosques qui ne reviennent pas en 2026 ── */
   {
     id: 'chantelame-ariane',
