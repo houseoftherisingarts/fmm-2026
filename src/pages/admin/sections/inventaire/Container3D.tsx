@@ -156,8 +156,8 @@ const Coque: React.FC = () => (
   </group>
 );
 
-const Scene: React.FC<Props & { orbite: React.MutableRefObject<{ yaw: number; pitch: number; zoom: number }>; onHover: (code: string | null) => void }> =
-  ({ comptes, selection, onSelect, orbite, onHover }) => {
+const Scene: React.FC<Props & { orbite: React.MutableRefObject<{ yaw: number; pitch: number; zoom: number }>; onHover: (code: string | null) => void; reduit: boolean }> =
+  ({ comptes, selection, survol, onSelect, orbite, onHover, reduit }) => {
     const groupe = useRef<THREE.Group>(null);
     const cam = useRef<{ yaw: number; pitch: number; zoom: number }>({ yaw: 0, pitch: 0, zoom: 1 });
     useFrame(({ camera }) => {
