@@ -1,9 +1,10 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import {
   Boxes, Search, Plus, X, Check, Undo2, MoveRight, Pencil, Trash2, History,
-  ShieldAlert, AlertTriangle, Box, LayoutGrid, Download,
+  ShieldAlert, AlertTriangle, Box, LayoutGrid, Download, Compass,
 } from 'lucide-react';
 import { Card, EmptyState, GhostButton, PrimaryButton, DangerButton, Label, downloadCsv } from '../primitives';
+import VisiteGuidee, { type Etape } from './inventaire/VisiteGuidee';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   watchInventaire, sortirObjet, retournerObjet, deplacerObjet, creerObjet, modifierObjet, supprimerObjet,
@@ -153,7 +154,7 @@ const FicheObjet: React.FC<{ initial: Champs; categories: string[]; onSave: (c: 
 // ── Une ligne de la liste ────────────────────────────────────────────
 type Mode = null | 'sortie' | 'retour' | 'deplacer' | 'modifier' | 'journal';
 
-const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void }> = ({ o, qui, categories, onError }) => {
+const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; premiere?: boolean }> = ({ o, qui, categories, onError, premiere }) => {
   const [mode, setMode] = useState<Mode>(null);
   const [par, setPar] = useState(qui);
   const [vers, setVers] = useState<string>(DESTINATIONS[0]);
@@ -175,7 +176,7 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
 
   return (
     <li className="py-3 border-b last:border-b-0" style={{ borderColor: 'var(--admin-line-soft)' }}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3" data-visite={premiere ? 'objet' : undefined}>
         <input
           type="checkbox"
           aria-label={sorti ? `Marquer « ${o.nom} » comme retourné` : `Sortir « ${o.nom} »`}
@@ -200,9 +201,9 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
             </p>
           )}
           <div className="mt-1.5 flex flex-wrap gap-1 -ml-2" style={{ color: 'var(--admin-text-soft)' }}>
-            <button type="button" className={bouton} onClick={() => setMode(mode === 'deplacer' ? null : 'deplacer')}><MoveRight size={12} /> Déplacer</button>
+            <button type="button" className={bouton} onClick={() => setMode(mode === 'deplacer' ? null : 'deplacer')} data-visite={premiere ? 'deplacer' : undefined}><MoveRight size={12} /> Déplacer</button>
             <button type="button" className={bouton} onClick={() => setMode(mode === 'modifier' ? null : 'modifier')}><Pencil size={12} /> Modifier</button>
-            <button type="button" className={bouton} onClick={() => setMode(mode === 'journal' ? null : 'journal')}><History size={12} /> Journal{o.historique.length > 1 ? ` (${o.historique.length})` : ''}</button>
+            <button type="button" className={bouton} onClick={() => setMode(mode === 'journal' ? null : 'journal')} data-visite={premiere ? 'journal' : undefined}><History size={12} /> Journal{o.historique.length > 1 ? ` (${o.historique.length})` : ''}</button>
           </div>
         </div>
       </div>
@@ -295,6 +296,30 @@ function texteMouvement(m: Mouvement): string {
   }
 }
 
+// ── Les étapes de la visite ──────────────────────────────────────────
+const ETAPES: Etape[] = [
+  { cible: 'chiffres', titre: 'Le container en un coup d’œil',
+    texte: 'Combien d’objets dorment dans le container, combien sont sortis en ce moment, et combien de cases restent à inventorier en détail.' },
+  { cible: 'plan', titre: 'Le plan en U',
+    texte: 'CG à gauche, CF au fond, CD à droite. Chaque case montre le nombre d’objets qu’elle contient. Cliquez une case et la liste ne montre plus que ce qui s’y trouve.' },
+  { cible: 'vue3d', titre: 'La même chose en volume',
+    texte: 'Le bouton 3D montre le container vu de la porte, avec une pile de caisses par case. Glissez pour tourner, molette pour zoomer.' },
+  { cible: 'recherche', titre: 'Chercher et filtrer',
+    texte: 'Un mot, une catégorie ou un code comme CG2A. Les pastilles montrent seulement ce qui est rangé, ce qui est sorti ou ce qui reste à inventorier.' },
+  { cible: 'objet', titre: 'Quelqu’un prend un objet',
+    texte: 'Cochez la case. Écrivez votre nom et l’endroit où l’objet s’en va, une note si vous voulez. Quand il revient dans le container, décochez-le.' },
+  { cible: 'deplacer', titre: 'Changer de case',
+    texte: 'Si vous rangez l’objet sur une autre tablette, le bouton Déplacer lui donne sa nouvelle case et le plan se met à jour.' },
+  { cible: 'journal', titre: 'Le journal de chaque objet',
+    texte: 'Chaque sortie, chaque retour et chaque déplacement reste écrit, avec le nom et la date. Rien ne se perd.' },
+  { cible: 'nouvel', titre: 'Ajouter ce qui manque',
+    texte: 'Un objet qui n’est pas encore dans la liste s’ajoute ici, avec sa case. Le bouton Modifier sur une ligne corrige une quantité ou un détail.' },
+  { cible: 'mouvements', titre: 'Ce qui a bougé',
+    texte: 'Les derniers gestes de toute l’équipe, en direct. Tout le monde voit la même liste au même moment.' },
+];
+
+const CLE_VISITE = 'fmm.inventaire.visite';
+
 // ── La section ───────────────────────────────────────────────────────
 type Filtre = 'tous' | 'ranges' | 'sortis' | 'aVerifier';
 
@@ -309,6 +334,17 @@ const InventaireSection: React.FC = () => {
   const [vue, setVue] = useState<'plan' | '3d'>('plan');
   const [ajout, setAjout] = useState(false);
   const [semis, setSemis] = useState(false);
+  const [visite, setVisite] = useState(false);
+  // Première visite : la visite guidée part d'elle-même une fois les objets lus.
+  useEffect(() => {
+    if (!objets || objets.length === 0) return;
+    let vue = false;
+    try { vue = localStorage.getItem(CLE_VISITE) === '1'; } catch { /* stockage refusé */ }
+    if (vue) return;
+    const t = window.setTimeout(() => setVisite(true), 700);
+    return () => window.clearTimeout(t);
+  }, [objets === null || objets.length === 0]);
+  const finVisite = () => { setVisite(false); try { localStorage.setItem(CLE_VISITE, '1'); } catch { /* stockage refusé */ } };
 
   useEffect(() => watchInventaire(setObjets, () => setErreur('Impossible de lire l’inventaire. Votre compte a-t-il un rôle admin ?')), []);
 
@@ -377,7 +413,10 @@ const InventaireSection: React.FC = () => {
   return (
     <div className="space-y-6">
       <Card className="p-5 md:p-6">
-        <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold mb-2" style={{ color: 'var(--admin-accent)' }}>Comment ça marche</p>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold" style={{ color: 'var(--admin-accent)' }}>Comment ça marche</p>
+          <GhostButton type="button" onClick={() => setVisite(true)}><Compass size={14} /> Visite guidée</GhostButton>
+        </div>
         <p className="font-sans text-sm leading-relaxed" style={{ color: 'var(--admin-text)' }}>
           Le container se lit en U : la rangée CG à gauche, CF au fond et CD à droite. Les tablettes sont numérotées de 1 en haut jusqu’à 4 pour le sol.
           Les cases portent une lettre, de A près de la porte jusqu’à D au fond du rayon. CG2A veut donc dire à gauche, tablette du milieu, à l’avant.
@@ -389,8 +428,10 @@ const InventaireSection: React.FC = () => {
 
       {erreur && <p className="flex items-center gap-2 font-sans text-xs text-blush"><ShieldAlert size={13} className="shrink-0" /> {erreur}</p>}
 
+      {visite && objets && objets.length > 0 && <VisiteGuidee etapes={ETAPES} onFin={finVisite} />}
+
       {/* En tête : les chiffres */}
-      <Card className="p-5 md:p-6">
+      <div data-visite="chiffres"><Card className="p-5 md:p-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { l: 'Objets', v: total, c: 'var(--admin-text)' },
@@ -404,7 +445,7 @@ const InventaireSection: React.FC = () => {
             </div>
           ))}
         </div>
-      </Card>
+      </Card></div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-6 items-start">
         {/* Le container */}
@@ -414,13 +455,13 @@ const InventaireSection: React.FC = () => {
               <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold" style={{ color: 'var(--admin-accent)' }}>
                 {selection ? <>Filtré sur <b>{selection}</b> · {libelleEmplacement(lireCode(selection))}</> : 'Tout le container'}
               </p>
-              <div className="flex gap-1">
+              <div className="flex gap-1" data-visite="vue3d">
                 <button type="button" onClick={() => setVue('plan')} className="rounded-md px-2 py-1 font-sans text-[11px] inline-flex items-center gap-1" style={chip(vue === 'plan')}><LayoutGrid size={12} /> Plan</button>
                 <button type="button" onClick={() => setVue('3d')} className="rounded-md px-2 py-1 font-sans text-[11px] inline-flex items-center gap-1" style={chip(vue === '3d')}><Box size={12} /> 3D</button>
               </div>
             </div>
             {vue === 'plan'
-              ? <PlanContainer comptes={comptes} selection={selection} onSelect={setSelection} />
+              ? <div data-visite="plan"><PlanContainer comptes={comptes} selection={selection} onSelect={setSelection} /></div>
               : (
                 <Suspense fallback={<div className="rounded-card" style={{ height: 380, background: 'rgba(4,8,12,0.4)' }} />}>
                   <Container3D comptes={comptes} selection={selection} onSelect={setSelection} />
@@ -429,7 +470,7 @@ const InventaireSection: React.FC = () => {
             {selection && <GhostButton type="button" onClick={() => setSelection(null)}><X size={13} /> Voir tout le container</GhostButton>}
           </Card>
 
-          <Card className="p-4 md:p-5">
+          <div data-visite="mouvements"><Card className="p-4 md:p-5">
             <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold mb-3" style={{ color: 'var(--admin-accent)' }}>Derniers mouvements</p>
             {derniers.length === 0
               ? <p className="font-sans text-xs" style={{ color: 'var(--admin-text-mute)' }}>Rien n’a encore bougé.</p>
@@ -438,19 +479,19 @@ const InventaireSection: React.FC = () => {
                   {derniers.map(({ o, m }, i) => <li key={i}><span style={{ color: 'var(--admin-text)' }}>{o.nom}</span> · {texteMouvement(m)}</li>)}
                 </ol>
               )}
-          </Card>
+          </Card></div>
         </div>
 
         {/* La liste */}
         <Card className="p-4 md:p-5">
-          <div className="flex flex-col gap-3 mb-4">
+          <div className="flex flex-col gap-3 mb-4" data-visite="recherche">
             <div className="flex flex-wrap gap-2 items-center">
               <div className="relative flex-1 min-w-[200px]">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--admin-text-mute)' }} />
                 <input className={`${champ} pl-9`} value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Chercher un objet, une catégorie, un code (CG2A)…" />
               </div>
               <GhostButton type="button" onClick={exporter} title="Exporter en CSV"><Download size={14} /> CSV</GhostButton>
-              <PrimaryButton type="button" onClick={() => setAjout((v) => !v)}><Plus size={14} /> Nouvel objet</PrimaryButton>
+              <PrimaryButton type="button" onClick={() => setAjout((v) => !v)} data-visite="nouvel"><Plus size={14} /> Nouvel objet</PrimaryButton>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {([['tous', 'Tous'], ['ranges', 'Rangés'], ['sortis', `Sortis${sortis ? ` (${sortis})` : ''}`], ['aVerifier', 'À inventorier']] as [Filtre, string][]).map(([f, l]) => (
@@ -482,14 +523,14 @@ const InventaireSection: React.FC = () => {
             <EmptyState icon={Search}>Aucun objet ne répond à ce filtre.</EmptyState>
           ) : (
             <div className="space-y-5">
-              {groupes.map(([code, liste]) => (
+              {groupes.map(([code, liste], gi) => (
                 <section key={code}>
                   <header className="sticky top-0 z-[2] flex items-baseline gap-2 py-1.5 -mx-1 px-1" style={{ background: 'rgba(11, 16, 21, 0.92)', backdropFilter: 'blur(8px)' }}>
                     <button type="button" onClick={() => setSelection(selection === code ? null : code)} className="font-display text-lg" style={{ color: 'var(--admin-accent)' }}>{code}</button>
                     <span className="font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>{libelleEmplacement(lireCode(code))}</span>
                     <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.2em] tabular-nums" style={{ color: 'var(--admin-text-mute)' }}>{liste.length}</span>
                   </header>
-                  <ul>{liste.map((o) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} />)}</ul>
+                  <ul>{liste.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} premiere={gi === 0 && i === 0} />)}</ul>
                 </section>
               ))}
             </div>
