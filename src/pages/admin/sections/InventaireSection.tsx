@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Boxes, Search, Plus, X, Check, Undo2, MoveRight, Pencil, Trash2, History,
   ShieldAlert, AlertTriangle, Box, LayoutGrid, Download, Compass, ArrowDownAZ, MapPin,
@@ -38,7 +38,9 @@ const ordreCode = (a: string, b: string) => {
 // Alex, 9 sept 2026 : survol d'une ligne dans la liste de droite = la
 // case s'allume ici (halo ambre, distinct de l'accent doré de la
 // sélection) et remonte à l'écran si elle était plus bas que la vue.
-const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis: number }>; selection: string | null; survol: string | null; onSelect: (c: string | null) => void }> =
+// Exporté pour le harnais de vérification (src/dev/HarnaisInventaire.tsx),
+// qui capture le survol sans Firestore. Rien d'autre ne l'importe.
+export const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis: number }>; selection: string | null; survol: string | null; onSelect: (c: string | null) => void }> =
   ({ comptes, selection, survol, onSelect }) => {
     const cases = useRef<Map<string, HTMLButtonElement>>(new Map());
     useEffect(() => {
@@ -174,7 +176,7 @@ const FicheObjet: React.FC<{ initial: Champs; categories: string[]; onSave: (c: 
 // ── Une ligne de la liste ────────────────────────────────────────────
 type Mode = null | 'sortie' | 'retour' | 'deplacer' | 'modifier' | 'journal';
 
-const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; onSurvol: (code: string | null) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, onSurvol, premiere, montrerCode }) => {
+export const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; onEntrer: (code: string) => void; onSortir: (code: string) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, onEntrer, onSortir, premiere, montrerCode }) => {
   const [mode, setMode] = useState<Mode>(null);
   const [par, setPar] = useState(qui);
   const [vers, setVers] = useState<string>(DESTINATIONS[0]);
@@ -189,9 +191,9 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
   const toucheRef = useRef<number | null>(null);
   useEffect(() => () => { if (toucheRef.current) window.clearTimeout(toucheRef.current); }, []);
   const toucher = () => {
-    onSurvol(code);
+    onEntrer(code);
     if (toucheRef.current) window.clearTimeout(toucheRef.current);
-    toucheRef.current = window.setTimeout(() => onSurvol(null), 2000);
+    toucheRef.current = window.setTimeout(() => onSortir(code), 2000);
   };
 
   const sorti = o.statut === 'sorti';
@@ -208,10 +210,10 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
     <li
       className="py-3 border-b last:border-b-0"
       style={{ borderColor: 'var(--admin-line-soft)' }}
-      onMouseEnter={() => onSurvol(code)}
-      onMouseLeave={() => onSurvol(null)}
-      onFocus={() => onSurvol(code)}
-      onBlur={() => onSurvol(null)}
+      onMouseEnter={() => onEntrer(code)}
+      onMouseLeave={() => onSortir(code)}
+      onFocus={() => onEntrer(code)}
+      onBlur={() => onSortir(code)}
       onTouchStart={toucher}
     >
       <div className="flex items-start gap-3" data-visite={premiere ? 'objet' : undefined}>
@@ -371,6 +373,12 @@ const InventaireSection: React.FC = () => {
   const [filtre, setFiltre] = useState<Filtre>('tous');
   const [selection, setSelection] = useState<string | null>(null);
   const [survol, setSurvol] = useState<string | null>(null);
+  // Alex, 9 sept 2026 : éteindre ne vaut que pour SA propre case. Sans ce
+  // garde-fou, quitter la ligne A après être entré sur la ligne B (souris
+  // qui glisse dans la liste, ou deux appuis tactiles rapprochés) éteignait
+  // la case de B au lieu de celle de A.
+  const entrerSurvol = useCallback((code: string) => setSurvol(code), []);
+  const sortirSurvol = useCallback((code: string) => setSurvol((s) => (s === code ? null : s)), []);
   const [vue, setVue] = useState<'plan' | '3d'>('plan');
   const [ajout, setAjout] = useState(false);
   const [ordre, setOrdre] = useState<'emplacement' | 'alpha'>('emplacement');
@@ -568,7 +576,7 @@ const InventaireSection: React.FC = () => {
           ) : groupes.length === 0 ? (
             <EmptyState icon={Search}>Aucun objet ne répond à ce filtre.</EmptyState>
           ) : ordre === 'alpha' ? (
-            <ul>{alpha.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} onSurvol={setSurvol} premiere={i === 0} montrerCode />)}</ul>
+            <ul>{alpha.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} onEntrer={entrerSurvol} onSortir={sortirSurvol} premiere={i === 0} montrerCode />)}</ul>
           ) : (
             <div className="space-y-5">
               {groupes.map(([code, liste], gi) => (
@@ -578,7 +586,7 @@ const InventaireSection: React.FC = () => {
                     <span className="font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>{libelleEmplacement(lireCode(code))}</span>
                     <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.2em] tabular-nums" style={{ color: 'var(--admin-text-mute)' }}>{liste.length}</span>
                   </header>
-                  <ul>{liste.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} onSurvol={setSurvol} premiere={gi === 0 && i === 0} />)}</ul>
+                  <ul>{liste.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} onEntrer={entrerSurvol} onSortir={sortirSurvol} premiere={gi === 0 && i === 0} />)}</ul>
                 </section>
               ))}
             </div>
