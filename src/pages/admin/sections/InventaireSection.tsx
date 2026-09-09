@@ -38,7 +38,7 @@ const ordreCode = (a: string, b: string) => {
 // Alex, 9 sept 2026 : survol d'une ligne dans la liste de droite = la
 // case s'allume ici (halo ambre, distinct de l'accent doré de la
 // sélection) et remonte à l'écran si elle était plus bas que la vue.
-const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis: number }>; selection: string | null; survol: string | null; onSelect: (c: string | null) => void }> =
+export const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis: number }>; selection: string | null; survol: string | null; onSelect: (c: string | null) => void }> =
   ({ comptes, selection, survol, onSelect }) => {
     const cases = useRef<Map<string, HTMLButtonElement>>(new Map());
     useEffect(() => {
