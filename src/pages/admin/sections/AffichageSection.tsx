@@ -88,7 +88,7 @@ const Panneau: React.FC<{ lieu: Lieu; qui: string; routes: string[]; onFermer: (
     };
 
     return (
-      <div className="admin-card-strong mt-2 p-4 space-y-4" onClick={(e) => e.stopPropagation()}>
+      <div className="admin-card-strong mt-3 p-4 md:p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold" style={{ color: 'var(--admin-accent)' }}>{LIBELLE_TYPE[lieu.type]}</p>
@@ -97,6 +97,7 @@ const Panneau: React.FC<{ lieu: Lieu; qui: string; routes: string[]; onFermer: (
           <button type="button" onClick={onFermer} className="admin-ghost" aria-label="Fermer"><X size={13} /></button>
         </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <Label>Où ça en est</Label>
           <div className="flex flex-wrap gap-1.5">
@@ -146,6 +147,7 @@ const Panneau: React.FC<{ lieu: Lieu; qui: string; routes: string[]; onFermer: (
             <input className={champ} value={porteurLibre} onChange={(e) => setPorteurLibre(e.target.value)} placeholder="Quelqu’un d’autre…" />
             <PrimaryButton type="submit" disabled={occupe || !porteurLibre.trim()}><UserPlus size={13} /> Confier</PrimaryButton>
           </form>
+        </div>
         </div>
 
         <div>
@@ -214,7 +216,7 @@ const Tuile: React.FC<{ lieu: Lieu; ouvert: boolean; onOuvrir: () => void; premi
         type="button"
         onClick={onOuvrir}
         data-visite={premiere ? 'commerce' : undefined}
-        className="w-full rounded-card p-3 text-left transition-colors"
+        className="h-full w-full rounded-card p-3 text-left transition-colors"
         style={{
           border: `1px solid ${ouvert ? 'var(--admin-accent)' : 'var(--admin-line)'}`,
           background: ouvert ? 'rgba(176,141,58,0.10)' : 'rgba(4, 8, 12, 0.35)',
@@ -501,16 +503,24 @@ const AffichageSection: React.FC = () => {
                 </div>
 
                 {!ferme && (
-                  <div className="mt-4 grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-                    {liste.map((l, i) => (
-                      <div key={l.id}>
-                        <Tuile lieu={l} ouvert={ouvert === l.id} onOuvrir={() => setOuvert(ouvert === l.id ? null : l.id)} premiere={ri === 0 && i === 0} />
-                        {ouvert === l.id && (
-                          <Panneau lieu={l} qui={qui} routes={toutesRoutes} onFermer={() => setOuvert(null)} onErreur={setErreur} />
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="mt-4 grid gap-2 items-stretch" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+                      {liste.map((l, i) => (
+                        <Tuile key={l.id} lieu={l} ouvert={ouvert === l.id} onOuvrir={() => setOuvert(ouvert === l.id ? null : l.id)} premiere={ri === 0 && i === 0} />
+                      ))}
+                    </div>
+                    {/* Le panneau se déplie sous la route, sur toute la largeur :
+                        dans une colonne de la grille il serait à l'étroit. */}
+                    {liste.some((l) => l.id === ouvert) && (
+                      <Panneau
+                        lieu={liste.find((l) => l.id === ouvert)!}
+                        qui={qui}
+                        routes={toutesRoutes}
+                        onFermer={() => setOuvert(null)}
+                        onErreur={setErreur}
+                      />
+                    )}
+                  </>
                 )}
               </Card>
             );
