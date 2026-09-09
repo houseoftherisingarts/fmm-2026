@@ -48,8 +48,8 @@ export const ROLE_DESCRIPTIONS: Record<AdminRole, { FR: string; EN: string }> = 
                     EN: 'Volunteer space + supervises normal volunteers.' },
   benevole:       { FR: 'Contenus publiés par les admins + salon de discussion.',
                     EN: 'Admin-published content + chat room.' },
-  kitchen:        { FR: 'Accès au bar (boissons, inventaire, service).',
-                    EN: 'Bar access (drinks, inventory, service).' },
+  kitchen:        { FR: 'Accès au bar et à l’inventaire du container.',
+                    EN: 'Bar and container inventory access.' },
 };
 
 // ─── Permission matrix ──────────────────────────────────────────────
@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'demandeVexel',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire', 'demandeVexel',
   ],
 
   // Organisateurs: total access minus the future CA-only tab.
@@ -81,7 +81,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire',
   ],
 
   // Super Bénévole: supervises normal bénévoles. Reads bénévole
@@ -98,9 +98,9 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
     'dashboard', 'discord',
   ],
 
-  // Kitchen: bar / food service only.
+  // Kitchen: bar / food service, and the container inventory.
   kitchen: [
-    'dashboard', 'bar',
+    'dashboard', 'bar', 'inventaire',
   ],
 };
 

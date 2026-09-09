@@ -64,6 +64,7 @@ const ComptesSection      = lazy(() => import('./admin/sections/ComptesSection')
 const GuildesSection      = lazy(() => import('./admin/sections/GuildesSection'));
 const ClientsSection      = lazy(() => import('./admin/sections/ClientsSection'));
 const CampingSection      = lazy(() => import('./admin/sections/CampingSection'));
+const InventaireSection   = lazy(() => import('./admin/sections/InventaireSection'));
 const InvitesSection      = lazy(() => import('./admin/sections/InvitesSection'));
 const MessagesSection     = lazy(() => import('./admin/sections/MessagesSection'));
 const MessagerieSection   = lazy(() => import('./admin/sections/MessagerieSection'));
@@ -222,6 +223,7 @@ const AdminPage: React.FC = () => {
       case 'clients':    return <ClientsSection />;
       case 'invites':    return <InvitesSection />;
       case 'camping':    return <CampingSection />;
+      case 'inventaire': return <InventaireSection />;
       case 'messages':   return <MessagesSection   devBypass={DEV_BYPASS} />;
       case 'messagerie': return <MessagerieSection />;
       case 'newsletter': return <NewsletterSection devBypass={DEV_BYPASS} />;
