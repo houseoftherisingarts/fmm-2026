@@ -504,10 +504,10 @@ const InventaireSection: React.FC = () => {
               </div>
             </div>
             {vue === 'plan'
-              ? <div data-visite="plan"><PlanContainer comptes={comptes} selection={selection} onSelect={setSelection} /></div>
+              ? <div data-visite="plan"><PlanContainer comptes={comptes} selection={selection} survol={survol} onSelect={setSelection} /></div>
               : (
                 <Suspense fallback={<div className="rounded-card" style={{ height: 380, background: 'rgba(4,8,12,0.4)' }} />}>
-                  <Container3D comptes={comptes} selection={selection} onSelect={setSelection} />
+                  <Container3D comptes={comptes} selection={selection} survol={survol} onSelect={setSelection} />
                 </Suspense>
               )}
             {selection && <GhostButton type="button" onClick={() => setSelection(null)}><X size={13} /> Voir tout le container</GhostButton>}
