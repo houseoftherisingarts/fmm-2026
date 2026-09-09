@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/fmm-favicon-128.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fond de coquille de l'app mobile interne (FMM Inventaire) : voir
+         public/manifest.webmanifest. Alex, 9 sept 2026. -->
+    <meta name="theme-color" content="#0b0709" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
+    <meta name="description" content="Festival Médiéval de Montpellier — 25, 26 et 27 septembre 2026. Édition Caravanes & Saltimbanques." />
+
+    <!-- Static OG/Twitter fallback: link scrapers (Facebook, WhatsApp, iMessage)
+         don't run JS, so react-helmet tags never reach them. These are the
+         defaults; react-helmet overrides them client-side per route. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Festival Médiéval de Montpellier — FMM 2026" />
+    <meta property="og:description" content="25, 26 et 27 septembre 2026 · Édition Caravanes &amp; Saltimbanques. Marché, banquet, musique, tournois et chevaux à Montpellier, Québec." />
+    <meta property="og:url" content="https://www.festivalmedievaldemontpellier.org/" />
+    <meta property="og:image" content="https://www.festivalmedievaldemontpellier.org/hero/fmm-share-2026-joute.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Deux cavaliers en armure se croisent à la joute, sous les fanions du festival." />
+    <meta property="og:site_name" content="Festival Médiéval de Montpellier" />
+    <meta property="og:locale" content="fr_CA" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.festivalmedievaldemontpellier.org/hero/fmm-share-2026-joute.jpg" />
+    <link rel="canonical" href="https://www.festivalmedievaldemontpellier.org/" />
+
+    <!-- Google AdSense : vérification de la propriété du site seulement.
+         Éditeur ca-pub-7365982984401895 (compte créé le 2026-08-03).
+         Cette balise ne charge rien et ne dépose aucun témoin : elle dit
+         seulement au robot de Google que ce domaine nous appartient. Le
+         fichier public/ads.txt porte la même preuve du côté des
+         annonceurs.
+         🚨 Loi 25 (Québec), article 8.1 : le script de diffusion des
+         annonces ne peut pas se trouver ici, parce qu'il se chargerait
+         avant que la personne ait répondu quoi que ce soit. Il est
+         maintenant injecté par src/components/layout/ConsentBanner.tsx,
+         et seulement quand la finalité « publicité » a été acceptée.
+         Ne pas remettre de balise script AdSense dans ce fichier. -->
+    <meta name="google-adsense-account" content="ca-pub-7365982984401895" />
+
+    <!-- Preload navbar logo so it paints with first frame (used eagerly by NavBar). -->
+    <link rel="preload" as="image" href="/fmm-logo-embossed-silver.webp" />
+
+    <!-- Fonts: preconnect first, then async-load with media trick to avoid render-block. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Festival",
+      "name": "Festival Médiéval de Montpellier",
+      "alternateName": "FMM 2026 · Caravanes & Saltimbanques",
+      "description": "Festival médiéval en Outaouais : marché artisanal, banquet aux flambeaux, musique, tournois et chevaux, du 25 au 27 septembre 2026 à Montpellier, Québec.",
+      "startDate": "2026-09-25T17:00:00-04:00",
+      "endDate": "2026-09-27T17:00:00-04:00",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "url": "https://www.festivalmedievaldemontpellier.org/",
+      "image": ["https://www.festivalmedievaldemontpellier.org/hero/fmm-share-2026-joute.jpg"],
+      "location": {
+        "@type": "Place",
+        "name": "Site du Festival Médiéval de Montpellier",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "4 rue du Bosquet",
+          "addressLocality": "Montpellier",
+          "addressRegion": "QC",
+          "addressCountry": "CA"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 45.8542778,
+          "longitude": -75.1642079
+        }
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": "Festival Médiéval de Montpellier",
+        "url": "https://www.festivalmedievaldemontpellier.org/"
+      },
+      "sameAs": [
+        "https://www.wikidata.org/wiki/Q141144093",
+        "https://www.facebook.com/FestivalMedievalMontpellier"
+      ],
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Passe Journée",
+          "price": "27.00",
+          "priceCurrency": "CAD",
+          "availability": "https://schema.org/InStock",
+          "validFrom": "2026-06-01T00:00:00-04:00",
+          "priceValidUntil": "2026-09-27T23:59:00-04:00",
+          "url": "https://www.festivalmedievaldemontpellier.org/billets"
+        },
+        {
+          "@type": "Offer",
+          "name": "Passe 3 Jours",
+          "price": "65.00",
+          "priceCurrency": "CAD",
+          "availability": "https://schema.org/InStock",
+          "validFrom": "2026-06-01T00:00:00-04:00",
+          "priceValidUntil": "2026-09-27T23:59:00-04:00",
+          "url": "https://www.festivalmedievaldemontpellier.org/billets"
+        }
+      ],
+      "performer": [
+        {"@type": "MusicGroup", "name": "Skarazula", "url": "https://www.skarazula.com"},
+        {"@type": "MusicGroup", "name": "L\u2019Harfang"},
+        {"@type": "MusicGroup", "name": "Troupe Caravane", "url": "http://www.troupecaravane.com"},
+        {"@type": "MusicGroup", "name": "L\u2019Ensemble Klezmer de Sainte-Nigoune", "url": "https://nigoune.com"},
+        {"@type": "MusicGroup", "name": "BicOasis"},
+        {"@type": "MusicGroup", "name": "Trifolys"},
+        {"@type": "MusicGroup", "name": "Svarica"},
+        {"@type": "MusicGroup", "name": "Las Noches Bohemias"},
+        {"@type": "MusicGroup", "name": "Alhambra"}
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","url":"https://www.festivalmedievaldemontpellier.org/","name":"Festival Médiéval de Montpellier","inLanguage":["fr-CA","en-CA"]}
+    </script>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Quand a lieu le Festival Médiéval de Montpellier 2026 ?","acceptedAnswer":{"@type":"Answer","text":"Du vendredi 25 au dimanche 27 septembre 2026. Le vendredi, le site est ouvert de 16 h 30 à 20 h et les portes ouvrent à 17 h. Le samedi, de 9 h 30 à 19 h, portes à 10 h. Le dimanche, de 9 h 30 à 16 h, portes à 10 h."}},{"@type":"Question","name":"Combien coûtent les billets ?","acceptedAnswer":{"@type":"Answer","text":"Une journée : enfant 20 $, adulte 35 $, famille 90 $. Trois jours : enfant 25 $, adulte 55 $, famille 125 $. Ce sont les montants affichés sur Zeffy. Le banquet médiéval se vend à part, 65 $ plus taxes. Tout s’achète en ligne sur Zeffy, qui ne prélève aucune commission."}},{"@type":"Question","name":"Mon billet d’une journée indique le vendredi 25 septembre. Puis-je venir samedi ou dimanche ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Zeffy imprime la date d’ouverture du festival sur tous les billets d’une journée, et cette date ne dit pas quel jour vous avez acheté. Votre billet vous ouvre les portes le vendredi, le samedi ou le dimanche, une seule fois, le jour que vous choisissez."}},{"@type":"Question","name":"Où se déroule le festival ?","acceptedAnswer":{"@type":"Answer","text":"Le festival se tient au 4, rue du Bosquet, à Montpellier, dans la Petite-Nation en Outaouais. Ottawa et Gatineau sont à environ 75 minutes de route. Il s’agit bien de Montpellier au Québec."}},{"@type":"Question","name":"Peut-on camper sur place ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Le camping festivalier se réserve sur Zeffy : 20 $ pour une tente et 40 $ pour une caravane. La page Hébergement présente aussi les hébergements partenaires de la Petite-Nation."}},{"@type":"Question","name":"Faut-il imprimer son billet ?","acceptedAnswer":{"@type":"Answer","text":"Nous vous le conseillons. Le réseau cellulaire est faible sur le site et il n’y a pas de Wi-Fi public à l’entrée. Imprimez votre confirmation Zeffy à la maison ou téléchargez-la sur votre appareil avant de partir."}},{"@type":"Question","name":"Les chiens sont-ils admis ?","acceptedAnswer":{"@type":"Answer","text":"Non, même en laisse. Des chevaux sont présents pendant tout le festival et notre couverture d’assurance tombe dès qu’un chien s’en approche."}},{"@type":"Question","name":"Peut-on payer par carte sur le site ?","acceptedAnswer":{"@type":"Answer","text":"Les terminaux deviennent capricieux quand le réseau faiblit, surtout aux heures de pointe. Apportez du comptant pour les kiosques, la nourriture et le bar. Le kiosque de la Petite Monnaie, à l’entrée, échange votre comptant contre la monnaie locale acceptée partout sur le site."}},{"@type":"Question","name":"Le festival est-il bilingue ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Le site web et le festival se vivent en français et en anglais."}}]}
+    </script>
+    <title>Festival Médiéval de Montpellier — FMM 2026</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/verif-main.tsx"></script>
+  </body>
+</html>
