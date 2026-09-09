@@ -174,7 +174,7 @@ const FicheObjet: React.FC<{ initial: Champs; categories: string[]; onSave: (c: 
 // ── Une ligne de la liste ────────────────────────────────────────────
 type Mode = null | 'sortie' | 'retour' | 'deplacer' | 'modifier' | 'journal';
 
-const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, premiere, montrerCode }) => {
+const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; onSurvol: (code: string | null) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, onSurvol, premiere, montrerCode }) => {
   const [mode, setMode] = useState<Mode>(null);
   const [par, setPar] = useState(qui);
   const [vers, setVers] = useState<string>(DESTINATIONS[0]);
@@ -183,6 +183,16 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
   const [cible, setCible] = useState<Emplacement>({ section: o.section, niveau: o.niveau, profondeur: o.profondeur });
   const [occupe, setOccupe] = useState(false);
   useEffect(() => { setPar(qui); }, [qui]);
+  // Alex, 9 sept 2026 : survoler ou garder le focus sur la ligne allume
+  // sa case dans le plan et la 3D. Sur mobile, un appui l'allume 2 s.
+  const code = codeDe(o);
+  const toucheRef = useRef<number | null>(null);
+  useEffect(() => () => { if (toucheRef.current) window.clearTimeout(toucheRef.current); }, []);
+  const toucher = () => {
+    onSurvol(code);
+    if (toucheRef.current) window.clearTimeout(toucheRef.current);
+    toucheRef.current = window.setTimeout(() => onSurvol(null), 2000);
+  };
 
   const sorti = o.statut === 'sorti';
   const faire = async (fn: () => Promise<void>) => {
