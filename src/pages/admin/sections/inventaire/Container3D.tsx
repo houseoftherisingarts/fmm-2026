@@ -229,7 +229,7 @@ const Container3D: React.FC<Props> = (props) => {
         <pointLight position={[0, 2.2, 2.4]} intensity={14} color="#E8B86A" distance={14} decay={1.5} castShadow />
         <pointLight position={[0, 2.1, -1.6]} intensity={8} color="#B9CCE6" distance={10} decay={1.6} />
         <pointLight position={[0, 1.4, 5.5]} intensity={6} color="#F4EFE3" distance={12} decay={1.6} />
-        <Scene {...props} orbite={orbite} onHover={setSurvol} />
+        <Scene {...props} orbite={orbite} onHover={setPointe} reduit={reduit} />
       </Canvas>
       <div className="pointer-events-none absolute left-3 top-3 hidden sm:flex gap-2 whitespace-nowrap font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
         <span>Gauche (CG)</span><span>·</span><span>Fond (CF)</span><span>·</span><span>Droit (CD)</span>
