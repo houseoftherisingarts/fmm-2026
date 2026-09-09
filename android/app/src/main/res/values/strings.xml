@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FMM Inventaire</string>
+    <string name="title_activity_main">FMM Inventaire</string>
+    <string name="package_name">org.festivalmedieval.inventaire</string>
+    <string name="custom_url_scheme">org.festivalmedieval.inventaire</string>
+</resources>
