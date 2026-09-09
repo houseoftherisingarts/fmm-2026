@@ -370,6 +370,7 @@ const InventaireSection: React.FC = () => {
   const [recherche, setRecherche] = useState('');
   const [filtre, setFiltre] = useState<Filtre>('tous');
   const [selection, setSelection] = useState<string | null>(null);
+  const [survol, setSurvol] = useState<string | null>(null);
   const [vue, setVue] = useState<'plan' | '3d'>('plan');
   const [ajout, setAjout] = useState(false);
   const [ordre, setOrdre] = useState<'emplacement' | 'alpha'>('emplacement');
