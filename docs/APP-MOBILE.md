@@ -25,7 +25,7 @@ L'icône « Inventaire » s'ajoute à l'écran d'accueil, s'ouvre plein écran (
 ## Rebâtir l'APK
 
 ```bash
-export JAVA_HOME=/usr/local/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+export JAVA_HOME=/usr/local/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 export PATH="$JAVA_HOME/bin:$PATH"
 export ANDROID_HOME=/Users/lesalondesinconnus/Library/Android/sdk
 export ANDROID_SDK_ROOT=/Users/lesalondesinconnus/Library/Android/sdk
