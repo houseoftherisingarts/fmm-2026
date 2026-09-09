@@ -207,13 +207,13 @@ const Container3D: React.FC<Props> = (props) => {
         <pointLight position={[0, 1.4, 5.5]} intensity={6} color="#F4EFE3" distance={12} decay={1.6} />
         <Scene {...props} orbite={orbite} onHover={setSurvol} />
       </Canvas>
-      <div className="pointer-events-none absolute left-3 top-3 flex gap-2 font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
+      <div className="pointer-events-none absolute left-3 top-3 hidden sm:flex gap-2 whitespace-nowrap font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
         <span>CG à gauche</span><span>·</span><span>CF au fond</span><span>·</span><span>CD à droite</span>
       </div>
-      <div className="pointer-events-none absolute right-3 bottom-3 font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
+      <div className="pointer-events-none absolute right-3 bottom-3 hidden sm:block font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
         Vue de la porte
       </div>
-      <div className="pointer-events-none absolute left-3 bottom-3 right-32 font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>
+      <div className="pointer-events-none absolute left-3 bottom-3 right-3 sm:right-32 font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>
         {survol
           ? <><b style={{ color: 'var(--admin-accent)' }}>{survol}</b> · {compteSurvol?.total ?? 0} objet{(compteSurvol?.total ?? 0) > 1 ? 's' : ''}{compteSurvol?.sortis ? `, ${compteSurvol.sortis} sorti${compteSurvol.sortis > 1 ? 's' : ''}` : ''}</>
           : 'Glissez pour tourner, molette pour zoomer, cliquez une case.'}
