@@ -24,6 +24,14 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
 
+    // Quelqu'un à qui un super-admin a donné un rôle dans adminRoles
+    // (Cuisine, CA, Organisateur…) sans être dans la liste d'équipe.
+    function aUnRoleAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && exists(/databases/$(database)/documents/adminRoles/$(request.auth.token.email.lower()));
+    }
+
     function isAdmin() {
       return signedIn()
         && request.auth.token.email != null
@@ -1265,6 +1273,9 @@ service cloud.firestore {
     // bar inventory, volunteer schedule, social-media planner, mail
     // tab (internal — different from inquiry-form `contacts`).
     match /bar/{docId}         { allow read, write: if isAdmin(); }
+    // Inventaire du container (admin › Nourriture et Bar › Inventaire) :
+    // l'équipe et les rôles Cuisine lisent et écrivent, rien de public.
+    match /inventaire/{docId}  { allow read, write: if isAdmin() || aUnRoleAdmin(); }
     // Horaire du festival : public en lecture (la page Programmation
     // s'y abonne), écriture réservée aux admins (section Horaire).
     match /schedule/{docId}    { allow read: if true; allow write: if isAdmin(); }
