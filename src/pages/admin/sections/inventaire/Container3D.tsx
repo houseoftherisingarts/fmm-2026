@@ -194,8 +194,12 @@ const Scene: React.FC<Props & { orbite: React.MutableRefObject<{ yaw: number; pi
 const Container3D: React.FC<Props> = (props) => {
   const orbite = useRef({ yaw: 0.22, pitch: 0.16, zoom: 0.95 });
   const drag = useRef<{ x: number; y: number } | null>(null);
-  const [survol, setSurvol] = useState<string | null>(null);
-  const compteSurvol = useMemo(() => (survol ? props.comptes[survol] : null), [survol, props.comptes]);
+  // pointe : la case que la souris touche DANS le canevas (infobulle).
+  // props.survol : la case allumée depuis la liste, peu importe où
+  // pointe la souris — deux choses distinctes.
+  const [pointe, setPointe] = useState<string | null>(null);
+  const comptePointe = useMemo(() => (pointe ? props.comptes[pointe] : null), [pointe, props.comptes]);
+  const reduit = useMemo(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
 
   return (
     <div
