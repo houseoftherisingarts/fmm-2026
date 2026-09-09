@@ -205,7 +205,15 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
   const bouton = 'inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-sans text-[11px] transition-colors hover:bg-white/5';
 
   return (
-    <li className="py-3 border-b last:border-b-0" style={{ borderColor: 'var(--admin-line-soft)' }}>
+    <li
+      className="py-3 border-b last:border-b-0"
+      style={{ borderColor: 'var(--admin-line-soft)' }}
+      onMouseEnter={() => onSurvol(code)}
+      onMouseLeave={() => onSurvol(null)}
+      onFocus={() => onSurvol(code)}
+      onBlur={() => onSurvol(null)}
+      onTouchStart={toucher}
+    >
       <div className="flex items-start gap-3" data-visite={premiere ? 'objet' : undefined}>
         <input
           type="checkbox"
