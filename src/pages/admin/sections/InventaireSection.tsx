@@ -174,7 +174,7 @@ const FicheObjet: React.FC<{ initial: Champs; categories: string[]; onSave: (c: 
 // ── Une ligne de la liste ────────────────────────────────────────────
 type Mode = null | 'sortie' | 'retour' | 'deplacer' | 'modifier' | 'journal';
 
-export const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; onSurvol: (code: string | null) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, onSurvol, premiere, montrerCode }) => {
+const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; onSurvol: (code: string | null) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, onSurvol, premiere, montrerCode }) => {
   const [mode, setMode] = useState<Mode>(null);
   const [par, setPar] = useState(qui);
   const [vers, setVers] = useState<string>(DESTINATIONS[0]);
