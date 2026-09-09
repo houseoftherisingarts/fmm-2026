@@ -73,19 +73,24 @@ const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis:
                   const code = `${section}${n}${p ?? ''}`;
                   const c = comptes[code];
                   const active = selection === code;
+                  const enSurvol = !!survol && code.startsWith(survol);
                   const dansSection = selection === section || (p !== null && selection === `${section}${n}`);
                   return (
                     <button
                       key={code}
+                      ref={(el) => { if (el) cases.current.set(code, el); else cases.current.delete(code); }}
                       type="button"
                       title={`${code} · ${libelleNiveau(section, n)}${p ? `, ${LIBELLE_PROFONDEUR[p].toLowerCase()}` : ''}`}
                       onClick={() => onSelect(active ? null : code)}
-                      className={`relative ${profond ? 'aspect-[5/4]' : 'h-9'} rounded-md font-sans text-xs tabular-nums transition-all`}
+                      className={`relative ${profond ? 'aspect-[5/4]' : 'h-9'} rounded-md font-sans text-xs tabular-nums`}
                       style={{
                         background: active
                           ? 'linear-gradient(180deg, var(--admin-brass-hi), var(--admin-accent))'
                           : c?.total ? 'rgba(176, 141, 58, 0.16)' : 'rgba(4, 8, 12, 0.5)',
-                        border: `1px solid ${active ? 'var(--admin-accent)' : dansSection ? 'color-mix(in oklab, var(--admin-accent), transparent 45%)' : 'var(--admin-line)'}`,
+                        border: `1px solid ${enSurvol ? 'var(--color-amber-glow)' : active ? 'var(--admin-accent)' : dansSection ? 'color-mix(in oklab, var(--admin-accent), transparent 45%)' : 'var(--admin-line)'}`,
+                        boxShadow: enSurvol ? '0 0 0 1px rgba(var(--sk-glow-rgb), 0.55), 0 0 14px 3px rgba(var(--sk-glow-rgb), 0.35)' : 'none',
+                        transform: enSurvol ? 'scale(1.05)' : 'scale(1)',
+                        transition: 'transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease',
                         color: active ? '#080D11' : c?.total ? 'var(--admin-text)' : 'var(--admin-text-mute)',
                         opacity: selection && !active && !dansSection ? 0.55 : 1,
                       }}

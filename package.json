@@ -34,6 +34,9 @@
     "three": "^0.184.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/ios": "^8.5.1",
     "@firebase/rules-unit-testing": "^5.0.1",
     "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^22.14.0",
