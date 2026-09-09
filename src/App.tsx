@@ -64,6 +64,7 @@ const MarchePage           = lazy(() => import('./pages/MarchePage'));
 const WilliamPage          = lazy(() => import('./pages/WilliamPage'));
 const SignerCuisinePage    = lazy(() => import('./pages/SignerCuisinePage'));
 const SignerKiosquePage    = lazy(() => import('./pages/SignerKiosquePage'));
+const PlaceClanPage        = lazy(() => import('./pages/PlaceClanPage'));
 const MariagesGroupesPage  = lazy(() => import('./pages/MariagesGroupesPage'));
 const HistoireApprendrePage = lazy(() => import('./pages/HistoireApprendrePage'));
 const AdminPage        = lazy(() => import('./pages/AdminPage'));
@@ -530,6 +531,9 @@ const App: React.FC = () => (
                 <Route path="/en/games/merelle"     element={<PorteDuJeu><MerelleGame /></PorteDuJeu>} />
                 <Route path="/en/games/dice"        element={<PorteDuJeu><DesGame /></PorteDuJeu>} />
                 <Route path="/en/games/tarot"       element={<PorteDuJeu><TarotGame /></PorteDuJeu>} />
+                {/* Le jeu de l'année de la Peste : se joue sans compte, se garde avec. */}
+                <Route path="/jeux/clan"            element={<PlaceClanPage />} />
+                <Route path="/en/games/clan"        element={<PlaceClanPage />} />
                 <Route path="/en/youth/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />
                 <Route path="/politique-de-confidentialite" element={<PrivacyPage />} />
                 <Route path="/en/privacy" element={<PrivacyPage />} />

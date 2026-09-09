@@ -29,9 +29,11 @@ const ANNEES: Annee[] = [
     id: 'peste',
     chiffre: 'I',
     nomFR: 'L’année de la Peste', nomEN: 'The Year of the Plague',
-    texteFR: 'Les portes restent closes et une croix de craie marque celles où la maladie est entrée. Le jeu de cette année-là se prépare.',
-    texteEN: 'The doors stay shut, and a chalk cross marks the ones the sickness has entered. That year’s game is in the making.',
+    texteFR: 'Les portes restent closes et une croix de craie marque celles où la maladie est entrée. Quand le fléau passe, chacun découvre la place qu’il tient vraiment dans le clan : celui qui décide, celui qui fonce, celui qui soigne. Quinze questions, un verdict, une équipe de sept et un clan à fonder.',
+    texteEN: 'The doors stay shut, and a chalk cross marks the ones the sickness has entered. When the plague passes, everyone finds out the place they truly hold in the clan: the one who decides, the one who charges, the one who heals. Fifteen questions, a verdict, a team of seven and a clan to found.',
+    jeuFR: 'Ta place dans le clan', jeuEN: 'Your place in the clan',
     image: '/tarot/T13.webp',
+    href: { fr: '/jeux/clan', en: '/en/games/clan' },
   },
   {
     id: 'seigneur',

@@ -36,6 +36,7 @@ import PorteAdmin from './PorteAdmin';
 import DonnerRoleAdmin from './DonnerRoleAdmin';
 import AvatarUpload from './AvatarUpload';
 import Repliable from './Repliable';
+import PlaceClanBloc from './PlaceClanBloc';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { TableDeJeux } from '../../pages/JeuxEnLignePage';
@@ -486,6 +487,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
     ? (nomForm || fiche?.nom || compte?.displayName || (compte?.email || '').split('@')[0])
     : (fiche?.nom || '')
   ).trim() || t.sansNom;
+  // Le pseudo (addendum 2 du 6 septembre, ordre 10) remplace le nom en
+  // tête de la fiche; le vrai nom reste écrit en petit dessous.
+  const pseudo = fiche?.pseudo?.trim() || '';
   const photo = prive ? avatarUrl : (fiche?.avatarUrl || undefined);
   const fonctions = rolesAffiches(fiche?.roles);
   const moi = visiteur?.uid === uid;
@@ -563,9 +567,12 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
 
                     <div className="flex-1 min-w-0 w-full">
                       <h1 className="font-display title-medieval text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight break-words inline-flex items-center gap-2 md:gap-3 flex-wrap justify-center md:justify-start">
-                        <span>{nom}</span>
+                        <span>{pseudo || nom}</span>
                         {fiche?.verifie && <BadgeVerifie size={40} titre={t.membreVerifie} />}
                       </h1>
+                      {pseudo && (
+                        <p className="mt-1 font-sans text-sm md:text-base" style={{ color: 'rgba(var(--sk-parchment-rgb),0.6)' }}>{nom}</p>
+                      )}
 
                       {/* Les fonctions portées au festival, en pastilles. */}
                       <ul className="mt-3 flex flex-wrap items-center justify-center md:justify-start gap-1.5">
@@ -1007,6 +1014,10 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 privé, ce bloc vit maintenant plus haut, dans l'ordre
                 d'importance dicté par Alex : voir la branche `prive`
                 ci-dessus. Ici, seulement la vue publique. ── */}
+            {/* Le jeu de l'année de la Peste : la place et l'équipe (Alex, 2026-09-09). */}
+            {onglet === 'profil' && (
+              <PlaceClanBloc uid={uid} lang={lang} prive={prive} />
+            )}
             {onglet === 'profil' && !prive && (
               <div className="mt-8 md:mt-10 space-y-6 md:space-y-8">
                 <div>

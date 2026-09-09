@@ -37,6 +37,7 @@ const FR_TO_EN: Record<string, string> = {
   // Les jeux et le lobby des défis, qui manquaient à la table de
   // correspondance : un lien de défi copié depuis la version anglaise
   // tombait sur `/en/defi/...`, une adresse qui n'existe pas.
+  '/jeux/clan': '/games/clan',
   '/jeux/des': '/games/dice',
   '/jeux/merelle': '/games/merelle',
   '/jeux/renard': '/games/fox-and-geese',
@@ -63,7 +64,9 @@ export const ONGLETS_GUILDE_FR_EN: Record<string, string> = {
   vitrine: 'showcase',
   salon: 'chat',
   evenements: 'events',
+  sondages: 'polls',
   marche: 'market',
+  dossiers: 'files',
   tresor: 'treasury',
   membres: 'members',
 };

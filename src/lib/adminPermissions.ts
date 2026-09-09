@@ -72,7 +72,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   // CA: total access to every existing section (minus role management).
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
-    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
+    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
     'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire', 'demandeVexel',
   ],
 
@@ -80,7 +80,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   // For now, until that tab ships, identical to CA.
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
-    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
+    'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
     'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire',
   ],
 

@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -22,6 +22,7 @@ export type AdminSectionId =
   | 'benevoles'
   | 'equipes'
   | 'guildes'
+  | 'placeClan'
   | 'marchands'
   | 'commerces'
   | 'concours'
@@ -144,6 +145,9 @@ export const NAV: NavItem[] = [
   { id: 'roles',      label: 'Rôles admin',     icon: ShieldCheck,     group: 'Régie' },
   // Le formulaire de demande de Vexel Webstudio, encadré dans l'admin.
   { id: 'demandeVexel', label: 'Demander un changement', icon: Wrench, group: 'Régie' },
+
+  // Les jeux de l'année : le questionnaire de la Peste (Alex, 2026-09-09).
+  { id: 'placeClan',  label: 'Ta place dans le clan', icon: Compass, group: 'Jeux' },
 ];
 
 const ALL_SECTION_IDS: AdminSectionId[] = NAV.map((n) => n.id);

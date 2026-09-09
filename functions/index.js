@@ -3195,3 +3195,7 @@ exports.stripeMontpellois = onRequest(
 // Montpellois, la base et la journée du festival. Le fichier reste
 // ainsi rejouable en mémoire par functions/test-guildes.js.
 Object.assign(exports, require('./guildes')({ db, FieldValue, crediter, debiter, journeeFestival }));
+
+// Ta place dans le clan (le jeu de l'année de la Peste) : résultats,
+// équipes suggérées, clans fondés et invitations. Voir functions/placeClan.js.
+Object.assign(exports, require('./placeClan')({ db, FieldValue, COURRIELS_ADMIN }));
