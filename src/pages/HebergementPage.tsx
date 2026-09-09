@@ -45,6 +45,10 @@ interface Lodging {
   image:    string;
   website?: string;
   area?:    string;     // distance / location pointer
+  /** Libellé du bouton quand « Voir le site » ne dit pas la vérité, par
+   *  exemple un lien qui mène droit à une page de réservation. */
+  ctaFR?:   string;
+  ctaEN?:   string;
 }
 
 // Coordonnées et descriptions validées sur les sites officiels de chaque
@@ -55,13 +59,21 @@ interface Lodging {
 // n'ont ni site web ni photo utilisable. Les appeler pour obtenir une photo
 // et un lien, puis remettre la fiche ici.
 const LODGINGS: Lodging[] = [
+  // Mis à jour le 9 septembre 2026 : les chambres de l'auberge sont toutes
+  // parties pour la fin de semaine du festival, il ne reste que les
+  // emplacements de camping. Le bouton mène donc droit à leur page de
+  // réservation plutôt qu'à leur accueil. Le nombre d'emplacements est écrit
+  // en dur ici (l'état vit dans le Firestore du Salon, un autre projet) :
+  // le changer à la main quand Alex le dit.
   {
     name:    'Le Salon des Inconnus',
-    blurbFR: 'Un de nos partenaires de longue date. Auberge victorienne et centre d’artistes : chambres, bus, yourte et espaces de camping pour la période du festival.',
-    blurbEN: 'A long-time partner. Victorian inn and artists’ hub: rooms, bus, yurt and camping spots during the festival.',
+    blurbFR: 'L’auberge est complète pour la fin de semaine du festival, et il reste deux emplacements de camping sur ses douze acres boisés, à dix minutes du site. Le manoir victorien d’où le festival est parti garde ses feux allumés tous les soirs.',
+    blurbEN: 'The inn is full for the festival weekend, and two camping pitches are left on its twelve wooded acres, ten minutes from the grounds. The Victorian manor the festival grew out of keeps its fires lit every evening.',
     image:   '/wix/hebergement/salon-living-room.webp',
-    website: 'https://www.lesalondesinconnus.com',
+    website: 'https://www.lesalondesinconnus.com/camping',
     area:    'Montpellier · 10 min',
+    ctaFR:   'Réserver un emplacement',
+    ctaEN:   'Book a pitch',
   },
   {
     name:    'Camping Montpellier',
@@ -420,7 +432,7 @@ const LodgingCarousel: React.FC<LodgingCarouselProps> = ({ lodgings, lang, t }) 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
                 >
-                  {t.book} <ArrowUpRight size={14} />
+                  {(lang === 'FR' ? item.ctaFR : item.ctaEN) ?? t.book} <ArrowUpRight size={14} />
                 </a>
               )}
             </div>
