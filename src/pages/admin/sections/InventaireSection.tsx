@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import {
   Boxes, Search, Plus, X, Check, Undo2, MoveRight, Pencil, Trash2, History,
-  ShieldAlert, AlertTriangle, Box, LayoutGrid, Download, Compass,
+  ShieldAlert, AlertTriangle, Box, LayoutGrid, Download, Compass, ArrowDownAZ, MapPin,
 } from 'lucide-react';
 import { Card, EmptyState, GhostButton, PrimaryButton, DangerButton, Label, downloadCsv } from '../primitives';
 import VisiteGuidee, { type Etape } from './inventaire/VisiteGuidee';
@@ -9,7 +9,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import {
   watchInventaire, sortirObjet, retournerObjet, deplacerObjet, creerObjet, modifierObjet, supprimerObjet,
   semerInventaire, codeDe, lireCode, libelleEmplacement,
-  SECTIONS, NIVEAUX, PROFONDEURS, LIBELLE_SECTION, LIBELLE_NIVEAU, LIBELLE_PROFONDEUR, DESTINATIONS, GRAINES,
+  SECTIONS, PROFONDEURS, NOM_SECTION, LIBELLE_PROFONDEUR, DESTINATIONS, GRAINES, niveauxDe, aProfondeur, libelleNiveau,
   type Objet, type Emplacement, type Section, type Niveau, type Profondeur, type Mouvement,
 } from '../../../firebase/inventaire';
 
@@ -39,6 +39,7 @@ const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis:
   ({ comptes, selection, onSelect }) => {
     const Grille: React.FC<{ section: Section }> = ({ section }) => {
       const libre = comptes[section];
+      const profond = aProfondeur(section);
       return (
         <div className="min-w-0">
           <button
@@ -47,27 +48,29 @@ const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis:
             className="w-full text-left mb-2 font-sans uppercase tracking-[0.25em] text-[10px] font-semibold"
             style={{ color: selection === section ? 'var(--admin-accent)' : 'var(--admin-text-soft)' }}
           >
-            {section} · {LIBELLE_SECTION[section].replace('Container ', '').replace('du fond', 'fond')}
+            {NOM_SECTION[section]}
             {libre?.total ? <span className="block normal-case tracking-normal" style={{ color: 'var(--admin-text-mute)' }}>{libre.total} sans tablette</span> : null}
           </button>
-          <div className="grid gap-1" style={{ gridTemplateColumns: 'auto repeat(4, minmax(0, 1fr))' }}>
+          <div className="grid gap-1" style={{ gridTemplateColumns: profond ? 'auto repeat(4, minmax(0, 1fr))' : 'auto minmax(0, 1fr)' }}>
             <span />
-            {PROFONDEURS.map((p) => <span key={p} className="text-center font-sans text-[10px]" style={{ color: 'var(--admin-text-mute)' }}>{p}</span>)}
-            {NIVEAUX.map((n) => (
+            {profond
+              ? PROFONDEURS.map((p) => <span key={p} className="text-center font-sans text-[10px]" style={{ color: 'var(--admin-text-mute)' }}>{p}</span>)
+              : <span className="text-center font-sans text-[10px]" style={{ color: 'var(--admin-text-mute)' }}>toute la largeur</span>}
+            {niveauxDe(section).map((n) => (
               <React.Fragment key={n}>
-                <span className="self-center pr-1 font-sans text-[10px] tabular-nums" style={{ color: 'var(--admin-text-mute)' }} title={LIBELLE_NIVEAU[n]}>{n}</span>
-                {PROFONDEURS.map((p) => {
-                  const code = `${section}${n}${p}`;
+                <span className="self-center pr-1 font-sans text-[10px] tabular-nums" style={{ color: 'var(--admin-text-mute)' }} title={libelleNiveau(section, n)}>{profond ? n : libelleNiveau(section, n)}</span>
+                {(profond ? PROFONDEURS : [null]).map((p) => {
+                  const code = `${section}${n}${p ?? ''}`;
                   const c = comptes[code];
                   const active = selection === code;
-                  const dansSection = selection === section || selection === `${section}${n}`;
+                  const dansSection = selection === section || (p !== null && selection === `${section}${n}`);
                   return (
                     <button
                       key={code}
                       type="button"
-                      title={`${code} · ${LIBELLE_NIVEAU[n]}, ${LIBELLE_PROFONDEUR[p].toLowerCase()}`}
+                      title={`${code} · ${libelleNiveau(section, n)}${p ? `, ${LIBELLE_PROFONDEUR[p].toLowerCase()}` : ''}`}
                       onClick={() => onSelect(active ? null : code)}
-                      className="relative aspect-[5/4] rounded-md font-sans text-xs tabular-nums transition-all"
+                      className={`relative ${profond ? 'aspect-[5/4]' : 'h-9'} rounded-md font-sans text-xs tabular-nums transition-all`}
                       style={{
                         background: active
                           ? 'linear-gradient(180deg, var(--admin-brass-hi), var(--admin-accent))'
@@ -96,7 +99,7 @@ const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis:
           <Grille section="CD" />
         </div>
         <p className="mt-3 font-sans text-[11px]" style={{ color: 'var(--admin-text-mute)' }}>
-          Colonnes A à D : de l’avant vers le fond. Lignes 1 à 3 : les tablettes du haut vers le bas; 4 : le sol. Le point rose signale un objet sorti.
+          Colonnes A à D : de l’avant vers le fond. Lignes 1 à 3 : les tablettes du haut vers le bas; 4 : le sol. Le container du fond n’a qu’une tablette et le sol. Le point rose signale un objet sorti.
         </p>
       </div>
     );
@@ -104,18 +107,20 @@ const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis:
 
 // ── Choisir un emplacement ───────────────────────────────────────────
 const ChoixEmplacement: React.FC<{ valeur: Emplacement; onChange: (e: Emplacement) => void }> = ({ valeur, onChange }) => (
-  <div className="grid grid-cols-3 gap-2">
-    <select className={champ} value={valeur.section} onChange={(e) => onChange({ ...valeur, section: e.target.value as Section })}>
-      {SECTIONS.map((s) => <option key={s} value={s}>{s} · {LIBELLE_SECTION[s]}</option>)}
+  <div className={`grid gap-2 ${aProfondeur(valeur.section) ? 'grid-cols-3' : 'grid-cols-2'}`}>
+    <select className={champ} value={valeur.section} onChange={(e) => { const section = e.target.value as Section; onChange({ section, niveau: valeur.niveau && niveauxDe(section).includes(valeur.niveau) ? valeur.niveau : null, profondeur: aProfondeur(section) ? valeur.profondeur : null }); }}>
+      {SECTIONS.map((s) => <option key={s} value={s}>{NOM_SECTION[s]}</option>)}
     </select>
     <select className={champ} value={valeur.niveau ?? ''} onChange={(e) => onChange({ ...valeur, niveau: e.target.value ? (Number(e.target.value) as Niveau) : null, profondeur: e.target.value ? valeur.profondeur : null })}>
       <option value="">Tablette ?</option>
-      {NIVEAUX.map((n) => <option key={n} value={n}>{n} · {LIBELLE_NIVEAU[n]}</option>)}
+      {niveauxDe(valeur.section).map((n) => <option key={n} value={n}>{aProfondeur(valeur.section) ? `${n} · ` : ''}{libelleNiveau(valeur.section, n)}</option>)}
     </select>
-    <select className={champ} value={valeur.profondeur ?? ''} disabled={!valeur.niveau} onChange={(e) => onChange({ ...valeur, profondeur: (e.target.value || null) as Profondeur | null })}>
-      <option value="">Profondeur ?</option>
-      {PROFONDEURS.map((p) => <option key={p} value={p}>{p} · {LIBELLE_PROFONDEUR[p]}</option>)}
-    </select>
+    {aProfondeur(valeur.section) && (
+      <select className={champ} value={valeur.profondeur ?? ''} disabled={!valeur.niveau} onChange={(e) => onChange({ ...valeur, profondeur: (e.target.value || null) as Profondeur | null })}>
+        <option value="">Profondeur ?</option>
+        {PROFONDEURS.map((p) => <option key={p} value={p}>{p} · {LIBELLE_PROFONDEUR[p]}</option>)}
+      </select>
+    )}
   </div>
 );
 
@@ -154,7 +159,7 @@ const FicheObjet: React.FC<{ initial: Champs; categories: string[]; onSave: (c: 
 // ── Une ligne de la liste ────────────────────────────────────────────
 type Mode = null | 'sortie' | 'retour' | 'deplacer' | 'modifier' | 'journal';
 
-const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; premiere?: boolean }> = ({ o, qui, categories, onError, premiere }) => {
+const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m: string) => void; premiere?: boolean; montrerCode?: boolean }> = ({ o, qui, categories, onError, premiere, montrerCode }) => {
   const [mode, setMode] = useState<Mode>(null);
   const [par, setPar] = useState(qui);
   const [vers, setVers] = useState<string>(DESTINATIONS[0]);
@@ -191,6 +196,7 @@ const Ligne: React.FC<{ o: Objet; qui: string; categories: string[]; onError: (m
               {o.nom}
             </span>
             {o.quantite !== null && <span className="font-sans text-xs tabular-nums" style={{ color: 'var(--admin-accent)' }}>× {o.quantite}</span>}
+            {montrerCode && <span className="rounded px-1.5 py-0.5 font-sans text-[10px] tabular-nums" style={{ border: '1px solid var(--admin-line)', color: 'var(--admin-text-soft)' }} title={libelleEmplacement(o)}>{codeDe(o)}</span>}
             {o.categorie && <span className="font-sans text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--admin-text-mute)' }}>{o.categorie}</span>}
             {o.aVerifier && <span className="inline-flex items-center gap-1 font-sans text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--color-blush)' }}><AlertTriangle size={10} /> à inventorier</span>}
           </div>
@@ -301,11 +307,11 @@ const ETAPES: Etape[] = [
   { cible: 'chiffres', titre: 'Le container en un coup d’œil',
     texte: 'Combien d’objets dorment dans le container, combien sont sortis en ce moment, et combien de cases restent à inventorier en détail.' },
   { cible: 'plan', titre: 'Le plan en U',
-    texte: 'CG à gauche, CF au fond, CD à droite. Chaque case montre le nombre d’objets qu’elle contient. Cliquez une case et la liste ne montre plus que ce qui s’y trouve.' },
+    texte: 'Le container gauche (CG), le container du fond (CF) et le container droit (CD). Chaque case montre le nombre d’objets qu’elle contient. Cliquez une case et la liste ne montre plus que ce qui s’y trouve.' },
   { cible: 'vue3d', titre: 'La même chose en volume',
     texte: 'Le bouton 3D montre le container vu de la porte, avec une pile de caisses par case. Glissez pour tourner, molette pour zoomer.' },
   { cible: 'recherche', titre: 'Chercher et filtrer',
-    texte: 'Un mot, une catégorie ou un code comme CG2A. Les pastilles montrent seulement ce qui est rangé, ce qui est sorti ou ce qui reste à inventorier.' },
+    texte: 'Un mot, une catégorie ou un code comme CG2A. Les pastilles montrent seulement ce qui est rangé, ce qui est sorti ou ce qui reste à inventorier. Le bouton A à Z met tous les objets en ordre alphabétique, sans les regrouper par case.' },
   { cible: 'objet', titre: 'Quelqu’un prend un objet',
     texte: 'Cochez la case. Écrivez votre nom et l’endroit où l’objet s’en va, une note si vous voulez. Quand il revient dans le container, décochez-le.' },
   { cible: 'deplacer', titre: 'Changer de case',
@@ -333,6 +339,7 @@ const InventaireSection: React.FC = () => {
   const [selection, setSelection] = useState<string | null>(null);
   const [vue, setVue] = useState<'plan' | '3d'>('plan');
   const [ajout, setAjout] = useState(false);
+  const [ordre, setOrdre] = useState<'emplacement' | 'alpha'>('emplacement');
   const [semis, setSemis] = useState(false);
   const [visite, setVisite] = useState(false);
   // Première visite : la visite guidée part d'elle-même une fois les objets lus.
@@ -382,6 +389,8 @@ const InventaireSection: React.FC = () => {
     return Array.from(m.entries()).sort(([a], [b]) => ordreCode(a, b)).map(([code, liste]) => [code, liste.sort((x, y) => x.categorie.localeCompare(y.categorie) || x.nom.localeCompare(y.nom))] as const);
   }, [visibles]);
 
+  const alpha = useMemo(() => [...visibles].sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })), [visibles]);
+
   const derniers = useMemo(() => {
     const tout: { o: Objet; m: Mouvement }[] = [];
     for (const o of objets ?? []) for (const m of o.historique) if (m.type !== 'creation') tout.push({ o, m });
@@ -418,8 +427,8 @@ const InventaireSection: React.FC = () => {
           <GhostButton type="button" onClick={() => setVisite(true)}><Compass size={14} /> Visite guidée</GhostButton>
         </div>
         <p className="font-sans text-sm leading-relaxed" style={{ color: 'var(--admin-text)' }}>
-          Le container se lit en U : la rangée CG à gauche, CF au fond et CD à droite. Les tablettes sont numérotées de 1 en haut jusqu’à 4 pour le sol.
-          Les cases portent une lettre, de A près de la porte jusqu’à D au fond du rayon. CG2A veut donc dire à gauche, tablette du milieu, à l’avant.
+          Le container se lit en U : le container gauche (CG), le container du fond (CF) et le container droit (CD). À gauche et à droite, les tablettes sont numérotées de 1 en haut jusqu’à 4 pour le sol,
+          et les cases portent une lettre, de A près de la porte jusqu’à D au fond du rayon. CG2A veut donc dire container gauche, tablette du milieu, à l’avant. Le container du fond n’a qu’une tablette et le sol.
           Le plan et la vue 3D montrent combien d’objets dorment dans chaque case; cliquez une case pour ne voir que ce qu’elle contient.
           Quand vous prenez quelque chose, cochez-le et écrivez votre nom et l’endroit où il s’en va. Quand il revient dans le container, décochez-le.
           Si vous le rangez ailleurs, le bouton Déplacer le change de case. Tout le monde voit la même liste, au même moment.
@@ -437,7 +446,7 @@ const InventaireSection: React.FC = () => {
             { l: 'Objets', v: total, c: 'var(--admin-text)' },
             { l: 'Sortis en ce moment', v: sortis, c: sortis ? 'var(--color-blush)' : 'var(--admin-text)' },
             { l: 'À inventorier', v: aVerifier, c: 'var(--admin-text)' },
-            { l: 'Cases occupées', v: Object.keys(comptes).filter((k) => k.length === 4).length, c: 'var(--admin-text)' },
+            { l: 'Cases occupées', v: Object.keys(comptes).filter((k) => k.length === 4 || (k.startsWith('CF') && k.length === 3)).length, c: 'var(--admin-text)' },
           ].map((s) => (
             <div key={s.l}>
               <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold mb-1" style={{ color: 'var(--admin-accent)' }}>{s.l}</p>
@@ -493,10 +502,13 @@ const InventaireSection: React.FC = () => {
               <GhostButton type="button" onClick={exporter} title="Exporter en CSV"><Download size={14} /> CSV</GhostButton>
               <PrimaryButton type="button" onClick={() => setAjout((v) => !v)} data-visite="nouvel"><Plus size={14} /> Nouvel objet</PrimaryButton>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               {([['tous', 'Tous'], ['ranges', 'Rangés'], ['sortis', `Sortis${sortis ? ` (${sortis})` : ''}`], ['aVerifier', 'À inventorier']] as [Filtre, string][]).map(([f, l]) => (
                 <button key={f} type="button" onClick={() => setFiltre(f)} className="rounded-full px-3 py-1 font-sans text-xs transition-colors" style={chip(filtre === f)}>{l}</button>
               ))}
+              <span className="mx-1 h-4 w-px" style={{ background: 'var(--admin-line)' }} />
+              <button type="button" onClick={() => setOrdre('emplacement')} className="inline-flex items-center gap-1 rounded-full px-3 py-1 font-sans text-xs transition-colors" style={chip(ordre === 'emplacement')} title="Regroupés par case du container"><MapPin size={12} /> Par case</button>
+              <button type="button" onClick={() => setOrdre('alpha')} className="inline-flex items-center gap-1 rounded-full px-3 py-1 font-sans text-xs transition-colors" style={chip(ordre === 'alpha')} title="Tous les objets, en ordre alphabétique"><ArrowDownAZ size={12} /> A à Z</button>
             </div>
           </div>
 
@@ -521,6 +533,8 @@ const InventaireSection: React.FC = () => {
             </div>
           ) : groupes.length === 0 ? (
             <EmptyState icon={Search}>Aucun objet ne répond à ce filtre.</EmptyState>
+          ) : ordre === 'alpha' ? (
+            <ul>{alpha.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} premiere={i === 0} montrerCode />)}</ul>
           ) : (
             <div className="space-y-5">
               {groupes.map(([code, liste], gi) => (

@@ -29,6 +29,16 @@ export const LIBELLE_SECTION: Record<Section, string> = {
   CF: 'Container du fond',
   CD: 'Container droit',
 };
+/** « Container gauche (CG) » : le nom complet, le code entre parenthèses (Alex, 2026-09-08). */
+export const NOM_SECTION: Record<Section, string> = {
+  CG: 'Container gauche (CG)',
+  CF: 'Container du fond (CF)',
+  CD: 'Container droit (CD)',
+};
+/** Le fond n'a qu'une tablette et le sol; pas de profondeur. */
+export const niveauxDe = (s: Section): readonly Niveau[] => (s === 'CF' ? [1, 4] : NIVEAUX);
+export const aProfondeur = (s: Section) => s !== 'CF';
+export const libelleNiveau = (s: Section, n: Niveau) => (s === 'CF' ? (n === 4 ? 'Sol' : 'Tablette') : LIBELLE_NIVEAU[n]);
 export const LIBELLE_NIVEAU: Record<Niveau, string> = {
   1: 'Tablette 1 (haut)',
   2: 'Tablette 2 (milieu)',
@@ -84,9 +94,9 @@ export function lireCode(code: string): Emplacement {
 }
 
 export function libelleEmplacement(e: Emplacement): string {
-  const parts = [LIBELLE_SECTION[e.section]];
-  if (e.niveau) parts.push(LIBELLE_NIVEAU[e.niveau].toLowerCase());
-  if (e.profondeur) parts.push(LIBELLE_PROFONDEUR[e.profondeur].toLowerCase());
+  const parts = [NOM_SECTION[e.section]];
+  if (e.niveau) parts.push(libelleNiveau(e.section, e.niveau).toLowerCase());
+  if (e.profondeur && aProfondeur(e.section)) parts.push(LIBELLE_PROFONDEUR[e.profondeur].toLowerCase());
   return parts.join(', ');
 }
 

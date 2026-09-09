@@ -1,144 +1,921 @@
 [
-  {"e":"CG1A","c":"Planches et découpe","n":"Planches à découper en plastique","q":15,"d":"Couleurs variées"},
-  {"e":"CG1A","c":"Emballages jetables","n":"Bacs rectangulaires en aluminium avec couvercles","q":null,"d":"Avec barquettes sous plastique"},
-  {"e":"CG1A","c":"Gastro et cuisson inox","n":"Plaques à pâtisserie grand format","q":4,"d":""},
-  {"e":"CG1A","c":"Gastro et cuisson inox","n":"Demi-plaques et tôles moyennes plates","q":3,"d":""},
-  {"e":"CG1A","c":"Gastro et cuisson inox","n":"Bacs Gastro 1/1","q":6,"d":"Profondeurs variées, dont un qui contient des ustensiles"},
-  {"e":"CG1A","c":"Gastro et cuisson inox","n":"Bacs Gastro 1/2","q":7,"d":"Moyens, profondeurs variées"},
-  {"e":"CG1A","c":"Gastro et cuisson inox","n":"Bacs Gastro 1/3 ou 1/4 allongés","q":2,"d":""},
-  {"e":"CG1A","c":"Gastro et cuisson inox","n":"Petits bacs Gastro 1/6 et 1/9","q":3,"d":""},
-  {"e":"CG1A","c":"Ustensiles et mesure","n":"Petites balances de précision","q":4,"d":"À poudre"},
-  {"e":"CG1A","c":"Ustensiles et mesure","n":"Thermomètre de cuisine","q":1,"d":""},
-  {"e":"CG1A","c":"Ustensiles et mesure","n":"Flacon doseur (squeeze bottle)","q":1,"d":"Plastique"},
-
-  {"e":"CG1B","c":"Pellicules et papiers","n":"Pellicule plastique","q":1,"d":"1 paquet"},
-  {"e":"CG1B","c":"Pellicules et papiers","n":"Résinite","q":2,"d":"2 paquets"},
-  {"e":"CG1B","c":"Pellicules et papiers","n":"Papier ciré (wax paper)","q":1,"d":"1 paquet"},
-  {"e":"CG1B","c":"Vaisselle jetable","n":"Assiettes en carton","q":40,"d":""},
-  {"e":"CG1B","c":"Vaisselle jetable","n":"Petits sacs divers lousses","q":null,"d":"Quantité négligeable"},
-  {"e":"CG1B","c":"Vaisselle jetable","n":"Sacs à pâtisserie jetables Slypak","q":100,"d":"1 boîte"},
-  {"e":"CG1B","c":"Contenants kraft Slypak","n":"Boat Tray 1/2 lb (KBT-012)","q":500,"d":"Environ une demi-boîte sur 1 000"},
-  {"e":"CG1B","c":"Contenants kraft Slypak","n":"Contenants kraft KBT-002","q":750,"d":"Environ trois quarts de boîte sur 1 000"},
-  {"e":"CG1B","c":"Bols kraft 12 oz (12FCB)","n":"Boîte 1, mix pack : bols à soupe en carton","q":100,"d":"Le reste de la boîte est rempli de barquettes médium (Cobb BT12 complet)"},
-  {"e":"CG1B","c":"Bols kraft 12 oz (12FCB)","n":"Boîte 2 : bols kraft 12 oz","q":400,"d":"Boîte pleine à 90 %"},
-  {"e":"CG1B","c":"Papier et essuie","n":"Essuie-mains J.E.T. Collection (PAM-350)","q":1,"d":"1 boîte pleine"},
-
-  {"e":"CG1C","c":"Emballages jetables","n":"Barquettes en carton format 5 lb","q":1,"d":"1 boîte complète, non ouverte"},
-  {"e":"CG1C","c":"Emballages jetables","n":"Papier d'emballage à motif damier","q":2000,"d":"1 boîte complète"},
-  {"e":"CG1C","c":"Papier et essuie","n":"Essuie-tout brun","q":2,"d":"2 rouleaux"},
-  {"e":"CG1C","c":"Vaisselle jetable","n":"Pailles","q":500,"d":"2 paquets de 250"},
-  {"e":"CG1C","c":"Vaisselle jetable","n":"Pics à brochettes en bambou","q":400,"d":""},
-  {"e":"CG1C","c":"Divers","n":"Tente 2 places","q":1,"d":""},
-
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Lécithine de soya (Guilde Culinaire)","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Curcuma","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Gomme de xanthane","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Pétales de rose","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Fleurs de muscade","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Haricots Tonka","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Épices et ingrédients fins (sacs scellés)","n":"Gélatine végétale en poudre","q":1,"d":"Sac scellé"},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Baies de genièvre","q":1,"d":"300 g"},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Paprika sucré","q":1,"d":"Petit pot, 36 g"},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Poudre de camerise","q":1,"d":""},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Poudre de betterave (Aroma)","q":1,"d":"Petit pot"},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Houblon en pellets","q":1,"d":""},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Voatsiperifery / Bétimure","q":1,"d":"Environ un demi-pot restant"},
-  {"e":"CG2A","c":"Pots d'épices et produits secs","n":"Thé Oolong","q":1,"d":"1 boîte"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Origan en feuilles","q":4,"d":"4 boîtes de 190 g"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Feuilles de laurier","q":1,"d":"1 boîte de 30 g"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Cumin moulu","q":1,"d":"1 boîte de 470 g"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Gingembre moulu","q":2,"d":"2 boîtes, 450 g et 375 g"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Poivre blanc moulu","q":1,"d":"1 boîte de 550 g"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Noix de muscade moulue","q":1,"d":"1 boîte de 550 g"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Agar-agar","q":1,"d":"1 boîte, environ 250 g restant"},
-  {"e":"CG2A","c":"Grosses boîtes d'épices (Rose Hill / Moulin Rouge)","n":"Cannelle moulue de Saigon","q":1,"d":"1 boîte, environ 150 g restant sur 303 g"},
-  {"e":"CG2A","c":"Poudres décoratives et cocktails","n":"Poudre d'argent étincelante comestible (argent perlé)","q":1,"d":"1 pot"},
-  {"e":"CG2A","c":"Poudres décoratives et cocktails","n":"Poudre d'or comestible","q":1,"d":"1 petit pot"},
-  {"e":"CG2A","c":"Poudres décoratives et cocktails","n":"Caesar Rimmer (bordeur à verre)","q":1,"d":"1 pot de 150 g"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Sauce Worcestershire","q":2,"d":"Grand format de 4,70 L et une petite bouteille"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Sauce Tabasco","q":1,"d":"Petite bouteille"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Moutarde de Dijon","q":1,"d":"4 L"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Sauce soya","q":1,"d":"2 L"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Ketchup","q":1,"d":"2,4 L"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Vinaigre de cidre de pomme","q":1,"d":"5 L"},
-  {"e":"CG2A","c":"Condiments, sauces et liquides","n":"Vinaigre de riz","q":1,"d":"1 gallon, environ 3,78 L"},
-  {"e":"CG2A","c":"Conserves","n":"Pois chiches","q":3,"d":"Cannes de 2,4 L"},
-  {"e":"CG2A","c":"Conserves","n":"Haricots rouges","q":1,"d":"Canne de 2,4 L"},
-  {"e":"CG2A","c":"Conserves","n":"Pâte de tomate","q":1,"d":"Canne de 2,4 L"},
-  {"e":"CG2A","c":"Conserves","n":"Haricots blancs","q":1,"d":"Petite boîte de 540 ml"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Sucre blanc","q":1,"d":"Poche de 2 kg"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Sel de table","q":2,"d":"2 boîtes de 1 kg"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Cassonade (sucre brun)","q":1,"d":"0,5 L"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Fécule de maïs","q":1,"d":"454 g"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Chapelure à l'italienne","q":1,"d":"680 g"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Bicarbonate de soude","q":1,"d":"1 boîte"},
-  {"e":"CG2A","c":"Épicerie sèche et poudres","n":"Café instantané Nescafé","q":1,"d":"1 boîte"},
-  {"e":"CG2A","c":"Boissons","n":"Soda tonique (cannettes)","q":23,"d":"2 boîtes de 12, il manque une cannette"},
-  {"e":"CG2A","c":"Boissons","n":"Club Soda (cannettes)","q":11,"d":"1 boîte de 12, il manque une cannette"},
-  {"e":"CG2A","c":"Boissons","n":"Crème Soda (cannettes)","q":12,"d":"1 boîte complète"},
-  {"e":"CG2A","c":"Matériel","n":"Siphon","q":1,"d":""},
-
-  {"e":"CG2B","c":"Nourriture et collations","n":"Chips Old Dutch, sacs assortis","q":4,"d":"4 boîtes complètes, non ouvertes"},
-  {"e":"CG2B","c":"Emballages jetables","n":"Petits sacs à emballer lousses","q":60,"d":"Environ 60"},
-  {"e":"CG2B","c":"Emballages jetables","n":"Petites barquettes en aluminium","q":20,"d":"Petit format, environ 20"},
-  {"e":"CG2B","c":"Chaudrons et marmites inox","n":"Très grande marmite haute","q":1,"d":""},
-  {"e":"CG2B","c":"Chaudrons et marmites inox","n":"Grand chaudron","q":1,"d":""},
-  {"e":"CG2B","c":"Chaudrons et marmites inox","n":"Chaudrons moyens","q":2,"d":"Dont un avec couvercle"},
-  {"e":"CG2B","c":"Culs-de-poule et bols inox","n":"Cul-de-poule géant","q":1,"d":"Très très très grand"},
-  {"e":"CG2B","c":"Culs-de-poule et bols inox","n":"Culs-de-poule très grands","q":2,"d":""},
-  {"e":"CG2B","c":"Culs-de-poule et bols inox","n":"Cul-de-poule grand profond","q":1,"d":""},
-  {"e":"CG2B","c":"Culs-de-poule et bols inox","n":"Cul-de-poule moyen","q":1,"d":""},
-  {"e":"CG2B","c":"Culs-de-poule et bols inox","n":"Culs-de-poule petits","q":4,"d":"Incluant le tout petit tombé"},
-  {"e":"CG2B","c":"Appareils et cafetières","n":"Grosses cafetières","q":2,"d":""},
-  {"e":"CG2B","c":"Appareils et cafetières","n":"Cafetière percolateur Black & Decker","q":1,"d":""},
-
-  {"e":"CG3A","c":"Vaisselle et ustensiles en vrac","n":"Bacs de petite vaisselle et d'ustensiles en vrac","q":null,"d":"Louches, tamis, tasses à mesurer, râpes à fromage, etc. Inventaire détaillé à venir.","v":true},
-
-  {"e":"CG3B","c":"Mijoteuses","n":"Mijoteuses triples (3 cuves chacune)","q":2,"d":"7 cuves de cuisson au total avec la simple"},
-  {"e":"CG3B","c":"Mijoteuses","n":"Mijoteuse simple rouge Crock-Pot","q":1,"d":""},
-  {"e":"CG3B","c":"Emballages jetables","n":"Grands bacs rigides en aluminium","q":5,"d":"Identiques à ceux de CG1A"},
-  {"e":"CG3B","c":"Emballages jetables","n":"Bacs légers et souples en aluminium","q":null,"d":"Utilisés mais fonctionnels"},
-  {"e":"CG3B","c":"Vaisselle médiévale","n":"Gobelets en métal style médiéval","q":50,"d":"Environ 50, répartis dans 2 chaudières"},
-  {"e":"CG3B","c":"Vaisselle médiévale","n":"Coupes décoratives style médiéval","q":2,"d":""},
-  {"e":"CG3B","c":"Eau","n":"Réservoir d'eau","q":1,"d":""},
-  {"e":"CG3B","c":"Décoration et service vintage","n":"Théières style arabe","q":2,"d":"Décoratives"},
-  {"e":"CG3B","c":"Décoration et service vintage","n":"Chauffe-plats en Pyrex et argent","q":2,"d":"Style victorien"},
-  {"e":"CG3B","c":"Équipement ancien","n":"Hachoir à viande manuel Spong No. 20","q":1,"d":"À manivelle"},
-
-  {"e":"CG3C","c":"Cuisson spécialisée","n":"Kit de méchoui de Daniel","q":1,"d":"Occupe toute la profondeur"},
-
-  {"e":"CG4A","c":"Glacières","n":"Grande glacière blanche","q":1,"d":""},
-  {"e":"CG4A","c":"Glacières","n":"Petite glacière bleue","q":1,"d":""},
-  {"e":"CG4A","c":"Eau","n":"Système de filtration d'eau Berkey","q":1,"d":""},
-  {"e":"CG4B","c":"Bacs","n":"Bacs en plastique","q":2,"d":""},
-  {"e":"CG4B","c":"Glacières","n":"Glacières moyennes","q":2,"d":""},
-
-  {"e":"CD1A","c":"Divers","n":"Cartons","q":null,"d":""},
-  {"e":"CD1A","c":"Vaisselle","n":"Pots Mason","q":null,"d":"Quelques-uns"},
-  {"e":"CD1A","c":"Bâches","n":"Bâches","q":null,"d":""},
-  {"e":"CD1B","c":"Bâches","n":"Bâches","q":null,"d":""},
-  {"e":"CD1B","c":"Bacs","n":"Bac rouge","q":1,"d":""},
-  {"e":"CD2B","c":"Appareils","n":"Déshydrateur","q":1,"d":""},
-  {"e":"CD2B","c":"Bacs","n":"Bac bleu","q":1,"d":""},
-  {"e":"CD2C","c":"Matériel","n":"Caisse enregistreuse","q":1,"d":""},
-  {"e":"CD2C","c":"Divers","n":"Boîte","q":1,"d":""},
-  {"e":"CD2C","c":"Vaisselle","n":"Paquet d'assiettes emballées dans du carton","q":1,"d":"Prêt"},
-  {"e":"CD3A","c":"Vaisselle","n":"Vaisselle en vrac","q":null,"d":""},
-  {"e":"CD3A","c":"Ustensiles et mesure","n":"Petits fouets","q":null,"d":""},
-  {"e":"CD3A","c":"Emballages jetables","n":"Feuilles et assiettes en aluminium","q":null,"d":""},
-  {"e":"CD3A","c":"Vaisselle jetable","n":"Assiettes en carton","q":40,"d":""},
-  {"e":"CD3A","c":"Ustensiles et mesure","n":"Bacs gradués en plastique","q":null,"d":""},
-  {"e":"CD3A","c":"Vaisselle","n":"Assiettes carrées","q":null,"d":"Prêt"},
-  {"e":"CD3A","c":"Eau","n":"Pompe à eau à l'ancienne","q":1,"d":""},
-  {"e":"CD3A","c":"Vaisselle","n":"Paquet d'assiettes","q":1,"d":""},
-  {"e":"CD3B","c":"Bâches","n":"Bâches","q":null,"d":""},
-  {"e":"CD4","c":"À inventorier","n":"Sol du container droit","q":null,"d":"À inventorier","v":true},
-
-  {"e":"CF","c":"Cuisson et équipement","n":"Machine à fumer (fumoir)","q":1,"d":""},
-  {"e":"CF","c":"Cuisson et équipement","n":"Réchaud double avec lampes chauffantes intégrées par le haut","q":1,"d":""},
-  {"e":"CF","c":"Cuisson et équipement","n":"Petits barbecues au charbon","q":2,"d":""},
-  {"e":"CF","c":"Cuisson et équipement","n":"Supports et grilles pour feu sur trépied","q":null,"d":""},
-  {"e":"CF","c":"Abris et fûts","n":"Grandes tentes VivoHome","q":4,"d":""},
-  {"e":"CF","c":"Abris et fûts","n":"Fûts à huile essentielle","q":2,"d":"Énormes tubes"},
-  {"e":"CF4","c":"À inventorier","n":"Sol du container du fond","q":null,"d":"À inventorier","v":true}
+  {
+"e": "CG1A",
+"c": "Planches et découpe",
+"n": "Planches à découper en plastique",
+"q": 15,
+"d": "Couleurs variées"
+},
+  {
+"e": "CG1A",
+"c": "Emballages jetables",
+"n": "Bacs rectangulaires en aluminium avec couvercles",
+"q": null,
+"d": "Avec barquettes sous plastique"
+},
+  {
+"e": "CG1A",
+"c": "Gastro et cuisson inox",
+"n": "Plaques à pâtisserie grand format",
+"q": 4,
+"d": ""
+},
+  {
+"e": "CG1A",
+"c": "Gastro et cuisson inox",
+"n": "Demi-plaques et tôles moyennes plates",
+"q": 3,
+"d": ""
+},
+  {
+"e": "CG1A",
+"c": "Gastro et cuisson inox",
+"n": "Bacs Gastro 1/1",
+"q": 6,
+"d": "Profondeurs variées, dont un qui contient des ustensiles"
+},
+  {
+"e": "CG1A",
+"c": "Gastro et cuisson inox",
+"n": "Bacs Gastro 1/2",
+"q": 7,
+"d": "Moyens, profondeurs variées"
+},
+  {
+"e": "CG1A",
+"c": "Gastro et cuisson inox",
+"n": "Bacs Gastro 1/3 ou 1/4 allongés",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CG1A",
+"c": "Gastro et cuisson inox",
+"n": "Petits bacs Gastro 1/6 et 1/9",
+"q": 3,
+"d": ""
+},
+  {
+"e": "CG1A",
+"c": "Ustensiles et mesure",
+"n": "Petites balances de précision",
+"q": 4,
+"d": "À poudre"
+},
+  {
+"e": "CG1A",
+"c": "Ustensiles et mesure",
+"n": "Thermomètre de cuisine",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG1A",
+"c": "Ustensiles et mesure",
+"n": "Flacon doseur (squeeze bottle)",
+"q": 1,
+"d": "Plastique"
+},
+  {
+"e": "CG1B",
+"c": "Pellicules et papiers",
+"n": "Pellicule plastique",
+"q": 1,
+"d": "1 paquet"
+},
+  {
+"e": "CG1B",
+"c": "Pellicules et papiers",
+"n": "Résinite",
+"q": 2,
+"d": "2 paquets"
+},
+  {
+"e": "CG1B",
+"c": "Pellicules et papiers",
+"n": "Papier ciré (wax paper)",
+"q": 1,
+"d": "1 paquet"
+},
+  {
+"e": "CG1B",
+"c": "Vaisselle jetable",
+"n": "Assiettes en carton",
+"q": 40,
+"d": ""
+},
+  {
+"e": "CG1B",
+"c": "Vaisselle jetable",
+"n": "Petits sacs divers lousses",
+"q": null,
+"d": "Quantité négligeable"
+},
+  {
+"e": "CG1B",
+"c": "Vaisselle jetable",
+"n": "Sacs à pâtisserie jetables Slypak",
+"q": 100,
+"d": "1 boîte"
+},
+  {
+"e": "CG1B",
+"c": "Contenants kraft Slypak",
+"n": "Boat Tray 1/2 lb (KBT-012)",
+"q": 500,
+"d": "Environ une demi-boîte sur 1 000"
+},
+  {
+"e": "CG1B",
+"c": "Contenants kraft Slypak",
+"n": "Contenants kraft KBT-002",
+"q": 750,
+"d": "Environ trois quarts de boîte sur 1 000"
+},
+  {
+"e": "CG1B",
+"c": "Bols kraft 12 oz (12FCB)",
+"n": "Boîte 1, mix pack : bols à soupe en carton",
+"q": 100,
+"d": "Le reste de la boîte est rempli de barquettes médium (Cobb BT12 complet)"
+},
+  {
+"e": "CG1B",
+"c": "Bols kraft 12 oz (12FCB)",
+"n": "Boîte 2 : bols kraft 12 oz",
+"q": 400,
+"d": "Boîte pleine à 90 %"
+},
+  {
+"e": "CG1B",
+"c": "Papier et essuie",
+"n": "Essuie-mains J.E.T. Collection (PAM-350)",
+"q": 1,
+"d": "1 boîte pleine"
+},
+  {
+"e": "CG1C",
+"c": "Emballages jetables",
+"n": "Barquettes en carton format 5 lb",
+"q": 1,
+"d": "1 boîte complète, non ouverte"
+},
+  {
+"e": "CG1C",
+"c": "Emballages jetables",
+"n": "Papier d'emballage à motif damier",
+"q": 2000,
+"d": "1 boîte complète"
+},
+  {
+"e": "CG1C",
+"c": "Papier et essuie",
+"n": "Essuie-tout brun",
+"q": 2,
+"d": "2 rouleaux"
+},
+  {
+"e": "CG1C",
+"c": "Vaisselle jetable",
+"n": "Pailles",
+"q": 500,
+"d": "2 paquets de 250"
+},
+  {
+"e": "CG1C",
+"c": "Vaisselle jetable",
+"n": "Pics à brochettes en bambou",
+"q": 400,
+"d": ""
+},
+  {
+"e": "CG1C",
+"c": "Divers",
+"n": "Tente 2 places",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Lécithine de soya (Guilde Culinaire)",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Curcuma",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Gomme de xanthane",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Pétales de rose",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Fleurs de muscade",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Haricots Tonka",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Épices et ingrédients fins (sacs scellés)",
+"n": "Gélatine végétale en poudre",
+"q": 1,
+"d": "Sac scellé"
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Baies de genièvre",
+"q": 1,
+"d": "300 g"
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Paprika sucré",
+"q": 1,
+"d": "Petit pot, 36 g"
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Poudre de camerise",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Poudre de betterave (Aroma)",
+"q": 1,
+"d": "Petit pot"
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Houblon en pellets",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Voatsiperifery / Bétimure",
+"q": 1,
+"d": "Environ un demi-pot restant"
+},
+  {
+"e": "CG2A",
+"c": "Pots d'épices et produits secs",
+"n": "Thé Oolong",
+"q": 1,
+"d": "1 boîte"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Origan en feuilles",
+"q": 4,
+"d": "4 boîtes de 190 g"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Feuilles de laurier",
+"q": 1,
+"d": "1 boîte de 30 g"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Cumin moulu",
+"q": 1,
+"d": "1 boîte de 470 g"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Gingembre moulu",
+"q": 2,
+"d": "2 boîtes, 450 g et 375 g"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Poivre blanc moulu",
+"q": 1,
+"d": "1 boîte de 550 g"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Noix de muscade moulue",
+"q": 1,
+"d": "1 boîte de 550 g"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Agar-agar",
+"q": 1,
+"d": "1 boîte, environ 250 g restant"
+},
+  {
+"e": "CG2A",
+"c": "Grosses boîtes d'épices (Rose Hill / Moulin Rouge)",
+"n": "Cannelle moulue de Saigon",
+"q": 1,
+"d": "1 boîte, environ 150 g restant sur 303 g"
+},
+  {
+"e": "CG2A",
+"c": "Poudres décoratives et cocktails",
+"n": "Poudre d'argent étincelante comestible (argent perlé)",
+"q": 1,
+"d": "1 pot"
+},
+  {
+"e": "CG2A",
+"c": "Poudres décoratives et cocktails",
+"n": "Poudre d'or comestible",
+"q": 1,
+"d": "1 petit pot"
+},
+  {
+"e": "CG2A",
+"c": "Poudres décoratives et cocktails",
+"n": "Caesar Rimmer (bordeur à verre)",
+"q": 1,
+"d": "1 pot de 150 g"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Sauce Worcestershire",
+"q": 2,
+"d": "Grand format de 4,70 L et une petite bouteille"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Sauce Tabasco",
+"q": 1,
+"d": "Petite bouteille"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Moutarde de Dijon",
+"q": 1,
+"d": "4 L"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Sauce soya",
+"q": 1,
+"d": "2 L"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Ketchup",
+"q": 1,
+"d": "2,4 L"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Vinaigre de cidre de pomme",
+"q": 1,
+"d": "5 L"
+},
+  {
+"e": "CG2A",
+"c": "Condiments, sauces et liquides",
+"n": "Vinaigre de riz",
+"q": 1,
+"d": "1 gallon, environ 3,78 L"
+},
+  {
+"e": "CG2A",
+"c": "Conserves",
+"n": "Pois chiches",
+"q": 3,
+"d": "Cannes de 2,4 L"
+},
+  {
+"e": "CG2A",
+"c": "Conserves",
+"n": "Haricots rouges",
+"q": 1,
+"d": "Canne de 2,4 L"
+},
+  {
+"e": "CG2A",
+"c": "Conserves",
+"n": "Pâte de tomate",
+"q": 1,
+"d": "Canne de 2,4 L"
+},
+  {
+"e": "CG2A",
+"c": "Conserves",
+"n": "Haricots blancs",
+"q": 1,
+"d": "Petite boîte de 540 ml"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Sucre blanc",
+"q": 1,
+"d": "Poche de 2 kg"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Sel de table",
+"q": 2,
+"d": "2 boîtes de 1 kg"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Cassonade (sucre brun)",
+"q": 1,
+"d": "0,5 L"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Fécule de maïs",
+"q": 1,
+"d": "454 g"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Chapelure à l'italienne",
+"q": 1,
+"d": "680 g"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Bicarbonate de soude",
+"q": 1,
+"d": "1 boîte"
+},
+  {
+"e": "CG2A",
+"c": "Épicerie sèche et poudres",
+"n": "Café instantané Nescafé",
+"q": 1,
+"d": "1 boîte"
+},
+  {
+"e": "CG2A",
+"c": "Boissons",
+"n": "Soda tonique (cannettes)",
+"q": 23,
+"d": "2 boîtes de 12, il manque une cannette"
+},
+  {
+"e": "CG2A",
+"c": "Boissons",
+"n": "Club Soda (cannettes)",
+"q": 11,
+"d": "1 boîte de 12, il manque une cannette"
+},
+  {
+"e": "CG2A",
+"c": "Boissons",
+"n": "Crème Soda (cannettes)",
+"q": 12,
+"d": "1 boîte complète"
+},
+  {
+"e": "CG2A",
+"c": "Matériel",
+"n": "Siphon",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Nourriture et collations",
+"n": "Chips Old Dutch, sacs assortis",
+"q": 4,
+"d": "4 boîtes complètes, non ouvertes"
+},
+  {
+"e": "CG2B",
+"c": "Emballages jetables",
+"n": "Petits sacs à emballer lousses",
+"q": 60,
+"d": "Environ 60"
+},
+  {
+"e": "CG2B",
+"c": "Emballages jetables",
+"n": "Petites barquettes en aluminium",
+"q": 20,
+"d": "Petit format, environ 20"
+},
+  {
+"e": "CG2B",
+"c": "Chaudrons et marmites inox",
+"n": "Très grande marmite haute",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Chaudrons et marmites inox",
+"n": "Grand chaudron",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Chaudrons et marmites inox",
+"n": "Chaudrons moyens",
+"q": 2,
+"d": "Dont un avec couvercle"
+},
+  {
+"e": "CG2B",
+"c": "Culs-de-poule et bols inox",
+"n": "Cul-de-poule géant",
+"q": 1,
+"d": "Très très très grand"
+},
+  {
+"e": "CG2B",
+"c": "Culs-de-poule et bols inox",
+"n": "Culs-de-poule très grands",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Culs-de-poule et bols inox",
+"n": "Cul-de-poule grand profond",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Culs-de-poule et bols inox",
+"n": "Cul-de-poule moyen",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Culs-de-poule et bols inox",
+"n": "Culs-de-poule petits",
+"q": 4,
+"d": "Incluant le tout petit tombé"
+},
+  {
+"e": "CG2B",
+"c": "Appareils et cafetières",
+"n": "Grosses cafetières",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CG2B",
+"c": "Appareils et cafetières",
+"n": "Cafetière percolateur Black & Decker",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG3A",
+"c": "Vaisselle et ustensiles en vrac",
+"n": "Bacs de petite vaisselle et d'ustensiles en vrac",
+"q": null,
+"d": "Louches, tamis, tasses à mesurer, râpes à fromage, etc. Inventaire détaillé à venir.",
+"v": true
+},
+  {
+"e": "CG3B",
+"c": "Mijoteuses",
+"n": "Mijoteuses triples (3 cuves chacune)",
+"q": 2,
+"d": "7 cuves de cuisson au total avec la simple"
+},
+  {
+"e": "CG3B",
+"c": "Mijoteuses",
+"n": "Mijoteuse simple rouge Crock-Pot",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG3B",
+"c": "Emballages jetables",
+"n": "Grands bacs rigides en aluminium",
+"q": 5,
+"d": "Identiques à ceux de CG1A"
+},
+  {
+"e": "CG3B",
+"c": "Emballages jetables",
+"n": "Bacs légers et souples en aluminium",
+"q": null,
+"d": "Utilisés mais fonctionnels"
+},
+  {
+"e": "CG3B",
+"c": "Vaisselle médiévale",
+"n": "Gobelets en métal style médiéval",
+"q": 50,
+"d": "Environ 50, répartis dans 2 chaudières"
+},
+  {
+"e": "CG3B",
+"c": "Vaisselle médiévale",
+"n": "Coupes décoratives style médiéval",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CG3B",
+"c": "Eau",
+"n": "Réservoir d'eau",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG3B",
+"c": "Décoration et service vintage",
+"n": "Théières style arabe",
+"q": 2,
+"d": "Décoratives"
+},
+  {
+"e": "CG3B",
+"c": "Décoration et service vintage",
+"n": "Chauffe-plats en Pyrex et argent",
+"q": 2,
+"d": "Style victorien"
+},
+  {
+"e": "CG3B",
+"c": "Équipement ancien",
+"n": "Hachoir à viande manuel Spong No. 20",
+"q": 1,
+"d": "À manivelle"
+},
+  {
+"e": "CG3C",
+"c": "Cuisson spécialisée",
+"n": "Kit de méchoui de Daniel",
+"q": 1,
+"d": "Occupe toute la profondeur"
+},
+  {
+"e": "CG4A",
+"c": "Glacières",
+"n": "Grande glacière blanche",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG4A",
+"c": "Glacières",
+"n": "Petite glacière bleue",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG4A",
+"c": "Eau",
+"n": "Système de filtration d'eau Berkey",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CG4B",
+"c": "Bacs",
+"n": "Bacs en plastique",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CG4B",
+"c": "Glacières",
+"n": "Glacières moyennes",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CD1A",
+"c": "Divers",
+"n": "Cartons",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD1A",
+"c": "Vaisselle",
+"n": "Pots Mason",
+"q": null,
+"d": "Quelques-uns"
+},
+  {
+"e": "CD1A",
+"c": "Bâches",
+"n": "Bâches",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD1B",
+"c": "Bâches",
+"n": "Bâches",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD1B",
+"c": "Bacs",
+"n": "Bac rouge",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD2B",
+"c": "Appareils",
+"n": "Déshydrateur",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD2B",
+"c": "Bacs",
+"n": "Bac bleu",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD2C",
+"c": "Matériel",
+"n": "Caisse enregistreuse",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD2C",
+"c": "Divers",
+"n": "Boîte",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD2C",
+"c": "Vaisselle",
+"n": "Paquet d'assiettes emballées dans du carton",
+"q": 1,
+"d": "Prêt"
+},
+  {
+"e": "CD3A",
+"c": "Vaisselle",
+"n": "Vaisselle en vrac",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD3A",
+"c": "Ustensiles et mesure",
+"n": "Petits fouets",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD3A",
+"c": "Emballages jetables",
+"n": "Feuilles et assiettes en aluminium",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD3A",
+"c": "Vaisselle jetable",
+"n": "Assiettes en carton",
+"q": 40,
+"d": ""
+},
+  {
+"e": "CD3A",
+"c": "Ustensiles et mesure",
+"n": "Bacs gradués en plastique",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD3A",
+"c": "Vaisselle",
+"n": "Assiettes carrées",
+"q": null,
+"d": "Prêt"
+},
+  {
+"e": "CD3A",
+"c": "Eau",
+"n": "Pompe à eau à l'ancienne",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD3A",
+"c": "Vaisselle",
+"n": "Paquet d'assiettes",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CD3B",
+"c": "Bâches",
+"n": "Bâches",
+"q": null,
+"d": ""
+},
+  {
+"e": "CD4",
+"c": "À inventorier",
+"n": "Sol du container droit",
+"q": null,
+"d": "À inventorier",
+"v": true
+},
+  {
+"e": "CF",
+"c": "Cuisson et équipement",
+"n": "Machine à fumer (fumoir)",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CF1",
+"c": "Cuisson et équipement",
+"n": "Réchaud double avec lampes chauffantes intégrées par le haut",
+"q": 1,
+"d": ""
+},
+  {
+"e": "CF4",
+"c": "Cuisson et équipement",
+"n": "Petits barbecues au charbon",
+"q": 2,
+"d": ""
+},
+  {
+"e": "CF4",
+"c": "Cuisson et équipement",
+"n": "Supports et grilles pour feu sur trépied",
+"q": null,
+"d": ""
+},
+  {
+"e": "CF1",
+"c": "Abris et fûts",
+"n": "Grandes tentes VivoHome",
+"q": 4,
+"d": ""
+},
+  {
+"e": "CF4",
+"c": "Abris et fûts",
+"n": "Fûts à huile essentielle",
+"q": 2,
+"d": "Énormes tubes"
+}
 ]

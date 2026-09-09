@@ -37,13 +37,16 @@ function cases(): Case[] {
   const zPorte = L / 2, zFond = -L / 2 + PROF_TABLETTE;
   const longueurCote = zPorte - zFond;
   const seg = longueurCote / 4;
-  for (const section of SECTIONS) for (const niveau of NIVEAUX) for (const [i, profondeur] of PROFONDEURS.entries()) {
-    const y = Y_NIVEAU[niveau];
+  for (const section of SECTIONS) {
     if (section === 'CF') {
-      const largeur = (W - 2 * PROF_TABLETTE) / 4;
-      const x = -W / 2 + PROF_TABLETTE + largeur * (i + 0.5);
-      out.push({ code: `CF${niveau}${profondeur}`, section, niveau, profondeur, pos: [x, y, -L / 2 + PROF_TABLETTE / 2], taille: [largeur, PROF_TABLETTE] });
-    } else {
+      // Une seule tablette et le sol, sans profondeur : deux cases pleine largeur.
+      for (const niveau of [1, 4] as const) {
+        out.push({ code: `CF${niveau}`, section, niveau, profondeur: 'A', pos: [0, niveau === 1 ? 1.15 : Y_NIVEAU[4], -L / 2 + PROF_TABLETTE / 2], taille: [W - 2 * PROF_TABLETTE, PROF_TABLETTE] });
+      }
+      continue;
+    }
+    for (const niveau of NIVEAUX) for (const [i, profondeur] of PROFONDEURS.entries()) {
+      const y = Y_NIVEAU[niveau];
       const x = section === 'CG' ? -W / 2 + PROF_TABLETTE / 2 : W / 2 - PROF_TABLETTE / 2;
       const z = zPorte - seg * (i + 0.5);
       out.push({ code: `${section}${niveau}${profondeur}`, section, niveau, profondeur, pos: [x, y, z], taille: [PROF_TABLETTE, seg] });
@@ -208,7 +211,7 @@ const Container3D: React.FC<Props> = (props) => {
         <Scene {...props} orbite={orbite} onHover={setSurvol} />
       </Canvas>
       <div className="pointer-events-none absolute left-3 top-3 hidden sm:flex gap-2 whitespace-nowrap font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
-        <span>CG à gauche</span><span>·</span><span>CF au fond</span><span>·</span><span>CD à droite</span>
+        <span>Gauche (CG)</span><span>·</span><span>Fond (CF)</span><span>·</span><span>Droit (CD)</span>
       </div>
       <div className="pointer-events-none absolute right-3 bottom-3 hidden sm:block font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
         Vue de la porte

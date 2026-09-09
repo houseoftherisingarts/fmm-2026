@@ -7,6 +7,7 @@ const b = await chromium.launch({ channel: 'chrome', headless: true });
 for (const [w, h, tag] of [[1440, 900, '1440'], [390, 844, '390']]) {
   const c = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
   const p = await c.newPage();
+  await p.addInitScript(() => { try { localStorage.setItem('fmm.inventaire.visite', '1'); } catch {} });
   const errs = [];
   p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text().slice(0, 160)); });
   await p.goto(`${BASE}/admin/inventaire`, { waitUntil: 'domcontentloaded' });
@@ -41,6 +42,7 @@ for (const [w, h, tag] of [[1440, 900, '1440'], [390, 844, '390']]) {
   }
   if (!p.url().includes('/admin/inventaire')) { await p.goto(`${BASE}/admin/inventaire`, { waitUntil: 'domcontentloaded' }); await p.waitForTimeout(5000); }
   await p.waitForTimeout(2500);
+  const passer = p.getByRole('button', { name: /Passer/ }).first(); if (await passer.count()) { await passer.click(); await p.waitForTimeout(500); }
   const txt = await p.evaluate(() => document.body.innerText);
   console.log(tag, 'url', p.url(), '| objets visibles:', /Tout le container/.test(txt), '| CG1A:', /CG1A/.test(txt));
   await p.screenshot({ path: `${OUT}/inv-${tag}-1-haut.png` });
@@ -57,6 +59,13 @@ for (const [w, h, tag] of [[1440, 900, '1440'], [390, 844, '390']]) {
   // Liste plus bas
   await p.evaluate(() => window.scrollBy(0, 900)); await p.waitForTimeout(500);
   await p.screenshot({ path: `${OUT}/inv-${tag}-5-liste.png` });
+  // A à Z
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(300);
+  const az = p.getByRole('button', { name: /A à Z/ }).first();
+  if (await az.count()) { await az.click(); await p.waitForTimeout(700); await p.screenshot({ path: `${OUT}/inv-${tag}-6-alpha.png` }); }
+  // Le fond : clic sur CF1
+  const cf = p.locator('button[title^="CF1"]').first();
+  if (await cf.count()) { await cf.click(); await p.waitForTimeout(700); await p.screenshot({ path: `${OUT}/inv-${tag}-7-cf1.png` }); }
   console.log(tag, 'erreurs console:', errs.length, errs.slice(0, 3));
   await c.close();
 }
