@@ -376,9 +376,16 @@ const InventaireSection: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <p className="font-editorial italic text-sm text-ivory-soft">
-        Le container en U, tablette par tablette. Cochez un objet quand quelqu’un le prend, dites où il s’en va, et décochez-le quand il revient. Tout le monde voit la même chose, en direct.
-      </p>
+      <Card className="p-5 md:p-6">
+        <p className="font-sans uppercase tracking-[0.3em] text-[10px] font-semibold mb-2" style={{ color: 'var(--admin-accent)' }}>Comment ça marche</p>
+        <p className="font-sans text-sm leading-relaxed" style={{ color: 'var(--admin-text)' }}>
+          Le container se lit en U : la rangée CG à gauche, CF au fond et CD à droite. Les tablettes sont numérotées de 1 en haut jusqu’à 4 pour le sol.
+          Les cases portent une lettre, de A près de la porte jusqu’à D au fond du rayon. CG2A veut donc dire à gauche, tablette du milieu, à l’avant.
+          Le plan et la vue 3D montrent combien d’objets dorment dans chaque case; cliquez une case pour ne voir que ce qu’elle contient.
+          Quand vous prenez quelque chose, cochez-le et écrivez votre nom et l’endroit où il s’en va. Quand il revient dans le container, décochez-le.
+          Si vous le rangez ailleurs, le bouton Déplacer le change de case. Tout le monde voit la même liste, au même moment.
+        </p>
+      </Card>
 
       {erreur && <p className="flex items-center gap-2 font-sans text-xs text-blush"><ShieldAlert size={13} className="shrink-0" /> {erreur}</p>}
 
