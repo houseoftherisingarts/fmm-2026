@@ -14,6 +14,7 @@
     "arene": "npx esbuild tools/arene.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/arene.mjs && node node_modules/.cache/arene.mjs"
   },
   "dependencies": {
+    "@capacitor/core": "^8.5.1",
     "@react-three/fiber": "^9.6.0",
     "@types/leaflet": "^1.9.22",
     "@types/three": "^0.184.0",

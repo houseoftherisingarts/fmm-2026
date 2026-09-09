@@ -35,8 +35,18 @@ const ordreCode = (a: string, b: string) => {
 };
 
 // ── Le plan en U, à plat ─────────────────────────────────────────────
-const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis: number }>; selection: string | null; onSelect: (c: string | null) => void }> =
-  ({ comptes, selection, onSelect }) => {
+// Alex, 9 sept 2026 : survol d'une ligne dans la liste de droite = la
+// case s'allume ici (halo ambre, distinct de l'accent doré de la
+// sélection) et remonte à l'écran si elle était plus bas que la vue.
+const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis: number }>; selection: string | null; survol: string | null; onSelect: (c: string | null) => void }> =
+  ({ comptes, selection, survol, onSelect }) => {
+    const cases = useRef<Map<string, HTMLButtonElement>>(new Map());
+    useEffect(() => {
+      if (!survol) return;
+      const el = cases.current.get(survol) ?? Array.from(cases.current.entries()).find(([code]) => code.startsWith(survol))?.[1];
+      const reduit = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduit ? 'auto' : 'smooth' });
+    }, [survol]);
     const Grille: React.FC<{ section: Section }> = ({ section }) => {
       const libre = comptes[section];
       const profond = aProfondeur(section);
