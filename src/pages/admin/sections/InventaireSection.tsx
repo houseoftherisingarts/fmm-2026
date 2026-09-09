@@ -568,7 +568,7 @@ const InventaireSection: React.FC = () => {
           ) : groupes.length === 0 ? (
             <EmptyState icon={Search}>Aucun objet ne répond à ce filtre.</EmptyState>
           ) : ordre === 'alpha' ? (
-            <ul>{alpha.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} premiere={i === 0} montrerCode />)}</ul>
+            <ul>{alpha.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} onSurvol={setSurvol} premiere={i === 0} montrerCode />)}</ul>
           ) : (
             <div className="space-y-5">
               {groupes.map(([code, liste], gi) => (
