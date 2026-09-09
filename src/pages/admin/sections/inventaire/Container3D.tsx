@@ -30,6 +30,9 @@ const BRASS = '#B08D3A';
 const BRASS_HI = '#E4C776';
 const BLUSH = '#D87B8E';
 const STEEL = '#2E3E52';
+// Alex, 9 sept 2026 : ambre du canon (var(--color-amber-glow)), réservé
+// au survol depuis la liste pour qu'il se distingue de l'or de la sélection.
+const AMBRE = '#E8B14A';
 
 interface Case { code: string; section: Section; niveau: Niveau; profondeur: Profondeur; pos: [number, number, number]; taille: [number, number] }
 
