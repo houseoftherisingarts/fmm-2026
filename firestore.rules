@@ -1391,6 +1391,9 @@ service cloud.firestore {
     // Inventaire du container (admin › Nourriture et Bar › Inventaire) :
     // l'équipe et les rôles Cuisine lisent et écrivent, rien de public.
     match /inventaire/{docId}  { allow read, write: if isAdmin() || aUnRoleAdmin(); }
+    // Tournée des affiches (admin › Marketing › Affichage) : même monde
+    // que l'inventaire, l'équipe et les rôles admin lisent et écrivent.
+    match /affichage/{docId}   { allow read, write: if isAdmin() || aUnRoleAdmin(); }
     // Horaire du festival : public en lecture (la page Programmation
     // s'y abonne), écriture réservée aux admins (section Horaire).
     match /schedule/{docId}    { allow read: if true; allow write: if isAdmin(); }
