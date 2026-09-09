@@ -180,7 +180,9 @@ const Scene: React.FC<Props & { orbite: React.MutableRefObject<{ yaw: number; pi
             c={c}
             compte={comptes[c.code] ?? vide}
             selectionnee={selection === c.code}
+            enSurvol={!!survol && c.code.startsWith(survol)}
             sombre={!!selection && selection !== c.code && !(selection.length < 4 && c.code.startsWith(selection))}
+            reduit={reduit}
             onSelect={() => onSelect(selection === c.code ? null : c.code)}
             onHover={(on) => onHover(on ? c.code : null)}
           />
