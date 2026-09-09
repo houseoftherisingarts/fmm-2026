@@ -578,7 +578,7 @@ const InventaireSection: React.FC = () => {
                     <span className="font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>{libelleEmplacement(lireCode(code))}</span>
                     <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.2em] tabular-nums" style={{ color: 'var(--admin-text-mute)' }}>{liste.length}</span>
                   </header>
-                  <ul>{liste.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} premiere={gi === 0 && i === 0} />)}</ul>
+                  <ul>{liste.map((o, i) => <Ligne key={o.id} o={o} qui={qui} categories={categories} onError={setErreur} onSurvol={setSurvol} premiere={gi === 0 && i === 0} />)}</ul>
                 </section>
               ))}
             </div>
