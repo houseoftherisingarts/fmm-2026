@@ -238,8 +238,8 @@ const Container3D: React.FC<Props> = (props) => {
         Vue de la porte
       </div>
       <div className="pointer-events-none absolute left-3 bottom-3 right-3 sm:right-32 font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>
-        {survol
-          ? <><b style={{ color: 'var(--admin-accent)' }}>{survol}</b> · {compteSurvol?.total ?? 0} objet{(compteSurvol?.total ?? 0) > 1 ? 's' : ''}{compteSurvol?.sortis ? `, ${compteSurvol.sortis} sorti${compteSurvol.sortis > 1 ? 's' : ''}` : ''}</>
+        {pointe
+          ? <><b style={{ color: 'var(--admin-accent)' }}>{pointe}</b> · {comptePointe?.total ?? 0} objet{(comptePointe?.total ?? 0) > 1 ? 's' : ''}{comptePointe?.sortis ? `, ${comptePointe.sortis} sorti${comptePointe.sortis > 1 ? 's' : ''}` : ''}</>
           : 'Glissez pour tourner, molette pour zoomer, cliquez une case.'}
       </div>
     </div>
