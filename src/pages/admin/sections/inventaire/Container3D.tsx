@@ -17,6 +17,7 @@ export interface Compte { total: number; sortis: number }
 interface Props {
   comptes: Record<string, Compte>;
   selection: string | null;
+  survol?: string | null;
   onSelect: (code: string | null) => void;
 }
 
