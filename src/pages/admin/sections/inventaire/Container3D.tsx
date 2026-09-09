@@ -85,10 +85,19 @@ const Pile: React.FC<{ n: number; sortis: number; taille: [number, number]; y: n
   );
 };
 
-const CaseMesh: React.FC<{ c: Case; compte: Compte; selectionnee: boolean; sombre: boolean; onSelect: () => void; onHover: (on: boolean) => void }> =
-  ({ c, compte, selectionnee, sombre, onSelect, onHover }) => {
+const CaseMesh: React.FC<{ c: Case; compte: Compte; selectionnee: boolean; enSurvol: boolean; sombre: boolean; reduit: boolean; onSelect: () => void; onHover: (on: boolean) => void }> =
+  ({ c, compte, selectionnee, enSurvol, sombre, reduit, onSelect, onHover }) => {
     const [x, y, z] = c.pos;
     const [w, d] = c.taille;
+    const mat = useRef<THREE.MeshStandardMaterial>(null);
+    // La case trouvée depuis la liste respire en ambre; à l'arrêt du
+    // mouvement demandé, l'émission reste fixe au lieu de pulser.
+    useFrame(({ clock }) => {
+      if (!mat.current || !enSurvol) return;
+      const t = reduit ? 0.65 : 0.35 + (Math.sin(clock.elapsedTime * 2.6) * 0.5 + 0.5) * 0.55;
+      mat.current.emissive.set(AMBRE);
+      mat.current.emissiveIntensity = selectionnee ? Math.max(0.6, t) : t;
+    });
     return (
       <group position={[x, 0, z]}>
         <mesh
@@ -99,6 +108,7 @@ const CaseMesh: React.FC<{ c: Case; compte: Compte; selectionnee: boolean; sombr
         >
           <boxGeometry args={[w * 0.96, 0.03, d * 0.96]} />
           <meshStandardMaterial
+            ref={mat}
             color={selectionnee ? BRASS_HI : compte.total ? '#3A4C60' : STEEL}
             emissive={selectionnee ? BRASS : '#000000'}
             emissiveIntensity={selectionnee ? 0.6 : 0}
@@ -108,6 +118,7 @@ const CaseMesh: React.FC<{ c: Case; compte: Compte; selectionnee: boolean; sombr
             metalness={0.4}
           />
         </mesh>
+        {enSurvol && <pointLight position={[0, y + 0.5, 0]} color={AMBRE} intensity={5} distance={2.2} decay={1.8} />}
         {compte.total > 0 && <Pile n={compte.total} sortis={compte.sortis} taille={[w, d]} y={y} />}
       </group>
     );
