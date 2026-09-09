@@ -11,17 +11,23 @@
 //   • badges     : /badges/{uid}.obtenus gagnés après notifsVuesLe
 //   • pages      : piliers publiés (siteFlags) que la fiche n'a pas
 //                  encore vus passer
+//   • guildes    : billets de vitrine, messages de salon et événements
+//                  créés dans mes guildes après notifsVuesLe, un lien
+//                  par onglet (addendum 2 du 6 septembre 2026, ordre 15c)
 
 import {
-  collection, doc, onSnapshot, query, where, setDoc, serverTimestamp, type Timestamp,
+  collection, doc, onSnapshot, query, where, orderBy, limit as fbLimit, setDoc, serverTimestamp,
+  type Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { addLocale } from '../lib/locale';
+import { listerMesGuildes, type Guilde } from './guildes';
 import { PILLARS } from '../content';
 import { PILLAR_PUBLISH_FLAGS, subscribeSiteFlags, isPillarPublished } from './siteFlags';
 import { badgeParId } from './badges';
 import { JEUX_DEFIABLES, jeuDe, type JeuDefi } from './tafl';
 
-export type GenreNotif = 'message' | 'amitie' | 'badge' | 'page' | 'defi' | 'tour';
+export type GenreNotif = 'message' | 'amitie' | 'badge' | 'page' | 'defi' | 'tour' | 'guilde';
 
 export interface Notif {
   id: string;
@@ -42,6 +48,29 @@ export interface EtatNotifs {
 
 const ms = (t?: Timestamp | null): number => (t && typeof t.toMillis === 'function' ? t.toMillis() : 0);
 
+// ── La cloche du clan ───────────────────────────────────────────────
+// Trois sources par guilde, chacune avec l'onglet qu'elle ouvre et le
+// champ qui nomme l'auteur (mes propres écrits ne sonnent pas).
+interface SourceClan {
+  col: 'vitrine' | 'clavardage' | 'evenements';
+  onglet: 'vitrine' | 'salon' | 'evenements';
+  auteur: 'uid' | 'creePar';
+  FR: (n: number, g: string) => string;
+  EN: (n: number, g: string) => string;
+}
+
+const SOURCES_CLAN: SourceClan[] = [
+  { col: 'vitrine', onglet: 'vitrine', auteur: 'uid',
+    FR: (n, g) => (n > 1 ? `${n} nouveaux billets dans la vitrine de ${g}` : `Un nouveau billet dans la vitrine de ${g}`),
+    EN: (n, g) => (n > 1 ? `${n} new posts in the ${g} showcase` : `A new post in the ${g} showcase`) },
+  { col: 'clavardage', onglet: 'salon', auteur: 'uid',
+    FR: (n, g) => (n > 1 ? `${n} nouveaux messages au salon de ${g}` : `Un nouveau message au salon de ${g}`),
+    EN: (n, g) => (n > 1 ? `${n} new messages in the ${g} chat` : `A new message in the ${g} chat`) },
+  { col: 'evenements', onglet: 'evenements', auteur: 'creePar',
+    FR: (n, g) => (n > 1 ? `${n} nouveaux événements chez ${g}` : `Un nouvel événement chez ${g}`),
+    EN: (n, g) => (n > 1 ? `${n} new events at ${g}` : `A new event at ${g}`) },
+];
+
 export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void): () => void {
   if (!db) { cb({ notifs: [], messagesNonLus: 0 }); return () => {}; }
   const base = db;
@@ -55,6 +84,20 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
   let flagsOk: string[] = [];
   let parties: Notif[] = [];
   let partiesDes: Notif[] = [];
+  let vivant = true;
+  // Par guilde et par source, les horodatages de ce que les autres ont
+  // écrit; le compte se refait à chaque publication contre `vuesLe`.
+  const clan = new Map<string, { guilde: Guilde; source: SourceClan; quand: number[] }>();
+  const notifsClan = (): Notif[] => Array.from(clan.values()).flatMap(({ guilde: g, source: s, quand }) => {
+    const neufs = quand.filter((t) => t > vuesLe);
+    if (!neufs.length) return [];
+    const chemin = g.slug ? `/${g.slug}/${s.onglet}` : `/guildes/${g.id}`;
+    return [{
+      id: `guilde-${g.id}-${s.col}`, genre: 'guilde' as const, quand: Math.max(...neufs),
+      titre: { FR: s.FR(neufs.length, g.nom), EN: s.EN(neufs.length, g.nom) },
+      lien: { FR: chemin, EN: addLocale(chemin, 'EN') },
+    }];
+  });
 
   const publier = () => {
     const badges: Notif[] = Object.entries(badgesObtenus)
@@ -77,7 +120,7 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
           lien: { FR: p?.slug.FR ?? '/', EN: p?.slug.EN ?? '/en' },
         };
       });
-    const notifs = [...messages, ...amities, ...parties, ...partiesDes, ...badges, ...pages].sort((a, b) => b.quand - a.quand);
+    const notifs = [...messages, ...amities, ...parties, ...partiesDes, ...badges, ...pages, ...notifsClan()].sort((a, b) => b.quand - a.quand);
     cb({ notifs, messagesNonLus: nonLus });
   };
 
@@ -172,7 +215,35 @@ export function suivreNotifications(uid: string, cb: (etat: EtatNotifs) => void)
       publier();
     }),
   ];
-  return () => arrets.forEach((stop) => stop());
+
+  // Mes guildes se lisent une fois à l'ouverture de la cloche; une
+  // guilde rejointe pendant la visite sonnera à la prochaine.
+  // ponytail: lecture unique, passer à un onSnapshot sur `membres`
+  // array-contains si le décalage se remarque.
+  void listerMesGuildes(uid).then((guildes) => {
+    if (!vivant) return;
+    for (const g of guildes) {
+      for (const s of SOURCES_CLAN) {
+        const cle = `${g.id}/${s.col}`;
+        clan.set(cle, { guilde: g, source: s, quand: [] });
+        arrets.push(onSnapshot(
+          query(collection(base, 'guildes', g.id, s.col), orderBy('creeLe', 'desc'), fbLimit(40)),
+          (snap) => {
+            const entree = clan.get(cle);
+            if (!entree) return;
+            entree.quand = snap.docs
+              .map((d) => d.data())
+              .filter((x) => x[s.auteur] !== uid)
+              .map((x) => ms(x.creeLe as Timestamp | undefined));
+            publier();
+          },
+          () => {},
+        ));
+      }
+    }
+  }).catch(() => { /* hors ligne, ou aucune guilde */ });
+
+  return () => { vivant = false; arrets.forEach((stop) => stop()); };
 }
 
 /** La personne a ouvert la cloche : les badges et les pages en cours

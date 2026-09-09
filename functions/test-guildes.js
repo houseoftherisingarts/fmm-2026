@@ -8,7 +8,10 @@
  * paie qu'une fois même si le déclencheur rejoue, et le virement qui
  * refuse quand la bourse est trop mince. Depuis l'addendum du 6
  * septembre : le miroir public qui ne laisse rien filtrer, et l'équipe
- * qui passe partout où un chef passe.
+ * qui passe partout où un chef passe. Depuis l'addendum 2 : la deuxième
+ * formule du cours et la part de trésor, le change croisé entre deux
+ * guildes, le transfert de trésor à trésor, et le fondateur rattaché
+ * par son courriel à la naissance de son compte.
  */
 
 const assert = require('assert');
@@ -122,12 +125,21 @@ function monter(courriels = {}) {
   return { db, monnaie, h };
 }
 
-// ── 1. La courbe du taux ─────────────────────────────────────────────
-assert.strictEqual(guildes.calculerTaux(10), 0.5, '10 actifs valent 0,5');
-assert.strictEqual(guildes.calculerTaux(40), 1, '40 actifs valent la parité');
-assert.strictEqual(guildes.calculerTaux(160), 2, '160 actifs valent 2');
-assert.strictEqual(guildes.calculerTaux(1000), 2, 'le taux plafonne à 2');
-assert.strictEqual(guildes.calculerTaux(0), 0.5, 'le taux plancher est 0,5');
+// ── 1. La courbe du cours, deuxième version ──────────────────────────
+assert.strictEqual(guildes.calculerTauxV2(10, 0), 0.5, '10 actifs sans trésor valent 0,5');
+assert.strictEqual(guildes.calculerTauxV2(40, 0), 1, '40 actifs sans trésor valent la parité');
+assert.strictEqual(guildes.calculerTauxV2(40, 1), 1.5, '40 actifs avec tout le trésor valent 1,5');
+assert.strictEqual(guildes.calculerTauxV2(1000, 1), 3, 'le cours plafonne à 3');
+assert.strictEqual(guildes.calculerTauxV2(0, 0), 0.5, 'le cours plancher est 0,5');
+assert.strictEqual(guildes.calculerTauxV2(160, 0), 2, '160 actifs sans trésor valent 2, comme avant');
+{
+  const parts = guildes.repartirTresors([{ id: 'a', tresor: 100, taux: 1 }, { id: 'b', tresor: 100, taux: 2 }, { id: 'c', tresor: 0, taux: 3 }]);
+  assert.deepStrictEqual(parts.a, { valeurTresorM: 100, partTresor: 0.3333 }, 'A vaut 100 M, un tiers du total');
+  assert.deepStrictEqual(parts.b, { valeurTresorM: 200, partTresor: 0.6667 }, 'B vaut 200 M, deux tiers');
+  assert.deepStrictEqual(parts.c, { valeurTresorM: 0, partTresor: 0 }, 'un trésor vide ne pèse rien');
+  assert.deepStrictEqual(guildes.repartirTresors([{ id: 'a', tresor: 0, taux: 1 }]).a, { valeurTresorM: 0, partTresor: 0 }, 'somme nulle : part nulle, pas NaN');
+  assert.deepStrictEqual(guildes.repartirTresors([]), {}, 'aucune guilde, aucune part');
+}
 
 // ── 2. Les actifs ────────────────────────────────────────────────────
 {
@@ -284,15 +296,18 @@ async function testMiroir() {
     nom: 'Vestrvegir Vikingar', forme: 'clan', slug: 'vestrvegirvikingarclan', description: 'Le clan du nord.',
     blason: 'https://x/blason.webp', banniereUrl: 'https://x/banniere.webp', nbMembres: 3,
     monnaie: { nom: 'Vikingar Coin', sigle: 'VIK', glyphe: '◎', imageUrl: 'https://x/monnaie.webp' },
-  }, 'le miroir porte exactement les champs publics');
-  for (const cle of ['codeInvitation', 'demandes', 'admins', 'membres', 'creePar', 'taux', 'tresor', 'membresFondateurs']) {
+    taux: 1, nbActifs: 3, tresor: 40, tauxHistorique: [],
+  }, 'le miroir porte exactement les champs publics, cours et trésor compris (addendum 2)');
+  for (const cle of ['codeInvitation', 'demandes', 'admins', 'membres', 'creePar', 'membresFondateurs']) {
     assert.ok(!(cle in miroir), `${cle} ne passe jamais dans le miroir`);
   }
+  assert.strictEqual(guildes.miroirPublic({ nom: 'Long', tauxHistorique: Array.from({ length: 45 }, (_, i) => ({ jour: String(i) })) }).tauxHistorique.length, 30, 'le miroir garde les 30 derniers points');
   // Un champ absent ne devient pas `undefined` (l'Admin SDK le refuserait).
   const mince = guildes.miroirPublic({ nom: 'Nu', membres: ['u1'] });
   assert.deepStrictEqual(mince, { nom: 'Nu' }, 'aucune clé indéfinie');
   // Une écriture privée ne change pas la face publique.
-  assert.deepStrictEqual(guildes.miroirPublic({ ...fiche, codeInvitation: 'ZZZZZZZZ', taux: 2 }), guildes.miroirPublic(fiche), 'le code et le taux ne bougent pas le miroir');
+  assert.deepStrictEqual(guildes.miroirPublic({ ...fiche, codeInvitation: 'ZZZZZZZZ' }), guildes.miroirPublic(fiche), 'le code ne bouge pas le miroir');
+  assert.notDeepStrictEqual(guildes.miroirPublic({ ...fiche, taux: 2 }), guildes.miroirPublic(fiche), 'le cours, lui, passe au miroir');
   await h.miroir('g1', fiche, null);
   assert.ok(!(await db.collection('guildesPubliques').doc('g1').get()).exists, 'le miroir part avec la fiche');
 }
@@ -317,6 +332,131 @@ async function testEquipe() {
   assert.strictEqual(chef.tresor, 20, 'le chef verse toujours');
 }
 
+// ── 11. Le cours de toutes les guildes, ensemble ────────────────────
+async function testRecalculTous() {
+  const { db, h } = monter();
+  await db.collection('guildes').doc('a').set({ nom: 'A', membres: ['u1'], taux: 0.5, tresor: 100 });
+  await db.collection('guildes').doc('b').set({ nom: 'B', membres: ['u2'], taux: 0.5, tresor: 50 });
+  await db.collection('membres').doc('u1').set({ vuLe: Date.now() });
+
+  assert.strictEqual((await h.recalculerTousLesTaux()).touchees, 2, 'les deux fiches reçoivent leur part de trésor');
+  let a = (await db.collection('guildes').doc('a').get()).data();
+  let b = (await db.collection('guildes').doc('b').get()).data();
+  assert.strictEqual(a.valeurTresorM, 50, '100 pièces à 0,5 valent 50 M');
+  assert.strictEqual(b.valeurTresorM, 25, '50 pièces à 0,5 valent 25 M');
+  assert.strictEqual(a.partTresor, 0.6667, 'A pèse deux tiers');
+  assert.strictEqual(b.partTresor, 0.3333, 'B pèse un tiers');
+  assert.strictEqual(a.nbActifs, 1, 'u1 vu aujourd’hui compte');
+  assert.strictEqual(b.nbActifs, 0, 'u2 jamais vu ne compte pas');
+  assert.strictEqual(a.nbMembres, 1, 'nbMembres suit la liste');
+  assert.strictEqual(a.taux, guildes.calculerTauxV2(1, 0.6667), 'le cours suit la formule v2');
+  assert.strictEqual(a.tauxHistorique[a.tauxHistorique.length - 1].partTresor, 0.6667, 'l’historique garde la part');
+  assert.strictEqual((await h.recalculerTousLesTaux()).touchees, 0, 'rien ne bouge, rien ne s’écrit');
+
+  // Un trésor qui bouge relance le calcul par le déclencheur de la fiche.
+  await db.collection('guildes').doc('a').set({ tresor: 400 }, { merge: true });
+  await h.entrees('a', { membres: ['u1'], tresor: 100 }, { membres: ['u1'], tresor: 400 });
+  a = (await db.collection('guildes').doc('a').get()).data();
+  b = (await db.collection('guildes').doc('b').get()).data();
+  assert.strictEqual(a.valeurTresorM, 200, 'le nouveau trésor est compté');
+  assert.strictEqual(a.partTresor, 0.8889, 'A pèse désormais huit neuvièmes');
+  assert.strictEqual(b.partTresor, 0.1111, 'B suit, sans avoir bougé');
+  const miroir = guildes.miroirPublic(a);
+  assert.strictEqual(miroir.partTresor, 0.8889, 'le miroir porte la part');
+  assert.strictEqual(miroir.tresor, 400, 'le miroir porte le trésor');
+}
+
+// ── 12. Le change croisé : A vers M moins 5 %, puis M vers B ────────
+async function testChangeCroise() {
+  const { db, h } = monter();
+  await db.collection('guildes').doc('a').set({ nom: 'Clan A', membres: ['u1'], admins: ['u1'], taux: 1, tresor: 0 });
+  await db.collection('guildes').doc('b').set({ nom: 'Clan B', membres: ['u1', 'u2'], admins: ['u2'], taux: 0.5, tresor: 0 });
+  await db.collection('guildes').doc('c').set({ nom: 'Clan C', membres: ['u2'], admins: ['u2'], taux: 1, tresor: 0 });
+  await db.collection('guildes').doc('d').set({ nom: 'Clan D', membres: ['u1'], admins: ['u1'], taux: 3, tresor: 0 });
+  await db.collection('guildes').doc('a').collection('bourses').doc('u1').set({ solde: 500, gagne: 500, depense: 0 });
+
+  const r = await h.changerCroise('u1', { deGuildeId: 'a', versGuildeId: 'b', montant: 100 });
+  assert.strictEqual(r.montpellois, 95, '100 pièces A moins 5 % font 95 M au cours de 1');
+  assert.strictEqual(r.piecesRecues, 190, '95 M font 190 pièces B au cours de 0,5');
+  assert.strictEqual(r.soldePiecesDe, 400, 'les 100 pièces A sont parties');
+  assert.strictEqual(r.soldePiecesVers, 190, 'la bourse B naît avec 190 pièces');
+  assert.strictEqual(r.tauxDe, 1); assert.strictEqual(r.tauxVers, 0.5);
+  assert.strictEqual((await db.collection('guildes').doc('a').get()).data().tresor, 5, 'les frais tombent au trésor de A');
+  assert.strictEqual((await db.collection('guildes').doc('b').get()).data().tresor, 0, 'B ne prend rien');
+  const bourseA = (await db.collection('guildes').doc('a').collection('bourses').doc('u1').get()).data();
+  const bourseB = (await db.collection('guildes').doc('b').collection('bourses').doc('u1').get()).data();
+  assert.strictEqual(bourseA.solde, 400); assert.strictEqual(bourseA.changeCumul, 100, 'le plafond se compte côté A');
+  assert.strictEqual(bourseB.solde, 190); assert.strictEqual(bourseB.gagne, 190);
+  const regA = (await db.collection('guildes').doc('a').collection('registre').get()).docs.map((d) => d.data());
+  const regB = (await db.collection('guildes').doc('b').collection('registre').get()).docs.map((d) => d.data());
+  assert.strictEqual(regA.length, 1); assert.strictEqual(regB.length, 1);
+  assert.deepStrictEqual([regA[0].type, regA[0].de, regA[0].a, regA[0].pieces, regA[0].montpellois, regA[0].autreGuildeId, regA[0].autreGuildeNom], ['change', 'u1', 'monnaie', 100, 95, 'b', 'Clan B'], 'le registre de A dit ce qui est sorti et vers où');
+  assert.deepStrictEqual([regB[0].type, regB[0].de, regB[0].a, regB[0].pieces, regB[0].montpellois, regB[0].autreGuildeId], ['change', 'monnaie', 'u1', 190, 95, 'a'], 'le registre de B dit ce qui est entré et d’où');
+
+  await assert.rejects(() => h.changerCroise('u1', { deGuildeId: 'a', versGuildeId: 'b', montant: 150 }), /Plafond de 200/, 'le plafond du jour vaut pour le change croisé');
+  await assert.rejects(() => h.changerCroise('u1', { deGuildeId: 'a', versGuildeId: 'c', montant: 10 }), /pas de cette guilde/, 'il faut être membre de B');
+  await assert.rejects(() => h.changerCroise('u1', { deGuildeId: 'a', versGuildeId: 'a', montant: 10 }), /deux guildes/, 'A et B doivent différer');
+  await assert.rejects(() => h.changerCroise('u1', { deGuildeId: 'a', versGuildeId: 'd', montant: 1 }), /aucune pièce/, '1 M au cours de 3 ne fait aucune pièce : refusé');
+  assert.strictEqual((await db.collection('guildes').doc('a').collection('bourses').doc('u1').get()).data().solde, 400, 'les refus ne touchent pas la bourse');
+}
+
+// ── 13. Le transfert de trésor à trésor ─────────────────────────────
+async function testTresorTransferer() {
+  const { db, h } = monter();
+  await db.collection('guildes').doc('a').set({ nom: 'Clan A', membres: ['u1', 'u2'], admins: ['u1'], taux: 1, tresor: 100 });
+  await db.collection('guildes').doc('b').set({ nom: 'Clan B', membres: ['u3'], admins: ['u3'], taux: 0.5, tresor: 10 });
+
+  await assert.rejects(() => h.tresorTransferer('u2', { deGuildeId: 'a', versGuildeId: 'b', montant: 50 }), /Réservé aux chefs/, 'un membre ordinaire ne vide pas le trésor');
+  const r = await h.tresorTransferer('u1', { deGuildeId: 'a', versGuildeId: 'b', montant: 50, note: 'Pour le feu' });
+  assert.strictEqual(r.montpellois, 50, '50 pièces A valent 50 M, sans frais');
+  assert.strictEqual(r.pieces, 100, '50 M valent 100 pièces B');
+  assert.strictEqual(r.tresorDe, 50); assert.strictEqual(r.tresorVers, 110);
+  assert.strictEqual((await db.collection('guildes').doc('a').get()).data().tresor, 50);
+  assert.strictEqual((await db.collection('guildes').doc('b').get()).data().tresor, 110);
+  const regA = (await db.collection('guildes').doc('a').collection('registre').get()).docs.map((d) => d.data());
+  const regB = (await db.collection('guildes').doc('b').collection('registre').get()).docs.map((d) => d.data());
+  assert.deepStrictEqual([regA[0].type, regA[0].de, regA[0].a, regA[0].pieces, regA[0].note, regA[0].autreGuildeId], ['transfert', 'tresor', 'monnaie', 50, 'Pour le feu', 'b'], 'A inscrit la sortie');
+  assert.deepStrictEqual([regB[0].type, regB[0].de, regB[0].a, regB[0].pieces, regB[0].note, regB[0].autreGuildeId], ['transfert', 'monnaie', 'tresor', 100, 'Pour le feu', 'a'], 'B inscrit l’entrée');
+  await assert.rejects(() => h.tresorTransferer('u1', { deGuildeId: 'a', versGuildeId: 'b', montant: 999 }), /trop bas/, 'on ne transfère pas plus que le trésor');
+  await assert.rejects(() => h.tresorTransferer('u1', { deGuildeId: 'a', versGuildeId: 'a', montant: 1 }), /deux guildes/, 'A et B doivent différer');
+}
+
+// ── 14. Le fondateur rattaché par son courriel, une seule fois ──────
+async function testFondateurCourriel() {
+  const { db, h } = monter();
+  await db.collection('guildes').doc('g1').set({
+    nom: 'Clan Test', membres: ['u1'], admins: ['u1'],
+    membresFondateurs: [
+      { nom: 'Ariane', chef: true, courriel: 'ariane@exemple.org' },
+      { nom: 'Camille', chef: false, courriel: 'camille@exemple.org' },
+      { nom: 'Erik', chef: true },
+    ],
+  });
+  await db.collection('guildes').doc('g2').set({ nom: 'Autre', membres: ['u5'], admins: ['u5'] });
+
+  assert.deepStrictEqual(await h.fondateurParCourriel('u9', ' Ariane@Exemple.org '), ['g1'], 'la casse et les espaces du courriel ne comptent pas');
+  let g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.deepStrictEqual(g.membres, ['u1', 'u9'], 'Ariane entre dans les membres');
+  assert.deepStrictEqual(g.admins, ['u1', 'u9'], 'Ariane est chef, elle entre dans les admins');
+  assert.strictEqual(g.membresFondateurs[0].uid, 'u9', 'sa ligne porte son uid');
+  assert.strictEqual(g.membresFondateurs[1].uid, undefined, 'la ligne de Camille ne bouge pas');
+  assert.strictEqual(g.membresFondateurs[2].uid, undefined, 'la ligne sans courriel ne bouge pas');
+
+  assert.deepStrictEqual(await h.fondateurParCourriel('u9', 'ariane@exemple.org'), [], 'rejoué, rien ne bouge');
+  g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.deepStrictEqual(g.membres, ['u1', 'u9']); assert.deepStrictEqual(g.admins, ['u1', 'u9']);
+
+  await h.fondateurParCourriel('u8', 'camille@exemple.org');
+  g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.deepStrictEqual(g.membres, ['u1', 'u9', 'u8'], 'Camille entre dans les membres');
+  assert.deepStrictEqual(g.admins, ['u1', 'u9'], 'Camille n’est pas chef');
+  assert.strictEqual(g.membresFondateurs[1].uid, 'u8');
+
+  assert.deepStrictEqual(await h.fondateurParCourriel('u7', 'personne@exemple.org'), [], 'un courriel inconnu ne touche rien');
+  assert.deepStrictEqual(await h.fondateurParCourriel('u6', ''), [], 'un compte sans courriel ne touche rien');
+  assert.deepStrictEqual((await db.collection('guildes').doc('g2').get()).data().membres, ['u5'], 'les autres guildes restent intactes');
+}
+
 (async () => {
   await testChange();
   await testEntreeIdempotente();
@@ -326,7 +466,11 @@ async function testEquipe() {
   await testIcs();
   await testMiroir();
   await testEquipe();
-  console.log('taux, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe : tout tient.');
+  await testRecalculTous();
+  await testChangeCroise();
+  await testTresorTransferer();
+  await testFondateurCourriel();
+  console.log('cours v2, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe, recalcul de toutes les guildes, change croisé, transfert de trésor, fondateur par courriel : tout tient.');
   console.log('functions/test-guildes.js : OK');
 })().catch((e) => {
   console.error('ÉCHEC :', e && e.message);

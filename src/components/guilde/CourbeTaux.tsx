@@ -6,8 +6,8 @@ import type { Lang } from '../../content';
 // ─── Le cours de la pièce ────────────────────────────────────────────
 // Une courbe tracée à la main en SVG, sans librairie : trente points au
 // plus, un tracé, une aire, et les trois repères de la formule posés en
-// filets horizontaux. Le cours monte avec le nombre de membres actifs,
-// entre un demi Montpellois et deux.
+// filets horizontaux. Le cours monte avec le nombre de membres actifs
+// et la part du trésor, entre un demi Montpellois et trois.
 //
 // Le tracé s'étire sur toute la largeur de la carte à hauteur fixe
 // (preserveAspectRatio « none », traits à épaisseur constante), et les
@@ -19,7 +19,7 @@ const HAUTEUR = 100;
 const HAUT = 8;
 const BAS = 6;
 const TAUX_MIN = 0.5;
-const TAUX_MAX = 2;
+const TAUX_MAX = 3;
 
 /** La hauteur d'un cours, en pour cent depuis le haut. */
 const enY = (taux: number): number => {
@@ -107,8 +107,8 @@ const CourbeTaux: React.FC<{
 
       <p className="font-sans text-[11px] leading-relaxed mt-2" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
         {fr
-          ? `Le cours suit le nombre de membres actifs : à dix il vaut ${tauxPour(10)} Montpellois, à quarante il atteint la parité, et à cent soixante il plafonne à ${tauxPour(160)}.`
-          : `The rate follows the number of active members: at ten it is worth ${tauxPour(10)} Montpellois, at forty it reaches parity, and at one hundred and sixty it caps at ${tauxPour(160)}.`}
+          ? `Le cours suit les membres actifs et la part du trésor : à dix actifs il vaut ${tauxPour(10)} Montpellois, à quarante il atteint la parité, et il ne dépasse jamais ${tauxPour(360)}.`
+          : `The rate follows active members and the treasury share: at ten actives it is worth ${tauxPour(10)} Montpellois, at forty it reaches parity, and it never goes above ${tauxPour(360)}.`}
       </p>
     </div>
   );

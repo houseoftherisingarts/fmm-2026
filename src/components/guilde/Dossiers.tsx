@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { addLocale } from '../../lib/locale';
 import Repliable from '../compte/Repliable';
-import { lireFiche } from '../../firebase/ordre';
+import { lireFiche, nomAffiche } from '../../firebase/ordre';
 import { FORMES_GUILDE, modifierGuilde, motDeLaForme, type Guilde } from '../../firebase/guildes';
 import {
   suivreDocuments, televerser, supprimer, idDossierDrive, lienEmbedDrive, lienDossierDrive,
@@ -356,7 +356,7 @@ const Depot: React.FC<{ guildeId: string; uid: string; dossiers: string[]; fr: b
       const fiche = await lireFiche(uid).catch(() => null);
       await televerser(
         guildeId,
-        { uid, nom: fiche?.nom || user?.displayName || (fr ? 'Un inconnu' : 'A stranger') },
+        { uid, nom: nomAffiche(fiche) || user?.displayName || (fr ? 'Un inconnu' : 'A stranger') },
         fichier, dossier, setProgression,
       );
       setFichier(null);

@@ -91,6 +91,8 @@ export interface PointTaux {
   jour: string;
   taux: number;
   nbActifs: number;
+  /** La part du trésor de toutes les guildes ce jour-là (ordre 12). */
+  partTresor?: number;
 }
 
 /** Un fondateur annoncé qui n'a pas encore de compte sur le site. */
@@ -98,6 +100,8 @@ export interface FondateurAttendu {
   nom: string;
   chef: boolean;
   uid?: string;
+  /** En minuscules; le serveur rattache le compte qui naît avec ce courriel. */
+  courriel?: string;
 }
 
 export interface Guilde {
@@ -177,7 +181,7 @@ export function slugDeGuilde(nom: string, forme: FormeGuilde | undefined): strin
 export const SLUGS_RESERVES: readonly string[] = [
   'accueil', 'activites', 'admin', 'alliance', 'apprendre', 'archives',
   'babillard', 'backuppage', 'banquet', 'benevole', 'benevoles', 'billets',
-  'boissons', 'boutique', 'chantier', 'chevaux', 'commanditaires',
+  'boissons', 'boutique', 'change', 'chantier', 'chevaux', 'commanditaires',
   'communaute', 'compte', 'contact', 'defi', 'en', 'espace-benevole',
   'festival-medieval-de-montpellier', 'groupe', 'groupes', 'guildes',
   'hebergement', 'histoire', 'horaire', 'jeunesse', 'jeux', 'jeux-en-ligne',

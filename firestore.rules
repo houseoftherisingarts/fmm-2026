@@ -373,6 +373,16 @@ service cloud.firestore {
     // depuis l'espace admin. Personne ne se les donne à soi-même
     // (Alex, 2026-08-23).
     match /membres/{uid} {
+      // Le pseudo (addendum 2 du 6 septembre, ordre 10) : le nom de
+      // guilde que la personne se choisit. Lettres, chiffres, espace,
+      // apostrophe et trait d'union, de 2 à 24 caractères.
+      function pseudoValide() {
+        return request.resource.data.pseudo is string
+               && request.resource.data.pseudo.size() >= 2
+               && request.resource.data.pseudo.size() <= 24
+               && request.resource.data.pseudo.matches("^[A-Za-z0-9À-ÿ' -]+$");
+      }
+
       // Loi 25, articles 13 et 9.1 (audit du 2026-09-02). Les outils
       // tools/importer-profils-fmm.mjs, tools/importer-profils-zeffy.mjs
       // et la fonction importerComptesZeffy versent au registre le vrai
@@ -407,7 +417,8 @@ service cloud.firestore {
                         && !('rolesLe' in request.resource.data)
                         // Le compteur de guildes fondées (CLAN-MONNAIE-CONTRAT.md,
                         // 6 sept 2026) : posé et incrémenté par le serveur seulement.
-                        && !('guildesFondees' in request.resource.data));
+                        && !('guildesFondees' in request.resource.data)
+                        && (!('pseudo' in request.resource.data) || pseudoValide()));
       // `tags` suit exactement le sort de `roles` : les étiquettes de
       // groupe (viking, marchand du dimanche, municipalité) servent à
       // former les listes d'envoi de l'équipe, et personne ne se les
@@ -425,7 +436,11 @@ service cloud.firestore {
                         // `vuLe` (présence, sert à compter les actifs de guilde) :
                         // le propriétaire seul la pose, et seulement un timestamp.
                         && (!('vuLe' in request.resource.data.diff(resource.data).affectedKeys())
-                            || request.resource.data.vuLe is timestamp));
+                            || request.resource.data.vuLe is timestamp)
+                        // `pseudo` : le propriétaire le pose, le change ou le retire.
+                        && (!('pseudo' in request.resource.data.diff(resource.data).affectedKeys())
+                            || !('pseudo' in request.resource.data)
+                            || pseudoValide()));
       allow delete: if isAdmin();
     }
 
@@ -813,7 +828,8 @@ service cloud.firestore {
       // les écrire s'inventerait un taux, un trésor ou un code à volonté
       // (contrat CLAN-MONNAIE-CONTRAT.md, 6 sept 2026).
       function guildeChampsServeur() {
-        return ['taux', 'tresor', 'nbActifs', 'tauxHistorique', 'codeInvitation'];
+        return ['taux', 'tresor', 'nbActifs', 'tauxHistorique', 'codeInvitation',
+                'partTresor', 'valeurTresorM'];
       }
 
       allow read: if signedIn();
@@ -863,7 +879,8 @@ service cloud.firestore {
                         && request.resource.data.creePar == resource.data.creePar
                         && request.resource.data.diff(resource.data).affectedKeys()
                               .hasOnly(['monnaie', 'slug', 'membresFondateurs', 'nom',
-                                        'description', 'forme', 'blason', 'banniereUrl', 'maj'])
+                                        'description', 'forme', 'blason', 'banniereUrl',
+                                        'titres', 'driveUrl', 'maj'])
                         && (!('slug' in request.resource.data.diff(resource.data).affectedKeys())
                             || (request.resource.data.slug is string
                                 && request.resource.data.slug.size() >= 3
@@ -875,6 +892,9 @@ service cloud.firestore {
                                 && request.resource.data.monnaie.sigle.size() >= 2
                                 && request.resource.data.monnaie.sigle.size() <= 4
                                 && request.resource.data.monnaie.glyphe is string))
+                        // Chaque ligne porte un nom, un drapeau chef, parfois un uid
+                        // et, depuis l'addendum 2 (ordre 9), parfois un courriel que
+                        // le serveur rattache à la naissance du compte.
                         && (!('membresFondateurs' in request.resource.data.diff(resource.data).affectedKeys())
                             || (request.resource.data.membresFondateurs is list
                                 && request.resource.data.membresFondateurs.size() <= 50))
@@ -893,7 +913,24 @@ service cloud.firestore {
                                 && request.resource.data.blason.size() <= 500))
                         && (!('banniereUrl' in request.resource.data.diff(resource.data).affectedKeys())
                             || (request.resource.data.banniereUrl is string
-                                && request.resource.data.banniereUrl.size() <= 500)))
+                                && request.resource.data.banniereUrl.size() <= 500))
+                        // Les titres honorifiques (addendum 2, ordre 15b) : une
+                        // carte uid vers titre. Les valeurs jointes par la barre
+                        // se vérifient d'un seul motif : chacune est une chaîne
+                        // de 30 caractères au plus, sans barre. La carte peut
+                        // aussi disparaître d'un coup.
+                        && (!('titres' in request.resource.data.diff(resource.data).affectedKeys())
+                            || !('titres' in request.resource.data)
+                            || (request.resource.data.titres is map
+                                && request.resource.data.titres.size() <= 200
+                                && request.resource.data.titres.values().join('|').matches('^[^|]{0,30}([|][^|]{0,30})*$')))
+                        // Le dossier Drive commun (addendum 2, ordre 13) : un lien
+                        // Google Drive, ou rien du tout.
+                        && (!('driveUrl' in request.resource.data.diff(resource.data).affectedKeys())
+                            || !('driveUrl' in request.resource.data)
+                            || (request.resource.data.driveUrl is string
+                                && request.resource.data.driveUrl.size() <= 500
+                                && request.resource.data.driveUrl.matches('^https://drive[.]google[.]com/.*'))))
                     || (signedIn()
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['demandes', 'maj'])
                         && request.resource.data.demandes.removeAll(resource.data.demandes).hasOnly([request.auth.uid])
@@ -1038,12 +1075,90 @@ service cloud.firestore {
       allow delete: if vitrineChefOuEquipe() || vitrineAuteur();
     }
 
+    // ── Les sondages de la guilde (addendum 2, ordre 15a) ────────
+    // Un membre pose une question et de deux à six choix; chacun vote
+    // sur sa seule clé de `votes`, avec l'indice d'un choix; l'auteur,
+    // un chef ou l'équipe ferme le sondage, et personne ne le rouvre.
+    match /guildes/{id}/sondages/{sid} {
+      function sondageChefOuEquipe() { return isAdmin() || (signedIn() && guildeAdmin(id)); }
+      function sondageAuteur() { return signedIn() && resource.data.creePar == request.auth.uid; }
+
+      allow read:   if signedIn() && (isAdmin() || guildeMembre(id));
+      allow create: if signedIn() && guildeMembre(id)
+                    && request.resource.data.keys().hasOnly(['question', 'options', 'votes', 'clos', 'creePar', 'creeLe'])
+                    && request.resource.data.creePar == request.auth.uid
+                    && request.resource.data.question is string
+                    && request.resource.data.question.size() >= 1
+                    && request.resource.data.question.size() <= 200
+                    && request.resource.data.options is list
+                    && request.resource.data.options.size() >= 2
+                    && request.resource.data.options.size() <= 6
+                    // Chaque choix est une chaîne de 1 à 80 caractères, sans
+                    // barre : les choix joints se vérifient d'un seul motif.
+                    && request.resource.data.options.join('|').matches('^[^|]{1,80}([|][^|]{1,80})*$')
+                    && request.resource.data.votes == {}
+                    && request.resource.data.clos == false
+                    && request.resource.data.creeLe == request.time;
+      // Voter : un membre, sur sa seule clé, tant que le sondage est
+      // ouvert, avec l'indice d'un choix existant. Fermer : l'auteur,
+      // un chef ou l'équipe, et rien d'autre ne bouge.
+      allow update: if (signedIn() && guildeMembre(id)
+                        && resource.data.clos == false
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+                        && request.resource.data.votes.diff(resource.data.votes).affectedKeys().hasOnly([request.auth.uid])
+                        && request.resource.data.votes[request.auth.uid] is int
+                        && request.resource.data.votes[request.auth.uid] >= 0
+                        && request.resource.data.votes[request.auth.uid] < resource.data.options.size())
+                    || ((sondageAuteur() || sondageChefOuEquipe())
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clos'])
+                        && request.resource.data.clos == true);
+      allow delete: if sondageAuteur() || sondageChefOuEquipe();
+    }
+
+    // ── Les documents du clan (addendum 2, ordre 14) ─────────────
+    // La fiche d'un fichier déposé dans Storage sous
+    // guildes/{id}/documents/ (voir storage.rules). Les membres lisent
+    // et déposent en leur nom; l'auteur, un chef ou l'équipe retirent.
+    // Rien ne se modifie après coup : on retire et on redépose.
+    match /guildes/{id}/documents/{docId} {
+      function documentChefOuEquipe() { return isAdmin() || (signedIn() && guildeAdmin(id)); }
+
+      allow read:   if signedIn() && (isAdmin() || guildeMembre(id));
+      allow create: if signedIn() && guildeMembre(id)
+                    && request.resource.data.keys().hasOnly(['titre', 'dossier', 'fichierUrl', 'chemin', 'contentType', 'taille', 'uid', 'nom', 'creeLe'])
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.titre is string
+                    && request.resource.data.titre.size() >= 1
+                    && request.resource.data.titre.size() <= 160
+                    && request.resource.data.dossier is string
+                    && request.resource.data.dossier.size() >= 1
+                    && request.resource.data.dossier.size() <= 60
+                    && request.resource.data.fichierUrl is string
+                    && request.resource.data.fichierUrl.size() <= 1000
+                    // Le chemin ne pointe que dans le coffre de cette guilde.
+                    && request.resource.data.chemin is string
+                    && request.resource.data.chemin.matches('^guildes/' + id + '/documents/[^/]+$')
+                    && request.resource.data.contentType is string
+                    && request.resource.data.contentType.size() <= 100
+                    && request.resource.data.taille is int
+                    && request.resource.data.taille >= 0
+                    && request.resource.data.taille <= 25 * 1024 * 1024
+                    && request.resource.data.nom is string
+                    && request.resource.data.nom.size() <= 80
+                    && request.resource.data.creeLe == request.time;
+      allow update: if false;
+      allow delete: if documentChefOuEquipe()
+                    || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+
     // ── Le miroir public d'une guilde ────────────────────────────
     // Écrit par le déclencheur guildeMiroir (functions/guildes.js) à
     // chaque écriture de guildes/{id}, avec les seuls champs publics :
     // nom, forme, slug, description, blason, bannière, nombre de
-    // membres et monnaie. C'est ce que le visiteur sans compte voit en
-    // ouvrant /{slug}. Aucun navigateur n'y écrit.
+    // membres et monnaie, plus le cours, les actifs, le trésor et sa
+    // part depuis l'addendum 2 (ordre 12, le bureau de change). C'est ce
+    // que le visiteur sans compte voit en ouvrant /{slug}. Aucun
+    // navigateur n'y écrit.
     match /guildesPubliques/{id} {
       allow read:  if true;
       allow write: if false;

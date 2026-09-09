@@ -26,20 +26,25 @@ export const PLAFOND_CHANGE_JOUR = 200;
  *  et qui tombe dans le trésor commun. */
 export const FRAIS_CHANGE = 0.05;
 
-/** Les trois repères que la courbe montre : dix actifs, quarante, cent
- *  soixante. Ils bornent le cours entre un demi et deux. */
+/** Les repères que la courbe montre, sans part de trésor : dix actifs,
+ *  quarante, cent soixante, trois cent soixante. Ils bornent le cours
+ *  entre un demi et trois. */
 export const ANCRES_TAUX = [
   { nbActifs: 10,  taux: 0.5 },
   { nbActifs: 40,  taux: 1 },
   { nbActifs: 160, taux: 2 },
+  { nbActifs: 360, taux: 3 },
 ] as const;
 
-/** Le cours d'une pièce en Montpellois, à un nombre d'actifs donné.
- *  Jumelle exacte de la formule du serveur : si l'une change, l'autre
- *  doit suivre le jour même, sinon l'écran ment. */
-export function tauxPour(nbActifs: number): number {
-  const brut = 0.5 * Math.sqrt(Math.max(0, nbActifs) / 10);
-  return Math.round(Math.min(2, Math.max(0.5, brut)) * 1000) / 1000;
+/** Le cours d'une pièce en Montpellois, à un nombre d'actifs et à une
+ *  part du trésor donnés (ordre 12 : la part, entre 0 et 1, gonfle le
+ *  cours jusqu'à moitié plus). Jumelle exacte de calculerTauxV2 côté
+ *  serveur : si l'une change, l'autre doit suivre le jour même, sinon
+ *  l'écran ment. */
+export function tauxPour(nbActifs: number, partTresor = 0): number {
+  const part = Math.min(1, Math.max(0, partTresor));
+  const brut = 0.5 * Math.sqrt(Math.max(0, nbActifs) / 10) * (1 + 0.5 * part);
+  return Math.round(Math.min(3, Math.max(0.5, brut)) * 1000) / 1000;
 }
 
 export interface BourseGuilde {
@@ -54,7 +59,7 @@ export interface BourseGuilde {
 
 export type TypeEcriture =
   | 'entree' | 'fondation' | 'change' | 'virement'
-  | 'tresor' | 'souk' | 'evenement';
+  | 'tresor' | 'souk' | 'evenement' | 'transfert';
 
 export interface Ecriture {
   id: string;
@@ -65,6 +70,9 @@ export interface Ecriture {
   montpellois?: number;
   taux?: number;
   note?: string;
+  /** Sur un change croisé ou un transfert de trésor : l'autre guilde. */
+  autreGuildeId?: string;
+  autreGuildeNom?: string;
   creeLe?: Timestamp | null;
 }
 

@@ -157,6 +157,31 @@ service firebase.storage {
       allow delete: if isAdmin() || (signedIn() && membreDeLaGuilde());
     }
 
+    // ── Les documents du clan (addendum 2 du 6 septembre, ordre 14) ──
+    // Le coffre de fichiers de la guilde : PDF, images, bureautique,
+    // texte et archives, chacun sous 25 Mo. Lecture et dépôt par les
+    // membres (lus dans Firestore) et l'équipe; retrait par un membre
+    // ou l'équipe. Le navigateur pose le type lui-même à l'envoi
+    // (guildeDocuments.ts), d'où la liste fermée ci-dessous.
+    match /guildes/{guildeId}/documents/{fichier} {
+      function membreDeLaGuilde() {
+        return request.auth.uid in firestore.get(/databases/(default)/documents/guildes/$(guildeId)).data.membres;
+      }
+      allow read:   if signedIn() && (isAdmin() || membreDeLaGuilde());
+      allow create: if signedIn() && (isAdmin() || membreDeLaGuilde())
+        && request.resource.size < 25 * 1024 * 1024
+        && request.resource.contentType in [
+          'application/pdf',
+          'image/webp', 'image/jpeg', 'image/png',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'text/plain', 'text/markdown', 'text/x-markdown',
+          'application/zip', 'application/x-zip-compressed',
+        ];
+      allow delete: if isAdmin() || (signedIn() && membreDeLaGuilde());
+    }
+
     // ── Hébergeurs partenaires (formulaire public /hebergement) ──
     // Un hébergeur téléverse ses photos AVANT le paiement, sans compte :
     // la création est publique, bornée aux images de moins de 8 Mo. Les

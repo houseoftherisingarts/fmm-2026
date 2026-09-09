@@ -11,7 +11,7 @@
 import {
   addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs,
   limit as fbLimit, onSnapshot, orderBy, query, serverTimestamp, setDoc,
-  updateDoc, where, writeBatch,
+  updateDoc, where, writeBatch, deleteField,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { LONGUEUR_MAX } from './moderation';
@@ -137,6 +137,12 @@ export const alerteActive = (alertes: AlertesMembre | undefined, cle: keyof Aler
 export interface Membre {
   uid: string;
   nom: string;
+  /** Le nom que la personne se choisit pour les guildes (addendum 2 du
+   *  6 septembre 2026, ordre 10) : deux à vingt-quatre caractères, en
+   *  lettres, chiffres, espaces, apostrophes et traits d'union. Il
+   *  remplace le nom dans les guildes et en tête du profil public, où
+   *  le vrai nom reste écrit en petit dessous. Voir nomAffiche. */
+  pseudo?: string;
   avatarUrl?: string;
   /** La photo de bannière du profil (users/{uid}/banniere.webp). */
   banniereUrl?: string;
@@ -213,6 +219,35 @@ export async function definirPref<K extends keyof PrefsMembre>(
 ): Promise<void> {
   if (!db) return;
   await updateDoc(doc(db, MEMBRES, uid), { [`prefs.${cle}`]: valeur, maj: serverTimestamp() });
+}
+
+// ── Le pseudo ───────────────────────────────────────────────────────
+export const PSEUDO_MIN = 2;
+export const PSEUDO_MAX = 24;
+const PSEUDO_RE = /^[\p{L}\p{N}][\p{L}\p{N} '’-]*[\p{L}\p{N}]$/u;
+
+/** Un pseudo tient sur une ligne, sans espaces de bout ni doublés. */
+export const pseudoPropre = (brut: string): string =>
+  brut.replace(/\s+/g, ' ').trim().slice(0, PSEUDO_MAX);
+
+export const pseudoValide = (p: string): boolean =>
+  p.length >= PSEUDO_MIN && p.length <= PSEUDO_MAX && PSEUDO_RE.test(p);
+
+/** Le nom sous lequel la personne paraît : son pseudo si elle en porte
+ *  un, sinon son nom. Vide quand la fiche manque, pour que chaque écran
+ *  garde son propre repli (« Un inconnu », « un membre »). */
+export const nomAffiche = (m: Pick<Membre, 'nom' | 'pseudo'> | null | undefined): string =>
+  m?.pseudo?.trim() || m?.nom || '';
+
+/** Le propriétaire seul pose ou retire son pseudo. Un pseudo vide
+ *  efface le champ plutôt que d'écrire une chaîne vide. */
+export async function definirPseudo(uid: string, pseudo: string): Promise<void> {
+  if (!db) return;
+  const p = pseudoPropre(pseudo);
+  if (p && !pseudoValide(p)) {
+    throw new Error('Le pseudo tient en deux à vingt-quatre caractères : lettres, chiffres, espace, apostrophe ou trait d’union.');
+  }
+  await setDoc(doc(db, MEMBRES, uid), { uid, pseudo: p || deleteField(), maj: serverTimestamp() }, { merge: true });
 }
 
 /** La fiche d'entrée au registre, posée à la première connexion, quel
@@ -452,6 +487,7 @@ export function filtrerMembres(membres: Membre[], terme: string): Membre[] {
   const t = sansAccents(terme.trim());
   if (!t) return membres;
   return membres.filter((m) => sansAccents(m.nom || '').includes(t)
+    || sansAccents(m.pseudo || '').includes(t)
     || sansAccents(m.ville || '').includes(t)
     || sansAccents(m.devise || '').includes(t));
 }

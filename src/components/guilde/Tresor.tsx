@@ -5,7 +5,7 @@ import CourbeTaux from './CourbeTaux';
 import { PieceGuilde } from './SoldePieces';
 import { addLocale } from '../../lib/locale';
 import { nomMonnaie, type Guilde } from '../../firebase/guildes';
-import type { Membre } from '../../firebase/ordre';
+import { nomAffiche, type Membre } from '../../firebase/ordre';
 import {
   suivreMaBourseGuilde, suivreRegistre, guildeChanger, guildeVirement,
   guildeTresorVerser, resteAChanger, tauxPour, FRAIS_CHANGE, PLAFOND_CHANGE_JOUR,
@@ -34,6 +34,7 @@ const ETIQUETTES: Record<TypeEcriture, { FR: string; EN: string }> = {
   tresor:    { FR: 'Trésor commun', EN: 'Treasury' },
   souk:      { FR: 'Marché',        EN: 'Market' },
   evenement: { FR: 'Événement',     EN: 'Event' },
+  transfert: { FR: 'Transfert',     EN: 'Treasury transfer' },
 };
 
 export function messageErreur(e: unknown, fr: boolean): string {
@@ -123,7 +124,7 @@ const Tresor: React.FC<{
     if (ref === 'monnaie') return fr ? 'la frappe' : 'the mint';
     return (
       <Link to={`${addLocale('/profil', lang)}/${ref}`} className="hover:text-brass transition-colors">
-        {fiches[ref]?.nom || (fr ? 'un membre' : 'a member')}
+        {nomAffiche(fiches[ref]) || (fr ? 'un membre' : 'a member')}
       </Link>
     );
   };
@@ -266,6 +267,7 @@ const Tresor: React.FC<{
                 </span>
                 <span className="font-sans text-[12px] text-ivory-soft min-w-0 flex-1 truncate">
                   {l.note || <>{nomDe(l.de)} → {nomDe(l.a)}</>}
+                  {l.autreGuildeNom && <> · {l.autreGuildeNom}</>}
                 </span>
                 <span className="font-sans text-[12px] text-ivory tabular-nums shrink-0 inline-flex items-center gap-1.5">
                   {l.pieces !== undefined && <>{l.pieces} <PieceGuilde guilde={guilde} size={14} /></>}
@@ -462,7 +464,7 @@ const FormulaireVirement: React.FC<{
           >
             <option value="">{fr ? 'Choisir un membre' : 'Pick a member'}</option>
             {destinataires.map((m) => (
-              <option key={m} value={m}>{fiches[m]?.nom || (fr ? 'Un inconnu' : 'A stranger')}</option>
+              <option key={m} value={m}>{nomAffiche(fiches[m]) || (fr ? 'Un inconnu' : 'A stranger')}</option>
             ))}
           </select>
         </label>

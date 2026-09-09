@@ -12,7 +12,7 @@ import {
   lienGoogleAgenda, lienWebcal, lienIcsHttps,
   type Evenement, type Reponse,
 } from '../../firebase/guildeEvenements';
-import type { Membre } from '../../firebase/ordre';
+import { nomAffiche, type Membre } from '../../firebase/ordre';
 import type { Lang } from '../../content';
 
 // ─── Les événements ──────────────────────────────────────────────────
@@ -199,7 +199,7 @@ const Carte: React.FC<{
   const sigle = guilde.monnaie?.sigle || 'PCE';
   const prix = ev.prixPieces || 0;
   const mien = ev.rsvp?.[uid];
-  const auteur = fiches[ev.creePar]?.nom || (fr ? 'un chef' : 'a leader');
+  const auteur = nomAffiche(fiches[ev.creePar]) || (fr ? 'un chef' : 'a leader');
 
   const compte = Object.values(ev.rsvp || {});
   const oui = compte.filter((r) => r === 'oui').length;

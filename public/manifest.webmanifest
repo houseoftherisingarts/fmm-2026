@@ -1,0 +1,26 @@
+{
+  "name": "FMM Inventaire",
+  "short_name": "Inventaire",
+  "description": "Inventaire du Festival Médiéval de Montpellier, synchronisé en temps réel avec l'admin du site.",
+  "start_url": "/admin/inventaire",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0709",
+  "theme_color": "#0b0709",
+  "lang": "fr-CA",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

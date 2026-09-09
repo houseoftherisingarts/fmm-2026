@@ -1,17 +1,19 @@
 import React from 'react';
-import { Sparkles, ScrollText, MessagesSquare, CalendarDays, Store, Coins, Users } from 'lucide-react';
+import { Sparkles, ScrollText, MessagesSquare, CalendarDays, Vote, Store, FolderOpen, Coins, Users } from 'lucide-react';
 import { addLocale, ONGLETS_GUILDE_FR_EN } from '../../lib/locale';
 import type { Lang } from '../../content';
 
 // ─── Les onglets d'un groupe ─────────────────────────────────────────
-// Sept panneaux, un seul à la fois, l'onglet retenu dans l'adresse :
+// Neuf panneaux, un seul à la fois, l'onglet retenu dans l'adresse :
 // /{slug} ouvre le mur, /{slug}/tresor ouvre le trésor. La vitrine
 // vient en premier depuis le 6 septembre 2026 (addendum, ordre 8) :
-// c'est la seule pièce que le monde entier peut lire. Le patron visuel
+// c'est la seule pièce que le monde entier peut lire. Les sondages et
+// les dossiers sont arrivés avec la deuxième vague du même jour. Le patron visuel
 // est celui de la fiche de membre (witcher-tab, filet du bas), pour que
 // la maison entière garde la même grammaire.
 
-export type OngletGuilde = 'vitrine' | 'mur' | 'salon' | 'evenements' | 'marche' | 'tresor' | 'membres';
+export type OngletGuilde =
+  | 'vitrine' | 'mur' | 'salon' | 'evenements' | 'sondages' | 'marche' | 'dossiers' | 'tresor' | 'membres';
 
 interface Definition {
   cle: OngletGuilde;
@@ -28,7 +30,9 @@ export const ONGLETS_GUILDE: readonly Definition[] = [
   { cle: 'mur',        slug: '',            FR: 'Mur',        EN: 'Wall',     Icone: ScrollText },
   { cle: 'salon',      slug: 'salon',       FR: 'Salon',      EN: 'Chat',     Icone: MessagesSquare },
   { cle: 'evenements', slug: 'evenements',  FR: 'Événements', EN: 'Events',   Icone: CalendarDays },
+  { cle: 'sondages',   slug: 'sondages',    FR: 'Sondages',   EN: 'Polls',    Icone: Vote },
   { cle: 'marche',     slug: 'marche',      FR: 'Marché',     EN: 'Market',   Icone: Store },
+  { cle: 'dossiers',   slug: 'dossiers',    FR: 'Dossiers',   EN: 'Files',    Icone: FolderOpen },
   { cle: 'tresor',     slug: 'tresor',      FR: 'Trésor',     EN: 'Treasury', Icone: Coins },
   { cle: 'membres',    slug: 'membres',     FR: 'Membres',    EN: 'Members',  Icone: Users },
 ];

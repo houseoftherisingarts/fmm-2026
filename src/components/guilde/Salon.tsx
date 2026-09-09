@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MessagesSquare, Send, Trash2, Crown } from 'lucide-react';
 import { useUI } from '../../contexts/AppContext';
 import { addLocale } from '../../lib/locale';
-import { lireFiche, type Membre } from '../../firebase/ordre';
+import { lireFiche, nomAffiche, type Membre } from '../../firebase/ordre';
 import { motDeLaForme, motDuChef, type Guilde } from '../../firebase/guildes';
 import {
   envoyer, suivre, supprimer, LONGUEUR_MAX,
@@ -73,7 +73,7 @@ const Salon: React.FC<{
   useEffect(() => {
     if (!uid) return;
     void lireFiche(uid)
-      .then((f) => setMoi({ nom: f?.nom || (fr ? 'Un inconnu' : 'A stranger'), avatarUrl: f?.avatarUrl }))
+      .then((f) => setMoi({ nom: nomAffiche(f) || (fr ? 'Un inconnu' : 'A stranger'), avatarUrl: f?.avatarUrl }))
       .catch(() => setMoi({ nom: fr ? 'Un inconnu' : 'A stranger' }));
   }, [uid, fr]);
 
@@ -161,7 +161,7 @@ const Salon: React.FC<{
                   <p className="font-sans text-[9px] uppercase tracking-[0.18em] mb-1 truncate"
                      style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}>
                     <Link to={profil(m.uid)} className="hover:text-brass transition-colors">
-                      {mien ? (fr ? 'Vous' : 'You') : m.nom}
+                      {mien ? (fr ? 'Vous' : 'You') : nomAffiche(fiches[m.uid]) || m.nom}
                     </Link>
                     <span className="mx-1.5">·</span>
                     {ilYA(m.creeLe?.toMillis?.(), fr)}
@@ -237,7 +237,7 @@ const Salon: React.FC<{
           <ul className="space-y-1 max-h-[560px] overflow-y-auto pr-1">
             {guilde.membres.map((m) => {
               const f = fiches[m];
-              const nom = f?.nom || (fr ? 'Un inconnu' : 'A stranger');
+              const nom = nomAffiche(f) || (fr ? 'Un inconnu' : 'A stranger');
               const chef = guilde.admins.includes(m);
               return (
                 <li key={m}>

@@ -11,7 +11,7 @@
  * `bourses/{uid}` et n'est écrit que par crediter/debiter, et les
  * pièces de guilde, qui vivent dans `guildes/{id}/bourses/{uid}` et ne
  * valent que dans leur guilde. Le taux entre les deux suit le nombre
- * de membres actifs.
+ * de membres actifs et le poids du trésor de la guilde parmi les autres.
  */
 
 const crypto = require('crypto');
@@ -20,6 +20,8 @@ const path = require('path');
 const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
 const { onDocumentCreated, onDocumentUpdated, onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
+// Le déclencheur Auth n'existe qu'en v1, comme compteCree dans index.js.
+const functionsV1 = require('firebase-functions/v1');
 
 const REGION = 'us-central1';
 const DECLENCHEUR = { region: REGION, memory: '256MiB' };
@@ -33,11 +35,26 @@ const HISTORIQUE_MAX = 30;
 // téléphone et recopié à la main ne se trompe pas de caractère.
 const ALPHABET_CODE = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-/** Le taux du jour : Montpellois pour une pièce. 10 actifs donnent 0,5,
- *  40 la parité, 160 le maximum de 2. Jumelle de `tauxPour` côté client. */
-function calculerTaux(nbActifs) {
-  const brut = 0.5 * Math.sqrt((Number(nbActifs) || 0) / 10);
-  return Math.round(Math.min(2, Math.max(0.5, brut)) * 1000) / 1000;
+/** Le cours du jour, deuxième version (addendum 2, ordre 12) :
+ *  Montpellois pour une pièce, tiré des actifs et de la part que le
+ *  trésor de la guilde pèse dans la valeur de tous les trésors. Dix
+ *  actifs sans trésor donnent 0,5; quarante la parité; quarante avec
+ *  tout le trésor du site 1,5; le plafond est 3. Jumelle de `tauxPour`
+ *  côté client. */
+function calculerTauxV2(nbActifs, partTresor) {
+  const brut = 0.5 * Math.sqrt((Number(nbActifs) || 0) / 10) * (1 + 0.5 * (Number(partTresor) || 0));
+  return Math.round(Math.min(3, Math.max(0.5, brut)) * 1000) / 1000;
+}
+
+/** La valeur en M de chaque trésor au cours précédent, et la part de
+ *  chacun dans le total (zéro partout quand tout est vide). Prend une
+ *  liste de `{ id, tresor, taux }`, rend un objet par identifiant. */
+function repartirTresors(liste) {
+  const valeurs = liste.map((g) => ({ id: g.id, valeurTresorM: Math.round((Number(g.tresor) || 0) * (Number(g.taux) || 0) * 100) / 100 }));
+  const total = valeurs.reduce((s, v) => s + v.valeurTresorM, 0);
+  const parts = {};
+  for (const v of valeurs) parts[v.id] = { valeurTresorM: v.valeurTresorM, partTresor: total > 0 ? Math.round((v.valeurTresorM / total) * 10000) / 10000 : 0 };
+  return parts;
 }
 
 function enMillisecondes(valeur) {
@@ -96,13 +113,17 @@ const sansVide = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v
 
 /** Ce que la fiche montre au monde, dans guildesPubliques/{id}. Rien
  *  qui ouvre une porte (code d'invitation, demandes, listes de membres
- *  et de chefs, argent) n'y passe (addendum du 6 septembre, ordre 8). */
+ *  et de chefs, bourses) n'y passe (addendum du 6 septembre, ordre 8).
+ *  Le cours, les actifs et le trésor y passent depuis l'addendum 2
+ *  (ordre 12) : le bureau de change les lit sans être de la guilde. */
 function miroirPublic(g) {
   const m = g.monnaie || {};
   return sansVide({
     nom: g.nom, forme: g.forme, slug: g.slug, description: g.description,
     blason: g.blason, banniereUrl: g.banniereUrl, nbMembres: g.nbMembres,
     monnaie: g.monnaie ? sansVide({ nom: m.nom, sigle: m.sigle, glyphe: m.glyphe, imageUrl: m.imageUrl }) : undefined,
+    taux: g.taux, nbActifs: g.nbActifs, tresor: g.tresor, valeurTresorM: g.valeurTresorM, partTresor: g.partTresor,
+    tauxHistorique: Array.isArray(g.tauxHistorique) ? g.tauxHistorique.slice(-HISTORIQUE_MAX) : undefined,
   });
 }
 
@@ -161,7 +182,7 @@ function handlers(deps) {
     if (!Number.isFinite(n) || n <= 0) throw new HttpsError('invalid-argument', 'Montant invalide.');
     return n;
   }
-  const tauxDe = (g) => (typeof g.taux === 'number' ? g.taux : calculerTaux(g.nbActifs || 0));
+  const tauxDe = (g) => (typeof g.taux === 'number' ? g.taux : calculerTauxV2(g.nbActifs || 0, g.partTresor || 0));
 
   /** Les 100 pièces d'arrivée. L'identifiant du document de registre
    *  fait la garde : parti puis revenu, on ne les touche qu'une fois. */
@@ -176,26 +197,46 @@ function handlers(deps) {
     });
   }
 
-  /** Recalcule le taux et le nombre d'actifs. N'écrit que si quelque
-   *  chose bouge : la fiche est son propre déclencheur, et une écriture
-   *  inutile tournerait en rond. */
-  async function majTaux(guildeId, guilde) {
-    const uids = guilde.membres || [];
+  async function compterActifsDe(guildeId, guilde) {
     const vus = {};
-    await Promise.all(uids.map(async (uid) => {
+    await Promise.all((guilde.membres || []).map(async (uid) => {
       const [m, b] = await Promise.all([db.collection('membres').doc(uid).get(), bRef(guildeId, uid).get()]);
       vus[uid] = { vuLe: m.exists ? m.data().vuLe : null, maj: b.exists ? b.data().maj : null };
     }));
-    const nbActifs = compterActifs(guilde, vus);
-    const taux = calculerTaux(nbActifs);
-    if (guilde.taux === taux && guilde.nbActifs === nbActifs && guilde.nbMembres === uids.length) return null;
+    return compterActifs(guilde, vus);
+  }
+
+  /** Le cours de toutes les guildes, ensemble (addendum 2, ordre 12) :
+   *  la part de trésor de chacune dépend de la valeur des autres, donc
+   *  aucune ne se recalcule seule. N'écrit que les fiches qui bougent :
+   *  la fiche est son propre déclencheur, et une écriture inutile
+   *  tournerait en rond. */
+  // ponytail: relit toutes les guildes et tous leurs membres à chaque
+  // appel; un compteur d'actifs tenu par déclencheur si les guildes se
+  // comptent par centaines.
+  async function recalculerTousLesTaux() {
+    const snap = await db.collection('guildes').get();
+    const fiches = snap.docs.map((d) => ({ id: d.id, g: d.data() }));
+    const actifs = {};
+    await Promise.all(fiches.map(async ({ id, g }) => { actifs[id] = await compterActifsDe(id, g); }));
+    const parts = repartirTresors(fiches.map(({ id, g }) => ({ id, tresor: g.tresor || 0, taux: tauxDe(g) })));
     const jour = journeeFestival(Date.now());
-    const tauxHistorique = (guilde.tauxHistorique || [])
-      .filter((e) => e && e.jour !== jour)
-      .concat([{ jour, taux, nbActifs }])
-      .slice(-HISTORIQUE_MAX);
-    await gRef(guildeId).set({ taux, nbActifs, nbMembres: uids.length, tauxHistorique, maj: SV() }, { merge: true });
-    return { taux, nbActifs };
+    let touchees = 0;
+    for (const { id, g } of fiches) {
+      const { valeurTresorM, partTresor } = parts[id];
+      const nbActifs = actifs[id];
+      const nbMembres = (g.membres || []).length;
+      const taux = calculerTauxV2(nbActifs, partTresor);
+      if (g.taux === taux && g.nbActifs === nbActifs && g.nbMembres === nbMembres
+          && g.partTresor === partTresor && g.valeurTresorM === valeurTresorM) continue;
+      const tauxHistorique = (g.tauxHistorique || [])
+        .filter((e) => e && e.jour !== jour)
+        .concat([{ jour, taux, nbActifs, partTresor }])
+        .slice(-HISTORIQUE_MAX);
+      await gRef(id).set({ taux, nbActifs, nbMembres, partTresor, valeurTresorM, tauxHistorique, maj: SV() }, { merge: true });
+      touchees += 1;
+    }
+    return { guildes: fiches.length, touchees };
   }
 
   // ── Déclencheurs ───────────────────────────────────────────────────
@@ -207,9 +248,11 @@ function handlers(deps) {
     if (!guilde.codeInvitation) patch.codeInvitation = nouveauCode();
     if (typeof guilde.tresor !== 'number') patch.tresor = 0;
     if (typeof guilde.taux !== 'number') {
-      patch.taux = calculerTaux(1);
+      patch.taux = calculerTauxV2(1, 0);
       patch.nbActifs = 1;
-      patch.tauxHistorique = [{ jour: journeeFestival(Date.now()), taux: patch.taux, nbActifs: 1 }];
+      patch.partTresor = 0;
+      patch.valeurTresorM = 0;
+      patch.tauxHistorique = [{ jour: journeeFestival(Date.now()), taux: patch.taux, nbActifs: 1, partTresor: 0 }];
     }
     if (Object.keys(patch).length) await gRef(guildeId).set(patch, { merge: true });
     await donnerPiecesEntree(guildeId, uid, 'fondation');
@@ -222,15 +265,20 @@ function handlers(deps) {
     await crediter(uid, M_ENTREE, `guilde-fondee:${guildeId}`);
   }
 
+  /** Sur chaque mise à jour de la fiche : les nouveaux membres touchent
+   *  leurs bonus, puis le cours de toutes les guildes se refait dès que
+   *  la liste des membres ou le trésor a bougé (addendum 2, ordre 12).
+   *  Passer par le déclencheur plutôt que par chaque callable couvre
+   *  tous les mouvements de trésor d'un seul endroit. */
   async function entrees(guildeId, avant, apres) {
     const anciens = (avant && avant.membres) || [];
     const nouveaux = (apres && apres.membres) || [];
-    if ([...anciens].sort().join('\u0000') === [...nouveaux].sort().join('\u0000')) return;
-    for (const uid of nouveaux.filter((u) => !anciens.includes(u))) {
+    const membresBouges = [...anciens].sort().join('\u0000') !== [...nouveaux].sort().join('\u0000');
+    for (const uid of membresBouges ? nouveaux.filter((u) => !anciens.includes(u)) : []) {
       await crediter(uid, M_ENTREE, `guilde-rejointe:${guildeId}:${uid}`);
       await donnerPiecesEntree(guildeId, uid, 'entree');
     }
-    await majTaux(guildeId, apres);
+    if (membresBouges || ((avant && avant.tresor) || 0) !== ((apres && apres.tresor) || 0)) await recalculerTousLesTaux();
   }
 
   async function compterOui(guildeId, evId, evenement) {
@@ -251,11 +299,30 @@ function handlers(deps) {
     await ref.set(neuf);
   }
 
-  async function recalculerTaux() {
+  /** Un compte qui naît avec le courriel d'un fondateur attendu prend
+   *  sa place (addendum 2, ordre 9) : uid sur la ligne, entrée dans
+   *  membres[] (le déclencheur d'entrée paie les bonus) et dans admins[]
+   *  si la ligne dit chef. Rejouable : une ligne déjà rattachée à ce
+   *  compte ne bouge plus. Rend les guildes touchées. */
+  // ponytail: balaie toutes les guildes, Firestore ne filtre pas dans un
+  // tableau de maps; un champ fondateursCourriels[] indexé si les guildes
+  // se comptent par centaines.
+  async function fondateurParCourriel(uid, courriel) {
+    const mail = String(courriel || '').trim().toLowerCase();
+    if (!uid || !mail) return [];
+    const memeCourriel = (f) => f && String(f.courriel || '').trim().toLowerCase() === mail;
     const snap = await db.collection('guildes').get();
-    let touchees = 0;
-    for (const d of snap.docs) if (await majTaux(d.id, d.data())) touchees += 1;
-    return { guildes: snap.docs.length, touchees };
+    const touchees = [];
+    for (const d of snap.docs) {
+      const lignes = d.data().membresFondateurs || [];
+      if (!lignes.some((f) => memeCourriel(f) && f.uid !== uid)) continue;
+      const membresFondateurs = lignes.map((f) => (memeCourriel(f) ? { ...f, uid } : f));
+      const patch = { membresFondateurs, membres: FieldValue.arrayUnion(uid), maj: SV() };
+      if (membresFondateurs.some((f) => f.uid === uid && f.chef === true)) patch.admins = FieldValue.arrayUnion(uid);
+      await d.ref.set(patch, { merge: true });
+      touchees.push(d.id);
+    }
+    return touchees;
   }
 
   // ── Callables ──────────────────────────────────────────────────────
@@ -294,7 +361,7 @@ function handlers(deps) {
         const cumul = (b.changeJour === jour ? b.changeCumul : 0) + montant;
         if (cumul > PLAFOND_CHANGE_JOUR) throw new HttpsError('failed-precondition', `Plafond de ${PLAFOND_CHANGE_JOUR} pièces par jour atteint.`);
         const taux = tauxDe(guilde);
-        const frais = Math.round(montant * FRAIS_CHANGE);
+        const frais = Math.ceil(montant * FRAIS_CHANGE);
         const gainM = Math.floor((montant - frais) * taux);
         if (gainM <= 0) throw new HttpsError('invalid-argument', 'Ce montant ne vaut aucun Montpellois.');
         tx.set(bRef(guildeId, uid), { solde: b.solde - montant, depense: b.depense + montant, changeJour: jour, changeCumul: cumul, maj: SV() }, { merge: true });
@@ -381,6 +448,74 @@ function handlers(deps) {
       tx.set(bRef(guildeId, aUid), { solde: a.solde + montant, gagne: a.gagne + montant, maj: SV() }, { merge: true });
       tx.set(registre(guildeId).doc(), { type: 'tresor', de: 'tresor', a: aUid, pieces: montant, note, creeLe: SV() });
       return { tresor: tresor - montant };
+    });
+  }
+
+  /** Mes pièces d'une guilde contre celles d'une autre (addendum 2,
+   *  ordre 11) : A vers M au cours de A, 5 % de frais en pièces A au
+   *  trésor de A, puis M vers B au cours de B. Le Montpellois ne fait
+   *  que passer, alors les deux bourses bougent dans une seule
+   *  transaction. Le plafond du jour se compte du côté de A. */
+  async function changerCroise(uid, data) {
+    const deId = String(data.deGuildeId || '');
+    const versId = String(data.versGuildeId || '');
+    const montant = entier(data.montant);
+    if (!deId || !versId || deId === versId) throw new HttpsError('invalid-argument', 'Choisissez deux guildes différentes.');
+    const jour = journeeFestival(Date.now());
+    return db.runTransaction(async (tx) => {
+      const [deSnap, versSnap, bDeSnap, bVersSnap] = await Promise.all([
+        tx.get(gRef(deId)), tx.get(gRef(versId)), tx.get(bRef(deId, uid)), tx.get(bRef(versId, uid)),
+      ]);
+      const de = exigeGuilde(deSnap);
+      const vers = exigeGuilde(versSnap);
+      exigeMembre(de, uid);
+      exigeMembre(vers, uid);
+      const bDe = bourseGuilde(bDeSnap);
+      const bVers = bourseGuilde(bVersSnap);
+      if (bDe.solde < montant) throw new HttpsError('failed-precondition', 'Pas assez de pièces.');
+      const cumul = (bDe.changeJour === jour ? bDe.changeCumul : 0) + montant;
+      if (cumul > PLAFOND_CHANGE_JOUR) throw new HttpsError('failed-precondition', `Plafond de ${PLAFOND_CHANGE_JOUR} pièces par jour atteint.`);
+      const coursDe = tauxDe(de);
+      const coursVers = tauxDe(vers);
+      const frais = Math.ceil(montant * FRAIS_CHANGE);
+      const montpellois = Math.floor((montant - frais) * coursDe);
+      const pieces = Math.floor(montpellois / coursVers);
+      if (pieces <= 0) throw new HttpsError('invalid-argument', 'Ce montant ne vaut aucune pièce là-bas.');
+      tx.set(bRef(deId, uid), { solde: bDe.solde - montant, depense: bDe.depense + montant, changeJour: jour, changeCumul: cumul, maj: SV() }, { merge: true });
+      tx.set(gRef(deId), { tresor: (de.tresor || 0) + frais, maj: SV() }, { merge: true });
+      tx.set(bRef(versId, uid), { solde: bVers.solde + pieces, gagne: bVers.gagne + pieces, maj: SV() }, { merge: true });
+      tx.set(registre(deId).doc(), { type: 'change', de: uid, a: 'monnaie', pieces: montant, montpellois, taux: coursDe, autreGuildeId: versId, autreGuildeNom: vers.nom || '', creeLe: SV() });
+      tx.set(registre(versId).doc(), { type: 'change', de: 'monnaie', a: uid, pieces, montpellois, taux: coursVers, autreGuildeId: deId, autreGuildeNom: de.nom || '', creeLe: SV() });
+      return { soldePiecesDe: bDe.solde - montant, soldePiecesVers: bVers.solde + pieces, piecesRecues: pieces, montpellois, tauxDe: coursDe, tauxVers: coursVers };
+    });
+  }
+
+  /** Une fortune de trésor à trésor (addendum 2, ordre 11) : chef ou
+   *  équipe de la guilde qui donne, conversion aux deux cours, sans
+   *  frais, une ligne `transfert` dans chaque registre. */
+  async function tresorTransferer(uid, data) {
+    const deId = String(data.deGuildeId || '');
+    const versId = String(data.versGuildeId || '');
+    const montant = entier(data.montant);
+    const note = String(data.note || '').slice(0, 200);
+    if (!deId || !versId || deId === versId) throw new HttpsError('invalid-argument', 'Choisissez deux guildes différentes.');
+    return db.runTransaction(async (tx) => {
+      const [deSnap, versSnap] = await Promise.all([tx.get(gRef(deId)), tx.get(gRef(versId))]);
+      const de = exigeGuilde(deSnap);
+      const vers = exigeGuilde(versSnap);
+      await exigeChefOuEquipe(de, uid);
+      const tresor = de.tresor || 0;
+      if (tresor < montant) throw new HttpsError('failed-precondition', 'Le trésor est trop bas.');
+      const coursDe = tauxDe(de);
+      const coursVers = tauxDe(vers);
+      const montpellois = Math.floor(montant * coursDe);
+      const pieces = Math.floor(montpellois / coursVers);
+      if (pieces <= 0) throw new HttpsError('invalid-argument', 'Ce montant ne vaut aucune pièce là-bas.');
+      tx.set(gRef(deId), { tresor: tresor - montant, maj: SV() }, { merge: true });
+      tx.set(gRef(versId), { tresor: (vers.tresor || 0) + pieces, maj: SV() }, { merge: true });
+      tx.set(registre(deId).doc(), { type: 'transfert', de: 'tresor', a: 'monnaie', pieces: montant, montpellois, taux: coursDe, note, autreGuildeId: versId, autreGuildeNom: vers.nom || '', creeLe: SV() });
+      tx.set(registre(versId).doc(), { type: 'transfert', de: 'monnaie', a: 'tresor', pieces, montpellois, taux: coursVers, note, autreGuildeId: deId, autreGuildeNom: de.nom || '', creeLe: SV() });
+      return { tresorDe: tresor - montant, tresorVers: (vers.tresor || 0) + pieces, pieces, montpellois, tauxDe: coursDe, tauxVers: coursVers };
     });
   }
 
@@ -489,8 +624,8 @@ function handlers(deps) {
   }
 
   return {
-    fondation, entrees, compterOui, miroir, estEquipe, recalculerTaux, majTaux, donnerPiecesEntree,
-    rejoindreParCode, nouveauCodeInvitation, changer, virement, tresorVerser,
+    fondation, entrees, compterOui, miroir, estEquipe, recalculerTousLesTaux, fondateurParCourriel, donnerPiecesEntree,
+    rejoindreParCode, nouveauCodeInvitation, changer, changerCroise, virement, tresorVerser, tresorTransferer,
     acheterAuSouk, rsvpPayant, rattacherFondateur, ics,
   };
 }
@@ -511,13 +646,16 @@ module.exports = (deps) => {
     guildeEvenementOui: onDocumentWritten({ document: 'guildes/{id}/evenements/{evId}', ...DECLENCHEUR }, (e) => h.compterOui(
       e.params.id, e.params.evId, e.data.after.exists ? e.data.after.data() : null,
     )),
-    guildeRecalculerTaux: onSchedule({ region: REGION, schedule: '0 4 * * *', timeZone: 'America/Toronto', memory: '256MiB', retryCount: 0 }, () => h.recalculerTaux()),
+    guildeFondateurCourriel: functionsV1.region(REGION).auth.user().onCreate((user) => h.fondateurParCourriel(user.uid, user.email)),
+    guildeRecalculerTaux: onSchedule({ region: REGION, schedule: '0 4 * * *', timeZone: 'America/Toronto', memory: '256MiB', retryCount: 0 }, () => h.recalculerTousLesTaux()),
     guildeIcs: onRequest({ region: REGION, memory: '256MiB' }, h.ics),
     guildeRejoindreParCode: appel(h.rejoindreParCode),
     guildeNouveauCode: appel(h.nouveauCodeInvitation),
     guildeChanger: appel(h.changer),
+    guildeChangerCroise: appel(h.changerCroise),
     guildeVirement: appel(h.virement),
     guildeTresorVerser: appel(h.tresorVerser),
+    guildeTresorTransferer: appel(h.tresorTransferer),
     guildeAcheterAuSouk: appel(h.acheterAuSouk),
     guildeRsvpPayant: appel(h.rsvpPayant),
     guildeRattacherFondateur: appel(h.rattacherFondateur),
@@ -527,7 +665,8 @@ module.exports = (deps) => {
 // Pour test-guildes.js : les fonctions pures et les gestionnaires nus,
 // sans l'enveloppe Cloud Functions.
 module.exports.handlers = handlers;
-module.exports.calculerTaux = calculerTaux;
+module.exports.calculerTauxV2 = calculerTauxV2;
+module.exports.repartirTresors = repartirTresors;
 module.exports.compterActifs = compterActifs;
 module.exports.monnaieParDefaut = monnaieParDefaut;
 module.exports.miroirPublic = miroirPublic;

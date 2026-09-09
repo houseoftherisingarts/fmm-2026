@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, MessageCircle, Award, Users, Sparkles, Swords, Dices, User as UserIcon } from 'lucide-react';
+import { Bell, MessageCircle, Award, Users, Sparkles, Swords, Dices, Shield, User as UserIcon } from 'lucide-react';
 import { suivreNotifications, marquerNotifsVues, type EtatNotifs, type GenreNotif } from '../../firebase/notifications';
 import { addLocale } from '../../lib/locale';
 
@@ -12,7 +12,7 @@ import { addLocale } from '../../lib/locale';
 // à côté, avec son propre compteur, pour aller droit à la boîte.
 
 const ICONE: Record<GenreNotif, React.ComponentType<{ size?: number }>> = {
-  message: MessageCircle, amitie: Users, badge: Award, page: Sparkles, defi: Swords, tour: Dices,
+  message: MessageCircle, amitie: Users, badge: Award, page: Sparkles, defi: Swords, tour: Dices, guilde: Shield,
 };
 
 const TEMOIN: EtatNotifs = {
@@ -68,7 +68,7 @@ const Cloche: React.FC<{ uid: string; lang: 'FR' | 'EN'; variante?: 'espace' | '
     // Ouvrir la cloche, c'est avoir vu : les badges et les pages
     // s'effacent au prochain passage, les messages restent jusqu'à
     // lecture, les demandes jusqu'à réponse.
-    if (suite && !temoin && uid && etat.notifs.some((n) => n.genre === 'badge' || n.genre === 'page')) {
+    if (suite && !temoin && uid && etat.notifs.some((n) => n.genre === 'badge' || n.genre === 'page' || n.genre === 'guilde')) {
       const dejaVues = etat.notifs.filter((n) => n.genre === 'page').length ? pagesEnCours : [];
       void marquerNotifsVues(uid, dejaVues).catch(() => { /* hors ligne */ });
     }

@@ -27,12 +27,15 @@ import Membres from '../components/guilde/Membres';
 import Salon from '../components/guilde/Salon';
 import Evenements from '../components/guilde/Evenements';
 import Marche from '../components/guilde/Marche';
+import Sondages from '../components/guilde/Sondages';
+import Dossiers from '../components/guilde/Dossiers';
 
 // ─── La fiche d'un groupe ────────────────────────────────────────────
 // Alex, 2026-08-27 : l'en-tête, les membres et la file des demandes.
 // Depuis le 6 septembre 2026 la page vit sous l'adresse du groupe
-// (/vestrvegirvikingarclan) et se lit en sept panneaux : la vitrine, le
-// mur, le salon, les événements, le marché, le trésor et les membres.
+// (/vestrvegirvikingarclan) et se lit en neuf panneaux : la vitrine, le
+// mur, le salon, les événements, les sondages, le marché, les dossiers,
+// le trésor et les membres.
 // Le composant accepte la guilde déjà résolue par GuildeParSlug, pour
 // ne pas la relire une seconde fois au montage.
 //
@@ -522,7 +525,7 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
             </section>
           )}
 
-          {/* ── Les sept panneaux ── */}
+          {/* ── Les neuf panneaux ── */}
           <Onglets actif={onglet} lang={lang} onChoisir={allerA} />
 
           <div id={`panneau-guilde-${onglet}`} role="tabpanel" aria-labelledby={`onglet-guilde-${onglet}`}>
@@ -536,7 +539,13 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
             {onglet === 'evenements' && (estMembre
               ? <Evenements guilde={guilde} uid={user.uid} estChef={estChef} peutGerer={peutGerer} fiches={fichesRef.current} />
               : reserve)}
+            {onglet === 'sondages' && (estMembre
+              ? <Sondages guilde={guilde} uid={user.uid} estChef={estChef} peutGerer={peutGerer} />
+              : reserve)}
             {onglet === 'marche' && (estMembre ? <Marche guilde={guilde} uid={user.uid} estChef={estChef} /> : reserve)}
+            {onglet === 'dossiers' && (estMembre
+              ? <Dossiers guilde={guilde} uid={user.uid} estChef={estChef} peutGerer={peutGerer} />
+              : reserve)}
             {onglet === 'tresor' && (estMembre
               ? <Tresor guilde={guilde} uid={user.uid} peutGerer={peutGerer} lang={lang} fiches={fichesRef.current} />
               : reserve)}

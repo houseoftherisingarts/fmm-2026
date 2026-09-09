@@ -6,7 +6,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { addLocale } from '../../lib/locale';
-import { lireFiche } from '../../firebase/ordre';
+import { lireFiche, nomAffiche } from '../../firebase/ordre';
 import type { Guilde } from '../../firebase/guildes';
 import { TYPES_ACCEPTES } from '../../firebase/photosPubliques';
 import {
@@ -236,7 +236,7 @@ const Composeur: React.FC<{ guildeId: string; uid: string; fr: boolean }> = ({ g
       const fiche = await lireFiche(uid).catch(() => null);
       await publier(guildeId, {
         uid,
-        nom: fiche?.nom || user?.displayName || (fr ? 'Un inconnu' : 'A stranger'),
+        nom: nomAffiche(fiche) || user?.displayName || (fr ? 'Un inconnu' : 'A stranger'),
         avatarUrl: fiche?.avatarUrl || user?.photoURL || undefined,
       }, { type, titre, texte, fichier: fichier || undefined, lien, duree }, setProgression);
       setTitre(''); setTexte(''); setLien(''); setDuree(''); setFichier(null);

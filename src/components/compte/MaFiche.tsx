@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useBadges } from '../../contexts/BadgesContext';
 import { Link } from 'react-router-dom';
 import { Save, Users, Check } from 'lucide-react';
@@ -7,15 +7,16 @@ import { useAuth } from '../../contexts/AuthContext';
 import { addLocale } from '../../lib/locale';
 import { hueFor } from '../../firebase/publicProfile';
 import {
-  lireFiche, publierFiche, STATS_VIDES, type Membre, type StatsMembre,
-  EDITIONS_FESTIVAL, ANNEES_POUR_VETERAN,
+  lireFiche, publierFiche, definirPseudo, pseudoPropre, PSEUDO_MAX, STATS_VIDES,
+  type Membre, type StatsMembre, EDITIONS_FESTIVAL, ANNEES_POUR_VETERAN,
 } from '../../firebase/ordre';
 
 // ─── Ma fiche de l'Ordre ────────────────────────────────────────────
 // Ce que les autres membres voient de nous dans le registre. La fiche
 // se publie toute seule dès la première visite (nom + teinte), et se
 // complète ici : ville, devise, et cinq aptitudes qu'on se donne
-// soi-même, pour le plaisir (Alex, 2026-08-23).
+// soi-même, pour le plaisir (Alex, 2026-08-23). Depuis le 6 septembre
+// 2026, le pseudo aussi : le nom que la personne porte dans les guildes.
 
 const CHAMPS: Array<[keyof StatsMembre, string, string]> = [
   ['force', 'Force', 'Strength'],
@@ -31,6 +32,9 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const { gagnerBadge } = useBadges();
   const [fiche, setFiche] = useState<Membre | null>(null);
   const [etat, setEtat] = useState<'lecture' | 'idle' | 'ecrit' | 'ok'>('lecture');
+  // Le pseudo tel qu'il est écrit dans Firestore : il ne part que s'il change.
+  const pseudoEcrit = useRef('');
+  const [erreurPseudo, setErreurPseudo] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -38,7 +42,7 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     const nom = user.displayName?.trim() || (fr ? 'Un inconnu' : 'A stranger');
     lireFiche(user.uid).then(async (m) => {
       if (!vivant) return;
-      if (m) { setFiche(m); setEtat('idle'); return; }
+      if (m) { pseudoEcrit.current = m.pseudo || ''; setFiche(m); setEtat('idle'); return; }
       // Première visite : la fiche entre au registre avec le strict
       // minimum. Jamais le courriel, la collection est lue par tous les
       // membres connectés.
@@ -58,7 +62,12 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     setFiche((f) => (f ? { ...f, stats: { ...(f.stats || STATS_VIDES), [cle]: v } } : f));
 
   const enregistrer = async () => {
-    setEtat('ecrit');
+    setEtat('ecrit'); setErreurPseudo(null);
+    const pseudo = pseudoPropre(fiche.pseudo || '');
+    if (pseudo !== pseudoEcrit.current) {
+      try { await definirPseudo(user.uid, pseudo); pseudoEcrit.current = pseudo; }
+      catch (e) { setErreurPseudo(e instanceof Error ? e.message : String(e)); }
+    }
     // La photo et le nom ne se règlent plus ici : ils viennent du profil,
     // au-dessus, et la fiche les reçoit de là (Alex, 2026-08-23).
     await publierFiche(user.uid, {
@@ -95,6 +104,20 @@ const MaFiche: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       </p>
 
       <div className="space-y-3 mb-6">
+        {/* Le pseudo : le nom porté dans les guildes et en tête de la fiche
+            publique, le vrai nom en petit dessous (addendum 2, ordre 10). */}
+        <div>
+          <input className={champ} style={champStyle}
+                 value={fiche.pseudo || ''} maxLength={PSEUDO_MAX}
+                 onChange={(e) => setFiche({ ...fiche, pseudo: e.target.value })}
+                 placeholder={fr ? 'Un pseudo, si vous en portez un dans les guildes' : 'A nickname, if you carry one in the guilds'} />
+          <p className="font-sans text-[10px] mt-1.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.45)' }}>
+            {fr
+              ? 'Il remplace votre nom dans les guildes et en tête de votre fiche. Votre vrai nom reste écrit dessous.'
+              : 'It stands in for your name in the guilds and at the top of your card. Your real name stays written below.'}
+          </p>
+          {erreurPseudo && <p role="alert" className="font-sans text-xs mt-1.5" style={{ color: '#E08A6E' }}>{erreurPseudo}</p>}
+        </div>
         <input className={champ} style={champStyle}
                value={fiche.ville || ''} maxLength={60}
                onChange={(e) => setFiche({ ...fiche, ville: e.target.value })}

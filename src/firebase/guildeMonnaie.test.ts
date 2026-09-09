@@ -24,16 +24,24 @@ let essais = 0;
 const essai = (nom: string, fn: () => void) => { fn(); essais += 1; console.log(`  ✓ ${nom}`); };
 
 // ── Le taux ─────────────────────────────────────────────────────────
-essai('les trois ancres du contrat tombent juste', () => {
+essai('les ancres du contrat tombent juste', () => {
   assert.equal(tauxPour(10), 0.5);
   assert.equal(tauxPour(40), 1);
   assert.equal(tauxPour(160), 2);
+  assert.equal(tauxPour(360), 3);
 });
 
-essai('le taux reste borné entre un demi et deux', () => {
+essai('la part du trésor gonfle le cours comme calculerTauxV2', () => {
+  assert.equal(tauxPour(40, 1), 1.5);
+  assert.equal(tauxPour(1000, 1), 3);
+  assert.equal(tauxPour(10, 0), 0.5);
+  assert.equal(tauxPour(40, 2), 1.5);
+});
+
+essai('le taux reste borné entre un demi et trois', () => {
   assert.equal(tauxPour(0), 0.5);
   assert.equal(tauxPour(1), 0.5);
-  assert.equal(tauxPour(10000), 2);
+  assert.equal(tauxPour(10000), 3);
   assert.equal(tauxPour(-5), 0.5);
 });
 
