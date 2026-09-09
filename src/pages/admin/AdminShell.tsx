@@ -98,7 +98,7 @@ export const NAV: NavItem[] = [
   { id: 'concours',   label: 'Concours William', icon: Gift,           group: 'Nourriture et Bar' },
   // Le container en U : qui prend quoi, où ça s'en va, quand ça
   // revient (Alex, 2026-09-08).
-  { id: 'inventaire', label: 'Inventaire du container', icon: Boxes, group: 'Nourriture et Bar' },
+  { id: 'inventaire', label: 'Inventaire',      icon: Boxes,           group: 'Nourriture et Bar' },
 
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
   // Les places du terrain de camping, par catégorie (Alex, 2026-09-07).

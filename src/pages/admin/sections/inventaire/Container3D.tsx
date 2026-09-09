@@ -28,7 +28,7 @@ const Y_NIVEAU: Record<Niveau, number> = { 1: 1.78, 2: 1.2, 3: 0.62, 4: 0.02 };
 const BRASS = '#B08D3A';
 const BRASS_HI = '#E4C776';
 const BLUSH = '#D87B8E';
-const STEEL = '#22303F';
+const STEEL = '#2E3E52';
 
 interface Case { code: string; section: Section; niveau: Niveau; profondeur: Profondeur; pos: [number, number, number]; taille: [number, number] }
 
@@ -172,7 +172,7 @@ const Scene: React.FC<Props & { orbite: React.MutableRefObject<{ yaw: number; pi
   };
 
 const Container3D: React.FC<Props> = (props) => {
-  const orbite = useRef({ yaw: 0.35, pitch: 0.08, zoom: 1 });
+  const orbite = useRef({ yaw: 0.22, pitch: 0.16, zoom: 0.95 });
   const drag = useRef<{ x: number; y: number } | null>(null);
   const [survol, setSurvol] = useState<string | null>(null);
   const compteSurvol = useMemo(() => (survol ? props.comptes[survol] : null), [survol, props.comptes]);
@@ -200,21 +200,23 @@ const Container3D: React.FC<Props> = (props) => {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         onPointerMissed={() => props.onSelect(null)}
       >
-        <ambientLight intensity={0.7} color="#F4EFE3" />
-        <pointLight position={[0, 2.2, 2.4]} intensity={9} color="#E8B86A" distance={12} decay={1.6} castShadow />
-        <pointLight position={[0, 2.0, -2.2]} intensity={4} color="#9FB7D6" distance={9} decay={1.8} />
+        <ambientLight intensity={1.1} color="#F4EFE3" />
+        <hemisphereLight args={['#DCE6F2', '#2A1E10', 0.9]} />
+        <pointLight position={[0, 2.2, 2.4]} intensity={14} color="#E8B86A" distance={14} decay={1.5} castShadow />
+        <pointLight position={[0, 2.1, -1.6]} intensity={8} color="#B9CCE6" distance={10} decay={1.6} />
+        <pointLight position={[0, 1.4, 5.5]} intensity={6} color="#F4EFE3" distance={12} decay={1.6} />
         <Scene {...props} orbite={orbite} onHover={setSurvol} />
       </Canvas>
       <div className="pointer-events-none absolute left-3 top-3 flex gap-2 font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
         <span>CG à gauche</span><span>·</span><span>CF au fond</span><span>·</span><span>CD à droite</span>
       </div>
-      <div className="pointer-events-none absolute right-3 top-3 font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
+      <div className="pointer-events-none absolute right-3 bottom-3 font-sans text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--admin-text-mute)' }}>
         Vue de la porte
       </div>
-      <div className="pointer-events-none absolute left-3 bottom-3 font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>
+      <div className="pointer-events-none absolute left-3 bottom-3 right-32 font-sans text-xs" style={{ color: 'var(--admin-text-soft)' }}>
         {survol
           ? <><b style={{ color: 'var(--admin-accent)' }}>{survol}</b> · {compteSurvol?.total ?? 0} objet{(compteSurvol?.total ?? 0) > 1 ? 's' : ''}{compteSurvol?.sortis ? `, ${compteSurvol.sortis} sorti${compteSurvol.sortis > 1 ? 's' : ''}` : ''}</>
-          : 'Glissez pour tourner, molette pour zoomer, cliquez une case pour filtrer.'}
+          : 'Glissez pour tourner, molette pour zoomer, cliquez une case.'}
       </div>
     </div>
   );

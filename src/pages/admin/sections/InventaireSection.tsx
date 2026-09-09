@@ -46,8 +46,8 @@ const PlanContainer: React.FC<{ comptes: Record<string, { total: number; sortis:
             className="w-full text-left mb-2 font-sans uppercase tracking-[0.25em] text-[10px] font-semibold"
             style={{ color: selection === section ? 'var(--admin-accent)' : 'var(--admin-text-soft)' }}
           >
-            {section} · {LIBELLE_SECTION[section].replace('Container ', '')}
-            {libre?.total ? <span className="ml-2 normal-case tracking-normal" style={{ color: 'var(--admin-text-mute)' }}>({libre.total} sans tablette)</span> : null}
+            {section} · {LIBELLE_SECTION[section].replace('Container ', '').replace('du fond', 'fond')}
+            {libre?.total ? <span className="block normal-case tracking-normal" style={{ color: 'var(--admin-text-mute)' }}>{libre.total} sans tablette</span> : null}
           </button>
           <div className="grid gap-1" style={{ gridTemplateColumns: 'auto repeat(4, minmax(0, 1fr))' }}>
             <span />
