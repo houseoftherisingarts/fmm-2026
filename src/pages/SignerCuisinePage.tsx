@@ -22,12 +22,32 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 // l'entente sans avoir à fouiller une conversation Messenger. La page
 // le dit à la personne avant qu'elle signe. Page absente des menus.
 
-const PDF_URL = '/contrats/entente-cuisine-2026.pdf';
+// Une même page sert plusieurs ententes : les cuisiniers (défaut) et le
+// kiosque de pizza de Philippe Landry (/signer-kiosque, 9 septembre).
+export interface EntenteASigner {
+  pdfUrl: string;
+  contrat: string;
+  titreSeo: string;
+  descriptionSeo: string;
+  intro: string;
+  titreSignature: string;
+  prefixeFichier: string;
+}
+
+const ENTENTE_CUISINE: EntenteASigner = {
+  pdfUrl: '/contrats/entente-cuisine-2026.pdf',
+  contrat: CONTRAT_CUISINE,
+  titreSeo: "Signer l'entente de cuisine",
+  descriptionSeo: 'Signature de l\'entente de prestation des cuisiniers du Festival Médiéval de Montpellier.',
+  intro: 'Trois gestes : lisez l\'entente, écrivez votre nom, signez avec votre doigt. Le document signé se renvoie ensuite dans la conversation Messenger, et une copie se dépose au même moment dans le dossier de l\'équipe du festival.',
+  titreSignature: 'Signature du cuisinier ou de la cuisinière',
+  prefixeFichier: 'entente-cuisine',
+};
 
 // ── L'entente elle-même, rendue page par page dans la page web ──────
 // Le cuisinier doit VOIR ce qu'il signe avant de signer (Alex, 29 août).
 // pdfjs dessine chaque page du PDF sur un canvas empilé, pleine largeur.
-const LecteurEntente: React.FC = () => {
+const LecteurEntente: React.FC<{ pdfUrl: string }> = ({ pdfUrl }) => {
   const boiteRef = useRef<HTMLDivElement>(null);
   const [etat, setEtat] = useState<'charge' | 'ok' | 'erreur'>('charge');
 
@@ -35,7 +55,7 @@ const LecteurEntente: React.FC = () => {
     let vivant = true;
     (async () => {
       try {
-        const doc = await pdfjsLib.getDocument({ url: PDF_URL }).promise;
+        const doc = await pdfjsLib.getDocument({ url: pdfUrl }).promise;
         if (!vivant || !boiteRef.current) return;
         const largeur = boiteRef.current.clientWidth;
         for (let n = 1; n <= doc.numPages; n++) {
@@ -70,14 +90,15 @@ const LecteurEntente: React.FC = () => {
       )}
       {etat === 'erreur' && (
         <p className="font-editorial text-sm mt-3" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>
-          L'aperçu n'a pas pu se charger : le bouton « Lire l'entente de prestation » ci-dessus ouvre le document complet.
+          L'aperçu n'a pas pu se charger : le bouton « Lire l'entente au complet » ci-dessus ouvre le document complet.
         </p>
       )}
     </div>
   );
 };
 
-const SignerCuisinePage: React.FC = () => {
+const SignerCuisinePage: React.FC<{ entente?: EntenteASigner }> = ({ entente = ENTENTE_CUISINE }) => {
+  const { pdfUrl, contrat, titreSeo, descriptionSeo, intro, titreSignature, prefixeFichier } = entente;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [nom, setNom] = useState('');
   const [aSigne, setASigne] = useState(false);
@@ -141,7 +162,7 @@ const SignerCuisinePage: React.FC = () => {
     if (!nom.trim() || !aSigne) { setEtat('erreur'); return; }
     setEtat('travail');
     try {
-      const source = await fetch(PDF_URL).then((r) => r.arrayBuffer());
+      const source = await fetch(pdfUrl).then((r) => r.arrayBuffer());
       const doc = await PDFDocument.load(source);
       const pngData = canvasRef.current!.toDataURL('image/png');
       const png = await doc.embedPng(pngData);
@@ -149,7 +170,7 @@ const SignerCuisinePage: React.FC = () => {
       const page = doc.addPage([612, 396]);
       const encre = rgb(0.14, 0.08, 0.02);
       page.drawRectangle({ x: 0, y: 0, width: 612, height: 396, color: rgb(0.956, 0.925, 0.847) });
-      page.drawText('Signature du cuisinier ou de la cuisinière', { x: 54, y: 330, size: 16, color: encre });
+      page.drawText(titreSignature, { x: 54, y: 330, size: 16, color: encre });
       page.drawText(`Nom : ${nom.trim()}`, { x: 54, y: 296, size: 12, color: encre });
       const quand = new Date().toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'short' });
       page.drawText(`Signé le ${quand}`, { x: 54, y: 276, size: 12, color: encre });
@@ -171,7 +192,7 @@ const SignerCuisinePage: React.FC = () => {
   };
 
   const nomFichier = () =>
-    `entente-cuisine-${nom.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.pdf`;
+    `${prefixeFichier}-${nom.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.pdf`;
 
   // Feuille de partage du téléphone : la personne choisit Messenger et
   // le PDF signé retombe dans la conversation. Repli : téléchargement.
@@ -185,7 +206,7 @@ const SignerCuisinePage: React.FC = () => {
     // conversation, et le bouton reste réessayable.
     if (copie !== 'ok' && copie !== 'envoi') {
       setCopie('envoi');
-      deposerContratSigne(CONTRAT_CUISINE, nom, pdfSigne)
+      deposerContratSigne(contrat, nom, pdfSigne)
         .then(() => setCopie('ok'))
         .catch(() => setCopie('erreur'));
     }
@@ -207,7 +228,7 @@ const SignerCuisinePage: React.FC = () => {
 
   return (
     <>
-      <SEO title="Signer l'entente de cuisine" description="Signature de l'entente de prestation des cuisiniers du Festival Médiéval de Montpellier." noindex />
+      <SEO title={titreSeo} description={descriptionSeo} noindex />
       <div className="min-h-screen px-5 pt-24 pb-20 max-w-xl mx-auto">
         <Eyebrow tone="amber" className="mb-4 inline-flex items-center gap-3">
           <span aria-hidden className="h-px w-8" style={{ background: 'var(--color-amber-glow)' }} />
@@ -216,22 +237,20 @@ const SignerCuisinePage: React.FC = () => {
         <DisplayTitle size="lg" glow className="mb-5">Signer l'entente</DisplayTitle>
 
         <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-6">
-          Trois gestes : lisez l'entente, écrivez votre nom, signez avec votre doigt.
-          Le document signé se renvoie ensuite dans la conversation Messenger, et une
-          copie se dépose au même moment dans le dossier de l'équipe du festival.
+          {intro}
         </p>
 
         <a
-          href={PDF_URL}
+          href={pdfUrl}
           target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[12px] mb-8"
           style={{ color: 'var(--color-amber-glow)' }}
         >
           <BookOpen size={15} />
-          Lire l'entente de prestation
+          Lire l'entente au complet
         </a>
 
-        <LecteurEntente />
+        <LecteurEntente pdfUrl={pdfUrl} />
 
         <GildedFrame tone="amber" active className="block">
           <div className="caravan-glass p-6 space-y-5">

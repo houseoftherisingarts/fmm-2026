@@ -26,9 +26,12 @@ export const MAX_OCTETS = 10 * 1024 * 1024;
 
 /** Identifiant de l'entente signée. Une entente par slug. */
 export const CONTRAT_CUISINE = 'cuisine-2026';
+/** L'entente d'exploitation du kiosque de pizza (Philippe Landry). */
+export const CONTRAT_KIOSQUE = 'kiosque-pizza-2026';
 
 export const NOMS_CONTRATS: Record<string, string> = {
   [CONTRAT_CUISINE]: 'Entente de cuisine 2026',
+  [CONTRAT_KIOSQUE]: 'Entente kiosque pizza 2026',
 };
 
 export interface ContratSigne {
