@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
 // ─── Le grimoire de l'année de la Peste ─────────────────────────────
 // Le jeu se joue dans un registre. Le livre s'ouvre une fois à
@@ -81,12 +81,14 @@ export const Encre: React.FC<EncreProps> = ({
       variants={{ ecrite: { transition: { delayChildren: delai, staggerChildren: vitesse } } }}
     >
       {mots.map((mot, m) => (
-        <span key={`${m}-${mot}`} aria-hidden style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
-          {Array.from(mot).map((c, i) => (
-            <motion.span key={`${i}-${c}`} style={{ display: 'inline-block' }} variants={lettre}>{c}</motion.span>
-          ))}
-          {m < mots.length - 1 && <motion.span style={{ display: 'inline-block' }} variants={lettre}>{' '}</motion.span>}
-        </span>
+        <React.Fragment key={`${m}-${mot}`}>
+          <span aria-hidden style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+            {Array.from(mot).map((c, k) => (
+              <motion.span key={`${k}-${c}`} style={{ display: 'inline-block' }} variants={lettre}>{c}</motion.span>
+            ))}
+          </span>
+          {m < mots.length - 1 ? ' ' : null}
+        </React.Fragment>
       ))}
     </Balise>
   );
@@ -101,6 +103,8 @@ interface GrimoireProps {
   folio?: string;
   /** Le registre de la page de gauche : une ligne par question déjà tranchée. */
   registre?: { romain: string; marque: boolean }[];
+  /** Le verdict s'écrit plus gros que les questions, comme un sceau. */
+  grand?: boolean;
   /** Appelé quand le livre a fini de s'ouvrir. */
   onOuvert?: () => void;
 }
@@ -109,7 +113,7 @@ interface GrimoireProps {
  * La scène. Le livre s'ouvre, puis sert de page pour tout le reste du
  * jeu : la vidéo garde sa dernière image, donc rien ne saute à la fin.
  */
-export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre, onOuvert }) => {
+export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre, grand, onOuvert }) => {
   const reduire = useReducedMotion();
   const video = useRef<HTMLVideoElement>(null);
 
@@ -168,16 +172,23 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
               demande de la place, donc il n'apparaît qu'à partir du
               format tablette. */}
           {registre && registre.length > 0 && (
-            <div className="hidden sm:block absolute" style={{ left: '11%', top: '17%', width: '28%', height: '58%' }}>
-              <div className="grid grid-cols-5 gap-x-[6cqw] gap-y-[1.1cqw]" style={{ fontSize: 'clamp(7px, 1.05cqw, 13px)' }}>
+            <div className="hidden sm:block absolute" style={{ left: '15%', top: '26%', width: '26%' }}>
+              <p aria-hidden className="font-display text-center mb-[1.6cqw]"
+                 style={{ color: ENCRE_PALE, fontSize: 'clamp(7px, 1.05cqw, 12px)', letterSpacing: '0.34em' }}>
+                REGISTRE
+              </p>
+              <div className="grid grid-cols-3 gap-x-[1.4cqw] gap-y-[1.5cqw] justify-items-center"
+                   style={{ fontSize: 'clamp(9px, 1.5cqw, 17px)' }}>
                 {registre.map((l, i) => (
                   <motion.span
                     key={l.romain}
-                    className="font-display tabular-nums"
-                    style={{ color: l.marque ? ENCRE : 'rgba(120, 96, 70, 0.32)' }}
+                    className="font-display tabular-nums leading-none"
+                    style={{ color: l.marque ? ENCRE : 'rgba(126, 102, 74, 0.3)' }}
                     initial={false}
-                    animate={l.marque ? { opacity: 1, filter: 'blur(0px)' } : { opacity: 0.55, filter: 'blur(0.4px)' }}
-                    transition={{ duration: 0.5, delay: l.marque ? 0.05 * (i % 5) : 0 }}
+                    animate={l.marque
+                      ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
+                      : { opacity: 0.5, filter: 'blur(0.5px)', scale: 0.94 }}
+                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: l.marque ? 0.03 * (i % 3) : 0 }}
                   >
                     {l.romain}
                   </motion.span>
@@ -191,8 +202,16 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
               sur un téléphone, où découper en colonnes rendrait le
               texte illisible. */}
           <div aria-live="polite" className="contents">
-            <div className="sm:hidden absolute inset-0 flex items-center justify-center px-[11%] text-center">
-              <div className="w-full">
+            <div className="sm:hidden absolute inset-0 flex items-center justify-center px-[9%] text-center">
+              {/* Sur un téléphone, les deux pages sont trop étroites pour
+                  tenir la question chacune de leur côté : elle passe donc
+                  au milieu, et un lavis de vélin efface la reliure sous
+                  les lettres pour que rien ne se perde dans le pli. */}
+              <div className="relative w-full px-[6%] py-[5%]">
+                <div aria-hidden className="absolute inset-0 rounded-[10px]" style={{
+                  background: 'radial-gradient(ellipse 62% 58% at 50% 50%, rgba(240, 226, 200, 0.9) 0%, rgba(238, 223, 195, 0.72) 55%, rgba(238, 223, 195, 0) 100%)',
+                }} />
+                <div className="relative">
                 {folio && (
                   <Encre
                     as="span" texte={folio} cle={`fm-${cle}`} vitesse={0.05}
@@ -203,12 +222,13 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
                 <Encre
                   texte={texte} cle={`m-${cle}`} delai={folio ? 0.35 : 0}
                   className="font-editorial leading-snug"
-                  style={{ fontSize: 'clamp(11px, 3.4cqw, 19px)' }}
+                  style={{ fontSize: grand ? 'clamp(20px, 7cqw, 34px)' : 'clamp(12px, 3.9cqw, 20px)' }}
                 />
+                </div>
               </div>
             </div>
 
-            <div className="hidden sm:block absolute text-center" style={{ left: '48%', top: '18%', width: '34%' }}>
+            <div className="hidden sm:block absolute text-center" style={{ left: '51%', top: '23%', width: '28%' }}>
               {folio && (
                 <Encre
                   as="span" texte={folio} cle={`fd-${cle}`} vitesse={0.05}
@@ -219,7 +239,7 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
               <Encre
                 texte={texte} cle={`d-${cle}`} delai={folio ? 0.35 : 0}
                 className="font-editorial leading-snug"
-                style={{ fontSize: 'clamp(12px, 2.3cqw, 25px)' }}
+                style={{ fontSize: grand ? 'clamp(22px, 4.4cqw, 48px)' : 'clamp(12px, 2.3cqw, 25px)' }}
               />
             </div>
           </div>

@@ -238,8 +238,9 @@ const PlaceClanPage: React.FC = () => {
           <div className="space-y-8">
             <Grimoire
               cle={`v-${v.fonction}`}
-              folio="LE REGISTRE TRANCHE"
+              folio="LE VERDICT"
               texte={v.titre}
+              grand
               registre={QUESTIONS.map((_, i) => ({ romain: romain(i + 1), marque: true }))}
             />
             <GildedFrame tone="amber" active className="block">
