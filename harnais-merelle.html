@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Banc d'essai · les bois du madrier de mérelle</title>
+  <style>
+    body { margin: 0; background: #0a0604; color: #e8ddc8; font: 12px/1.5 system-ui, sans-serif; }
+    .rangee { display: flex; flex-wrap: wrap; }
+    .bloc { width: 50vw; height: 100vh; position: relative; }
+    .bloc > .nom { position: absolute; top: 10px; left: 12px; z-index: 5;
+      letter-spacing: .18em; text-transform: uppercase; font-size: 10px;
+      background: rgba(0,0,0,.5); padding: 6px 10px; border-radius: 11px; }
+    .bloc > .scene { position: absolute; inset: 0; }
+  </style>
+</head>
+<body>
+  <div class="rangee" id="rangee"></div>
+  <script type="module">
+    // Banc d'essai réservé au développement : Vite ne sert cette page
+    // qu'en local et elle n'entre dans aucun build, dont l'entrée reste
+    // index.html. Elle existe pour REGARDER les deux bois du madrier
+    // sans passer par la page du jeu, qui exige un compte.
+    import { monterScene, HABILLAGES } from '/src/games/merelle/scene.ts';
+
+    // Une position de milieu de partie : des pions des deux camps, pour
+    // juger le contraste du bois ET des pièces en même temps.
+    const points = new Array(24).fill(0);
+    [0, 2, 6, 9, 14, 18, 21].forEach((p) => { points[p] = 1; });
+    [1, 4, 7, 11, 16, 19, 22].forEach((p) => { points[p] = 2; });
+
+    for (const nom of Object.keys(HABILLAGES)) {
+      const bloc = document.createElement('div');
+      bloc.className = 'bloc';
+      const titre = document.createElement('div');
+      titre.className = 'nom';
+      titre.textContent = `${nom} · ${HABILLAGES[nom].nom}`;
+      const hote = document.createElement('div');
+      hote.className = 'scene';
+      bloc.append(titre, hote);
+      document.getElementById('rangee').append(bloc);
+      const sc = monterScene(hote, nom);
+      sc.reinitialiser(points);
+      sc.attacherResize();
+      window[`scene_${nom}`] = sc;
+    }
+    window.__pret = true;
+  </script>
+</body>
+</html>

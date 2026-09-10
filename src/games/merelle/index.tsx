@@ -44,7 +44,10 @@ import {
 import { nomNiveau, NIVEAUX_POSSIBLES, type Niveau } from '../moteur/niveaux';
 import { nouveauPenseur, type Penseur } from '../moteur/penseur';
 import MerellePanneaux from '../../components/jeux/MerellePanneaux';
-import { monterScene, type SceneMerelle } from './scene';
+import {
+  monterScene, HABILLAGES, HABILLAGE_DEFAUT,
+  type SceneMerelle, type Habillage,
+} from './scene';
 
 type Mode = 'deux-joueurs' | 'ordinateur';
 
@@ -525,6 +528,17 @@ const MerellePage: React.FC = () => {
 
   const sceneRef = useRef<SceneMerelle | null>(null);
   const montageRef = useRef<HTMLDivElement>(null);
+
+  // Le bois du madrier. Le choix se garde d'une visite à l'autre : c'est
+  // un goût, pas un réglage de partie, donc il ne touche pas au règlement.
+  const [habillage, setHabillage] = useState<Habillage>(() => {
+    try {
+      const v = localStorage.getItem('fmm.merelle.habillage');
+      return v && v in HABILLAGES ? (v as Habillage) : HABILLAGE_DEFAUT;
+    } catch { return HABILLAGE_DEFAUT; }
+  });
+  const habillageRef = useRef(habillage);
+  habillageRef.current = habillage;
   const tableRef = useRef<HTMLDivElement>(null);
   const musiqueRef = useRef<BoutonMusiqueHandle>(null);
 
@@ -666,7 +680,7 @@ const MerellePage: React.FC = () => {
     if (!commencee) return;
     const el = montageRef.current;
     if (!el) return;
-    const sc = monterScene(el);
+    const sc = monterScene(el, habillageRef.current);
     sceneRef.current = sc;
     sc.reinitialiser(arbitreRef.current.jeu.points);
     const detacherEntrees = sc.attacherEntrees(surPoint);
@@ -678,6 +692,13 @@ const MerellePage: React.FC = () => {
       sceneRef.current = null;
     };
   }, [commencee, cle, surPoint]);
+
+  // Changer de bois ne remonte pas la scène : seules les deux textures
+  // du madrier se repeignent, et la partie continue.
+  useEffect(() => {
+    sceneRef.current?.poserHabillage(habillage);
+    try { localStorage.setItem('fmm.merelle.habillage', habillage); } catch { /* navigation privée */ }
+  }, [habillage]);
 
   // ── La surbrillance suit l'état et la main ───────────────────────
   useEffect(() => {
@@ -1205,6 +1226,28 @@ const MerellePage: React.FC = () => {
             {t.geste}
           </span>
         </div>
+        {/* ── Le bois du madrier ─────────────────────────────────── */}
+        {commencee && (
+          <div className="absolute bottom-20 left-3 md:left-6 z-20 flex items-center gap-1.5 rounded-[15px] border border-white/15 bg-black/45 backdrop-blur-md p-1.5">
+            {(Object.keys(HABILLAGES) as Habillage[]).map((nom) => (
+              <button
+                key={nom}
+                type="button"
+                onClick={() => setHabillage(nom)}
+                aria-pressed={habillage === nom}
+                title={HABILLAGES[nom].nom}
+                className={`px-2.5 py-1.5 rounded-[11px] font-sans text-[9px] uppercase tracking-[0.18em] transition-colors ${
+                  habillage === nom
+                    ? 'bg-brass/25 text-ivory border border-brass/50'
+                    : 'text-ivory-soft/70 hover:text-ivory border border-transparent'
+                }`}
+              >
+                {HABILLAGES[nom].nom}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* ── « Je ne sais pas quoi faire » ───────────────────────── */}
         {!fin.finie && (
           <BoiteAide

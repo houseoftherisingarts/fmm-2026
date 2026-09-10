@@ -34,6 +34,63 @@ const TEINTES: Record<Camp, number> = {
   2: 0x14100e, // chêne noirci, incrusté d'os
 };
 
+// ── Les habillages du madrier ────────────────────────────────────────
+// Alex, 2026-09-10 : « le board semble pas assez comme s'il avait été
+// fait dans un vrai outil, fais au moins deux skins pour ça ». Le
+// plateau se peint au canevas, donc un habillage n'est pas une image à
+// télécharger : c'est une essence de bois et une façon d'y poser les
+// lignes. Le chêne les creuse et les noircit, le noyer les incruste en
+// os, comme les vrais jeux de mérelle offerts au Moyen Âge.
+//
+// Le relief, lui, ne change pas d'un habillage à l'autre : la gravure a
+// la même profondeur, quel que soit le bois.
+
+export type Habillage = 'chene' | 'noyer';
+
+export interface Bois {
+  /** Ce que le joueur lit dans le sélecteur. */
+  nom: string;
+  fond: string; veine: string; repetition: number;
+  chantFond: string; chantVeine: string;
+  /** Le double filet du pourtour : demi-côté, largeur, teinte. */
+  filet: ReadonlyArray<readonly [number, number, string]>;
+  /** Le trait principal des alignements, et l'accent décalé à côté. */
+  trait: string; traitLarge: number;
+  accent: string; accentLarge: number;
+  /** La cupule, du centre vers le bord. */
+  cupule: readonly [string, string, string];
+  /** L'arête haute prend la lumière, l'arête basse reste dans l'ombre. */
+  cupuleHaut: string; cupuleBas: string;
+}
+
+export const HABILLAGES: Record<Habillage, Bois> = {
+  // Le madrier d'origine : chêne huilé, lignes creusées et noircies.
+  chene: {
+    nom: 'Chêne du festival',
+    fond: '#6d4a28', veine: '#2e1c08', repetition: 4,
+    chantFond: '#5a3b20', chantVeine: '#2a1809',
+    filet: [[3.34, 0.007, 'rgba(30,17,6,0.78)'], [3.46, 0.0035, 'rgba(30,17,6,0.6)']],
+    trait: 'rgba(28,16,7,0.85)', traitLarge: 0.008,
+    accent: 'rgba(214,175,120,0.30)', accentLarge: 0.0028,
+    cupule: ['rgba(46,28,11,0.52)', 'rgba(74,49,23,0.36)', 'rgba(116,84,47,0.14)'],
+    cupuleHaut: 'rgba(232,197,144,0.42)', cupuleBas: 'rgba(24,13,4,0.55)',
+  },
+  // Noyer sombre et filets d'os : le trait devient clair et large, et
+  // l'ombre fine passe à côté. Les cupules sont des pastilles d'os.
+  noyer: {
+    nom: 'Noyer et os',
+    fond: '#3b2415', veine: '#150b04', repetition: 3,
+    chantFond: '#311d10', chantVeine: '#120904',
+    filet: [[3.34, 0.0075, 'rgba(228,216,186,0.62)'], [3.46, 0.0035, 'rgba(14,8,3,0.72)']],
+    trait: 'rgba(230,219,190,0.74)', traitLarge: 0.0085,
+    accent: 'rgba(12,7,3,0.62)', accentLarge: 0.003,
+    cupule: ['rgba(226,214,184,0.78)', 'rgba(190,174,140,0.5)', 'rgba(96,80,54,0.16)'],
+    cupuleHaut: 'rgba(246,238,214,0.55)', cupuleBas: 'rgba(16,9,3,0.62)',
+  },
+};
+
+export const HABILLAGE_DEFAUT: Habillage = 'chene';
+
 export interface SceneMerelle {
   renderer: THREE.WebGLRenderer;
   /** Rend le point visé par ce clic, ou null si le clic tombe à côté. */
@@ -46,6 +103,8 @@ export interface SceneMerelle {
   /** Allume la table : le pion tenu, où il peut aller, et les pions
    *  adverses qu'on a le droit de retirer. */
   allumer(opts: { selection?: number | null; destinations?: number[]; retraits?: number[] }): void;
+  /** Change le bois du madrier sans rien casser de la partie en cours. */
+  poserHabillage(nom: Habillage): void;
   /** Branche la souris et le doigt. Rend la fonction de débranchement. */
   attacherEntrees(surPoint: (p: number) => void): () => void;
   attacherResize(): () => void;
@@ -75,9 +134,9 @@ const R_CUPULE = (S: number) => (0.31 / (DEMI * 2)) * S;
 
 /** Le dessus du plateau : le grain, les seize alignements gravés, et les
  *  vingt-quatre cupules avec leur ombre portée. */
-function dessusGrave(): THREE.CanvasTexture {
+function dessusGrave(bois: Bois): THREE.CanvasTexture {
   const S = 1024;
-  const c = grainDeChene(S, '#6d4a28', '#2e1c08', 4);
+  const c = grainDeChene(S, bois.fond, bois.veine, bois.repetition);
   const g = c.getContext('2d')!;
   const px = PX_DESSUS(S);
   const R = R_CUPULE(S);
@@ -86,10 +145,7 @@ function dessusGrave(): THREE.CanvasTexture {
 
   // Le double filet du pourtour : c'est ce qui fait un plateau taillé
   // pour être offert plutôt qu'une planche marquée à la va-vite.
-  for (const [u, largeur, teinte] of [
-    [3.34, 0.007, 'rgba(30,17,6,0.78)'],
-    [3.46, 0.0035, 'rgba(30,17,6,0.6)'],
-  ] as const) {
+  for (const [u, largeur, teinte] of bois.filet) {
     g.strokeStyle = teinte;
     g.lineWidth = S * largeur;
     g.strokeRect(px(-u), px(-u), px(u) - px(-u), px(u) - px(-u));
@@ -100,14 +156,14 @@ function dessusGrave(): THREE.CanvasTexture {
   for (const [a, b] of ARETES) {
     const [ax, az] = POSITIONS[a];
     const [bx, bz] = POSITIONS[b];
-    g.strokeStyle = 'rgba(28,16,7,0.85)';
-    g.lineWidth = S * 0.008;
+    g.strokeStyle = bois.trait;
+    g.lineWidth = S * bois.traitLarge;
     g.beginPath();
     g.moveTo(px(ax), px(az));
     g.lineTo(px(bx), px(bz));
     g.stroke();
-    g.strokeStyle = 'rgba(214,175,120,0.30)';
-    g.lineWidth = S * 0.0028;
+    g.strokeStyle = bois.accent;
+    g.lineWidth = S * bois.accentLarge;
     g.beginPath();
     g.moveTo(px(ax) - 2, px(az) - 2);
     g.lineTo(px(bx) - 2, px(bz) - 2);
@@ -121,20 +177,20 @@ function dessusGrave(): THREE.CanvasTexture {
     const cx = px(x);
     const cz = px(z);
     const grad = g.createRadialGradient(cx + R * 0.28, cz + R * 0.3, R * 0.05, cx, cz, R);
-    grad.addColorStop(0, 'rgba(46,28,11,0.52)');
-    grad.addColorStop(0.8, 'rgba(74,49,23,0.36)');
-    grad.addColorStop(1, 'rgba(116,84,47,0.14)');
+    grad.addColorStop(0, bois.cupule[0]);
+    grad.addColorStop(0.8, bois.cupule[1]);
+    grad.addColorStop(1, bois.cupule[2]);
     g.fillStyle = grad;
     g.beginPath();
     g.arc(cx, cz, R, 0, Math.PI * 2);
     g.fill();
     // L'arête haute prend la lumière, l'arête basse reste dans l'ombre.
-    g.strokeStyle = 'rgba(232,197,144,0.42)';
+    g.strokeStyle = bois.cupuleHaut;
     g.lineWidth = S * 0.0032;
     g.beginPath();
     g.arc(cx, cz, R, Math.PI * 1.08, Math.PI * 1.92);
     g.stroke();
-    g.strokeStyle = 'rgba(24,13,4,0.55)';
+    g.strokeStyle = bois.cupuleBas;
     g.beginPath();
     g.arc(cx, cz, R, Math.PI * 0.08, Math.PI * 0.92);
     g.stroke();
@@ -220,7 +276,7 @@ function positionDe(p: number, y = HAUT): THREE.Vector3 {
   return new THREE.Vector3(x * CELL, y, z * CELL);
 }
 
-export function monterScene(el: HTMLElement): SceneMerelle {
+export function monterScene(el: HTMLElement, habillage: Habillage = HABILLAGE_DEFAUT): SceneMerelle {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -377,7 +433,8 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   const cote = DEMI * 2 * CELL;
   const DESSUS_TABLE = -0.75;
 
-  const dessusTex = dessusGrave();
+  let bois = HABILLAGES[habillage] ?? HABILLAGES[HABILLAGE_DEFAUT];
+  const dessusTex = dessusGrave(bois);
   const reliefCanvas = reliefDuDessus();
   const normalesTex = carteNormales(reliefCanvas, 2.6);
   // Le même relief sert de carte de rugosité : le bois brut reste mat,
@@ -385,7 +442,7 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   const rugositeTex = new THREE.CanvasTexture(reliefCanvas);
   rugositeTex.anisotropy = 8;
 
-  const chantTex = new THREE.CanvasTexture(grainDeChene(512, '#5a3b20', '#2a1809', 3));
+  const chantTex = new THREE.CanvasTexture(grainDeChene(512, bois.chantFond, bois.chantVeine, 3));
   chantTex.colorSpace = THREE.SRGBColorSpace;
   chantTex.wrapS = chantTex.wrapT = THREE.RepeatWrapping;
   chantTex.repeat.set(3, 3);
@@ -845,6 +902,29 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   };
   boucle();
 
+  // Changer de bois repeint les deux seules textures qui en dépendent,
+  // le dessus gravé et le chant. La gravure garde son relief, donc ni la
+  // carte de normales ni celle de rugosité ne se refont, et la partie en
+  // cours ne s'aperçoit de rien.
+  const poserHabillage = (nom: Habillage) => {
+    const neufBois = HABILLAGES[nom];
+    if (!neufBois || neufBois === bois) return;
+    bois = neufBois;
+    const ancienDessus = matDessus.map;
+    const ancienChant = matChant.map;
+    matDessus.map = dessusGrave(bois);
+    const chant = new THREE.CanvasTexture(grainDeChene(512, bois.chantFond, bois.chantVeine, 3));
+    chant.colorSpace = THREE.SRGBColorSpace;
+    chant.wrapS = chant.wrapT = THREE.RepeatWrapping;
+    chant.repeat.set(3, 3);
+    chant.anisotropy = 8;
+    matChant.map = chant;
+    matDessus.needsUpdate = true;
+    matChant.needsUpdate = true;
+    ancienDessus?.dispose();
+    ancienChant?.dispose();
+  };
+
   const dispose = () => {
     vivant = false;
     cancelAnimationFrame(raf);
@@ -870,10 +950,10 @@ export function monterScene(el: HTMLElement): SceneMerelle {
     ombreTex.dispose();
     matDessus.dispose();
     matChant.dispose();
-    dessusTex.dispose();
+    matDessus.map?.dispose();
+    matChant.map?.dispose();
     normalesTex.dispose();
     rugositeTex.dispose();
-    chantTex.dispose();
     tableGeo.dispose();
     tableMat.dispose();
     boisTable.dispose();
@@ -888,6 +968,6 @@ export function monterScene(el: HTMLElement): SceneMerelle {
 
   return {
     renderer, pointSous, poser, deplacer, retirer, reinitialiser,
-    allumer, attacherEntrees, attacherResize, dispose,
+    allumer, poserHabillage, attacherEntrees, attacherResize, dispose,
   };
 }
