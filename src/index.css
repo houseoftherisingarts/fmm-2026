@@ -2711,3 +2711,31 @@ a:hover > .fmm-annee-carte::after {
 @media (prefers-reduced-motion: reduce) {
   .fmm-faq[open] .fmm-faq-reponse { animation: none; }
 }
+
+/* ─── Le grimoire plein écran du jeu de la Peste ─────────────────────
+   Le livre occupe l'écran, et tout ce que le jeu demande s'écrit sur le
+   vélin (Alex, 2026-09-10). Le plan garde le rapport de l'image pendant
+   qu'il couvre l'écran, ce qui permet de poser les zones de texte en
+   pourcentage du plan plutôt que du navigateur : les pages restent
+   alignées quelle que soit la fenêtre. */
+.grimoire-scene {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: rgb(11, 7, 5);
+  display: grid;
+  place-items: center;
+}
+.grimoire-plan {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: max(100%, calc(100dvh * 16 / 9));
+  transform: translateX(var(--grimoire-decalage, 0));
+  container-type: inline-size;
+}
+/* Écran plus haut que large : le plan glisse pour amener la page de
+   droite au centre, sinon la reliure mange l'espace d'écriture. */
+@media (max-aspect-ratio: 5 / 4) {
+  .grimoire-plan { --grimoire-decalage: -13%; }
+}

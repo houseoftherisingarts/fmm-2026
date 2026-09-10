@@ -2,12 +2,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
 // ─── Le grimoire de l'année de la Peste ─────────────────────────────
-// Le jeu se joue dans un registre. Le livre s'ouvre une fois à
-// l'arrivée (cinq secondes générées chez Higgsfield, puis la dernière
-// image reste à l'écran), et tout ce que le jeu demande s'inscrit
-// ensuite sur le vélin, lettre par lettre, comme une main qui écrit à
-// la plume (Alex, 2026-09-10). La page de gauche porte le registre des
-// réponses déjà données, la page de droite porte la question.
+// Le jeu se joue dans un registre, en plein écran. Le livre s'ouvre une
+// fois à l'arrivée (cinq secondes générées chez Higgsfield, puis la
+// dernière image reste), et tout ce que le jeu demande s'écrit ensuite
+// sur le vélin à l'encre, les réponses comprises : plus un seul bouton
+// de verre posé par-dessus la scène (Alex, 2026-09-10).
+//
+// Le plan garde le rapport de l'image pendant qu'il couvre l'écran (voir
+// .grimoire-plan dans index.css), donc les zones de texte se posent en
+// pourcentage du plan plutôt que de la fenêtre, et elles restent collées
+// aux pages du livre quelle que soit la taille de l'écran.
 //
 // Sous prefers-reduced-motion, le livre est ouvert d'emblée et le texte
 // s'affiche d'un coup : la scène tient, le mouvement disparaît.
@@ -17,11 +21,14 @@ const POSTER = '/jeux/grimoire/ferme.webp';
 const OUVERT = '/jeux/grimoire/ouvert.webp';
 
 /** L'encre du registre, telle qu'elle sèche sur le vélin. */
-export const ENCRE = 'rgba(54, 32, 17, 0.94)';
+export const ENCRE = 'rgba(50, 29, 15, 0.95)';
 export const ENCRE_PALE = 'rgba(96, 66, 40, 0.72)';
+export const ENCRE_ROUGE = 'rgba(126, 44, 30, 0.92)';
 
 const ROMAINS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
 export const romain = (n: number) => ROMAINS[n - 1] ?? String(n);
+
+// ── L'encre qui s'écrit ─────────────────────────────────────────────
 
 interface EncreProps {
   texte: string;
@@ -34,47 +41,37 @@ interface EncreProps {
   /** Change de valeur pour relancer l'écriture : une question chasse l'autre. */
   cle?: string | number;
   as?: 'p' | 'h2' | 'span' | 'div';
-  onFini?: () => void;
 }
+
+const LETTRE: Variants = {
+  seche: { opacity: 0, filter: 'blur(5px)', y: -1, color: ENCRE_PALE },
+  ecrite: {
+    opacity: 1, filter: 'blur(0px)', y: 0, color: ENCRE,
+    transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 /**
  * Le texte se dessine caractère par caractère. L'encre arrive pâle et
- * floue, s'étale, puis se fixe, comme la plume qui appuie et sèche.
+ * floue, s'étale, puis se fixe, comme la plume qui appuie et sèche. Les
+ * mots restent d'un bloc, sinon la ligne se couperait au milieu d'un mot.
  */
 export const Encre: React.FC<EncreProps> = ({
-  texte, className, style, delai = 0, vitesse = 0.022, cle, as = 'p', onFini,
+  texte, className, style, delai = 0, vitesse = 0.02, cle, as = 'p',
 }) => {
   const reduire = useReducedMotion();
-  // Les lettres s'animent une à une, mais chaque mot reste d'un bloc :
-  // sans ça, la ligne se coupe au milieu d'un mot (« d ira / otre »).
   const mots = useMemo(() => texte.split(' '), [texte]);
-  const nbLettres = useMemo(() => Array.from(texte).length, [texte]);
   const Balise = motion[as] as typeof motion.p;
-
-  useEffect(() => {
-    if (!onFini) return;
-    const duree = reduire ? 0 : (delai + nbLettres * vitesse + 0.45) * 1000;
-    const t = window.setTimeout(onFini, duree);
-    return () => window.clearTimeout(t);
-  }, [onFini, reduire, delai, nbLettres, vitesse]);
 
   if (reduire) {
     return <Balise className={className} style={{ color: ENCRE, ...style }}>{texte}</Balise>;
   }
 
-  const lettre: Variants = {
-    seche: { opacity: 0, filter: 'blur(5px)', y: -1, color: ENCRE_PALE },
-    ecrite: {
-      opacity: 1, filter: 'blur(0px)', y: 0, color: ENCRE,
-      transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
-
   return (
     <Balise
       key={cle}
       className={className}
-      style={{ color: ENCRE, ...style }}
+      style={{ color: ENCRE, hyphens: 'auto', overflowWrap: 'break-word', ...style }}
       aria-label={texte}
       initial="seche"
       animate="ecrite"
@@ -84,7 +81,7 @@ export const Encre: React.FC<EncreProps> = ({
         <React.Fragment key={`${m}-${mot}`}>
           <span aria-hidden style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
             {Array.from(mot).map((c, k) => (
-              <motion.span key={`${k}-${c}`} style={{ display: 'inline-block' }} variants={lettre}>{c}</motion.span>
+              <motion.span key={`${k}-${c}`} style={{ display: 'inline-block' }} variants={LETTRE}>{c}</motion.span>
             ))}
           </span>
           {m < mots.length - 1 ? ' ' : null}
@@ -94,26 +91,151 @@ export const Encre: React.FC<EncreProps> = ({
   );
 };
 
-interface GrimoireProps {
-  /** La question du moment, écrite sur la page de droite. */
+// ── Une ligne de la page sur laquelle on peut appuyer ───────────────
+
+interface ChoixProps {
   texte: string;
-  /** Change de valeur à chaque question pour relancer la plume. */
-  cle: string | number;
-  /** Le folio, écrit en romain au-dessus de la question. */
-  folio?: string;
-  /** Le registre de la page de gauche : une ligne par question déjà tranchée. */
-  registre?: { romain: string; marque: boolean }[];
-  /** Le verdict s'écrit plus gros que les questions, comme un sceau. */
-  grand?: boolean;
+  onClick: () => void;
+  /** La ligne retenue porte sa marque de plume. */
+  choisi?: boolean;
+  /** Le repère de marge : un chiffre romain, une lettre, un point. */
+  marge?: string;
+  delai?: number;
+  cle?: string | number;
+  /** Un choix mis en avant s'écrit plus gros, comme une entrée de titre. */
+  fort?: boolean;
+  /** Une ligne secondaire, écrite plus petit sous la première. */
+  sous?: string;
+}
+
+/**
+ * Une réponse écrite à l'encre sur la page. Le trait de plume se tire
+ * sous la ligne au survol, et la croix de marge reste quand la réponse
+ * est retenue.
+ */
+export const ChoixEncre: React.FC<ChoixProps> = ({
+  texte, onClick, choisi, marge, delai = 0, cle, fort, sous,
+}) => {
+  const reduire = useReducedMotion();
+  const [survol, setSurvol] = useState(false);
+  const actif = survol || !!choisi;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setSurvol(true)}
+      onMouseLeave={() => setSurvol(false)}
+      onFocus={() => setSurvol(true)}
+      onBlur={() => setSurvol(false)}
+      className="grimoire-choix block w-full text-left"
+      style={{ padding: '0.55cqw 0' }}
+    >
+      <span className="flex items-baseline gap-[1.2cqw]">
+        <motion.span
+          aria-hidden
+          className="font-display shrink-0 tabular-nums text-right"
+          style={{
+            color: choisi ? ENCRE_ROUGE : ENCRE_PALE,
+            fontSize: fort ? 'clamp(9px, 1.3cqw, 16px)' : 'clamp(8px, 1.1cqw, 14px)',
+            width: '2.2cqw',
+          }}
+          animate={{ opacity: actif ? 1 : 0.6 }}
+          transition={{ duration: 0.25 }}
+        >
+          {choisi ? '✕' : marge ?? '·'}
+        </motion.span>
+        <span className="block flex-1">
+          <Encre
+            as="span"
+            texte={texte}
+            cle={cle}
+            delai={delai}
+            vitesse={0.013}
+            className={fort ? 'font-display leading-snug' : 'font-editorial leading-snug'}
+            style={{
+              display: 'block',
+              fontSize: fort ? 'clamp(13px, 1.95cqw, 23px)' : 'clamp(11px, 1.5cqw, 18px)',
+            }}
+          />
+          {sous && (
+            <Encre
+              as="span"
+              texte={sous}
+              cle={`s-${cle}`}
+              delai={delai + 0.18}
+              vitesse={0.01}
+              className="font-editorial leading-snug"
+              style={{ display: 'block', marginTop: '0.2cqw', fontSize: 'clamp(9px, 1.15cqw, 14px)', color: ENCRE_PALE }}
+            />
+          )}
+        </span>
+      </span>
+      {/* Le trait de plume sous la ligne retenue ou survolée. */}
+      <motion.span
+        aria-hidden
+        className="block origin-left"
+        style={{
+          height: 1, marginTop: '0.3cqw', marginLeft: '3.4cqw',
+          background: choisi ? ENCRE_ROUGE : ENCRE_PALE,
+        }}
+        initial={false}
+        animate={{ scaleX: actif ? 1 : 0, opacity: actif ? (choisi ? 0.85 : 0.5) : 0 }}
+        transition={reduire ? { duration: 0 } : { duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      />
+    </button>
+  );
+};
+
+// ── Le folio, le titre de page et le registre de la marge ───────────
+
+export const Folio: React.FC<{ texte: string; cle?: string | number }> = ({ texte, cle }) => (
+  <Encre
+    as="span" texte={texte} cle={`folio-${cle ?? texte}`} vitesse={0.045}
+    className="font-display block text-center mb-[1.6cqw]"
+    style={{ color: ENCRE_PALE, fontSize: 'clamp(8px, 1.15cqw, 14px)', letterSpacing: '0.34em' }}
+  />
+);
+
+export const RegistreFolios: React.FC<{ lignes: { romain: string; marque: boolean }[] }> = ({ lignes }) => (
+  <div>
+    <p aria-hidden className="font-display text-center mb-[1.4cqw]"
+       style={{ color: ENCRE_PALE, fontSize: 'clamp(7px, 0.95cqw, 12px)', letterSpacing: '0.34em' }}>
+      REGISTRE
+    </p>
+    <div className="grid grid-cols-3 gap-x-[1.2cqw] gap-y-[1.3cqw] justify-items-center"
+         style={{ fontSize: 'clamp(9px, 1.4cqw, 17px)' }}>
+      {lignes.map((l, i) => (
+        <motion.span
+          key={l.romain}
+          className="font-display tabular-nums leading-none"
+          style={{ color: l.marque ? ENCRE : 'rgba(126, 102, 74, 0.3)' }}
+          initial={false}
+          animate={l.marque
+            ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
+            : { opacity: 0.5, filter: 'blur(0.5px)', scale: 0.94 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: l.marque ? 0.03 * (i % 3) : 0 }}
+        >
+          {l.romain}
+        </motion.span>
+      ))}
+    </div>
+  </div>
+);
+
+// ── La scène ────────────────────────────────────────────────────────
+
+interface GrimoireProps {
+  /** Ce qui s'écrit sur la page de gauche. Elle sort du cadre quand
+   *  l'écran est plus haut que large, donc rien d'indispensable ici. */
+  gauche?: React.ReactNode;
+  /** Ce qui s'écrit sur la page de droite : le cœur du jeu. */
+  droite: React.ReactNode;
   /** Appelé quand le livre a fini de s'ouvrir. */
   onOuvert?: () => void;
 }
 
-/**
- * La scène. Le livre s'ouvre, puis sert de page pour tout le reste du
- * jeu : la vidéo garde sa dernière image, donc rien ne saute à la fin.
- */
-export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre, grand, onOuvert }) => {
+export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) => {
   const reduire = useReducedMotion();
   const video = useRef<HTMLVideoElement>(null);
 
@@ -145,112 +267,38 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
   const statique = reduire || dejaVu || videoMorte;
 
   return (
-    <div
-      className="relative w-full rounded-[15px] overflow-hidden aspect-[4/3] sm:aspect-video"
-      style={{ background: 'rgb(11, 7, 5)', containerType: 'inline-size' }}
-    >
-      {statique ? (
-        <img src={OUVERT} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
-      ) : (
-        <video
-          ref={video} aria-hidden
-          className="absolute inset-0 w-full h-full object-cover"
-          src={VIDEO} poster={POSTER}
-          muted playsInline preload="auto"
-        />
-      )}
+    <div className="grimoire-scene" lang="fr">
+      <div className="grimoire-plan">
+        {statique ? (
+          <img src={OUVERT} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <video
+            ref={video} aria-hidden
+            className="absolute inset-0 w-full h-full object-cover"
+            src={VIDEO} poster={POSTER}
+            muted playsInline preload="auto"
+          />
+        )}
 
-      {/* Les bords se fondent dans le noir chaud du site plutôt que de
-          couper net, et le centre du vélin reste clair sous le texte. */}
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse 74% 60% at 50% 50%, rgba(0,0,0,0) 46%, rgba(10,5,7,0.5) 80%, rgba(10,5,7,0.9) 100%)',
-      }} />
+        {/* Les bords se fondent dans le noir chaud du site plutôt que de
+            couper net, et le centre du vélin reste clair sous l'encre. */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse 76% 66% at 50% 50%, rgba(0,0,0,0) 50%, rgba(10,5,7,0.4) 84%, rgba(10,5,7,0.88) 100%)',
+        }} />
 
-      {ouvert && (
-        <>
-          {/* Page de gauche : le registre des réponses déjà portées. Il
-              demande de la place, donc il n'apparaît qu'à partir du
-              format tablette. */}
-          {registre && registre.length > 0 && (
-            <div className="hidden sm:block absolute" style={{ left: '15%', top: '26%', width: '26%' }}>
-              <p aria-hidden className="font-display text-center mb-[1.6cqw]"
-                 style={{ color: ENCRE_PALE, fontSize: 'clamp(7px, 1.05cqw, 12px)', letterSpacing: '0.34em' }}>
-                REGISTRE
-              </p>
-              <div className="grid grid-cols-3 gap-x-[1.4cqw] gap-y-[1.5cqw] justify-items-center"
-                   style={{ fontSize: 'clamp(9px, 1.5cqw, 17px)' }}>
-                {registre.map((l, i) => (
-                  <motion.span
-                    key={l.romain}
-                    className="font-display tabular-nums leading-none"
-                    style={{ color: l.marque ? ENCRE : 'rgba(126, 102, 74, 0.3)' }}
-                    initial={false}
-                    animate={l.marque
-                      ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
-                      : { opacity: 0.5, filter: 'blur(0.5px)', scale: 0.94 }}
-                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: l.marque ? 0.03 * (i % 3) : 0 }}
-                  >
-                    {l.romain}
-                  </motion.span>
-                ))}
+        {ouvert && (
+          <>
+            {gauche && (
+              <div className="grimoire-page-gauche absolute" style={{ left: '11.5%', top: '19%', width: '27%' }}>
+                {gauche}
               </div>
+            )}
+            <div className="absolute" style={{ left: '50%', top: '17%', width: '31%' }}>
+              {droite}
             </div>
-          )}
-
-          {/* La question s'écrit sur la page de droite quand les deux
-              pages tiennent à l'écran, et au milieu de la double page
-              sur un téléphone, où découper en colonnes rendrait le
-              texte illisible. */}
-          <div aria-live="polite" className="contents">
-            <div lang="fr" className="sm:hidden absolute inset-0 flex items-center justify-center px-[9%] text-center">
-              {/* Sur un téléphone, les deux pages sont trop étroites pour
-                  tenir la question chacune de leur côté : elle passe donc
-                  au milieu, et un lavis de vélin efface la reliure sous
-                  les lettres pour que rien ne se perde dans le pli. */}
-              <div className="relative w-full px-[6%] py-[5%]">
-                <div aria-hidden className="absolute inset-0 rounded-[10px]" style={{
-                  background: 'radial-gradient(ellipse 62% 58% at 50% 50%, rgba(240, 226, 200, 0.9) 0%, rgba(238, 223, 195, 0.72) 55%, rgba(238, 223, 195, 0) 100%)',
-                }} />
-                <div className="relative">
-                {folio && (
-                  <Encre
-                    as="span" texte={folio} cle={`fm-${cle}`} vitesse={0.05}
-                    className="font-display block mb-[2.4cqw]"
-                    style={{ color: ENCRE_PALE, fontSize: 'clamp(9px, 2.4cqw, 15px)', letterSpacing: '0.34em' }}
-                  />
-                )}
-                <Encre
-                  texte={texte} cle={`m-${cle}`} delai={folio ? 0.35 : 0}
-                  className="font-editorial leading-snug"
-                  style={{
-                    fontSize: grand ? 'clamp(20px, 7cqw, 34px)' : 'clamp(12px, 3.9cqw, 20px)',
-                    hyphens: 'auto', overflowWrap: 'break-word',
-                  }}
-                />
-                </div>
-              </div>
-            </div>
-
-            <div className="hidden sm:block absolute text-center" lang="fr" style={{ left: '50.5%', top: '23%', width: '30%' }}>
-              {folio && (
-                <Encre
-                  as="span" texte={folio} cle={`fd-${cle}`} vitesse={0.05}
-                  className="font-display block mb-[1.4cqw]"
-                  style={{ color: ENCRE_PALE, fontSize: 'clamp(9px, 1.5cqw, 16px)', letterSpacing: '0.34em' }}
-                />
-              )}
-              <Encre
-                texte={texte} cle={`d-${cle}`} delai={folio ? 0.35 : 0}
-                className="font-editorial leading-snug"
-                style={{
-                  fontSize: grand ? 'clamp(22px, 4.4cqw, 48px)' : 'clamp(12px, 2.2cqw, 24px)',
-                  hyphens: 'auto', overflowWrap: 'break-word',
-                }}
-              />
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
