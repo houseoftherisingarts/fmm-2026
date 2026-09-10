@@ -45,19 +45,30 @@ export const Encre: React.FC<EncreProps> = ({
   texte, className, style, delai = 0, vitesse = 0.022, cle, as = 'p', onFini,
 }) => {
   const reduire = useReducedMotion();
-  const lettres = useMemo(() => Array.from(texte), [texte]);
+  // Les lettres s'animent une à une, mais chaque mot reste d'un bloc :
+  // sans ça, la ligne se coupe au milieu d'un mot (« d ira / otre »).
+  const mots = useMemo(() => texte.split(' '), [texte]);
+  const nbLettres = useMemo(() => Array.from(texte).length, [texte]);
   const Balise = motion[as] as typeof motion.p;
 
   useEffect(() => {
     if (!onFini) return;
-    const duree = reduire ? 0 : (delai + lettres.length * vitesse + 0.45) * 1000;
+    const duree = reduire ? 0 : (delai + nbLettres * vitesse + 0.45) * 1000;
     const t = window.setTimeout(onFini, duree);
     return () => window.clearTimeout(t);
-  }, [onFini, reduire, delai, lettres.length, vitesse]);
+  }, [onFini, reduire, delai, nbLettres, vitesse]);
 
   if (reduire) {
     return <Balise className={className} style={{ color: ENCRE, ...style }}>{texte}</Balise>;
   }
+
+  const lettre = {
+    seche: { opacity: 0, filter: 'blur(5px)', y: -1, color: ENCRE_PALE },
+    ecrite: {
+      opacity: 1, filter: 'blur(0px)', y: 0, color: ENCRE,
+      transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
 
   return (
     <Balise
@@ -69,21 +80,13 @@ export const Encre: React.FC<EncreProps> = ({
       animate="ecrite"
       variants={{ ecrite: { transition: { delayChildren: delai, staggerChildren: vitesse } } }}
     >
-      {lettres.map((c, i) => (
-        <motion.span
-          key={`${i}-${c}`}
-          aria-hidden
-          style={{ display: 'inline-block', whiteSpace: 'pre' }}
-          variants={{
-            seche: { opacity: 0, filter: 'blur(5px)', y: -1, color: ENCRE_PALE },
-            ecrite: {
-              opacity: 1, filter: 'blur(0px)', y: 0, color: ENCRE,
-              transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
-            },
-          }}
-        >
-          {c}
-        </motion.span>
+      {mots.map((mot, m) => (
+        <span key={`${m}-${mot}`} aria-hidden style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+          {Array.from(mot).map((c, i) => (
+            <motion.span key={`${i}-${c}`} style={{ display: 'inline-block' }} variants={lettre}>{c}</motion.span>
+          ))}
+          {m < mots.length - 1 && <motion.span style={{ display: 'inline-block' }} variants={lettre}>{' '}</motion.span>}
+        </span>
       ))}
     </Balise>
   );
