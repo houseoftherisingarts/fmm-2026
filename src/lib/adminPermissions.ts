@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire', 'affichage', 'demandeVexel',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire', 'livraison', 'affichage', 'demandeVexel',
   ],
 
   // Organisateurs: total access minus the future CA-only tab.
@@ -81,7 +81,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire', 'affichage',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'inventaire', 'livraison', 'affichage',
   ],
 
   // Super Bénévole: supervises normal bénévoles. Reads bénévole
@@ -100,7 +100,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
 
   // Kitchen: bar / food service, and the container inventory.
   kitchen: [
-    'dashboard', 'bar', 'inventaire',
+    'dashboard', 'bar', 'inventaire', 'livraison',
   ],
 };
 
