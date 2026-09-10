@@ -71,8 +71,10 @@ export const CarteDuSite: React.FC<{
           />
         </button>
 
-        {/* Les deux gestes possibles sur la carte : l'agrandir, l'emporter. */}
-        <span className="absolute bottom-3 right-3 md:bottom-6 md:right-6 flex items-center gap-2">
+        {/* Les deux gestes possibles sur la carte : l'agrandir, l'emporter.
+            Sur un téléphone, les deux boutons descendent sous l'image :
+            posés dessus, ils mangeaient le quart du terrain. */}
+        <span className="mt-2 pr-3 flex items-center justify-end gap-2 md:mt-0 md:pr-0 md:absolute md:bottom-6 md:right-6">
           <button
             type="button"
             onClick={() => setZoom(true)}

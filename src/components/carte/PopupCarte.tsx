@@ -44,13 +44,20 @@ const PopupCarte: React.FC = () => {
   const pageMuette = chemin === '/'
     || PAGES_SANS_POPUP.some((p) => chemin.startsWith(p));
 
+  // Échappatoire de développement, comme la porte de l'espace client :
+  // `?carte=1` déplie le pop-up sans compte, pour vérifier le rendu à
+  // l'écran. Le test disparaît du bundle de production.
+  const apercu = import.meta.env.DEV
+    && new URLSearchParams(window.location.search).get('carte') === '1';
+
   useEffect(() => {
+    if (apercu) { setAPrise(false); return; }
     if (!user?.uid) { setAPrise(null); return; }
     try {
       if (localStorage.getItem(CLE_LOCALE) === user.uid) { setAPrise(true); return; }
     } catch { /* navigation privée */ }
     return suivreMesAvis(user.uid, (ids) => setAPrise(ids.includes(CARTE_AVIS_ID)));
-  }, [user?.uid]);
+  }, [user?.uid, apercu]);
 
   // Un battement avant d'ouvrir : la page finit d'arriver, et la carte
   // se déplie ensuite plutôt que de sauter à la figure.

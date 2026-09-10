@@ -190,9 +190,14 @@ export const Parchment: React.FC<{
 
 // Inclinaison déterministe par id, dans [-3.5, +3.5] degrés : épinglé à
 // la main, mais qui ne resaute pas à chaque rendu.
+//
+// Le hachage peut sortir négatif, et `%` garde le signe en JavaScript :
+// sans la valeur absolue, un avis pouvait basculer jusqu'à -10,4 degrés
+// et pousser ses lignes hors du parchemin. Vu le 2026-09-10 sur l'avis
+// de la carte, qui tombait à -8,04.
 export function seedTilt(seed: string): number {
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
-  const t = ((h % 71) / 71) * 7 - 3.5;
+  const t = ((Math.abs(h) % 71) / 71) * 7 - 3.5;
   return Math.round(t * 100) / 100;
 }

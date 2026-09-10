@@ -60,6 +60,7 @@ import BadgeVerifie from './BadgeVerifie';
 import ReglagesProfil from './ReglagesProfil';
 import EspaceVip from './EspaceVip';
 import AlertesPanel from './AlertesPanel';
+import MaCarte from '../carte/MaCarte';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
 // derrière lui, donc il arrive à part, quand l'onglet s'ouvre.
@@ -83,12 +84,12 @@ export type ModeFiche = 'prive' | 'public';
 // Alex, 2026-08-28 : « Profil » absorbe le fil et les photos, « Badges »
 // absorbe la collection. Les anciens paramètres d'URL restent valides,
 // voir REDIRECTIONS_ONGLET plus bas.
-const ONGLETS_PRIVE  = ['profil', 'souk', 'commerce', 'badges', 'jeux', 'messages', 'boutique'] as const;
+const ONGLETS_PRIVE  = ['profil', 'carte', 'souk', 'commerce', 'badges', 'jeux', 'messages', 'boutique'] as const;
 const ONGLETS_PUBLIC = ['profil', 'souk', 'commerce', 'badges', 'jeux'] as const;
 type Onglet = typeof ONGLETS_PRIVE[number];
 
 const ICONE_ONGLET: Record<Onglet, React.ComponentType<{ size?: number; className?: string }>> = {
-  profil: UserIcon, souk: Tag, commerce: Store, badges: Award, jeux: Swords,
+  profil: UserIcon, carte: MapPin, souk: Tag, commerce: Store, badges: Award, jeux: Swords,
   messages: MessageCircle, boutique: ShoppingBag,
 };
 
@@ -1042,6 +1043,13 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
               </div>
             )}
 
+            {/* Ma carte : la carte du site, à demeure dans l'espace de la
+                personne (Alex, 2026-09-10). Le même avis que le pop-up
+                d'arrivée et que le parchemin du babillard. */}
+            {onglet === 'carte' && prive && compte && (
+              <MaCarte uid={compte.uid} lang={lang} />
+            )}
+
             {/* Badges absorbe l'ancienne Collection : les avis décrochés
                 paraissent sous les badges (Alex, 2026-08-28). */}
             {onglet === 'badges' && (
@@ -1359,7 +1367,7 @@ const FR = {
   // absorbe la collection. Plus de possessif nulle part : les mots
   // tiennent sur une ligne, en bureau comme en mobile.
   onglet: {
-    profil: 'Profil', souk: 'Souk', commerce: 'Commerce', badges: 'Coffre et badges', jeux: 'Jeux',
+    profil: 'Profil', carte: 'Ma carte', souk: 'Souk', commerce: 'Commerce', badges: 'Coffre et badges', jeux: 'Jeux',
     messages: 'Boîte de réception', boutique: 'Boutique',
   } as Record<Onglet, string>,
   ongletPublic: {
@@ -1417,7 +1425,7 @@ const EN: typeof FR = {
   demandeEnvoyee: 'Request sent', accepterAmi: 'Accept friendship', dejaAmi: 'Friend',
   onglets: 'Sections of the member card', retour: 'Back',
   onglet: {
-    profil: 'Profile', souk: 'Souk', commerce: 'Business', badges: 'Vault and badges', jeux: 'Games',
+    profil: 'Profile', carte: 'My map', souk: 'Souk', commerce: 'Business', badges: 'Vault and badges', jeux: 'Games',
     messages: 'Inbox', boutique: 'Shop',
   } as Record<Onglet, string>,
   ongletPublic: {

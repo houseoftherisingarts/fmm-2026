@@ -2751,6 +2751,15 @@ a:hover > .fmm-annee-carte::after {
   --page-droite-w: 27%;
   --page-haut: 17%;
   --page-hauteur: 56%;
+  /* Les corps de texte du vélin, réglés à part sur téléphone où la page
+     est plus courte. */
+  --t-folio: clamp(8px, 1.15cqw, 14px);
+  --t-question: clamp(12px, 1.72cqw, 22px);
+  --t-reponse: clamp(11px, 1.42cqw, 18px);
+  --t-sous: clamp(8px, 1.02cqw, 13px);
+  --t-fort: clamp(13px, 1.9cqw, 23px);
+  --t-marge: clamp(8px, 1.1cqw, 14px);
+  --t-verdict: clamp(22px, 3.6cqw, 46px);
 }
 /* Écran plus haut que large : le plan glisse pour amener la page de
    droite au centre, sinon la reliure mange l'espace d'écriture et le
@@ -2762,12 +2771,19 @@ a:hover > .fmm-annee-carte::after {
    et le dessous. */
 @media (max-aspect-ratio: 5 / 4) {
   .grimoire-plan {
-    width: min(calc(100dvw * 2.55), calc(100dvh * 16 / 9));
+    width: min(calc(100dvw * 3.45), calc(100dvh * 16 / 9));
     --grimoire-decalage: -15.25%;
-    --page-droite-x: 50%;
-    --page-droite-w: 30%;
-    --page-haut: 19%;
-    --page-hauteur: 51%;
+    --page-droite-x: 52.7%;
+    --page-droite-w: 25%;
+    --page-haut: 17%;
+    --page-hauteur: 55%;
+    --t-folio: 10px;
+    --t-question: 16px;
+    --t-reponse: 13.5px;
+    --t-sous: 11px;
+    --t-fort: 18px;
+    --t-marge: 10px;
+    --t-verdict: 30px;
   }
   .grimoire-page-gauche { display: none; }
   /* Le doigt vise plus large que la souris. */
@@ -2778,6 +2794,6 @@ a:hover > .fmm-annee-carte::after {
 .grimoire-choix { background: none; border: 0; cursor: pointer; }
 /* Six compagnies avec leur devise tiennent mal sur une page courte :
    la liste se resserre plutôt que de sortir du filet. */
-.grimoire-serre .grimoire-choix { padding-top: 0.35cqw; padding-bottom: 0.35cqw; }
+.grimoire-serre .grimoire-choix { padding-top: 0.15cqw; padding-bottom: 0.15cqw; }
 .grimoire-choix:focus { outline: none; }
 .grimoire-choix:focus-visible { outline: 1px dashed rgba(96, 66, 40, 0.8); outline-offset: 3px; }

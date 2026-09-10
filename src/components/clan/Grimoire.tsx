@@ -104,6 +104,8 @@ interface ChoixProps {
   cle?: string | number;
   /** Un choix mis en avant s'écrit plus gros, comme une entrée de titre. */
   fort?: boolean;
+  /** Une entrée seule se centre sur la page, sans colonne de marge. */
+  centre?: boolean;
   /** Une ligne secondaire, écrite plus petit sous la première. */
   sous?: string;
 }
@@ -114,7 +116,7 @@ interface ChoixProps {
  * est retenue.
  */
 export const ChoixEncre: React.FC<ChoixProps> = ({
-  texte, onClick, choisi, marge, delai = 0, cle, fort, sous,
+  texte, onClick, choisi, marge, delai = 0, cle, fort, sous, centre,
 }) => {
   const reduire = useReducedMotion();
   const [survol, setSurvol] = useState(false);
@@ -131,31 +133,31 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
       className="grimoire-choix block w-full text-left"
       style={{ padding: '0.55cqw 0' }}
     >
-      <span className="flex items-baseline gap-[1.2cqw]">
-        <motion.span
+      <span className={centre ? 'flex items-baseline justify-center' : 'flex items-baseline gap-[1.2cqw]'}>
+        {!centre && <motion.span
           aria-hidden
           className="font-display shrink-0 tabular-nums text-right"
           style={{
             color: choisi ? ENCRE_ROUGE : ENCRE_PALE,
-            fontSize: fort ? 'clamp(9px, 1.3cqw, 16px)' : 'clamp(8px, 1.1cqw, 14px)',
+            fontSize: 'var(--t-marge)',
             width: '2.2cqw',
           }}
           animate={{ opacity: actif ? 1 : 0.6 }}
           transition={{ duration: 0.25 }}
         >
           {choisi ? '✕' : marge ?? '·'}
-        </motion.span>
-        <span className="block flex-1">
+        </motion.span>}
+        <span className={centre ? 'block' : 'block flex-1'}>
           <Encre
             as="span"
             texte={texte}
             cle={cle}
             delai={delai}
             vitesse={0.013}
-            className={fort ? 'font-display leading-snug' : 'font-editorial leading-snug'}
+            className={`${fort ? 'font-display' : 'font-editorial'} leading-snug${centre ? ' text-center' : ''}`}
             style={{
               display: 'block',
-              fontSize: fort ? 'clamp(13px, 1.9cqw, 23px)' : 'clamp(11px, 1.42cqw, 18px)',
+              fontSize: fort ? 'var(--t-fort)' : 'var(--t-reponse)',
             }}
           />
           {sous && (
@@ -166,7 +168,7 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
               delai={delai + 0.18}
               vitesse={0.01}
               className="font-editorial leading-snug"
-              style={{ display: 'block', marginTop: '0.2cqw', fontSize: 'clamp(9px, 1.15cqw, 14px)', color: ENCRE_PALE }}
+              style={{ display: 'block', marginTop: '0.1cqw', fontSize: 'var(--t-sous)', color: ENCRE_PALE }}
             />
           )}
         </span>
@@ -176,7 +178,8 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
         aria-hidden
         className="block origin-left"
         style={{
-          height: 1, marginTop: '0.3cqw', marginLeft: '3.4cqw',
+          height: 1, marginTop: '0.3cqw',
+          marginLeft: centre ? '22%' : '3.4cqw', marginRight: centre ? '22%' : 0,
           background: choisi ? ENCRE_ROUGE : ENCRE_PALE,
         }}
         initial={false}
@@ -193,7 +196,7 @@ export const Folio: React.FC<{ texte: string; cle?: string | number }> = ({ text
   <Encre
     as="span" texte={texte} cle={`folio-${cle ?? texte}`} vitesse={0.045}
     className="font-display block text-center mb-[1.6cqw]"
-    style={{ color: ENCRE_PALE, fontSize: 'clamp(8px, 1.15cqw, 14px)', letterSpacing: '0.34em' }}
+    style={{ color: ENCRE_PALE, fontSize: 'var(--t-folio)', letterSpacing: '0.34em' }}
   />
 );
 
