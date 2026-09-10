@@ -15,7 +15,7 @@
 // écoute le document en direct : une case cochée sur le téléphone de
 // Marc-Alexis apparaît sur l'écran d'Alex sans rechargement.
 
-import { doc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, serverTimestamp, deleteField } from 'firebase/firestore';
 import { db } from '../firebase';
 
 /** Ce que le document garde pour une tâche cochée. */
@@ -72,7 +72,7 @@ export async function cocherTache(id: string, coche: boolean, par?: string): Pro
   await setDoc(
     doc(db, ...CHEMIN),
     {
-      coche: { [id]: coche ? { le: Date.now(), ...(par ? { par } : {}) } : null },
+      coche: { [id]: coche ? { le: Date.now(), ...(par ? { par } : {}) } : deleteField() },
       majLe: serverTimestamp(),
     },
     { merge: true },
