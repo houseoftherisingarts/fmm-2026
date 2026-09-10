@@ -94,6 +94,7 @@ const LivraisonKiosquePage: React.FC = () => {
         personnes,
         jours,
         restrictions: restrictions.trim(),
+        langue: lang,
         liste: complet,
       });
       if (reponse.url) { window.location.href = reponse.url; return; }
@@ -488,7 +489,7 @@ const EN: typeof FR = {
   phRestrictions: 'An intolerance, a diet, someone who does not eat pork: tell us here and the kitchen adjusts.',
   confirmationKiosque: 'I confirm that I hold a booth at the festival this year, since the service is reserved for merchants and operators working on site.',
   ligneForfait: (p: number, j: number) =>
-    `Delivered meals · ${p} person${p > 1 ? 's' : ''} × ${j} day${j > 1 ? 's' : ''} × $${(PRIX_JOUR_CENTS / 100).toFixed(0)}`,
+    `Delivered meals · ${p} ${p > 1 ? 'people' : 'person'} × ${j} day${j > 1 ? 's' : ''} × $${(PRIX_JOUR_CENTS / 100).toFixed(0)}`,
   tps: 'GST (5%)',
   tvq: 'QST (9.975%)',
   total: 'Total',

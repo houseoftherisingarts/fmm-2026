@@ -49,6 +49,10 @@ const FR_TO_EN: Record<string, string> = {
   '/groupes': '/groups',
   '/chevaux': '/horses',
   '/guildes': '/guilds',
+  // Le pilote des repas livrés aux kiosques, donné par lien. Sans cette
+  // ligne, la bascule vers l'anglais tombait sur /en/kiosque/livraison,
+  // une adresse qui n'existe pas (Alex, 2026-09-10).
+  '/kiosque/livraison': '/booth/delivery',
   '/change': '/exchange',
 };
 

@@ -18,6 +18,9 @@ export interface DemandeLivraison {
   personnes: number;
   jours: JourId[];
   restrictions: string;
+  /** La langue de la page au moment de la réservation : la confirmation
+   *  et la caisse Stripe repartent dans celle-là. */
+  langue: 'FR' | 'EN';
   /** Vrai quand les dix places sont prises et que la fiche rejoint la
    *  liste d'attente au lieu de passer à la caisse. */
   liste?: boolean;

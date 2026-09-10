@@ -3230,6 +3230,7 @@ const LIVRAISON_TVQ = 0.09975;
 const LIVRAISON_NO_TPS = '736597287 RT0001';
 const LIVRAISON_NO_TVQ = '1225724543 TQ0001';
 const LIVRAISON_RETOUR = 'https://www.festivalmedievaldemontpellier.org/kiosque/livraison';
+const LIVRAISON_RETOUR_EN = 'https://www.festivalmedievaldemontpellier.org/en/booth/delivery';
 // Une fiche non payée garde sa place une demi-heure, le temps de la
 // caisse. Passé ce délai elle ne bloque plus personne, et la session
 // Stripe expire au même moment.
@@ -3241,6 +3242,14 @@ const LIVRAISON_JOURS = {
   dim: 'dimanche 27 septembre',
 };
 
+const LIVRAISON_JOURS_EN = {
+  ven: 'Friday, September 25',
+  sam: 'Saturday, September 26',
+  dim: 'Sunday, September 27',
+};
+
+const livraisonJour = (id, langue) => (langue === 'EN' ? LIVRAISON_JOURS_EN : LIVRAISON_JOURS)[id] || id;
+
 /** Sous-total, puis chaque taxe sur le sous-total, jamais l'une sur
  *  l'autre. La page /kiosque/livraison affiche la même arithmétique. */
 function livraisonFacture(personnes, nbJours) {
@@ -3250,7 +3259,9 @@ function livraisonFacture(personnes, nbJours) {
   return { sousTotalCents, tpsCents, tvqCents, totalCents: sousTotalCents + tpsCents + tvqCents };
 }
 
-const livraisonArgent = (cents) => `${(cents / 100).toFixed(2).replace('.', ',')} $`;
+const livraisonArgent = (cents, langue) => (langue === 'EN'
+  ? `$${(cents / 100).toFixed(2)}`
+  : `${(cents / 100).toFixed(2).replace('.', ',')} $`);
 
 /** Les places tenues : celles qui sont payées, plus celles dont la
  *  caisse est ouverte depuis moins d'une demi-heure. */
@@ -3289,15 +3300,17 @@ exports.reserverLivraisonKiosque = onCall(
     const courriel = livraisonTexte(d.courriel, 160).toLowerCase();
     const telephone = livraisonTexte(d.telephone, 40);
     const restrictions = livraisonTexte(d.restrictions, 1200);
+    const langue = d.langue === 'EN' ? 'EN' : 'FR';
     const personnes = Math.floor(Number(d.personnes) || 0);
     const jours = Array.isArray(d.jours)
       ? d.jours.filter((j) => Object.prototype.hasOwnProperty.call(LIVRAISON_JOURS, j))
       : [];
 
-    if (!kiosque || !contact || !telephone) throw new HttpsError('invalid-argument', 'Il manque le nom du kiosque, la personne à joindre ou le téléphone.');
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(courriel)) throw new HttpsError('invalid-argument', 'Ce courriel ne semble pas valide.');
-    if (personnes < 1 || personnes > 12) throw new HttpsError('invalid-argument', 'Le nombre de personnes va de 1 à 12.');
-    if (jours.length < 1) throw new HttpsError('invalid-argument', 'Choisissez au moins une journée.');
+    const dire = (fr, en) => (langue === 'EN' ? en : fr);
+    if (!kiosque || !contact || !telephone) throw new HttpsError('invalid-argument', dire('Il manque le nom du kiosque, la personne à joindre ou le téléphone.', 'The booth name, the contact person or the phone number is missing.'));
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(courriel)) throw new HttpsError('invalid-argument', dire('Ce courriel ne semble pas valide.', 'That email does not look valid.'));
+    if (personnes < 1 || personnes > 12) throw new HttpsError('invalid-argument', dire('Le nombre de personnes va de 1 à 12.', 'The number of people runs from 1 to 12.'));
+    if (jours.length < 1) throw new HttpsError('invalid-argument', dire('Choisissez au moins une journée.', 'Choose at least one day.'));
 
     // Un même kiosque ne remplit pas la liste à lui seul, et un double
     // clic ne crée pas deux fiches.
@@ -3307,19 +3320,21 @@ exports.reserverLivraisonKiosque = onCall(
     const deja = dejaSnap.docs.map((doc) => doc.data() || {}).filter((f) => f.statut === 'paye' || f.statut === 'attente');
     if (deja.length) {
       const f = deja[0];
-      throw new HttpsError(
-        'already-exists',
-        f.statut === 'paye'
-          ? 'Une réservation existe déjà pour ce courriel. Écrivez à admin@festivalmedievaldemontpellier.org pour la modifier.'
-          : 'Ce courriel est déjà sur la liste. La cuisine vous écrit dès qu’une place se libère.',
-      );
+      const enAnglais = d.langue === 'EN';
+      const dejaPaye = enAnglais
+        ? 'A reservation already exists for this email. Write to admin@festivalmedievaldemontpellier.org to change it.'
+        : 'Une réservation existe déjà pour ce courriel, et elle se modifie en écrivant à admin@festivalmedievaldemontpellier.org.';
+      const dejaListe = enAnglais
+        ? 'This email is already on the list, and the kitchen writes to you as soon as a spot frees up.'
+        : 'Ce courriel est déjà sur la liste, et la cuisine vous écrit dès qu’une place se libère.';
+      throw new HttpsError('already-exists', f.statut === 'paye' ? dejaPaye : dejaListe);
     }
 
     const pris = await livraisonPlacesPrises();
     const complet = pris >= LIVRAISON_PLACES;
     const facture = livraisonFacture(personnes, jours.length);
     const base = {
-      kiosque, contact, courriel, telephone, personnes, jours, restrictions,
+      kiosque, contact, courriel, telephone, personnes, jours, restrictions, langue,
       troisJours: jours.length === 3,
       ...facture,
       creeLe: admin.firestore.FieldValue.serverTimestamp(),
@@ -3337,14 +3352,23 @@ exports.reserverLivraisonKiosque = onCall(
 
     const cleStripe = STRIPE_SECRET_KEY.value();
     if (!cleStripe || !/^(sk|rk)_/.test(cleStripe)) {
-      throw new HttpsError('failed-precondition', 'La caisse n’est pas encore ouverte. Écrivez à admin@festivalmedievaldemontpellier.org.');
+      throw new HttpsError('failed-precondition', dire('La caisse n’est pas encore ouverte, alors écrivez à admin@festivalmedievaldemontpellier.org.', 'The checkout is not open yet, so write to admin@festivalmedievaldemontpellier.org.'));
     }
 
     const ref = await db.collection(LIVRAISON_COLLECTION).add({ ...base, statut: 'en-attente' });
 
     let session;
     try {
-      const libelleJours = jours.map((j) => LIVRAISON_JOURS[j]).join(', ');
+      const libelleJours = jours.map((j) => livraisonJour(j, langue)).join(', ');
+      const nomForfait = langue === 'EN'
+        ? 'Meals delivered to your booth · 2 meals per person, per day'
+        : 'Repas livrés au kiosque · 2 repas par personne, par jour';
+      const nomPersonnes = langue === 'EN'
+        ? `${kiosque} · ${personnes} person(s) · ${libelleJours}`
+        : `${kiosque} · ${personnes} personne(s) · ${libelleJours}`;
+      const nomTps = langue === 'EN' ? 'GST 5%' : 'TPS 5 %';
+      const nomTvq = langue === 'EN' ? 'QST 9.975%' : 'TVQ 9,975 %';
+      const noDe = (n) => (langue === 'EN' ? `No. ${n}` : `No ${n}`);
       session = await Stripe(cleStripe).checkout.sessions.create({
         mode: 'payment',
         customer_email: courriel,
@@ -3354,10 +3378,7 @@ exports.reserverLivraisonKiosque = onCall(
             price_data: {
               currency: 'cad',
               unit_amount: LIVRAISON_PRIX_JOUR_CENTS,
-              product_data: {
-                name: 'Repas livrés au kiosque · 2 repas par personne, par jour',
-                description: `${kiosque} · ${personnes} personne(s) · ${libelleJours}`,
-              },
+              product_data: { name: nomForfait, description: nomPersonnes },
             },
           },
           {
@@ -3365,7 +3386,7 @@ exports.reserverLivraisonKiosque = onCall(
             price_data: {
               currency: 'cad',
               unit_amount: facture.tpsCents,
-              product_data: { name: 'TPS 5 %', description: `No ${LIVRAISON_NO_TPS}` },
+              product_data: { name: nomTps, description: noDe(LIVRAISON_NO_TPS) },
             },
           },
           {
@@ -3373,7 +3394,7 @@ exports.reserverLivraisonKiosque = onCall(
             price_data: {
               currency: 'cad',
               unit_amount: facture.tvqCents,
-              product_data: { name: 'TVQ 9,975 %', description: `No ${LIVRAISON_NO_TVQ}` },
+              product_data: { name: nomTvq, description: noDe(LIVRAISON_NO_TVQ) },
             },
           },
         ],
@@ -3382,20 +3403,21 @@ exports.reserverLivraisonKiosque = onCall(
           metadata: { entite: 'fmm', programme: 'livraison-kiosque', reservationId: ref.id },
         },
         client_reference_id: ref.id,
+        locale: langue === 'EN' ? 'en' : 'fr-CA',
         expires_at: Math.floor(Date.now() / 1000) + Math.floor(LIVRAISON_TENUE_MS / 1000),
-        success_url: `${LIVRAISON_RETOUR}?livraison=ok`,
-        cancel_url: `${LIVRAISON_RETOUR}?livraison=annulee`,
+        success_url: `${langue === 'EN' ? LIVRAISON_RETOUR_EN : LIVRAISON_RETOUR}?livraison=ok`,
+        cancel_url: `${langue === 'EN' ? LIVRAISON_RETOUR_EN : LIVRAISON_RETOUR}?livraison=annulee`,
       });
     } catch (e) {
       await ref.delete().catch(() => {});
       logger.error('[livraison] session refusée', e);
-      throw new HttpsError('internal', 'La caisse n’a pas répondu. Réessayez dans un moment.');
+      throw new HttpsError('internal', dire('La caisse n’a pas répondu, alors réessayez dans un moment.', 'The checkout did not answer, so try again in a moment.'));
     }
 
     if (!session || !session.url) {
       await ref.delete().catch(() => {});
       logger.error('[livraison] session sans adresse', { reservationId: ref.id });
-      throw new HttpsError('internal', 'La caisse n’a pas répondu. Réessayez dans un moment.');
+      throw new HttpsError('internal', dire('La caisse n’a pas répondu, alors réessayez dans un moment.', 'The checkout did not answer, so try again in a moment.'));
     }
 
     await ref.set({ sessionId: session.id }, { merge: true });
@@ -3430,14 +3452,19 @@ async function livraisonEncaisser(session) {
   await livraisonMajCompteur();
   if (fiche.rejeu) return 'déjà encaissé';
 
-  const jours = (fiche.jours || []).map((j) => LIVRAISON_JOURS[j] || j);
+  const langue = fiche.langue === 'EN' ? 'EN' : 'FR';
+  const jours = (fiche.jours || []).map((j) => livraisonJour(j, langue));
+  const liaison = langue === 'EN' ? ' and ' : ' et ';
   const libelleJours = jours.length > 1
-    ? `${jours.slice(0, -1).join(', ')} et ${jours[jours.length - 1]}`
+    ? jours.slice(0, -1).join(', ') + liaison + jours[jours.length - 1]
     : (jours[0] || '');
-  const total = livraisonArgent(Number(session.amount_total) || fiche.totalCents || 0);
-  const gens = fiche.personnes > 1 ? `${fiche.personnes} personnes` : '1 personne';
+  const total = livraisonArgent(Number(session.amount_total) || fiche.totalCents || 0, langue);
+  const gens = langue === 'EN'
+    ? (fiche.personnes > 1 ? `${fiche.personnes} people` : 'one person')
+    : (fiche.personnes > 1 ? `${fiche.personnes} personnes` : '1 personne');
 
-  const pourLeKiosque = [
+  // La lettre part dans la langue où la réservation a été prise.
+  const lettreFR = [
     `Bonjour ${fiche.contact},`,
     '',
     `Votre réservation est prise pour ${fiche.kiosque}. La cuisine apportera deux repas par jour à votre tente pour ${gens}, le ${libelleJours}, et vous n’aurez pas à quitter votre kiosque pour manger.`,
@@ -3449,17 +3476,37 @@ async function livraisonEncaisser(session) {
     '',
     'Au plaisir de vous voir au village,',
     'L’équipe du Festival Médiéval de Montpellier',
-  ].filter((l) => l !== null).join('\n');
+  ].join('\n');
+
+  const lettreEN = [
+    `Hello ${fiche.contact},`,
+    '',
+    `Your reservation is set for ${fiche.kiosque}. The kitchen will bring two meals a day to your tent for ${gens}, on ${libelleJours}, and you will not have to leave your booth to eat.`,
+    '',
+    `You paid ${total}, taxes included, and Stripe has sent you the receipt.`,
+    '',
+    'Every box is built from the village menu, and what is inside stays a surprise until it reaches you. We will agree on delivery times with you once we are on the grounds.',
+    fiche.restrictions ? `\nThe kitchen has noted this: ${fiche.restrictions}` : '',
+    '',
+    'See you at the village,',
+    'The Festival Médiéval de Montpellier team',
+  ].join('\n');
+
+  const pourLeKiosque = langue === 'EN' ? lettreEN : lettreFR;
+  const sujetKiosque = langue === 'EN'
+    ? 'Your meals are booked · Festival Médiéval de Montpellier'
+    : 'Vos repas sont réservés · Festival Médiéval de Montpellier';
 
   const pourEquipe = [
     `Kiosque : ${fiche.kiosque}`,
     `Contact : ${fiche.contact} · ${fiche.courriel} · ${fiche.telephone}`,
+    `Langue : ${langue === 'EN' ? 'anglais' : 'français'}`,
     `Personnes : ${fiche.personnes}`,
-    `Jours : ${libelleJours}`,
+    `Jours : ${(fiche.jours || []).map((j) => livraisonJour(j, 'FR')).join(', ')}`,
     `Restrictions : ${fiche.restrictions || 'aucune'}`,
-    `Payé : ${total}`,
+    `Payé : ${livraisonArgent(Number(session.amount_total) || fiche.totalCents || 0, 'FR')}`,
     '',
-    `Fiche : /admin/livraison`,
+    'Fiche : /admin/livraison',
   ].join('\n');
 
   try {
@@ -3469,7 +3516,7 @@ async function livraisonEncaisser(session) {
     });
     await transport.sendMail({
       from: FROM, to: fiche.courriel,
-      subject: 'Vos repas sont réservés · Festival Médiéval de Montpellier',
+      subject: sujetKiosque,
       text: pourLeKiosque,
     });
     await transport.sendMail({
@@ -3482,7 +3529,7 @@ async function livraisonEncaisser(session) {
     logger.error('[livraison] lettre non partie', e);
   }
 
-  logger.info('[livraison] encaissé', { reservationId, kiosque: fiche.kiosque, total });
+  logger.info('[livraison] encaissé', { reservationId, kiosque: fiche.kiosque, total, langue });
   return 'encaissé';
 }
 

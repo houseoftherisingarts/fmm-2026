@@ -203,5 +203,19 @@ const appeler = (data) => fonctions.reserverLivraisonKiosque.run({ data, auth: n
   assert.ok(apresExpiration.url, 'une caisse abandonnée ne doit pas bloquer la place');
   console.log('4 · une caisse abandonnée depuis 31 minutes rend sa place');
 
+  // 5 · L'anglais va jusqu'au bout : la caisse et la lettre suivent
+  donnees.clear();
+  const avant = sessionsCreees.length;
+  const rEN = await appeler(demande({ langue: 'EN', personnes: 1, jours: ['sam'] }));
+  assert.ok(rEN.url);
+  const pEN = sessionsCreees[avant];
+  assert.strictEqual(pEN.locale, 'en', 'la caisse Stripe doit s’ouvrir en anglais');
+  assert.match(pEN.line_items[0].price_data.product_data.name, /Meals delivered to your booth/);
+  assert.match(pEN.line_items[0].price_data.product_data.description, /Saturday, September 26/);
+  assert.strictEqual(pEN.line_items[1].price_data.product_data.name, 'GST 5%');
+  assert.strictEqual(pEN.line_items[2].price_data.product_data.name, 'QST 9.975%');
+  assert.match(pEN.success_url, /\/en\/booth\/delivery/, 'le retour doit rester du côté anglais');
+  console.log('5 · l’anglais tient de la caisse jusqu’au retour');
+
   console.log('\nTout passe.');
 })().catch((e) => { console.error('\nÉCHEC :', e && e.message ? e.message : e); process.exit(1); });
