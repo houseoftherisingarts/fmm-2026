@@ -67,8 +67,8 @@ const LODGINGS: Lodging[] = [
   // le changer à la main quand Alex le dit.
   {
     name:    'Le Salon des Inconnus',
-    blurbFR: 'L’auberge est complète pour la fin de semaine du festival, et il reste deux emplacements de camping sur ses douze acres boisés, à dix minutes du site. Le manoir victorien d’où le festival est parti garde ses feux allumés tous les soirs.',
-    blurbEN: 'The inn is full for the festival weekend, and two camping pitches are left on its twelve wooded acres, ten minutes from the grounds. The Victorian manor the festival grew out of keeps its fires lit every evening.',
+    blurbFR: 'L’auberge est complète pour la fin de semaine du festival, et il reste deux emplacements de camping sur ses cinq acres boisés, à dix minutes du site. Le manoir victorien d’où le festival est parti garde ses feux allumés tous les soirs.',
+    blurbEN: 'The inn is full for the festival weekend, and two camping pitches are left on its five wooded acres, ten minutes from the grounds. The Victorian manor the festival grew out of keeps its fires lit every evening.',
     image:   '/wix/hebergement/salon-living-room.webp',
     website: 'https://www.lesalondesinconnus.com/camping',
     area:    'Montpellier · 10 min',
