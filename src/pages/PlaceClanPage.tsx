@@ -154,7 +154,7 @@ const PlaceClanPage: React.FC = () => {
             className="text-center leading-snug mb-[0.7cqw]"
             style={{ fontSize: 'var(--t-question)' }}
           />
-          <div className="grimoire-serre" style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '0.45cqw' }}>
+          <div className="grimoire-serre" style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', borderRadius: '50% / 100% 100% 0 0', paddingTop: '0.45cqw' }}>
             {LISTE_GROUPES.map((g, i) => (
               <ChoixEncre
                 key={g} cle={`g-${g}`}
@@ -180,7 +180,7 @@ const PlaceClanPage: React.FC = () => {
             className="text-center leading-snug mb-[1.3cqw]"
             style={{ fontSize: 'var(--t-question)' }}
           />
-          <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '1cqw' }}>
+          <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', borderRadius: '50% / 100% 100% 0 0', paddingTop: '1cqw' }}>
             {q.reponses.map((r, i) => (
               <ChoixEncre
                 key={`${q.id}-${i}`} cle={`${q.id}-${i}`}
@@ -225,7 +225,7 @@ const PlaceClanPage: React.FC = () => {
             className="text-center leading-snug mb-[2.2cqw]"
             style={{ fontSize: 'var(--t-sous)', color: ENCRE_PALE }}
           />
-          <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '1cqw' }}>
+          <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', borderRadius: '50% / 100% 100% 0 0', paddingTop: '1cqw' }}>
             <ChoixEncre
               texte="Lire ce que ça veut dire" cle="lire" marge="›" delai={2}
               onClick={() => document.getElementById('fiche-verdict')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}

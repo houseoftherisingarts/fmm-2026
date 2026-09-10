@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
 // ─── Le grimoire de l'année de la Peste ─────────────────────────────
@@ -79,7 +79,7 @@ export const Encre: React.FC<EncreProps> = ({
     >
       {mots.map((mot, m) => (
         <React.Fragment key={`${m}-${mot}`}>
-          <span aria-hidden style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+          <span data-mot aria-hidden style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
             {Array.from(mot).map((c, k) => (
               <motion.span key={`${k}-${c}`} style={{ display: 'inline-block' }} variants={LETTRE}>{c}</motion.span>
             ))}
@@ -178,9 +178,10 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
         aria-hidden
         className="block origin-left"
         style={{
-          height: 1, marginTop: '0.3cqw',
+          height: 4, marginTop: '0.3cqw',
           marginLeft: centre ? '22%' : '3.4cqw', marginRight: centre ? '22%' : 0,
-          background: choisi ? ENCRE_ROUGE : ENCRE_PALE,
+          borderBottom: `1px solid ${choisi ? ENCRE_ROUGE : ENCRE_PALE}`,
+          borderRadius: '50% / 0 0 100% 100%',
         }}
         initial={false}
         animate={{ scaleX: actif ? 1 : 0, opacity: actif ? (choisi ? 0.85 : 0.5) : 0 }}
@@ -226,6 +227,68 @@ export const RegistreFolios: React.FC<{ lignes: { romain: string; marque: boolea
   </div>
 );
 
+
+// ── La courbure du papier ────────────────────────────────────────────
+// La page ne penche pas seulement, elle se bombe : mesuré sur l'image du
+// livre, le filet du haut se soulève de 13 px en son milieu et celui du
+// bas descend de 32 px, sur une image large de 1276. Un bloc de texte
+// plat posé là-dessus se voit au premier coup d'œil (Alex, 2026-09-10).
+//
+// Chaque MOT reçoit donc son propre décalage vertical et sa pente, selon
+// une parabole qui interpole entre les deux filets. Le mot, et pas la
+// lettre, parce que framer-motion tient déjà la lettre par la main.
+const FLECHE_HAUT = -0.0102;  // fraction de la largeur du plan, le centre monte
+const FLECHE_BAS = 0.0251;    // le centre descend
+
+function useCourbureDuPapier(actif: boolean) {
+  const zone = useRef<HTMLDivElement>(null);
+  const reduire = useReducedMotion();
+
+  useLayoutEffect(() => {
+    const el = zone.current;
+    if (!el || !actif) return;
+    const plan = el.closest('.grimoire-plan') as HTMLElement | null;
+    if (!plan) return;
+
+    let attente = 0;
+    const courber = () => {
+      const cadre = plan.getBoundingClientRect();
+      if (!cadre.width) return;
+      // Les bornes du vélin, en fraction du plan : mesurées sur l'image.
+      const hautVelin = cadre.top + cadre.height * 0.16;
+      const basVelin = cadre.top + cadre.height * 0.729;
+      const hauteurVelin = Math.max(1, basVelin - hautVelin);
+      const zr = el.getBoundingClientRect();
+      const centreX = zr.left + zr.width / 2;
+      const demi = Math.max(1, zr.width / 2);
+
+      el.querySelectorAll<HTMLElement>('[data-mot]').forEach((mot) => {
+        const r = mot.getBoundingClientRect();
+        const u = ((r.left + r.width / 2) - centreX) / demi;   // -1 à 1
+        const v = Math.min(1, Math.max(0, ((r.top + r.height / 2) - hautVelin) / hauteurVelin));
+        const amplitude = (FLECHE_HAUT + (FLECHE_BAS - FLECHE_HAUT) * v) * cadre.width;
+        const dy = amplitude * (1 - u * u);          // parabole, nulle aux bords
+        const pente = amplitude * (-2 * u) / demi;   // la tangente, pour l'inclinaison
+        mot.style.transform = `translateY(${dy.toFixed(2)}px) rotate(${(Math.atan(pente) * 180 / Math.PI).toFixed(3)}deg)`;
+        mot.style.transformOrigin = '50% 50%';
+      });
+    };
+
+    // Le texte s'écrit lettre par lettre, donc la mise en page bouge :
+    // on recourbe tant qu'elle n'est pas stable.
+    const boucle = () => { courber(); attente = window.setTimeout(boucle, 120); };
+    boucle();
+    const arret = window.setTimeout(() => window.clearTimeout(attente), 6000);
+    window.addEventListener('resize', courber);
+    return () => {
+      window.clearTimeout(attente); window.clearTimeout(arret);
+      window.removeEventListener('resize', courber);
+    };
+  }, [actif, reduire]);
+
+  return zone;
+}
+
 // ── La scène ────────────────────────────────────────────────────────
 
 interface GrimoireProps {
@@ -268,6 +331,7 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
   }, [ouvert, marquerOuvert, onOuvert]);
 
   const statique = reduire || dejaVu || videoMorte;
+  const pageDroite = useCourbureDuPapier(ouvert && !reduire);
 
   return (
     <div className="grimoire-scene" lang="fr">
@@ -303,6 +367,7 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
             {/* La page centre son contenu plutôt que de le tasser en
                 haut : le bas du vélin ne reste plus vide. */}
             <div
+              ref={pageDroite}
               className="grimoire-page absolute flex flex-col justify-center"
               style={{
                 left: 'var(--page-droite-x)', top: 'var(--page-haut)',
