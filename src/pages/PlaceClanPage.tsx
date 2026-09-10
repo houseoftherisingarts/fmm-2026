@@ -155,7 +155,7 @@ const PlaceClanPage: React.FC = () => {
             className="font-editorial text-center leading-snug mb-[1.8cqw]"
             style={{ fontSize: 'clamp(12px, 1.8cqw, 21px)' }}
           />
-          <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '1cqw' }}>
+          <div className="grimoire-serre" style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '0.8cqw' }}>
             {LISTE_GROUPES.map((g, i) => (
               <ChoixEncre
                 key={g} cle={`g-${g}`}
@@ -192,7 +192,7 @@ const PlaceClanPage: React.FC = () => {
               />
             ))}
           </div>
-          <div className="flex items-center justify-between mt-[1.4cqw]"
+          <div className="flex items-center justify-between mt-[1cqw]"
                style={{ fontSize: 'clamp(8px, 1.05cqw, 13px)' }}>
             <button type="button" className="grimoire-choix font-display"
                     style={{ color: ENCRE_PALE, letterSpacing: '0.22em' }}

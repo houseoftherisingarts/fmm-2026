@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Download, Newspaper } from 'lucide-react';
+import { ArrowUpRight, Newspaper } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { lienBilletterie, ouvrirBilletterie } from '../lib/billetterie';
@@ -10,6 +10,7 @@ import { useCountdown } from '../lib/useCountdown';
 import { addLocale } from '../lib/locale';
 import { addSub } from '../firebase/newsletter';
 import SEO from '../components/SEO';
+import CarteDuSite from '../components/carte/CarteDuSite';
 import Brume from '../components/Brume';
 
 // Real homepage: clones the live Wix `/festival-medieval-de-montpellier`
@@ -341,15 +342,10 @@ const AccueilPage: React.FC = () => {
           transition={{ duration: 1 }}
           className="relative w-full overflow-hidden fade-y"
         >
-          <img decoding="async" src="/site/carte-fmm-2025.jpg" alt={t.map.title} className="w-full h-auto" loading="lazy" />
-          <a
-            href="/site/carte-fmm-2025.jpg"
-            download="Carte-FMM.jpg"
-            className="group absolute bottom-3 right-3 md:bottom-6 md:right-6 inline-flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-card bg-midnight-deep/85 backdrop-blur-sm border border-brass/40 font-sans uppercase tracking-widest text-[10px] md:text-xs font-semibold text-brass hover:bg-brass hover:text-midnight-deep hover:border-brass transition-colors"
-          >
-            <Download size={14} className="transition-transform group-hover:translate-y-0.5" />
-            {t.map.download}
-          </a>
+          {/* La carte 2026 remplace celle de 2025 (Alex, 2026-09-10).
+              Le composant porte les trois largeurs, l'agrandissement
+              plein écran et le téléchargement. */}
+          <CarteDuSite lang={lang} sizes="100vw" />
         </motion.div>
       </section>
 

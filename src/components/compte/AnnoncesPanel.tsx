@@ -8,6 +8,7 @@ import { SITE } from '../../content';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { accepterAvis, suivreMesAvis } from '../../firebase/avis';
+import CarteDuSite from '../carte/CarteDuSite';
 
 // Les annonces ouvrent l'espace client : c'est la première chose vue en
 // arrivant. Elles s'épinglent depuis le 2026-08-03 sur le même panneau de
@@ -40,10 +41,15 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const prisCollection = pris.filter(
     (id) => !ANNONCES.find((a) => a.id === id)?.permanent,
   );
+  // Les avis à décrocher sont cinq depuis que la carte s'y est ajoutée
+  // (Alex, 2026-09-10). Les trois premiers badges suivent le compte, et
+  // « Babillard vidé » attend que le tableau le soit vraiment.
+  const nbCollectionnables = ANNONCES.filter((a) => !a.permanent).length;
   useEffect(() => {
     if (prisCollection.length === 0) return;
-    for (let i = 1; i <= Math.min(prisCollection.length, 4); i += 1) gagnerBadge(`billet-${i}`);
-  }, [prisCollection.length, gagnerBadge]);
+    for (let i = 1; i <= Math.min(prisCollection.length, 3); i += 1) gagnerBadge(`billet-${i}`);
+    if (prisCollection.length >= nbCollectionnables) gagnerBadge('billet-4');
+  }, [prisCollection.length, nbCollectionnables, gagnerBadge]);
 
   const accepter = (id: string) => {
     if (!user?.uid) { openSignIn(); return; }
@@ -127,8 +133,8 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           </p>
           <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
             {fr
-              ? 'Les quatre avis sont dans votre collection, plus bas.'
-              : 'All four notices are in your collection, further down.'}
+              ? 'Tous les avis sont dans votre collection, plus bas.'
+              : 'Every notice is in your collection, further down.'}
           </p>
         </div>
       )}
@@ -260,6 +266,21 @@ const AnnonceNotice: React.FC<{
               </li>
             ))}
           </ol>
+        )}
+
+        {/* L'avis de la carte porte la carte elle-même : un plan de
+            terrain se regarde, il ne se raconte pas (Alex, 2026-09-10). */}
+        {a.carte && (
+          <div
+            className="mt-5 overflow-hidden"
+            style={{
+              borderRadius: 'var(--radius-card)',
+              border: '1px solid rgba(var(--sk-copper-deep-rgb), 0.45)',
+              boxShadow: '0 10px 24px rgba(0,0,0,0.35)',
+            }}
+          >
+            <CarteDuSite lang={lang} sizes="(max-width: 768px) 92vw, 900px" />
+          </div>
         )}
 
         {onAccepter && (

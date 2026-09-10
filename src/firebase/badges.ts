@@ -193,7 +193,7 @@ export const COLLECTIONS: Collection[] = [
       { id: 'billet-3', glyphe: '❸', nomFR: 'Troisième avis', nomEN: 'Third notice',
         texteFR: 'Trois avis décrochés du babillard.', texteEN: 'Three notices taken off the board.' },
       { id: 'billet-4', glyphe: '❹', nomFR: 'Babillard vidé', nomEN: 'Board cleared',
-        texteFR: 'Les quatre avis du babillard sont à vous.', texteEN: 'All four notices on the board are yours.' },
+        texteFR: 'Tous les avis du babillard sont à vous.', texteEN: 'Every notice on the board is yours.' },
     ],
   },
   {

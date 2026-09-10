@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Tent, Home, ChevronLeft, ChevronRight, MapPin, Caravan, Download } from 'lucide-react';
+import { ArrowUpRight, Tent, Home, ChevronLeft, ChevronRight, MapPin, Caravan } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
+import CarteDuSite from '../components/carte/CarteDuSite';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, ScrollProgress } from '../components/scroll';
 import { Motes } from '../components/marche/effects';
@@ -176,28 +177,15 @@ const HebergementPage: React.FC = () => {
             </p>
           </Reveal>
 
-          {/* Site map: last year's full festival map, camping emphasised.
-              Interactive spot-picking is removed for now; campers pick a
-              spot type below and reserve on Zeffy. */}
+          {/* La carte du site 2026 (Alex, 2026-09-10). Le composant porte
+              lui-même l'agrandissement et le téléchargement : deux
+              boutons de plus ici se seraient superposés dans le coin. */}
           <Reveal>
             <figure className="relative rounded-card border border-brass/30 overflow-hidden bg-midnight-deep/40">
-              <img
-                src="/site/carte-fmm-2025.jpg"
-                alt={t.mapAria}
-                className="w-full h-auto"
-                loading="lazy"
-              />
+              <CarteDuSite lang={lang} sizes="(max-width: 1024px) 100vw, 1100px" />
               <figcaption className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-card bg-midnight-deep/85 border border-brass/40 font-sans text-[10px] uppercase tracking-widest text-brass">
                 <Tent size={12} /> {t.mapCampingTag}
               </figcaption>
-              <a
-                href="/site/carte-fmm-2025.jpg"
-                download="Carte-FMM.jpg"
-                className="group absolute bottom-3 right-3 inline-flex items-center gap-2 px-4 py-2 rounded-card bg-midnight-deep/85 backdrop-blur-sm border border-brass/40 font-sans text-[10px] uppercase tracking-widest font-semibold text-brass hover:bg-brass hover:text-midnight-deep hover:border-brass transition-colors"
-              >
-                <Download size={12} className="transition-transform group-hover:translate-y-0.5" />
-                {t.mapDownload}
-              </a>
             </figure>
             <p className="font-editorial italic text-sm text-ivory-soft/70 text-center mt-3">{t.mapCaption}</p>
           </Reveal>

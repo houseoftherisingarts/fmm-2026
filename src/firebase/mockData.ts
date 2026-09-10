@@ -78,6 +78,6 @@ export const mockMedia: Array<{ id: string; src: string; alt: string; folder: st
   { id: 'mh8', src: '/wix/histoire/722a8ce4.jpg',      alt: 'Archive 2024',          folder: 'histoire',  sizeKb: 467 },
   { id: 'mh9', src: '/wix/histoire/89562353.jpg',      alt: 'Archive 2024',          folder: 'histoire',  sizeKb: 449 },
   { id: 'mh10',src: '/wix/hebergement/e1d1583b.jpg',   alt: 'Hébergement',           folder: 'hebergement', sizeKb: 419 },
-  { id: 'mh11',src: '/site/carte-fmm-2025.jpg',        alt: 'Carte du site 2025',    folder: 'site',      sizeKb: 744 },
+  { id: 'mh11',src: '/site/carte-fmm-2026.jpg',        alt: 'Carte du site 2026',    folder: 'site',      sizeKb: 1554 },
   { id: 'mh12',src: '/site/medieval-ticket.png',       alt: 'Plaque de billets',     folder: 'site',      sizeKb: 740 },
 ];

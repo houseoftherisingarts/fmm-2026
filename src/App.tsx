@@ -35,6 +35,9 @@ const ConsentBanner = lazy(() => import('./components/layout/ConsentBanner'));
 const PorteBilletterieGlobale = lazy(() =>
   import('./components/billets/PorteBilletterie').then((m) => ({ default: m.PorteBilletterieGlobale })));
 const SignInModal   = lazy(() => import('./components/auth/SignInModal'));
+// La carte du site, montrée une seule fois à qui vient de se connecter.
+// Elle se décroche comme un avis du babillard : voir components/carte.
+const PopupCarte    = lazy(() => import('./components/carte/PopupCarte'));
 // L'atterrissage du lien de connexion reçu par courriel. Monté au-dessus
 // de tout le site : le lien peut ramener sur n'importe quelle page, et
 // en mode « placeholder » l'intro couvre l'écran.
@@ -422,6 +425,7 @@ const App: React.FC = () => (
                 et la question du consentement, elle, se pose partout
                 (Loi 25, article 8.1). */}
             <ConsentBanner />
+            <PopupCarte />
           </Suspense>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>

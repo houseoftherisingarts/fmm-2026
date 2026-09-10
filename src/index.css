@@ -2776,5 +2776,8 @@ a:hover > .fmm-annee-carte::after {
 /* La ligne cliquable ne porte aucun fond : c'est de l'encre sur du
    vélin, et le clavier la trouve par son trait de plume. */
 .grimoire-choix { background: none; border: 0; cursor: pointer; }
+/* Six compagnies avec leur devise tiennent mal sur une page courte :
+   la liste se resserre plutôt que de sortir du filet. */
+.grimoire-serre .grimoire-choix { padding-top: 0.35cqw; padding-bottom: 0.35cqw; }
 .grimoire-choix:focus { outline: none; }
 .grimoire-choix:focus-visible { outline: 1px dashed rgba(96, 66, 40, 0.8); outline-offset: 3px; }

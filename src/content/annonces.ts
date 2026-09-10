@@ -13,6 +13,8 @@
 // `alerte` = consigne à respecter (clou de cire rouge), `info` = bon à
 // savoir (clou de laiton), `appel` = demande de participation (clou d'or,
 // avec un bouton).
+import { CARTE_AVIS_ID } from './carte';
+
 export type AnnonceTone = 'alerte' | 'info' | 'appel';
 
 export interface Annonce {
@@ -35,6 +37,10 @@ export interface Annonce {
   /** Le parchemin occupe toute la largeur du panneau. Réservé aux avis
    *  longs, qu'une colonne étirerait en ruban. */
   pleineLargeur?: boolean;
+  /** L'avis porte la carte du site : le parchemin la montre en entier,
+   *  et le bouton « Accepté » la range dans la collection. C'est le même
+   *  avis que le pop-up d'arrivée (voir components/carte/PopupCarte). */
+  carte?: boolean;
   /** Affiche la pièce de la Petite Monnaie sous l'avis. */
   piece?:     boolean;
   lienPiece?: string;
@@ -106,6 +112,25 @@ const TOUTES: Annonce[] = [
       'Sur les billets d’une journée, Zeffy imprime la date d’ouverture du festival, le vendredi 25 septembre. Cette date marque le début de l’événement et non la journée que vous avez achetée. Un billet d’une journée vous ouvre les portes le vendredi, le samedi ou le dimanche, selon ce qui vous arrange. Présentez-le à l’entrée le jour venu, tel quel.',
     bodyEN:
       'On one-day tickets, Zeffy prints the festival’s opening date, Friday 25 September. That date marks the start of the event, not the day you bought. A one-day ticket lets you in on Friday, Saturday or Sunday, whichever suits you. Show it at the gate on the day you come, as it is.',
+  },
+  // La carte du site, ajoutée le 2026-09-10. Elle se décroche comme les
+  // autres avis, et le même document Firestore sert au pop-up d'arrivée :
+  // qui la prend ici ne reverra jamais le pop-up, et l'inverse est vrai
+  // aussi (Alex, 2026-09-10).
+  {
+    id:   CARTE_AVIS_ID,
+    tone: 'info',
+    date: '2026-09-10',
+    pleineLargeur: true,
+    carte: true,
+    titleFR: 'La carte du site 2026',
+    titleEN: 'The 2026 site map',
+    bodyFR:
+      'Le plan du terrain est prêt pour l’édition 2026, et il a bougé depuis l’an dernier. La porte et la foire s’ouvrent du côté du chemin. Plus haut, vous trouverez le camping et la cuisine, tandis que la taverne et les grandes tables occupent le centre. De l’autre côté de la palissade s’alignent les kiosques, l’arène et la scène, et le camp viking ferme le terrain vers les bois.\n\n'
+      + 'Décrochez l’avis et la carte reste chez vous, dans votre espace, sous « Ma carte ». De là, vous l’imprimez ou vous l’emportez sur votre téléphone, ce qui vaut mieux qu’un appareil qui cherche du réseau à l’entrée.',
+    bodyEN:
+      'The layout is set for the 2026 edition, and it has moved since last year. The gate and the fair open on the road side. Higher up you will find the camping and the kitchen, while the tavern and the long tables hold the centre. On the far side of the palisade stand the kiosks, the arena and the stage, and the Viking camp closes the grounds towards the woods.\n\n'
+      + 'Take this notice down and the map stays with you, in your space, under “My map”. From there you can print it or carry it on your phone, which beats a device hunting for signal at the gate.',
   },
   {
     id:   'no-dogs-2026',
