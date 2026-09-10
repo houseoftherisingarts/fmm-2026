@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Concours des Artisans d'Azure · Festival Médiéval de Montpellier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+SC:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sk-slate:#0E0C0A; --sk-slate-hi:#1A1612;
+    --sk-panel-rgb:19,8,11; --sk-velvet-rgb:43,10,18;
+    --sk-flame-rgb:232,184,106; --sk-copper-rgb:184,106,42; --sk-mustard-rgb:216,155,58;
+    --sk-glow-rgb:232,177,74;
+    --gilt:#D8B05A; --gilt-lit:#E8C46E; --glow:#E8B14A; --brass:#B08D3A;
+    --ivory:#F4EFE3; --ivory-soft:#C9C2B5;
+    --r:15px;
+    --f-display:"Cinzel Decorative","Marcellus",Georgia,serif;
+    --f-alt:"Cormorant SC","Cormorant Garamond",Georgia,serif;
+    --f-ed:"Cormorant Garamond",Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sk-slate);}
+  body{
+    font-family:var(--f-ed); color:var(--ivory);
+    min-height:100vh; padding-block:0; padding-left:16px; padding-right:16px;
+    background:
+      radial-gradient(120% 80% at 12% -10%, rgba(var(--sk-copper-rgb),.16), transparent 60%),
+      radial-gradient(90% 70% at 100% 8%, rgba(var(--sk-glow-rgb),.10), transparent 55%),
+      linear-gradient(180deg,#120E0B 0%, var(--sk-slate) 45%, #080605 100%);
+    background-attachment:fixed;
+  }
+
+  /* bandeau d'aperçu, retiré à la mise en ligne */
+  .apercu{
+    max-width:1320px; margin:0 auto; padding:10px 4px 0;
+    font-family:var(--f-alt); font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(var(--sk-mustard-rgb),.72);
+  }
+  .apercu span{ border-bottom:1px solid rgba(var(--sk-mustard-rgb),.28); padding-bottom:4px; }
+
+  .shell{ max-width:1320px; margin:0 auto; padding-block:28px 60px; }
+
+  .eyebrow{ font-family:var(--f-alt); font-size:12px; letter-spacing:.3em; text-transform:uppercase;
+    color:var(--gilt); display:flex; align-items:center; gap:12px; }
+  .eyebrow::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, rgba(var(--sk-mustard-rgb),.5), transparent); }
+
+  h1.section{ font-family:var(--f-display); font-weight:400; font-size:clamp(30px,4.4vw,52px);
+    line-height:1.08; margin:14px 0 10px; color:var(--ivory);
+    text-shadow:0 2px 30px rgba(var(--sk-glow-rgb),.18); }
+  h1.section em{ font-style:normal; color:var(--gilt-lit); }
+  .lead{ font-size:clamp(15px,1.45vw,18.5px); line-height:1.62; color:var(--ivory-soft); max-width:62ch; }
+
+  .grid{ display:grid; grid-template-columns:1.06fr .94fr; gap:26px; align-items:start; margin-top:30px; }
+
+  .glass{
+    background:
+      linear-gradient(180deg, rgba(var(--sk-flame-rgb),.05), rgba(var(--sk-velvet-rgb),.55)),
+      rgba(var(--sk-panel-rgb),.88);
+    -webkit-backdrop-filter:blur(8px) saturate(115%); backdrop-filter:blur(8px) saturate(115%);
+    border:1px solid rgba(var(--sk-mustard-rgb),.28);
+    border-radius:var(--r);
+    box-shadow:
+      inset 0 1px 0 rgba(var(--sk-glow-rgb),.18),
+      inset 0 0 80px -30px rgba(var(--sk-copper-rgb),.27),
+      0 30px 80px -30px rgba(0,0,0,.85),
+      0 0 0 1px rgba(0,0,0,.6);
+  }
+
+  /* ── la fiche kiosque ───────────────────────────── */
+  .fiche{ padding:30px 32px 28px; display:flex; flex-direction:column; }
+  .fiche .metier{ font-family:var(--f-alt); font-size:11.5px; letter-spacing:.24em; text-transform:uppercase; color:rgba(var(--sk-mustard-rgb),.85); }
+  .fiche h2{ font-family:var(--f-display); font-weight:400; font-size:clamp(26px,2.6vw,36px); line-height:1.12; margin:10px 0 18px; color:var(--ivory); }
+  .fiche .dit{ font-family:var(--f-ed); font-style:italic; font-size:16px; color:var(--ivory-soft); margin-bottom:20px; }
+  .fiche p{ font-size:16.5px; line-height:1.65; color:var(--ivory-soft); margin-bottom:14px; }
+  .trouve{ font-family:var(--f-alt); font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(var(--sk-mustard-rgb),.85); margin:20px 0 11px; }
+  ul.liste{ list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:4px; }
+  ul.liste li{ display:flex; gap:11px; font-size:16px; line-height:1.5; color:var(--ivory-soft); }
+  ul.liste li::before{ content:""; flex:0 0 6px; width:6px; height:6px; margin-top:9px;
+    background:var(--gilt); transform:rotate(45deg); }
+  .lien{ display:inline-flex; align-items:center; gap:10px; margin-top:26px;
+    font-family:var(--f-alt); font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--gilt); text-decoration:none; }
+  .lien i{ display:inline-block; width:22px; height:1px; background:var(--glow); transition:width .28s ease; }
+  .lien:hover i{ width:44px; }
+
+  /* ── l'encadré concours ─────────────────────────── */
+  .concours{ padding:26px 28px 30px; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .concours::before{ content:""; position:absolute; inset:0;
+    background:radial-gradient(70% 45% at 50% 12%, rgba(var(--sk-glow-rgb),.16), transparent 70%);
+    pointer-events:none; }
+  .sceau{ position:relative; font-family:var(--f-alt); font-size:10.5px; letter-spacing:.26em;
+    text-transform:uppercase; color:#0E0C0A; background:linear-gradient(135deg,var(--gilt-lit),var(--brass));
+    align-self:flex-start; padding:5px 13px; border-radius:999px; font-weight:700; }
+  .scene{ position:relative; width:100%; height:270px; margin:12px 0 2px; }
+  .scene canvas{ display:block; width:100%; height:100%; }
+  .repli{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; }
+  .repli svg{ width:82px; height:250px; opacity:.9; }
+  .concours h3{ position:relative; font-family:var(--f-display); font-weight:400;
+    font-size:clamp(23px,2.15vw,29px); line-height:1.14; color:var(--ivory); margin-bottom:6px; }
+  .concours h3 em{ font-style:normal; color:var(--gilt-lit); }
+  .concours .sous{ position:relative; font-size:15.5px; line-height:1.6; color:var(--ivory-soft); margin-bottom:16px; }
+  .comment{ position:relative; font-family:var(--f-alt); font-size:11px; letter-spacing:.22em;
+    text-transform:uppercase; color:rgba(var(--sk-mustard-rgb),.85); margin-bottom:12px; }
+  ol.etapes{ position:relative; list-style:none; display:flex; flex-direction:column; gap:13px; }
+  ol.etapes li{ display:flex; gap:13px; font-size:15.5px; line-height:1.55; color:var(--ivory-soft); }
+  ol.etapes .n{ flex:0 0 25px; height:25px; border-radius:50%; display:grid; place-items:center;
+    border:1px solid rgba(var(--sk-mustard-rgb),.55); color:var(--gilt-lit);
+    font-family:var(--f-alt); font-size:12.5px; margin-top:1px; }
+  ol.etapes b{ color:var(--ivory); font-weight:600; }
+  .codebloc{ display:block; margin-top:12px; padding:13px 15px; border-radius:12px;
+    background:rgba(8,5,4,.62); border:1px solid rgba(var(--sk-mustard-rgb),.32);
+    box-shadow:inset 0 1px 0 rgba(var(--sk-glow-rgb),.10); }
+  .codelab{ display:block; font-family:var(--f-alt); font-size:9.5px; letter-spacing:.18em;
+    text-transform:uppercase; color:rgba(var(--sk-mustard-rgb),.78); margin-bottom:8px; }
+  .coderang{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .codeval{ font-family:var(--f-display); font-size:clamp(21px,2vw,26px); letter-spacing:.20em;
+    color:var(--gilt-lit); text-shadow:0 0 22px rgba(var(--sk-glow-rgb),.32); }
+  .codebtn{ font-family:var(--f-alt); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--gilt); background:transparent; border:1px solid rgba(var(--sk-mustard-rgb),.45);
+    border-radius:999px; padding:6px 15px; cursor:pointer; transition:background .2s ease, color .2s ease; }
+  .codebtn:hover{ background:rgba(var(--sk-mustard-rgb),.16); color:var(--ivory); }
+  .codebtn:focus-visible{ outline:2px solid var(--glow); outline-offset:2px; }
+  .pied{ position:relative; margin-top:18px; padding-top:14px; border-top:1px solid rgba(var(--sk-mustard-rgb),.2);
+    font-size:14.5px; line-height:1.55; color:var(--ivory-soft); font-style:italic; }
+
+  @media (max-width:900px){
+    .grid{ grid-template-columns:1fr; }
+    .scene{ height:250px; }
+    .fiche,.concours{ padding-left:22px; padding-right:22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="apercu"><span>Proposition · page non listée</span></div>
+
+<div class="shell">
+
+  <h1 class="section">Concours des Artisans d'Azure</h1>
+
+  <div class="grid">
+
+    <!-- fiche kiosque, copiée de la section Marché -->
+    <article class="glass fiche">
+      <div class="metier">Armes, armures et accessoires de grandeur nature</div>
+      <h2>Les Artisans d'Azure</h2>
+      <p>Leur kiosque reste ouvert les trois jours, et les pièces se touchent avant de s'acheter.</p>
+
+      <div class="trouve">Ce que l'on trouve à leur table</div>
+      <ul class="liste">
+        <li>Épées, dagues et haches de mousse, montées pour le combat</li>
+        <li>Boucliers peints à la main</li>
+        <li>Armures et pièces de cuir taillées sur mesure</li>
+        <li>Ceintures, bourses et accessoires de costume</li>
+      </ul>
+
+      <a class="lien" href="https://www.artisansdazure.com" target="_blank" rel="noopener">Voir la boutique <i></i></a>
+    </article>
+
+    <!-- encadré concours -->
+    <aside class="glass concours">
+      <div class="sceau">Concours du marché</div>
+
+      <div class="scene" id="scene" role="img" aria-label="Une épée de mousse des Artisans d'Azure, qui tourne lentement.">
+        <div class="repli" id="repli">
+          <svg viewBox="0 0 60 200" aria-hidden="true">
+            <defs>
+              <linearGradient id="lame" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#7C838A"/><stop offset=".45" stop-color="#C3CAD1"/><stop offset="1" stop-color="#767D85"/>
+              </linearGradient>
+              <linearGradient id="or" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#E8C46E"/><stop offset="1" stop-color="#8C6A1F"/>
+              </linearGradient>
+            </defs>
+            <path d="M30 6 L40 34 L40 128 L30 140 L20 128 L20 34 Z" fill="url(#lame)"/>
+            <rect x="8" y="132" width="44" height="9" rx="4.5" fill="url(#or)"/>
+            <rect x="25" y="141" width="10" height="42" rx="5" fill="#3A2A1B"/>
+            <circle cx="30" cy="188" r="8" fill="url(#or)"/>
+          </svg>
+        </div>
+      </div>
+
+      <h3>Gagnez une épée <em>des Artisans d'Azure</em></h3>
+      <p class="sous">Une lame de mousse montée à la main, tirée au sort le dimanche du festival parmi ceux qui ont amené quelqu'un à la cour.</p>
+
+      <div class="comment">Comment participer</div>
+      <ol class="etapes">
+        <li><span class="n">1</span><span>Invitez une personne à se créer un compte pour le Festival Médiéval.</span></li>
+        <li><span class="n">2</span><span>Votre <b>code de parrain</b> vous attend dans votre espace membre. Donnez-le à votre invité au moment où il ouvre son compte.
+
+          <span class="codebloc" id="codebloc">
+            <span class="codelab">Votre code de parrainage</span>
+            <span class="coderang">
+              <span class="codeval" id="codeval">HRV4TN</span>
+              <button type="button" class="codebtn" id="codebtn" aria-label="Copier votre code de parrain">Copier</button>
+            </span>
+          </span>
+        </span></li>
+        <li><span class="n">3</span><span>Si votre compte existe déjà et que quelqu'un vous a amené ici, inscrivez son nom dans la section <b>« Qui est mon parrain »</b> de votre espace.</span></li>
+      </ol>
+
+      <p class="pied">Chaque personne que vous amenez ajoute votre nom une fois de plus dans le chapeau.</p>
+    </aside>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+        integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+(function(){
+  var hote = document.getElementById('scene');
+  var repli = document.getElementById('repli');
+  if (typeof THREE === 'undefined' || !hote) { if (repli) repli.style.display = 'flex'; return; }
+
+  var doux = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  cam.position.set(0, 0.62, 10.6);
+  cam.lookAt(0, 0.55, 0);
+
+  var rendu;
+  try {
+    rendu = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+  } catch (e) { repli.style.display = 'flex'; return; }
+  rendu.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  rendu.outputEncoding = THREE.sRGBEncoding;
+  hote.appendChild(rendu.domElement);
+
+  // ── matières : de la mousse peinte, jamais de l'acier ──
+  var mLame = new THREE.MeshStandardMaterial({ color: 0x9AA2AA, metalness: 0.16, roughness: 0.60 });
+  var mGorge = new THREE.MeshStandardMaterial({ color: 0x6B7178, metalness: 0.12, roughness: 0.82 });
+  var mBronze = new THREE.MeshStandardMaterial({ color: 0x8C6A1F, metalness: 0.55, roughness: 0.42 });
+  var mBronzeClair = new THREE.MeshStandardMaterial({ color: 0xB08D3A, metalness: 0.6, roughness: 0.36 });
+  var mCuir = new THREE.MeshStandardMaterial({ color: 0x3B2B1C, metalness: 0.0, roughness: 0.93 });
+
+  var epee = new THREE.Group();
+
+  // lame : profil extrudé, biseau qui fait le tranchant de mousse
+  var p = new THREE.Shape();
+  p.moveTo(-0.160, 0);
+  p.lineTo(-0.150, 2.55);
+  p.quadraticCurveTo(-0.132, 3.00, 0, 3.22);
+  p.quadraticCurveTo(0.132, 3.00, 0.150, 2.55);
+  p.lineTo(0.160, 0);
+  p.lineTo(-0.160, 0);
+  var gLame = new THREE.ExtrudeGeometry(p, {
+    depth: 0.055, bevelEnabled: true, bevelThickness: 0.022,
+    bevelSize: 0.030, bevelOffset: 0, bevelSegments: 3, curveSegments: 20
+  });
+  gLame.center();
+  var lame = new THREE.Mesh(gLame, mLame);
+  lame.position.y = 1.61;
+  epee.add(lame);
+
+  // la gorge, creusée sur les deux faces
+  [0.055, -0.055].forEach(function(z){
+    var g = new THREE.BoxGeometry(0.072, 2.42, 0.012);
+    var m = new THREE.Mesh(g, mGorge);
+    m.position.set(0, 1.46, z);
+    epee.add(m);
+  });
+
+  // garde recourbée vers la lame
+  var courbe = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-0.62, 0.16, 0),
+    new THREE.Vector3(-0.34, -0.03, 0),
+    new THREE.Vector3(0, -0.07, 0),
+    new THREE.Vector3(0.34, -0.03, 0),
+    new THREE.Vector3(0.62, 0.16, 0)
+  ]);
+  var garde = new THREE.Mesh(new THREE.TubeGeometry(courbe, 40, 0.062, 14, false), mBronze);
+  epee.add(garde);
+  [-0.62, 0.62].forEach(function(x){
+    var b = new THREE.Mesh(new THREE.SphereGeometry(0.072, 18, 14), mBronzeClair);
+    b.position.set(x, 0.16, 0);
+    epee.add(b);
+  });
+  var collet = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.135, 0.13, 20), mBronzeClair);
+  collet.position.y = 0.09;
+  epee.add(collet);
+
+  // poignée de cuir, avec ses anneaux
+  var manche = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.098, 0.86, 22), mCuir);
+  manche.position.y = -0.50;
+  epee.add(manche);
+  for (var i = 0; i < 7; i++){
+    var an = new THREE.Mesh(new THREE.TorusGeometry(0.094, 0.011, 8, 24), mCuir);
+    an.rotation.x = Math.PI / 2;
+    an.position.y = -0.16 - i * 0.115;
+    epee.add(an);
+  }
+
+  // pommeau
+  var pom = new THREE.Mesh(new THREE.SphereGeometry(0.165, 24, 18), mBronze);
+  pom.scale.set(1, 0.74, 1);
+  pom.position.y = -0.99;
+  epee.add(pom);
+  var rondelle = new THREE.Mesh(new THREE.CylinderGeometry(0.108, 0.108, 0.035, 20), mBronzeClair);
+  rondelle.position.y = -0.90;
+  epee.add(rondelle);
+
+  epee.rotation.z = 0.10;
+  scene.add(epee);
+
+  // ── lumière de chandelle ──
+  scene.add(new THREE.AmbientLight(0x3A2A18, 1.15));
+  var cle = new THREE.DirectionalLight(0xE8B14A, 1.45);
+  cle.position.set(3.2, 4.6, 3.4);
+  scene.add(cle);
+  var contre = new THREE.PointLight(0xD8B05A, 1.5, 16);
+  contre.position.set(-2.6, 1.4, -3.2);
+  scene.add(contre);
+  var froid = new THREE.DirectionalLight(0x7E96B8, 0.85);
+  froid.position.set(-3.4, -1.2, 2.2);
+  scene.add(froid);
+
+  function taille(){
+    var l = hote.clientWidth, h = hote.clientHeight;
+    if (!l || !h) return;
+    rendu.setSize(l, h, false);
+    cam.aspect = l / h;
+    cam.updateProjectionMatrix();
+  }
+  taille();
+  window.addEventListener('resize', taille);
+
+  if (doux) {
+    epee.rotation.y = -0.55;
+    rendu.render(scene, cam);
+    return;
+  }
+
+  var t0 = performance.now();
+  (function boucle(t){
+    requestAnimationFrame(boucle);
+    var s = (t - t0) / 1000;
+    epee.rotation.y = -0.55 + s * 0.40;
+    epee.rotation.z = 0.10 + Math.sin(s * 0.7) * 0.035;
+    epee.position.y = Math.sin(s * 0.85) * 0.055;
+    rendu.render(scene, cam);
+  })(t0);
+})();
+
+(function(){
+  var b=document.getElementById('codebtn'), v=document.getElementById('codeval');
+  if(!b||!v) return;
+  b.addEventListener('click', function(){
+    var fini=function(){ var t=b.textContent; b.textContent='Copié'; setTimeout(function(){ b.textContent=t; }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(v.textContent.trim()).then(fini, fini);
+    } else { fini(); }
+  });
+})();
+</script>
+
+</body>
+</html>
