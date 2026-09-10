@@ -76,6 +76,7 @@ const handlers = ({ db, FieldValue, COURRIELS_ADMIN }) => {
       equipe: memeGroupe ? (avant.equipe || null) : null,
       exclus: memeGroupe ? (avant.exclus || []) : [],
       clanId: avant ? (avant.clanId || null) : null,
+      badge: avant && avant.badge === false ? false : true,
       faitLe: SV(),
       maj: SV(),
       creeLe: avant && avant.creeLe ? avant.creeLe : SV(),
@@ -136,6 +137,7 @@ const handlers = ({ db, FieldValue, COURRIELS_ADMIN }) => {
       resultat: moi ? {
         groupe: moi.groupe, fonction: moi.fonction, seconde: moi.seconde, archetype: moi.archetype,
         scores: moi.scores, reponses: moi.reponses, clanId: moi.clanId || null,
+        badge: moi.badge !== false,
       } : null,
       places,
       invitations: invitations.map((i) => ({ id: i.id, guildeId: i.guildeId, nomClan: i.nomClan, groupe: i.groupe, de: deQui[i.de] || null })),
@@ -143,6 +145,17 @@ const handlers = ({ db, FieldValue, COURRIELS_ADMIN }) => {
   }
 
   // ── Le profil d'une autre personne ─────────────────────────────────
+  // Épingler le verdict sur sa fiche, ou le retirer. Le champ vit dans
+  // le document du résultat : celui qui n'a pas joué n'a rien à épingler.
+  async function badge(uid, data) {
+    const voulu = data.afficher !== false;
+    const doc = colResultats().doc(uid);
+    const avant = await doc.get();
+    if (!avant.exists) throw new HttpsError('failed-precondition', 'Faites le questionnaire d’abord.');
+    await doc.set({ badge: voulu, maj: SV() }, { merge: true });
+    return { ok: true, badge: voulu };
+  }
+
   async function profil(_uid, data) {
     const cible = String(data.uid || '');
     if (!cible) throw new HttpsError('invalid-argument', 'Qui ?');
@@ -154,7 +167,10 @@ const handlers = ({ db, FieldValue, COURRIELS_ADMIN }) => {
       places = r.equipe.map((p) => ({ fonction: p.fonction, uid: p.uid, parDefaut: !!p.parDefaut, membre: p.uid ? gens[p.uid] : null }));
     }
     return {
-      resultat: { groupe: r.groupe, fonction: r.fonction, seconde: r.seconde, archetype: r.archetype, clanId: r.clanId || null },
+      resultat: {
+        groupe: r.groupe, fonction: r.fonction, seconde: r.seconde, archetype: r.archetype,
+        clanId: r.clanId || null, badge: r.badge !== false,
+      },
       places,
     };
   }
@@ -245,7 +261,7 @@ const handlers = ({ db, FieldValue, COURRIELS_ADMIN }) => {
     return { total: snap.size, parGroupe, parFonction, parArchetype, croise, clans, equipes, invitations };
   }
 
-  return { enregistrer, equipe, lire, profil, former, repondre, stats };
+  return { enregistrer, equipe, lire, profil, former, repondre, stats, badge };
 };
 
 module.exports = (deps) => {
@@ -263,6 +279,7 @@ module.exports = (deps) => {
     placeClanFormer: appel(h.former),
     placeClanRepondre: appel(h.repondre),
     placeClanStats: appel(h.stats),
+    placeClanBadge: appel(h.badge),
   };
 };
 module.exports.handlers = handlers;

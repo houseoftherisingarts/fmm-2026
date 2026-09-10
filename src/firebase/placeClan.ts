@@ -11,6 +11,8 @@ export interface Place { fonction: Fonction; uid: string | null; parDefaut: bool
 export interface ResultatClan {
   groupe: Groupe; fonction: Fonction; seconde: Fonction; archetype: Archetype;
   scores?: Scores; reponses?: number[]; clanId: string | null;
+  /** Le verdict est épinglé sur la fiche du membre, sauf s'il l'a retiré. */
+  badge?: boolean;
 }
 export interface InvitationClan { id: string; guildeId: string; nomClan: string; groupe: Groupe; de: MembreEquipe | null }
 export interface EtatClan { resultat: ResultatClan | null; places: Place[] | null; invitations: InvitationClan[] }
@@ -39,6 +41,7 @@ export const lirePlaceDe = appeler<{ uid: string }, { resultat: ResultatClan | n
 export const formerClan = appeler<{ nom: string }, { id: string; slug: string; invites: number }>('placeClanFormer');
 export const repondreInvitation = appeler<{ invitationId: string; accepter: boolean }, { ok: true; guildeId: string; slug: string | null }>('placeClanRepondre');
 export const statsPlaceClan = appeler<Record<string, never>, StatsClan>('placeClanStats');
+export const epinglerPlace = appeler<{ afficher: boolean }, { ok: true; badge: boolean }>('placeClanBadge');
 
 /** Le brouillon local : les réponses survivent à une connexion en cours de route. */
 const CLE = 'fmm.placeClan.brouillon';

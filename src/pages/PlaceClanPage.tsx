@@ -129,13 +129,13 @@ const PlaceClanPage: React.FC = () => {
           <Folio texte="ANNO PESTIS" />
           <Encre
             as="span" texte="Ta place dans le clan" cle="titre" vitesse={0.03}
-            className="font-display block text-center leading-tight mb-[1.6cqw]"
+            className="block text-center leading-tight mb-[1.6cqw]"
             style={{ fontSize: 'var(--t-verdict)' }}
           />
           <Encre
             texte="Quinze questions, un verdict, et une équipe de sept à réunir."
             cle="accroche" delai={0.9}
-            className="font-editorial text-center leading-snug mb-[2.4cqw]"
+            className="text-center leading-snug mb-[2.4cqw]"
             style={{ fontSize: 'var(--t-reponse)', color: ENCRE_PALE }}
           />
           <ChoixEncre
@@ -150,8 +150,8 @@ const PlaceClanPage: React.FC = () => {
       return (
         <>
           <Encre
-            texte="Dans quelle compagnie marchez-vous ?" cle="groupe"
-            className="font-editorial text-center leading-snug mb-[0.7cqw]"
+            texte="Lequel de ces groupes vous appelle le plus ?" cle="groupe"
+            className="text-center leading-snug mb-[0.7cqw]"
             style={{ fontSize: 'var(--t-question)' }}
           />
           <div className="grimoire-serre" style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '0.45cqw' }}>
@@ -177,7 +177,7 @@ const PlaceClanPage: React.FC = () => {
           <Folio texte={`FOLIO ${romain(index + 1)}`} cle={q.id} />
           <Encre
             texte={q.texte} cle={q.id} delai={0.3} vitesse={0.014}
-            className="font-editorial text-center leading-snug mb-[1.3cqw]"
+            className="text-center leading-snug mb-[1.3cqw]"
             style={{ fontSize: 'var(--t-question)' }}
           />
           <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '1cqw' }}>
@@ -193,13 +193,13 @@ const PlaceClanPage: React.FC = () => {
           </div>
           <div className="flex items-center justify-between mt-[1cqw]"
                style={{ fontSize: 'var(--t-sous)', paddingLeft: '3.4cqw' }}>
-            <button type="button" className="grimoire-choix font-display"
+            <button type="button" className="grimoire-choix grimoire-encre"
                     style={{ color: ENCRE_PALE, letterSpacing: '0.22em' }}
                     onClick={() => (index === 0 ? setEtape('groupe') : setIndex(index - 1))}>
               ‹ PRÉCÉDENTE
             </button>
             {reponses[index] !== undefined && index < QUESTIONS.length - 1 && (
-              <button type="button" className="grimoire-choix font-display"
+              <button type="button" className="grimoire-choix grimoire-encre"
                       style={{ color: ENCRE, letterSpacing: '0.22em' }}
                       onClick={() => setIndex(index + 1)}>
                 SUIVANTE ›
@@ -216,13 +216,13 @@ const PlaceClanPage: React.FC = () => {
           <Folio texte="LE VERDICT" cle={v.fonction} />
           <Encre
             as="span" texte={v.titre} cle={`t-${v.fonction}`} vitesse={0.05} delai={0.5}
-            className="font-display block text-center leading-tight mb-[1.2cqw]"
+            className="block text-center leading-tight mb-[1.2cqw]"
             style={{ fontSize: 'var(--t-verdict)' }}
           />
           <Encre
             texte={`${GROUPES[groupe].nom} · ${ARCHETYPES[v.archetype].nom}`}
             cle={`a-${v.fonction}`} delai={1.4}
-            className="font-editorial text-center leading-snug mb-[2.2cqw]"
+            className="text-center leading-snug mb-[2.2cqw]"
             style={{ fontSize: 'var(--t-sous)', color: ENCRE_PALE }}
           />
           <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '1cqw' }}>
@@ -253,13 +253,13 @@ const PlaceClanPage: React.FC = () => {
       <Grimoire
         gauche={registreDesFolios ? (
           <>
-            <p aria-hidden className="font-display text-center mb-[2.2cqw]"
+            <p aria-hidden className="grimoire-encre text-center mb-[2.2cqw]"
                style={{ color: ENCRE_PALE, fontSize: 'clamp(8px, 1.05cqw, 13px)', letterSpacing: '0.3em' }}>
               TA PLACE DANS LE CLAN
             </p>
             <RegistreFolios lignes={registreDesFolios} />
             {groupe && (
-              <p aria-hidden className="font-display text-center mt-[2cqw]"
+              <p aria-hidden className="grimoire-encre text-center mt-[2cqw]"
                  style={{ color: ENCRE_PALE, fontSize: 'clamp(8px, 1.05cqw, 13px)', letterSpacing: '0.26em' }}>
                 {GROUPES[groupe].nom.toUpperCase()}
               </p>

@@ -2712,6 +2712,17 @@ a:hover > .fmm-annee-carte::after {
   .fmm-faq[open] .fmm-faq-reponse { animation: none; }
 }
 
+/* Luminari, la main du registre. Alex la voulait pour le grimoire : elle
+   vient de macOS, donc elle est servie ici en sous-ensemble latin pour
+   que le rendu soit le même sur Windows et sur Android. */
+@font-face {
+  font-family: 'Luminari FMM';
+  src: url('/fonts/luminari.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ─── Le grimoire plein écran du jeu de la Peste ─────────────────────
    Le livre occupe l'écran, et tout ce que le jeu demande s'écrit sur le
    vélin (Alex, 2026-09-10). Le plan garde le rapport de l'image pendant
@@ -2747,12 +2758,22 @@ a:hover > .fmm-annee-carte::after {
   transform: translate(calc(-50% + var(--grimoire-decalage, 0px)), -50%);
   container-type: inline-size;
   /* Les pages du livre, en pourcentage du plan. */
-  --page-droite-x: 51.5%;
+  --page-droite-x: 51.7%;
   --page-droite-w: 27%;
   --page-haut: 17%;
   --page-hauteur: 56%;
   /* Les corps de texte du vélin, réglés à part sur téléphone où la page
      est plus courte. */
+  /* La main du registre, et son épaisseur : Luminari n'a qu'une graisse,
+     donc l'encre se densifie au filet plutôt qu'au gras. */
+  --encre-main: 'Luminari FMM', 'Luminari', 'Cinzel', 'Cormorant SC', Georgia, serif;
+  --encre-filet: 0.34px;
+  /* La page n'est pas un rectangle : elle penche et s'élargit vers le
+     bas. Le texte prend la même perspective, sinon il se lit comme un
+     calque posé par-dessus (Alex, 2026-09-10). */
+  --page-perspective: 1400px;
+  --page-inclinaison: 5.5deg;
+  --page-roulis: -0.4deg;
   --t-folio: clamp(8px, 1.15cqw, 14px);
   --t-question: clamp(12px, 1.72cqw, 22px);
   --t-reponse: clamp(11px, 1.42cqw, 18px);
@@ -2777,6 +2798,9 @@ a:hover > .fmm-annee-carte::after {
     --page-droite-w: 25%;
     --page-haut: 17%;
     --page-hauteur: 55%;
+    --encre-filet: 0.28px;
+    --page-inclinaison: 4.4deg;
+    --page-roulis: -0.3deg;
     --t-folio: 10px;
     --t-question: 16px;
     --t-reponse: 13.5px;
@@ -2791,6 +2815,20 @@ a:hover > .fmm-annee-carte::after {
 }
 /* La ligne cliquable ne porte aucun fond : c'est de l'encre sur du
    vélin, et le clavier la trouve par son trait de plume. */
+.grimoire-encre {
+  font-family: var(--encre-main);
+  -webkit-text-stroke: var(--encre-filet) currentColor;
+  paint-order: stroke fill;
+}
+/* Les deux pages du livre, chacune dans son plan. */
+.grimoire-page {
+  transform: perspective(var(--page-perspective))
+             rotateX(var(--page-inclinaison))
+             rotate(var(--page-roulis));
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+.grimoire-page-gauche { --page-roulis: 0.5deg; }
 .grimoire-choix { background: none; border: 0; cursor: pointer; }
 /* Six compagnies avec leur devise tiennent mal sur une page courte :
    la liste se resserre plutôt que de sortir du filet. */

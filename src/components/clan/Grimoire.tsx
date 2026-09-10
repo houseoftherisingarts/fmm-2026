@@ -64,13 +64,13 @@ export const Encre: React.FC<EncreProps> = ({
   const Balise = motion[as] as typeof motion.p;
 
   if (reduire) {
-    return <Balise className={className} style={{ color: ENCRE, ...style }}>{texte}</Balise>;
+    return <Balise className={`grimoire-encre ${className ?? ''}`} style={{ color: ENCRE, ...style }}>{texte}</Balise>;
   }
 
   return (
     <Balise
       key={cle}
-      className={className}
+      className={`grimoire-encre ${className ?? ''}`}
       style={{ color: ENCRE, hyphens: 'auto', overflowWrap: 'break-word', ...style }}
       aria-label={texte}
       initial="seche"
@@ -136,7 +136,7 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
       <span className={centre ? 'flex items-baseline justify-center' : 'flex items-baseline gap-[1.2cqw]'}>
         {!centre && <motion.span
           aria-hidden
-          className="font-display shrink-0 tabular-nums text-right"
+          className="grimoire-encre shrink-0 tabular-nums text-right"
           style={{
             color: choisi ? ENCRE_ROUGE : ENCRE_PALE,
             fontSize: 'var(--t-marge)',
@@ -195,14 +195,14 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
 export const Folio: React.FC<{ texte: string; cle?: string | number }> = ({ texte, cle }) => (
   <Encre
     as="span" texte={texte} cle={`folio-${cle ?? texte}`} vitesse={0.045}
-    className="font-display block text-center mb-[1.6cqw]"
+    className="block text-center mb-[1.6cqw]"
     style={{ color: ENCRE_PALE, fontSize: 'var(--t-folio)', letterSpacing: '0.34em' }}
   />
 );
 
 export const RegistreFolios: React.FC<{ lignes: { romain: string; marque: boolean }[] }> = ({ lignes }) => (
   <div>
-    <p aria-hidden className="font-display text-center mb-[1.4cqw]"
+    <p aria-hidden className="grimoire-encre text-center mb-[1.4cqw]"
        style={{ color: ENCRE_PALE, fontSize: 'clamp(7px, 0.95cqw, 12px)', letterSpacing: '0.34em' }}>
       REGISTRE
     </p>
@@ -211,7 +211,7 @@ export const RegistreFolios: React.FC<{ lignes: { romain: string; marque: boolea
       {lignes.map((l, i) => (
         <motion.span
           key={l.romain}
-          className="font-display tabular-nums leading-none"
+          className="grimoire-encre tabular-nums leading-none"
           style={{ color: l.marque ? ENCRE : 'rgba(126, 102, 74, 0.3)' }}
           initial={false}
           animate={l.marque
@@ -296,14 +296,14 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
         {ouvert && (
           <>
             {gauche && (
-              <div className="grimoire-page-gauche absolute" style={{ left: '11.5%', top: 'calc(var(--page-haut) + 2%)', width: '27%' }}>
+              <div className="grimoire-page grimoire-page-gauche absolute" style={{ left: '15.6%', top: 'calc(var(--page-haut) + 2%)', width: '27%' }}>
                 {gauche}
               </div>
             )}
             {/* La page centre son contenu plutôt que de le tasser en
                 haut : le bas du vélin ne reste plus vide. */}
             <div
-              className="absolute flex flex-col justify-center"
+              className="grimoire-page absolute flex flex-col justify-center"
               style={{
                 left: 'var(--page-droite-x)', top: 'var(--page-haut)',
                 width: 'var(--page-droite-w)', height: 'var(--page-hauteur)',
