@@ -287,7 +287,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               Nourriture (LIEN_BANQUET), une place à la fois. */}
           <div className="glass-light rounded-lg-card overflow-hidden flex flex-col">
             <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
-              <img src="/wix/nourriture/13fb1062.jpg" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
+              <img src="/wix/nourriture/e629f353.jpg" alt="" aria-hidden loading="lazy" className="w-full h-full object-cover" />
             </div>
             <div className="p-4 flex flex-col gap-2 flex-1">
               <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><UtensilsCrossed size={13} className="text-brass shrink-0" />{fr ? 'Billet du banquet' : 'Banquet ticket'}</p>

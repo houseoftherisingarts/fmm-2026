@@ -113,8 +113,6 @@ const PartenairesPage: React.FC = () => {
         orbImagePosition="center"
       />
 
-      <SponsorOffer />
-
       {/* ── Chapitre 2 : les partenaires actuels ── */}
       <section className="pt-16 md:pt-24">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
@@ -221,7 +219,7 @@ const PartenairesPage: React.FC = () => {
             {/* ── Centerpiece: Vikings fight figure with copper glow + bottom fade ── */}
             <div
               aria-hidden
-              className="relative col-span-2 row-span-1 md:col-start-2 md:col-span-2 md:row-span-2 min-h-[280px] md:min-h-[360px] flex items-end justify-center"
+              className="relative col-span-2 row-span-2 md:col-start-2 md:col-span-2 md:row-span-3 min-h-[420px] md:min-h-[560px] flex items-end justify-center"
             >
               <span
                 className="absolute inset-0 pointer-events-none"
@@ -234,7 +232,7 @@ const PartenairesPage: React.FC = () => {
               <img
                 src="/characters/vikings-fight.webp"
                 alt=""
-                className="fmm-no-grade relative w-full h-full object-contain"
+                className="fmm-no-grade relative w-full h-full object-contain scale-110 md:scale-[1.18] origin-bottom"
                 style={{
                   filter:
                     'drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(var(--sk-copper-rgb), 0.4))',
@@ -269,6 +267,9 @@ const PartenairesPage: React.FC = () => {
       </section>
 
       {/* Become a partner CTA */}
+      {/* Les paliers de commandite viennent après la maison, jamais avant. */}
+      <SponsorOffer />
+
       <section className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-50" count={16} />

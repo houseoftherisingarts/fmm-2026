@@ -29,7 +29,7 @@ const BoutiquePage: React.FC = () => {
         intro={fr
           ? 'Des cosmétiques pour votre personnage, des skins pour le site, et bientôt les albums des groupes, contre les Montpellois gagnés en explorant le festival.'
           : 'Cosmetics for your character, skins for the site, and soon band albums, for the Montpellois earned while exploring the festival.'}
-        orbImage="/orb/marche.jpg"
+        orbImage="/montpellois.webp"
       />
       <section className="relative bleed-edges pt-4 pb-24 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">

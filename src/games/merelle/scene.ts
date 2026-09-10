@@ -31,7 +31,7 @@ const HAUTEUR_PION = 1.5;
 
 const TEINTES: Record<Camp, number> = {
   1: 0xd9b681, // chêne clair, huilé
-  2: 0x452a18, // bois teint au brou de noix
+  2: 0x14100e, // chêne noirci, incrusté d'os
 };
 
 export interface SceneMerelle {
@@ -341,11 +341,22 @@ export function monterScene(el: HTMLElement): SceneMerelle {
   plancher.renderOrder = -2;
   scene.add(plancher);
 
+  // La même planche que le jeu de dés, pour que les deux tables du
+  // festival soient la même table. Le canevas reste en secours tant que
+  // la photo n'est pas arrivée.
   const boisTable = new THREE.CanvasTexture(grainDeChene(512, '#4a3018', '#20120a'));
   boisTable.wrapS = boisTable.wrapT = THREE.RepeatWrapping;
   boisTable.repeat.set(3, 3);
   boisTable.anisotropy = 8;
   boisTable.colorSpace = THREE.SRGBColorSpace;
+  new THREE.TextureLoader().load('/jeux/des/table-bois.webp', (photo) => {
+    photo.wrapS = photo.wrapT = THREE.RepeatWrapping;
+    photo.repeat.set(2.4, 2.4);
+    photo.anisotropy = 8;
+    photo.colorSpace = THREE.SRGBColorSpace;
+    tableMat.map = photo;
+    tableMat.needsUpdate = true;
+  });
   const tableMat = new THREE.MeshStandardMaterial({ map: boisTable, roughness: 0.7, metalness: 0.02 });
   const tableGeo = new THREE.CylinderGeometry(11.5, 12.5, 0.7, 56);
   const table = new THREE.Mesh(tableGeo, tableMat);

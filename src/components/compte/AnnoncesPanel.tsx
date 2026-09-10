@@ -59,13 +59,16 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     );
   };
 
-  // Un règlement reste épinglé et n'entre pas dans la collection : le
-  // compte des avis à décrocher ne parle que des avis décrochables
-  // (Alex, 2026-09-02, quand le règlement des armes est arrivé).
-  const permanents = ANNONCES.filter((a) => a.permanent);
+  // Un avis accepté quitte le babillard et rejoint la collection de la
+  // personne, y compris les bons à savoir et les règlements : les
+  // laisser épinglés avec la mention « accepté » encombrait le mur pour
+  // rien (Alex, 2026-09-10, qui revient sur la règle du 2 septembre).
+  const permanents = ANNONCES.filter((a) => a.permanent && !pris.includes(a.id));
   const collectionnables = ANNONCES.filter((a) => !a.permanent);
   const restants = collectionnables.filter((a) => !pris.includes(a.id));
   const affiches = [...permanents, ...restants];
+  // La collection montre tout ce qui a été pris, dans l'ordre du mur.
+  const dansMaCollection = ANNONCES.filter((a) => pris.includes(a.id));
   if (ANNONCES.length === 0) return null;
 
   return (
@@ -88,14 +91,14 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       {/* Ma collection d'abord : le chiffre du profil pointe ici, donc
           la personne doit voir ce qu'elle a décroché avant le reste
           (Alex, 2026-08-23). */}
-      {prisCollection.length > 0 && (
+      {dansMaCollection.length > 0 && (
         <div className="mb-7 rounded-lg-card border border-brass/25 px-6 py-5"
              style={{ background: 'rgba(var(--sk-deep-rgb), 0.45)' }}>
           <p className="witcher-stat-label mb-3">
             {fr ? 'Mes avis décrochés' : 'Notices I have taken'}
           </p>
           <ul className="space-y-2">
-            {collectionnables.filter((a) => prisCollection.includes(a.id)).map((a) => (
+            {dansMaCollection.map((a) => (
               <li key={a.id} className="font-editorial text-sm text-ivory-soft flex items-start gap-2.5">
                 <Check size={14} className="text-brass shrink-0 mt-0.5" />
                 <span>
