@@ -27,7 +27,7 @@ export interface GroupeMusical {
   statut: GroupeStatut;
   /** Présent seulement quand statut === 'affiche'. */
   jour?: GroupeJour;
-  /** Présent seulement quand statut === 'archive' (2022 à 2026). */
+  /** Présent seulement quand statut === 'archive' (2021 à 2026). */
   annee?: number;
   ordre: number;
   createdAt?: Timestamp;

@@ -154,7 +154,7 @@ export const SponsorOffer: React.FC = () => {
           jamais publié, seulement l'affluence et la portée. */}
       <section className="relative py-8 md:py-12 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" stagger={0.08}>
+          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5" stagger={0.08}>
             {t.stats.map((s) => (
               <StaggerItem
                 key={s.label}
@@ -171,7 +171,7 @@ export const SponsorOffer: React.FC = () => {
 
       {/* L'ascension : une frise de jalons par édition, hauteur croissante.
           Jalons qualitatifs documentés (01-identite.md du vault) : pas de
-          chiffres inventés pour 2022-2024; seul le 3 100 (rapport 2025)
+          chiffres inventés pour 2021-2024; seul le 3 100 (rapport 2025)
           est chiffré. 2026 se termine sur la place du commanditaire. */}
       <section className="relative py-12 md:py-16 overflow-hidden">
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
@@ -181,19 +181,21 @@ export const SponsorOffer: React.FC = () => {
               {t.growthSub}
             </p>
           </Reveal>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-5 gap-3 md:gap-4 items-end" stagger={0.1}>
+          <Stagger className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 items-end" stagger={0.1}>
             {t.growth.map((g, i) => (
               <StaggerItem
                 key={g.year}
                 as="article"
                 className={
-                  i === 4
-                    ? 'relative rounded-card p-5 border-2 border-brass bg-brass/10 flex flex-col justify-end'
-                    : 'relative rounded-card p-5 glass-light border border-white/10 flex flex-col justify-end'
+                  i === t.growth.length - 1
+                    ? 'relative rounded-card p-5 border-2 border-brass bg-brass/10 flex flex-col justify-end sm:min-h-[var(--jalon-h)]'
+                    : 'relative rounded-card p-5 glass-light border border-white/10 flex flex-col justify-end sm:min-h-[var(--jalon-h)]'
                 }
-                style={{ minHeight: `${9 + i * 2.5}rem` }}
+                /* L'escalier de hauteurs ne vaut que sur une rangée : en
+                   colonne unique il ne produit que du vide. */
+                style={{ ['--jalon-h' as string]: `${9 + i * 2.5}rem` }}
               >
-                <p className={i === 4 ? 'font-display text-2xl text-brass mb-2' : 'font-display text-2xl text-ivory mb-2'}>{g.year}</p>
+                <p className={i === t.growth.length - 1 ? 'font-display text-2xl text-brass mb-2' : 'font-display text-2xl text-ivory mb-2'}>{g.year}</p>
                 {g.big && <p className="font-display text-3xl md:text-4xl text-brass leading-none mb-2">{g.big}</p>}
                 <p className="font-editorial text-sm text-ivory-soft leading-snug">{g.note}</p>
               </StaggerItem>
@@ -406,13 +408,13 @@ const FR = {
   stats: [
     { value: '3 100', label: 'Festivaliers en 2025' },
     { value: '3 jours', label: 'Dernier week-end de septembre' },
-    { value: 'Depuis 2022', label: 'Quatre éditions derrière nous' },
-    { value: '15 000 $', label: 'Appui annuel de la MRC Papineau' },
+    { value: 'Depuis 2021', label: 'Cinq éditions derrière nous' },
   ],
   growthEyebrow: 'La plus forte croissance des festivals médiévaux du Québec',
   growthTitle: 'De la première tente à 3 100 festivaliers',
-  growthSub: 'Aucun festival médiéval québécois n’a grandi aussi vite. Parti de zéro en 2022, le FMM rejoint déjà des festivals établis depuis des décennies, et chaque édition a été plus grande que la précédente. Le nom qui s’attache à cette ascension maintenant grandit avec elle.',
+  growthSub: 'Aucun festival médiéval québécois n’a grandi aussi vite. Parti de zéro en 2021, le FMM rejoint déjà des festivals établis depuis des décennies, et chaque édition a été plus grande que la précédente. Le nom qui s’attache à cette ascension maintenant grandit avec elle.',
   growth: [
+    { year: '2021', note: 'Le pique-nique médiéval, l’étincelle de départ en pleine pandémie.' },
     { year: '2022', note: 'Première édition. Le village se dresse pour la première fois.' },
     { year: '2023', note: 'L’offre artistique s’élargit : troupes, musique, spectacles.' },
     { year: '2024', note: 'Expansion équestre et artisanale. Les cavaliers entrent en lice.' },
@@ -507,13 +509,13 @@ const EN = {
   stats: [
     { value: '3,100', label: 'Festival-goers in 2025' },
     { value: '3 days', label: 'Last weekend of September' },
-    { value: 'Since 2022', label: 'Four editions behind us' },
-    { value: '$15,000', label: 'Yearly support from MRC Papineau' },
+    { value: 'Since 2021', label: 'Five editions behind us' },
   ],
   growthEyebrow: 'The fastest-growing medieval festival in Quebec',
   growthTitle: 'From the first tent to 3,100 festival-goers',
-  growthSub: 'No medieval festival in Quebec has grown this fast. Starting from zero in 2022, the FMM already stands beside festivals decades in the making, and every edition has been larger than the last. The name that joins this ascent now grows with it.',
+  growthSub: 'No medieval festival in Quebec has grown this fast. Starting from zero in 2021, the FMM already stands beside festivals decades in the making, and every edition has been larger than the last. The name that joins this ascent now grows with it.',
   growth: [
+    { year: '2021', note: 'The medieval picnic, the spark it all began with, mid-pandemic.' },
     { year: '2022', note: 'First edition. The village rises for the first time.' },
     { year: '2023', note: 'The artistic offering grows: troupes, music, shows.' },
     { year: '2024', note: 'Equestrian and artisan expansion. The riders enter the lists.' },

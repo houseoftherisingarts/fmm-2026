@@ -597,7 +597,7 @@ export async function retirerDuSalon(motId: string): Promise<void> {
 // ── Les éditions du festival ─────────────────────────────────────────
 // Alex, 2026-08-28 : à l'inscription, la personne coche les années où
 // elle était là. Deux années lui valent le badge du vétéran.
-export const EDITIONS_FESTIVAL = [2022, 2023, 2024, 2025, 2026];
+export const EDITIONS_FESTIVAL = [2021, 2022, 2023, 2024, 2025, 2026];
 export const ANNEES_POUR_VETERAN = 2;
 
 const CLE_ANNEES = 'fmm_annees_presence';

@@ -25,7 +25,6 @@ const CinematicOpening = lazy(() => import('../components/apprendre/CinematicOpe
 const FORMATIONS: { name: { FR: string; EN: string }; Icon: React.FC<GameIconProps> }[] = [
   { name: { FR: 'Démonstration de forge',      EN: 'Forge demonstration' },     Icon: IconForge },
   { name: { FR: 'Parcours d’herboristerie',    EN: 'Herbalism trail' },         Icon: IconTissage },
-  { name: { FR: 'Conférence bohème',           EN: 'Bohemian talk' },           Icon: IconOpenBook },
   { name: { FR: 'Vente aux enchères · Forge',  EN: 'Auction · Forge' },         Icon: IconFonderie },
 ];
 
@@ -142,17 +141,19 @@ export const ThemeCaravanesSection: React.FC = () => {
             </CinematicReveal>
           </div>
 
-          {/* Culture invitée + continuité des thèmes */}
-          <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
-            <CinematicReveal as="article" className="glass-light rounded-card p-6 md:p-8">
-              <p className="font-editorial uppercase tracking-[0.3em] text-xs text-brass mb-3">{t.partnerEyebrow}</p>
-              <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-3">{t.partnerTitle}</h3>
-              <p className="font-editorial text-base text-ivory-soft leading-relaxed">{t.partnerBody}</p>
+          {/* Continuite des themes. Le bloc « culture invitee » (association
+              Rome de Montreal) est retire : elle ne vient pas au festival
+              (Tristan, 2026-09-09). */}
+          <CinematicReveal className="mb-8 md:mb-10">
+            <p className="font-display title-medieval text-xl md:text-3xl text-ivory leading-tight max-w-4xl">{t.continuityTitle}</p>
+            <div className="divider-brass w-20 mt-5" />
+          </CinematicReveal>
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-14">
+            <CinematicReveal>
+              <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed">{t.continuityBody}</p>
             </CinematicReveal>
-            <CinematicReveal as="article" className="border-l-2 border-brass/60 pl-6 md:pl-8 py-2 self-center">
-              <p className="font-display title-medieval text-xl md:text-3xl text-ivory mb-4 leading-tight">{t.continuityTitle}</p>
-              <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-3">{t.continuityBody}</p>
-              <p className="font-editorial text-base text-brass leading-relaxed">{t.continuityHullsborg}</p>
+            <CinematicReveal className="border-l-2 border-brass/60 pl-6 md:pl-8">
+              <p className="font-editorial text-base md:text-lg text-brass leading-relaxed">{t.continuityHullsborg}</p>
             </CinematicReveal>
           </div>
         </div>
@@ -257,7 +258,7 @@ export const FormationsSection: React.FC = () => {
             title={t.formationsTitle}
             lead={t.formationsLead}
           />
-          <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4" stagger={0.05}>
+          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4" stagger={0.05}>
             {FORMATIONS.map(({ name, Icon }) => (
               <StaggerItem
                 key={name.FR}
@@ -361,8 +362,6 @@ const FR = {
     { era: '1316', title: 'Le fou à la cour', body: 'Les registres royaux français mentionnent pour la première fois un fou de cour. Bouffons et conteurs animent les salles de banquet des seigneurs.' },
     { era: '1768', title: 'Le cirque moderne', body: 'À Londres, Philip Astley réunit cavaliers, acrobates, funambules et clowns sur une piste ronde. Le cirque tel que nous le connaissons est né.' },
   ],
-  partnerEyebrow: 'Une culture invitée', partnerTitle: 'L’association Rome de Montréal',
-  partnerBody: 'Cette année, nous accueillons l’association Rome de Montréal, qui vient partager et représenter la culture rom (romani) au festival. Une présence vivante, portée par celles et ceux qui la font vibrer aujourd’hui.',
   continuityTitle: 'Les Vikings ne sont pas partis. Les chevaliers non plus.',
   continuityBody: 'Chaque année, nous bonifions le festival : un nouveau thème s’ajoute, mais les anciens restent. Rien ne disparaît, tout s’additionne.',
   continuityHullsborg: 'Si vous avez aimé l’expérience viking l’an dernier, vous serez encore servis. La troupe Hullsborg vous attend, tambours et esprit du Nord compris.',
@@ -373,7 +372,7 @@ const FR = {
   epoqueAndes: 'Dans les Andes, les systèmes agricoles en terrasses (Mita) répondaient aux besoins de la communauté avec une organisation méthodique.',
   epoqueClose: 'Ces nuances montrent à quel point cette époque était riche et complexe, loin des généralités souvent évoquées.',
   formationsEyebrow: 'Au programme', formationsTitle: 'Formations et démonstrations',
-  formationsLead: 'Huit métiers vivants, démontrés sous vos yeux par des artisans qui les pratiquent encore. Le détail de chaque atelier arrive avec la programmation.',
+  formationsLead: 'Des métiers vivants, démontrés sous vos yeux par des artisans qui les pratiquent encore. Le détail de chaque atelier arrive avec la programmation.',
   detailsTBD: 'Détails à venir',
 };
 const EN = {
@@ -394,8 +393,6 @@ const EN = {
     { era: '1316', title: 'The fool at court', body: 'French royal records mention a court fool for the first time. Jesters and storytellers liven up the lords’ banquet halls.' },
     { era: '1768', title: 'The modern circus', body: 'In London, Philip Astley brings riders, acrobats, tightrope-walkers and clowns together on a round ring. The circus as we know it is born.' },
   ],
-  partnerEyebrow: 'A guest culture', partnerTitle: 'The Rome de Montréal association',
-  partnerBody: 'This year we welcome the Rome de Montréal association, here to share and represent Romani culture at the festival. A living presence, carried by the people who keep it alive today.',
   continuityTitle: 'The Vikings haven’t left. Neither have the knights.',
   continuityBody: 'Every year we enrich the festival : a new theme joins in, but the old ones stay. Nothing disappears, everything adds up.',
   continuityHullsborg: 'If you loved the Viking experience last year, you will be served again. The Hullsborg troupe awaits, drums and northern spirit included.',
@@ -406,7 +403,7 @@ const EN = {
   epoqueAndes: 'In the Andes, terraced agricultural systems (Mita) met community needs through methodical organisation.',
   epoqueClose: 'These nuances show how rich and complex this era was, far from the generalities often invoked.',
   formationsEyebrow: 'On the program', formationsTitle: 'Workshops and demonstrations',
-  formationsLead: 'Eight living crafts, demonstrated before your eyes by artisans who still practice them. Details for each workshop arrive with the program.',
+  formationsLead: 'Living crafts, demonstrated before your eyes by artisans who still practice them. Details for each workshop arrive with the program.',
   detailsTBD: 'Details to come',
 };
 

@@ -48,7 +48,9 @@ const ProgrammationPage: React.FC = () => {
       <SEO title={fr ? 'Programmation' : 'Program'} />
       <ScrollProgress />
       <PageHeader
-        eyebrow={fr ? 'Trois villages, une fin de semaine' : 'Three villages, one weekend'}
+        /* « Trois villages » ne disait rien à personne (Tristan,
+           2026-09-09), et la date fait déjà doublon sous le titre. */
+        eyebrow={fr ? 'Le village au grand complet' : 'The whole village'}
         titleA={fr ? 'Programmation' : 'Program'}
         intro={fr
           ? 'Activités, musique et jeux de la jeunesse : tout le programme du festival, réuni en un seul lieu.'

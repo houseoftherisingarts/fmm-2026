@@ -203,8 +203,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     blocs: [
       {
         type: 'texte',
-        FR: 'La programmation de l’édition 2026 est en ligne. Treize piliers tiennent les trois jours, du premier feu du matin jusqu’à celui qui s’éteint au petit matin suivant.',
-        EN: 'The programme for the 2026 edition is online. Thirteen pillars hold up the three days, from the first fire of the morning to the one that dies down at dawn.',
+        FR: 'La programmation de l’édition 2026 est en ligne, et elle tient les trois jours au complet, du premier feu du matin jusqu’à celui qui s’éteint au petit matin suivant.',
+        EN: 'The programme for the 2026 edition is online, and it fills all three days, from the first fire of the morning to the one that dies down at dawn.',
       },
       {
         type: 'photo',

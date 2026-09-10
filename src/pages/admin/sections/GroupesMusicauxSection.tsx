@@ -18,7 +18,7 @@ import {
 
 const JOUR_LABEL: Record<GroupeJour, string> = { vendredi: 'Vendredi', samedi: 'Samedi', dimanche: 'Dimanche' };
 const JOUR_ORDER: GroupeJour[] = ['vendredi', 'samedi', 'dimanche'];
-const ANNEES = [2026, 2025, 2024, 2023, 2022];
+const ANNEES = [2026, 2025, 2024, 2023, 2022, 2021];
 const ANNEE_COURANTE = 2026;
 
 const GroupesMusicauxSection: React.FC = () => {

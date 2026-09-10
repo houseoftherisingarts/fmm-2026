@@ -168,8 +168,8 @@ const Footer: React.FC = () => {
               </h3>
               <p className="font-editorial italic text-base md:text-lg leading-relaxed max-w-xl" style={{ color: 'var(--color-bone)', opacity: 0.78 }}>
                 {lang === 'FR'
-                  ? 'Migrez vers notre portail Zeffy. 3 jours · 13 piliers · 1 festival.'
-                  : 'Head to our Zeffy portal. 3 days · 13 pillars · 1 festival.'}
+                  ? 'Les billets se prennent sur notre portail Zeffy, pour les trois jours du festival, les 25, 26 et 27 septembre.'
+                  : 'Tickets are sold through our Zeffy portal, for the three days of the festival, September 25, 26 and 27.'}
               </p>
             </div>
             <div className="md:col-span-5 md:justify-self-end flex flex-col items-start md:items-end gap-5">

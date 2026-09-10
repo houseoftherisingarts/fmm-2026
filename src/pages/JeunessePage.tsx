@@ -1,18 +1,10 @@
 import React from 'react';
-import { Tent, TreePine, Compass } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
 import { Reveal, Stagger, StaggerItem, ScrollProgress, Parallax } from '../components/scroll';
-import { Motes } from '../components/marche/effects';
 import { SectionFog } from '../components/marche/atmospherics';
-
-const SPACES = [
-  { icon: Tent,    titleFR: 'Tente de relaxation', titleEN: 'Relaxation tent', bodyFR: 'Pour parents et enfants qui veulent se reposer à l’ombre.', bodyEN: 'For parents and kids who need a shaded rest.' },
-  { icon: TreePine,titleFR: 'Parc',                titleEN: 'Park',            bodyFR: 'Pour jouer de façon libre.',                                  bodyEN: 'Free-play space.' },
-  { icon: Compass, titleFR: 'Quêtes',              titleEN: 'Quests',          bodyFR: 'Organisées sur tout le site.',                                bodyEN: 'Organised all across the site.' },
-];
 
 const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   useCaravanPage();
@@ -90,38 +82,6 @@ const JeunessePage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =>
         </div>
       </section>
 
-      {/* Au complet : vue d'ensemble de l'espace jeunesse (Tente,
-          Parc, Quêtes). Déplacée en toute fin de la section Jeunesse
-          (demande d'Alex, 2026-08-04) : c'était le tout premier bloc
-          sous l'en-tête, désormais le dernier. */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        <SectionFog edges="top" />
-        <Motes className="opacity-50" count={16} />
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
-          <Stagger className="grid md:grid-cols-3 gap-5 md:gap-6" stagger={0.1}>
-            {SPACES.map((s) => {
-              const Icon = s.icon;
-              return (
-                <StaggerItem
-                  key={s.titleFR}
-                  as="article"
-                  className="glass-light rounded-card p-7 md:p-8 text-center transition-transform duration-300 hover:-translate-y-1"
-                >
-                  <div className="w-14 h-14 rounded-full bg-brass/15 border border-brass/40 flex items-center justify-center mx-auto mb-5">
-                    <Icon size={24} className="text-brass" />
-                  </div>
-                  <h3 className="font-display title-medieval text-xl md:text-2xl text-ivory mb-2">
-                    {lang === 'FR' ? s.titleFR : s.titleEN}
-                  </h3>
-                  <p className="font-editorial italic text-sm md:text-base text-ivory-soft leading-snug">
-                    {lang === 'FR' ? s.bodyFR : s.bodyEN}
-                  </p>
-                </StaggerItem>
-              );
-            })}
-          </Stagger>
-        </div>
-      </section>
     </>
   );
 };
@@ -131,7 +91,7 @@ const FR = {
   eyebrow: 'Présenté par Les Camps Légendaires',
   heroAlt: 'Une file d’enfants du festival, épée d’entraînement en main, attend son tour devant leur monitrice de camp',
   title: 'Village Jeunesse & Jeux',
-  intro: 'Le FMM tient à offrir un espace aussi adapté que possible pour les cœurs d’enfants qui sont encore dans des corps d’enfants. Cette année (en plus d’avoir adapté les prix aux familles), nous avons agrandi le site, ajouté du confort et bonifié les ateliers et activités pour les jeunes.',
+  intro: 'Le FMM tient à offrir un espace aussi adapté que possible pour les cœurs d’enfants qui sont encore dans des corps d’enfants. Cette année (en plus d’avoir adapté les prix aux familles), nous avons agrandi le site, ajouté du confort, ouvert un parc où les enfants jouent librement et bonifié les ateliers et activités pour les jeunes.',
   campsEyebrow: 'Présentateur officiel de la section jeunesse',
   campsTitle: 'Les Camps Légendaires',
   campsBody: 'Maniement de l’épée, tir à l’arc, grands jeux en équipe, quêtes immersives et plus. Depuis 2005, leur mission éducative est au cœur du camp. Par leurs activités, ils contribuent au développement positif des enfants et des ados.',
@@ -145,7 +105,7 @@ const EN = {
   eyebrow: 'Presented by Les Camps Légendaires',
   heroAlt: 'A line of festival children, wooden training swords in hand, waiting their turn in front of their camp counselor',
   title: 'Youth & Games Village',
-  intro: 'FMM strives to offer the most kid-friendly space possible for the young-hearted still living in young bodies. This year (beyond family-adjusted prices), we expanded the site, added comfort, and enriched the workshops and activities for kids.',
+  intro: 'FMM strives to offer the most kid-friendly space possible for the young-hearted still living in young bodies. This year (beyond family-adjusted prices), we expanded the site, added comfort, opened a park where kids play freely, and enriched the workshops and activities for kids.',
   campsEyebrow: 'Official presenter of the youth section',
   campsTitle: 'Les Camps Légendaires',
   campsBody: 'Swordsmanship, archery, large team games, immersive quests and more. Since 2005, their educational mission has been at the camp’s heart. Through their activities they contribute to the positive development of kids and teens.',
