@@ -65,7 +65,7 @@ service cloud.firestore {
     // s'écrivent depuis le serveur seulement : un membre ne se les
     // attribue pas lui-même.
     function userChampsServeur() {
-      return ['sansPub', 'sansPubLe', 'sansPubPaymentId', 'sansPubRaison', 'filleuls', 'filleulsMajLe', 'billetOffert'];
+      return ['sansPub', 'sansPubLe', 'sansPubPaymentId', 'sansPubRaison', 'filleuls', 'filleulsMajLe', 'billetOffert', 'concoursParrainage'];
     }
     match /users/{uid} {
       allow read:   if isOwner(uid) || isAdmin();

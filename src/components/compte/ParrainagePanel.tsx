@@ -6,9 +6,7 @@ import {
   monCodeParrain, suivreMesFilleuls, filleulsDeMesFilleuls, monParrain,
   PALIERS_PARRAINAGE, type Parrainage,
 } from '../../firebase/parrainage';
-import {
-  monConsentementConcours, poserConsentementConcours, monNombreDeFilleuls,
-} from '../../firebase/concoursParrainage';
+import { lireMonConcours, poserConsentementConcours } from '../../firebase/concoursParrainage';
 
 // ─── Le parrainage ───────────────────────────────────────────────────
 // Alex, 2026-08-28 : chacun porte son code. Une personne qui crée son
@@ -31,11 +29,14 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
 
   useEffect(() => {
     let vivant = true;
-    monConsentementConcours(uid)
-      .then((c) => { if (vivant) setAuTirage(Boolean(c?.accepte)); })
-      .catch(() => {});
-    monNombreDeFilleuls(uid)
-      .then((n) => { if (vivant) setAdmissible(n > 0); })
+    // Un seul aller-retour : le serveur rend les chances et l'état de la
+    // case ensemble, et lui seul a le droit de les écrire.
+    lireMonConcours({})
+      .then((e) => {
+        if (!vivant) return;
+        setAuTirage(Boolean(e.consentement?.accepte));
+        setAdmissible(e.chances > 0);
+      })
       .catch(() => { if (vivant) setAdmissible(false); });
     return () => { vivant = false; };
   }, [uid]);
@@ -43,7 +44,7 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
   const basculerTirage = async (veut: boolean) => {
     setTirageBusy(true);
     setTirageMsg(null);
-    const res = await poserConsentementConcours(uid, veut);
+    const res = await poserConsentementConcours(veut);
     if (res === 'ok') {
       setAuTirage(veut);
     } else if (res === 'sans-filleul') {

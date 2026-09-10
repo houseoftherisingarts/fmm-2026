@@ -11,10 +11,10 @@
 // en a amené trois voit son nom trois fois dans le chapeau.
 
 import {
-  collection, doc, getDoc, getDocs, query, where, documentId, setDoc,
-  serverTimestamp, type Timestamp,
+  collection, getDocs, query, where, documentId,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { db, firebaseApp } from '../firebase';
 import type { Parrainage } from './parrainage';
 
 export interface CandidatParrainage {
@@ -106,58 +106,48 @@ export function tirerAuSort(candidats: CandidatParrainage[]): CandidatParrainage
 // Alex, 2026-09-10 : quelqu'un entre au tirage en cochant la case, et la
 // même coche remet son courriel au commanditaire pour son marketing. La
 // coche ne veut rien dire sans filleul, donc la porte se ferme tant que
-// personne n'est entré avec son code. Le champ vit dans la fiche du
-// membre, hors des champs réservés au serveur, donc aucune règle
-// Firestore à toucher.
+// personne n'est entré avec son code.
+//
+// Le compte des filleuls et l'écriture vivent côté serveur
+// (functions/concoursParrainage.js). La première version comptait dans
+// le navigateur puis écrivait `concoursParrainage` en direct, alors que
+// les règles laissaient chaque membre écrire ce champ de sa propre
+// fiche : n'importe qui entrait au tirage depuis la console sans avoir
+// parrainé personne. Le champ est désormais rangé dans
+// `userChampsServeur()` et seul le SDK admin y touche.
 
-export interface ConsentementConcours {
-  accepte: boolean;
-  /** Le commanditaire à qui la liste est remise, pour ne pas mêler les éditions. */
-  commanditaire: string;
-  signeLe: Timestamp | null;
+export interface EtatConcours {
+  /** Le nombre de filleuls, qui est aussi le nombre de chances au tirage. */
+  chances: number;
+  /** Ce que la fiche dit aujourd'hui, ou rien si la case n'a jamais été touchée. */
+  consentement: { accepte: boolean; commanditaire: string | null } | null;
 }
 
 export const COMMANDITAIRE_CONCOURS = 'artisans-azure-2026';
 
-// Alex tient le site et n'a pas de filleul à lui : son compte compte
-// pour un, sans quoi il ne peut pas voir ni essayer le bouton avant de
-// le montrer au commanditaire. Rien d'autre ne change pour lui.
-const COURRIELS_TEST = ['alex@lesalondesinconnus.com'];
-
-/** Le nombre de personnes entrées avec mon code. */
-export async function monNombreDeFilleuls(uid: string): Promise<number> {
-  if (!db) return 0;
-  const snap = await getDocs(query(collection(db, 'parrainages'), where('parrainUid', '==', uid)));
-  if (snap.size > 0) return snap.size;
-  const fiche = await getDoc(doc(db, 'users', uid));
-  const courriel = fiche.exists() ? String(fiche.data().email || '').toLowerCase() : '';
-  return COURRIELS_TEST.includes(courriel) ? 1 : 0;
+function appeler<TIn extends object, TOut>(nom: string) {
+  return async (data: TIn): Promise<TOut> => {
+    if (!firebaseApp) throw new Error('Firebase n’est pas configuré');
+    const fn = httpsCallable<TIn, TOut>(getFunctions(firebaseApp, 'us-central1'), nom);
+    const { data: reponse } = await fn(data);
+    return reponse;
+  };
 }
 
-/** Ce que la fiche dit aujourd'hui de mon inscription au tirage. */
-export async function monConsentementConcours(uid: string): Promise<ConsentementConcours | null> {
-  if (!db) return null;
-  const fiche = await getDoc(doc(db, 'users', uid));
-  const c = fiche.exists() ? (fiche.data().concoursParrainage as ConsentementConcours | undefined) : undefined;
-  return c ?? null;
-}
+/** Mes chances et l'état de ma case, lus au serveur. */
+export const lireMonConcours = appeler<Record<string, never>, EtatConcours>('concoursParrainageLire');
 
 /**
- * Cocher la case, ou la décocher. Sans filleul, rien ne s'écrit et la
- * réponse dit pourquoi, pour que l'espace affiche la phrase au membre.
+ * Cocher la case, ou la décocher. Le serveur recompte les filleuls avant
+ * d'écrire, donc « sans-filleul » est une vraie porte fermée et non un
+ * simple affichage.
  */
-export async function poserConsentementConcours(uid: string, accepte: boolean): Promise<'ok' | 'sans-filleul' | 'erreur'> {
-  if (!db) return 'erreur';
-  if (accepte && (await monNombreDeFilleuls(uid)) === 0) return 'sans-filleul';
+export async function poserConsentementConcours(accepte: boolean): Promise<'ok' | 'sans-filleul' | 'erreur'> {
   try {
-    await setDoc(doc(db, 'users', uid), {
-      concoursParrainage: {
-        accepte,
-        commanditaire: COMMANDITAIRE_CONCOURS,
-        signeLe: serverTimestamp(),
-      },
-    }, { merge: true });
-    return 'ok';
+    const r = await appeler<{ accepte: boolean }, { etat: 'ok' | 'sans-filleul' }>(
+      'concoursParrainagePoser',
+    )({ accepte });
+    return r.etat;
   } catch {
     return 'erreur';
   }

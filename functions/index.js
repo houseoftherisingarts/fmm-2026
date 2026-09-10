@@ -3543,3 +3543,7 @@ Object.assign(exports, require('./guildes')({ db, FieldValue, crediter, debiter,
 // Ta place dans le clan (le jeu de l'année de la Peste) : résultats,
 // équipes suggérées, clans fondés et invitations. Voir functions/placeClan.js.
 Object.assign(exports, require('./placeClan')({ db, FieldValue, COURRIELS_ADMIN }));
+
+// Le concours de parrainage : la coche du tirage se pose côté serveur,
+// après un vrai compte des filleuls. Voir functions/concoursParrainage.js.
+Object.assign(exports, require('./concoursParrainage')({ db, FieldValue }));
