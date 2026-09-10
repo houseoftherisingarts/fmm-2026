@@ -64,6 +64,7 @@ const MarchePage           = lazy(() => import('./pages/MarchePage'));
 const WilliamPage          = lazy(() => import('./pages/WilliamPage'));
 const SignerCuisinePage    = lazy(() => import('./pages/SignerCuisinePage'));
 const SignerKiosquePage    = lazy(() => import('./pages/SignerKiosquePage'));
+const LivraisonKiosquePage = lazy(() => import('./pages/LivraisonKiosquePage'));
 const PlaceClanPage        = lazy(() => import('./pages/PlaceClanPage'));
 const MariagesGroupesPage  = lazy(() => import('./pages/MariagesGroupesPage'));
 const HistoireApprendrePage = lazy(() => import('./pages/HistoireApprendrePage'));
@@ -578,6 +579,11 @@ const App: React.FC = () => (
                     partagée par lien Messenger. Hors menus. */}
                 <Route path="/signer-cuisine" element={<SignerCuisinePage />} />
                 <Route path="/signer-kiosque" element={<SignerKiosquePage />} />
+                {/* Repas livrés au kiosque, le pilote à dix places.
+                    Le lien se colle dans une conversation, la page
+                    n'entre dans aucun menu et porte un noindex. */}
+                <Route path="/kiosque/livraison" element={<LivraisonKiosquePage />} />
+                <Route path="/en/booth/delivery" element={<LivraisonKiosquePage />} />
                 {/* Petite Monnaie a rejoint Commanditaires & Partenaires sur
                     une seule vitrine (Alex, 2026-08-27) : son ancien pilier
                     redirige vers l'ancre de son chapitre. */}

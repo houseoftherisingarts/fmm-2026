@@ -2313,6 +2313,27 @@ select.admin-input option { background: #0A1015; color: var(--admin-text); }
 select.witcher-input { cursor: pointer; }
 select.witcher-input option { background: var(--sk-deep); color: var(--sk-parchment); }
 
+/* Le compteur de personnes de /kiosque/livraison : deux boutons carrés
+   au même registre que les champs, assez larges pour le pouce. */
+.witcher-step {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--sk-parchment);
+  background: rgba(var(--sk-deep-rgb), 0.55);
+  border: 1px solid rgba(var(--sk-parchment-rgb), 0.18);
+  transition: border-color .25s ease, background .25s ease, color .25s ease;
+}
+.witcher-step:hover {
+  border-color: rgba(var(--sk-gilt-rgb), 0.7);
+  color: var(--sk-gilt);
+  background: rgba(var(--sk-deep-rgb), 0.78);
+}
+
 /* ── Cartes de billet, registre Gwent ──────────────────────────────
    Format tarot (2:3), dos ouvragé, recto au retournement. Le cadre
    imite une plaque de métal battu : double filet de laiton, coins

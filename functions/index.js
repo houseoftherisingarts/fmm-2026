@@ -3130,7 +3130,7 @@ exports.acheterMontpelloisLien = onCall(
 exports.stripeMontpellois = onRequest(
   {
     region: 'us-central1',
-    secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET],
+    secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ZOHO_APP_PASSWORD],
     memory: '256MiB',
     timeoutSeconds: 60,
   },
@@ -3163,6 +3163,20 @@ exports.stripeMontpellois = onRequest(
       return;
     }
 
+    // Un seul point d'entrée pour toute la caisse du festival : la
+    // métadonnée `programme` dit à quel programme le paiement
+    // appartient. Sans elle, c'est la bourse des Montpellois.
+    if (session.metadata && session.metadata.programme === 'livraison-kiosque') {
+      try {
+        const suite = await livraisonEncaisser(session);
+        res.status(200).send(suite);
+      } catch (e) {
+        logger.error('[livraison] encaissement impossible', e);
+        res.status(500).send('encaissement impossible');
+      }
+      return;
+    }
+
     const uid = String((session.metadata && session.metadata.uid) || '').slice(0, 128);
     const packId = String((session.metadata && session.metadata.packId) || '');
     const pack = PACKS_MONTPELLOIS[packId];
@@ -3188,6 +3202,289 @@ exports.stripeMontpellois = onRequest(
     }
   },
 );
+
+
+// ─── Repas livrés au kiosque · le pilote à dix places ────────────────
+// Alex, 10 septembre 2026. Le service rendu à un marchand l'an passé
+// devient une offre ouverte à dix kiosques : deux repas par jour
+// apportés à la tente, des boîtes surprises tirées du menu du village,
+// cinquante dollars avant taxes par personne et par jour.
+//
+// La page vit derrière son lien (/kiosque/livraison) et n'écrit rien
+// elle-même. Tout passe ici : le compte des places, la fiche, la
+// caisse Stripe. Le webhook `stripeMontpellois` marque la fiche payée,
+// parce que Stripe envoie déjà tous ses événements à cette adresse et
+// qu'un deuxième point d'entrée n'apporterait qu'une signature de plus
+// à vérifier.
+//
+// La caisse est celle du Salon des Inconnus, partagée avec Vexel et la
+// boutique des Montpellois : les métadonnées `entite` et `programme`
+// séparent les encaissements, et rien ici ne se déclenche sur le seul
+// type d'événement.
+
+const LIVRAISON_COLLECTION = 'livraisonsKiosque';
+const LIVRAISON_PLACES = 10;
+const LIVRAISON_PRIX_JOUR_CENTS = 5000;
+const LIVRAISON_TPS = 0.05;
+const LIVRAISON_TVQ = 0.09975;
+const LIVRAISON_NO_TPS = '736597287 RT0001';
+const LIVRAISON_NO_TVQ = '1225724543 TQ0001';
+const LIVRAISON_RETOUR = 'https://www.festivalmedievaldemontpellier.org/kiosque/livraison';
+// Une fiche non payée garde sa place une demi-heure, le temps de la
+// caisse. Passé ce délai elle ne bloque plus personne, et la session
+// Stripe expire au même moment.
+const LIVRAISON_TENUE_MS = 30 * 60 * 1000;
+
+const LIVRAISON_JOURS = {
+  ven: 'vendredi 25 septembre',
+  sam: 'samedi 26 septembre',
+  dim: 'dimanche 27 septembre',
+};
+
+/** Sous-total, puis chaque taxe sur le sous-total, jamais l'une sur
+ *  l'autre. La page /kiosque/livraison affiche la même arithmétique. */
+function livraisonFacture(personnes, nbJours) {
+  const sousTotalCents = LIVRAISON_PRIX_JOUR_CENTS * personnes * nbJours;
+  const tpsCents = Math.round(sousTotalCents * LIVRAISON_TPS);
+  const tvqCents = Math.round(sousTotalCents * LIVRAISON_TVQ);
+  return { sousTotalCents, tpsCents, tvqCents, totalCents: sousTotalCents + tpsCents + tvqCents };
+}
+
+const livraisonArgent = (cents) => `${(cents / 100).toFixed(2).replace('.', ',')} $`;
+
+/** Les places tenues : celles qui sont payées, plus celles dont la
+ *  caisse est ouverte depuis moins d'une demi-heure. */
+async function livraisonPlacesPrises() {
+  const snap = await db.collection(LIVRAISON_COLLECTION).get();
+  const seuil = Date.now() - LIVRAISON_TENUE_MS;
+  let pris = 0;
+  snap.forEach((doc) => {
+    const f = doc.data() || {};
+    if (f.statut === 'paye') { pris += 1; return; }
+    if (f.statut !== 'en-attente') return;
+    const cree = f.creeLe && typeof f.creeLe.toMillis === 'function' ? f.creeLe.toMillis() : 0;
+    if (cree > seuil) pris += 1;
+  });
+  return pris;
+}
+
+/** Le compteur que lit la page, dans un document public. */
+async function livraisonMajCompteur() {
+  const pris = await livraisonPlacesPrises();
+  await db.doc('siteFlags/livraisonKiosque').set(
+    { pris, places: LIVRAISON_PLACES, majLe: admin.firestore.FieldValue.serverTimestamp() },
+    { merge: true },
+  );
+  return pris;
+}
+
+const livraisonTexte = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
+
+exports.reserverLivraisonKiosque = onCall(
+  { region: 'us-central1', secrets: [STRIPE_SECRET_KEY] },
+  async (requete) => {
+    const d = requete.data || {};
+    const kiosque = livraisonTexte(d.kiosque, 120);
+    const contact = livraisonTexte(d.contact, 120);
+    const courriel = livraisonTexte(d.courriel, 160).toLowerCase();
+    const telephone = livraisonTexte(d.telephone, 40);
+    const restrictions = livraisonTexte(d.restrictions, 1200);
+    const personnes = Math.floor(Number(d.personnes) || 0);
+    const jours = Array.isArray(d.jours)
+      ? d.jours.filter((j) => Object.prototype.hasOwnProperty.call(LIVRAISON_JOURS, j))
+      : [];
+
+    if (!kiosque || !contact || !telephone) throw new HttpsError('invalid-argument', 'Il manque le nom du kiosque, la personne à joindre ou le téléphone.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(courriel)) throw new HttpsError('invalid-argument', 'Ce courriel ne semble pas valide.');
+    if (personnes < 1 || personnes > 12) throw new HttpsError('invalid-argument', 'Le nombre de personnes va de 1 à 12.');
+    if (jours.length < 1) throw new HttpsError('invalid-argument', 'Choisissez au moins une journée.');
+
+    // Un même kiosque ne remplit pas la liste à lui seul, et un double
+    // clic ne crée pas deux fiches.
+    // Un seul filtre d'égalité, et le statut se trie en mémoire : deux
+    // filtres demanderaient un index composite pour trois fiches.
+    const dejaSnap = await db.collection(LIVRAISON_COLLECTION).where('courriel', '==', courriel).get();
+    const deja = dejaSnap.docs.map((doc) => doc.data() || {}).filter((f) => f.statut === 'paye' || f.statut === 'attente');
+    if (deja.length) {
+      const f = deja[0];
+      throw new HttpsError(
+        'already-exists',
+        f.statut === 'paye'
+          ? 'Une réservation existe déjà pour ce courriel. Écrivez à admin@festivalmedievaldemontpellier.org pour la modifier.'
+          : 'Ce courriel est déjà sur la liste. La cuisine vous écrit dès qu’une place se libère.',
+      );
+    }
+
+    const pris = await livraisonPlacesPrises();
+    const complet = pris >= LIVRAISON_PLACES;
+    const facture = livraisonFacture(personnes, jours.length);
+    const base = {
+      kiosque, contact, courriel, telephone, personnes, jours, restrictions,
+      troisJours: jours.length === 3,
+      ...facture,
+      creeLe: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    // Les dix places sont prises : la fiche rejoint la liste, sans
+    // caisse et sans un sou prélevé.
+    if (complet) {
+      if (!d.liste) return { complet: true };
+      await db.collection(LIVRAISON_COLLECTION).add({ ...base, statut: 'attente' });
+      await livraisonMajCompteur();
+      logger.info('[livraison] liste d’attente', { kiosque, courriel, jours: jours.length });
+      return { enAttente: true };
+    }
+
+    const cleStripe = STRIPE_SECRET_KEY.value();
+    if (!cleStripe || !/^(sk|rk)_/.test(cleStripe)) {
+      throw new HttpsError('failed-precondition', 'La caisse n’est pas encore ouverte. Écrivez à admin@festivalmedievaldemontpellier.org.');
+    }
+
+    const ref = await db.collection(LIVRAISON_COLLECTION).add({ ...base, statut: 'en-attente' });
+
+    let session;
+    try {
+      const libelleJours = jours.map((j) => LIVRAISON_JOURS[j]).join(', ');
+      session = await Stripe(cleStripe).checkout.sessions.create({
+        mode: 'payment',
+        customer_email: courriel,
+        line_items: [
+          {
+            quantity: personnes * jours.length,
+            price_data: {
+              currency: 'cad',
+              unit_amount: LIVRAISON_PRIX_JOUR_CENTS,
+              product_data: {
+                name: 'Repas livrés au kiosque · 2 repas par personne, par jour',
+                description: `${kiosque} · ${personnes} personne(s) · ${libelleJours}`,
+              },
+            },
+          },
+          {
+            quantity: 1,
+            price_data: {
+              currency: 'cad',
+              unit_amount: facture.tpsCents,
+              product_data: { name: 'TPS 5 %', description: `No ${LIVRAISON_NO_TPS}` },
+            },
+          },
+          {
+            quantity: 1,
+            price_data: {
+              currency: 'cad',
+              unit_amount: facture.tvqCents,
+              product_data: { name: 'TVQ 9,975 %', description: `No ${LIVRAISON_NO_TVQ}` },
+            },
+          },
+        ],
+        metadata: { entite: 'fmm', programme: 'livraison-kiosque', reservationId: ref.id },
+        payment_intent_data: {
+          metadata: { entite: 'fmm', programme: 'livraison-kiosque', reservationId: ref.id },
+        },
+        client_reference_id: ref.id,
+        expires_at: Math.floor(Date.now() / 1000) + Math.floor(LIVRAISON_TENUE_MS / 1000),
+        success_url: `${LIVRAISON_RETOUR}?livraison=ok`,
+        cancel_url: `${LIVRAISON_RETOUR}?livraison=annulee`,
+      });
+    } catch (e) {
+      await ref.delete().catch(() => {});
+      logger.error('[livraison] session refusée', e);
+      throw new HttpsError('internal', 'La caisse n’a pas répondu. Réessayez dans un moment.');
+    }
+
+    if (!session || !session.url) {
+      await ref.delete().catch(() => {});
+      logger.error('[livraison] session sans adresse', { reservationId: ref.id });
+      throw new HttpsError('internal', 'La caisse n’a pas répondu. Réessayez dans un moment.');
+    }
+
+    await ref.set({ sessionId: session.id }, { merge: true });
+    await livraisonMajCompteur();
+    logger.info('[livraison] caisse ouverte', { reservationId: ref.id, kiosque, personnes, jours: jours.length });
+    return { url: session.url };
+  },
+);
+
+/** Le paiement est passé : la fiche se marque payée une seule fois,
+ *  le compteur se refait, et deux lettres partent. */
+async function livraisonEncaisser(session) {
+  const reservationId = String((session.metadata && session.metadata.reservationId) || '');
+  if (!reservationId) { logger.warn('[livraison] paiement sans fiche', { sessionId: session.id }); return 'sans fiche'; }
+
+  const ref = db.collection(LIVRAISON_COLLECTION).doc(reservationId);
+  const fiche = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return null;
+    const f = snap.data() || {};
+    if (f.statut === 'paye') return { ...f, rejeu: true };
+    tx.set(ref, {
+      statut: 'paye',
+      sessionId: session.id,
+      payeCents: Number(session.amount_total) || f.totalCents || 0,
+      payeLe: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+    return { ...f, rejeu: false };
+  });
+
+  if (!fiche) { logger.warn('[livraison] fiche introuvable', { reservationId }); return 'fiche introuvable'; }
+  await livraisonMajCompteur();
+  if (fiche.rejeu) return 'déjà encaissé';
+
+  const jours = (fiche.jours || []).map((j) => LIVRAISON_JOURS[j] || j);
+  const libelleJours = jours.length > 1
+    ? `${jours.slice(0, -1).join(', ')} et ${jours[jours.length - 1]}`
+    : (jours[0] || '');
+  const total = livraisonArgent(Number(session.amount_total) || fiche.totalCents || 0);
+  const gens = fiche.personnes > 1 ? `${fiche.personnes} personnes` : '1 personne';
+
+  const pourLeKiosque = [
+    `Bonjour ${fiche.contact},`,
+    '',
+    `Votre réservation est prise pour ${fiche.kiosque}. La cuisine apportera deux repas par jour à votre tente pour ${gens}, le ${libelleJours}, et vous n’aurez pas à quitter votre kiosque pour manger.`,
+    '',
+    `Le montant réglé est de ${total}, taxes comprises, et Stripe vous a fait parvenir le reçu.`,
+    '',
+    'Chaque boîte se compose à même le menu du village et son contenu reste une surprise jusqu’à ce qu’elle arrive chez vous. Nous conviendrons des heures de livraison avec vous une fois sur le terrain.',
+    fiche.restrictions ? `\nLa cuisine a noté ceci : ${fiche.restrictions}` : '',
+    '',
+    'Au plaisir de vous voir au village,',
+    'L’équipe du Festival Médiéval de Montpellier',
+  ].filter((l) => l !== null).join('\n');
+
+  const pourEquipe = [
+    `Kiosque : ${fiche.kiosque}`,
+    `Contact : ${fiche.contact} · ${fiche.courriel} · ${fiche.telephone}`,
+    `Personnes : ${fiche.personnes}`,
+    `Jours : ${libelleJours}`,
+    `Restrictions : ${fiche.restrictions || 'aucune'}`,
+    `Payé : ${total}`,
+    '',
+    `Fiche : /admin/livraison`,
+  ].join('\n');
+
+  try {
+    const transport = nodemailer.createTransport({
+      host: ZOHO_SMTP_HOST, port: 465, secure: true,
+      auth: { user: ZOHO_EMAIL, pass: ZOHO_APP_PASSWORD.value() },
+    });
+    await transport.sendMail({
+      from: FROM, to: fiche.courriel,
+      subject: 'Vos repas sont réservés · Festival Médiéval de Montpellier',
+      text: pourLeKiosque,
+    });
+    await transport.sendMail({
+      from: FROM, to: ZOHO_EMAIL,
+      subject: `Repas au kiosque · ${fiche.kiosque}`,
+      text: pourEquipe,
+    });
+  } catch (e) {
+    // La lettre qui ne part pas ne doit pas défaire un paiement pris.
+    logger.error('[livraison] lettre non partie', e);
+  }
+
+  logger.info('[livraison] encaissé', { reservationId, kiosque: fiche.kiosque, total });
+  return 'encaissé';
+}
 
 // ── La monnaie des guildes (docs/CLAN-MONNAIE-CONTRAT.md) ────────────
 // Tout vit dans functions/guildes.js, qui ne connaît du serveur que ce

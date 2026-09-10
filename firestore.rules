@@ -1427,6 +1427,13 @@ service cloud.firestore {
     // condition, sans exception, et aucun chemin public nulle part.
     match /clients/{docId}     { allow read, write: if isAdmin(); }
 
+    // ── Repas livrés au kiosque · le pilote à dix places ───────────
+    // Les fiches portent un courriel, un téléphone et des allergies :
+    // rien ne se lit du navigateur. Le formulaire public passe par
+    // `reserverLivraisonKiosque`, qui écrit avec les droits du serveur,
+    // et le compteur que la page affiche vit dans siteFlags.
+    match /livraisonsKiosque/{docId} { allow read, write: if isAdmin(); }
+
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
     // Rapports publicitaires (section admin Publicité) : analyses de
     // campagne Meta, Google Ads, AdSense, journal, déposées par Claude.

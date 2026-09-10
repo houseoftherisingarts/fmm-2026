@@ -98,8 +98,13 @@ export const BadgesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Jamais sur l'accueil : le chevalier et l'orbe ont droit à leur
   // entrée sans qu'une annonce leur passe devant (vérifié à l'écran,
   // 2026-08-23). Le badge tombe à la première vraie page.
+  // Les pages qui se donnent par lien et demandent un geste sérieux,
+  // une signature ou un paiement : l'annonce du badge y passait devant
+  // le titre et devant le formulaire (vu à l'écran, 2026-09-10).
+  const SANS_ANNONCE = ['/kiosque/livraison', '/en/booth/delivery', '/signer-cuisine', '/signer-kiosque'];
   const surLaccueil = typeof window !== 'undefined'
     && (['/', '/en', '/en/'].includes(window.location.pathname)
+        || SANS_ANNONCE.includes(window.location.pathname)
         || (import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu')));
   useEffect(() => {
     if (surLaccueil) return;

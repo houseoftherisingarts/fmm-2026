@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -44,6 +44,7 @@ export type AdminSectionId =
   | 'clients'
   | 'invites'
   | 'camping'
+  | 'livraison'
   | 'inventaire'
   | 'affichage'
   | 'messages'
@@ -101,6 +102,9 @@ export const NAV: NavItem[] = [
   // Le container en U : qui prend quoi, où ça s'en va, quand ça
   // revient (Alex, 2026-09-08).
   { id: 'inventaire', label: 'Inventaire',      icon: Boxes,           group: 'Nourriture et Bar' },
+  // Le pilote des repas livrés aux kiosques, ouvert par le lien
+  // /kiosque/livraison (Alex, 2026-09-10).
+  { id: 'livraison',  label: 'Repas aux kiosques', icon: UtensilsCrossed, group: 'Nourriture et Bar' },
 
   { id: 'horaire',    label: 'Horaire',         icon: CalendarClock,   group: 'Opérations' },
   // Les places du terrain de camping, par catégorie (Alex, 2026-09-07).
