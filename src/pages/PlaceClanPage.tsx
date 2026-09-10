@@ -178,8 +178,8 @@ const PlaceClanPage: React.FC = () => {
           <Folio texte={`FOLIO ${romain(index + 1)}`} cle={q.id} />
           <Encre
             texte={q.texte} cle={q.id} delai={0.3} vitesse={0.014}
-            className="font-editorial text-center leading-snug mb-[1.6cqw]"
-            style={{ fontSize: 'clamp(12px, 1.85cqw, 22px)' }}
+            className="font-editorial text-center leading-snug mb-[1.3cqw]"
+            style={{ fontSize: 'clamp(12px, 1.72cqw, 22px)' }}
           />
           <div style={{ borderTop: '1px solid rgba(96, 66, 40, 0.26)', paddingTop: '1cqw' }}>
             {q.reponses.map((r, i) => (

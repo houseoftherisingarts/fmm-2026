@@ -2750,7 +2750,7 @@ a:hover > .fmm-annee-carte::after {
   --page-droite-x: 51.5%;
   --page-droite-w: 27%;
   --page-haut: 17%;
-  --page-hauteur: 58%;
+  --page-hauteur: 56%;
 }
 /* Écran plus haut que large : le plan glisse pour amener la page de
    droite au centre, sinon la reliure mange l'espace d'écriture et le
@@ -2771,7 +2771,7 @@ a:hover > .fmm-annee-carte::after {
   }
   .grimoire-page-gauche { display: none; }
   /* Le doigt vise plus large que la souris. */
-  .grimoire-choix { padding-top: 1.1cqw; padding-bottom: 1.1cqw; }
+  .grimoire-choix { padding-top: 0.75cqw; padding-bottom: 0.75cqw; }
 }
 /* La ligne cliquable ne porte aucun fond : c'est de l'encre sur du
    vélin, et le clavier la trouve par son trait de plume. */

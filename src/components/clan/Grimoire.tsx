@@ -155,7 +155,7 @@ export const ChoixEncre: React.FC<ChoixProps> = ({
             className={fort ? 'font-display leading-snug' : 'font-editorial leading-snug'}
             style={{
               display: 'block',
-              fontSize: fort ? 'clamp(13px, 1.95cqw, 23px)' : 'clamp(11px, 1.5cqw, 18px)',
+              fontSize: fort ? 'clamp(13px, 1.9cqw, 23px)' : 'clamp(11px, 1.42cqw, 18px)',
             }}
           />
           {sous && (
