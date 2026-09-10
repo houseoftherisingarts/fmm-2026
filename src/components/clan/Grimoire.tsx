@@ -268,6 +268,10 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
 
   return (
     <div className="grimoire-scene" lang="fr">
+      {/* Le livre ne remplit pas un écran de téléphone sans se faire
+          couper, donc la même scène passe derrière, floue et sombre :
+          on voit la table plutôt qu'un aplat noir. */}
+      <img src={OUVERT} alt="" aria-hidden className="grimoire-fond" />
       <div className="grimoire-plan">
         {statique ? (
           <img src={OUVERT} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
@@ -289,11 +293,19 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
         {ouvert && (
           <>
             {gauche && (
-              <div className="grimoire-page-gauche absolute" style={{ left: '11.5%', top: '19%', width: '27%' }}>
+              <div className="grimoire-page-gauche absolute" style={{ left: '11.5%', top: 'calc(var(--page-haut) + 2%)', width: '27%' }}>
                 {gauche}
               </div>
             )}
-            <div className="absolute" style={{ left: '50%', top: '17%', width: '31%' }}>
+            {/* La page centre son contenu plutôt que de le tasser en
+                haut : le bas du vélin ne reste plus vide. */}
+            <div
+              className="absolute flex flex-col justify-center"
+              style={{
+                left: 'var(--page-droite-x)', top: 'var(--page-haut)',
+                width: 'var(--page-droite-w)', height: 'var(--page-hauteur)',
+              }}
+            >
               {droite}
             </div>
           </>
