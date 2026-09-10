@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Copy, Check, Crown, Ticket, ShieldOff, Loader2 } from 'lucide-react';
+import { Users, Copy, Check, Crown, Ticket, ShieldOff, Loader2, Swords } from 'lucide-react';
 import { addLocale } from '../../lib/locale';
 import {
   monCodeParrain, suivreMesFilleuls, filleulsDeMesFilleuls, monParrain,
   PALIERS_PARRAINAGE, type Parrainage,
 } from '../../firebase/parrainage';
+import {
+  monConsentementConcours, poserConsentementConcours,
+} from '../../firebase/concoursParrainage';
 
 // ─── Le parrainage ───────────────────────────────────────────────────
 // Alex, 2026-08-28 : chacun porte son code. Une personne qui crée son
@@ -18,6 +21,35 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
   const [code, setCode] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [copie, setCopie] = useState(false);
+
+  // ── Le tirage de l'épée, commandité par les Artisans d'Azure ──────
+  const [auTirage, setAuTirage] = useState(false);
+  const [tirageBusy, setTirageBusy] = useState(false);
+  const [tirageMsg, setTirageMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    let vivant = true;
+    monConsentementConcours(uid)
+      .then((c) => { if (vivant) setAuTirage(Boolean(c?.accepte)); })
+      .catch(() => {});
+    return () => { vivant = false; };
+  }, [uid]);
+
+  const basculerTirage = async (veut: boolean) => {
+    setTirageBusy(true);
+    setTirageMsg(null);
+    const res = await poserConsentementConcours(uid, veut);
+    if (res === 'ok') {
+      setAuTirage(veut);
+    } else if (res === 'sans-filleul') {
+      setTirageMsg(fr
+        ? 'Pour participer à ce concours, vous devez avoir un filleul. Donnez votre code à quelqu\'un, et votre nom entrera dans le chapeau.'
+        : 'To enter this draw you need at least one godchild. Give your code to someone, and your name goes in the hat.');
+    } else {
+      setTirageMsg(fr ? 'La coche ne s\'est pas enregistrée. Réessayez dans un instant.' : 'That did not save. Try again in a moment.');
+    }
+    setTirageBusy(false);
+  };
   const [filleuls, setFilleuls] = useState<Parrainage[]>([]);
   const [petitsFilleuls, setPetitsFilleuls] = useState<Record<string, Parrainage[]>>({});
   const [parrain, setParrain] = useState<Parrainage | null>(null);
@@ -136,6 +168,29 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
           ))}
         </ul>
       )}
+
+      {/* Le tirage de l'épée */}
+      <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.14)' }}>
+        <p className="witcher-stat-label inline-flex items-center gap-2 mb-3">
+          <Swords size={13} /> {fr ? 'Le tirage de l’épée' : 'The sword draw'}
+        </p>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" id="concours-parrainage" checked={auTirage} disabled={tirageBusy}
+                 onChange={(e) => basculerTirage(e.target.checked)}
+                 className="mt-1 h-4 w-4 shrink-0 accent-[var(--sk-gilt)]" />
+          <span className="font-editorial text-sm text-ivory-soft leading-relaxed">
+            {fr
+              ? 'Je veux courir la chance de gagner l’épée des Artisans d’Azure, et j’accepte que mon courriel leur soit remis pour leurs communications.'
+              : 'Enter me in the draw for the Artisans d’Azure sword, and share my email with them for their communications.'}
+          </span>
+        </label>
+        {auTirage && !tirageMsg && (
+          <p className="mt-2 font-sans text-xs inline-flex items-center gap-2" style={{ color: 'var(--sk-gilt)' }}>
+            <Check size={12} /> {fr ? 'Votre nom est dans le chapeau, une fois par filleul.' : 'Your name is in the hat, once per godchild.'}
+          </p>
+        )}
+        {tirageMsg && <p className="mt-2 font-sans text-xs" style={{ color: '#E08A6E' }}>{tirageMsg}</p>}
+      </div>
 
       {!code && !erreur && <p className="mt-4 font-sans text-xs text-ivory-soft/50 inline-flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> {fr ? 'Votre code arrive…' : 'Your code is coming…'}</p>}
       {erreur && <p className="mt-4 font-sans text-xs" style={{ color: '#E08A6E' }}>{erreur}</p>}

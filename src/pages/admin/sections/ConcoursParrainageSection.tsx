@@ -29,9 +29,10 @@ const ConcoursParrainageSection: React.FC = () => {
 
   useEffect(recharger, []);
 
+  const inscrits = useMemo(() => items.filter((c) => c.auTirage), [items]);
   const totalChances = useMemo(
-    () => items.reduce((somme, c) => somme + c.chances, 0),
-    [items],
+    () => inscrits.reduce((somme, c) => somme + c.chances, 0),
+    [inscrits],
   );
 
   const exporter = () => {
@@ -40,6 +41,7 @@ const ConcoursParrainageSection: React.FC = () => {
       Courriel: c.courriel,
       Code: c.code,
       Chances: c.chances,
+      'Au tirage': c.auTirage ? 'Oui' : 'Non',
       Filleuls: c.filleuls.join(' · '),
     })));
   };
@@ -51,7 +53,7 @@ const ConcoursParrainageSection: React.FC = () => {
           <div>
             <h2 className="font-display text-xl text-ivory">Concours de parrainage</h2>
             <p className="mt-1 text-sm text-ivory-soft/80">
-              Ceux qui ont amené quelqu'un au festival, avec une chance par filleul.
+              Ceux qui ont amené quelqu'un au festival. Le tirage ne pioche que parmi ceux qui ont coché la case dans leur espace, avec une chance par filleul.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -61,14 +63,15 @@ const ConcoursParrainageSection: React.FC = () => {
             <GhostButton onClick={exporter} disabled={items.length === 0}>
               <Download size={14} className="mr-2 inline" /> Exporter
             </GhostButton>
-            <GhostButton onClick={() => setGagnant(tirerAuSort(items))} disabled={items.length === 0}>
+            <GhostButton onClick={() => setGagnant(tirerAuSort(inscrits))} disabled={inscrits.length === 0}>
               <Dices size={14} className="mr-2 inline" /> Tirer au sort
             </GhostButton>
           </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-6 text-sm text-ivory-soft/80">
-          <span><strong className="text-ivory">{items.length}</strong> candidats</span>
+          <span><strong className="text-ivory">{items.length}</strong> candidats possibles</span>
+          <span><strong className="text-ivory">{inscrits.length}</strong> inscrits au tirage</span>
           <span><strong className="text-ivory">{totalChances}</strong> chances dans le chapeau</span>
         </div>
 
@@ -109,6 +112,7 @@ const ConcoursParrainageSection: React.FC = () => {
                   <th className="px-4 py-3">Courriel</th>
                   <th className="px-4 py-3">Code</th>
                   <th className="px-4 py-3">Chances</th>
+                  <th className="px-4 py-3">Au tirage</th>
                   <th className="px-4 py-3">Filleuls</th>
                 </tr>
               </thead>
@@ -120,6 +124,9 @@ const ConcoursParrainageSection: React.FC = () => {
                     <td className="px-4 py-3 whitespace-nowrap font-mono text-xs opacity-80">{c.code || '·'}</td>
                     <td className="px-4 py-3">
                       <Badge tone={c.chances >= 5 ? 'accepted' : 'neutral'}>{c.chances}</Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge tone={c.auTirage ? 'accepted' : 'pending'}>{c.auTirage ? 'Oui' : 'Non'}</Badge>
                     </td>
                     <td className="px-4 py-3">
                       <button type="button"

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Concours des Artisans d'Azure · Festival Médiéval de Montpellier</title>
+<title>Aperçu · Le concours des Artisans d'Azure · Festival Médiéval de Montpellier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+SC:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -124,6 +124,16 @@
     border-radius:999px; padding:6px 15px; cursor:pointer; transition:background .2s ease, color .2s ease; }
   .codebtn:hover{ background:rgba(var(--sk-mustard-rgb),.16); color:var(--ivory); }
   .codebtn:focus-visible{ outline:2px solid var(--glow); outline-offset:2px; }
+  .consent{ position:relative; margin-top:20px; padding:15px 16px; border-radius:12px;
+    background:rgba(8,5,4,.62); border:1px solid rgba(var(--sk-mustard-rgb),.32); }
+  .consent label{ display:flex; align-items:flex-start; gap:12px; cursor:pointer; }
+  .consent input{ margin-top:3px; width:17px; height:17px; flex:0 0 17px; accent-color:var(--gilt); cursor:pointer; }
+  .consent .txt{ font-size:15px; line-height:1.55; color:var(--ivory-soft); }
+  .consent .oui{ display:none; margin-top:9px; font-family:var(--f-alt); font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gilt-lit); }
+  .consent input:checked ~ .oui, .consent .oui.on{ display:block; }
+  .consent .sans{ margin-top:11px; padding-top:10px; border-top:1px solid rgba(var(--sk-mustard-rgb),.18);
+    font-size:13.5px; line-height:1.5; color:#E08A6E; font-style:italic; }
   .pied{ position:relative; margin-top:18px; padding-top:14px; border-top:1px solid rgba(var(--sk-mustard-rgb),.2);
     font-size:14.5px; line-height:1.55; color:var(--ivory-soft); font-style:italic; }
 
@@ -202,6 +212,16 @@
         </span></li>
         <li><span class="n">3</span><span>Si votre compte existe déjà et que quelqu'un vous a amené ici, inscrivez son nom dans la section <b>« Qui est mon parrain »</b> de votre espace.</span></li>
       </ol>
+
+
+      <div class="consent">
+        <label for="autirage">
+          <input type="checkbox" id="autirage" checked>
+          <span class="txt">Je veux courir la chance de gagner l'épée des Artisans d'Azure, et j'accepte que mon courriel leur soit remis pour leurs communications.</span>
+        </label>
+        <div class="oui on" id="ouiTirage">Votre nom est dans le chapeau, une fois par filleul.</div>
+        <div class="sans">Sans filleul, la case répond : pour participer à ce concours, vous devez avoir un filleul. Donnez votre code à quelqu'un, et votre nom entrera dans le chapeau.</div>
+      </div>
 
       <p class="pied">Votre nom entre une fois de plus dans le chapeau pour chaque personne que vous amenez.</p>
     </aside>
@@ -357,6 +377,12 @@
       navigator.clipboard.writeText(v.textContent.trim()).then(fini, fini);
     } else { fini(); }
   });
+})();
+
+(function(){
+  var c=document.getElementById('autirage'), o=document.getElementById('ouiTirage');
+  if(!c||!o) return;
+  c.addEventListener('change', function(){ o.classList.toggle('on', c.checked); });
 })();
 </script>
 
