@@ -27,7 +27,9 @@ const CLE_LOCALE = 'fmm.carte2026.prise';
 
 /** Là où un pop-up n'a rien à faire : l'accueil cinématique, les jeux
  *  plein écran, l'admin et les tunnels de signature. */
-const PAGES_SANS_POPUP = ['/admin', '/jeux', '/signer', '/labo-titre'];
+const PAGES_SANS_POPUP = [
+  '/admin', '/jeux', '/jeunesse/hnefatafl', '/signer', '/labo-titre',
+];
 
 const PopupCarte: React.FC = () => {
   const { user } = useAuth();
