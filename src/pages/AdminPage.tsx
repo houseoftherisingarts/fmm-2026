@@ -41,6 +41,7 @@ const EquipesSection      = lazy(() => import('./admin/sections/EquipesSection')
 const MarchandsSection    = lazy(() => import('./admin/sections/MarchandsSection'));
 const CommercesSection    = lazy(() => import('./admin/sections/CommercesSection'));
 const ConcoursSection     = lazy(() => import('./admin/sections/ConcoursSection'));
+const ConcoursParrainageSection = lazy(() => import('./admin/sections/ConcoursParrainageSection'));
 const MusiquesSection     = lazy(() => import('./admin/sections/MusiquesSection'));
 const ActivitesSection    = lazy(() => import('./admin/sections/ActivitesSection'));
 const BadgesSection       = lazy(() => import('./admin/sections/BadgesSection'));
@@ -205,6 +206,7 @@ const AdminPage: React.FC = () => {
       case 'marchands':  return <MarchandsSection  fetchAll={fetchVendors}   updateOne={updateVendor} />;
       case 'commerces':  return <CommercesSection />;
       case 'concours':   return <ConcoursSection />;
+      case 'concoursParrainage': return <ConcoursParrainageSection />;
       case 'musiciens':  return <MusiquesSection   fetchAll={fetchMusicians} updateOne={updateMusician} />;
       case 'activites':  return <ActivitesSection />;
       case 'badges':     return <BadgesSection />;

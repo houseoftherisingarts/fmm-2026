@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, LogIn, Shield, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, LogIn, RotateCcw, Shield, Sparkles } from 'lucide-react';
 import SEO from '../components/SEO';
 import { Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,6 +13,7 @@ import {
   repondreInvitation, type EtatClan, type Place,
 } from '../firebase/placeClan';
 import EquipeClan, { ICONES } from '../components/clan/EquipeClan';
+import Grimoire, { romain } from '../components/clan/Grimoire';
 import Medaillon from '../components/compte/Medaillon';
 
 // ─── Ta place dans le clan · le jeu de l'année de la Peste ──────────
@@ -150,6 +151,11 @@ const PlaceClanPage: React.FC = () => {
 
         {etape === 'accueil' && (
           <div className="space-y-6">
+            <Grimoire
+              cle="accueil"
+              folio="ANNO PESTIS"
+              texte="Quinze questions, et le registre dira votre place."
+            />
             <p className="font-editorial text-lg text-ivory-soft leading-relaxed">
               Dans une équipe, il y a toujours quelqu’un qui décide, quelqu’un qui fonce, quelqu’un qui part devant, quelqu’un qui comprend, quelqu’un qui fabrique, quelqu’un qui soigne et quelqu’un qui relie tout le monde. Quinze questions disent laquelle de ces places est la vôtre.
             </p>
@@ -164,7 +170,9 @@ const PlaceClanPage: React.FC = () => {
 
         {etape === 'groupe' && (
           <div>
-            <p className="font-editorial text-lg text-ivory-soft mb-5">Dans quelle compagnie marchez-vous ?</p>
+            <div className="mb-6">
+              <Grimoire cle="groupe" folio="FOLIO I" texte="Dans quelle compagnie marchez-vous ?" />
+            </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {LISTE_GROUPES.map((g) => (
                 <li key={g}>
@@ -192,7 +200,14 @@ const PlaceClanPage: React.FC = () => {
             <div className="h-1 rounded-full mb-6" style={{ background: 'rgba(var(--sk-glow-rgb), 0.15)' }}>
               <div className="h-1 rounded-full transition-all" style={{ width: `${((index) / QUESTIONS.length) * 100}%`, background: 'var(--color-amber-glow)' }} />
             </div>
-            <p className="font-editorial text-[22px] sm:text-2xl text-ivory leading-snug mb-6">{q.texte}</p>
+            <div className="mb-6">
+              <Grimoire
+                cle={q.id}
+                folio={`FOLIO ${romain(index + 1)}`}
+                texte={q.texte}
+                registre={QUESTIONS.map((_, i) => ({ romain: romain(i + 1), marque: reponses[i] !== undefined }))}
+              />
+            </div>
             <ul className="space-y-3">
               {q.reponses.map((r, i) => (
                 <li key={i}>
@@ -221,6 +236,12 @@ const PlaceClanPage: React.FC = () => {
 
         {etape === 'verdict' && groupe && v && (
           <div className="space-y-8">
+            <Grimoire
+              cle={`v-${v.fonction}`}
+              folio="LE REGISTRE TRANCHE"
+              texte={v.titre}
+              registre={QUESTIONS.map((_, i) => ({ romain: romain(i + 1), marque: true }))}
+            />
             <GildedFrame tone="amber" active className="block">
               <div className="caravan-glass p-6 sm:p-8">
                 <p className="font-sans uppercase tracking-[0.22em] text-[11px] mb-2" style={{ color: 'var(--color-amber-glow)' }}>
@@ -251,6 +272,15 @@ const PlaceClanPage: React.FC = () => {
                 </ul>
               </div>
             </GildedFrame>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <button type="button" onClick={recommencer} className="fmm-glass-btn px-6 py-3" style={STYLE_BOUTON}>
+                <RotateCcw size={15} /><span className="fmm-glass-btn-label">Refaire le questionnaire</span>
+              </button>
+              <p className="font-editorial text-sm text-ivory-soft/70 max-w-sm leading-snug">
+                Vos réponses se remplacent, et votre place change avec elles{clanId ? ', sans que votre clan bouge' : ''}.
+              </p>
+            </div>
 
             {!user ? (
               <div className="caravan-glass rounded-[15px] p-5 space-y-3" style={{ border: '1px solid rgba(var(--sk-glow-rgb), 0.3)' }}>
@@ -309,9 +339,6 @@ const PlaceClanPage: React.FC = () => {
 
             {erreur && <p className="font-editorial text-sm" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>{erreur}</p>}
 
-            <button type="button" onClick={recommencer} className="font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft/60">
-              Refaire le questionnaire
-            </button>
           </div>
         )}
       </div>
