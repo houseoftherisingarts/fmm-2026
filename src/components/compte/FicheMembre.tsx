@@ -37,6 +37,7 @@ import DonnerRoleAdmin from './DonnerRoleAdmin';
 import AvatarUpload from './AvatarUpload';
 import Repliable from './Repliable';
 import PlaceClanBloc from './PlaceClanBloc';
+import BadgePlace from '../clan/BadgePlace';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { TableDeJeux } from '../../pages/JeuxEnLignePage';
@@ -590,6 +591,8 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                         ))}
                         {/* Les cinq badges favoris, à côté de la fonction. */}
                         <Vitrine ids={idsVitrine} lang={lang} />
+                        {/* La place tenue dans le clan, pour qui a fait le jeu. */}
+                        <BadgePlace uid={uid} lang={lang} />
                         {/* La guilde, en bleu; sinon, les portes vers les guildes (Alex, 2026-08-28). */}
                         {guildes.map((g) => (
                           <li key={g.id}>

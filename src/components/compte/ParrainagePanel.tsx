@@ -7,7 +7,7 @@ import {
   PALIERS_PARRAINAGE, type Parrainage,
 } from '../../firebase/parrainage';
 import {
-  monConsentementConcours, poserConsentementConcours,
+  monConsentementConcours, poserConsentementConcours, monNombreDeFilleuls,
 } from '../../firebase/concoursParrainage';
 
 // ─── Le parrainage ───────────────────────────────────────────────────
@@ -26,12 +26,17 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
   const [auTirage, setAuTirage] = useState(false);
   const [tirageBusy, setTirageBusy] = useState(false);
   const [tirageMsg, setTirageMsg] = useState<string | null>(null);
+  const [consent, setConsent] = useState(true);
+  const [admissible, setAdmissible] = useState<boolean | null>(null);
 
   useEffect(() => {
     let vivant = true;
     monConsentementConcours(uid)
       .then((c) => { if (vivant) setAuTirage(Boolean(c?.accepte)); })
       .catch(() => {});
+    monNombreDeFilleuls(uid)
+      .then((n) => { if (vivant) setAdmissible(n > 0); })
+      .catch(() => { if (vivant) setAdmissible(false); });
     return () => { vivant = false; };
   }, [uid]);
 
@@ -42,9 +47,8 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
     if (res === 'ok') {
       setAuTirage(veut);
     } else if (res === 'sans-filleul') {
-      setTirageMsg(fr
-        ? 'Pour participer à ce concours, vous devez avoir un filleul. Donnez votre code à quelqu\'un, et votre nom entrera dans le chapeau.'
-        : 'To enter this draw you need at least one godchild. Give your code to someone, and your name goes in the hat.');
+      setAdmissible(false);
+      setTirageMsg(null);
     } else {
       setTirageMsg(fr ? 'La coche ne s\'est pas enregistrée. Réessayez dans un instant.' : 'That did not save. Try again in a moment.');
     }
@@ -174,22 +178,47 @@ const ParrainagePanel: React.FC<{ uid: string; lang: 'FR' | 'EN' }> = ({ uid, la
         <p className="witcher-stat-label inline-flex items-center gap-2 mb-3">
           <Swords size={13} /> {fr ? 'Le tirage de l’épée' : 'The sword draw'}
         </p>
-        <label className="flex items-start gap-3 cursor-pointer">
-          <input type="checkbox" id="concours-parrainage" checked={auTirage} disabled={tirageBusy}
-                 onChange={(e) => basculerTirage(e.target.checked)}
-                 className="mt-1 h-4 w-4 shrink-0 accent-[var(--sk-gilt)]" />
-          <span className="font-editorial text-sm text-ivory-soft leading-relaxed">
+
+        {auTirage ? (
+          <p className="font-sans text-sm inline-flex items-center gap-2" style={{ color: 'var(--sk-gilt)' }}>
+            <Check size={14} /> {fr
+              ? 'Vous êtes inscrit au tirage, une chance par filleul.'
+              : 'You are entered in the draw, one chance per godchild.'}
+          </p>
+        ) : admissible === false ? (
+          <p className="font-editorial text-sm text-ivory-soft leading-relaxed">
             {fr
-              ? 'Je veux courir la chance de gagner l’épée des Artisans d’Azure, et j’accepte que mon courriel leur soit remis pour leurs communications.'
-              : 'Enter me in the draw for the Artisans d’Azure sword, and share my email with them for their communications.'}
-          </span>
-        </label>
-        {auTirage && !tirageMsg && (
-          <p className="mt-2 font-sans text-xs inline-flex items-center gap-2" style={{ color: 'var(--sk-gilt)' }}>
-            <Check size={12} /> {fr ? 'Votre nom est dans le chapeau, une fois par filleul.' : 'Your name is in the hat, once per godchild.'}
+              ? 'Pour participer à ce concours, vous devez avoir un filleul. Donnez votre code à quelqu’un, et votre nom entrera dans le chapeau.'
+              : 'To enter this draw you need one godchild. Give your code to someone, and your name goes in the hat.'}
+          </p>
+        ) : admissible === true ? (
+          <>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" id="concours-consentement" checked={consent} disabled={tirageBusy}
+                     onChange={(e) => setConsent(e.target.checked)}
+                     className="mt-1 h-4 w-4 shrink-0 accent-[var(--sk-gilt)]" />
+              <span className="font-editorial text-sm text-ivory-soft leading-relaxed">
+                {fr
+                  ? 'J’accepte que mon courriel soit remis aux Artisans d’Azure pour leurs communications.'
+                  : 'Share my email with Artisans d’Azure for their communications.'}
+              </span>
+            </label>
+            <button type="button" disabled={tirageBusy || !consent}
+                    onClick={() => basculerTirage(true)}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2 font-sans text-xs tracking-[0.18em] uppercase transition-colors disabled:opacity-40"
+                    style={{ border: '1px solid rgba(var(--sk-gilt-rgb),0.55)', color: 'var(--sk-gilt)' }}>
+              {tirageBusy
+                ? (fr ? 'Un instant…' : 'One moment…')
+                : (fr ? 'Participer au concours' : 'Enter the draw')}
+            </button>
+          </>
+        ) : (
+          <p className="font-sans text-xs text-ivory-soft/50 inline-flex items-center gap-2">
+            <Loader2 size={12} className="animate-spin" /> {fr ? 'Un instant…' : 'One moment…'}
           </p>
         )}
-        {tirageMsg && <p className="mt-2 font-sans text-xs" style={{ color: '#E08A6E' }}>{tirageMsg}</p>}
+
+        {tirageMsg && <p className="mt-3 font-sans text-xs" style={{ color: '#E08A6E' }}>{tirageMsg}</p>}
       </div>
 
       {!code && !erreur && <p className="mt-4 font-sans text-xs text-ivory-soft/50 inline-flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> {fr ? 'Votre code arrive…' : 'Your code is coming…'}</p>}

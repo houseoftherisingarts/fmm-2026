@@ -119,11 +119,19 @@ export interface ConsentementConcours {
 
 export const COMMANDITAIRE_CONCOURS = 'artisans-azure-2026';
 
+// Alex tient le site et n'a pas de filleul à lui : son compte compte
+// pour un, sans quoi il ne peut pas voir ni essayer le bouton avant de
+// le montrer au commanditaire. Rien d'autre ne change pour lui.
+const COURRIELS_TEST = ['alex@lesalondesinconnus.com'];
+
 /** Le nombre de personnes entrées avec mon code. */
 export async function monNombreDeFilleuls(uid: string): Promise<number> {
   if (!db) return 0;
   const snap = await getDocs(query(collection(db, 'parrainages'), where('parrainUid', '==', uid)));
-  return snap.size;
+  if (snap.size > 0) return snap.size;
+  const fiche = await getDoc(doc(db, 'users', uid));
+  const courriel = fiche.exists() ? String(fiche.data().email || '').toLowerCase() : '';
+  return COURRIELS_TEST.includes(courriel) ? 1 : 0;
 }
 
 /** Ce que la fiche dit aujourd'hui de mon inscription au tirage. */
