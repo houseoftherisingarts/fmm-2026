@@ -202,7 +202,7 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
               sur un téléphone, où découper en colonnes rendrait le
               texte illisible. */}
           <div aria-live="polite" className="contents">
-            <div className="sm:hidden absolute inset-0 flex items-center justify-center px-[9%] text-center">
+            <div lang="fr" className="sm:hidden absolute inset-0 flex items-center justify-center px-[9%] text-center">
               {/* Sur un téléphone, les deux pages sont trop étroites pour
                   tenir la question chacune de leur côté : elle passe donc
                   au milieu, et un lavis de vélin efface la reliure sous
@@ -222,13 +222,16 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
                 <Encre
                   texte={texte} cle={`m-${cle}`} delai={folio ? 0.35 : 0}
                   className="font-editorial leading-snug"
-                  style={{ fontSize: grand ? 'clamp(20px, 7cqw, 34px)' : 'clamp(12px, 3.9cqw, 20px)' }}
+                  style={{
+                    fontSize: grand ? 'clamp(20px, 7cqw, 34px)' : 'clamp(12px, 3.9cqw, 20px)',
+                    hyphens: 'auto', overflowWrap: 'break-word',
+                  }}
                 />
                 </div>
               </div>
             </div>
 
-            <div className="hidden sm:block absolute text-center" style={{ left: '51%', top: '23%', width: '28%' }}>
+            <div className="hidden sm:block absolute text-center" lang="fr" style={{ left: '50.5%', top: '23%', width: '30%' }}>
               {folio && (
                 <Encre
                   as="span" texte={folio} cle={`fd-${cle}`} vitesse={0.05}
@@ -239,7 +242,10 @@ export const Grimoire: React.FC<GrimoireProps> = ({ texte, cle, folio, registre,
               <Encre
                 texte={texte} cle={`d-${cle}`} delai={folio ? 0.35 : 0}
                 className="font-editorial leading-snug"
-                style={{ fontSize: grand ? 'clamp(22px, 4.4cqw, 48px)' : 'clamp(12px, 2.3cqw, 25px)' }}
+                style={{
+                  fontSize: grand ? 'clamp(22px, 4.4cqw, 48px)' : 'clamp(12px, 2.2cqw, 24px)',
+                  hyphens: 'auto', overflowWrap: 'break-word',
+                }}
               />
             </div>
           </div>
