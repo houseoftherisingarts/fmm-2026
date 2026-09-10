@@ -62,7 +62,7 @@ export const Encre: React.FC<EncreProps> = ({
     return <Balise className={className} style={{ color: ENCRE, ...style }}>{texte}</Balise>;
   }
 
-  const lettre = {
+  const lettre: Variants = {
     seche: { opacity: 0, filter: 'blur(5px)', y: -1, color: ENCRE_PALE },
     ecrite: {
       opacity: 1, filter: 'blur(0px)', y: 0, color: ENCRE,
