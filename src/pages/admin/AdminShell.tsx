@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed, ListChecks } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -22,6 +22,7 @@ export type AdminSectionId =
   | 'benevoles'
   | 'equipes'
   | 'guildes'
+  | 'tachesVillage'
   | 'placeClan'
   | 'marchands'
   | 'commerces'
@@ -100,6 +101,9 @@ export const NAV: NavItem[] = [
   // bar et le concours William J. Walter, dont la liste est remise au
   // commanditaire, relèvent du même monde (Alex, 2026-09-01).
   { id: 'bar',        label: 'Bar',             icon: Beer,            group: 'Nourriture et Bar' },
+  // La répartition des tâches du Village Gastronomique, cochée à trois
+  // (Alex, Marc-Alexis, Phil) plutôt que gardée dans un PDF de juin.
+  { id: 'tachesVillage', label: 'Tâches du Village', icon: ListChecks,   group: 'Nourriture et Bar' },
   { id: 'concours',   label: 'Concours William', icon: Gift,           group: 'Nourriture et Bar' },
   // Le container en U : qui prend quoi, où ça s'en va, quand ça
   // revient (Alex, 2026-09-08).

@@ -1349,6 +1349,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ── Les tâches du Village Gastronomique ──────────────────────
+    // Un seul document, `tachesVillage/etat`, qui garde uniquement ce
+    // qui est coché : des identifiants de tâches écrits en dur dans le
+    // code, chacun avec l'heure de la coche et le nom de la personne.
+    // Rien de personnel n'y descend, mais la liste dit où en est
+    // l'organisation du festival, alors elle reste entre les mains de
+    // l'équipe plutôt qu'ouverte au public (Alex, 2026-09-10).
+    match /tachesVillage/{docId} {
+      allow read, write: if isAdmin();
+    }
+
     // ── Musicians (one application per musician per year) ────────
     // /musicians/{uid}/years/{year} — mirrors the vendors layout so
     // a band can have multi-year history. Accepted musicians are

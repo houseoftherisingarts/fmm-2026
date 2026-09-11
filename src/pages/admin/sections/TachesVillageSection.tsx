@@ -5,7 +5,7 @@ import {
   TACHES_VILLAGE, NOMS_QUI, type Qui, type TacheVillage,
 } from '../../../content/tachesVillage';
 import { subscribeEtatTaches, cocherTache, type EtatTaches } from '../../../firebase/tachesVillage';
-import { useAuth } from '../../../auth/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 // ─── Les tâches du Village Gastronomique, à cocher à plusieurs ──────
 // Alex, 10 septembre 2026 : la répartition montée en juin dormait dans
@@ -162,7 +162,7 @@ const TachesVillageSection: React.FC = () => {
                           <span className={`block ${est ? 'line-through text-parchment/40' : 'text-parchment/90'}`}>
                             {t.nom}
                             {t.qui.length > 1 && (
-                              <span className="text-parchment/45 text-sm"> avec {t.qui.filter((q) => q !== filtre || filtre === 'tous').map((q) => NOMS_QUI[q]).join(', ')}</span>
+                              <span className="text-parchment/45 text-sm"> avec {t.qui.filter((q) => filtre === 'tous' || q !== filtre).map((q) => NOMS_QUI[q]).join(', ')}</span>
                             )}
                           </span>
                           {t.note && !est && (

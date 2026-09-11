@@ -48,8 +48,8 @@ export const ROLE_DESCRIPTIONS: Record<AdminRole, { FR: string; EN: string }> = 
                     EN: 'Volunteer space + supervises normal volunteers.' },
   benevole:       { FR: 'Contenus publiés par les admins + salon de discussion.',
                     EN: 'Admin-published content + chat room.' },
-  kitchen:        { FR: 'Accès au bar et à l’inventaire du container.',
-                    EN: 'Bar and container inventory access.' },
+  kitchen:        { FR: 'Accès au bar, à l’inventaire du container et aux tâches du Village.',
+                    EN: 'Bar, container inventory and Village task access.' },
 };
 
 // ─── Permission matrix ──────────────────────────────────────────────
@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'affichage', 'demandeVexel',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'tachesVillage', 'affichage', 'demandeVexel',
   ],
 
   // Organisateurs: total access minus the future CA-only tab.
@@ -81,7 +81,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'commerces', 'activites', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'affichage',
+    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'tachesVillage', 'affichage',
   ],
 
   // Super Bénévole: supervises normal bénévoles. Reads bénévole
@@ -100,7 +100,9 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
 
   // Kitchen: bar / food service, and the container inventory.
   kitchen: [
-    'dashboard', 'bar', 'inventaire', 'livraison',
+    // Marc-Alexis et Phil cochent leurs propres tâches du Village
+    // depuis ce rôle, sans voir le reste de l'administration.
+    'dashboard', 'bar', 'inventaire', 'livraison', 'tachesVillage',
   ],
 };
 
