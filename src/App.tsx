@@ -633,10 +633,11 @@ const App: React.FC = () => (
                     premier niveau doit s'ajouter à SLUGS_RESERVES dans
                     src/firebase/guildes.ts, sinon un groupe pourrait
                     prendre son adresse. */}
-                <Route path="/:slug"              element={<GuildeParSlug />} />
-                <Route path="/:slug/:onglet"      element={<GuildeParSlug />} />
-                <Route path="/en/:slug"           element={<GuildeParSlug />} />
-                <Route path="/en/:slug/:onglet"   element={<GuildeParSlug />} />
+                {/* Un seul patron avec l'onglet facultatif : passer du mur
+                    au salon reste dans la même page, sans remonter la fiche
+                    ni la position de défilement (Alex, 11 sept 2026). */}
+                <Route path="/:slug/:onglet?"     element={<GuildeParSlug />} />
+                <Route path="/en/:slug/:onglet?"  element={<GuildeParSlug />} />
 
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>

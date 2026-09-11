@@ -167,7 +167,7 @@ const RevendiquerPage: React.FC = () => {
 
       <section className="relative caravan-stage bleed-edges pt-8 pb-20 overflow-hidden">
         <Brume />
-        <div className="relative z-10 px-5 md:px-10 xl:px-16 grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className={`relative z-10 px-5 md:px-10 xl:px-16 grid gap-6 ${resultat ? '' : 'lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]'}`}>
 
           {/* ── Ce que le groupe dit de lui, et la porte ── */}
           <div className="space-y-6">
