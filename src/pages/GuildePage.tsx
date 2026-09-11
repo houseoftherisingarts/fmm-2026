@@ -7,7 +7,6 @@ import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
-import PageHeader from '../components/layout/PageHeader';
 import { addLocale } from '../lib/locale';
 import { lireFiche, type Membre } from '../firebase/ordre';
 import {
@@ -24,6 +23,7 @@ import SoldePieces, { PieceGuilde } from '../components/guilde/SoldePieces';
 import Vitrine from '../components/guilde/Vitrine';
 import Tresor from '../components/guilde/Tresor';
 import Membres, { CodeInvitation } from '../components/guilde/Membres';
+import EnteteGuilde from '../components/guilde/EnteteGuilde';
 import Salon from '../components/guilde/Salon';
 import Evenements from '../components/guilde/Evenements';
 import Marche from '../components/guilde/Marche';
@@ -50,14 +50,6 @@ const champ = {
   background: 'rgba(0,0,0,0.35)',
   border: '1px solid rgba(var(--sk-glow-rgb),0.22)',
 };
-
-/** La photo des vikings, dans l'orbe des groupes sans blason. */
-const ORBE_PAR_DEFAUT = '/histoire/archives/lievre/2022-e9ed2ea5.webp';
-
-/** Le cadrage de la bannière : aucune préférence n'existe encore sur
- *  la fiche, donc le réglage de l'addendum (65 % vers la droite, où
- *  Aslak tient la proue du drakkar). */
-const CADRAGE_BANNIERE = '65% center';
 
 const bouton = {
   plein: 'inline-flex items-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50',
@@ -122,8 +114,11 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
   // reste dans la page plutôt que dans l'URL.
   const [ongletLocal, setOngletLocal] = useState<OngletGuilde>('mur');
   const onglet = ongletRoute || ongletLocal;
+  // Alex, 11 septembre 2026 : changer d'onglet ne remonte plus en haut
+  // de la page. ScrollToTop (App.tsx) lit `garderScroll` et laisse la
+  // page où elle est.
   const allerA = (o: OngletGuilde) => {
-    if (slug) navigate(cheminGuilde(slug, o, lang));
+    if (slug) navigate(cheminGuilde(slug, o, lang), { state: { garderScroll: true } });
     else setOngletLocal(o);
   };
 
@@ -307,57 +302,33 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
   return (
     <main className="min-h-screen text-ivory">
       <SEO title={guilde.nom} noindex />
-      <PageHeader
-        eyebrow={mot}
-        titleA={guilde.nom}
-        intro={guilde.description || (fr
-          ? `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'Un' : 'Une'} ${mot.toLowerCase()} de l’Ordre.`
-          : `A ${mot.toLowerCase()} of the Order.`)}
-        orbImage={guilde.blason || ORBE_PAR_DEFAUT}
-        orbLabel={guilde.blason ? (fr ? `Le blason de ${guilde.nom}` : `The ${guilde.nom} coat of arms`) : undefined}
-      />
       <section className="relative caravan-stage bleed-edges pb-20 overflow-hidden">
         <Brume />
 
-        {/* ── La bannière, d'un bord à l'autre (addendum, ordre 2) ── */}
-        {(guilde.banniereUrl || peutGerer) && (
-          <div
-            className="relative z-10 w-full overflow-hidden aspect-[16/9] md:aspect-[21/9]"
-            style={{ background: guilde.banniereUrl ? 'rgba(var(--sk-ink-rgb),0.9)' : 'url(/textures/black-linen.png), rgba(var(--sk-ink-rgb),0.9)' }}
-          >
-            {guilde.banniereUrl && (
-              <img src={guilde.banniereUrl} alt="" className="absolute inset-0 w-full h-full object-cover"
-                   style={{ objectPosition: CADRAGE_BANNIERE }} />
-            )}
-            <div className="absolute inset-x-0 top-0 h-24 pointer-events-none"
-                 style={{ background: 'linear-gradient(to bottom, rgba(var(--sk-ink-rgb),0.55), transparent)' }} />
-            <div className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
-                 style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.92), rgba(var(--sk-ink-rgb),0.35) 55%, transparent)' }} />
-            {peutGerer && (
-              <>
-                <button type="button" onClick={() => fichierBanniere.current?.click()} disabled={banniereEnvoi}
-                        className="absolute bottom-4 right-5 md:right-10 xl:right-16 inline-flex items-center gap-2 px-3.5 py-2 rounded-full font-sans uppercase tracking-[0.18em] text-[10px]"
-                        style={{ background: 'rgba(var(--sk-ink-rgb),0.75)', border: '1px solid rgba(var(--sk-parchment-rgb),0.25)', color: 'rgba(var(--sk-parchment-rgb),0.9)' }}>
-                  {banniereEnvoi ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
-                  {guilde.banniereUrl ? (fr ? 'Changer la bannière' : 'Change the banner') : (fr ? 'Ajouter une bannière' : 'Add a banner')}
-                </button>
-                <input ref={fichierBanniere} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
-                       onChange={(e) => { void choisirBanniere(e.target.files?.[0]); e.target.value = ''; }} />
-              </>
-            )}
-          </div>
-        )}
+        {/* ── La bannière, d'un bord à l'autre, avec le nom et le sous-titre posés dessus ── */}
+        <div className="relative z-10">
+          <EnteteGuilde
+            guilde={guilde} lang={lang}
+            edition={peutGerer ? {
+              enregistrer: (patch) => modifierGuilde(guilde.id, patch),
+              choisirBanniere: () => fichierBanniere.current?.click(), banniereEnvoi,
+              choisirBlason: () => fichierBlason.current?.click(), blasonEnvoi,
+            } : undefined}
+          />
+          {peutGerer && (
+            <>
+              <input ref={fichierBanniere} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
+                     onChange={(e) => { void choisirBanniere(e.target.files?.[0]); e.target.value = ''; }} />
+              <input ref={fichierBlason} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
+                     onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
+            </>
+          )}
+        </div>
 
         <div className="relative z-10 px-5 md:px-10 xl:px-16 pt-6 space-y-6">
 
-          {/* ── Le blason, le compte des membres, mes deux bourses ── */}
+          {/* ── Le compte des membres, l'invitation, mes deux bourses ── */}
           <div className="flex items-center gap-4 flex-wrap">
-            <span className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 border border-brass/40 flex items-center justify-center"
-                  style={{ background: 'rgba(var(--sk-deep-rgb),0.6)', boxShadow: '0 0 28px -8px rgba(var(--sk-gilt-rgb),0.5)' }}>
-              {guilde.blason
-                ? <img src={guilde.blason} alt="" className="w-full h-full object-cover" />
-                : <Users size={26} className="text-brass" />}
-            </span>
             <div className="min-w-0">
               <p className="font-sans uppercase tracking-[0.22em] text-[10px]" style={{ color: 'var(--sk-gilt)' }}>{mot}</p>
               <p className="font-sans text-sm text-ivory-soft mt-1 inline-flex items-center gap-1.5">
@@ -365,16 +336,6 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
                 {guilde.monnaie && <span className="text-ivory-soft/50"> · {nomMonnaie(guilde, lang)}</span>}
               </p>
             </div>
-            {peutGerer && (
-              <>
-                <button type="button" onClick={() => fichierBlason.current?.click()} disabled={blasonEnvoi} className={bouton.filet}>
-                  {blasonEnvoi ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
-                  {guilde.blason ? (fr ? 'Changer le blason' : 'Change the coat of arms') : (fr ? 'Ajouter un blason' : 'Add a coat of arms')}
-                </button>
-                <input ref={fichierBlason} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="sr-only"
-                       onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
-              </>
-            )}
             {estMembre && guilde.codeInvitation && (
               <button type="button" onClick={() => setInviter((v) => !v)} className={bouton.filet} aria-expanded={inviter}>
                 {inviter ? <X size={13} /> : <UserPlus size={13} />}

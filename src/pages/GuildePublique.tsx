@@ -7,7 +7,7 @@ import { useCaravanPage } from '../lib/useCaravanPage';
 import { addLocale } from '../lib/locale';
 import SEO from '../components/SEO';
 import Brume from '../components/Brume';
-import PageHeader from '../components/layout/PageHeader';
+import EnteteGuilde from '../components/guilde/EnteteGuilde';
 import { motDeLaForme, nomMonnaie } from '../firebase/guildes';
 import { lireGuildePubliqueParSlug, suivreGuildePublique, type GuildePublique as FichePublique } from '../firebase/guildesPubliques';
 import Vitrine from '../components/guilde/Vitrine';
@@ -20,8 +20,6 @@ import NotFoundPage from './NotFoundPage';
 // qui ouvre la connexion. Tout vient du miroir guildesPubliques/{id},
 // que le serveur tient à jour; la fiche complète reste entre membres.
 
-/** Sans blason, la photo des vikings, comme sur la fiche privée. */
-const BLASON_DEFAUT = '/histoire/archives/lievre/2022-e9ed2ea5.webp';
 
 const GuildePublique: React.FC<{ slug: string }> = ({ slug }) => {
   useCaravanPage();
@@ -65,23 +63,7 @@ const GuildePublique: React.FC<{ slug: string }> = ({ slug }) => {
   return (
     <main className="min-h-screen text-ivory">
       <SEO title={guilde.nom} description={guilde.description || undefined} image={guilde.banniereUrl || guilde.blason} />
-      <PageHeader
-        eyebrow={mot}
-        titleA={guilde.nom}
-        intro={guilde.description || (fr
-          ? `${['clan', 'ordre'].includes(guilde.forme || 'guilde') ? 'Un' : 'Une'} ${mot.toLowerCase()} de l’Ordre.`
-          : `A ${mot.toLowerCase()} of the Order.`)}
-        orbImage={guilde.blason || BLASON_DEFAUT}
-      />
-
-      {/* ── La bannière, d'un bord à l'autre (ordre 2) ── */}
-      {guilde.banniereUrl && (
-        <div className="relative w-full overflow-hidden aspect-video md:aspect-[21/9]">
-          <img src={guilde.banniereUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: '65% center' }} />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
-               style={{ background: 'linear-gradient(to top, rgba(var(--sk-ink-rgb),0.95), rgba(var(--sk-ink-rgb),0.4) 55%, transparent)' }} />
-        </div>
-      )}
+      <EnteteGuilde guilde={guilde} lang={lang} />
 
       <section className="relative caravan-stage bleed-edges pt-8 pb-20 overflow-hidden">
         <Brume />
@@ -89,12 +71,6 @@ const GuildePublique: React.FC<{ slug: string }> = ({ slug }) => {
 
           {/* ── Le blason, le compte des membres, la porte ── */}
           <div className="flex items-center gap-4 flex-wrap">
-            <span className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden shrink-0 border border-brass/40 flex items-center justify-center"
-                  style={{ background: 'rgba(var(--sk-deep-rgb),0.6)', boxShadow: '0 0 28px -8px rgba(var(--sk-gilt-rgb),0.5)' }}>
-              {guilde.blason
-                ? <img src={guilde.blason} alt="" className="w-full h-full object-cover" />
-                : <Users size={24} className="text-brass" />}
-            </span>
             <div className="min-w-0">
               <p className="font-sans uppercase tracking-[0.22em] text-[10px]" style={{ color: 'var(--sk-gilt)' }}>{mot}</p>
               <p className="font-sans text-sm text-ivory-soft mt-1 inline-flex items-center gap-1.5">

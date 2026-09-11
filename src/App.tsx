@@ -268,18 +268,21 @@ const isImmersive = (pathname: string) =>
 // Les ancres (#section) et le retour arrière du navigateur sont
 // respectés : on ne remonte que sur une vraie navigation vers le haut.
 const ScrollToTop: React.FC = () => {
-  const { pathname, hash, search } = useLocation();
+  const { pathname, hash, search, state } = useLocation();
   const navType = useNavigationType();
   useEffect(() => {
     if (hash) return;                 // lien vers une ancre : on laisse faire
     if (navType === 'POP') return;    // retour arrière : le navigateur restaure
+    // Les onglets d'un groupe (/{slug}/salon…) changent d'adresse sans
+    // changer de page : la page reste où elle est (Alex, 11 sept 2026).
+    if ((state as { garderScroll?: boolean } | null)?.garderScroll) return;
     // `?banquet=…` : la page Nourriture déplie son chapitre et vise
     // elle-même le banquet. Remonter en haut ici revenait à lui tirer le
     // tapis sous les pieds, et le visiteur restait devant l'en-tête
     // pendant que la page cherchait sa place (Alex, 2026-08-23).
     if (new URLSearchParams(search).get('banquet')) return;
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [pathname, hash, search, navType]);
+  }, [pathname, hash, search, navType, state]);
   return null;
 };
 
