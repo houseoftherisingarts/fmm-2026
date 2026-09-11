@@ -43,6 +43,25 @@ interface EncreProps {
   as?: 'p' | 'h2' | 'span' | 'div';
 }
 
+/**
+ * Le texte se découpe en mots, mais la ponctuation double du français
+ * (le point d'interrogation, le point d'exclamation, les deux-points,
+ * le point-virgule et le guillemet fermant) reste accrochée au mot qui
+ * la précède par une espace fine insécable. Sans ça, un « ? » tombe
+ * seul au début de la ligne suivante, ce qui se voit tout de suite sur
+ * une page de vélin (Alex, 2026-09-10).
+ */
+function decouper(texte: string): string[] {
+  const sortie: string[] = [];
+  for (const mot of texte.split(' ')) {
+    const dernier = sortie.length - 1;
+    if (dernier >= 0 && /^[?!:;»][.,…]?$/.test(mot)) sortie[dernier] += `\u202F${mot}`;
+    else if (dernier >= 0 && sortie[dernier] === '«') sortie[dernier] += `\u202F${mot}`;
+    else sortie.push(mot);
+  }
+  return sortie;
+}
+
 const LETTRE: Variants = {
   seche: { opacity: 0, filter: 'blur(5px)', y: -1, color: ENCRE_PALE },
   ecrite: {
@@ -60,7 +79,7 @@ export const Encre: React.FC<EncreProps> = ({
   texte, className, style, delai = 0, vitesse = 0.02, cle, as = 'p',
 }) => {
   const reduire = useReducedMotion();
-  const mots = useMemo(() => texte.split(' '), [texte]);
+  const mots = useMemo(() => decouper(texte), [texte]);
   const Balise = motion[as] as typeof motion.p;
 
   if (reduire) {
@@ -228,6 +247,136 @@ export const RegistreFolios: React.FC<{ lignes: { romain: string; marque: boolea
 );
 
 
+// ── Les deux pages, relevées sur la photo du livre ──────────────────
+// Le livre est photographié de biais : ses pages ne sont pas des
+// rectangles, elles s'élargissent vers le bas et leur filet penche. Une
+// boîte de texte droite posée là-dessus se voit au premier coup d'œil,
+// et c'est exactement ce qu'Alex a vu le 2026-09-10 : le texte sortait
+// de la page. Les quatre coins du filet imprimé ont donc été relevés sur
+// ouvert.webp (1276 × 720), en fraction du plan, dans l'ordre haut
+// gauche, haut droite, bas droite, bas gauche; la zone d'écriture prend
+// ensuite cette forme exacte par une matrice de perspective, si bien
+// qu'elle ne peut plus déborder du vélin quelle que soit la fenêtre.
+export type Quad = readonly (readonly [number, number])[];
+
+const CADRE_GAUCHE: Quad = [[0.146, 0.203], [0.418, 0.150], [0.410, 0.725], [0.082, 0.746]];
+const CADRE_DROITE: Quad = [[0.479, 0.167], [0.777, 0.185], [0.821, 0.733], [0.484, 0.722]];
+
+/** Le cadre rentré vers son centre : l'encre ne touche jamais le filet.
+ *  La marge est plus large en largeur qu'en hauteur, parce que le bord
+ *  du papier s'assombrit sur les côtés et avale l'encre qui s'en
+ *  approche. */
+function retrecir(q: Quad, mx: number, my: number): Quad {
+  const cx = (q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4;
+  const cy = (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4;
+  return q.map(([x, y]) => [x + (cx - x) * mx, y + (cy - y) * my] as const);
+}
+
+const ZONE_GAUCHE = retrecir(CADRE_GAUCHE, 0.13, 0.10);
+const ZONE_DROITE = retrecir(CADRE_DROITE, 0.10, 0.08);
+
+/**
+ * La matrice qui pose un rectangle de w sur h exactement sur les quatre
+ * points donnés, en pixels et dans l'ordre des coins. C'est l'homographie
+ * classique du carré unité vers un quadrilatère, mise à l'échelle du
+ * rectangle et écrite dans l'ordre colonne par colonne de matrix3d.
+ */
+function matriceVersQuad(pts: readonly (readonly [number, number])[], w: number, h: number): string {
+  const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = pts;
+  const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2;
+  const sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+  const den = dx1 * dy2 - dx2 * dy1;
+  // Un quadrilatère qui serait un parallélogramme parfait annule le
+  // dénominateur : la transformation est alors affine, sans fuite.
+  const g = Math.abs(den) < 1e-9 ? 0 : (sx * dy2 - dx2 * sy) / den;
+  const k = Math.abs(den) < 1e-9 ? 0 : (dx1 * sy - sx * dy1) / den;
+  const m = [
+    (x1 - x0 + g * x1) / w, (y1 - y0 + g * y1) / w, 0, g / w,
+    (x3 - x0 + k * x3) / h, (y3 - y0 + k * y3) / h, 0, k / h,
+    0, 0, 1, 0,
+    x0, y0, 0, 1,
+  ];
+  return `matrix3d(${m.map((v) => Number(v.toFixed(6))).join(',')})`;
+}
+
+/** Pose la zone d'écriture sur sa page et la garde dessus quand la
+ *  fenêtre change de taille. */
+function usePageDuLivre(cadre: Quad, actif: boolean) {
+  const zone = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const el = zone.current;
+    if (!el || !actif) return;
+    const plan = el.closest('.grimoire-plan') as HTMLElement | null;
+    if (!plan) return;
+
+    const poser = () => {
+      const c = plan.getBoundingClientRect();
+      if (!c.width) return;
+      const pts = cadre.map(([fx, fy]) => [fx * c.width, fy * c.height] as const);
+      // La boîte de départ prend la largeur et la hauteur moyennes du
+      // cadre : le texte se compose à sa vraie taille, puis la matrice
+      // l'incline. Les deux mesures sortent des quatre coins, donc elles
+      // suivent la fenêtre sans qu'un seul chiffre soit écrit en dur.
+      const w = ((pts[1][0] - pts[0][0]) + (pts[2][0] - pts[3][0])) / 2;
+      const h = ((pts[3][1] - pts[0][1]) + (pts[2][1] - pts[1][1])) / 2;
+      if (w <= 0 || h <= 0) return;
+      el.style.left = `${(pts[0][0] / c.width * 100).toFixed(3)}%`;
+      el.style.top = `${(pts[0][1] / c.height * 100).toFixed(3)}%`;
+      el.style.width = `${w.toFixed(2)}px`;
+      el.style.height = `${h.toFixed(2)}px`;
+      el.style.transform = matriceVersQuad(
+        pts.map(([x, y]) => [x - pts[0][0], y - pts[0][1]] as const), w, h,
+      );
+    };
+
+    poser();
+    const oeil = new ResizeObserver(poser);
+    oeil.observe(plan);
+    return () => oeil.disconnect();
+  }, [cadre, actif]);
+
+  return zone;
+}
+
+/**
+ * Le corps du texte se resserre jusqu'à tenir entre les filets. Une
+ * question courte s'écrit en grand, les six compagnies avec leur devise
+ * se rangent plus serré, et rien ne dépasse jamais du vélin. La mesure
+ * se prend sur la hauteur de mise en page, que la réduction ne touche
+ * pas : une seule passe suffit et rien ne peut boucler.
+ */
+const PLANCHER = 0.62;
+
+function useEncreQuiTient(zone: React.RefObject<HTMLDivElement | null>, actif: boolean) {
+  const contenu = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const el = contenu.current;
+    const page = zone.current;
+    if (!el || !page || !actif) return;
+
+    const ajuster = () => {
+      const dispo = page.clientHeight;
+      const pris = el.offsetHeight;
+      if (!dispo || !pris) return;
+      const k = Math.max(PLANCHER, Math.min(1, (dispo - 2) / pris));
+      el.style.transform = k > 0.998 ? '' : `scale(${k.toFixed(4)})`;
+    };
+
+    ajuster();
+    // La hauteur du contenu change quand la question change, et celle de
+    // la page quand la fenêtre bouge; le scale, lui, ne touche pas à la
+    // mise en page, donc l'oeil ne se réveille pas sur son propre geste.
+    const oeil = new ResizeObserver(ajuster);
+    oeil.observe(el);
+    oeil.observe(page);
+    return () => oeil.disconnect();
+  }, [zone, actif]);
+
+  return contenu;
+}
+
 // ── La courbure du papier ────────────────────────────────────────────
 // La page ne penche pas seulement, elle se bombe : mesuré sur l'image du
 // livre, le filet du haut se soulève de 13 px en son milieu et celui du
@@ -240,13 +389,12 @@ export const RegistreFolios: React.FC<{ lignes: { romain: string; marque: boolea
 const FLECHE_HAUT = -0.0102;  // fraction de la largeur du plan, le centre monte
 const FLECHE_BAS = 0.0251;    // le centre descend
 
-function useCourbureDuPapier(actif: boolean) {
-  const zone = useRef<HTMLDivElement>(null);
+function useCourbureDuPapier(zone: React.RefObject<HTMLDivElement | null>, actif: boolean) {
   const reduire = useReducedMotion();
 
   useLayoutEffect(() => {
     const el = zone.current;
-    if (!el || !actif) return;
+    if (!el || !actif || reduire) return;
     const plan = el.closest('.grimoire-plan') as HTMLElement | null;
     if (!plan) return;
 
@@ -261,12 +409,17 @@ function useCourbureDuPapier(actif: boolean) {
       const zr = el.getBoundingClientRect();
       const centreX = zr.left + zr.width / 2;
       const demi = Math.max(1, zr.width / 2);
+      // La page est posée en perspective et son texte peut être resserré,
+      // donc un pixel écrit ici ne vaut plus un pixel à l'écran : la
+      // flèche se convertit dans l'échelle de la page, sinon le bombé
+      // grossit avec l'inclinaison et le texte remonte hors du filet.
+      const echelle = el.offsetWidth > 0 ? zr.width / el.offsetWidth : 1;
 
       el.querySelectorAll<HTMLElement>('[data-mot]').forEach((mot) => {
         const r = mot.getBoundingClientRect();
         const u = ((r.left + r.width / 2) - centreX) / demi;   // -1 à 1
         const v = Math.min(1, Math.max(0, ((r.top + r.height / 2) - hautVelin) / hauteurVelin));
-        const amplitude = (FLECHE_HAUT + (FLECHE_BAS - FLECHE_HAUT) * v) * cadre.width;
+        const amplitude = (FLECHE_HAUT + (FLECHE_BAS - FLECHE_HAUT) * v) * cadre.width / Math.max(0.2, echelle);
         const dy = amplitude * (1 - u * u);          // parabole, nulle aux bords
         const pente = amplitude * (-2 * u) / demi;   // la tangente, pour l'inclinaison
         mot.style.transform = `translateY(${dy.toFixed(2)}px) rotate(${(Math.atan(pente) * 180 / Math.PI).toFixed(3)}deg)`;
@@ -284,9 +437,7 @@ function useCourbureDuPapier(actif: boolean) {
       window.clearTimeout(attente); window.clearTimeout(arret);
       window.removeEventListener('resize', courber);
     };
-  }, [actif, reduire]);
-
-  return zone;
+  }, [zone, actif, reduire]);
 }
 
 // ── La scène ────────────────────────────────────────────────────────
@@ -331,7 +482,13 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
   }, [ouvert, marquerOuvert, onOuvert]);
 
   const statique = reduire || dejaVu || videoMorte;
-  const pageDroite = useCourbureDuPapier(ouvert && !reduire);
+  // Chaque page se pose sur son cadre relevé sur la photo, et son texte
+  // se resserre jusqu'à tenir entre les filets.
+  const pageGauche = usePageDuLivre(ZONE_GAUCHE, ouvert && !!gauche);
+  const pageDroite = usePageDuLivre(ZONE_DROITE, ouvert);
+  const encreGauche = useEncreQuiTient(pageGauche, ouvert && !!gauche);
+  const encreDroite = useEncreQuiTient(pageDroite, ouvert);
+  useCourbureDuPapier(encreDroite, ouvert);
 
   return (
     <div className="grimoire-scene" lang="fr">
@@ -360,21 +517,14 @@ export const Grimoire: React.FC<GrimoireProps> = ({ gauche, droite, onOuvert }) 
         {ouvert && (
           <>
             {gauche && (
-              <div className="grimoire-page grimoire-page-gauche absolute" style={{ left: '15.6%', top: 'calc(var(--page-haut) + 2%)', width: '27%' }}>
-                {gauche}
+              <div ref={pageGauche} className="grimoire-page grimoire-page-gauche absolute flex flex-col justify-center">
+                <div ref={encreGauche} className="grimoire-contenu">{gauche}</div>
               </div>
             )}
             {/* La page centre son contenu plutôt que de le tasser en
                 haut : le bas du vélin ne reste plus vide. */}
-            <div
-              ref={pageDroite}
-              className="grimoire-page absolute flex flex-col justify-center"
-              style={{
-                left: 'var(--page-droite-x)', top: 'var(--page-haut)',
-                width: 'var(--page-droite-w)', height: 'var(--page-hauteur)',
-              }}
-            >
-              {droite}
+            <div ref={pageDroite} className="grimoire-page absolute flex flex-col justify-center">
+              <div ref={encreDroite} className="grimoire-contenu">{droite}</div>
             </div>
           </>
         )}

@@ -2753,27 +2753,20 @@ a:hover > .fmm-annee-carte::after {
   position: absolute;
   left: 50%;
   top: 50%;
-  aspect-ratio: 16 / 9;
-  width: max(100%, calc(100dvh * 16 / 9));
+  /* Le rapport EXACT de la photo (1276 × 720), jamais un 16/9 arrondi :
+     l'image est recadrée pour couvrir le plan, donc un plan au mauvais
+     rapport décale les pages de quelques pixels et le texte ne tombe
+     plus dessus. */
+  aspect-ratio: 1276 / 720;
+  width: max(100%, calc(100dvh * 1276 / 720));
   transform: translate(calc(-50% + var(--grimoire-decalage, 0px)), -50%);
   container-type: inline-size;
-  /* Les pages du livre, en pourcentage du plan. */
-  --page-droite-x: 51.7%;
-  --page-droite-w: 27%;
-  --page-haut: 17%;
-  --page-hauteur: 56%;
   /* Les corps de texte du vélin, réglés à part sur téléphone où la page
      est plus courte. */
   /* La main du registre, et son épaisseur : Luminari n'a qu'une graisse,
      donc l'encre se densifie au filet plutôt qu'au gras. */
   --encre-main: 'Luminari FMM', 'Luminari', 'Cinzel', 'Cormorant SC', Georgia, serif;
   --encre-filet: 0.34px;
-  /* La page n'est pas un rectangle : elle penche et s'élargit vers le
-     bas. Le texte prend la même perspective, sinon il se lit comme un
-     calque posé par-dessus (Alex, 2026-09-10). */
-  --page-perspective: 1400px;
-  --page-inclinaison: 5.5deg;
-  --page-roulis: -0.4deg;
   --t-folio: clamp(8px, 1.15cqw, 14px);
   --t-question: clamp(12px, 1.72cqw, 22px);
   --t-reponse: clamp(11px, 1.42cqw, 18px);
@@ -2792,15 +2785,12 @@ a:hover > .fmm-annee-carte::after {
    et le dessous. */
 @media (max-aspect-ratio: 5 / 4) {
   .grimoire-plan {
-    width: min(calc(100dvw * 3.45), calc(100dvh * 16 / 9));
-    --grimoire-decalage: -15.25%;
-    --page-droite-x: 52.7%;
-    --page-droite-w: 25%;
-    --page-haut: 17%;
-    --page-hauteur: 55%;
+    /* La page de droite occupe 34,2 % du plan à son plus large : le plan
+       s'élargit juste assez pour qu'elle tienne l'écran sans que son
+       filet sorte par la droite. */
+    width: min(calc(100dvw * 2.86), calc(100dvh * 1276 / 720));
+    --grimoire-decalage: -15%;
     --encre-filet: 0.28px;
-    --page-inclinaison: 4.4deg;
-    --page-roulis: -0.3deg;
     --t-folio: 10px;
     --t-question: 16px;
     --t-reponse: 13.5px;
@@ -2820,15 +2810,21 @@ a:hover > .fmm-annee-carte::after {
   -webkit-text-stroke: var(--encre-filet) currentColor;
   paint-order: stroke fill;
 }
-/* Les deux pages du livre, chacune dans son plan. */
+/* Les deux pages du livre. La position, la taille et la matrice de
+   perspective sont posées par le composant, à partir des quatre coins
+   relevés sur la photo : rien ici ne doit les contredire. */
 .grimoire-page {
-  transform: perspective(var(--page-perspective))
-             rotateX(var(--page-inclinaison))
-             rotate(var(--page-roulis));
-  transform-origin: 50% 50%;
+  transform-origin: 0 0;
   transform-style: preserve-3d;
+  will-change: transform;
 }
-.grimoire-page-gauche { --page-roulis: 0.5deg; }
+/* L'encre se resserre jusqu'à tenir entre les filets (voir
+   useEncreQuiTient), et elle se resserre autour de son milieu pour que
+   la page reste centrée. */
+.grimoire-contenu {
+  width: 100%;
+  transform-origin: 50% 50%;
+}
 .grimoire-choix { background: none; border: 0; cursor: pointer; }
 /* Six compagnies avec leur devise tiennent mal sur une page courte :
    la liste se resserre plutôt que de sortir du filet. */

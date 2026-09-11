@@ -19,6 +19,7 @@ import {
   type FinanceAllocation, type FinanceDocument,
   type FinanceReceivable, type ReceivableType, type ReceivableStatus,
 } from '../../../firebase/finances';
+import { lireTresorerieMontpellois, type TresorerieMontpellois } from '../../../firebase/montpellois';
 
 // ─── Finances ────────────────────────────────────────────────────────
 // Un tableau de bord (budget par catégories + comptes + répartition,
@@ -129,6 +130,9 @@ const DashboardTab: React.FC = () => {
   const [receivables, setReceivables] = useState<FinanceReceivable[]>([]);
   const [recError, setRecError] = useState<string | null>(null);
 
+  const [montpellois, setMontpellois] = useState<TresorerieMontpellois | null>(null);
+  const [mpError, setMpError] = useState<string | null>(null);
+
   const reloadCategories = async () => {
     try {
       const list = await listCategories();
@@ -189,8 +193,18 @@ const DashboardTab: React.FC = () => {
     }
   };
 
+  const reloadMontpellois = async () => {
+    try {
+      setMontpellois(await lireTresorerieMontpellois());
+      setMpError(null);
+    } catch (e) {
+      console.warn('[FinancesSection] lireTresorerieMontpellois failed:', e);
+      setMpError(humanizeError(e, 'charger ces données'));
+    }
+  };
+
   useEffect(() => {
-    Promise.allSettled([reloadCategories(), reloadAccounts(), reloadAllocation(), reloadReceivables()]).finally(() => setLoading(false));
+    Promise.allSettled([reloadCategories(), reloadAccounts(), reloadAllocation(), reloadReceivables(), reloadMontpellois()]).finally(() => setLoading(false));
   }, []);
 
   const totals = useMemo(() => ({
@@ -231,6 +245,9 @@ const DashboardTab: React.FC = () => {
         <TresorerieHero total={tresorerie} allocation={allocation} />
         <ARecevoirStat total={totalARecevoir} count={receivables.filter((r) => r.status === 'promis' || r.status === 'facture').length} />
       </div>
+
+      {/* La monnaie du site, jamais mêlée aux dollars plus haut. */}
+      <TresorerieMontpelloisCard tresor={montpellois} error={mpError} onClearError={() => setMpError(null)} />
 
       {/* Vue d'ensemble: budget + comptes, un coup d'œil */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -332,6 +349,51 @@ const ARecevoirStat: React.FC<{ total: number; count: number }> = ({ total, coun
     </p>
   </Card>
 );
+
+// ─── La trésorerie en Montpellois ────────────────────────────────────
+// Alex, 2026-09-10 : « combien est-ce que nous avons en Montpellois, en
+// comptant tous les membres ? » Le chiffre qui répond à la question,
+// c'est ce qui dort dans les bourses en ce moment. À côté vivent le
+// total gagné depuis l'ouverture et ce qui est déjà reparti à la
+// boutique et au Souk, parce que la différence entre les deux dit si la
+// monnaie tourne ou si elle dort. La carte reste volontairement séparée
+// des dollars du haut : un Montpellois n'est pas une piastre, et rien
+// ici ne doit laisser croire le contraire.
+
+const fmtMP = (n: number) => new Intl.NumberFormat('fr-CA', { maximumFractionDigits: 0 }).format(n);
+
+const TresorerieMontpelloisCard: React.FC<{
+  tresor: TresorerieMontpellois | null;
+  error: string | null;
+  onClearError: () => void;
+}> = ({ tresor, error, onClearError }) => {
+  if (error) return <ErrorBanner message={error} onClose={onClearError} />;
+  if (!tresor) return null;
+  const moyenne = tresor.bourses > 0 ? tresor.circulation / tresor.bourses : 0;
+
+  return (
+    <Card className="p-5 md:p-6 !rounded-card border border-brass/25">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="font-display title-medieval text-xs text-brass uppercase tracking-widest inline-flex items-center gap-2">
+            <Coins size={14} /> Trésorerie en Montpellois
+          </p>
+          <p className="font-sans text-4xl md:text-5xl tabular-nums text-ivory mt-2 leading-none">
+            {fmtMP(tresor.circulation)} <span className="text-xl text-brass align-baseline">MP</span>
+          </p>
+          <p className="font-editorial italic text-xs text-ivory-soft/60 mt-2">
+            Ce que les {fmtMP(tresor.bourses)} bourses du site portent en ce moment, monnaie de jeu et non des dollars.
+          </p>
+        </div>
+        <div className="grid grid-cols-3 gap-3 min-w-[16rem] flex-1 max-w-md">
+          <Stat label="Gagné à vie"   value={fmtMP(tresor.gagne)} />
+          <Stat label="Dépensé"       value={fmtMP(tresor.depense)} />
+          <Stat label="Par membre"    value={fmtMP(Math.round(moyenne))} />
+        </div>
+      </div>
+    </Card>
+  );
+};
 
 // ─── Colonne Budget ──────────────────────────────────────────────────
 

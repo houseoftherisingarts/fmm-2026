@@ -184,6 +184,66 @@ const PAIRS = [
       h1: 'Hnefatafl',
       body: `${FAITS_EN}<p>Hnefatafl is the Vikings' strategy game: Raiders surround, Defenders protect the King who must escape to a corner. Free 3D version by the festival, 11×11 board, full rules.</p>` },
   }],
+  ['/jeux/clan', '/en/games/clan', {
+    img: '/partage/jeu-clan.jpg',
+    imgAlt: 'Un grimoire ouvert sur la table, à la chandelle, où s’écrit le questionnaire du clan.',
+    fr: { title: 'Ta place dans le clan — Jeu du FMM 2026',
+      desc: 'Quinze questions décident de votre place dans une équipe de sept, puis du clan que vous fondez. Le jeu de l’année de la Peste se joue dans un grimoire, sans rien installer.',
+      h1: 'Ta place dans le clan',
+      body: `${FAITS_FR}<p>Le jeu s’ouvre sur un grimoire : vous choisissez votre groupe parmi les chevaliers, les vikings, les pirates, les artisans, le clergé et les saltimbanques, vous répondez à quinze questions, et le registre rend son verdict sur la fonction que vous tenez dans une équipe de sept. Un clan se fonde ensuite, avec les gens du même groupe.</p>` },
+    en: { title: 'Your Place in the Clan — FMM 2026 game',
+      desc: 'Fifteen questions decide your place in a team of seven, then the clan you found. The Year of the Plague game is played inside a grimoire, with nothing to install.',
+      h1: 'Your Place in the Clan',
+      body: `${FAITS_EN}<p>The game opens on a grimoire: you pick your group among knights, Vikings, pirates, artisans, clergy and travelling players, you answer fifteen questions, and the register gives its verdict on the role you hold in a team of seven. A clan is founded afterwards, with people from the same group.</p>` },
+  }],
+  ['/jeux/renard', '/en/games/fox-and-geese', {
+    img: '/partage/jeu-renard.jpg',
+    imgAlt: 'La planche en croix du Renard et les Oies, le renard roux cerné par les oies blanches.',
+    fr: { title: 'Le Renard et les Oies — Jeu du FMM 2026',
+      desc: 'Les oies montent en bloc vers la tanière pour y coincer le renard, qui n’a besoin que d’un saut par-dessus l’une d’elles. Treize ou dix-sept oies, contre l’ordinateur ou à deux.',
+      h1: 'Le Renard et les Oies',
+      body: `${FAITS_FR}<p>Sur une planche en croix, une basse-cour n’a que le nombre pour se défendre : les oies avancent ensemble vers la tanière et cherchent à immobiliser le renard, pendant que lui saute par-dessus les isolées pour éclaircir le troupeau. Les deux formes du jeu sont offertes, la plus ancienne à treize oies et la plus tardive à dix-sept.</p>` },
+    en: { title: 'Fox and Geese — FMM 2026 game',
+      desc: 'The geese climb together toward the den to pin the fox, while the fox needs a single leap over one of them. Thirteen or seventeen geese, against the computer or two players.',
+      h1: 'Fox and Geese',
+      body: `${FAITS_EN}<p>On a cross-shaped board, a farmyard has nothing but numbers on its side: the geese move together toward the den and try to pin the fox, while he leaps over the stragglers to thin the flock. Both forms are offered, the older one with thirteen geese and the later one with seventeen.</p>` },
+  }],
+  ['/jeux/merelle', '/en/games/merelle', {
+    img: '/partage/jeu-merelle.jpg',
+    imgAlt: 'Le madrier de la mérelle et ses trois carrés emboîtés, les pions bruns et noirs posés dessus.',
+    fr: { title: 'La Mérelle — Jeu du FMM 2026',
+      desc: 'Le jeu des moulins : neuf pions chacun, trois carrés emboîtés, et chaque alignement de trois enlève une pièce à l’autre. Contre l’ordinateur ou à deux sur le même écran.',
+      h1: 'La Mérelle',
+      body: `${FAITS_FR}<p>Trois carrés emboîtés, neuf pions par joueur, et un alignement de trois qui vous laisse retirer une pièce à l’autre : la mérelle se joue sur la table haute du seigneur, contre l’ordinateur ou à deux sur le même écran.</p>` },
+    en: { title: 'Nine Men’s Morris — FMM 2026 game',
+      desc: 'The mill game: nine pieces each, three nested squares, and every line of three takes a piece from the other side. Against the computer or two players on one screen.',
+      h1: 'Nine Men’s Morris',
+      body: `${FAITS_EN}<p>Three nested squares, nine pieces each, and a line of three that lets you take one of your opponent’s: morris is played on the lord’s high table, against the computer or with two players on one screen.</p>` },
+  }],
+  ['/jeux/des', '/en/games/dice', {
+    img: '/partage/jeu-des.jpg',
+    imgAlt: 'Un gobelet de cuir renversé et cinq dés rouges sur une table de taverne, à la chandelle.',
+    fr: { title: 'Les dés du menteur — Jeu du FMM 2026',
+      desc: 'Cinq dés sous chaque gobelet, une annonce qui monte jusqu’à ce que quelqu’un doute, et tous les gobelets se lèvent en même temps. Jusqu’à cinq joueurs.',
+      h1: 'Les dés du menteur',
+      body: `${FAITS_FR}<p>Chacun cache cinq dés sous son gobelet et annonce ce qu’il croit voir sur la table. L’annonce monte jusqu’au doute, et tous les gobelets se lèvent ensemble. Jusqu’à cinq joueurs s’y affrontent, contre la maison ou contre de vraies personnes.</p>` },
+    en: { title: 'Liar’s Dice — FMM 2026 game',
+      desc: 'Five dice under each cup, a bid that climbs until someone doubts, and every cup goes up at once. Up to five players, against the house or real people.',
+      h1: 'Liar’s Dice',
+      body: `${FAITS_EN}<p>Each player hides five dice under a cup and calls out what he believes is on the table. The bid climbs until someone doubts, and every cup goes up at once. Up to five players face each other, against the house or against real people.</p>` },
+  }],
+  ['/jeux/tarot', '/en/games/tarot', {
+    img: '/partage/jeu-tarot.jpg',
+    imgAlt: 'Les lames du tarot de Marseille étalées sur une étoffe, à la lueur d’une chandelle.',
+    fr: { title: 'Tarot de Marseille — Jeu du FMM 2026',
+      desc: 'Une carte, trois cartes ou la croix celtique en dix lames, et chaque lame reçoit sa lecture. Le jeu que les roulottes portaient de foire en foire.',
+      h1: 'Tarot de Marseille',
+      body: `${FAITS_FR}<p>Les roulottes portaient ce jeu de foire en foire, et il se lit encore de la même façon : vous tirez une seule carte, trois cartes ou la croix celtique en dix lames, et chaque lame reçoit sa lecture.</p>` },
+    en: { title: 'Marseille Tarot — FMM 2026 game',
+      desc: 'One card, three cards or the ten-card Celtic cross, and every card gets its reading. The deck the wagons carried from fair to fair.',
+      h1: 'Marseille Tarot',
+      body: `${FAITS_EN}<p>The wagons carried this deck from fair to fair, and it is still read the same way: you draw a single card, three cards or the ten of the Celtic cross, and every card gets its reading.</p>` },
+  }],
   ['/politique-de-confidentialite', '/en/privacy', {
     fr: { title: 'Politique de confidentialité — Festival Médiéval de Montpellier',
       desc: 'Politique de confidentialité du site du Festival Médiéval de Montpellier.', h1: 'Politique de confidentialité', body: FAITS_FR },
@@ -207,6 +267,17 @@ for (const [frPath, enPath, def] of PAIRS) {
       .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${url}$2`)
       .replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`)
       .replace(/(<html lang=")[^"]*(")/, `$1${lang === 'en' ? 'en' : 'fr'}$2`);
+    // L'image de partage propre à la page, quand la route en déclare une :
+    // sans elle, tout ce qui se partage montre la même joute, et le lien
+    // d'un jeu ressemble au lien de la billetterie (Alex, 2026-09-10).
+    if (def.img) {
+      const img = `${ROOT_URL}${def.img}`;
+      html = html
+        .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${img}$2`)
+        .replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${img}$2`)
+        .replace(/(<meta property="og:image:alt" content=")[^"]*(")/, `$1${esc(def.imgAlt ?? d.title)}$2`);
+    }
+
     // hreflang par route
     const hreflang = `<link rel="alternate" hreflang="fr-CA" href="${ROOT_URL}${frPath === '/' ? '' : frPath}" />\n    <link rel="alternate" hreflang="en-CA" href="${ROOT_URL}${enPath}" />\n    <link rel="alternate" hreflang="x-default" href="${ROOT_URL}${frPath === '/' ? '' : frPath}" />\n    `;
     html = html.replace(/<link rel="canonical"/, hreflang + '<link rel="canonical"');

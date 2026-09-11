@@ -304,3 +304,51 @@ export function suivreBourseDe(uid: string, cb: (bourse: { solde: number; gagne:
     (snap) => cb(snap.exists() ? (snap.data() as { solde: number; gagne: number; publique?: boolean }) : null),
     () => cb(null));
 }
+
+// ── La trésorerie du festival, vue de l'admin (Alex, 2026-09-10) ─────
+// « Combien est-ce que nous avons en Montpellois, tous les membres
+// ensemble ? » La réponse se prend par une agrégation côté serveur, qui
+// rend la somme sans rapatrier une seule bourse; si le serveur la
+// refuse, la lecture ordinaire prend le relais et compte à la main,
+// pour que le chiffre s'affiche quand même. Réservé à l'équipe : les
+// règles de sécurité n'ouvrent la collection qu'aux comptes admin.
+
+export interface TresorerieMontpellois {
+  /** Ce qui dort dans les bourses en ce moment. */
+  circulation: number;
+  /** Tout ce qui a été gagné depuis l'ouverture, dépenses comprises. */
+  gagne: number;
+  /** Ce qui est reparti à la boutique, au Souk et aux enveloppes. */
+  depense: number;
+  /** Le nombre de bourses ouvertes. */
+  bourses: number;
+}
+
+export async function lireTresorerieMontpellois(): Promise<TresorerieMontpellois> {
+  if (!db) throw new Error('Firebase n’est pas configuré');
+  const { collection, getDocs, getAggregateFromServer, sum, count } = await import('firebase/firestore');
+  const bourses = collection(db, COLLECTION);
+  try {
+    const r = await getAggregateFromServer(bourses, {
+      circulation: sum('solde'), gagne: sum('gagne'), depense: sum('depense'), bourses: count(),
+    });
+    const d = r.data();
+    return {
+      circulation: Number(d.circulation) || 0,
+      gagne: Number(d.gagne) || 0,
+      depense: Number(d.depense) || 0,
+      bourses: Number(d.bourses) || 0,
+    };
+  } catch (e) {
+    console.warn('[bourse] agrégation refusée, lecture complète', e);
+    const snap = await getDocs(bourses);
+    const t: TresorerieMontpellois = { circulation: 0, gagne: 0, depense: 0, bourses: snap.size };
+    snap.forEach((doc) => {
+      const b = doc.data() as Bourse;
+      t.circulation += Number(b.solde) || 0;
+      t.gagne += Number(b.gagne) || 0;
+      t.depense += Number(b.depense) || 0;
+    });
+    return t;
+  }
+}
