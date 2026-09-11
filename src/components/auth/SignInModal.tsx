@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EDITIONS_FESTIVAL, retenirLesAnnees, anneesRetenues } from '../../firebase/ordre';
 import { retenirLeCode, codeRetenu } from '../../firebase/parrainage';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,7 +50,7 @@ const TEXTES = {
 
 const SignInModal: React.FC = () => {
   const {
-    signInModalOpen, closeSignIn,
+    signInModalOpen, signInModalMode, closeSignIn,
     signInWithGoogle, signInWithPassword, signUpWithPassword,
     sendMagicLink, resetPassword,
   } = useAuth();
@@ -58,6 +58,9 @@ const SignInModal: React.FC = () => {
   const t = TEXTES[lang];
   // Top-level mode: log-in vs create-new-account.
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  // La page qui ouvre le modal choisit l'onglet : « M'inscrire » ouvre
+  // directement l'inscription.
+  useEffect(() => { if (signInModalOpen) setMode(signInModalMode); }, [signInModalOpen, signInModalMode]);
   // Inside sign-in mode, the user picks password or magic-link.
   const [tab, setTab]   = useState<'password' | 'magic'>('password');
   // Form fields, shared between modes where it makes sense.

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useBadges } from '../contexts/BadgesContext';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Users, Pencil, Trash2, Save, LogOut, Loader2, Camera, KeyRound } from 'lucide-react';
+import { Users, Pencil, Trash2, Save, LogOut, Loader2, Camera, KeyRound, UserPlus, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -23,7 +23,7 @@ import Onglets, { cheminGuilde, type OngletGuilde } from '../components/guilde/O
 import SoldePieces, { PieceGuilde } from '../components/guilde/SoldePieces';
 import Vitrine from '../components/guilde/Vitrine';
 import Tresor from '../components/guilde/Tresor';
-import Membres from '../components/guilde/Membres';
+import Membres, { CodeInvitation } from '../components/guilde/Membres';
 import Salon from '../components/guilde/Salon';
 import Evenements from '../components/guilde/Evenements';
 import Marche from '../components/guilde/Marche';
@@ -218,6 +218,11 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
     finally { setPieceEnvoi(false); }
   };
 
+  // Alex, 11 septembre 2026 : « si je forme un groupe de chevaliers, je
+  // voudrais inviter les autres ». Le lien d'invitation se sort de
+  // l'en-tête, sur tous les panneaux, pour tout membre du groupe.
+  const [inviter, setInviter] = useState(false);
+
   const code = params.get('code') || '';
   const rejoindreParCode = async () => {
     setAdhesion(true); setErreurAdhesion(null);
@@ -370,12 +375,23 @@ const GuildePage: React.FC<{ guildeInitiale?: Guilde; onglet?: OngletGuilde }> =
                        onChange={(e) => { void choisirBlason(e.target.files?.[0]); e.target.value = ''; }} />
               </>
             )}
+            {estMembre && guilde.codeInvitation && (
+              <button type="button" onClick={() => setInviter((v) => !v)} className={bouton.filet} aria-expanded={inviter}>
+                {inviter ? <X size={13} /> : <UserPlus size={13} />}
+                {fr ? 'Inviter' : 'Invite'}
+              </button>
+            )}
             {estMembre && (
               <div className="w-full sm:w-auto sm:ml-auto">
                 <SoldePieces guilde={guilde} uid={user.uid} lang={lang} />
               </div>
             )}
           </div>
+
+          {/* ── Le lien d'invitation, sorti de l'en-tête ── */}
+          {inviter && estMembre && guilde.codeInvitation && (
+            <CodeInvitation guilde={guilde} peutGerer={peutGerer} lang={lang} />
+          )}
 
           {/* ── Entrer dans le groupe ── */}
           {!estMembre && (

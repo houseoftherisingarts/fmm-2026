@@ -241,7 +241,7 @@ async function testFondation() {
   assert.ok(/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(pose.codeInvitation), 'ni O, ni 0, ni I, ni 1 dans le code');
   assert.strictEqual(pose.tresor, 0, 'le trésor part à zéro');
   assert.strictEqual(monnaie.bourses.get('u1').solde, 10, '10 M au fondateur');
-  assert.strictEqual((await db.collection('guildes').doc('g1').collection('bourses').doc('u1').get()).data().solde, 100, '100 pièces au fondateur');
+  assert.strictEqual((await db.collection('guildes').doc('g1').collection('bourses').doc('u1').get()).data().solde, guildes.PIECES_ENTREE_CHEF, 'le fondateur, chef, touche le double des pièces d’entrée');
   assert.strictEqual((await db.collection('membres').doc('u1').get()).data().guildesFondees, 1, 'le compteur de fondations monte');
 
   // Une deuxième guilde ne repaie pas le bonus en Montpellois.
@@ -524,6 +524,30 @@ async function testRevendiquer() {
   assert.deepStrictEqual(g.membres, ['u1', 'u9', 'u3', 'u7']); assert.deepStrictEqual(g.demandes, []);
 }
 
+// ── 14. Le Jarl entre avec le double, et la présence du jour paie dix ──
+async function testPiecesJarlEtPresence() {
+  const { db, h } = monter();
+  const g = db.collection('guildes').doc('g1');
+  await g.set({ nom: 'Clan', creePar: 'u1', admins: ['u1'], membres: ['u1'], tresor: 0 });
+  await h.fondation('g1', (await g.get()).data());
+  assert.strictEqual((await g.collection('bourses').doc('u1').get()).data().solde, guildes.PIECES_ENTREE_CHEF, 'le fondateur, chef, touche le double');
+
+  const avant = (await g.get()).data();
+  await g.set({ membres: ['u1', 'u2', 'u3'], admins: ['u1', 'u3'] }, { merge: true });
+  await h.entrees('g1', avant, (await g.get()).data());
+  assert.strictEqual((await g.collection('bourses').doc('u2').get()).data().solde, guildes.PIECES_ENTREE, 'un membre touche l’entrée simple');
+  assert.strictEqual((await g.collection('bourses').doc('u3').get()).data().solde, guildes.PIECES_ENTREE_CHEF, 'un chef qui entre touche le double');
+
+  const t0 = Date.UTC(2026, 8, 11, 15, 0, 0);
+  assert.deepStrictEqual(await h.presenceDuJour('u2', null, { vuLe: t0 }), ['g1'], 'la première marque du jour paie');
+  assert.strictEqual((await g.collection('bourses').doc('u2').get()).data().solde, guildes.PIECES_ENTREE + guildes.PIECES_JOUR);
+  assert.deepStrictEqual(await h.presenceDuJour('u2', { vuLe: t0 }, { vuLe: t0 + 3600000 }), [], 'le même jour ne paie plus');
+  assert.deepStrictEqual(await h.presenceDuJour('u2', { vuLe: t0 + 3600000 }, { vuLe: t0 + 3600000, maj: 1 }), [], 'une autre écriture de la fiche ne paie pas');
+  assert.deepStrictEqual(await h.presenceDuJour('u2', { vuLe: t0 }, { vuLe: t0 + 86400000 }), ['g1'], 'le lendemain paie de nouveau');
+  assert.strictEqual((await g.collection('bourses').doc('u2').get()).data().solde, guildes.PIECES_ENTREE + 2 * guildes.PIECES_JOUR);
+  assert.deepStrictEqual(await h.presenceDuJour('u9', null, { vuLe: t0 }), [], 'qui n’est d’aucune guilde ne touche rien');
+}
+
 (async () => {
   await testChange();
   await testEntreeIdempotente();
@@ -538,7 +562,8 @@ async function testRevendiquer() {
   await testTresorTransferer();
   await testFondateurCourriel();
   await testRevendiquer();
-  console.log('cours v2, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe, recalcul de toutes les guildes, change croisé, transfert de trésor, fondateur par courriel, porte de revendication : tout tient.');
+  await testPiecesJarlEtPresence();
+  console.log('cours v2, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe, recalcul de toutes les guildes, change croisé, transfert de trésor, fondateur par courriel, porte de revendication, double du Jarl et présence du jour : tout tient.');
   console.log('functions/test-guildes.js : OK');
 })().catch((e) => {
   console.error('ÉCHEC :', e && e.message);

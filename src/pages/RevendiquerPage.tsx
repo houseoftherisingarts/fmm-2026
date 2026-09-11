@@ -55,6 +55,17 @@ const RevendiquerPage: React.FC = () => {
   const [busy, setBusy] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
+  // Ce que la personne voulait avant de se connecter (« C'est moi » sur
+  // un nom, ou « M'inscrire et rejoindre ») : retenu dans la session,
+  // parce que la connexion Google peut recharger la page.
+  const cleIntention = `fmm:rejoindre:${code}`;
+  const retenir = (intention: string) => { try { sessionStorage.setItem(cleIntention, intention); } catch { /* navigation privée */ } };
+  const reprendre = (): string | null => {
+    try { const v = sessionStorage.getItem(cleIntention); sessionStorage.removeItem(cleIntention); return v; }
+    catch { return null; }
+  };
+  const seConnecterPour = (intention: string, mode: 'signin' | 'signup' = 'signin') => { retenir(intention); openSignIn(mode); };
+
   // Le groupe se montre avant la connexion.
   useEffect(() => {
     let vivant = true;
@@ -72,9 +83,15 @@ const RevendiquerPage: React.FC = () => {
     setRegarde(true);
     guildeRevendiquerProfil({ code, seulementCourriel: true })
       .then((r) => {
-        if (r.cas === 'fondateur' || r.cas === 'deja') setResultat({ cas: r.cas, nom: r.nom, slug: r.slug });
+        if (r.cas === 'fondateur' || r.cas === 'deja') { reprendre(); setResultat({ cas: r.cas, nom: r.nom, slug: r.slug }); return; }
+        // Pas de ligne au courriel du compte : l'intention d'avant la
+        // connexion se joue maintenant.
+        const intention = reprendre();
+        if (intention === 'membre') void revendiquer();
+        else if (intention) void revendiquer(intention);
       })
       .catch(() => { /* la liste ci-dessous reste la voie normale */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, apercu, regarde, code]);
 
   const revendiquer = async (nom?: string) => {
@@ -230,7 +247,7 @@ const RevendiquerPage: React.FC = () => {
                         </button>
                       )
                       : (
-                        <button type="button" onClick={openSignIn} className={bouton.filet}>
+                        <button type="button" onClick={() => seConnecterPour(f.nom)} className={bouton.filet}>
                           {fr ? 'C’est moi' : 'That’s me'}
                         </button>
                       )}
@@ -254,7 +271,11 @@ const RevendiquerPage: React.FC = () => {
 
               <div className="mt-6 pt-5 flex items-center justify-between gap-4 flex-wrap" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }}>
                 <p className="font-editorial text-sm text-ivory-soft leading-relaxed min-w-0 flex-1">
-                  {fr ? 'Sans nom sur la liste, le lien vous fait quand même entrer comme membre, sans file d’attente.' : 'Without a name on the list, the link still lets you in as a member, with no queue.'}
+                  {user
+                    ? (fr ? `Votre nom n’est pas sur la liste : entrez comme membre, la porte s’ouvre quand même.`
+                          : 'Your name is not on the list: enter as a member, the door opens all the same.')
+                    : (fr ? `Vous ne trouvez pas votre courriel ? Ajoutez-le et inscrivez-vous. Le compte vaut pour ${un === 'un' ? 'le' : 'la'} ${mot.toLowerCase()} et pour tout le site du festival, et vous entrez sans file d’attente.`
+                          : `Can’t find your email? Add it and sign up. The account works for the ${mot.toLowerCase()} and for the whole festival site, and you enter with no queue.`)}
                 </p>
                 {user
                   ? (
@@ -264,8 +285,8 @@ const RevendiquerPage: React.FC = () => {
                     </button>
                   )
                   : (
-                    <button type="button" onClick={openSignIn} className={bouton.plein}>
-                      <LogIn size={13} /> {fr ? 'Se connecter' : 'Sign in'}
+                    <button type="button" onClick={() => seConnecterPour('membre', 'signup')} className={bouton.plein}>
+                      <LogIn size={13} /> {fr ? 'M’inscrire et rejoindre' : 'Sign up and join'}
                     </button>
                   )}
               </div>

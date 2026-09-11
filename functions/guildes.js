@@ -28,6 +28,11 @@ const DECLENCHEUR = { region: REGION, memory: '256MiB' };
 const FRAIS_CHANGE = 0.05;
 const PLAFOND_CHANGE_JOUR = 200;
 const PIECES_ENTREE = 100;
+// Alex, 11 septembre 2026 : le Jarl entre avec le double des autres.
+const PIECES_ENTREE_CHEF = 200;
+// Et chaque membre touche dix pièces par jour de présence, une fois par
+// jour, dans chacune de ses guildes (Alex, 11 septembre 2026).
+const PIECES_JOUR = 10;
 const M_ENTREE = 10;
 const JOURS_ACTIF = 30;
 const HISTORIQUE_MAX = 30;
@@ -186,15 +191,41 @@ function handlers(deps) {
 
   /** Les 100 pièces d'arrivée. L'identifiant du document de registre
    *  fait la garde : parti puis revenu, on ne les touche qu'une fois. */
-  async function donnerPiecesEntree(guildeId, uid, type) {
-    const rRef = registre(guildeId).doc(`entree:${uid}`);
-    await db.runTransaction(async (tx) => {
+  /** Un versement de la monnaie à un membre, jamais deux fois pour la
+   *  même clé de registre. Rend vrai s'il a eu lieu. */
+  async function verserPieces(guildeId, uid, cle, type, pieces) {
+    const rRef = registre(guildeId).doc(cle);
+    return db.runTransaction(async (tx) => {
       const [rSnap, bSnap] = await Promise.all([tx.get(rRef), tx.get(bRef(guildeId, uid))]);
-      if (rSnap.exists) return;
+      if (rSnap.exists) return false;
       const b = bourseGuilde(bSnap);
-      tx.set(bRef(guildeId, uid), { solde: b.solde + PIECES_ENTREE, gagne: b.gagne + PIECES_ENTREE, depense: b.depense, maj: SV() }, { merge: true });
-      tx.set(rRef, { type, de: 'monnaie', a: uid, pieces: PIECES_ENTREE, creeLe: SV() });
+      tx.set(bRef(guildeId, uid), { solde: b.solde + pieces, gagne: b.gagne + pieces, depense: b.depense, maj: SV() }, { merge: true });
+      tx.set(rRef, { type, de: 'monnaie', a: uid, pieces, creeLe: SV() });
+      return true;
     });
+  }
+
+  async function donnerPiecesEntree(guildeId, uid, type, chef = false) {
+    await verserPieces(guildeId, uid, `entree:${uid}`, type, chef ? PIECES_ENTREE_CHEF : PIECES_ENTREE);
+  }
+
+  /** La présence du jour : membres/{uid}.vuLe change de journée (la
+   *  marque de passage du client, une fois par jour), et chaque guilde
+   *  dont la personne est membre lui verse dix pièces. Rejouable : la
+   *  clé porte le jour. */
+  // ponytail: relit toutes les guildes du membre à chaque premier
+  // passage du jour; un index membres/{uid}.guildes[] si ça pèse.
+  async function presenceDuJour(uid, avant, apres) {
+    const jour = apres && apres.vuLe ? journeeFestival(enMillisecondes(apres.vuLe)) : null;
+    if (!uid || !jour) return [];
+    const jourAvant = avant && avant.vuLe ? journeeFestival(enMillisecondes(avant.vuLe)) : null;
+    if (jour === jourAvant) return [];
+    const snap = await db.collection('guildes').where('membres', 'array-contains', uid).get();
+    const versees = [];
+    for (const d of snap.docs) {
+      if (await verserPieces(d.id, uid, `jour:${uid}:${jour}`, 'presence', PIECES_JOUR)) versees.push(d.id);
+    }
+    return versees;
   }
 
   async function compterActifsDe(guildeId, guilde) {
@@ -255,7 +286,7 @@ function handlers(deps) {
       patch.tauxHistorique = [{ jour: journeeFestival(Date.now()), taux: patch.taux, nbActifs: 1, partTresor: 0 }];
     }
     if (Object.keys(patch).length) await gRef(guildeId).set(patch, { merge: true });
-    await donnerPiecesEntree(guildeId, uid, 'fondation');
+    await donnerPiecesEntree(guildeId, uid, 'fondation', true);
     // Le compteur monte même quand le bonus est refusé : c'est lui qui
     // ferme la porte à une deuxième fondation côté client.
     await db.collection('membres').doc(uid).set({ guildesFondees: FieldValue.increment(1), maj: SV() }, { merge: true });
@@ -274,9 +305,10 @@ function handlers(deps) {
     const anciens = (avant && avant.membres) || [];
     const nouveaux = (apres && apres.membres) || [];
     const membresBouges = [...anciens].sort().join('\u0000') !== [...nouveaux].sort().join('\u0000');
+    const chefs = (apres && apres.admins) || [];
     for (const uid of membresBouges ? nouveaux.filter((u) => !anciens.includes(u)) : []) {
       await crediter(uid, M_ENTREE, `guilde-rejointe:${guildeId}:${uid}`);
-      await donnerPiecesEntree(guildeId, uid, 'entree');
+      await donnerPiecesEntree(guildeId, uid, 'entree', chefs.includes(uid));
     }
     if (membresBouges || ((avant && avant.tresor) || 0) !== ((apres && apres.tresor) || 0)) await recalculerTousLesTaux();
   }
@@ -695,7 +727,7 @@ function handlers(deps) {
   }
 
   return {
-    fondation, entrees, compterOui, miroir, estEquipe, recalculerTousLesTaux, fondateurParCourriel, donnerPiecesEntree,
+    fondation, entrees, compterOui, miroir, estEquipe, recalculerTousLesTaux, fondateurParCourriel, donnerPiecesEntree, presenceDuJour,
     rejoindreParCode, nouveauCodeInvitation, changer, changerCroise, virement, tresorVerser, tresorTransferer,
     acheterAuSouk, rsvpPayant, rattacherFondateur, ics, apercuParCode, revendiquerProfil, voilerCourriel,
   };
@@ -718,6 +750,9 @@ module.exports = (deps) => {
       e.params.id, e.params.evId, e.data.after.exists ? e.data.after.data() : null,
     )),
     guildeFondateurCourriel: functionsV1.region(REGION).auth.user().onCreate((user) => h.fondateurParCourriel(user.uid, user.email)),
+    guildePresenceJour: onDocumentWritten({ document: 'membres/{uid}', ...DECLENCHEUR }, (e) => h.presenceDuJour(
+      e.params.uid, e.data.before.exists ? e.data.before.data() : null, e.data.after.exists ? e.data.after.data() : null,
+    )),
     guildeRecalculerTaux: onSchedule({ region: REGION, schedule: '0 4 * * *', timeZone: 'America/Toronto', memory: '256MiB', retryCount: 0 }, () => h.recalculerTousLesTaux()),
     guildeIcs: onRequest({ region: REGION, memory: '256MiB' }, h.ics),
     guildeRejoindreParCode: appel(h.rejoindreParCode),
@@ -747,3 +782,6 @@ module.exports.miroirPublic = miroirPublic;
 module.exports.COURRIELS_EQUIPE = COURRIELS_EQUIPE;
 module.exports.PLAFOND_CHANGE_JOUR = PLAFOND_CHANGE_JOUR;
 module.exports.FRAIS_CHANGE = FRAIS_CHANGE;
+module.exports.PIECES_ENTREE = PIECES_ENTREE;
+module.exports.PIECES_ENTREE_CHEF = PIECES_ENTREE_CHEF;
+module.exports.PIECES_JOUR = PIECES_JOUR;

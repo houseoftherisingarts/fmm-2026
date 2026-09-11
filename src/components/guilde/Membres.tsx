@@ -628,7 +628,7 @@ const FondateurLigne: React.FC<{
 
 // ─── Le code d'invitation ────────────────────────────────────────────
 // `nu` : sans sa carte, quand il vit déjà dans celle de l'intendance.
-const CodeInvitation: React.FC<{ guilde: Guilde; peutGerer: boolean; lang: Lang; nu?: boolean }> = ({
+export const CodeInvitation: React.FC<{ guilde: Guilde; peutGerer: boolean; lang: Lang; nu?: boolean }> = ({
   guilde, peutGerer, lang, nu,
 }) => {
   const fr = lang === 'FR';

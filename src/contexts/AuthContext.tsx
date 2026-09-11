@@ -97,7 +97,10 @@ interface AuthState {
   /** Referme l'écran de finalisation et nettoie l'adresse du lien. */
   abandonnerLien: () => void;
   signInModalOpen: boolean;
-  openSignIn: () => void;
+  /** L'onglet que le modal ouvre : connexion par défaut, inscription
+   *  quand une page invite à créer son compte (porte /rejoindre). */
+  signInModalMode: 'signin' | 'signup';
+  openSignIn: (mode?: 'signin' | 'signup' | unknown) => void;
   closeSignIn: () => void;
 }
 
@@ -107,6 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [signInModalOpen, setOpen] = useState(false);
+  const [signInModalMode, setModeVoulu] = useState<'signin' | 'signup'>('signin');
   const [lienEtat, setLienEtat] = useState<EtatLien>(() =>
     auth && typeof window !== 'undefined' && isSignInWithEmailLink(auth, window.location.href)
       ? 'verification' : 'aucun');
@@ -274,12 +278,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = useMemo<AuthState>(() => ({
     user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading,
     signInWithGoogle, signInWithPassword, signUpWithPassword, resetPassword, sendMagicLink, signOut,
-    signInModalOpen,
-    openSignIn: () => setOpen(true),
+    signInModalOpen, signInModalMode,
+    // Un onClick passe l'événement en premier argument : seul 'signup' compte.
+    openSignIn: (mode?: unknown) => { setModeVoulu(mode === 'signup' ? 'signup' : 'signin'); setOpen(true); },
     closeSignIn: () => setOpen(false),
     lienEtat, lienCode, finaliserLien, abandonnerLien,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen, lienEtat, lienCode]);
+  }), [user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading, signInModalOpen, signInModalMode, lienEtat, lienCode]);
 
   // Une fiche importée se réclame à la première vraie connexion : le
   // petit « i » du registre disparaît alors (Alex, 2026-08-28).
