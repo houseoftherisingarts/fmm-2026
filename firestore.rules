@@ -1306,6 +1306,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Partenaire Vexel (badge foil du pied de page) : lecture publique du
+    // seul document, écriture par l'admin du site seulement.
+    match /settings/vexel {
+      allow get:   if true;
+      allow list:  if false;
+      allow write: if isAdmin();
+    }
+
     // ── Places du banquet · le compteur public ────────────────────
     // Un seul document, `banquetPlaces/compteur`, et il ne porte que
     // deux champs : `vendues` (un nombre) et `majLe` (une date). Aucun
