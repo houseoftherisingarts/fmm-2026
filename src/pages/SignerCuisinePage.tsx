@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocument, rgb } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { BookOpen, Check, Eraser, PenLine, Share2 } from 'lucide-react';
+import { BookOpen, Check, Eraser, PenLine, Send, Share2 } from 'lucide-react';
 import { CONTRAT_CUISINE, deposerContratSigne } from '../firebase/contratsSignes';
 import SEO from '../components/SEO';
 import { Eyebrow, DisplayTitle, GildedFrame } from '../components/marche/atmospherics';
@@ -16,6 +16,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 // la feuille de partage du téléphone renvoie le PDF signé dans la même
 // conversation. Le document se fabrique entièrement dans le navigateur
 // (pdf-lib) : rien ne monte tant que personne n'appuie sur le bouton.
+//
+// Depuis le 10 septembre 2026, le bouton d'envoi dépose l'entente signée
+// dans l'admin du site et attend la confirmation avant de le dire : plus
+// personne n'a besoin de télécharger le PDF pour le renvoyer à Alex. La
+// copie personnelle reste offerte après coup, en second.
 //
 // Au moment de l'envoi, une copie part aussi vers l'admin du site, dans
 // la section Contrats signés (Alex, 4 septembre) : l'équipe retrouve
@@ -39,7 +44,7 @@ const ENTENTE_CUISINE: EntenteASigner = {
   contrat: CONTRAT_CUISINE,
   titreSeo: "Signer l'entente de cuisine",
   descriptionSeo: 'Signature de l\'entente de prestation des cuisiniers du Festival Médiéval de Montpellier.',
-  intro: 'Trois gestes : lisez l\'entente, écrivez votre nom, signez avec votre doigt. Le document signé se renvoie ensuite dans la conversation Messenger, et une copie se dépose au même moment dans le dossier de l\'équipe du festival.',
+  intro: 'Trois gestes : lisez l\'entente, écrivez votre nom, signez avec votre doigt. Le bouton d\'envoi remet ensuite l\'entente signée directement à l\'équipe du festival, sans que vous ayez à télécharger ni à renvoyer quoi que ce soit.',
   titreSignature: 'Signature du cuisinier ou de la cuisinière',
   prefixeFichier: 'entente-cuisine',
 };
@@ -194,23 +199,28 @@ const SignerCuisinePage: React.FC<{ entente?: EntenteASigner }> = ({ entente = E
   const nomFichier = () =>
     `${prefixeFichier}-${nom.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.pdf`;
 
-  // Feuille de partage du téléphone : la personne choisit Messenger et
-  // le PDF signé retombe dans la conversation. Repli : téléchargement.
-  const partager = async () => {
-    if (!pdfSigne) return;
-
-    // La copie pour l'équipe part d'abord, sans être attendue : la
-    // feuille de partage d'iOS exige le geste de la personne et se
-    // referme dès qu'elle doit patienter derrière un téléversement. Un
-    // échec du dépôt n'empêche donc jamais l'envoi dans la
-    // conversation, et le bouton reste réessayable.
-    if (copie !== 'ok' && copie !== 'envoi') {
-      setCopie('envoi');
-      deposerContratSigne(contrat, nom, pdfSigne)
-        .then(() => setCopie('ok'))
-        .catch(() => setCopie('erreur'));
+  // Alex, 10 septembre 2026 : le geste principal envoie l'entente signée
+  // au festival, et personne n'a besoin de télécharger quoi que ce soit
+  // pour la renvoyer. Le dépôt est donc attendu, pas lancé en arrière-
+  // plan, et la page ne dit « envoyée » qu'une fois le PDF vraiment
+  // rendu dans l'admin (Firestore et Storage). Le bouton se réessaie
+  // tant que ça ne passe pas.
+  const envoyer = async () => {
+    if (!pdfSigne || copie === 'envoi' || copie === 'ok') return;
+    setCopie('envoi');
+    try {
+      await deposerContratSigne(contrat, nom, pdfSigne);
+      setCopie('ok');
+    } catch {
+      setCopie('erreur');
     }
+  };
 
+  // Garder une copie pour soi, une fois l'entente envoyée. La feuille de
+  // partage du téléphone sert d'abord, le téléchargement prend le relais
+  // sur un ordinateur ou si la personne la referme.
+  const garderUneCopie = async () => {
+    if (!pdfSigne) return;
     const fichier = new File([pdfSigne], nomFichier(), { type: 'application/pdf' });
     if (navigator.canShare?.({ files: [fichier] })) {
       try { await navigator.share({ files: [fichier], title: 'Entente signée' }); return; } catch { /* refus : repli */ }
@@ -299,26 +309,37 @@ const SignerCuisinePage: React.FC<{ entente?: EntenteASigner }> = ({ entente = E
               </button>
             ) : (
               <div className="space-y-4">
-                <p className="font-editorial text-base text-ivory leading-relaxed inline-flex items-start gap-2">
-                  <Check size={18} style={{ color: 'var(--color-amber-glow)' }} className="mt-0.5 shrink-0" />
-                  Votre entente signée est prête. Renvoyez-la dans la conversation Messenger.
-                </p>
-                <button type="button" onClick={partager}
-                  className="fmm-glass-btn is-primary px-8 py-4"
-                  style={{ display: 'inline-flex', gap: '.8rem', alignItems: 'center', width: 'auto' }}>
-                  <Share2 size={16} />
-                  <span className="fmm-glass-btn-label">Renvoyer le document signé</span>
-                </button>
-
-                {copie === 'ok' && (
-                  <p className="font-editorial text-sm text-ivory-soft">
-                    L'équipe du festival a reçu sa copie.
-                  </p>
-                )}
-                {copie === 'erreur' && (
-                  <p className="font-editorial text-sm" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>
-                    La copie de l'équipe n'est pas passée. Appuyez de nouveau sur le bouton.
-                  </p>
+                {copie === 'ok' ? (
+                  <>
+                    <p className="font-editorial text-base text-ivory leading-relaxed inline-flex items-start gap-2">
+                      <Check size={18} style={{ color: 'var(--color-amber-glow)' }} className="mt-0.5 shrink-0" />
+                      C'est envoyé. L'équipe du festival a votre entente signée et vous n'avez rien d'autre à faire.
+                    </p>
+                    <button type="button" onClick={garderUneCopie}
+                      className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft/70">
+                      <Share2 size={13} /> Garder une copie
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-editorial text-base text-ivory leading-relaxed inline-flex items-start gap-2">
+                      <Check size={18} style={{ color: 'var(--color-amber-glow)' }} className="mt-0.5 shrink-0" />
+                      Votre entente est signée. Envoyez-la au festival et le dossier se rend directement à l'équipe.
+                    </p>
+                    <button type="button" onClick={envoyer} disabled={copie === 'envoi'}
+                      className="fmm-glass-btn is-primary px-8 py-4"
+                      style={{ display: 'inline-flex', gap: '.8rem', alignItems: 'center', width: 'auto' }}>
+                      <Send size={16} />
+                      <span className="fmm-glass-btn-label">
+                        {copie === 'envoi' ? 'Envoi en cours' : 'Envoyer au festival'}
+                      </span>
+                    </button>
+                    {copie === 'erreur' && (
+                      <p className="font-editorial text-sm" style={{ color: 'rgba(224, 138, 122, 0.9)' }}>
+                        L'envoi n'est pas passé. Appuyez de nouveau sur le bouton.
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}

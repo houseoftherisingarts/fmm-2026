@@ -12,7 +12,7 @@ const ENTENTE_KIOSQUE: EntenteASigner = {
   contrat: CONTRAT_KIOSQUE,
   titreSeo: "Signer l'entente du kiosque",
   descriptionSeo: "Signature de l'entente d'exploitation du kiosque de pizza au Festival Médiéval de Montpellier.",
-  intro: "Trois gestes : lisez l'entente, écrivez votre nom, signez avec votre doigt. Le document signé se renvoie ensuite dans la conversation Messenger, et une copie se dépose au même moment dans le dossier de l'équipe du festival.",
+  intro: "Trois gestes : lisez l'entente, écrivez votre nom, signez avec votre doigt. Le bouton d'envoi remet ensuite l'entente signée directement à l'équipe du festival, sans que vous ayez à télécharger ni à renvoyer quoi que ce soit.",
   titreSignature: "Signature de l'exploitant du kiosque",
   prefixeFichier: 'entente-kiosque-pizza',
 };
