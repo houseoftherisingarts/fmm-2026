@@ -159,6 +159,7 @@ export const NAV: NavItem[] = [
   { id: 'roles',      label: 'Rôles admin',     icon: ShieldCheck,     group: 'Régie' },
   // Le formulaire de demande de Vexel Webstudio, encadré dans l'admin.
   { id: 'demandeVexel', label: 'Demander un changement', icon: Wrench, group: 'Régie' },
+  { id: 'partenaireVexel', label: 'Devenir partenaire Vexel', icon: Award, group: 'Régie' },
 
   // Les jeux de l'année : le questionnaire de la Peste (Alex, 2026-09-09).
   { id: 'placeClan',  label: 'Ta place dans le clan', icon: Compass, group: 'Jeux' },
