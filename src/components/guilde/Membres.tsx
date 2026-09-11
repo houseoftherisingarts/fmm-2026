@@ -632,7 +632,9 @@ const CodeInvitation: React.FC<{ guilde: Guilde; peutGerer: boolean; lang: Lang;
   guilde, peutGerer, lang, nu,
 }) => {
   const fr = lang === 'FR';
-  const lien = `${HOTE}/${guilde.slug || `guildes/${guilde.id}`}?code=${guilde.codeInvitation}`;
+  // Depuis le 11 septembre 2026 le lien mène à la porte « Revendiquer
+  // votre profil » : la personne se connecte et retrouve sa ligne.
+  const lien = `${HOTE}/rejoindre/${guilde.codeInvitation}`;
   const [copie, setCopie] = useState(false);
   const [busy, setBusy] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -661,8 +663,8 @@ const CodeInvitation: React.FC<{ guilde: Guilde; peutGerer: boolean; lang: Lang;
       </p>
       <p className="font-sans text-[11px] mb-4" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
         {fr
-          ? 'Qui ouvre ce lien entre sans passer par la file d’attente.'
-          : 'Anyone who opens this link walks in without queuing.'}
+          ? 'Qui ouvre ce lien entre sans passer par la file d’attente, et retrouve sa place si son nom a été annoncé à la fondation.'
+          : 'Anyone who opens this link walks in without queuing, and finds their seat if their name was announced at the founding.'}
       </p>
 
       <p

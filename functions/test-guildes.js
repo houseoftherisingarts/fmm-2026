@@ -67,9 +67,19 @@ function faireDb() {
       .filter((k) => k.startsWith(`${chemin}/`) && !k.slice(chemin.length + 1).includes('/'))
       .map(instantane);
     const requete = {
-      where: (champ, _op, valeur) => ({ ...requete, _filtre: (s) => s.data()[champ] === valeur }),
-      orderBy: () => requete,
-      limit: () => requete,
+      where: (champ, op, valeur) => ({ ...requete, _filtre: (s) => {
+        const v = s.data()[champ];
+        const n = (x) => (x instanceof Date ? x.getTime() : x);
+        if (op === '>=') return n(v) >= n(valeur);
+        if (op === '<=') return n(v) <= n(valeur);
+        if (op === '>') return n(v) > n(valeur);
+        if (op === '<') return n(v) < n(valeur);
+        if (op === 'array-contains') return Array.isArray(v) && v.includes(valeur);
+        return v === valeur;
+      } }),
+      // `this`, pas `requete` : sinon un `.where().limit()` perdrait son filtre.
+      orderBy: function orderBy() { return this; },
+      limit: function limit() { return this; },
       get: async function get() { return { docs: enfants().filter(this._filtre || (() => true)) }; },
     };
     return { ...requete, doc: (id) => refDoc(`${chemin}/${id || `auto${++compteur}`}`) };
@@ -457,6 +467,63 @@ async function testFondateurCourriel() {
   assert.deepStrictEqual((await db.collection('guildes').doc('g2').get()).data().membres, ['u5'], 'les autres guildes restent intactes');
 }
 
+// ── 13. La porte « Revendiquer votre profil » ────────────────────────
+async function testRevendiquer() {
+  const { db, h } = monter({ u9: 'ariane@exemple.org', u8: 'camille@exemple.org', u7: 'personne@exemple.org', u3: 'quelquun@exemple.org' });
+  await db.collection('guildes').doc('g1').set({
+    nom: 'Vestrvegir Vikingar', forme: 'clan', slug: 'vestrvegirvikingarclan', codeInvitation: 'CMMX3V5H',
+    creePar: 'u1', admins: ['u1'], membres: ['u1'], demandes: ['u7'],
+    membresFondateurs: [
+      { nom: 'Ariane', chef: true, courriel: 'ariane@exemple.org' },
+      { nom: 'Camille', chef: false, courriel: 'camille@exemple.org' },
+      { nom: 'Papyrus', chef: false },
+    ],
+  });
+
+  // L'aperçu se lit sans compte et ne laisse pas filtrer un courriel entier.
+  const apercu = await h.apercuParCode({ code: 'cmmx3v5h' });
+  assert.strictEqual(apercu.guildeId, 'g1'); assert.strictEqual(apercu.forme, 'clan');
+  assert.deepStrictEqual(apercu.fondateurs[0], { nom: 'Ariane', chef: true, pris: false, indice: 'a•••@exemple.org' });
+  assert.deepStrictEqual(apercu.fondateurs[2], { nom: 'Papyrus', chef: false, pris: false });
+  assert.ok(!JSON.stringify(apercu).includes('ariane@'), 'le courriel complet ne sort jamais');
+  await assert.rejects(h.apercuParCode({ code: 'ZZZZZZZZ' }), /Aucune guilde/, 'un code inconnu ne mène à rien');
+
+  // Ariane se connecte avec son courriel : sa ligne la reconnaît, elle devient chef.
+  let r = await h.revendiquerProfil('u9', { code: 'CMMX3V5H', seulementCourriel: true });
+  assert.strictEqual(r.cas, 'fondateur'); assert.strictEqual(r.nom, 'Ariane'); assert.strictEqual(r.slug, 'vestrvegirvikingarclan');
+  let g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.deepStrictEqual(g.membres, ['u1', 'u9']); assert.deepStrictEqual(g.admins, ['u1', 'u9']);
+  assert.strictEqual(g.membresFondateurs[0].uid, 'u9');
+  r = await h.revendiquerProfil('u9', { code: 'CMMX3V5H' });
+  assert.strictEqual(r.cas, 'deja', 'rejoué, la ligne est déjà la sienne');
+
+  // Quelqu'un d'autre pointe la ligne de Camille : refusé avec l'indice.
+  await assert.rejects(h.revendiquerProfil('u7', { code: 'CMMX3V5H', nom: 'Camille' }), /c•••@exemple\.org/, 'le mauvais courriel reçoit l’indice');
+  g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.strictEqual(g.membresFondateurs[1].uid, undefined, 'la ligne de Camille ne bouge pas');
+  assert.deepStrictEqual(g.membres, ['u1', 'u9'], 'le refus ne fait entrer personne');
+
+  // Le premier passage sans ligne à soi ne fait qu'observer.
+  r = await h.revendiquerProfil('u7', { code: 'CMMX3V5H', seulementCourriel: true });
+  assert.strictEqual(r.cas, 'aucun'); assert.strictEqual(r.membre, false);
+  assert.deepStrictEqual((await db.collection('guildes').doc('g1').get()).data().membres, ['u1', 'u9']);
+
+  // Papyrus n'a pas de courriel sur sa ligne : celui qui la revendique y laisse le sien.
+  r = await h.revendiquerProfil('u3', { code: 'CMMX3V5H', nom: 'Papyrus' });
+  assert.strictEqual(r.cas, 'fondateur');
+  g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.strictEqual(g.membresFondateurs[2].uid, 'u3'); assert.strictEqual(g.membresFondateurs[2].courriel, 'quelquun@exemple.org');
+  assert.deepStrictEqual(g.admins, ['u1', 'u9'], 'pas chef, pas admin');
+  await assert.rejects(h.revendiquerProfil('u7', { code: 'CMMX3V5H', nom: 'Papyrus' }), /déjà été revendiqué/);
+  await assert.rejects(h.revendiquerProfil('u7', { code: 'CMMX3V5H', nom: 'Inconnu' }), /pas sur la liste/);
+
+  // Sans nom et sans ligne : simple membre, et sa demande en attente s'efface.
+  r = await h.revendiquerProfil('u7', { code: 'CMMX3V5H' });
+  assert.strictEqual(r.cas, 'membre');
+  g = (await db.collection('guildes').doc('g1').get()).data();
+  assert.deepStrictEqual(g.membres, ['u1', 'u9', 'u3', 'u7']); assert.deepStrictEqual(g.demandes, []);
+}
+
 (async () => {
   await testChange();
   await testEntreeIdempotente();
@@ -470,7 +537,8 @@ async function testFondateurCourriel() {
   await testChangeCroise();
   await testTresorTransferer();
   await testFondateurCourriel();
-  console.log('cours v2, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe, recalcul de toutes les guildes, change croisé, transfert de trésor, fondateur par courriel : tout tient.');
+  await testRevendiquer();
+  console.log('cours v2, actifs, frais et plafond de change, entrée idempotente, virement, fondation, nbOui, ICS, miroir public, équipe, recalcul de toutes les guildes, change croisé, transfert de trésor, fondateur par courriel, porte de revendication : tout tient.');
   console.log('functions/test-guildes.js : OK');
 })().catch((e) => {
   console.error('ÉCHEC :', e && e.message);

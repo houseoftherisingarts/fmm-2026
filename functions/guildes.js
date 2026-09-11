@@ -326,16 +326,87 @@ function handlers(deps) {
   }
 
   // ── Callables ──────────────────────────────────────────────────────
-  async function rejoindreParCode(uid, data) {
-    const code = String(data.code || '').trim().toUpperCase();
-    if (code.length !== 8) throw new HttpsError('invalid-argument', 'Code invalide.');
-    const trouve = await db.collection('guildes').where('codeInvitation', '==', code).limit(1).get();
+  async function guildeParCode(code) {
+    const propre = String(code || '').trim().toUpperCase();
+    if (propre.length !== 8) throw new HttpsError('invalid-argument', 'Code invalide.');
+    const trouve = await db.collection('guildes').where('codeInvitation', '==', propre).limit(1).get();
     if (!trouve.docs.length) throw new HttpsError('not-found', 'Aucune guilde ne porte ce code.');
-    const doc = trouve.docs[0];
+    return trouve.docs[0];
+  }
+
+  async function rejoindreParCode(uid, data) {
+    const doc = await guildeParCode(data.code);
     if (!(doc.data().membres || []).includes(uid)) {
       await doc.ref.set({ membres: FieldValue.arrayUnion(uid), demandes: FieldValue.arrayRemove(uid), maj: SV() }, { merge: true });
     }
     return { guildeId: doc.id };
+  }
+
+  // ── La porte « Revendiquer votre profil » (Alex, 11 septembre 2026) ──
+  // Le lien d'invitation mène à /rejoindre/{code}. La page montre le
+  // groupe et les noms annoncés à la fondation, sans un courriel en
+  // clair; la personne se connecte (courriel ou Google) et le serveur
+  // rattache son compte à sa ligne. Trois chemins : le courriel du
+  // compte est celui d'une ligne (rattachement sans rien demander), la
+  // personne pointe son nom (accepté si la ligne n'a pas de courriel ou
+  // si c'est le sien, refusé avec l'indice sinon), ou elle entre comme
+  // simple membre. Le déclencheur `fondateurParCourriel` couvre déjà le
+  // compte qui naît; cette porte couvre le compte qui existe déjà.
+
+  /** « a•••@outlook.fr » : assez pour se reconnaître, pas assez pour écrire. */
+  function voilerCourriel(mail) {
+    const [u, d] = String(mail || '').split('@');
+    return d ? `${u.slice(0, 1)}•••@${d}` : '';
+  }
+
+  async function apercuParCode(data) {
+    const doc = await guildeParCode(data.code);
+    const g = doc.data();
+    return sansVide({
+      guildeId: doc.id, nom: g.nom, forme: g.forme || 'guilde', slug: g.slug, description: g.description || '',
+      blason: g.blason, banniereUrl: g.banniereUrl, nbMembres: (g.membres || []).length,
+      fondateurs: (g.membresFondateurs || []).filter((f) => f && f.nom).map((f) => sansVide({
+        nom: f.nom, chef: Boolean(f.chef), pris: Boolean(f.uid), indice: f.uid ? undefined : (voilerCourriel(f.courriel) || undefined),
+      })),
+    });
+  }
+
+  async function revendiquerProfil(uid, data) {
+    const doc = await guildeParCode(data.code);
+    const g = doc.data();
+    const mail = String((await lireCourriel(uid).catch(() => '')) || '').trim().toLowerCase();
+    const lignes = g.membresFondateurs || [];
+    const memeCourriel = (f) => Boolean(mail) && String(f.courriel || '').trim().toLowerCase() === mail;
+    const nom = String(data.nom || '').trim();
+
+    let index = lignes.findIndex((f) => f && f.uid === uid);
+    if (index < 0) index = lignes.findIndex((f) => f && !f.uid && memeCourriel(f));
+    if (index < 0 && nom) {
+      const i = lignes.findIndex((f) => f && String(f.nom || '').trim() === nom);
+      if (i < 0) throw new HttpsError('not-found', 'Ce nom n’est pas sur la liste.');
+      const f = lignes[i];
+      if (f.uid) throw new HttpsError('already-exists', 'Ce profil a déjà été revendiqué.');
+      if (f.courriel && !memeCourriel(f)) {
+        throw new HttpsError('failed-precondition', `Ce profil est rattaché à ${voilerCourriel(f.courriel)}. Connectez-vous avec cette adresse.`);
+      }
+      index = i;
+    }
+    // Le premier passage de la page ne fait que regarder : sans ligne
+    // à soi, il ne fait pas entrer la personne comme simple membre.
+    if (index < 0 && data.seulementCourriel) {
+      return { guildeId: doc.id, slug: g.slug || null, cas: 'aucun', nom: null, membre: (g.membres || []).includes(uid) };
+    }
+
+    const patch = { membres: FieldValue.arrayUnion(uid), demandes: FieldValue.arrayRemove(uid), maj: SV() };
+    let cas = 'membre';
+    if (index >= 0) {
+      const ligne = lignes[index];
+      cas = ligne.uid === uid ? 'deja' : 'fondateur';
+      patch.membresFondateurs = lignes.map((f, i) => (i === index ? sansVide({ ...f, uid, courriel: f.courriel || mail || undefined }) : f));
+      if (ligne.chef) patch.admins = FieldValue.arrayUnion(uid);
+    }
+    await doc.ref.set(patch, { merge: true });
+    return { guildeId: doc.id, slug: g.slug || null, cas, nom: index >= 0 ? lignes[index].nom : null, membre: true };
   }
 
   async function nouveauCodeInvitation(uid, data) {
@@ -626,7 +697,7 @@ function handlers(deps) {
   return {
     fondation, entrees, compterOui, miroir, estEquipe, recalculerTousLesTaux, fondateurParCourriel, donnerPiecesEntree,
     rejoindreParCode, nouveauCodeInvitation, changer, changerCroise, virement, tresorVerser, tresorTransferer,
-    acheterAuSouk, rsvpPayant, rattacherFondateur, ics,
+    acheterAuSouk, rsvpPayant, rattacherFondateur, ics, apercuParCode, revendiquerProfil, voilerCourriel,
   };
 }
 
@@ -659,6 +730,9 @@ module.exports = (deps) => {
     guildeAcheterAuSouk: appel(h.acheterAuSouk),
     guildeRsvpPayant: appel(h.rsvpPayant),
     guildeRattacherFondateur: appel(h.rattacherFondateur),
+    // La porte se regarde avant de se connecter : pas d'auth exigée.
+    guildeApercuParCode: onCall({ region: REGION }, (requete) => h.apercuParCode(requete.data || {})),
+    guildeRevendiquerProfil: appel(h.revendiquerProfil),
   };
 };
 

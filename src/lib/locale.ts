@@ -15,6 +15,7 @@ export function getLocaleFromPath(pathname: string): Lang {
 // apprendre, groupes, chevaux) are included so their EN redirects fire.
 const FR_TO_EN: Record<string, string> = {
   '/mur': '/wall',
+  '/rejoindre': '/join',
   '/babillard': '/notice-board',
   '/boutique': '/shop',
   '/activites': '/activities',

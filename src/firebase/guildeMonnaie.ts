@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, firebaseApp } from '../firebase';
+import type { FormeGuilde } from './guildes';
 
 /** Ce qu'un membre peut changer en une journée, dans un sens comme
  *  dans l'autre. Le serveur applique le même chiffre. */
@@ -161,6 +162,23 @@ export const guildeRejoindreParCode = (args: { code: string }) =>
 /** Un chef tire un nouveau code et invalide l'ancien. */
 export const guildeNouveauCode = (args: { guildeId: string }) =>
   appeler<typeof args, { codeInvitation: string }>('guildeNouveauCode')(args);
+
+/** Ce que la porte /rejoindre/{code} montre avant la connexion : le
+ *  groupe et les noms annoncés, avec un indice de courriel voilé. */
+export interface ApercuInvitation {
+  guildeId: string; nom: string; forme: FormeGuilde; slug?: string; description: string;
+  blason?: string; banniereUrl?: string; nbMembres: number;
+  fondateurs: Array<{ nom: string; chef: boolean; pris: boolean; indice?: string }>;
+}
+export const guildeApercuParCode = (args: { code: string }) =>
+  appeler<typeof args, ApercuInvitation>('guildeApercuParCode')(args);
+
+/** « C'est moi » : le serveur rattache le compte à sa ligne de fondateur
+ *  (par courriel, ou par le nom pointé), ou fait entrer comme membre.
+ *  `seulementCourriel` : regarder sans faire entrer. */
+export type CasRevendication = 'fondateur' | 'deja' | 'membre' | 'aucun';
+export const guildeRevendiquerProfil = (args: { code: string; nom?: string; seulementCourriel?: boolean }) =>
+  appeler<typeof args, { guildeId: string; slug: string | null; cas: CasRevendication; nom: string | null; membre: boolean }>('guildeRevendiquerProfil')(args);
 
 /** Un chef rattache un compte au nom d'un fondateur attendu. */
 export const guildeRattacherFondateur = (args: { guildeId: string; nom: string; uid: string }) =>

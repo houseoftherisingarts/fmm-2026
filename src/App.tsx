@@ -95,6 +95,7 @@ const PropositionCATestPage = lazy(() => import('./pages/PropositionCATestPage')
 const GuildesPage          = lazy(() => import('./pages/GuildesPage'));
 const GuildePage           = lazy(() => import('./pages/GuildePage'));
 const GuildeParSlug        = lazy(() => import('./pages/GuildeParSlug'));
+const RevendiquerPage      = lazy(() => import('./pages/RevendiquerPage'));
 const BureauDeChangePage   = lazy(() => import('./pages/BureauDeChangePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
@@ -505,6 +506,8 @@ const App: React.FC = () => (
                 <Route path="/en/guilds"         element={<GuildesPage />} />
                 <Route path="/guildes/:id"       element={<GuildePage />} />
                 <Route path="/en/guilds/:id"     element={<GuildePage />} />
+                <Route path="/rejoindre/:code"   element={<RevendiquerPage />} />
+                <Route path="/en/join/:code"     element={<RevendiquerPage />} />
                 <Route path="/change"            element={<BureauDeChangePage />} />
                 <Route path="/en/exchange"       element={<BureauDeChangePage />} />
                 <Route path="/messages"                         element={<MessagesPage />} />

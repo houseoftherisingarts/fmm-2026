@@ -184,11 +184,11 @@ export const SLUGS_RESERVES: readonly string[] = [
   'boissons', 'boutique', 'change', 'chantier', 'chevaux', 'commanditaires',
   'communaute', 'compte', 'contact', 'defi', 'en', 'espace-benevole',
   'festival-medieval-de-montpellier', 'groupe', 'groupes', 'guildes',
-  'hebergement', 'histoire', 'horaire', 'jeunesse', 'jeux', 'jeux-en-ligne',
+  'hebergement', 'histoire', 'horaire', 'jeunesse', 'jeux', 'jeux-en-ligne', 'kiosque',
   'labo-titre', 'marche', 'mariages', 'messages', 'mur', 'musique',
   'nourriture', 'ordre', 'partenaires', 'partenaires-2027', 'petite-monnaie',
   'politique-de-confidentialite', 'press-kit', 'presse', 'presskit', 'profil',
-  'propositioncatest', 'ressources', 'signer-cuisine', 'souk', 'videos',
+  'propositioncatest', 'rejoindre', 'ressources', 'signer-cuisine', 'signer-kiosque', 'souk', 'videos',
   'william',
 ];
 
