@@ -83,6 +83,7 @@ const DiscordSection      = lazy(() => import('./admin/sections/DiscordSection')
 const BugsSection         = lazy(() => import('./admin/sections/BugsSection'));
 const RolesSection        = lazy(() => import('./admin/sections/RolesSection'));
 const DemandeVexelSection = lazy(() => import('./admin/sections/DemandeVexelSection'));
+const PartenaireVexelSection = lazy(() => import('./admin/sections/PartenaireVexelSection'));
 
 const SectionFallback: React.FC = () => (
   <div className="flex items-center justify-center py-16">
