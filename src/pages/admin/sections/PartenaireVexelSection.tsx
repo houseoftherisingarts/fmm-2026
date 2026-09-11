@@ -35,6 +35,7 @@ const PartenaireVexelSection: React.FC = () => (
         slug="fmm"
         cle="SVCf6bxaH3dsY5KNVMs-uKpq"
         onSucces={async (resultat) => {
+          if (!db) return;
           try {
             await setDoc(
               doc(db, 'settings/vexel'),
