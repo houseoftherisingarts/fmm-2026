@@ -217,7 +217,7 @@ const RevendiquerPage: React.FC = () => {
                   <div key={f.nom} className="flex items-center justify-between gap-3 px-4 py-3 rounded-card"
                        style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(var(--sk-glow-rgb),0.18)' }}>
                     <div className="min-w-0">
-                      <p className="font-display text-base md:text-lg text-ivory truncate">{f.nom}</p>
+                      <p className="font-display text-base md:text-lg text-ivory leading-tight break-words">{f.nom}</p>
                       <p className="font-sans text-[10px] uppercase tracking-[0.18em] mt-0.5" style={{ color: f.chef ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.5)' }}>
                         {f.chef ? chef : (fr ? 'Fondateur' : 'Founder')}{f.indice ? ` · ${f.indice}` : ''}
                       </p>
@@ -240,7 +240,7 @@ const RevendiquerPage: React.FC = () => {
                   <div key={f.nom} className="flex items-center justify-between gap-3 px-4 py-3 rounded-card opacity-50"
                        style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(var(--sk-parchment-rgb),0.1)' }}>
                     <div className="min-w-0">
-                      <p className="font-display text-base md:text-lg text-ivory truncate">{f.nom}</p>
+                      <p className="font-display text-base md:text-lg text-ivory leading-tight break-words">{f.nom}</p>
                       <p className="font-sans text-[10px] uppercase tracking-[0.18em] mt-0.5" style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)' }}>
                         {f.chef ? chef : (fr ? 'Fondateur' : 'Founder')} · {fr ? 'déjà en place' : 'already seated'}
                       </p>
@@ -250,11 +250,11 @@ const RevendiquerPage: React.FC = () => {
                 ))}
               </div>
 
-              {erreur && <p role="alert" className="font-sans text-xs mt-4" style={{ color: 'var(--sk-rouille, #c0563a)' }}>{erreur}</p>}
+              {erreur && <p role="alert" className="font-sans text-xs mt-4" style={{ color: '#E08A6E' }}>{erreur}</p>}
 
               <div className="mt-6 pt-5 flex items-center justify-between gap-4 flex-wrap" style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }}>
                 <p className="font-editorial text-sm text-ivory-soft leading-relaxed min-w-0 flex-1">
-                  {fr ? 'Votre nom n’y est pas ? Le lien vous fait entrer comme membre, sans file d’attente.' : 'Your name is not there? The link lets you in as a member, no queue.'}
+                  {fr ? 'Sans nom sur la liste, le lien vous fait quand même entrer comme membre, sans file d’attente.' : 'Without a name on the list, the link still lets you in as a member, with no queue.'}
                 </p>
                 {user
                   ? (
