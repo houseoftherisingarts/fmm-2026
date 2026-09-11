@@ -464,7 +464,23 @@ const Footer: React.FC = () => {
             déjà Le Salon des Inconnus comme titulaire, et coller les
             deux mentions côte à côte donnait une répétition maladroite.
             Demandée par Alex le 2026-08-03. */}
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8 pb-6 flex justify-center">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 pb-6 flex flex-col items-center gap-4">
+          {isFirebaseReady && db && (
+            <div
+              style={{
+                // @ts-expect-error -- variables CSS custom, pas dans le typage React
+                '--couleur-surface': 'rgba(var(--sk-ink-rgb), 0.55)',
+                '--couleur-texte': 'var(--color-bone)',
+                '--couleur-muted': 'color-mix(in srgb, var(--color-bone) 60%, transparent)',
+                '--couleur-bordure': 'rgba(var(--sk-glow-rgb), 0.28)',
+                '--couleur-accent': 'var(--color-amber-glow)',
+                '--rayon-carte': '15px',
+                '--police-corps': 'var(--font-sans, system-ui, sans-serif)',
+              }}
+            >
+              <BadgeVexel db={db} />
+            </div>
+          )}
           <a
             href="https://vexel-webstudio.web.app"
             target="_blank"
