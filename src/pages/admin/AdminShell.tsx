@@ -63,7 +63,8 @@ export type AdminSectionId =
   | 'discord'
   | 'bugs'
   | 'roles'
-  | 'demandeVexel';
+  | 'demandeVexel'
+  | 'partenaireVexel';
 
 interface NavItem {
   id: AdminSectionId;
