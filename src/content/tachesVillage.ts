@@ -103,6 +103,7 @@ export const TACHES_VILLAGE: TacheVillage[] = [
   { id: '3-3-costumes', grand: "3 · Logistique & personnel", section: "3.3 Gestion du personnel", nom: "Costumes", qui: ["A"], note: "rien sur les costumes de la cuisine" },
   { id: '3-4-positionnement-de-la-cuisine', grand: "3 · Logistique & personnel", section: "3.4 Aménagement du site", nom: "Positionnement de la cuisine", qui: ["M", "A"], note: "aucun plan qui situe la cuisine sur le site" },
   { id: '3-4-positionnement-des-feux', grand: "3 · Logistique & personnel", section: "3.4 Aménagement du site", nom: "Positionnement des feux", qui: ["M", "A"], etat: 'encours', note: "Thierry gère les feux, briques et billots déjà chez Alex" },
+  { id: '3-4-acheter-des-briques', grand: "3 · Logistique & personnel", section: "3.4 Aménagement du site", nom: "Aller acheter des briques", qui: ["A"] },
   { id: '3-4-positionnement-des-frigos', grand: "3 · Logistique & personnel", section: "3.4 Aménagement du site", nom: "Positionnement des frigos", qui: ["M", "P"] },
   { id: '3-4-zone-de-stockage-sec-et-froid', grand: "3 · Logistique & personnel", section: "3.4 Aménagement du site", nom: "Zone de stockage (sec et froid)", qui: ["M"] },
   { id: '3-4-zone-de-plonge-sur-le-site', grand: "3 · Logistique & personnel", section: "3.4 Aménagement du site", nom: "Zone de plonge sur le site", qui: ["M", "P"] },
