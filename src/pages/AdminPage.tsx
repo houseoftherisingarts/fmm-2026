@@ -248,6 +248,7 @@ const AdminPage: React.FC = () => {
       case 'bugs':       return <BugsSection       devBypass={DEV_BYPASS} />;
       case 'roles':      return <RolesSection      devBypass={DEV_BYPASS} />;
       case 'demandeVexel': return <DemandeVexelSection nom={user?.displayName ?? ''} courriel={user?.email ?? ''} />;
+      case 'partenaireVexel': return <PartenaireVexelSection />;
     }
   };
 
