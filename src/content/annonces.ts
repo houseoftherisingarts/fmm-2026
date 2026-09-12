@@ -54,6 +54,22 @@ export interface Annonce {
 const ZEFFY_LEVEE_URL = 'https://www.zeffy.com/fr-CA/donation-form/apportez-le-reseau-a-montpellier';
 
 const TOUTES: Annonce[] = [
+  // La politique d'annulation (Alex, 2026-09-12). Épinglée : une
+  // politique d'achat ne se décroche pas, et elle ouvre le tableau parce
+  // que c'est ce qu'il faut avoir lu avant de sortir sa carte. Le texte
+  // vient de src/content/politiqueAnnulation.ts, la même source que la
+  // page Billets, la porte avant Zeffy et le pied des infolettres.
+  {
+    id:   'politique-annulation-2026',
+    tone: 'alerte',
+    date: '2026-09-12',
+    permanent: true,
+    titleFR: 'Aucune annulation, aucun remboursement',
+    titleEN: 'No cancellation, no refund',
+    bodyFR: POLITIQUE_ANNULATION.longueFR,
+    bodyEN: POLITIQUE_ANNULATION.longueEN,
+    cta: { url: '/billets', labelFR: 'Voir les billets', labelEN: 'See the tickets' },
+  },
   // Le règlement des armes, adopté par le comité et affiché au babillard
   // (Alex, 2026-09-02). Il reste épinglé : un règlement ne se décroche
   // pas, et il ouvre le tableau parce que c'est ce qu'il faut avoir lu
