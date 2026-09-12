@@ -39,7 +39,7 @@ const PartenaireVexelSection: React.FC = () => (
           try {
             await setDoc(
               doc(db, 'settings/vexel'),
-              { partenaire: { code: resultat.code, lien: resultat.lien, page: resultat.page, signeLe: serverTimestamp() } },
+              { partenaire: { code: resultat.code, signeLe: serverTimestamp() } },
               { merge: true },
             );
           } catch (e) {

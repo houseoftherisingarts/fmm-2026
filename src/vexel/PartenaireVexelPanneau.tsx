@@ -291,9 +291,18 @@ export function PartenaireVexelPanneau({ slug, cle, onSucces }: PartenaireVexelP
       });
       const corps = await rep.json();
       if (!rep.ok) throw new Error(corps?.erreur || 'L’inscription a échoué.');
-      setResultat(corps);
       setEtat('fait');
-      onSucces?.(corps);
+      // Le serveur est le notre, mais le navigateur ne fait confiance qu'a un
+      // code de la forme attendue et reconstruit lui-meme les deux adresses.
+      const codeSur = typeof corps?.code === 'string' && /^[A-Z0-9-]{4,24}$/.test(corps.code) ? corps.code : null;
+      if (!codeSur) throw new Error('La réponse du studio est inattendue. Réessayez dans un instant.');
+      const corpsSur = {
+        code: codeSur,
+        lien: `https://vexelwebstudio.com/compte?parrain=${encodeURIComponent(codeSur)}`,
+        page: `https://vexelwebstudio.com/r/${encodeURIComponent(codeSur)}`,
+      };
+      setResultat(corpsSur);
+      onSucces?.(corpsSur);
     } catch (e) {
       setErreur(e instanceof Error ? e.message : 'L’inscription a échoué.');
       setEtat('erreur');

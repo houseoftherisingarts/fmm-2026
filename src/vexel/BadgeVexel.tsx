@@ -66,8 +66,12 @@ export function BadgeVexel({ db, className = '' }: BadgeVexelProps) {
       doc(db, 'settings/vexel'),
       (snap) => {
         const p = (snap.exists() ? (snap.data() as ParametresVexel) : {}).partenaire;
-        setCode(p?.code ?? null);
-        setLien(p?.lien ?? null);
+        // Seul un code de la forme attendue passe; le lien se reconstruit
+        // ici plutot que d'etre lu de la base, pour qu'aucune adresse
+        // etrangere (javascript:, autre site) ne puisse etre servie au visiteur.
+        const codeSur = typeof p?.code === 'string' && /^[A-Z0-9-]{4,24}$/.test(p.code) ? p.code : null;
+        setCode(codeSur);
+        setLien(codeSur ? `https://vexelwebstudio.com/r/${encodeURIComponent(codeSur)}` : null);
       },
       () => {
         setCode(null);
