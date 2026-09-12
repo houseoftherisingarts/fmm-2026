@@ -904,9 +904,22 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                   />
                 </div>
 
+                  {/* Le kiosque attribué vit dans l'onglet Carte : un
+                      marchand accepté n'a qu'un pas à faire pour le
+                      retrouver (Alex, 12 septembre 2026). */}
+                  {vApp?.status === 'accepted' && (
+                    <p className="font-editorial text-sm text-ivory-soft/70">
+                      {fr ? 'Le kiosque qui vous est attribué vit dans l’onglet ' : 'The kiosk assigned to you lives under the '}
+                      <button type="button" onClick={() => ouvrir('carte')} className="text-brass hover:underline">
+                        {fr ? 'Carte' : 'Map'}
+                      </button>
+                      {fr ? '.' : ' tab.'}
+                    </p>
+                  )}
+
                   {/* ── Le fil entre le marchand et le festival ── */}
                   {vApp && compte && (
-                    <div className="glass-light rounded-lg-card p-6 md:p-7">
+                    <div id="fil-marchand" className="glass-light rounded-lg-card p-6 md:p-7">
                       <MessageThread
                         vendorUid={compte.uid}
                         currentUid={compte.uid}
