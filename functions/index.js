@@ -717,6 +717,7 @@ function lettreDuMessage(surtitre, texte) {
       </td></tr>
       <tr><td bgcolor="${C_BANDE}" style="padding:22px 44px;border-top:1px solid ${C_BORDURE};">
         <p style="margin:0;font-family:${SANS_COURRIEL};font-size:11px;line-height:19px;color:${C_MUET};">Vous recevez ce mot parce que vous avez un compte au festival, et vos alertes se r&egrave;glent dans <a href="${URL_COMPTE}" target="_blank" style="color:${C_OR};text-decoration:none;">votre espace</a>.<br />You get this note because you have an account with the festival, and your alerts live in your account.</p>
+        <p style="margin:12px 0 0 0;font-family:${SANS_COURRIEL};font-size:10px;line-height:17px;color:${C_MUET};">${echapperHtml(POLITIQUE_ANNULATION_FR)}<br />${echapperHtml(POLITIQUE_ANNULATION_EN)}</p>
       </td></tr>
     </table>
   </td></tr>
