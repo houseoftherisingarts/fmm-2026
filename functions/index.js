@@ -118,6 +118,15 @@ async function lireCommande(orderId, jeton) {
   return d.order || {};
 }
 
+// ── La politique d'annulation, en fine print au pied de CHAQUE lettre ──
+// Alex, 2026-09-12 : « partout, partout ». Jumelle textuelle de
+// src/content/politiqueAnnulation.ts (le serveur ne lit pas ce dossier) :
+// une phrase qui change là-bas change ici le même jour.
+const POLITIQUE_ANNULATION_FR =
+  'Politique d’annulation : tout achat est définitif dès le moment où il est fait, et aucune annulation ni aucun remboursement n’est possible, quelle qu’en soit la raison.';
+const POLITIQUE_ANNULATION_EN =
+  'Cancellation policy: every purchase is final from the moment it is made, and no cancellation or refund is possible, whatever the reason.';
+
 const CORPS_FR = (nom) => `Bonjour${nom ? ' ' + nom : ''},
 
 Merci d'avoir acheté le livre de recettes du festival. Il est en pièce jointe, en format PDF : vingt-sept recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites.
