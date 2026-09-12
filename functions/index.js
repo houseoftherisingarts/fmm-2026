@@ -3510,6 +3510,9 @@ async function livraisonEncaisser(session) {
     '',
     'See you at the village,',
     'The Festival Médiéval de Montpellier team',
+    '',
+    '---',
+    POLITIQUE_ANNULATION_EN,
   ].join('\n');
 
   const pourLeKiosque = langue === 'EN' ? lettreEN : lettreFR;
