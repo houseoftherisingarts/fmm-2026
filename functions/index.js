@@ -734,7 +734,11 @@ Your reply waits for you at the same address.
 Vous recevez ce mot parce que vous avez un compte au festival, et vos alertes se règlent dans votre espace : ${URL_COMPTE}
 
 Le Festival Médiéval de Montpellier
-festivalmedievaldemontpellier.org`;
+festivalmedievaldemontpellier.org
+
+---
+${POLITIQUE_ANNULATION_FR}
+${POLITIQUE_ANNULATION_EN}`;
 
   return { html, texte: brut };
 }
