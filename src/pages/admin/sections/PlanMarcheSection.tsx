@@ -238,7 +238,7 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
       </div>
 
       <AnimatePresence>
-        {kiosqueOuvert && adminUser && (
+        {kiosqueOuvert && (
           <PanneauKiosque
             key={kiosqueOuvert.id}
             kiosque={kiosqueOuvert}
@@ -249,8 +249,12 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
                 ? ficheDeVendor(vendorByUid.get(kiosqueOuvert.vendorUid)!, livraisons)
                 : null
             }
-            currentUid={adminUser.uid}
-            currentName={adminUser.displayName || adminUser.email || 'FMM'}
+            /* Repli sur 'admin' quand Firebase Auth n'a rien à donner
+             * (mode VITE_ADMIN_DEV_BYPASS) : le même repli que
+             * MarchandsSection prend pour son propre fil de messages,
+             * pour que le panneau reste utilisable hors connexion réelle. */
+            currentUid={adminUser?.uid || 'admin'}
+            currentName={adminUser?.displayName || adminUser?.email || 'FMM'}
             onClose={() => setKiosqueOuvertId(null)}
             onPatch={(patch) => appliquer((p) => modifierKiosque(p, kiosqueOuvert.id, patch))}
             onLiberer={() => { appliquer((p) => liberer(p, kiosqueOuvert.id)); setKiosqueOuvertId(null); }}
