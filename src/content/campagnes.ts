@@ -654,7 +654,7 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       {
         type: 'texte',
         FR: 'Votre billet pour l’édition 2026 est bien enregistré, et nous vous en remercions. Zeffy vous a fait parvenir votre confirmation par courriel : gardez-la précieusement, parce que c’est elle qui vous ouvre les portes le jour venu. Si vous avez pris un billet d’une journée, ne vous fiez pas à la date imprimée dessus, qui est celle de l’ouverture du festival, car il vaut pour le vendredi, le samedi ou le dimanche, selon ce qui vous arrange.',
-        EN: 'Your ticket for the 2026 edition is registered, and we thank you for it. Zeffy has sent your confirmation by email: keep it safe, because it is what opens the gates for you on the day. If you bought a one-day ticket, do not go by the date printed on it, which is the festival’s opening date, since it is good for Friday, Saturday or Sunday, whichever suits you.',
+        EN: 'Your ticket for the 2026 edition is registered, and we thank you for it. Zeffy has sent your confirmation by email: keep it safe, because it opens the gates for you on the day. If you bought a one-day ticket, do not go by the date printed on it, which is the festival’s opening date, since it is good for Friday, Saturday or Sunday, whichever suits you.',
       },
       {
         type: 'photo',
@@ -700,8 +700,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     blocs: [
       {
         type: 'texte',
-        FR: 'Le festival commence vendredi, et voici ce qu’il faut savoir avant de prendre la route. Le site ouvre le vendredi 25 septembre de 16 h 30 à 20 h, avec les portes à 17 h, puis le samedi de 9 h 30 à 19 h et le dimanche de 9 h 30 à 16 h, avec les portes à 10 h les deux jours. L’adresse est le 4, rue du Bosquet, à Montpellier dans la Petite-Nation, à environ 75 minutes d’Ottawa et de Gatineau.',
-        EN: 'The festival starts on Friday, and here is what you need to know before you hit the road. The grounds open on Friday 25 September from 4:30 pm to 8 pm, with the gates at 5 pm, then on Saturday from 9:30 am to 7 pm and on Sunday from 9:30 am to 4 pm, with the gates at 10 am on both days. The address is 4 rue du Bosquet in Montpellier, in the Petite-Nation, about 75 minutes from Ottawa and Gatineau.',
+        FR: 'Le festival commence vendredi, et voici ce qu’il faut savoir avant de prendre la route. Le site ouvre le vendredi 25 septembre de 16 h 30 à 20 h, avec les portes à 17 h, puis le samedi de 9 h 30 à 19 h et le dimanche de 9 h 30 à 16 h, avec les portes à 10 h les deux jours. Le festival se tient au 4, rue du Bosquet, à Montpellier dans la Petite-Nation, et Ottawa comme Gatineau sont à environ 75 minutes de route.',
+        EN: 'The festival starts on Friday, and here is what you need to know before you hit the road. The grounds open on Friday 25 September from 4:30 pm to 8 pm, with the gates at 5 pm, then on Saturday from 9:30 am to 7 pm and on Sunday from 9:30 am to 4 pm, with the gates at 10 am on both days. The festival is held at 4 rue du Bosquet in Montpellier, in the Petite-Nation, and both Ottawa and Gatineau are about 75 minutes away by road.',
       },
       {
         type: 'photo',
@@ -716,8 +716,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Nous vous rappelons aussi que tout achat est définitif dès le moment où il est fait, et qu’aucune annulation ni aucun remboursement n’est possible, quelle qu’en soit la raison. Votre billet d’une journée, lui, vaut pour le vendredi, le samedi ou le dimanche, peu importe la date imprimée dessus.',
-        EN: 'We also remind you that every purchase is final from the moment it is made, and that no cancellation or refund is possible, whatever the reason. Your one-day ticket, for its part, is good for Friday, Saturday or Sunday, whatever date is printed on it.',
+        FR: 'Nous vous rappelons aussi que tout achat est définitif dès le moment où il est fait, et qu’aucune annulation ni aucun remboursement n’est possible, quelle qu’en soit la raison. Votre billet d’une journée vaut quand même pour le vendredi, le samedi ou le dimanche, peu importe la date qui est imprimée dessus.',
+        EN: 'We also remind you that every purchase is final from the moment it is made, and that no cancellation or refund is possible, whatever the reason. Your one-day ticket is still good for Friday, Saturday or Sunday, whatever date happens to be printed on it.',
       },
       {
         type: 'photo',

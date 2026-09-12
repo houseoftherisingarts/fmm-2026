@@ -72,8 +72,11 @@ const C = {
   carte:     '#150A10',   // le parchemin sombre de la lettre
   bande:     '#100609',   // l'en-tête, le pied, les blocs rapportés
   bordure:   '#3B2A1B',   // le filet de laiton éteint
-  or:        'var(--sk-brass-warm)',   // --color-brass de la palette caravane
-  orPale:    'var(--sk-brass-warm-soft)',   // --color-brass-soft
+  // Écrit en clair, jamais en variable : un client de courriel ne lit pas
+  // `var(--sk-brass-warm)`, et le bouton perdait son fond (corrigé le
+  // 2026-09-12). Les valeurs sont celles de src/index.css, ligne 115.
+  or:        '#C9A85A',   // --sk-brass-warm
+  orPale:    '#E0BE6A',   // --sk-brass-warm-soft
   texte:     '#EFE8DB',   // l'ivoire du corps
   texteDoux: '#BDB2A1',   // l'ivoire assourdi
   texteMuet: '#8B8072',   // le pied de page et les crédits

@@ -335,7 +335,7 @@ const Carte: React.FC<{
 
           {mention && (
             <span
-              className="self-start px-2.5 py-1 mb-3 font-sans uppercase tracking-[0.28em] text-[8px]"
+              className="hidden sm:inline-block self-start px-2.5 py-1 mb-3 font-sans uppercase tracking-[0.28em] text-[8px]"
               style={{
                 color: 'var(--sk-deep)',
                 background: 'linear-gradient(180deg, var(--sk-gilt-lit), #C79E4A)',
@@ -347,18 +347,18 @@ const Carte: React.FC<{
           )}
 
           <h3
-            className="font-display leading-[1.15] text-lg md:text-xl mb-3"
+            className="font-display leading-[1.15] text-base sm:text-lg md:text-xl mb-2 sm:mb-3"
             style={{ color: 'var(--color-bone)', fontWeight: 400 }}
           >
             {nom}
           </h3>
 
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <span
               className="font-display leading-none block"
               style={{
                 color: 'var(--sk-gilt-lit)',
-                fontSize: 'clamp(1.9rem, 2.6vw, 2.5rem)',
+                fontSize: 'clamp(1.55rem, 2.6vw, 2.5rem)',
                 fontWeight: 400,
                 textShadow: '0 0 26px rgba(var(--sk-gilt-lit-rgb),0.4)',
               }}
@@ -384,18 +384,23 @@ const Carte: React.FC<{
             )}
           </div>
 
+          {/* Sur un téléphone la carte fait 170 px de large et le recto
+              déborde : la description se tait (le dos porte déjà la
+              composition du billet) pour que le bouton d'achat reste
+              visible (vérifié à 390 px le 2026-09-12). */}
           <p
-            className="font-sans text-[11px] sm:text-[13px] leading-[1.6] flex-1 overflow-hidden"
+            className="hidden sm:block font-sans text-[13px] leading-[1.6] flex-1 overflow-hidden"
             style={{ color: 'rgba(var(--sk-parchment-rgb), 0.72)', fontWeight: 300 }}
           >
             {fr ? billet.descFR : billet.descEN}
           </p>
+          <span aria-hidden className="flex-1 sm:hidden" />
 
           {/* La politique d'annulation, sur la carte même, avant le geste
               d'achat (Alex, 2026-09-12). Un mot suffit ici; l'encart sous
               la main de cartes porte le paragraphe entier. */}
           <p
-            className="mt-3 font-sans uppercase tracking-[0.18em] text-[8px] sm:text-[9px] leading-snug"
+            className="mt-2 sm:mt-3 font-sans uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[8px] sm:text-[9px] leading-snug"
             style={{ color: 'rgba(217,88,74,0.85)' }}
           >
             {fr ? POLITIQUE_ANNULATION.etiquetteFR : POLITIQUE_ANNULATION.etiquetteEN}
@@ -410,7 +415,7 @@ const Carte: React.FC<{
               // Sans compte : la porte d'abord, qui offre le rabais membre.
               if (porte) { e.preventDefault(); ouvrirBilletterie(false); }
             }}
-            className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 font-sans uppercase tracking-[0.26em] text-[10px] transition-transform hover:scale-[1.02]"
+            className="mt-3 sm:mt-4 inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 font-sans uppercase tracking-[0.18em] sm:tracking-[0.26em] text-[9px] sm:text-[10px] transition-transform hover:scale-[1.02]"
             style={{
               color: 'var(--sk-deep)',
               background: 'linear-gradient(180deg, var(--sk-gilt-lit) 0%, var(--sk-gilt) 55%, #B98F3E 100%)',
