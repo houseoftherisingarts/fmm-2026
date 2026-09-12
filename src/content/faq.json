@@ -21,6 +21,13 @@
     "rEN": "Yes. Zeffy prints the festival’s opening date on every one-day ticket, and that date does not say which day you bought. Your ticket lets you in on Friday, Saturday or Sunday, once, on the day you choose."
   },
   {
+    "id": "annulation",
+    "qFR": "Puis-je annuler mon billet ou me faire rembourser ?",
+    "qEN": "Can I cancel my ticket or get a refund?",
+    "rFR": "Non. Tout achat est définitif dès le moment où il est fait, qu’il s’agisse d’un billet, d’une passe, d’un emplacement de camping ou d’une place au banquet, et aucune annulation ni aucun remboursement n’est possible, quelle qu’en soit la raison. Chaque billet vendu engage déjà les dépenses du festival, alors prenez le temps de vérifier vos dates et vos quantités avant de confirmer votre paiement sur Zeffy.",
+    "rEN": "No. Every purchase is final from the moment it is made, whether it is a ticket, a pass, a camping pitch or a seat at the banquet, and no cancellation or refund is possible, whatever the reason. Every ticket sold already commits the festival’s spending, so take a moment to check your dates and quantities before you confirm your payment on Zeffy."
+  },
+  {
     "id": "lieu",
     "qFR": "Où se déroule le festival ?",
     "qEN": "Where is the festival held?",
