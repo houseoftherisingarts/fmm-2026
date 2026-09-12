@@ -116,6 +116,16 @@ const PorteBilletterie: React.FC<{
                 </div>
               </>
             )}
+
+            {/* La politique d'annulation, lue avant de franchir la porte
+                vers Zeffy, dans les deux visages de la porte (Alex,
+                2026-09-12). */}
+            <p
+              className="mt-6 pt-4 font-sans text-[11px] leading-relaxed text-ivory-soft/55"
+              style={{ borderTop: '1px solid rgba(var(--sk-parchment-rgb),0.12)' }}
+            >
+              {fr ? POLITIQUE_ANNULATION.courteFR : POLITIQUE_ANNULATION.courteEN}
+            </p>
           </motion.div>
         </motion.div>
       )}
