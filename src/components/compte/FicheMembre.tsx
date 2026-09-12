@@ -349,6 +349,13 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
     ouvrir('badges');
     setTimeout(() => document.getElementById('coffre')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
+  // Le fil vers l'équipe des kiosques vit dans l'onglet Profil, sous les
+  // candidatures : « Mon kiosque » y renvoie depuis l'onglet Carte
+  // (Alex, 12 septembre 2026).
+  const allerVersFilMarchand = () => {
+    ouvrir('profil');
+    setTimeout(() => document.getElementById('fil-marchand')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  };
 
   // ── Le badge bleu vérifié : décerné par l'équipe depuis la fiche
   //    publique du membre (Alex, 2026-08-28). ──
