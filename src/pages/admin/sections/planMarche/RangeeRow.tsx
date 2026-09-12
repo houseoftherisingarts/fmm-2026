@@ -102,8 +102,3 @@ const RangeeRow: React.FC<Props> = ({
 };
 
 export default RangeeRow;
-
-// L'icône Check n'est utilisée nulle part ici pour l'instant : elle
-// reste importée pour la prochaine passe (confirmation visuelle du nom
-// renommé) plutôt que de faire un aller-retour d'import.
-void Check;
