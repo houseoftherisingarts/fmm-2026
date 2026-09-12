@@ -184,8 +184,11 @@ const HomeWithIntro: React.FC = () => {
   // every visit: we don't honour the once-per-session `fmm_intro_seen` gate,
   // and we ignore reduced-motion (Alex runs with it on; see fmm_orb_logo_video).
   const presale = SITE_MODE === 'placeholder';
+  // Le bouton « Nouvelles » de la barre mène à `/#nouvelles` : la
+  // personne veut lire le fil, pas revoir le prologue (2026-09-12).
+  const versNouvelles = typeof window !== 'undefined' && window.location.hash === '#nouvelles';
   const [entered, setEntered] = useState<boolean>(
-    () => !force && !presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1',
+    () => !force && (versNouvelles || (!presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1')),
   );
   // Reduced-motion skips the prologue by default, but an explicit ?intro in
   // the URL forces it to play even under reduced-motion (handy for previewing

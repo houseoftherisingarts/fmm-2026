@@ -16,6 +16,7 @@ import { usePerfTier } from '../lib/usePerfTier';
 import SEO from '../components/SEO';
 import AnnoncesPanel from '../components/compte/AnnoncesPanel';
 import { IronBar } from '../components/board/NoticeBoard';
+import NouvellesFacebook from '../components/landing/NouvellesFacebook';
 
 // Pattern adapted from le-salon-des-inconnus apps/hub/src/HubOrb.tsx:
 // vertical list of choices on the left, glass orb on the right with
@@ -1802,6 +1803,10 @@ const OrbHomePage: React.FC = () => {
         />
         <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8">
           <AnnoncesPanel lang={lang} />
+          {/* Les nouvelles de la page Facebook, recopiées chaque matin,
+              sous les avis (Alex, 2026-09-12). Le bouton « Nouvelles »
+              de la barre descend ici. */}
+          <NouvellesFacebook lang={lang} />
         </div>
       </section>
     </>

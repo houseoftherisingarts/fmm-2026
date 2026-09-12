@@ -1416,6 +1416,10 @@ service cloud.firestore {
     // Horaire du festival : public en lecture (la page Programmation
     // s'y abonne), écriture réservée aux admins (section Horaire).
     match /schedule/{docId}    { allow read: if true; allow write: if isAdmin(); }
+    // Le fil Facebook recopié chaque matin par la fonction
+    // nouvellesFacebook : l'accueil le lit, personne n'y écrit depuis
+    // le navigateur (le serveur passe au-dessus des règles).
+    match /nouvelles/{docId}   { allow read: if true; allow write: if false; }
     // Compteurs de visites first-party (section admin Analytiques).
     // Écriture publique nécessaire (visiteurs anonymes), mais bornée
     // aux trois champs du compteur; lecture réservée aux admins.

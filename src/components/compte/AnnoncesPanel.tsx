@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Info, Facebook, ArrowUpRight, Stars, Check } from 'lucide-react';
+import { AlertTriangle, Info, ArrowUpRight, Stars, Check } from 'lucide-react';
 import { ANNONCES, type Annonce } from '../../content/annonces';
 import { NoticeBoard, Parchment, seedTilt, type PinTone } from '../board/NoticeBoard';
 import PetiteMonnaieCoin from '../PetiteMonnaieCoin';
-import { SITE } from '../../content';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { accepterAvis, suivreMesAvis } from '../../firebase/avis';
@@ -142,48 +141,6 @@ const AnnoncesPanel: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
         </div>
       )}
 
-      {/* Le fil Facebook n'est pas branché : tirer les publications
-          demande un jeton de page Meta côté serveur. En attendant, on
-          renvoie honnêtement à la page plutôt que de simuler un fil. */}
-      <a
-        href={SITE.social.facebook}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group mt-6 md:mt-8 flex items-center justify-between gap-4 p-5 border transition-colors"
-        style={{
-          borderColor: 'rgba(var(--sk-parchment-rgb), 0.12)',
-          background: 'rgba(var(--sk-deep-rgb), 0.5)',
-        }}
-      >
-        <span className="flex items-center gap-4 min-w-0">
-          <span className="witcher-tile shrink-0" style={{ width: 42, height: 42 }}>
-            <span className="witcher-tile-inner" style={{ color: 'var(--sk-gilt)' }}>
-              <Facebook size={15} />
-            </span>
-          </span>
-          <span className="min-w-0">
-            <span
-              className="block font-sans uppercase tracking-[0.25em] text-[11px] mb-1"
-              style={{ color: 'var(--color-bone)' }}
-            >
-              {fr ? 'Nouvelles de la page Facebook' : 'News from the Facebook page'}
-            </span>
-            <span
-              className="block font-sans text-[13px] leading-snug"
-              style={{ color: 'rgba(var(--sk-parchment-rgb),0.5)', fontWeight: 300 }}
-            >
-              {fr
-                ? 'Les publications du festival, au fil des jours.'
-                : 'The festival’s posts, day by day.'}
-            </span>
-          </span>
-        </span>
-        <ArrowUpRight
-          size={16}
-          className="shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-          style={{ color: 'var(--sk-gilt)' }}
-        />
-      </a>
     </section>
   );
 };

@@ -3570,3 +3570,103 @@ Object.assign(exports, require('./placeClan')({ db, FieldValue, COURRIELS_ADMIN 
 // Le concours de parrainage : la coche du tirage se pose côté serveur,
 // après un vrai compte des filleuls. Voir functions/concoursParrainage.js.
 Object.assign(exports, require('./concoursParrainage')({ db, FieldValue }));
+
+// ═══════════════════════════════════════════════════════════════════
+// Le fil Facebook sur l'accueil (Alex, 2026-09-12)
+// ═══════════════════════════════════════════════════════════════════
+// Chaque matin, les dernières publications de la page Facebook du
+// festival se recopient dans `nouvelles/facebook`, et l'accueil les
+// épingle sous les avis de la caravane. Facebook ne laisse rien lire
+// sans jeton (le plugin public ne rend que l'en-tête de la page, la
+// page elle-même renvoie un mur de connexion), donc la seule porte
+// est l'API Graph avec un jeton de page, qui n'expire pas quand il
+// est tiré d'un jeton d'utilisateur longue durée. La marche à suivre
+// est dans docs/BRANCHEMENTS.md.
+const FACEBOOK_PAGE_TOKEN = defineSecret('FACEBOOK_PAGE_TOKEN');
+const NOUVELLES_DOC = 'nouvelles/facebook';
+const NOUVELLES_MAX = 9;
+const GRAPH = 'https://graph.facebook.com/v21.0';
+
+/** Une publication Graph ramenée à ce que l'accueil affiche. */
+function normaliserPublication(p) {
+  const piece = (p.attachments && p.attachments.data && p.attachments.data[0]) || {};
+  const sous = ((piece.subattachments && piece.subattachments.data) || [])
+    .map((s) => s.media && s.media.image && s.media.image.src)
+    .filter(Boolean);
+  const image = p.full_picture || (piece.media && piece.media.image && piece.media.image.src) || sous[0] || null;
+  const genre = String(piece.media_type || piece.type || '').toLowerCase();
+  const type = genre.includes('video') ? 'video'
+    : genre.includes('album') || sous.length > 1 ? 'album'
+    : genre.includes('photo') || image ? 'photo'
+    : genre.includes('link') || genre.includes('share') ? 'lien'
+    : 'texte';
+  return {
+    id: p.id,
+    texte: (p.message || '').trim(),
+    image,
+    images: sous.slice(0, 4),
+    lien: p.permalink_url || `https://www.facebook.com/${p.id}`,
+    lienExterne: type === 'lien' && piece.url ? piece.url : null,
+    titreLien: type === 'lien' && piece.title ? piece.title : null,
+    date: p.created_time,
+    type,
+  };
+}
+
+async function lireFilFacebook(jeton) {
+  const champs = [
+    'id', 'message', 'created_time', 'permalink_url', 'full_picture',
+    'attachments{media_type,type,url,title,media{image{src}},subattachments.limit(4){media{image{src}}}}',
+  ].join(',');
+  // `/me/posts` avec un jeton de page : les publications de la page
+  // seulement, jamais ce que des visiteurs écrivent sur son mur.
+  const url = `${GRAPH}/me/posts?fields=${encodeURIComponent(champs)}&limit=${NOUVELLES_MAX * 2}&access_token=${encodeURIComponent(jeton)}`;
+  const reponse = await fetch(url);
+  const corps = await reponse.json().catch(() => ({}));
+  if (!reponse.ok || corps.error) {
+    const e = corps.error || {};
+    throw new Error(`Graph ${reponse.status} : ${e.message || 'réponse illisible'} (code ${e.code || '?'})`);
+  }
+  // Une publication sans texte ni image (changement de photo de
+  // couverture, par exemple) n'a rien à montrer.
+  return (corps.data || [])
+    .map(normaliserPublication)
+    .filter((p) => p.texte || p.image)
+    .slice(0, NOUVELLES_MAX);
+}
+
+async function rafraichirNouvellesFacebook() {
+  const jeton = (FACEBOOK_PAGE_TOKEN.value() || '').trim();
+  if (!jeton || jeton === 'A_REMPLACER') {
+    logger.warn('nouvellesFacebook : aucun jeton de page, rien à lire (voir docs/BRANCHEMENTS.md).');
+    return;
+  }
+  const ref = db.doc(NOUVELLES_DOC);
+  try {
+    const publications = await lireFilFacebook(jeton);
+    await ref.set({
+      publications,
+      misAJour: FieldValue.serverTimestamp(),
+      erreur: FieldValue.delete(),
+    }, { merge: true });
+    logger.info(`nouvellesFacebook : ${publications.length} publications recopiées.`);
+  } catch (e) {
+    // Les publications d'hier restent affichées : mieux vaut un fil
+    // d'un jour que rien du tout. L'erreur se note pour l'admin.
+    await ref.set({ erreur: String(e.message || e), derniereErreur: FieldValue.serverTimestamp() }, { merge: true });
+    logger.error('nouvellesFacebook', e);
+  }
+}
+
+exports.nouvellesFacebook = onSchedule(
+  {
+    region: 'us-central1',
+    schedule: 'every day 06:00',
+    timeZone: prog.FUSEAU_FESTIVAL,
+    secrets: [FACEBOOK_PAGE_TOKEN],
+    memory: '256MiB',
+    timeoutSeconds: 60,
+    retryCount: 1,
+  },
+  rafraichirNouvellesFacebook,
+);

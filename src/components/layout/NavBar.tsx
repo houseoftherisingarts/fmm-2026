@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, ArrowUpRight, Newspaper, ScrollText } from 'lucide-react';
+import { Menu, X, User, ArrowUpRight, Newspaper, ScrollText, Megaphone } from 'lucide-react';
 import PieceMontpellois from '../boutique/PieceMontpellois';
 import { suivreMaBourse } from '../../firebase/montpellois';
 import { useUI } from '../../contexts/AppContext';
@@ -14,6 +14,7 @@ import AudioPlayer from '../AudioPlayer';
 import { HexMark } from '../marche/atmospherics';
 import Cloche from '../compte/Cloche';
 import { ouvrirBilletterie, tarifMembre } from '../../lib/billetterie';
+import { ANCRE_NOUVELLES } from '../landing/NouvellesFacebook';
 
 // Local dev (VITE_SITE_MODE=live) previews every pillar; production shows only
 // published ones. `npm run deploy` forces placeholder, so prod follows flags.
@@ -115,6 +116,23 @@ const NavBar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // « Nouvelles » : sur l'accueil, la page glisse jusqu'au fil Facebook;
+  // ailleurs, on rentre à l'accueil avec l'ancre, et la section se met
+  // en vue elle-même une fois montée (Alex, 2026-09-12).
+  const versNouvelles = () => {
+    setMobileMenuOpen(false);
+    if (stripLocale(location.pathname) === '/') {
+      const viser = () => document.getElementById(ANCRE_NOUVELLES)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      viser();
+      // Les images paresseuses au-dessus se chargent pendant la descente
+      // et déplacent la cible : une deuxième visée rattrape l'écart.
+      window.setTimeout(viser, 900);
+      history.replaceState(null, '', `#${ANCRE_NOUVELLES}`);
+    } else {
+      navigate(`${addLocale('/', lang)}#${ANCRE_NOUVELLES}`);
+    }
+  };
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 14);
     onScroll();
@@ -212,6 +230,19 @@ const NavBar: React.FC = () => {
 
           {/* ── Right cluster ─────────────────────────────── */}
           <div className="flex items-center gap-2 md:gap-2.5 shrink-0">
+            {/* Nouvelles : descend au fil Facebook de l'accueil. */}
+            <button
+              type="button"
+              onClick={versNouvelles}
+              className="hidden md:inline-flex items-center gap-2 h-9 px-3.5 rounded-full transition-all font-sans uppercase tracking-[0.18em] text-[10px] hover:scale-[1.03]"
+              style={{
+                background: 'rgba(var(--sk-ink-rgb), 0.5)',
+                border: '1px solid rgba(var(--sk-glow-rgb), 0.35)',
+                color: 'var(--color-amber-glow)',
+              }}
+            >
+              <Megaphone size={14} /> {lang === 'FR' ? 'Nouvelles' : 'News'}
+            </button>
             {/* Primary CTA: Tickets, always visible on desktop */}
             <Link
               to={ticketUrl}
@@ -498,6 +529,22 @@ const NavBar: React.FC = () => {
               {/* Le babillard : le règlement des armes et les avis du
                   festival se lisent sans compte (Alex, 2026-09-02), donc
                   le tiroir leur donne une porte. */}
+              <motion.button
+                type="button"
+                variants={ctaVariants}
+                initial="hidden"
+                animate="shown"
+                onClick={versNouvelles}
+                className="group relative inline-flex items-center gap-3 px-8 py-3.5 mr-3 mb-3 font-sans uppercase tracking-[0.28em] text-[11px] font-semibold"
+                style={{
+                  color: 'var(--color-bone)',
+                  borderRadius: 999,
+                  border: '1px solid rgba(var(--sk-glow-rgb), 0.5)',
+                  background: 'rgba(var(--sk-glow-rgb), 0.08)',
+                }}
+              >
+                <Megaphone size={14} /> {lang === 'FR' ? 'Nouvelles' : 'News'}
+              </motion.button>
               <MotionLink
                 variants={ctaVariants}
                 initial="hidden"
