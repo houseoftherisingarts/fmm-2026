@@ -78,7 +78,7 @@ const PanneauKiosque: React.FC<Props> = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Prix ($ avant taxes)</Label>
-            <input
+            <Input
               type="number"
               min={0}
               step="0.01"
@@ -87,7 +87,7 @@ const PanneauKiosque: React.FC<Props> = ({
               onChange={(e) => setPrixBrouillon(e.target.value)}
               onBlur={commitPrix}
               placeholder="Prix à venir"
-              className="admin-input w-full"
+              className="w-full"
             />
           </div>
           <div>
