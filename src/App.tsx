@@ -524,6 +524,8 @@ const App: React.FC = () => (
                 <Route path="/en/messages"                      element={<MessagesPage />} />
                 <Route path="/en/messages/:otherUid"            element={<MessagesPage />} />
                 <Route path="/compte" element={<ComptePage />} />
+                {/* RULE -5, temporaire : à retirer après la capture de MonKiosque. */}
+                <Route path="/qa-plan" element={<QaPlanPage />} />
                 {/* Billetterie en cartes. Publiee le 2026-08-03 apres
                     qu'Alex a confirme que les montants Zeffy sont taxes
                     comprises : les cartes montrent donc le hors-taxes,
