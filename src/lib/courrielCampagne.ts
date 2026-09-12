@@ -39,6 +39,7 @@
 // personne ne mesure une lecture en texte brut.
 
 import type { BlocCampagne, LangueCampagne, ModeleCampagne } from '../content/campagnes';
+import { finePrintAnnulation } from '../content/politiqueAnnulation';
 
 /** L'adresse publique du site. Les images du courriel s'y réfèrent en
  *  absolu : le client de courriel n'a aucune notion de « chemin
