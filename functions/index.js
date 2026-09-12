@@ -3493,6 +3493,9 @@ async function livraisonEncaisser(session) {
     '',
     'Au plaisir de vous voir au village,',
     'L’équipe du Festival Médiéval de Montpellier',
+    '',
+    '---',
+    POLITIQUE_ANNULATION_FR,
   ].join('\n');
 
   const lettreEN = [
