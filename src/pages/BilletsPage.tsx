@@ -62,10 +62,12 @@ const BilletsPage: React.FC = () => {
       <Section index="01" name={t.entreesRail} title={t.entreesTitle} lead={t.entreesLead} icon={Ticket}>
         <Deck billets={entrees} lang={lang} t={t} href={lienBilletterie(connecte)}
               surcharge={surcharge} porte={!membre} />
+        <EncartPolitique lang={lang} />
       </Section>
 
       <Section index="02" name={t.campingRail} title={t.campingTitle} lead={t.campingLead} icon={Tent}>
         <Deck billets={camping} lang={lang} t={t} href={ZEFFY_CAMPING} />
+        <EncartPolitique lang={lang} />
       </Section>
 
       {/* Questions fréquentes. Une seule source (src/content/faq.json)
