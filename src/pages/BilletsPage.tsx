@@ -125,8 +125,64 @@ const BilletsPage: React.FC = () => {
         >
           {showBeforeTax ? t.taxNote : t.taxNoteIncl}
         </p>
+        <p
+          className="relative max-w-3xl mx-auto mt-4 px-4 md:px-8 font-sans text-xs text-center leading-relaxed"
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.4)', fontWeight: 300 }}
+        >
+          {fr ? POLITIQUE_ANNULATION.courteFR : POLITIQUE_ANNULATION.courteEN}
+        </p>
       </section>
     </>
+  );
+};
+
+// ─── L'encart de la politique d'annulation ──────────────────────────
+// Alex, 2026-09-12 : la politique se lit AVANT de partir sur Zeffy, là
+// où la personne choisit son billet. Un parchemin sombre sous la main
+// de cartes, avec le sceau rouge des avis à respecter, la même famille
+// que le clou de cire de l'espace membre. Il ne se plie pas et ne se
+// ferme pas : une politique qui se cache ne protège personne.
+const EncartPolitique: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
+  const fr = lang === 'FR';
+  return (
+    <motion.aside
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      aria-label={fr ? POLITIQUE_ANNULATION.titreFR : POLITIQUE_ANNULATION.titreEN}
+      className="relative max-w-5xl mx-auto mt-8 md:mt-10 px-5 py-5 md:px-8 md:py-6 flex gap-4 md:gap-6 items-start"
+      style={{
+        background: 'linear-gradient(160deg, rgba(38,12,18,0.72), rgba(16,4,8,0.82))',
+        border: '1px solid rgba(var(--sk-gilt-rgb),0.28)',
+        borderRadius: 15,
+        boxShadow: '0 24px 60px -36px rgba(0,0,0,0.9)',
+      }}
+    >
+      <span
+        aria-hidden
+        className="shrink-0 mt-0.5 rounded-full"
+        style={{
+          width: 14, height: 14,
+          background: 'radial-gradient(circle at 35% 35%, #d9584a, #6e1a16 70%)',
+          boxShadow: '0 0 0 2px rgba(var(--sk-gilt-rgb),0.25), 0 4px 12px rgba(0,0,0,0.6)',
+        }}
+      />
+      <div className="min-w-0">
+        <p
+          className="font-sans uppercase tracking-[0.28em] text-[10px] mb-2"
+          style={{ color: 'var(--sk-gilt)' }}
+        >
+          {fr ? POLITIQUE_ANNULATION.titreFR : POLITIQUE_ANNULATION.titreEN}
+        </p>
+        <p
+          className="font-sans text-[13px] md:text-[15px] leading-[1.7]"
+          style={{ color: 'rgba(var(--sk-parchment-rgb), 0.82)', fontWeight: 300 }}
+        >
+          {fr ? POLITIQUE_ANNULATION.longueFR : POLITIQUE_ANNULATION.longueEN}
+        </p>
+      </div>
+    </motion.aside>
   );
 };
 
