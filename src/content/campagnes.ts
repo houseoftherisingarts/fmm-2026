@@ -634,6 +634,102 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     salutEN: 'Thank you for carrying the village with us,',
     cta: { url: ZEFFY_ANTENNE, labelFR: 'Porter la lumière', labelEN: 'Carry the light' },
   },
+
+  // ── 11 · Merci pour votre billet ──────────────────────────────────
+  // Alex, 2026-09-12 : la confirmation et le remerciement d'achat,
+  // envoyés depuis l'admin aux gens qui ont pris un billet sur Zeffy
+  // (les comptes importés, origine « zeffy »). Zeffy envoie déjà son
+  // reçu; cette lettre est celle du festival, et elle porte la
+  // politique d'annulation dans le corps, en plus du fine print au
+  // pied. Les heures des portes viennent de src/content/faq.json.
+  {
+    id: 'merci-achat',
+    nom: 'Merci pour votre billet (confirmation d’achat)',
+    pourQui: 'Les gens qui ont acheté un billet sur Zeffy cette année',
+    sujetFR: 'Votre billet est bien reçu, et le village vous attend',
+    sujetEN: 'Your ticket is in, and the village is waiting for you',
+    titreFR: 'Merci pour votre billet',
+    titreEN: 'Thank you for your ticket',
+    blocs: [
+      {
+        type: 'texte',
+        FR: 'Votre billet pour l’édition 2026 est bien enregistré, et nous vous en remercions. Zeffy vous a fait parvenir votre confirmation par courriel : gardez-la précieusement, parce que c’est elle qui vous ouvre les portes le jour venu. Si vous avez pris un billet d’une journée, ne vous fiez pas à la date imprimée dessus, qui est celle de l’ouverture du festival, car il vaut pour le vendredi, le samedi ou le dimanche, selon ce qui vous arrange.',
+        EN: 'Your ticket for the 2026 edition is registered, and we thank you for it. Zeffy has sent your confirmation by email: keep it safe, because it is what opens the gates for you on the day. If you bought a one-day ticket, do not go by the date printed on it, which is the festival’s opening date, since it is good for Friday, Saturday or Sunday, whichever suits you.',
+      },
+      {
+        type: 'photo',
+        fichier: '2024-IMG_4547.jpg',
+        altFR: 'Des visiteurs entrent sous la grande tente du marché, à l’entrée du site',
+        altEN: 'Visitors step under the big market tent at the entrance to the site',
+      },
+      {
+        type: 'texte',
+        FR: 'Le réseau cellulaire est faible dans le village, alors imprimez votre confirmation à la maison ou téléchargez-la sur votre appareil avant de partir. Votre espace membre garde aussi une copie dans votre coffre à billets, prête à ressortir même sans signal.',
+        EN: 'Cell coverage is weak in the village, so print your confirmation at home or download it to your device before you leave. Your member space also keeps a copy in your ticket vault, ready to come out even without signal.',
+      },
+      {
+        type: 'texte',
+        FR: 'Une chose à savoir avant que vous ne prépariez votre costume : tout achat est définitif dès le moment où il est fait. Aucune annulation n’est acceptée et aucun remboursement n’est accordé, quelle qu’en soit la raison, parce que chaque billet vendu engage déjà les dépenses du festival, des artistes aux marmites.',
+        EN: 'One thing to know before you prepare your costume: every purchase is final from the moment it is made. No cancellation is accepted and no refund is granted, whatever the reason, because every ticket sold already commits the festival’s spending, from the performers to the cooking pots.',
+      },
+      {
+        type: 'photo',
+        fichier: '2025-IMG_4533.jpg',
+        altFR: 'Les tentes vikings et leurs boucliers dressés, sous un ciel dégagé',
+        altEN: 'Viking tents and their standing shields, under a clear sky',
+      },
+    ],
+    salutFR: 'Nous vous attendons les 25, 26 et 27 septembre,',
+    salutEN: 'We will be waiting for you on September 25, 26 and 27,',
+    cta: { url: `${SITE}/compte`, labelFR: 'Ranger mon billet dans mon coffre', labelEN: 'Put my ticket in my vault' },
+  },
+
+  // ── 12 · Le rappel de la semaine du festival ──────────────────────
+  // Alex, 2026-09-12 : le courriel de rappel, à envoyer à tous les
+  // billets dans la semaine qui précède. Les heures des portes sont
+  // celles de src/content/faq.json, les consignes du comptant et des
+  // chiens sont celles des lettres d'Alex du 24 août.
+  {
+    id: 'rappel-festival',
+    nom: 'Le rappel de la semaine du festival',
+    pourQui: 'Tous les billets, dans la semaine avant le festival',
+    sujetFR: 'C’est cette semaine : le village vous attend',
+    sujetEN: 'It is this week: the village is waiting for you',
+    titreFR: 'Le village ouvre ses portes',
+    titreEN: 'The village opens its gates',
+    blocs: [
+      {
+        type: 'texte',
+        FR: 'Le festival commence vendredi, et voici ce qu’il faut savoir avant de prendre la route. Le site ouvre le vendredi 25 septembre de 16 h 30 à 20 h, avec les portes à 17 h, puis le samedi de 9 h 30 à 19 h et le dimanche de 9 h 30 à 16 h, avec les portes à 10 h les deux jours. L’adresse est le 4, rue du Bosquet, à Montpellier dans la Petite-Nation, à environ 75 minutes d’Ottawa et de Gatineau.',
+        EN: 'The festival starts on Friday, and here is what you need to know before you hit the road. The grounds open on Friday 25 September from 4:30 pm to 8 pm, with the gates at 5 pm, then on Saturday from 9:30 am to 7 pm and on Sunday from 9:30 am to 4 pm, with the gates at 10 am on both days. The address is 4 rue du Bosquet in Montpellier, in the Petite-Nation, about 75 minutes from Ottawa and Gatineau.',
+      },
+      {
+        type: 'photo',
+        fichier: '2025-IMG_6325.jpg',
+        altFR: 'Une procession de torches traverse le site à la nuit tombée',
+        altEN: 'A torch procession crosses the grounds after nightfall',
+      },
+      {
+        type: 'texte',
+        FR: 'Le réseau est faible dans les montagnes, alors imprimez votre confirmation Zeffy à la maison ou téléchargez-la pendant que le signal tient encore, et apportez du comptant pour les kiosques, la nourriture et le bar, parce que les terminaux deviennent capricieux aux heures de pointe. Les chiens ne sont pas admis sur le site, même en laisse, à cause des chevaux qui y sont pendant tout le festival.',
+        EN: 'Signal is weak in the mountains, so print your Zeffy confirmation at home or download it while the signal still holds, and bring cash for the kiosks, the food and the bar, because card terminals get temperamental at peak hours. Dogs are not allowed on the grounds, not even on a leash, because of the horses that are there for the whole festival.',
+      },
+      {
+        type: 'texte',
+        FR: 'Nous vous rappelons aussi que tout achat est définitif dès le moment où il est fait, et qu’aucune annulation ni aucun remboursement n’est possible, quelle qu’en soit la raison. Votre billet d’une journée, lui, vaut pour le vendredi, le samedi ou le dimanche, peu importe la date imprimée dessus.',
+        EN: 'We also remind you that every purchase is final from the moment it is made, and that no cancellation or refund is possible, whatever the reason. Your one-day ticket, for its part, is good for Friday, Saturday or Sunday, whatever date is printed on it.',
+      },
+      {
+        type: 'photo',
+        fichier: '2025-IMG_4533.jpg',
+        altFR: 'Les tentes vikings et leurs boucliers dressés, sous un ciel dégagé',
+        altEN: 'Viking tents and their standing shields, under a clear sky',
+      },
+    ],
+    salutFR: 'À vendredi, au village,',
+    salutEN: 'See you Friday, at the village,',
+    cta: { url: `${SITE}/programmation`, labelFR: 'Voir la programmation', labelEN: 'See the program' },
+  },
 ];
 
 export const MODELE_PAR_ID = new Map<IdCampagne, ModeleCampagne>(
