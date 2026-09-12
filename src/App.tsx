@@ -75,6 +75,8 @@ const AdminPage        = lazy(() => import('./pages/AdminPage'));
 const PersonProfilePage = lazy(() => import('./pages/admin/PersonProfilePage'));
 const BenevoleProfilePage = lazy(() => import('./pages/admin/BenevoleProfilePage'));
 const ComptePage       = lazy(() => import('./pages/ComptePage'));
+// RULE -5, temporaire : page de vérification visuelle de MonKiosque, à retirer après capture.
+const QaPlanPage       = lazy(() => import('./pages/QaPlanPage'));
 const BilletsPage      = lazy(() => import('./pages/BilletsPage'));
 const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const MurPage              = lazy(() => import('./pages/MurPage'));
