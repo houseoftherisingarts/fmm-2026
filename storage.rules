@@ -51,6 +51,21 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
+    // ── La carte du plan du marché (Alex, 2026-09-12) ───────────
+    // La photo de la carte dessinée par Jesse, une par année. Lecture
+    // publique (l'exposant la voit dans son espace), dépôt par l'équipe
+    // ou par quiconque tient un rôle admin dans Firestore.
+    match /plan-marche/{annee}/{fichier} {
+      allow read:  if true;
+      allow write: if signedIn()
+        && request.auth.token.email != null
+        && (isAdmin()
+            || firestore.exists(/databases/(default)/documents/adminRoles/$(request.auth.token.email.lower())))
+        && request.resource != null
+        && request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     // ── Archives photos (section Photos de l'admin) ─────────────
     // Téléversements de la galerie Histoire (Léna). Lecture publique
     // (la page Histoire les affiche), écriture admin seulement.

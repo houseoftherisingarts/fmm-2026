@@ -1368,6 +1368,19 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // ── Plan du marché (Alex, 2026-09-12) ─────────────────────────
+    // Un document par année : les rangées, les kiosques (prix,
+    // électricité, wifi, repas livrés) et le marchand posé sur chacun.
+    // Tout compte connecté le lit, parce que l'exposant y trouve son
+    // kiosque ; Jesse et les rôles admin l'écrivent.
+    match /planMarche/{annee} {
+      allow read: if signedIn();
+      allow write: if (isAdmin() || aUnRoleAdmin())
+                   && request.resource.data.kiosques is list
+                   && request.resource.data.rangees is list
+                   && request.resource.data.kiosques.size() <= 400;
+    }
+
     // ── Musicians (one application per musician per year) ────────
     // /musicians/{uid}/years/{year} — mirrors the vendors layout so
     // a band can have multi-year history. Accepted musicians are

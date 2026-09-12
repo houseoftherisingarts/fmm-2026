@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed, ListChecks } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed, ListChecks, Map } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -47,6 +47,7 @@ export type AdminSectionId =
   | 'invites'
   | 'camping'
   | 'livraison'
+  | 'planMarche'
   | 'inventaire'
   | 'affichage'
   | 'messages'
@@ -89,6 +90,9 @@ export const NAV: NavItem[] = [
   { id: 'matrice',    label: 'Matrice des Rôles', icon: Grid3x3,       group: 'Bénévoles' },
 
   { id: 'marchands',  label: 'Marchands',       icon: ShoppingBag,     group: 'Participants' },
+  // Le plan des kiosques de Jesse : rangées, prix, électricité, wifi,
+  // repas livrés, et les marchands glissés sur leur kiosque (Alex, 2026-09-12).
+  { id: 'planMarche', label: 'Plan du marché',  icon: Map,             group: 'Participants' },
   // La ruelle du Souk : commerces non officiels créés par les membres,
   // pas encore promus en kiosque (Alex, 2026-08-27).
   { id: 'commerces',  label: 'Commerces de la ruelle', icon: Store,    group: 'Participants' },
