@@ -283,6 +283,10 @@ export function rendreCampagne(
   const piedDesabo = fr ? 'Ne plus rien recevoir' : 'Stop receiving these';
   const piedBillets = fr ? 'La billetterie' : 'Tickets';
   const piedPhotos = fr ? 'Photographies : Léna' : 'Photography: Léna';
+  // Le fine print de la politique d'annulation, au pied de CHAQUE lettre
+  // (Alex, 2026-09-12 : « partout, partout »). Une infolettre qui parle
+  // du menu porte la phrase autant que celle qui parle des billets.
+  const piedPolitique = finePrintAnnulation(langue);
 
   const corps = modele.blocs.map((b) => rendreBloc(b, fr, base)).join('\n');
   const cta = modele.cta ? bouton(modele.cta.url, fr ? modele.cta.labelFR : modele.cta.labelEN) : '';
