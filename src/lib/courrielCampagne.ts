@@ -411,6 +411,7 @@ ${corps}${cta}
               </p>
               <p style="margin:16px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">${e(piedPhotos)}</p>
               <p style="margin:6px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">${e(piedRaison)}</p>
+              <p style="margin:10px 0 0 0;font-family:${SANS};font-size:10px;line-height:17px;color:${C.texteMuet};">${e(piedPolitique)}</p>
               <p style="margin:8px 0 0 0;font-family:${SANS};font-size:10px;line-height:18px;color:${C.texteMuet};">
                 <a href="${JETON_DESABONNEMENT}" target="_blank" style="color:${C.texteMuet};text-decoration:underline;">${e(piedDesabo)}</a>
               </p>
