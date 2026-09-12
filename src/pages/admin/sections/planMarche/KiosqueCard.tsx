@@ -31,6 +31,8 @@ const KiosqueCard: React.FC<Props> = ({
     <div
       role="button"
       tabIndex={0}
+      draggable={!!vendor}
+      onDragStart={(e) => { if (vendor) e.dataTransfer.setData('text/kiosqueId', kiosque.id); }}
       onClick={onOpen}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
       onDragOver={(e) => { e.preventDefault(); setSurvole(true); }}
