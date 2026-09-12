@@ -391,6 +391,16 @@ const Carte: React.FC<{
             {fr ? billet.descFR : billet.descEN}
           </p>
 
+          {/* La politique d'annulation, sur la carte même, avant le geste
+              d'achat (Alex, 2026-09-12). Un mot suffit ici; l'encart sous
+              la main de cartes porte le paragraphe entier. */}
+          <p
+            className="mt-3 font-sans uppercase tracking-[0.18em] text-[8px] sm:text-[9px] leading-snug"
+            style={{ color: 'rgba(217,88,74,0.85)' }}
+          >
+            {fr ? POLITIQUE_ANNULATION.etiquetteFR : POLITIQUE_ANNULATION.etiquetteEN}
+          </p>
+
           <a
             href={href}
             target="_blank"
