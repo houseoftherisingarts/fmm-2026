@@ -34,7 +34,7 @@ const PlaceClanBloc: React.FC<{ uid: string; lang: 'FR' | 'EN'; prive: boolean }
     return (
       <Repliable id="clan" titre={fr ? 'Ma place dans le clan' : 'My place in the clan'} icone={<Compass size={16} />}>
         <p className="font-editorial text-base text-ivory-soft leading-relaxed">
-          {fr ? 'Le jeu de l’année de la Peste dit quelle place vous tenez dans une équipe, puis vous propose un clan.' : 'The Plague year’s game tells you your place in a team, then offers you a clan.'}{' '}
+          {fr ? 'Le questionnaire d’équipe du festival dit quelle place vous tenez dans une équipe, puis vous propose un clan.' : 'The festival’s team questionnaire tells you your place in a team, then offers you a clan.'}{' '}
           <Link to={fr ? '/jeux/clan' : '/en/games/clan'} style={{ color: 'var(--color-amber-glow)' }}>{fr ? 'Trouver ma place' : 'Find my place'}</Link>
         </p>
       </Repliable>

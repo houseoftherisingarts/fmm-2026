@@ -247,7 +247,7 @@ const PlaceClanPage: React.FC = () => {
 
   return (
     <>
-      <SEO title="Ta place dans le clan" description="Le jeu de l’année de la Peste : quinze questions pour trouver votre place dans une équipe, et le clan qui va avec." />
+      <SEO title="Ta place dans le clan" description="Le questionnaire d’équipe du festival : quinze questions pour trouver votre place dans une équipe, et le clan qui va avec. Pour les groupes, les sorties d’équipe et le team building." />
 
       {/* La scène : le livre prend l'écran, et le jeu s'écrit dessus. */}
       <Grimoire

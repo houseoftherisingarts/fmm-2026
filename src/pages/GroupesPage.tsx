@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import {ArrowUpRight, Check, GraduationCap, Users, Briefcase} from 'lucide-react';
+import {ArrowUpRight, Check, Compass, GraduationCap, Users, Briefcase} from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useUI } from '../contexts/AppContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
@@ -137,6 +138,34 @@ const GroupesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => 
             <p className="font-editorial italic text-base md:text-lg text-ivory-soft text-center max-w-2xl mx-auto mt-12">
               {t.pricingNote}
             </p>
+          </Reveal>
+
+          {/* Le questionnaire d'équipe : « Ta place dans le clan », l'ancien
+              jeu de l'année de la Peste, vit maintenant ici, pour les sorties
+              d'équipe (Alex, 2026-09-12). */}
+          <Reveal>
+            <article className="glass-light rounded-lg-card p-7 md:p-9 mt-10 md:mt-14 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+              <div className="w-14 h-14 shrink-0 rounded-card bg-brass/15 border border-brass/40 flex items-center justify-center">
+                <Compass size={26} className="text-brass" />
+              </div>
+              <div className="flex-1">
+                <p className="font-editorial italic text-stone uppercase tracking-[0.3em] text-xs mb-2">
+                  {lang === 'FR' ? 'Le questionnaire d’équipe' : 'The team questionnaire'}
+                </p>
+                <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory mb-3">
+                  {lang === 'FR' ? 'Ta place dans le clan' : 'Your place in the clan'}
+                </h3>
+                <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed">
+                  {lang === 'FR'
+                    ? 'Quinze questions et un verdict pour chaque membre de votre groupe : celui qui décide, celui qui fonce, celui qui soigne. Le questionnaire compose ensuite une équipe de sept et un clan à fonder, de quoi ouvrir une sortie d’équipe avant même d’arriver au festival.'
+                    : 'Fifteen questions and a verdict for each member of your group: the one who decides, the one who charges, the one who heals. The questionnaire then builds a team of seven and a clan to found, enough to open a team outing before you even reach the festival.'}
+                </p>
+              </div>
+              <Link to={lang === 'FR' ? '/jeux/clan' : '/en/games/clan'} className="fmm-glass-btn is-primary px-6 py-4 shrink-0" style={{ flexDirection: 'row', gap: '0.6rem', width: 'auto' }}>
+                <span className="fmm-glass-btn-label">{lang === 'FR' ? 'Faire le questionnaire' : 'Take the questionnaire'}</span>
+                <ArrowUpRight size={15} className="text-brass" />
+              </Link>
+            </article>
           </Reveal>
         </div>
       </section>

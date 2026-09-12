@@ -669,8 +669,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Une chose à savoir avant que vous ne prépariez votre costume : tout achat est définitif dès le moment où il est fait. Aucune annulation n’est acceptée et aucun remboursement n’est accordé, quelle qu’en soit la raison, parce que chaque billet vendu engage déjà les dépenses du festival, des artistes aux marmites.',
-        EN: 'One thing to know before you prepare your costume: every purchase is final from the moment it is made. No cancellation is accepted and no refund is granted, whatever the reason, because every ticket sold already commits the festival’s spending, from the performers to the cooking pots.',
+        FR: 'Une chose à savoir avant que vous ne prépariez votre costume : tout achat est définitif dès la confirmation du paiement. Aucune annulation n’est acceptée et aucun remboursement n’est accordé à la demande de l’acheteur, quelle qu’en soit la raison, parce que chaque billet vendu engage déjà les dépenses du festival, des artistes aux installations. Seule une journée annulée par le festival lui-même donnerait lieu à un remboursement.',
+        EN: 'One thing to know before you prepare your costume: every purchase is final once the payment is confirmed. No cancellation is accepted and no refund is granted at the buyer’s request, for any reason, because every ticket sold already commits the festival’s expenses, from the performers to the grounds. Only a day cancelled by the festival itself would give rise to a refund.',
       },
       {
         type: 'photo',

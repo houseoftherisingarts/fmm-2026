@@ -182,7 +182,7 @@ export function useBadgeAuBout(id: string, seuil = 0.82) {
 
 /** Retient les jeux joués et décerne « joueur » quand la table est faite. */
 const CLE_JEUX = 'fmm-jeux-joues';
-export function useBadgeJeu(jeu: 'tafl' | 'tarot' | 'des' | 'renard' | 'merelle') {
+export function useBadgeJeu(jeu: 'tafl' | 'tarot' | 'des' | 'renard' | 'merelle' | 'chouette') {
   const { gagnerBadge } = useBadges();
   useEffect(() => {
     gagnerBadge('petit-joueur');

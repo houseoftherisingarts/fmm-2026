@@ -112,6 +112,7 @@ const TarotGame               = lazy(() => import('./games/tarot'));
 const DesGame                 = lazy(() => import('./games/des'));
 const RenardGame              = lazy(() => import('./games/renard'));
 const MerelleGame             = lazy(() => import('./games/merelle'));
+const ChouetteGame            = lazy(() => import('./games/chouette'));
 const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
@@ -542,10 +543,12 @@ const App: React.FC = () => (
                 <Route path="/jeux/renard"          element={<PorteDuJeu><RenardGame /></PorteDuJeu>} />
                 <Route path="/en/games/fox-and-geese" element={<PorteDuJeu><RenardGame /></PorteDuJeu>} />
                 <Route path="/jeux/merelle"         element={<PorteDuJeu><MerelleGame /></PorteDuJeu>} />
+                <Route path="/jeux/chouette"        element={<PorteDuJeu><ChouetteGame /></PorteDuJeu>} />
+                <Route path="/en/games/cul-de-chouette" element={<PorteDuJeu><ChouetteGame /></PorteDuJeu>} />
                 <Route path="/en/games/merelle"     element={<PorteDuJeu><MerelleGame /></PorteDuJeu>} />
                 <Route path="/en/games/dice"        element={<PorteDuJeu><DesGame /></PorteDuJeu>} />
                 <Route path="/en/games/tarot"       element={<PorteDuJeu><TarotGame /></PorteDuJeu>} />
-                {/* Le jeu de l'année de la Peste : se joue sans compte, se garde avec. */}
+                {/* Le questionnaire d'équipe « Ta place dans le clan » (ancien jeu de l'année de la Peste, remplacé par le Cul de chouette le 2026-09-12) : se joue sans compte, se garde avec. */}
                 <Route path="/jeux/clan"            element={<PlaceClanPage />} />
                 <Route path="/en/games/clan"        element={<PlaceClanPage />} />
                 <Route path="/en/youth/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />

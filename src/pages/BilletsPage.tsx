@@ -176,7 +176,7 @@ const EncartPolitique: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           {fr ? POLITIQUE_ANNULATION.titreFR : POLITIQUE_ANNULATION.titreEN}
         </p>
         <p
-          className="font-sans text-[13px] md:text-[15px] leading-[1.7]"
+          className="font-sans text-[13px] md:text-[15px] leading-[1.7] whitespace-pre-line"
           style={{ color: 'rgba(var(--sk-parchment-rgb), 0.82)', fontWeight: 300 }}
         >
           {fr ? POLITIQUE_ANNULATION.longueFR : POLITIQUE_ANNULATION.longueEN}

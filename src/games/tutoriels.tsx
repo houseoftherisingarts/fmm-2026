@@ -15,7 +15,7 @@ import React from 'react';
 import { ARETES, LIGNES, POSITIONS } from './merelle/logic';
 import { PAS, POINTS, pointDe } from './renard/logic';
 
-export type JeuTutoriel = 'hnefatafl' | 'merelle' | 'renard' | 'tarot';
+export type JeuTutoriel = 'hnefatafl' | 'merelle' | 'renard' | 'tarot' | 'chouette';
 
 export interface EtapeTutoriel {
   titre: string;
@@ -284,6 +284,52 @@ const MiniTarot: React.FC<{ legende?: string }> = ({ legende }) => (
 const MOULIN_DEMO = LIGNES[0];
 
 export const TUTORIELS: Record<JeuTutoriel, Record<'FR' | 'EN', EtapeTutoriel[]>> = {
+  chouette: {
+    FR: [
+      {
+        titre: 'Le but du jeu',
+        corps: 'Trois dés, et le premier convive à trois cent quarante-trois points gagne la table. À votre tour, vous lancez les deux chouettes, puis le cul, et la combinaison des trois dés dit ce que vous marquez.',
+        ancre: 'scores',
+      },
+      {
+        titre: 'Ce que les dés racontent',
+        corps: 'Deux dés pareils font une chouette, trois pareils un cul de chouette, et deux dés qui additionnés donnent le troisième font une velute. Vos trois dés s’affichent ici, le cul en dernier.',
+        ancre: 'des',
+      },
+      {
+        titre: 'Siroter, parier, défier',
+        corps: 'Sur une chouette, le pupitre vous offre de siroter : relancer le cul pour tenter le cul de chouette, au risque de perdre la chouette. Quand un autre sirote, vous pariez cinq points sur la face. Un 4-2-1 vous laisse défier quelqu’un.',
+        ancre: 'pupitre',
+      },
+      {
+        titre: 'Les deux cris',
+        corps: 'Une suite, et tout le monde crie « Grelotte ça picote ! » : le dernier perd dix points. Une chouette-velute, et le premier à crier « Pas mou le caillou ! » empoche les points. Les deux boutons restent là tout le temps, mais crier à tort coûte dix points.',
+        ancre: 'cris',
+      },
+    ],
+    EN: [
+      {
+        titre: 'The goal',
+        corps: 'Three dice, and the first player to three hundred and forty-three points wins the table. On your turn you roll the two chouettes, then the cul, and the three dice together say what you score.',
+        ancre: 'scores',
+      },
+      {
+        titre: 'What the dice say',
+        corps: 'Two matching dice make a chouette, three matching a cul de chouette, and two dice adding up to the third make a velute. Your three dice show here, the cul last.',
+        ancre: 'des',
+      },
+      {
+        titre: 'Sip, bet, challenge',
+        corps: 'On a chouette the desk offers a sip: re-roll the cul to try for the cul de chouette, at the risk of losing the chouette. When someone else sips, you bet five points on the face. A 4-2-1 lets you challenge someone.',
+        ancre: 'pupitre',
+      },
+      {
+        titre: 'The two shouts',
+        corps: 'A run, and everyone shouts "Grelotte ça picote!": the last one loses ten points. A chouette-velute, and the first to shout "Pas mou le caillou!" pockets the points. Both buttons stay there the whole time, but shouting wrongly costs ten points.',
+        ancre: 'cris',
+      },
+    ],
+  },
   merelle: {
     FR: [
       {

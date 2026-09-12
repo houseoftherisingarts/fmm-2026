@@ -123,9 +123,9 @@ async function lireCommande(orderId, jeton) {
 // src/content/politiqueAnnulation.ts (le serveur ne lit pas ce dossier) :
 // une phrase qui change là-bas change ici le même jour.
 const POLITIQUE_ANNULATION_FR =
-  'Politique d’annulation : tout achat est définitif dès le moment où il est fait, et aucune annulation ni aucun remboursement n’est possible, quelle qu’en soit la raison.';
+  'Politique d’annulation : tout achat est définitif dès la confirmation du paiement, et aucune annulation ni aucun remboursement n’est possible à la demande de l’acheteur, quelle qu’en soit la raison. Seule une journée annulée par le festival lui-même donne lieu à un remboursement.';
 const POLITIQUE_ANNULATION_EN =
-  'Cancellation policy: every purchase is final from the moment it is made, and no cancellation or refund is possible, whatever the reason.';
+  'Cancellation policy: every purchase is final once the payment is confirmed, and no cancellation or refund is possible at the buyer’s request, for any reason. Only a day cancelled by the festival itself gives rise to a refund.';
 
 const CORPS_FR = (nom) => `Bonjour${nom ? ' ' + nom : ''},
 
