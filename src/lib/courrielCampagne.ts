@@ -471,6 +471,7 @@ ${corps}${cta}
     '',
     '----------------------------------------',
     piedPhotos,
+    piedPolitique,
     `${piedRaison} ${piedDesabo} : ${JETON_DESABONNEMENT}`,
   ].join('\n');
 
