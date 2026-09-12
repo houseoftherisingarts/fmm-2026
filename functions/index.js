@@ -3620,8 +3620,10 @@ async function lireFilFacebook(jeton) {
   ].join(',');
   // `/me/posts` avec un jeton de page : les publications de la page
   // seulement, jamais ce que des visiteurs écrivent sur son mur.
-  const url = `${GRAPH}/me/posts?fields=${encodeURIComponent(champs)}&limit=${NOUVELLES_MAX * 2}&access_token=${encodeURIComponent(jeton)}`;
-  const reponse = await fetch(url);
+  // Le jeton part dans l'en-tête, jamais dans l'URL : une erreur réseau
+  // recopie l'URL dans le journal, et un jeton de page n'a rien à y faire.
+  const url = `${GRAPH}/me/posts?fields=${encodeURIComponent(champs)}&limit=${NOUVELLES_MAX * 2}`;
+  const reponse = await fetch(url, { headers: { Authorization: `Bearer ${jeton}` } });
   const corps = await reponse.json().catch(() => ({}));
   if (!reponse.ok || corps.error) {
     const e = corps.error || {};
@@ -3654,7 +3656,7 @@ async function rafraichirNouvellesFacebook() {
     // Les publications d'hier restent affichées : mieux vaut un fil
     // d'un jour que rien du tout. L'erreur se note pour l'admin.
     await ref.set({ erreur: String(e.message || e), derniereErreur: FieldValue.serverTimestamp() }, { merge: true });
-    logger.error('nouvellesFacebook', e);
+    logger.error('nouvellesFacebook', String(e.message || e));
   }
 }
 
