@@ -13,6 +13,7 @@ import {
 import FAQ from '../content/faq.json';
 import { useAuth } from '../contexts/AuthContext';
 import { lienBilletterie, ouvrirBilletterie, surchargeBillet, tarifMembre } from '../lib/billetterie';
+import { POLITIQUE_ANNULATION } from '../content/politiqueAnnulation';
 
 // ─── Billetterie ────────────────────────────────────────────────────
 // Une main de cartes plutôt qu'une liste. Chaque billet est une carte
