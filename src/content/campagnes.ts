@@ -42,7 +42,9 @@ export type IdCampagne =
   | 'chiens'
   | 'billet-imprime'
   | 'comptant'
-  | 'antenne';
+  | 'antenne'
+  | 'merci-achat'
+  | 'rappel-festival';
 
 export type LangueCampagne = 'FR' | 'EN';
 
