@@ -19,13 +19,9 @@ const TAILLES = [
 async function franchirLaPorte(page) {
   // Le portail DEV_BYPASS demande de choisir un rôle avant d'entrer.
   await page.goto(`${BASE}/admin`, { waitUntil: 'networkidle' });
-  const superAdmin = page.getByText('Super admin', { exact: false }).first();
-  if (await superAdmin.count()) {
-    await superAdmin.click();
-  } else {
-    // Repli : premier bouton de porte visible.
-    await page.locator('button', { hasText: /admin|super|jesse|équipe/i }).first().click();
-  }
+  const superAdmin = page.getByText('Super-Admin', { exact: false }).first();
+  await superAdmin.waitFor({ timeout: 10000 });
+  await superAdmin.click();
   await page.waitForTimeout(400);
 }
 
