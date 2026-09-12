@@ -137,7 +137,10 @@ Au plaisir de festoyer ensemble,
 
 Le Festival Médiéval de Montpellier
 25, 26 et 27 septembre 2026
-festivalmedievaldemontpellier.org`;
+festivalmedievaldemontpellier.org
+
+---
+${POLITIQUE_ANNULATION_FR}`;
 
 exports.squareGrimoire = onRequest(
   {
