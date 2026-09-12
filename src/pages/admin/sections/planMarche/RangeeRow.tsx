@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, Trash2, Check } from 'lucide-react';
+import { Plus, Minus, Trash2 } from 'lucide-react';
 import type { Rangee, Kiosque } from '../../../../firebase/planMarche';
 import type { VendorApp } from '../../../../firebase/applications';
 import type { CibleEnMain } from './helpers';
