@@ -14,6 +14,7 @@
 // savoir (clou de laiton), `appel` = demande de participation (clou d'or,
 // avec un bouton).
 import { CARTE_AVIS_ID } from './carte';
+import { POLITIQUE_ANNULATION } from './politiqueAnnulation';
 
 export type AnnonceTone = 'alerte' | 'info' | 'appel';
 
