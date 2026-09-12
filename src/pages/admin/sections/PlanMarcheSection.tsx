@@ -40,7 +40,7 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
   const [vueCarte, setVueCarte] = useState(false);
   const [kiosqueOuvertId, setKiosqueOuvertId] = useState<string | null>(null);
   const [enMain, setEnMain] = useState<CibleEnMain>(null);
-  const timerRef = useRef<number>();
+  const timerRef = useRef<number | undefined>(undefined);
 
   useEffect(() => watchPlanMarche(CURRENT_YEAR, (p) => setPlan(p)), []);
   useEffect(() => watchLivraisons(setLivraisons), []);
