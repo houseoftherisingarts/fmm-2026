@@ -85,6 +85,14 @@ for (const taille of TAILLES) {
   await page.locator('[title*="·"]').first().click();
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${OUT}/03b-panneau-occupe-${taille.nom}.png`, fullPage: false });
+  // Le panneau défile en interne (overflow-y-auto) : le bouton Libérer
+  // vit sous le fil de messages, hors du premier écran.
+  await page.evaluate(() => {
+    const panneau = document.querySelector('.overflow-y-auto.p-5, .overflow-y-auto.md\\:p-6');
+    if (panneau) panneau.scrollTop = panneau.scrollHeight;
+  });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${OUT}/03c-panneau-occupe-bas-${taille.nom}.png`, fullPage: false });
 
   await browser.close();
 }
