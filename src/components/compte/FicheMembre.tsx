@@ -61,8 +61,7 @@ import BadgeVerifie from './BadgeVerifie';
 import ReglagesProfil from './ReglagesProfil';
 import EspaceVip from './EspaceVip';
 import AlertesPanel from './AlertesPanel';
-import MaCarte from '../carte/MaCarte';
-import MonKiosque from './MonKiosque';
+import OngletCarte from './OngletCarte';
 
 // Le dé de la vie est un vrai d20 en trois dimensions : il tire three.js
 // derrière lui, donc il arrive à part, quand l'onglet s'ouvre.
