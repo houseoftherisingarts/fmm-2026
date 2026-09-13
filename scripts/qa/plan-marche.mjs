@@ -39,6 +39,9 @@ async function ouvrirPlanMarche(page) {
   // Un goto direct vers /admin/planMarche relance l'appli et fait
   // retomber sur la porte (le rôle choisi vit dans l'état React, pas
   // dans l'URL) : on clique donc l'entrée du menu, comme Jesse le ferait.
+  // Sous lg (mobile ici), le menu vit dans un tiroir fermé par défaut.
+  const menuMobile = page.getByLabel('Menu', { exact: true });
+  if (await menuMobile.isVisible().catch(() => false)) await menuMobile.click();
   await page.getByText('Plan du marché', { exact: false }).first().click();
   await page.waitForTimeout(600);
 }
