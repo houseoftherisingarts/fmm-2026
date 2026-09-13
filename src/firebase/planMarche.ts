@@ -29,6 +29,20 @@ export * from '../lib/planMarche';
 
 const planDoc = (annee: number) => doc(db!, 'planMarche', String(annee));
 
+/** Lit un document brut de Firestore (ou son absence) et rend un plan
+ *  complet : le même repli sert la lecture en direct et la transaction
+ *  de sauvegarde ci-dessous. */
+function depuisDoc(annee: number, d: Partial<PlanMarche> | undefined): PlanMarche {
+  if (!d) return planParDefaut(annee);
+  return {
+    annee,
+    rangees: Array.isArray(d.rangees) ? d.rangees : [],
+    kiosques: Array.isArray(d.kiosques) ? d.kiosques : [],
+    carte: d.carte ?? null,
+    maj: d.maj,
+  };
+}
+
 /** Le plan en direct. Sans document, le plan par défaut : trois
  *  rangées de huit, que la première sauvegarde de Jesse remplace. */
 export function watchPlanMarche(
@@ -40,33 +54,36 @@ export function watchPlanMarche(
     planDoc(annee),
     (snap) => {
       if (!snap.exists()) { cb(planParDefaut(annee), false); return; }
-      const d = snap.data() as Partial<PlanMarche>;
-      cb({
-        annee,
-        rangees: Array.isArray(d.rangees) ? d.rangees : [],
-        kiosques: Array.isArray(d.kiosques) ? d.kiosques : [],
-        carte: d.carte ?? null,
-        maj: d.maj,
-      }, true);
+      cb(depuisDoc(annee, snap.data() as Partial<PlanMarche>), true);
     },
     (err) => { console.warn('[planMarche] lecture refusée', err); cb(planParDefaut(annee), false); },
   );
 }
 
-/** Le document se remplace en entier : le plan est une seule chose. */
-export async function sauverPlanMarche(plan: PlanMarche): Promise<void> {
+/** Applique `mut` au plan tel qu'il est vraiment sur le serveur à l'instant
+ *  de l'écriture, dans une transaction Firestore, plutôt que d'écraser le
+ *  document avec une copie locale déjà périmée. Deux admins qui déplacent
+ *  chacun un marchand à la même seconde repartent donc tous les deux du
+ *  geste de l'autre au lieu de l'effacer sans le savoir. */
+export async function sauverPlanMarche(annee: number, mut: (planActuel: PlanMarche) => PlanMarche): Promise<void> {
   if (!db) throw new Error('Firestore n’est pas configuré');
-  const kiosques = plan.kiosques.map((k) => {
-    const propre: Record<string, unknown> = {};
-    for (const [cle, v] of Object.entries(k)) if (v !== undefined) propre[cle] = v;
-    return propre;
-  });
-  await setDoc(planDoc(plan.annee), {
-    annee: plan.annee,
-    rangees: plan.rangees,
-    kiosques,
-    carte: plan.carte ?? null,
-    maj: serverTimestamp(),
+  await runTransaction(db, async (tx) => {
+    const ref = planDoc(annee);
+    const snap = await tx.get(ref);
+    const actuel = depuisDoc(annee, snap.exists() ? (snap.data() as Partial<PlanMarche>) : undefined);
+    const suivant = mut(actuel);
+    const kiosques = suivant.kiosques.map((k) => {
+      const propre: Record<string, unknown> = {};
+      for (const [cle, v] of Object.entries(k)) if (v !== undefined) propre[cle] = v;
+      return propre;
+    });
+    tx.set(ref, {
+      annee: suivant.annee,
+      rangees: suivant.rangees,
+      kiosques,
+      carte: suivant.carte ?? null,
+      maj: serverTimestamp(),
+    });
   });
 }
 
