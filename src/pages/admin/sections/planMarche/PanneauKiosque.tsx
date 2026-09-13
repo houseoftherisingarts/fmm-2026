@@ -4,7 +4,7 @@ import { X, Trash2 } from 'lucide-react';
 import type { Kiosque, QualiteWifi } from '../../../../firebase/planMarche';
 import type { VendorApp } from '../../../../firebase/applications';
 import type { FicheLivraison } from '../../../../firebase/livraisonKiosque';
-import { WIFI } from '../../../../lib/planMarche';
+import { WIFI, NOTE_MAX_LEN } from '../../../../lib/planMarche';
 import { Label, Input, ToggleSwitch, Textarea, DangerButton } from '../../primitives';
 import MessageThread from '../../../../components/vendor/MessageThread';
 import { besoinElectriciteLabel, nomAffiche, optionNourriturePrise } from './helpers';
