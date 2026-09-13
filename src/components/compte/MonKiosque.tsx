@@ -96,15 +96,6 @@ const KiosqueAssigne: React.FC<{
         />
       </div>
 
-      {kiosque.note?.trim() && (
-        <div className="rounded-card border border-brass/20 bg-brass/5 px-4 py-3">
-          <p className="font-sans uppercase tracking-[0.2em] text-[10px] text-brass mb-1">
-            {fr ? 'Note de l’équipe' : 'Note from the team'}
-          </p>
-          <p className="font-editorial text-sm text-ivory-soft leading-relaxed whitespace-pre-line">{kiosque.note}</p>
-        </div>
-      )}
-
       {surCarte
         ? <SchemaCarte plan={plan} kiosque={kiosque} lang={lang} />
         : <SchemaRangees plan={plan} kiosque={kiosque} lang={lang} />}
