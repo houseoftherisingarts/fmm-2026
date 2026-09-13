@@ -78,6 +78,7 @@ for (const taille of TAILLES) {
   const premiereCarte = page.locator('[title*="libre"], [title*="·"]').first();
   await premiereCarte.click();
   await page.waitForTimeout(400);
+  await fermerBadgeSiPresent(page);
   await page.screenshot({ path: `${OUT}/02-panneau-kiosque-${taille.nom}.png`, fullPage: false });
   // Fermer le panneau (clic sur le voile).
   await page.keyboard.press('Escape');
