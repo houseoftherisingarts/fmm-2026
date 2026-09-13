@@ -1070,10 +1070,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 personne (Alex, 2026-09-10). Le même avis que le pop-up
                 d'arrivée et que le parchemin du babillard. */}
             {onglet === 'carte' && prive && compte && (
-              <div className="space-y-6 md:space-y-8">
-                {vApp && <MonKiosque uid={compte.uid} lang={lang} annee={vApp.year} onEcrire={allerVersFilMarchand} />}
-                <MaCarte uid={compte.uid} lang={lang} />
-              </div>
+              <OngletCarte uid={compte.uid} lang={lang} vApp={vApp} onEcrireMarchand={allerVersFilMarchand} />
             )}
 
             {/* Badges absorbe l'ancienne Collection : les avis décrochés
