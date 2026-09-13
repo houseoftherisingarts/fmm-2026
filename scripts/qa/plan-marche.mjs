@@ -82,6 +82,12 @@ for (const taille of TAILLES) {
 for (const taille of TAILLES) {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: taille.width, height: taille.height } });
+  await page.addInitScript(() => {
+    window.localStorage.setItem('fmm.consentement.v2', JSON.stringify({
+      mesure: false, publicite: false, tiers: false,
+      horodatage: new Date().toISOString(), version: '2026-09-02',
+    }));
+  });
   await page.goto(`${BASE}/qa-plan`, { waitUntil: 'load' });
   await page.waitForSelector('text=Mon kiosque', { timeout: 15000 });
   await page.waitForTimeout(500);
