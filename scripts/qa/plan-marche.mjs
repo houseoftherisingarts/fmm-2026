@@ -93,11 +93,13 @@ for (const taille of TAILLES) {
   const kiosqueLibre = page.locator('[title*="libre"]').first();
   await kiosqueLibre.click();
   await page.waitForTimeout(500);
+  await fermerBadgeSiPresent(page);
   await page.screenshot({ path: `${OUT}/03-marchand-pose-${taille.nom}.png`, fullPage: true });
 
   // 3b) Le même kiosque, rouvert : occupant, fil de messages, Libérer.
   await page.locator('[title*="·"]').first().click();
   await page.waitForTimeout(500);
+  await fermerBadgeSiPresent(page);
   await page.screenshot({ path: `${OUT}/03b-panneau-occupe-${taille.nom}.png`, fullPage: false });
   // Le panneau défile en interne (overflow-y-auto) : le bouton Libérer
   // vit sous le fil de messages, hors du premier écran.
