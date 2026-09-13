@@ -81,6 +81,11 @@ for (const taille of TAILLES) {
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${OUT}/03-marchand-pose-${taille.nom}.png`, fullPage: true });
 
+  // 3b) Le même kiosque, rouvert : occupant, fil de messages, Libérer.
+  await page.locator('[title*="·"]').first().click();
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `${OUT}/03b-panneau-occupe-${taille.nom}.png`, fullPage: false });
+
   await browser.close();
 }
 
