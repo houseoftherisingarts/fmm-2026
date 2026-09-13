@@ -122,9 +122,13 @@ const PanneauKiosque: React.FC<Props> = ({
         </div>
 
         <div>
-          <Label>Note</Label>
+          <div className="flex items-center justify-between">
+            <Label>Note</Label>
+            <span className="font-sans text-[10px] text-ivory-soft/40">{noteBrouillon.length}/{NOTE_MAX_LEN}</span>
+          </div>
           <Textarea
             rows={3}
+            maxLength={NOTE_MAX_LEN}
             value={noteBrouillon}
             onChange={(e) => setNoteBrouillon(e.target.value)}
             onBlur={commitNote}
