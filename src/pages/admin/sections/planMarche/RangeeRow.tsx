@@ -74,7 +74,7 @@ const RangeeRow: React.FC<Props> = ({
         </button>
         <button
           type="button"
-          onClick={onRetirerDernierKiosque}
+          onClick={retirerDernier}
           disabled={dernierOccupe || kiosques.length === 0}
           title={dernierOccupe ? 'Le dernier kiosque est occupé : libérez-le d’abord' : 'Retirer le dernier kiosque'}
           className="inline-flex items-center gap-1 px-2 py-1 rounded-card border border-ivory-soft/20 text-ivory-soft hover:border-blush hover:text-blush transition text-[11px] font-sans uppercase tracking-wider disabled:opacity-30 disabled:hover:text-ivory-soft disabled:hover:border-ivory-soft/20"
