@@ -17,11 +17,15 @@ const TAILLES = [
 ];
 
 async function franchirLaPorte(page) {
-  // Le portail DEV_BYPASS demande de choisir un rôle avant d'entrer.
+  // Le portail DEV_BYPASS demande de choisir un rôle avant d'entrer :
+  // en super-admin, toutes les portes s'ouvrent, on prend celle du CA.
   await page.goto(`${BASE}/admin`, { waitUntil: 'load' });
-  const superAdmin = page.getByText('Super-Admin', { exact: false }).first();
-  await superAdmin.waitFor({ timeout: 10000 });
-  await superAdmin.click();
+  const refuser = page.getByText('TOUT REFUSER', { exact: false }).first();
+  if (await refuser.count()) await refuser.click();
+  await page.waitForTimeout(200);
+  const porteCA = page.getByText('CA (CONSEIL D’ADMIN.)', { exact: false }).first();
+  await porteCA.waitFor({ timeout: 10000 });
+  await porteCA.locator('xpath=ancestor::button[1]').getByText('ENTRER').click();
   await page.waitForTimeout(400);
 }
 
