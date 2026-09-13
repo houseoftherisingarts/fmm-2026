@@ -17,12 +17,18 @@ const TAILLES = [
 ];
 
 async function franchirLaPorte(page) {
+  // La bannière de témoins ne doit jamais se trouver dans nos captures
+  // du plan du marché : le consentement est posé d'avance en local,
+  // exactement comme la vraie bannière l'aurait écrit après un refus.
+  await page.addInitScript(() => {
+    window.localStorage.setItem('fmm.consentement.v2', JSON.stringify({
+      mesure: false, publicite: false, tiers: false,
+      horodatage: new Date().toISOString(), version: '2026-09-02',
+    }));
+  });
   // Le portail DEV_BYPASS demande de choisir un rôle avant d'entrer :
   // en super-admin, toutes les portes s'ouvrent, on prend celle du CA.
   await page.goto(`${BASE}/admin`, { waitUntil: 'load' });
-  const refuser = page.getByText('TOUT REFUSER', { exact: false }).first();
-  if (await refuser.count()) await refuser.click();
-  await page.waitForTimeout(200);
   const porteCA = page.getByText(/CA \(CONSEIL D.ADMIN/i).first();
   await porteCA.waitFor({ timeout: 10000 });
   await porteCA.locator('xpath=ancestor::button[1]').getByText('ENTRER').click();
