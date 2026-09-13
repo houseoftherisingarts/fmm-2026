@@ -30,8 +30,10 @@ async function franchirLaPorte(page) {
 }
 
 async function ouvrirPlanMarche(page) {
-  await page.goto(`${BASE}/admin/planMarche`, { waitUntil: 'load' });
-  await page.waitForSelector('text=Plan du marché', { timeout: 15000 });
+  // Un goto direct vers /admin/planMarche relance l'appli et fait
+  // retomber sur la porte (le rôle choisi vit dans l'état React, pas
+  // dans l'URL) : on clique donc l'entrée du menu, comme Jesse le ferait.
+  await page.getByText('Plan du marché', { exact: false }).first().click();
   await page.waitForTimeout(600);
 }
 
