@@ -127,6 +127,7 @@ for (const taille of TAILLES) {
   await page.goto(`${BASE}/qa-plan`, { waitUntil: 'load' });
   await page.waitForSelector('text=Mon kiosque', { timeout: 15000 });
   await page.waitForTimeout(500);
+  await fermerBadgeSiPresent(page);
   await page.screenshot({ path: `${OUT}/04-mon-kiosque-${taille.nom}.png`, fullPage: true });
   await browser.close();
 }
