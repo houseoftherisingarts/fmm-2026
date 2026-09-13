@@ -58,11 +58,14 @@ for (const taille of TAILLES) {
   // 1) Vue rangées, telle quelle.
   await page.screenshot({ path: `${OUT}/01-rangees-${taille.nom}.png`, fullPage: true });
 
-  // 2) Panneau d'un kiosque ouvert : la première carte de kiosque.
+  // 2) Panneau d'un kiosque ouvert : la première carte de kiosque. Pas
+  //    de fullPage ici, le panneau est en position fixed et Chromium ne
+  //    le recalcule pas pour la hauteur dépliée (artefact de capture,
+  //    pas un défaut réel) : la fenêtre telle qu'une personne la voit.
   const premiereCarte = page.locator('[title*="libre"], [title*="·"]').first();
   await premiereCarte.click();
   await page.waitForTimeout(400);
-  await page.screenshot({ path: `${OUT}/02-panneau-kiosque-${taille.nom}.png`, fullPage: true });
+  await page.screenshot({ path: `${OUT}/02-panneau-kiosque-${taille.nom}.png`, fullPage: false });
   // Fermer le panneau (clic sur le voile).
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
