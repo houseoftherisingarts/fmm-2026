@@ -18,7 +18,7 @@ const TAILLES = [
 
 async function franchirLaPorte(page) {
   // Le portail DEV_BYPASS demande de choisir un rôle avant d'entrer.
-  await page.goto(`${BASE}/admin`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/admin`, { waitUntil: 'load' });
   const superAdmin = page.getByText('Super-Admin', { exact: false }).first();
   await superAdmin.waitFor({ timeout: 10000 });
   await superAdmin.click();
@@ -26,7 +26,7 @@ async function franchirLaPorte(page) {
 }
 
 async function ouvrirPlanMarche(page) {
-  await page.goto(`${BASE}/admin/planMarche`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/admin/planMarche`, { waitUntil: 'load' });
   await page.waitForSelector('text=Plan du marché', { timeout: 15000 });
   await page.waitForTimeout(600);
 }
@@ -70,7 +70,7 @@ for (const taille of TAILLES) {
 for (const taille of TAILLES) {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: taille.width, height: taille.height } });
-  await page.goto(`${BASE}/qa-plan`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/qa-plan`, { waitUntil: 'load' });
   await page.waitForSelector('text=Mon kiosque', { timeout: 15000 });
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${OUT}/04-mon-kiosque-${taille.nom}.png`, fullPage: true });

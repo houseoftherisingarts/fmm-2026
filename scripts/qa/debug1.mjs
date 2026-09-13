@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+page.on('console', (m) => console.log('[console]', m.type(), m.text()));
+page.on('pageerror', (e) => console.log('[pageerror]', e.message));
+await page.goto('http://localhost:5179/admin', { waitUntil: 'load' });
+await page.waitForTimeout(2000);
+const bodyText = await page.evaluate(() => document.body.innerText.slice(0, 2000));
+console.log('--- BODY TEXT ---');
+console.log(bodyText);
+await page.screenshot({ path: '/Users/lesalondesinconnus/Documents/Websites/FMM 2026/captures/plan-marche/debug1.png', fullPage: true });
+await browser.close();
