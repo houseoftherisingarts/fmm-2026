@@ -66,6 +66,7 @@ for (const taille of TAILLES) {
 
   await franchirLaPorte(page);
   await ouvrirPlanMarche(page);
+  await fermerBadgeSiPresent(page);
 
   // 1) Vue rangées, telle quelle.
   await page.screenshot({ path: `${OUT}/01-rangees-${taille.nom}.png`, fullPage: true });
