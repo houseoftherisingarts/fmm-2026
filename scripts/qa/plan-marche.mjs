@@ -43,8 +43,15 @@ async function franchirLaPorte(page) {
 // ici pour garder des captures propres, sans toucher au système des
 // badges, qui n'appartient pas aux fichiers du plan du marché.
 async function fermerBadgeSiPresent(page) {
-  const fermer = page.getByLabel('Fermer', { exact: true });
-  if (await fermer.isVisible().catch(() => false)) await fermer.click();
+  // L'annonce se ferme aussi toute seule après 7 à 11 secondes : un
+  // clic qui la manque de justesse (déjà partie) ne doit jamais planter
+  // le reste de la capture.
+  try {
+    const fermer = page.getByLabel('Fermer', { exact: true });
+    if (await fermer.isVisible({ timeout: 500 }).catch(() => false)) {
+      await fermer.click({ timeout: 2000 });
+    }
+  } catch { /* déjà partie, tant mieux */ }
 }
 
 async function ouvrirPlanMarche(page) {
