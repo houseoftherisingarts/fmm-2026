@@ -149,10 +149,16 @@ export function liberer(plan: PlanMarche, kiosqueId: string): PlanMarche {
   return assigner(plan, kiosqueId, null);
 }
 
+/** Le document planMarche/{annee} est unique pour tout le marché : une note
+ *  sans borne finirait par bloquer la sauvegarde de toute l'équipe en heurtant
+ *  la limite de 1 Mo de Firestore. La règle côté serveur porte la même borne. */
+export const NOTE_MAX_LEN = 500;
+
 export function modifierKiosque(plan: PlanMarche, kiosqueId: string, patch: Partial<Omit<Kiosque, 'id' | 'rangeeId' | 'vendorUid'>>): PlanMarche {
+  const patchBorne = patch.note != null ? { ...patch, note: patch.note.slice(0, NOTE_MAX_LEN) } : patch;
   return {
     ...plan,
-    kiosques: plan.kiosques.map((k) => (k.id === kiosqueId ? { ...k, ...patch } : k)),
+    kiosques: plan.kiosques.map((k) => (k.id === kiosqueId ? { ...k, ...patchBorne } : k)),
   };
 }
 
