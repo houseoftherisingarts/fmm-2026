@@ -104,6 +104,7 @@ for (const taille of TAILLES) {
     if (panneau) panneau.scrollTop = panneau.scrollHeight;
   });
   await page.waitForTimeout(200);
+  await fermerBadgeSiPresent(page);
   await page.screenshot({ path: `${OUT}/03c-panneau-occupe-bas-${taille.nom}.png`, fullPage: false });
 
   await browser.close();
