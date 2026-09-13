@@ -23,7 +23,7 @@ async function franchirLaPorte(page) {
   const refuser = page.getByText('TOUT REFUSER', { exact: false }).first();
   if (await refuser.count()) await refuser.click();
   await page.waitForTimeout(200);
-  const porteCA = page.getByText('CA (CONSEIL D’ADMIN.)', { exact: false }).first();
+  const porteCA = page.getByText(/CA \(CONSEIL D.ADMIN/i).first();
   await porteCA.waitFor({ timeout: 10000 });
   await porteCA.locator('xpath=ancestor::button[1]').getByText('ENTRER').click();
   await page.waitForTimeout(400);
