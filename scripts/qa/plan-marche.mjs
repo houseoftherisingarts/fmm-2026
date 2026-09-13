@@ -121,22 +121,13 @@ for (const taille of TAILLES) {
   await browser.close();
 }
 
-// 4) L'espace exposant, /qa-plan, kiosque déjà attribué.
-for (const taille of TAILLES) {
-  const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: taille.width, height: taille.height } });
-  await page.addInitScript(() => {
-    window.localStorage.setItem('fmm.consentement.v2', JSON.stringify({
-      mesure: false, publicite: false, tiers: false,
-      horodatage: new Date().toISOString(), version: '2026-09-02',
-    }));
-  });
-  await page.goto(`${BASE}/qa-plan`, { waitUntil: 'load' });
-  await page.waitForSelector('text=Mon kiosque', { timeout: 15000 });
-  await page.waitForTimeout(500);
-  await fermerBadgeSiPresent(page);
-  await page.screenshot({ path: `${OUT}/04-mon-kiosque-${taille.nom}.png`, fullPage: true });
-  await browser.close();
-}
+// 4) L'espace exposant (MonKiosque) : capturé une fois via une route
+// temporaire /qa-plan (un plan en mémoire, r2-3 donné à un uid de
+// test), qui a servi le temps de la capture puis a été retirée avec le
+// prop de test qu'elle demandait sur MonKiosque, comme prévu. Les
+// captures 04-mon-kiosque-*.png restent dans ./captures/plan-marche.
+// Pour rejouer ce bout : remettre temporairement le prop `planTest`
+// sur MonKiosque (voir l'historique git de ce fichier) et une route
+// qui l'utilise, capturer, puis retirer les deux à nouveau.
 
 console.log('Captures écrites dans', OUT);
