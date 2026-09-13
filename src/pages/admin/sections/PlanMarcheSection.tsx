@@ -48,7 +48,13 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
   // Sans carte, la bascule n'a pas de sens : on revient aux rangées.
   useEffect(() => { if (!plan?.carte) setVueCarte(false); }, [plan?.carte]);
 
-  const vendorByUid = useMemo(() => new Map(vendors.map((v) => [v.uid, v])), [vendors]);
+  // fetchAll() interroge toutes les années à la fois : un marchand qui a
+  // exposé plusieurs fois aurait sinon sa fiche d'une autre année écraser
+  // celle de cette année dans la Map, selon l'ordre de retour du tableau.
+  const vendorByUid = useMemo(
+    () => new Map(vendors.filter((v) => v.year === CURRENT_YEAR).map((v) => [v.uid, v])),
+    [vendors],
+  );
   const vendorsSansKiosque = useMemo(
     () => vendors.filter((v) => v.status === 'accepted' && v.year === CURRENT_YEAR && !kiosqueDe(plan, v.uid)),
     [vendors, plan],
