@@ -24,20 +24,16 @@ interface Props {
   annee?: number;
   /** Ouvre le fil vers l'équipe des kiosques, dans l'espace du membre. */
   onEcrire?: () => void;
-  /** RULE -5, temporaire : court-circuite Firestore avec un plan fourni
-   *  d'avance, pour la page /qa-plan. À retirer avec cette page. */
-  planTest?: PlanMarche;
 }
 
-const MonKiosque: React.FC<Props> = ({ uid, lang, annee = CURRENT_YEAR, onEcrire, planTest }) => {
+const MonKiosque: React.FC<Props> = ({ uid, lang, annee = CURRENT_YEAR, onEcrire }) => {
   const fr = lang === 'FR';
-  const [plan, setPlan] = useState<PlanMarche | null>(planTest ?? null);
+  const [plan, setPlan] = useState<PlanMarche | null>(null);
 
   useEffect(() => {
-    if (planTest) return;
     if (!uid) { setPlan(null); return; }
     return watchPlanMarche(annee, (p) => setPlan(p));
-  }, [uid, annee, planTest]);
+  }, [uid, annee]);
 
   // Le document arrive en un instant depuis le cache local de Firestore :
   // mieux vaut ne rien montrer une fraction de seconde que de montrer,
