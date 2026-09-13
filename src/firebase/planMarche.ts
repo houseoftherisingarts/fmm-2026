@@ -17,7 +17,7 @@
 // kiosque), écriture pour l'équipe et les rôles admin.
 
 import {
-  doc, onSnapshot, serverTimestamp, setDoc,
+  doc, onSnapshot, runTransaction, serverTimestamp,
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '../firebase';
