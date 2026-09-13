@@ -35,6 +35,18 @@ async function franchirLaPorte(page) {
   await page.waitForTimeout(400);
 }
 
+// Défaut constaté, hors périmètre de cette section : l'annonce de badge
+// du site public (AnnonceBadge, montée globalement dans App.tsx) n'est
+// pas coupée sur /admin comme le sont NavBar et les autres chromes
+// publics (trois gardes `pathname.startsWith('/admin')` existent déjà
+// pour ceux-là). Elle peut donc s'poser par-dessus l'admin. On la ferme
+// ici pour garder des captures propres, sans toucher au système des
+// badges, qui n'appartient pas aux fichiers du plan du marché.
+async function fermerBadgeSiPresent(page) {
+  const fermer = page.getByLabel('Fermer', { exact: true });
+  if (await fermer.isVisible().catch(() => false)) await fermer.click();
+}
+
 async function ouvrirPlanMarche(page) {
   // Un goto direct vers /admin/planMarche relance l'appli et fait
   // retomber sur la porte (le rôle choisi vit dans l'état React, pas
