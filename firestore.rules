@@ -1371,10 +1371,15 @@ service cloud.firestore {
     // ── Plan du marché (Alex, 2026-09-12) ─────────────────────────
     // Un document par année : les rangées, les kiosques (prix,
     // électricité, wifi, repas livrés) et le marchand posé sur chacun.
-    // Tout compte connecté le lit, parce que l'exposant y trouve son
-    // kiosque ; Jesse et les rôles admin l'écrivent.
+    // Le document porte aussi le prix négocié et la note d'équipe de
+    // CHAQUE kiosque, donc sa lecture reste au cercle qui a un motif
+    // de le voir : l'équipe, et les marchands acceptés de cette année
+    // (qui y retrouvent le leur), jamais tout compte connecté.
     match /planMarche/{annee} {
-      allow read: if signedIn();
+      allow read: if isAdmin() || aUnRoleAdmin()
+                  || (signedIn()
+                      && exists(/databases/$(database)/documents/vendors/$(request.auth.uid)/years/$(annee))
+                      && get(/databases/$(database)/documents/vendors/$(request.auth.uid)/years/$(annee)).data.status == 'accepted');
       allow write: if (isAdmin() || aUnRoleAdmin())
                    && request.resource.data.kiosques is list
                    && request.resource.data.rangees is list
