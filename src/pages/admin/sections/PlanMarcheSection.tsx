@@ -60,10 +60,10 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
     [vendors, plan],
   );
 
-  const sauver = async (p: PlanMarche) => {
+  const sauver = async (mut: (p: PlanMarche) => PlanMarche) => {
     setEtat('saving');
     try {
-      await sauverPlanMarche(p);
+      await sauverPlanMarche(CURRENT_YEAR, mut);
       setEtat('saved');
       window.clearTimeout(timerRef.current);
       timerRef.current = window.setTimeout(() => setEtat('idle'), 2000);
@@ -73,16 +73,14 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
     }
   };
 
-  // Optimiste : le plan local change tout de suite, la sauvegarde suit.
-  // Un seul document pour tout le plan (voir firebase/planMarche.ts),
-  // donc pas de course possible entre deux kiosques pendant l'écriture.
+  // Optimiste : le plan local change tout de suite pour que Jesse voie son
+  // geste sans attendre. La sauvegarde réelle, elle, rejoue `mut` sur le
+  // document le plus frais du serveur (transaction dans firebase/planMarche.ts)
+  // plutôt que sur cette copie locale, qui peut déjà être en retard sur un
+  // autre admin.
   const appliquer = (mut: (p: PlanMarche) => PlanMarche) => {
-    setPlan((prev) => {
-      if (!prev) return prev;
-      const suivant = mut(prev);
-      void sauver(suivant);
-      return suivant;
-    });
+    setPlan((prev) => (prev ? mut(prev) : prev));
+    void sauver(mut);
   };
 
   const assignerVendorSurKiosque = (kiosqueId: string, vendorUid: string) => {
