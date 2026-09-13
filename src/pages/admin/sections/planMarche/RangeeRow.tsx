@@ -32,12 +32,22 @@ const RangeeRow: React.FC<Props> = ({
   const [nomBrouillon, setNomBrouillon] = useState(rangee.nom);
   const dernier = kiosques[kiosques.length - 1];
   const dernierOccupe = !!dernier?.vendorUid;
+  // Un kiosque sans marchand peut quand même porter une position sur la
+  // carte, un prix ou une note : le retirer effacerait ce travail-là sans
+  // que le vendorUid en soit le signe.
+  const dernierConfigure = !!dernier && !dernierOccupe
+    && (dernier.x != null || dernier.y != null || dernier.prixCents != null || !!dernier.note?.trim());
   const rangeeOccupee = kiosques.some((k) => k.vendorUid);
 
   const commitNom = () => {
     const propre = nomBrouillon.trim();
     if (propre && propre !== rangee.nom) onRenommer(propre);
     else setNomBrouillon(rangee.nom);
+  };
+
+  const retirerDernier = () => {
+    if (dernierConfigure && !window.confirm(`${dernier.code} a déjà une position, un prix ou une note réglés. Le retirer quand même ?`)) return;
+    onRetirerDernierKiosque();
   };
 
   return (
