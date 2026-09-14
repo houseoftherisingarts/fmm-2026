@@ -123,9 +123,7 @@ CHAPITRES = [
                            'limonade', 'café turc']),
 ]
 
-MOT = """Ce livre a été écrit dehors, entre deux services.
-
-Ces plats sont nés à cinquante couverts d’un coup, trois jours de suite, sur un terrain en herbe où rien n’est de niveau et où le vent décide de la cuisson autant que le feu. Vous les trouverez ici ramenés à quatre personnes, pour une table ordinaire un mardi soir. La recette n’a pas bougé, seule la marmite a rapetissé.
+MOT = """Ces plats sont nés à cinquante couverts d’un coup, trois jours de suite, sur un terrain en herbe où rien n’est de niveau et où le vent décide de la cuisson autant que le feu. Vous les trouverez ici ramenés à quatre personnes, pour une table ordinaire un mardi soir. La recette n’a pas bougé, seule la marmite a rapetissé.
 
 Les plats viennent de la route. L’Europe de l’Est, le Levant, l’Espagne gitane, les feux du Nord : c’est de là que viennent les caravanes de cette édition, et la table leur ressemble. Le pain au sang voisine le baba ganoush. L’hypocras voisine le café turc. Personne ne s’en plaint autour du feu.
 
