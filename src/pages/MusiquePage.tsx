@@ -115,7 +115,7 @@ const AFFICHE_2026_BANDS: Band[] = [
     name:    'L’Ensemble Klezmer de Sainte-Nigoune',
     jour:    'vendredi',
     image:   '/wix/musique/sainte-nigoune.webp',
-    imageAlt:'L’Ensemble Klezmer de Sainte-Nigoune, illustration de la formation',
+    imageAlt:'L’Ensemble Klezmer de Sainte-Nigoune, photo officielle de la formation',
     website: 'https://nigoune.com',
     bioFR: 'Depuis 2016, l’Ensemble Klezmer de Sainte-Nigoune fait la navette entre son village et la ville de Québec. Un répertoire fait pour la danse : hora, freylekhs, sher, khosidl, kolomeyka et bulgar, portés par violons, clarinette, accordéon, guitare et tambour.',
     bioEN: 'Since 2016, the Ensemble Klezmer de Sainte-Nigoune has travelled back and forth between its village and Quebec City. A repertoire built for dancing: hora, freylekhs, sher, khosidl, kolomeyka and bulgar, carried by fiddles, clarinet, accordion, guitar and drum.',
