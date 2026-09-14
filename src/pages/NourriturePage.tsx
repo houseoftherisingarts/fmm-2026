@@ -523,8 +523,10 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
       {/* ══ 07 · Le livre de recettes du festival ══════════════════════
           Le livre de recettes de Marc-Alexis, 9 $ plus taxes, payé par
           Square. Deux recettes se lisent en ligne, le reste s'achète.
-          Chaque recette est écrite pour cinq personnes depuis le
-          2026-08-24 : la colonne des cinquante portions a été retirée. */}
+          Chaque recette est écrite pour quatre personnes depuis le
+          2026-09-14, dans la formulation de Ricardo Cuisine que le chef
+          a demandée : mesure métrique, équivalent impérial entre
+          parenthèses, étapes à l'infinitif. */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <SectionFog edges="top" />
         <Motes className="opacity-30" count={12} />
@@ -658,7 +660,7 @@ const FR = {
   grimoireMetaValue: '27',
   grimoireEyebrow: 'À rapporter chez soi',
   grimoireTitle: 'Le livre de recettes du festival',
-  grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et vingt-trois autres, écrites de la main du chef Marc-Alexis Pepin. Elles ont été ramenées à cinq personnes pour que vous puissiez les refaire chez vous, un mardi soir, sans avoir à diviser quoi que ce soit.',
+  grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et vingt-trois autres, écrites de la main du chef Marc-Alexis Pepin. Elles ont été ramenées à quatre personnes et réécrites en mesures d’ici, avec les tasses et les cuillères entre parenthèses, pour que vous puissiez les refaire chez vous un mardi soir sans avoir à diviser quoi que ce soit.',
   grimoireBientot: 'Bientôt en vente',
   grimoireCta: 'Acheter le livre',
   grimoirePreview: 'Feuilleter deux recettes',
@@ -718,7 +720,7 @@ const EN: typeof FR = {
   grimoireMetaValue: '27',
   grimoireEyebrow: 'To take home',
   grimoireTitle: 'The festival cookbook',
-  grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and twenty-three more, written in the hand of chef Marc-Alexis Pepin. Every one of them has been scaled down to five people, so you can cook it at home on a Tuesday night without dividing anything.',
+  grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and twenty-three more, written in the hand of chef Marc-Alexis Pepin. Every one of them has been scaled down to four people and rewritten in metric measures, with cups and spoons in brackets, so you can cook it at home on a Tuesday night without dividing anything.',
   grimoireBientot: 'Coming soon',
   grimoireCta: 'Buy the cookbook',
   grimoirePreview: 'Read two recipes',

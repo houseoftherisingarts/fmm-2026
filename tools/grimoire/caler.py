@@ -73,6 +73,12 @@ def caler(fichier='grimoire.html', tours=9):
             crans.setdefault(cle, int(m.get('serre') or 0))
             if cle in figees:
                 continue
+            # Une colonne d'ingredients peut deborder sa case sans que
+            # le bloc de page grossisse : le debordement se lit alors
+            # dans « vide », qui devient negatif. Le 2026-09-14, la
+            # fiche des kawaps sortait sur le folio sans que personne
+            # le voie.
+            m['d'] = max(m['d'], -m['vide'])
             if m['d'] > 1 and crans[cle] < CRAN_MAX:
                 crans[cle] += 1
                 # Une fiche qu'on avait desserrée et qui déborde revient
