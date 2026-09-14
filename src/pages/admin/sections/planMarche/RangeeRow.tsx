@@ -92,7 +92,10 @@ const RangeeRow: React.FC<Props> = ({
         </button>
       </header>
 
-      <div className="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1">
+      {/* Sur le bureau, la rangée se lit d’un coup : les kiosques passent à la
+          ligne plutôt que de se cacher derrière un défilement. Le téléphone
+          garde le défilement horizontal, qui y est naturel. */}
+      <div className="flex gap-2.5 overflow-x-auto md:overflow-visible md:flex-wrap pb-2 -mx-1 px-1">
         {kiosques.map((k) => (
           <KiosqueCard
             key={k.id}

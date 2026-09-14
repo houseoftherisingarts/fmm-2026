@@ -163,7 +163,7 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
       <Card className="px-5 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory">Plan du marché</h2>
+            <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory">Les kiosques de l’édition {CURRENT_YEAR}</h2>
             <p className="font-editorial italic text-sm text-ivory-soft mt-1">
               {occupes} / {plan.kiosques.length} kiosques occupés · {vendorsSansKiosque.length} marchand{vendorsSansKiosque.length > 1 ? 's' : ''} accepté{vendorsSansKiosque.length > 1 ? 's' : ''} sans kiosque
             </p>
