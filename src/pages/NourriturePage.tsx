@@ -38,9 +38,14 @@ const Glyphe: React.FC<{ name: keyof typeof GLYPHES; size?: number }> = ({ name,
 const SQUARE_BANQUET  = 'https://square.link/u/g0UOU5L3';  // 65 $ + taxes = 74,73 $
 const SQUARE_GRIMOIRE = 'https://square.link/u/OLtFu9jY';  //  9 $ + taxes = 10,35 $
 
-// 🔒 Le livre de recettes ne se vend pas encore : il se termine. Mettre
-// à true rouvre la vente, rien d'autre à toucher (Alex, 2026-08-23).
-const GRIMOIRE_EN_VENTE = false;
+// Le livre est fini et il se vend depuis le 2026-09-14. Repasser ce
+// drapeau à false referme la boutique, rien d'autre à toucher.
+const GRIMOIRE_EN_VENTE = true;
+
+// L'aperçu public, quatre pages : la couverture, deux recettes et
+// l'invitation. Le numéro monte à chaque refonte du livre, parce que
+// `public/**` est servi avec un cache d'un an marqué immuable.
+const APERCU_GRIMOIRE = '/grimoire/apercu-livre-recettes-v3.pdf';
 
 // Le titre porte le nom complet du livre, qui est long. Les tailles sont
 // mesurées écran par écran pour qu'il tienne toujours sur deux lignes :
@@ -550,10 +555,9 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                   <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
                     {t.grimoireBody}
                   </p>
-                  {/* 🔒 La vente est FERMÉE tant que le livre n'est pas
-                      fini (Alex, 2026-08-23). Le lien Square existe et
-                      fonctionne : il suffira de repasser ce drapeau à
-                      true pour rouvrir la boutique. */}
+                  {/* La vente passe par le lien Square du Salon des
+                      Inconnus, et le webhook `squareGrimoire` envoie le
+                      PDF par courriel dès que le paiement est confirmé. */}
                   <div className="flex flex-wrap items-center gap-5">
                     {GRIMOIRE_EN_VENTE ? (
                       <a
@@ -570,14 +574,14 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                         {t.grimoireBientot}
                       </span>
                     )}
-                    {/* 🔒 Le feuilletage est fermé lui aussi : le livre se
-                        termine et ne se montre pas encore (Alex, 29 août).
-                        Le PDF d'aperçu reste sur le serveur; il suffira de
-                        remettre le lien pour rouvrir le feuilletage. */}
-                    <span className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft/60">
+                    <a
+                      href={APERCU_GRIMOIRE}
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory-soft/60 hover:text-brass transition"
+                    >
                       <BookOpen size={14} />
                       {t.grimoirePreview}
-                    </span>
+                    </a>
                   </div>
                   <p className="font-editorial text-xs text-ivory-soft/70 mt-5">{t.grimoireNote}</p>
                 </div>
