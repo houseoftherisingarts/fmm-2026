@@ -129,7 +129,7 @@ const POLITIQUE_ANNULATION_EN =
 
 const CORPS_FR = (nom) => `Bonjour${nom ? ' ' + nom : ''},
 
-Merci d'avoir acheté le livre de recettes du festival. Il est en pièce jointe, en format PDF : vingt-sept recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites.
+Merci d'avoir acheté le livre de recettes du festival. Il est en pièce jointe, en format PDF : vingt-quatre recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites. Elles viennent des deux éditions, celle de 2025 et celle de 2026.
 
 Les quantités ont été ramenées à quatre personnes, pour une table ordinaire un mardi soir. Vous les trouverez en mesures métriques, avec les tasses et les cuillères entre parenthèses, alors vous n'avez rien à diviser ni à convertir. Les temps de cuisson, eux, n'ont pas bougé d'une minute. Goûtez souvent, et salez un peu plus que vous ne croyez devoir le faire.
 

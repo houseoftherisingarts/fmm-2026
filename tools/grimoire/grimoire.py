@@ -21,7 +21,7 @@ def b64(p):
     return base64.b64encode((HERE / p).read_bytes()).decode()
 
 
-# ── Les vingt-sept recettes, ecrites pour quatre ────────────────────
+# ── Les vingt-quatre recettes, ecrites pour quatre ──────────────────
 from recettes4 import RECETTES
 
 TITRES = {cle: r['titre'] for cle, r in RECETTES.items()}
@@ -113,9 +113,9 @@ GRAVURES = {
 CHAPITRES = [
     ('La marmite du campement', 'I', ['olla gitana', 'goulash']),
     ('Les grillages', 'II', ['brochette de poulet du verger', 'sauce au cidre', 'boeuf kawaps',
-                             'sauce boeuf', 'hotdog', 'patate chaude']),
-    ('Les boustifailles', 'III', ['cuirs du seigneur', 'verdure du jardin', 'salade betteraves repas',
-                                  'salade betterves side', 'baba ganoush', 'hummus']),
+                             'sauce boeuf', 'patate chaude']),
+    ('Les boustifailles', 'III', ['verdure du jardin', 'salade betteraves repas',
+                                  'baba ganoush', 'hummus']),
     ('La boulangerie', 'IV', ['pain viking', 'beurre aux herbes', 'bloodbraud',
                               'lembas', 'pain insectes']),
     ('Les douceurs', 'V', ['gateau du voyageur', "les offrandes de l'oasis"]),
@@ -125,7 +125,9 @@ CHAPITRES = [
 
 MOT = """Ces plats sont nés à cinquante couverts d’un coup, trois jours de suite, sur un terrain en herbe où rien n’est de niveau et où le vent décide de la cuisson autant que le feu. Vous les trouverez ici ramenés à quatre personnes, pour une table ordinaire un mardi soir. La recette n’a pas bougé, seule la marmite a rapetissé.
 
-Les plats viennent de la route. L’Europe de l’Est, le Levant, l’Espagne gitane, les feux du Nord : c’est de là que viennent les caravanes de cette édition, et la table leur ressemble. Le pain au sang voisine le baba ganoush. L’hypocras voisine le café turc. Personne ne s’en plaint autour du feu.
+Ce livre couvre deux éditions plutôt qu’une. Vous y trouverez les recettes de 2025 et celles de 2026 dans le même volume, parce que la cuisine du festival se bâtit d’une année à l’autre et qu’il aurait été dommage de laisser la première derrière.
+
+Les plats viennent de la route. L’Europe de l’Est, le Levant, l’Espagne gitane, les feux du Nord : c’est de là que viennent les caravanes qui campent chez nous, et la table leur ressemble. Le pain au sang voisine le baba ganoush. L’hypocras voisine le café turc. Personne ne s’en plaint autour du feu.
 
 Les proportions ont été écrites la main dans le sac de farine. Elles supportent d’être poussées, et elles pardonnent.
 
@@ -531,8 +533,9 @@ if __name__ == '__main__':
               '<div class="orn"><span class="diamond"></span></div>'
               '<h2 style="font-size:21pt;color:#e8c87a">La suite se trouve<br>dans le livre</h2>'
               '<p style="font-size:11pt;line-height:1.6;max-width:3.5in;color:rgba(239,227,200,.82)">'
-              'Vingt-sept recettes écrites pour quatre personnes, réparties en six chapitres '
-              'qui vont du pain viking à l’hypocras. Le livre coûte neuf dollars plus taxes '
+              'Vingt-quatre recettes des éditions 2025 et 2026, écrites pour quatre personnes et '
+              'réparties en six chapitres qui vont du pain viking à l’hypocras. Le livre coûte '
+              'neuf dollars plus taxes '
               'et vous arrive par courriel, en format PDF.</p>'
               '<div class="orn"><span class="rule-gold" style="width:1.7in"></span></div></div></section>')
     (HERE / 'apercu.html').write_text(

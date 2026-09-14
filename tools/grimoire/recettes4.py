@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Les vingt-sept recettes du festival, écrites pour quatre personnes.
+"""Les vingt-quatre recettes du festival, écrites pour quatre personnes.
 
 Marc-Alexis Pepin, le chef, a demandé le 14 septembre 2026 que la
 formulation du livre suive celle de Ricardo Cuisine, parce que c'est le
@@ -24,6 +24,14 @@ le rendement de chaque fiche puis ramenées à quatre parts, et enfin
 arrondies à ce qui se mesure vraiment dans une cuisine de maison. Les
 temps affichés en tête de fiche ne sont donnés que lorsque le chef les
 a écrits lui-même : rien n'a été inventé.
+
+
+Retirées le 2026-09-14, à la demande de Marc-Alexis : la saucisse sur pain
+viking (« c'est un hotdog, ça n'a pas rapport comme recette »), les cuirs du
+seigneur (il a trop mis de temps à élaborer la recette pour la donner) et la
+salade de betteraves en accompagnement (la même que la salade-repas, en plus
+petit). Elles vivent encore dans recettes.json, la feuille du festival, mais
+elles ne se rendent plus dans le livre.
 """
 
 # Chaque entrée : titre, chapeau, temps (liste de couples), ingrédients
@@ -255,29 +263,6 @@ RECETTES = {
  'note': "L'ail se rôtit entier, en chemise, à 190 °C (375 °F) pendant 40 minutes. La pulpe se presse ensuite hors de la gousse et n'a plus rien de l'ail cru.",
 },
 
-'hotdog': {
- 'titre': 'Saucisse grillée sur pain viking',
- 'chapeau': "Une saucisse artisanale se pose dans un pain viking, avec de la choucroute chaude et les trois moutardes alignées sur la table. C'est la file la plus longue du village gustatif, et c'est aussi celle qui bouge le plus vite.",
- 'temps': [('4 portions', ''), ('Cuisson', '10 min')],
- 'ingredients': [
-   (None, [
-     "4 pains viking (recette au chapitre de la boulangerie)",
-     "4 saucisses artisanales",
-     "250 g (2 tasses) de choucroute, égouttée",
-     "Moutarde jaune, moutarde de Dijon et moutarde à l'ancienne, au goût",
-     "Oignons frits et oignons marinés, au goût",
-     "Cornichons tranchés et relish, au goût",
-     "Ketchup et mayonnaise à l'ail, au goût",
-   ]),
- ],
- 'etapes': [
-   "Préchauffer le barbecue à puissance moyenne. Griller les saucisses de 8 à 10 minutes, en les retournant souvent, jusqu'à ce qu'elles soient bien colorées et chaudes à cœur.",
-   "Entre-temps, dans une petite casserole, réchauffer la choucroute à feu doux.",
-   "Fendre les pains sur la longueur sans les traverser, puis les griller quelques secondes, côté coupé sur la grille.",
-   "Garnir chaque pain d'une saucisse et de choucroute, puis laisser chacun monter le sien.",
- ],
- 'note': "Au festival, les condiments sont posés en rang sur la table et personne ne monte deux fois le même. C'est la moitié du plaisir, et c'est pour ça qu'aucune quantité n'est donnée ici.",
-},
 
 'patate chaude': {
  'titre': 'Pommes de terre rôties au miel épicé',
@@ -308,36 +293,6 @@ RECETTES = {
 
 # ── III · Les boustifailles ──────────────────────────────────────────
 
-'cuirs du seigneur': {
- 'titre': 'Les cuirs du seigneur, bœuf séché aux épices',
- 'chapeau': "Le rumsteak se tranche mince, marine une nuit dans les épices, puis sèche lentement jusqu'à devenir cuir. Ça se mâche longtemps et ça se garde des semaines au fond d'une besace.",
- 'temps': [('Rendement', 'environ 200 g (7 oz)'), ('Marinage', '12 à 24 h'), ('Séchage', '5 à 8 h')],
- 'ingredients': [
-   (None, [
-     "450 g (1 lb) de rumsteak de bœuf",
-     "60 ml (¼ tasse) de sauce soya",
-     "60 ml (¼ tasse) de sauce Worcestershire",
-     "15 ml (1 c. à soupe) de miel",
-     "5 ml (1 c. à thé) de poivre noir moulu",
-     "5 ml (1 c. à thé) de poudre d'ail",
-     "5 ml (1 c. à thé) de poudre d'oignon",
-     "5 ml (1 c. à thé) de piment en poudre",
-     "5 ml (1 c. à thé) de paprika fumé",
-     "5 ml (1 c. à thé) de sel",
-     "2,5 ml (½ c. à thé) de poivre de Cayenne",
-   ]),
- ],
- 'etapes': [
-   "Envelopper le rumsteak et le placer au congélateur 45 minutes : raffermie, la viande se tranche beaucoup plus mince.",
-   "Couper le bœuf en tranches de 0,5 cm (¼ po), dans le sens contraire des fibres.",
-   "Dans un grand bol, mélanger la sauce soya, la sauce Worcestershire, le miel et toutes les épices.",
-   "Ajouter la viande et remuer pour enrober chaque tranche. Couvrir et réfrigérer de 12 à 24 heures.",
-   "Égoutter la viande et l'éponger légèrement.",
-   "Déposer les tranches côte à côte sur les plateaux du déshydrateur, sans qu'elles se touchent. Déshydrater à 60 °C (140 °F) de 5 à 8 heures ou jusqu'à ce que la viande soit sèche mais encore souple : elle doit plier sans casser.",
-   "Laisser refroidir complètement à l'air libre, puis emballer dans des sacs hermétiques.",
- ],
- 'note': "Sans déshydrateur, cuire au four à la plus basse température, la porte entrouverte sur le manche d'une cuillère de bois, de 4 à 6 heures.",
-},
 
 'verdure du jardin': {
  'titre': "Verdure du jardin, vinaigrette à l'érable",
@@ -401,41 +356,6 @@ RECETTES = {
  'note': "La roquette ne se met jamais d'avance : elle tombe en dix minutes au contact de la vinaigrette. Tout le reste, au contraire, gagne à attendre.",
 },
 
-'salade betterves side': {
- 'titre': 'Salade de betteraves, en accompagnement',
- 'chapeau': "C'est la même salade de betteraves et d'orge, en portions réduites de moitié, qui se pose à côté d'une grillade plutôt que de tenir le repas à elle seule.",
- 'temps': [('4 portions de 150 g', ''), ('Trempage', '12 h'), ('Cuisson', '1 h')],
- 'ingredients': [
-   ('La salade', [
-     "50 g (¼ tasse) de pois chiches secs",
-     "2 betteraves moyennes, d'environ 250 g (9 oz) au total",
-     "60 g (1/3 tasse) d'orge mondé sec",
-     "20 g (3 c. à soupe) de noix de Grenoble",
-     "15 ml (1 c. à soupe) d'oignon rouge, émincé finement",
-     "30 ml (2 c. à soupe) de persil plat frais, ciselé",
-     "80 g (2 ½ tasses) de roquette",
-   ]),
-   ("La vinaigrette à l'érable", [
-     "15 ml (1 c. à soupe) d'huile d'olive",
-     "7,5 ml (1 ½ c. à thé) de vinaigre de cidre",
-     "5 ml (1 c. à thé) de sirop d'érable",
-     "2,5 ml (½ c. à thé) de moutarde de Dijon",
-     "2,5 ml (½ c. à thé) de jus de citron",
-     "Sel et poivre, au goût",
-   ]),
- ],
- 'etapes': [
-   "La veille, dans un bol, couvrir les pois chiches d'eau froide et laisser tremper 12 heures. Égoutter.",
-   "Dans une casserole d'eau bouillante salée, cuire les pois chiches de 45 à 60 minutes ou jusqu'à ce qu'ils soient tendres. Égoutter et laisser tiédir.",
-   "Placer la grille au centre du four. Préchauffer le four à 200 °C (400 °F). Envelopper les betteraves entières dans du papier d'aluminium et les cuire au four de 45 à 55 minutes ou jusqu'à ce que la pointe d'un couteau y entre sans résistance. Laisser tiédir, puis peler et couper en cubes.",
-   "Entre-temps, rincer l'orge à l'eau froide. Dans une casserole, le cuire dans trois fois son volume d'eau bouillante salée de 30 à 40 minutes ou jusqu'à ce qu'il soit tendre sous la dent. Égoutter et laisser tiédir.",
-   "Dans une poêle à feu moyen, griller les noix de 4 à 5 minutes, en remuant souvent. Laisser refroidir, puis les concasser grossièrement.",
-   "Dans un petit bol, mélanger au fouet tous les ingrédients de la vinaigrette.",
-   "Dans un grand saladier, réunir les betteraves, l'orge, les pois chiches, l'oignon rouge et le persil. Verser la vinaigrette et remuer. Couvrir et laisser mariner au réfrigérateur au moins 1 heure.",
-   "Au moment de servir, incorporer la roquette et les noix grillées.",
- ],
- 'note': None,
-},
 
 'baba ganoush': {
  'titre': 'Baba ganoush aux aubergines brûlées',
