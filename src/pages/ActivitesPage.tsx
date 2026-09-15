@@ -5,7 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MapPin, ChevronLeft, ChevronRight, ChevronDown, X } from 'lucide-react';
-import { IconGoblet, IconScroll, IconLozenge } from '../components/icons/Medieval';
+import { IconGoblet, IconScroll, IconLozenge, IconLyre } from '../components/icons/Medieval';
 import { addLocale } from '../lib/locale';
 import { watchSchedule, CURRENT_SCHEDULE_YEAR, type ScheduleDay } from '../firebase/schedule';
 import { watchProgFlags, PROG_FLAGS_DEFAULTS, type ProgFlags } from '../firebase/programmationFlags';
