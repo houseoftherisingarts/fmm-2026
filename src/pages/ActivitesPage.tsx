@@ -1372,6 +1372,41 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
       </section>
       )}
 
+      {/* ── Appel « J'aimerais animer » : troupes, artisans, conteurs et
+          saltimbanques déposent leur candidature sans compte requis, via
+          /animation/inscription (Alex, 2026-09-15). ── */}
+      {progFlags.appelAnimateurs && (
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <SectionTopRail
+            index="06"
+            name={t.appelRailName}
+            meta={t.appelMeta}
+            className="sec-rail mb-10 md:mb-14"
+          />
+          <div className="relative max-w-3xl mx-auto">
+            <GildedFrame inset={14} tone="copper" className="relative">
+              <div className="caravan-glass p-8 md:p-12 text-center">
+                <Eyebrow tone="copper" className="mb-3">{t.appelEyebrow}</Eyebrow>
+                <DisplayTitle size="lg" className="mb-6">{t.appelTitle}</DisplayTitle>
+                <p className="font-editorial text-base md:text-lg leading-relaxed mb-8"
+                   style={{ color: 'rgba(var(--sk-parchment-rgb), 0.85)' }}>
+                  {t.appelBody}
+                </p>
+                <Link
+                  to={addLocale('/animation/inscription', lang)}
+                  className="prog-anchor inline-flex items-center gap-3 pl-3 pr-5 py-3 font-sans text-[11px] md:text-xs uppercase tracking-[0.2em] font-semibold"
+                >
+                  <span aria-hidden className="prog-anchor-glyph"><IconLyre size={17} /></span>
+                  {t.appelCta}
+                </Link>
+              </div>
+            </GildedFrame>
+          </div>
+        </div>
+      </section>
+      )}
+
       {/* ── Activity flip-expand modal ──────────────────────────────
           Clicking a tile in the bestiary opens the activity in a
           centred overlay with a 3D flip-in entrance (rotateY -180 →
