@@ -329,6 +329,23 @@ export async function televerserPhotoAnimation(id: string, fichier: File): Promi
   return getDownloadURL(r);
 }
 
+/**
+ * Sème les fiches écrites dans le code (Aslak, Hullsborg, AMQ) et rend
+ * le nombre de fiches créées. Ne fait rien si la collection porte déjà
+ * quelque chose : le bouton se presse deux fois sans dégât.
+ */
+export async function semerAnimations(fiches: AnimationInput[]): Promise<number> {
+  if (!db) throw new Error('Firestore n’est pas configuré');
+  const existantes = await listerAnimations();
+  if (existantes.length > 0) return 0;
+  let n = 0;
+  for (const f of fiches) {
+    await creerAnimation(nouvelIdAnimation(), f);
+    n += 1;
+  }
+  return n;
+}
+
 // ── L'argent ─────────────────────────────────────────────────────────
 
 /** Ce que le transport coûte, selon le mode retenu. */
