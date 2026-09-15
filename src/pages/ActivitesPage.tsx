@@ -1382,6 +1382,7 @@ const ActivitesPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) =
             index="06"
             name={t.appelRailName}
             meta={t.appelMeta}
+            metaValue={t.appelMetaValue}
             className="sec-rail mb-10 md:mb-14"
           />
           <div className="relative max-w-3xl mx-auto">
@@ -1678,6 +1679,7 @@ const FR = {
   banquetCta: 'Voir le menu et réserver',
   appelRailName: 'Appel aux animateurs',
   appelMeta: 'Candidatures',
+  appelMetaValue: 'Ouvertes',
   appelEyebrow: 'Appel aux troupes',
   appelTitle: 'Troupes et artisans, la scène vous attend',
   appelBody: 'Le FMM cherche déjà les troupes de la prochaine édition, avec les artisans qui aiment montrer leur métier en plein air, les conteurs qui savent tenir une foule autour du feu et les saltimbanques qui n’ont besoin que d’un peu d’espace pour jouer. Le formulaire ouvre la discussion avec Tristan, qui lit chaque candidature et revient par courriel, sans qu’aucun cachet ni aucune sélection ne soit promis d’avance.',
@@ -1750,6 +1752,7 @@ const EN: typeof FR = {
   banquetCta: 'See the menu and book',
   appelRailName: 'Call for performers',
   appelMeta: 'Applications',
+  appelMetaValue: 'Open',
   appelEyebrow: 'Call for troupes',
   appelTitle: 'Troupes and craftspeople, the stage awaits',
   appelBody: 'FMM is already looking for troupes for the next edition, alongside craftspeople who enjoy showing their trade in the open air, storytellers who know how to hold a crowd around the fire, and performers who just need a bit of room to work. The form opens the conversation with Tristan, who reads every application and replies by email, without promising a fee or a selection in advance.',
