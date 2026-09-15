@@ -128,8 +128,8 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
 
   useEffect(() => {
     let vivant = true;
-    Promise.all(liste.map(async (a) => [a.id, await compterPubliees(a)] as const))
-      .then((pairs) => { if (vivant) setPubMap(Object.fromEntries(pairs)); })
+    compterPubliees(liste)
+      .then((parFiche) => { if (vivant) setPubMap(parFiche); })
       .catch(() => {});
     return () => { vivant = false; };
   }, [liste]);
