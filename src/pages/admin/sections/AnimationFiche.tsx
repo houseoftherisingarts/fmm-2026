@@ -12,7 +12,7 @@ import {
 } from '../../../firebase/animations';
 import type { AppUser } from '../../../firebase/users';
 import {
-  Card, Badge, Input, Textarea, Label, PrimaryButton, GhostButton, DangerButton, ToggleSwitch,
+  Badge, Input, Textarea, Label, PrimaryButton, GhostButton, DangerButton, ToggleSwitch,
 } from '../primitives';
 
 // ─── La fiche d'une animation ────────────────────────────────────────
