@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import {
   TYPES_ANIMATION, STATUTS, JOURS, CONFIRMATIONS,
-  coutTransport, coutTotal, enDollars, raisonDeBlocage, compterPubliees,
+  coutTransport, coutTotal, enDollars, raisonDeBlocage,
   televerserPhotoAnimation,
   type Animation, type AnimationInput, type JourFestival,
   type ModeHebergement, type ModeTransport,
@@ -72,6 +72,10 @@ const numOrUndef = (s: string): number | undefined => (s.trim() === '' ? undefin
 export interface AnimationFicheProps {
   animation: Animation;
   isNew?: boolean;
+  /** Combien des passages de la fiche figurent déjà à l'horaire public.
+   *  Compté une seule fois pour toute la liste par la section, parce que
+   *  l'horaire tient dans un seul document. */
+  publiees?: number;
   comptes: Map<string, AppUser> | null;
   onSave: (patch: AnimationInput) => Promise<void>;
   onDelete: () => Promise<void>;
@@ -81,7 +85,7 @@ export interface AnimationFicheProps {
 }
 
 const AnimationFiche: React.FC<AnimationFicheProps> = ({
-  animation, isNew = false, comptes, onSave, onDelete, onPublier, onRetirer, onCancel,
+  animation, isNew = false, publiees, comptes, onSave, onDelete, onPublier, onRetirer, onCancel,
 }) => {
   const [draft, setDraft] = useState<Animation>(animation);
   useEffect(() => { setDraft(animation); }, [animation.id]);
@@ -92,14 +96,11 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
   const [erreur, setErreur] = useState<string | null>(null);
   const [resultatPub, setResultatPub] = useState<string | null>(null);
   const [confirmerSuppr, setConfirmerSuppr] = useState(false);
-  const [publieesCompte, setPublieesCompte] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (isNew) { setPublieesCompte(0); return; }
-    let vivant = true;
-    compterPubliees([animation]).then((m) => { if (vivant) setPublieesCompte(m[animation.id] ?? 0); }).catch(() => {});
-    return () => { vivant = false; };
-  }, [animation, isNew]);
+  // Le compte part de ce que la section a déjà mesuré pour toute la
+  // liste (une seule lecture de l'horaire), et se corrige ici après une
+  // publication ou un retrait, le temps que la liste se rafraîchisse.
+  const [publieesCompte, setPublieesCompte] = useState<number>(isNew ? 0 : (publiees ?? 0));
+  useEffect(() => { setPublieesCompte(isNew ? 0 : (publiees ?? 0)); }, [animation.id, publiees, isNew]);
 
   const upd = (patch: Partial<Animation>) => setDraft((d) => ({ ...d, ...patch }));
 
@@ -124,7 +125,7 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
       const phrase = await onPublier(draft);
       upd({ statut: 'publiee' });
       setResultatPub(phrase);
-      compterPubliees([draft]).then((m) => setPublieesCompte(m[draft.id] ?? 0)).catch(() => {});
+      setPublieesCompte(draft.creneaux.length);
     } catch (e) {
       console.warn('[AnimationFiche] publication échouée', e);
       setErreur('Échec de la publication à l’horaire.');
@@ -364,7 +365,7 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
           {draft.statut === 'publiee' ? (
             <>
               <p className="text-sm mb-3" style={{ color: 'var(--admin-text)' }}>
-                {(publieesCompte ?? 0)} passage{(publieesCompte ?? 0) === 1 ? '' : 's'} sur {totalPassages} figure{(publieesCompte ?? 0) === 1 ? '' : 'nt'} à l’horaire public en ce moment.
+                {publieesCompte} passage{publieesCompte === 1 ? '' : 's'} sur {totalPassages} figure{publieesCompte === 1 ? '' : 'nt'} à l’horaire public en ce moment.
               </p>
               <DangerButton type="button" onClick={retirer} disabled={busyPub}>{busyPub ? 'Retrait…' : 'Retirer de l’horaire'}</DangerButton>
             </>

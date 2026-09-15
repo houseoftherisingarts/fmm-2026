@@ -424,7 +424,7 @@ const AnimationCard: React.FC<{
       </button>
       {open && (
         <div className="px-5 pb-5 pt-1 border-t border-ivory-soft/15">
-          <AnimationFiche animation={animation} comptes={comptes} onSave={onSave} onDelete={onDelete} onPublier={onPublier} onRetirer={onRetirer} />
+          <AnimationFiche animation={animation} publiees={publiees} comptes={comptes} onSave={onSave} onDelete={onDelete} onPublier={onPublier} onRetirer={onRetirer} />
         </div>
       )}
     </Card>
