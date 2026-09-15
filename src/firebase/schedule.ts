@@ -17,6 +17,10 @@ export interface ScheduleItem {
   time:  string;   // "17h00" or "17h00–18h30"
   label: string;
   where: string;
+  /** Id de l'animation qui a posé la ligne (section Animations). La
+   *  section Horaire recompose ses lignes depuis son bloc de texte et
+   *  efface ce champ au passage : il aide, il ne fait pas foi. */
+  source?: string;
 }
 
 export interface ScheduleDay {
