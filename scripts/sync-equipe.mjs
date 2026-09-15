@@ -30,8 +30,12 @@ const courriels = equipe
 // l'équipe gardent l'accès aux données (les règles ci-dessous les
 // reconnaissent toujours) mais leur rôle vient de adminRoles, ce qui
 // permet de donner le CA à quelqu'un sans lui donner les clés des rôles.
+// Le rôle doit être écrit noir sur blanc : une fiche qui l'oublie tombe
+// au CA, jamais au super-admin, pour qu'un ajout distrait n'ouvre pas la
+// gestion des rôles à quelqu'un qui ne l'a pas demandée. Si plus personne
+// n'est super, le script refuse de recopier quoi que ce soit.
 const courrielsSuper = equipe
-  .filter((m) => (m.role || 'super') === 'super')
+  .filter((m) => m.role === 'super')
   .map((m) => String(m.courriel || '').trim().toLowerCase())
   .filter(Boolean);
 

@@ -123,6 +123,14 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
     () => items.filter((v) => v.status === 'pending' && v.year === CURRENT_YEAR).length,
     [items],
   );
+  // Le formulaire public réserve l'édition suivante par défaut, alors une
+  // candidature déposée aujourd'hui porte 2027 et le filtre d'année, posé
+  // sur l'édition en cours, la cachait : Jonathan Guay a déposé la sienne
+  // le 15 septembre 2026 sans que rien ne l'annonce (Alex, le même jour).
+  const pendingSuivante = useMemo(
+    () => items.filter((v) => v.status === 'pending' && v.year > CURRENT_YEAR).length,
+    [items],
+  );
 
   const grouped = useMemo(() => {
     const m = new Map<number, VendorApp[]>();
@@ -206,6 +214,11 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
             <Chip icon={ShoppingBag} label="Marché"  value={tierCounts.marche}  tone="bg-ivory-soft/10 text-ivory border-ivory-soft/30" />
             <Chip icon={Globe}     label="Digitale"  value={tierCounts.digital} tone="bg-blue-300/15 text-blue-300 border-blue-300/40" />
             <Chip icon={Sparkles}  label="À traiter" value={pendingCount}       tone="bg-amber-300/15 text-amber-300 border-amber-300/40" />
+            {pendingSuivante > 0 && (
+              <button onClick={() => { setYearF(CURRENT_YEAR + 1); setFilter('pending'); }} className="col-span-2 sm:col-span-4 text-left">
+                <Chip icon={Sparkles} label={`À traiter pour ${CURRENT_YEAR + 1}`} value={pendingSuivante} tone="bg-amber-300/15 text-amber-300 border-amber-300/40" />
+              </button>
+            )}
           </div>
         </div>
       </motion.div>

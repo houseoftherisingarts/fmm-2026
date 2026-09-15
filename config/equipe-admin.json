@@ -1,6 +1,6 @@
 {
   "_lisez_moi": "La SEULE liste des courriels de l'équipe. Ajoutez ou retirez quelqu'un ici, puis lancez « npm run equipe ». Les règles Firestore, la fonction d'envoi et le site se mettent d'accord tout seuls. Ne touchez à aucun autre fichier.",
-  "_role": "« super » ouvre tout, y compris la gestion des rôles. « ca » ouvre tout le reste. Une personne sans rôle écrit ici garde le sien dans adminRoles.",
+  "_role": "Écrivez le rôle de chaque personne. « super » ouvre tout, y compris la gestion des rôles; « ca » ouvre tout le reste. Une fiche sans rôle tombe au CA, jamais au super-admin.",
   "equipe": [
     {
       "courriel": "admin@festivalmedievaldemontpellier.org",
