@@ -129,11 +129,7 @@ const HoraireSection: React.FC<Props> = ({ devBypass = false }) => {
     // crée les trois jours vides localement; le premier « Sauvegarder »
     // écrit le doc dans Firestore.
     const initDays = () => {
-      const skel: ScheduleDay[] = [
-        { id: 'vendredi', dateFR: 'Vendredi 25 septembre',  dateEN: 'Friday September 25',   items: [] },
-        { id: 'samedi',   dateFR: 'Samedi 26 septembre',    dateEN: 'Saturday September 26', items: [] },
-        { id: 'dimanche', dateFR: 'Dimanche 27 septembre',  dateEN: 'Sunday September 27',   items: [] },
-      ];
+      const skel: ScheduleDay[] = joursParDefaut();
       setDays(skel);
       setDayBlocks(['', '', '']);
     };
