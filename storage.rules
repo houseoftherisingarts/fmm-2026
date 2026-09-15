@@ -246,16 +246,19 @@ service firebase.storage {
 
     // Photos des fiches d'animation (troupes, artistes, jouteurs),
     // téléversées depuis la section Animations de l'admin. Lecture
-    // ouverte parce que la photo finit sur la page publique, écriture
-    // réservée à l'équipe. Précision qui compte : les règles du Storage
-    // ne peuvent pas lire Firestore, donc elles ne voient pas les rôles
-    // accordés dans `adminRoles`. Un coordonnateur qui n'est pas dans la
-    // liste de courriels ci-dessus gère toute sa fiche, sauf le
-    // téléversement de la photo, qui passe alors par un membre de
-    // l'équipe ou par le champ d'adresse d'image (Alex, 2026-09-15).
-    match /animations/{allPaths=**} {
+    // ouverte parce que la photo finit sur la page publique. Le dépôt
+    // suit la même porte que la carte du marché plus haut : l'équipe,
+    // ou quiconque tient un rôle dans `adminRoles`, ce que le Storage
+    // sait vérifier par `firestore.exists` (Alex, 2026-09-15).
+    match /animations/{annee}/{fichier} {
       allow read:  if true;
-      allow write: if isAdmin();
+      allow write: if signedIn()
+        && request.auth.token.email != null
+        && (isAdmin()
+            || firestore.exists(/databases/(default)/documents/adminRoles/$(request.auth.token.email.lower())))
+        && request.resource != null
+        && request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
     }
 
     // ── User avatars + bannière (VIP : GIF ≤ 8 Mo, vidéo ≤ 15 Mo) ──
