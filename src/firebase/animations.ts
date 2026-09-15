@@ -499,11 +499,25 @@ export async function retirerDeLHoraire(
   return retirees;
 }
 
-/** Combien des passages de la fiche se retrouvent vraiment à l'horaire. */
-export async function compterPubliees(a: Animation, annee = CURRENT_SCHEDULE_YEAR): Promise<number> {
+/**
+ * Combien des passages de chaque fiche se retrouvent vraiment à
+ * l'horaire, pour toute la liste d'un coup. L'horaire tient dans un
+ * seul document, donc une seule lecture suffit : le compter fiche par
+ * fiche relisait le même document autant de fois qu'il y a d'animations,
+ * à chaque rafraîchissement de la liste.
+ */
+export async function compterPubliees(
+  liste: Animation[],
+  annee = CURRENT_SCHEDULE_YEAR,
+): Promise<Record<string, number>> {
+  const vide = Object.fromEntries(liste.map((a) => [a.id, 0]));
+  if (liste.length === 0) return vide;
   const docHoraire = await getSchedule(annee);
-  if (!docHoraire?.days?.length) return 0;
+  if (!docHoraire?.days?.length) return vide;
   const presentes = new Set<string>();
   for (const d of docHoraire.days) for (const it of d.items) presentes.add(cleDeLigne(it));
-  return a.creneaux.filter((c) => presentes.has(cleDeLigne(ligneDuCreneau(a, c)))).length;
+  return Object.fromEntries(liste.map((a) => [
+    a.id,
+    a.creneaux.filter((c) => presentes.has(cleDeLigne(ligneDuCreneau(a, c)))).length,
+  ]));
 }
