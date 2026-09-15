@@ -3,7 +3,7 @@ import { CalendarClock, Save, RotateCcw, Eye, MapPin } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   getSchedule, setSchedule, parseScheduleBlock, formatScheduleBlock,
-  CURRENT_SCHEDULE_YEAR,
+  joursParDefaut, CURRENT_SCHEDULE_YEAR,
   type ScheduleDay, type ScheduleItem,
 } from '../../../firebase/schedule';
 import {
