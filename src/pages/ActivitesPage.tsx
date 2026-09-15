@@ -1676,6 +1676,12 @@ const FR = {
   banquetTitle: 'Le Banquet du Prince William',
   banquetBody: 'Un grand banquet sera préparé par les chefs de clans du village gustatif. Le billet pour la grande tablée est vendu séparément des billets d’entrée.',
   banquetCta: 'Voir le menu et réserver',
+  appelRailName: 'Appel aux animateurs',
+  appelMeta: 'Candidatures',
+  appelEyebrow: 'Appel aux troupes',
+  appelTitle: 'Troupes et artisans, la scène vous attend',
+  appelBody: 'Le FMM cherche déjà les troupes de la prochaine édition, avec les artisans qui aiment montrer leur métier en plein air, les conteurs qui savent tenir une foule autour du feu et les saltimbanques qui n’ont besoin que d’un peu d’espace pour jouer. Le formulaire ouvre la discussion avec Tristan, qui lit chaque candidature et revient par courriel, sans qu’aucun cachet ni aucune sélection ne soit promis d’avance.',
+  appelCta: 'Déposer ma candidature',
   replier: 'Replier les activités',
   deplier: 'Voir les activités',
 };
