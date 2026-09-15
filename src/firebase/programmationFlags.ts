@@ -20,6 +20,10 @@ export interface ProgFlags {
   // ateliers jeunesse n'ont pas encore de section à cacher sur la page.
   // Gardé en place, signalé « Dormante » dans la section Paramètres.
   ateliersJeunesse:  boolean;
+  // L'appel « J'aimerais animer » sur /activites, posé le 2026-09-15 :
+  // troupes, artisans, conteurs et saltimbanques peuvent y déposer une
+  // candidature vers /animation/inscription, sans compte requis.
+  appelAnimateurs:   boolean;
 }
 
 export const PROG_FLAGS_DEFAULTS: ProgFlags = {
@@ -28,6 +32,7 @@ export const PROG_FLAGS_DEFAULTS: ProgFlags = {
   banquet:           true,
   behourd:           false,
   ateliersJeunesse:  false,
+  appelAnimateurs:   true,
 };
 
 const progFlagsDoc = () => (db ? doc(db, 'siteFlags', 'programmation') : null);

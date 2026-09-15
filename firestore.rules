@@ -48,6 +48,21 @@ service cloud.firestore {
         ];
     }
 
+    // ── La programmation ────────────────────────────────────────
+    // L'équipe au sens strict, plus les gens à qui un super-admin a
+    // donné un rôle qui porte la programmation. Tristan tient la
+    // programmation du festival sans figurer dans la liste de courriels
+    // de l'équipe : sans cette porte, son propre module lui serait
+    // fermé, et l'onglet Horaire que son rôle voit déjà refuserait
+    // chacune de ses sauvegardes (Alex, 2026-09-15).
+    function roleDeLAdmin() {
+      return get(/databases/$(database)/documents/adminRoles/$(request.auth.token.email.lower())).data.role;
+    }
+    function estProgrammation() {
+      return isAdmin()
+        || (aUnRoleAdmin() && roleDeLAdmin() in ['super', 'ca', 'organisateur']);
+    }
+
     // Fields on a bénévole doc that only an admin (or the server) may ever set
     // or change. Everything else on the doc is the applicant's own form data.
     // Add any future sensitive field here so the owner can't forge it.
@@ -1433,7 +1448,7 @@ service cloud.firestore {
     match /affichage/{docId}   { allow read, write: if isAdmin() || aUnRoleAdmin(); }
     // Horaire du festival : public en lecture (la page Programmation
     // s'y abonne), écriture réservée aux admins (section Horaire).
-    match /schedule/{docId}    { allow read: if true; allow write: if isAdmin(); }
+    match /schedule/{docId}    { allow read: if true; allow write: if estProgrammation(); }
     // Le fil Facebook recopié chaque matin par la fonction
     // nouvellesFacebook : l'accueil le lit, personne n'y écrit depuis
     // le navigateur (le serveur passe au-dessus des règles).
@@ -1490,6 +1505,41 @@ service cloud.firestore {
     // (GroupesPage.tsx, voir plus bas). Lecture publique : la page
     // publique Musique lit cette collection.
     match /groupesMusicaux/{docId} { allow read: if true; allow write: if isAdmin(); }
+
+    // ── Les animations du festival, le dossier de Tristan ────────
+    // Tout ce qui monte sur le site sauf la musique : les troupes, les
+    // artistes, les jouteurs, les conteurs. Une fiche porte un cachet,
+    // un remboursement de transport et les coordonnées d'une troupe,
+    // donc rien ici ne se lit sans compte d'équipe. Ce qui devient
+    // public, ce sont les lignes d'horaire, écrites dans `schedule` au
+    // moment de publier (Alex, 2026-09-15).
+    match /animations/{docId} { allow read, write: if estProgrammation(); }
+
+    // Les candidatures du formulaire « J'aimerais animer ». Une troupe
+    // qui écrit au festival pour la première fois n'a pas de compte, et
+    // lui en demander un fermerait la porte avant la première phrase :
+    // la création est donc ouverte, mais bornée à la forme exacte du
+    // formulaire pour empêcher les documents arbitraires.
+    match /candidaturesAnimation/{docId} {
+      allow create: if request.resource.data.keys().hasOnly(
+            ['nom', 'type', 'contactNom', 'courriel', 'telephone', 'siteWeb', 'provenance',
+             'nbPersonnes', 'description', 'jours', 'duree', 'nbPassages', 'besoins',
+             'cachetDemande', 'transport', 'hebergement', 'dejaVenu', 'message',
+             'lang', 'annee', 'uid', 'statut', 'createdAt'])
+        && request.resource.data.keys().hasAll(['nom', 'contactNom', 'courriel', 'description', 'lang', 'annee', 'statut'])
+        && request.resource.data.nom is string && request.resource.data.nom.size() > 0 && request.resource.data.nom.size() < 200
+        && request.resource.data.contactNom is string && request.resource.data.contactNom.size() < 200
+        && request.resource.data.courriel is string && request.resource.data.courriel.matches('.+@.+\\..+') && request.resource.data.courriel.size() < 200
+        && request.resource.data.description is string && request.resource.data.description.size() < 4000
+        && (!('besoins' in request.resource.data) || request.resource.data.besoins.size() < 4000)
+        && (!('message' in request.resource.data) || request.resource.data.message.size() < 4000)
+        && (!('cachetDemande' in request.resource.data) || request.resource.data.cachetDemande.size() < 1000)
+        && (!('transport' in request.resource.data) || request.resource.data.transport.size() < 1000)
+        && (!('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid)
+        && request.resource.data.lang in ['FR', 'EN']
+        && request.resource.data.statut == 'nouvelle';
+      allow read, update, delete: if estProgrammation();
+    }
 
     // ── Public-create, admin-managed inquiry collections ─────────
     // Inquiry / newsletter / contact / behourd forms. Allow create

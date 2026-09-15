@@ -106,6 +106,9 @@ const MessagesPage     = lazy(() => import('./pages/MessagesPage'));
 const VendorApplicationPage = lazy(() => import('./pages/VendorApplicationPage'));
 const FaubourgPage = lazy(() => import('./pages/FaubourgPage'));
 const MusicianApplicationPage = lazy(() => import('./pages/MusicianApplicationPage'));
+// La candidature des troupes et des animateurs, le pendant de celle
+// des musiciens (Alex, 2026-09-15).
+const AnimationApplicationPage = lazy(() => import('./pages/AnimationApplicationPage'));
 const RessourcesPage          = lazy(() => import('./pages/RessourcesPage'));
 const HnefataflGame           = lazy(() => import('./games/hnefatafl'));
 const TarotGame               = lazy(() => import('./games/tarot'));
@@ -535,6 +538,8 @@ const App: React.FC = () => (
                 <Route path="/en/market/faubourg"   element={<FaubourgPage />} />
                 <Route path="/musique/inscription"  element={<MusicianApplicationPage />} />
                 <Route path="/en/music/registration" element={<MusicianApplicationPage />} />
+                <Route path="/animation/inscription" element={<AnimationApplicationPage />} />
+                <Route path="/en/entertainment/registration" element={<AnimationApplicationPage />} />
                 <Route path="/ressources"           element={<RessourcesPage />} />
                 <Route path="/en/resources"         element={<RessourcesPage />} />
                 <Route path="/jeunesse/hnefatafl"   element={<PorteDuJeu><HnefataflGame /></PorteDuJeu>} />

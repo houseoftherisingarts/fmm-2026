@@ -44,6 +44,9 @@ const ConcoursSection     = lazy(() => import('./admin/sections/ConcoursSection'
 const ConcoursParrainageSection = lazy(() => import('./admin/sections/ConcoursParrainageSection'));
 const MusiquesSection     = lazy(() => import('./admin/sections/MusiquesSection'));
 const ActivitesSection    = lazy(() => import('./admin/sections/ActivitesSection'));
+// Le dossier des animations de Tristan : troupes, logistique, cachet,
+// remboursement du transport, et la montée à l'horaire (Alex, 2026-09-15).
+const AnimationsSection   = lazy(() => import('./admin/sections/AnimationsSection'));
 const BadgesSection       = lazy(() => import('./admin/sections/BadgesSection'));
 const PupitreSection      = lazy(() => import('./admin/sections/PupitreSection'));
 const SocialMediaSection  = lazy(() => import('./admin/sections/SocialMediaSection'));
@@ -212,6 +215,7 @@ const AdminPage: React.FC = () => {
       case 'concoursParrainage': return <ConcoursParrainageSection />;
       case 'musiciens':  return <MusiquesSection   fetchAll={fetchMusicians} updateOne={updateMusician} />;
       case 'activites':  return <ActivitesSection />;
+      case 'animations': return <AnimationsSection devBypass={DEV_BYPASS} />;
       case 'badges':     return <BadgesSection />;
       case 'pupitre':    return <PupitreSection />;
       case 'signature':  return <SignatureSection />;

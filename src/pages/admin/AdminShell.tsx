@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed, ListChecks, Map } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed, ListChecks, Map, Drama } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -29,6 +29,7 @@ export type AdminSectionId =
   | 'concours'
   | 'concoursParrainage'
   | 'activites'
+  | 'animations'
   | 'badges'
   | 'musiciens'
   | 'pupitre'
@@ -97,6 +98,11 @@ export const NAV: NavItem[] = [
   // pas encore promus en kiosque (Alex, 2026-08-27).
   { id: 'commerces',  label: 'Commerces de la ruelle', icon: Store,    group: 'Participants' },
   { id: 'activites',  label: 'Activités',       icon: Swords,          group: 'Participants' },
+  // Le dossier de Tristan : les troupes, les artistes, les jouteurs et
+  // les conteurs, avec leur logistique, leur cachet et leur passage à
+  // l'horaire. Tout sauf la musique, qui reste à Pitch juste en dessous
+  // (Alex, 2026-09-15).
+  { id: 'animations', label: 'Animations',      icon: Drama,           group: 'Participants' },
   { id: 'musiciens',  label: 'Musique',         icon: Music,           group: 'Participants' },
   { id: 'mariages',   label: 'Mariages',        icon: Heart,           group: 'Participants' },
   { id: 'invites',    label: 'Invités',         icon: TicketCheck,     group: 'Participants' },
