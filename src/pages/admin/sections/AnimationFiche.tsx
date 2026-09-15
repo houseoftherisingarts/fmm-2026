@@ -520,7 +520,4 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
   );
 };
 
-// Card import used only for type consistency with the house pattern.
-void Card;
-
 export default AnimationFiche;
