@@ -59,12 +59,21 @@ function badgeCompte(courriel: string, comptes: Map<string, AppUser> | null): Re
 
 function seedLocale(): Animation[] {
   return ANIMATIONS_DE_BASE.map((f, i) => ({
-    ...f,
-    id: `local-${i}`,
+    ...f, id: `local-${i}`,
     confirmations: { ...f.confirmations },
     creneaux: f.creneaux.map((c) => ({ ...c })),
   }));
 }
+
+// Pilule : le bouton pastille réutilisé pour les onglets et les filtres.
+const Pilule: React.FC<{ actif: boolean; onClick: () => void; children: React.ReactNode }> = ({ actif, onClick, children }) => (
+  <button onClick={onClick}
+    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
+      actif ? 'bg-brass/25 border-brass text-brass' : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
+    }`}>
+    {children}
+  </button>
+);
 
 const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
   const { user } = useAuth();
@@ -198,23 +207,16 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
 
   const commencerNouvelle = () => {
     const id = enLocal ? `local-new-${localCounter.current++}` : nouvelIdAnimation();
-    const fiche: Animation = { id, ...nouvelleFicheVide() };
-    setBrouillon(fiche);
+    setBrouillon({ id, ...nouvelleFicheVide() });
     setExpanded(id);
     setFiltreStatut('toutes');
   };
 
   const semer = async () => {
     setSemis(true);
-    try {
-      await semerAnimations(ANIMATIONS_DE_BASE);
-      setErreur(null);
-    } catch (e) {
-      console.warn('[AnimationsSection] semis échoué', e);
-      setErreur('Échec du semis des fiches de départ.');
-    } finally {
-      setSemis(false);
-    }
+    try { await semerAnimations(ANIMATIONS_DE_BASE); setErreur(null); }
+    catch (e) { console.warn('[AnimationsSection] semis échoué', e); setErreur('Échec du semis des fiches de départ.'); }
+    finally { setSemis(false); }
   };
 
   const exporterAnimations = () => {
@@ -222,16 +224,11 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
       nom: a.nom,
       type: TYPES_ANIMATION.find((t) => t.id === a.type)?.FR ?? a.type,
       statut: STATUTS.find((s) => s.id === a.statut)?.FR ?? a.statut,
-      contact: a.contactNom,
-      courriel: a.courriel,
-      telephone: a.telephone,
+      contact: a.contactNom, courriel: a.courriel, telephone: a.telephone,
       jours: a.jours.map((j) => JOUR_ABBR[j]).join('|'),
-      cachet: a.cachet ?? '',
-      transportMode: a.transportMode,
-      coutTransport: coutTransport(a),
-      coutTotal: coutTotal(a),
-      passagesPublies: pubMap[a.id] ?? 0,
-      passagesTotal: a.creneaux.length,
+      cachet: a.cachet ?? '', transportMode: a.transportMode,
+      coutTransport: coutTransport(a), coutTotal: coutTotal(a),
+      passagesPublies: pubMap[a.id] ?? 0, passagesTotal: a.creneaux.length,
     }));
     downloadCsv(`animations-${CURRENT_YEAR}.csv`, rows);
   };
@@ -244,60 +241,36 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
 
   const importer = async (c: CandidatureAnimation) => {
     setBusyCandidatureId(c.id);
-    try {
-      const id = await importerCandidature(c);
-      irALaFiche(id);
-      setErreur(null);
-    } catch (e) {
-      console.warn('[AnimationsSection] import de candidature échoué', e);
-      setErreur('Échec de l’import de cette candidature.');
-    } finally {
-      setBusyCandidatureId(null);
-    }
+    try { irALaFiche(await importerCandidature(c)); setErreur(null); }
+    catch (e) { console.warn('[AnimationsSection] import de candidature échoué', e); setErreur('Échec de l’import de cette candidature.'); }
+    finally { setBusyCandidatureId(null); }
   };
 
   const ecarter = async (c: CandidatureAnimation) => {
     setBusyCandidatureId(c.id);
-    try {
-      await marquerCandidature(c.id, 'ecartee');
-      setErreur(null);
-    } catch (e) {
-      console.warn('[AnimationsSection] écarter une candidature a échoué', e);
-      setErreur('Échec : la candidature n’a pas pu être écartée.');
-    } finally {
-      setBusyCandidatureId(null);
-    }
+    try { await marquerCandidature(c.id, 'ecartee'); setErreur(null); }
+    catch (e) { console.warn('[AnimationsSection] écarter une candidature a échoué', e); setErreur('Échec : la candidature n’a pas pu être écartée.'); }
+    finally { setBusyCandidatureId(null); }
   };
 
   const exporterCandidatures = () => {
     const rows = candidatures.map((c) => ({
-      nom: c.nom,
-      type: TYPES_ANIMATION.find((t) => t.id === c.type)?.FR ?? c.type,
-      contact: c.contactNom,
-      courriel: c.courriel,
-      telephone: c.telephone,
-      provenance: c.provenance ?? '',
-      jours: c.jours.map((j) => JOUR_ABBR[j]).join('|'),
-      dejaVenu: c.dejaVenu ? 'oui' : 'non',
-      lang: c.lang,
-      statut: c.statut,
-      recue: fmtDate(c.createdAt),
+      nom: c.nom, type: TYPES_ANIMATION.find((t) => t.id === c.type)?.FR ?? c.type,
+      contact: c.contactNom, courriel: c.courriel, telephone: c.telephone,
+      provenance: c.provenance ?? '', jours: c.jours.map((j) => JOUR_ABBR[j]).join('|'),
+      dejaVenu: c.dejaVenu ? 'oui' : 'non', lang: c.lang, statut: c.statut, recue: fmtDate(c.createdAt),
     }));
     downloadCsv(`candidatures-animation-${CURRENT_YEAR}.csv`, rows);
   };
 
-  // ── En-tête personnalisé pour Tristan ───────────────────────────────
   const adminEmail = (user?.email || '').toLowerCase();
   const adminName = user?.displayName || '';
   const estTristan = adminEmail.includes('tristan') || adminEmail.includes('cote-hotte') || /tristan/i.test(adminName);
+  const nouvelles = candidatures.filter((c) => c.statut === 'nouvelle').length;
 
   return (
     <div className="space-y-6">
-      {erreur && (
-        <Card className="p-4 border border-blush/40 bg-blush/8">
-          <p className="font-sans text-sm text-blush">{erreur}</p>
-        </Card>
-      )}
+      {erreur && <Card className="p-4 border border-blush/40 bg-blush/8"><p className="font-sans text-sm text-blush">{erreur}</p></Card>}
 
       <Card className="p-6 md:p-8">
         <div className="flex items-start gap-4">
@@ -321,21 +294,10 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
       </Card>
 
       <div className="flex items-center gap-1">
-        <button onClick={() => setTab('animations')}
-          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
-            tab === 'animations' ? 'bg-brass/25 border-brass text-brass' : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
-          }`}>
-          <TentTree size={13} /> Animations
-        </button>
-        <button onClick={() => setTab('candidatures')}
-          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
-            tab === 'candidatures' ? 'bg-brass/25 border-brass text-brass' : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
-          }`}>
-          <Inbox size={13} /> Candidatures
-          {candidatures.filter((c) => c.statut === 'nouvelle').length > 0 && (
-            <span className="ml-1 tabular-nums">({candidatures.filter((c) => c.statut === 'nouvelle').length})</span>
-          )}
-        </button>
+        <Pilule actif={tab === 'animations'} onClick={() => setTab('animations')}><TentTree size={13} /> Animations</Pilule>
+        <Pilule actif={tab === 'candidatures'} onClick={() => setTab('candidatures')}>
+          <Inbox size={13} /> Candidatures{nouvelles > 0 ? ` (${nouvelles})` : ''}
+        </Pilule>
       </div>
 
       {tab === 'animations' ? (
@@ -348,23 +310,12 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
 
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex flex-wrap items-center gap-1">
-              <button onClick={() => setFiltreStatut('toutes')}
-                className={`px-3 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
-                  filtreStatut === 'toutes' ? 'bg-brass/25 border-brass text-brass' : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
-                }`}>
-                Toutes
-              </button>
+              <Pilule actif={filtreStatut === 'toutes'} onClick={() => setFiltreStatut('toutes')}>Toutes</Pilule>
               {STATUTS.map((s) => (
-                <button key={s.id} onClick={() => setFiltreStatut(s.id)}
-                  className={`px-3 py-1.5 rounded-pill border text-xs font-sans uppercase tracking-widest transition ${
-                    filtreStatut === s.id ? 'bg-brass/25 border-brass text-brass' : 'bg-midnight-deep/40 border-ivory-soft/25 text-ivory-soft hover:border-ivory-soft/50'
-                  }`}>
-                  {s.FR}
-                </button>
+                <Pilule key={s.id} actif={filtreStatut === s.id} onClick={() => setFiltreStatut(s.id)}>{s.FR}</Pilule>
               ))}
             </div>
-            <Input placeholder="Rechercher un nom, un contact, un courriel…" value={recherche} onChange={(e) => setRecherche(e.target.value)}
-              className="flex-1 min-w-[220px]" />
+            <Input placeholder="Rechercher un nom, un contact, un courriel…" value={recherche} onChange={(e) => setRecherche(e.target.value)} className="flex-1 min-w-[220px]" />
             <PrimaryButton onClick={commencerNouvelle}><Plus size={12} /> Nouvelle animation</PrimaryButton>
             <GhostButton onClick={exporterAnimations}><Download size={14} className="inline mr-1.5 -mt-0.5" />CSV</GhostButton>
           </div>
@@ -376,13 +327,10 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
               </div>
               <div className="px-5 pb-5 pt-2">
                 <AnimationFiche
-                  animation={brouillon}
-                  isNew
-                  comptes={comptes}
+                  animation={brouillon} isNew comptes={comptes}
                   onSave={(patch) => onSaveAnimation(brouillon, patch)}
                   onDelete={() => onDeleteAnimation(brouillon)}
-                  onPublier={onPublierAnimation}
-                  onRetirer={onRetirerAnimation}
+                  onPublier={onPublierAnimation} onRetirer={onRetirerAnimation}
                   onCancel={() => { setBrouillon(null); setExpanded(null); }}
                 />
               </div>
@@ -396,9 +344,7 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
               <EmptyState icon={TentTree}>
                 Aucune animation pour l’instant.
                 <div className="mt-4">
-                  <PrimaryButton onClick={semer} disabled={semis}>
-                    <Sparkles size={12} /> {semis ? 'Semis…' : 'Semer les trois premières fiches'}
-                  </PrimaryButton>
+                  <PrimaryButton onClick={semer} disabled={semis}><Sparkles size={12} /> {semis ? 'Semis…' : 'Semer les trois premières fiches'}</PrimaryButton>
                 </div>
               </EmptyState>
             </Card>
@@ -407,17 +353,11 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
           ) : (
             <div className="space-y-3">
               {filtered.map((a) => (
-                <AnimationCard
-                  key={a.id}
-                  animation={a}
-                  open={expanded === a.id}
+                <AnimationCard key={a.id} animation={a} open={expanded === a.id}
                   onToggle={() => setExpanded(expanded === a.id ? null : a.id)}
-                  publiees={pubMap[a.id]}
-                  comptes={comptes}
-                  onSave={(patch) => onSaveAnimation(a, patch)}
-                  onDelete={() => onDeleteAnimation(a)}
-                  onPublier={onPublierAnimation}
-                  onRetirer={onRetirerAnimation}
+                  publiees={pubMap[a.id]} comptes={comptes}
+                  onSave={(patch) => onSaveAnimation(a, patch)} onDelete={() => onDeleteAnimation(a)}
+                  onPublier={onPublierAnimation} onRetirer={onRetirerAnimation}
                 />
               ))}
             </div>
@@ -435,13 +375,8 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
           ) : (
             <div className="space-y-3">
               {candidatures.map((c) => (
-                <CandidatureCard
-                  key={c.id}
-                  candidature={c}
-                  comptes={comptes}
-                  busy={busyCandidatureId === c.id}
-                  onImporter={() => importer(c)}
-                  onEcarter={() => ecarter(c)}
+                <CandidatureCard key={c.id} candidature={c} comptes={comptes} busy={busyCandidatureId === c.id}
+                  onImporter={() => importer(c)} onEcarter={() => ecarter(c)}
                   onVoirFiche={c.animationId ? () => irALaFiche(c.animationId!) : undefined}
                 />
               ))}
@@ -470,8 +405,7 @@ const AnimationCard: React.FC<{
 
   return (
     <Card className="p-0 overflow-hidden">
-      <button type="button" onClick={onToggle}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-white/5 transition-colors">
+      <button type="button" onClick={onToggle} className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-white/5 transition-colors">
         <div className="flex items-center gap-3 min-w-0">
           {open ? <ChevronDown size={16} className="text-ivory-soft shrink-0" /> : <ChevronRight size={16} className="text-ivory-soft shrink-0" />}
           <div className="min-w-0">
@@ -485,21 +419,12 @@ const AnimationCard: React.FC<{
           <Badge tone={STATUT_TONE[animation.statut]}>{statutLabel}</Badge>
           {badgeCompte(animation.courriel, comptes)}
           <span className="hidden sm:inline font-sans text-xs uppercase tracking-wider text-ivory-soft/60">{enDollars(coutTotal(animation))}</span>
-          <span className="hidden md:inline font-sans text-[10px] uppercase tracking-wider text-ivory-soft/50">
-            {publiees ?? 0}/{animation.creneaux.length} passages
-          </span>
+          <span className="hidden md:inline font-sans text-[10px] uppercase tracking-wider text-ivory-soft/50">{publiees ?? 0}/{animation.creneaux.length} passages</span>
         </div>
       </button>
       {open && (
         <div className="px-5 pb-5 pt-1 border-t border-ivory-soft/15">
-          <AnimationFiche
-            animation={animation}
-            comptes={comptes}
-            onSave={onSave}
-            onDelete={onDelete}
-            onPublier={onPublier}
-            onRetirer={onRetirer}
-          />
+          <AnimationFiche animation={animation} comptes={comptes} onSave={onSave} onDelete={onDelete} onPublier={onPublier} onRetirer={onRetirer} />
         </div>
       )}
     </Card>
@@ -547,9 +472,7 @@ const CandidatureCard: React.FC<{
       </div>
 
       {c.message && (
-        <p className="text-sm italic border-l-2 pl-3" style={{ borderColor: 'var(--admin-accent-line)', color: 'var(--admin-text-mute)' }}>
-          {c.message}
-        </p>
+        <p className="text-sm italic border-l-2 pl-3" style={{ borderColor: 'var(--admin-accent-line)', color: 'var(--admin-text-mute)' }}>{c.message}</p>
       )}
 
       <div className="flex items-center gap-2 flex-wrap pt-1">
