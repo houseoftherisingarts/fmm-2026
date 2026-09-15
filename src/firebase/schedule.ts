@@ -40,30 +40,10 @@ export interface ScheduleDoc {
 
 export const CURRENT_SCHEDULE_YEAR = 2026;
 
-// Les trois journées de l'édition, telles qu'elles sont créées au
-// premier passage. La section Horaire s'en sert pour son squelette et
-// la section Animations pour publier un passage dans une journée qui
-// n'existe pas encore : une seule source, sinon les deux écrans
-// finissent par se contredire sur une date.
-export function joursParDefaut(): ScheduleDay[] {
-  return [
-    { id: 'vendredi', dateFR: 'Vendredi 25 septembre', dateEN: 'Friday September 25',   items: [] },
-    { id: 'samedi',   dateFR: 'Samedi 26 septembre',   dateEN: 'Saturday September 26', items: [] },
-    { id: 'dimanche', dateFR: 'Dimanche 27 septembre', dateEN: 'Sunday September 27',   items: [] },
-  ];
-}
-
-// « 14h00 », « 14 h 00 », « 9h », « 14h00–15h30 » : rend les minutes
-// depuis minuit de l'heure de DÉPART, ou null quand la ligne n'a pas
-// d'heure lisible (une ligne libre garde alors sa place d'origine).
-export function minutesDeLHeure(heure: string): number | null {
-  const m = /(\d{1,2})\s*[h:]\s*(\d{2})?/.exec(heure.trim());
-  if (!m) return null;
-  const h = Number(m[1]);
-  const min = m[2] ? Number(m[2]) : 0;
-  if (!Number.isFinite(h) || h > 23 || min > 59) return null;
-  return h * 60 + min;
-}
+// Les trois journées par défaut et la lecture d'une heure vivent dans
+// `src/lib/horaireAnimations.ts`, avec le calcul de publication qui s'en
+// sert : c'est du calcul pur, vérifié par son propre banc d'essai.
+export { joursParDefaut, minutesDeLHeure } from '../lib/horaireAnimations';
 
 const COL = 'schedule';
 const docId = (year: number) => String(year);

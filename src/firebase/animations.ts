@@ -22,11 +22,10 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { CURRENT_YEAR } from './applications';
+import { getSchedule, setSchedule, CURRENT_SCHEDULE_YEAR, type ScheduleDay, type ScheduleItem } from './schedule';
 import {
-  getSchedule, setSchedule, joursParDefaut, minutesDeLHeure,
-  CURRENT_SCHEDULE_YEAR,
-  type ScheduleDay, type ScheduleItem,
-} from './schedule';
+  fusionnerAlHoraire, retirerDeLHoraireJours, compterDansJours, ligneDuPassage,
+} from '../lib/horaireAnimations';
 
 export type JourFestival = 'vendredi' | 'samedi' | 'dimanche';
 
@@ -395,40 +394,7 @@ export function raisonDeBlocage(a: Animation): string | null {
 // ce qui a été renommé à la main.
 
 export function ligneDuCreneau(a: Animation, c: CreneauAnimation): ScheduleItem {
-  return {
-    time: c.heure.trim(),
-    label: (c.titre.trim() || a.nom.trim()),
-    where: c.lieu.trim(),
-    source: a.id,
-  };
-}
-
-const cleDeLigne = (it: ScheduleItem): string =>
-  `${it.time.trim()}|${it.label.trim()}|${it.where.trim()}`.toLowerCase();
-
-/** Insère la ligne à sa place dans l'heure plutôt qu'au bout de la journée. */
-function inserer(items: ScheduleItem[], ligne: ScheduleItem): ScheduleItem[] {
-  const m = minutesDeLHeure(ligne.time);
-  if (m === null) return [...items, ligne];
-  const i = items.findIndex((it) => {
-    const mi = minutesDeLHeure(it.time);
-    return mi !== null && mi > m;
-  });
-  if (i === -1) return [...items, ligne];
-  return [...items.slice(0, i), ligne, ...items.slice(i)];
-}
-
-function journeesDuDoc(days: ScheduleDay[] | undefined): ScheduleDay[] {
-  const base = days && days.length > 0 ? days.map((d) => ({ ...d, items: [...d.items] })) : joursParDefaut();
-  // Une journée manquante (horaire bâti à deux jours, par exemple) se
-  // rajoute plutôt que de faire disparaître un passage en silence.
-  for (const j of JOURS) {
-    if (!base.some((d) => d.id === j.id)) {
-      const modele = joursParDefaut().find((d) => d.id === j.id);
-      if (modele) base.push(modele);
-    }
-  }
-  return base;
+  return ligneDuPassage(a.nom, a.id, c);
 }
 
 export interface ResultatPublication {
@@ -447,22 +413,9 @@ export async function publierAlHoraire(
 ): Promise<ResultatPublication> {
   const annee = meta.annee ?? CURRENT_SCHEDULE_YEAR;
   const docHoraire = await getSchedule(annee);
-  const jours = journeesDuDoc(docHoraire?.days);
+  const { jours, ajoutees, deja } = fusionnerAlHoraire(docHoraire?.days, a);
 
-  let ajoutees = 0;
-  let deja = 0;
-  for (const c of a.creneaux) {
-    const jour = jours.find((d) => d.id === c.jour);
-    if (!jour) continue;
-    const ligne = ligneDuCreneau(a, c);
-    if (!ligne.time || !ligne.label) continue;
-    const cle = cleDeLigne(ligne);
-    if (jour.items.some((it) => cleDeLigne(it) === cle)) { deja += 1; continue; }
-    jour.items = inserer(jour.items, ligne);
-    ajoutees += 1;
-  }
-
-  await setSchedule(jours, { uid: meta.uid, email: meta.email, year: annee });
+  await setSchedule(jours as ScheduleDay[], { uid: meta.uid, email: meta.email, year: annee });
   await majAnimation(a.id, {
     statut: 'publiee',
     publieLe: serverTimestamp(),
@@ -479,19 +432,9 @@ export async function retirerDeLHoraire(
   const annee = meta.annee ?? CURRENT_SCHEDULE_YEAR;
   const docHoraire = await getSchedule(annee);
   if (!docHoraire?.days?.length) return 0;
-  const cles = new Set(a.creneaux.map((c) => cleDeLigne(ligneDuCreneau(a, c))));
+  const { jours, retirees } = retirerDeLHoraireJours(docHoraire.days, a);
 
-  let retirees = 0;
-  const jours = docHoraire.days.map((d) => {
-    const restantes = d.items.filter((it) => {
-      const aRetirer = cles.has(cleDeLigne(it)) || it.source === a.id;
-      if (aRetirer) retirees += 1;
-      return !aRetirer;
-    });
-    return { ...d, items: restantes };
-  });
-
-  if (retirees > 0) await setSchedule(jours, { uid: meta.uid, email: meta.email, year: annee });
+  if (retirees > 0) await setSchedule(jours as ScheduleDay[], { uid: meta.uid, email: meta.email, year: annee });
   await majAnimation(a.id, {
     statut: 'confirmee',
     creneaux: a.creneaux.map(({ publieLe: _publieLe, ...reste }) => reste),
@@ -510,14 +453,7 @@ export async function compterPubliees(
   liste: Animation[],
   annee = CURRENT_SCHEDULE_YEAR,
 ): Promise<Record<string, number>> {
-  const vide = Object.fromEntries(liste.map((a) => [a.id, 0]));
-  if (liste.length === 0) return vide;
+  if (liste.length === 0) return {};
   const docHoraire = await getSchedule(annee);
-  if (!docHoraire?.days?.length) return vide;
-  const presentes = new Set<string>();
-  for (const d of docHoraire.days) for (const it of d.items) presentes.add(cleDeLigne(it));
-  return Object.fromEntries(liste.map((a) => [
-    a.id,
-    a.creneaux.filter((c) => presentes.has(cleDeLigne(ligneDuCreneau(a, c)))).length,
-  ]));
+  return compterDansJours(docHoraire?.days, liste);
 }
