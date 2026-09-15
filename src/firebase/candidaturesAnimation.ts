@@ -192,5 +192,5 @@ export async function marquerCandidature(
   animationId?: string,
 ): Promise<void> {
   if (!db) throw new Error('Firestore n’est pas configuré');
-  await updateDoc(doc(db, COL, id), sansUndefined({ statut, animationId }));
+  await updateDoc(doc(db, COL, id), sansUndefined({ statut, animationId }) as Record<string, string>);
 }
