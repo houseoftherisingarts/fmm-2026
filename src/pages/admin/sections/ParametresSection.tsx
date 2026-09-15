@@ -122,6 +122,8 @@ const PROG_FLAG_ROWS: LigneProg[] = [
   { flag: 'ateliersJeunesse', label: 'Ateliers Jeunesse (inscriptions)',
     dormante: 'sans lecteur',
     effet: "Rien ne change nulle part. La page Programmation ne consulte pas cette bascule : les ateliers jeunesse n'y ont pas encore de section à cacher." },
+  { flag: 'appelAnimateurs', label: 'Appel « J’aimerais animer »',
+    effet: "Allumée : l'appel aux troupes et aux artisans s'affiche sur la page Activités, avec son lien vers le formulaire de candidature. Éteinte : la section disparaît, le formulaire reste accessible par son adresse directe." },
 ];
 
 // La pastille qui signale une bascule que l'audit tient pour sans effet,
