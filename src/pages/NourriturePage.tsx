@@ -45,7 +45,7 @@ const GRIMOIRE_EN_VENTE = true;
 // L'aperçu public, quatre pages : la couverture, deux recettes et
 // l'invitation. Le numéro monte à chaque refonte du livre, parce que
 // `public/**` est servi avec un cache d'un an marqué immuable.
-const APERCU_GRIMOIRE = '/grimoire/apercu-livre-recettes-v3.pdf';
+const APERCU_GRIMOIRE = '/grimoire/apercu-livre-recettes-v4.pdf';
 
 // Le titre porte le nom complet du livre, qui est long. Les tailles sont
 // mesurées écran par écran pour qu'il tienne toujours sur deux lignes :

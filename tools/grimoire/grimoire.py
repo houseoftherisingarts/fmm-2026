@@ -491,7 +491,7 @@ APERCU_RECETTES = ('olla gitana', 'brochette de poulet du verger')
 # `public/**` est servi avec un cache d'un an marque immuable. Remplacer
 # le fichier sans changer son nom laisserait tout le monde devant
 # l'ancien aperçu : le numero monte a chaque refonte du livre.
-APERCU_PUBLIC = 'apercu-livre-recettes-v3.pdf'
+APERCU_PUBLIC = 'apercu-livre-recettes-v4.pdf'
 
 RACINE = HERE.parent.parent
 
