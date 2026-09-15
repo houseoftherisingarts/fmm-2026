@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Zap, Wifi, WifiOff, UtensilsCrossed, MapPin, MessageSquare } from 'lucide-react';
+import { Zap, Wifi, WifiOff, UtensilsCrossed, MapPin, MessageSquare, Crown } from 'lucide-react';
 import {
   watchPlanMarche, kiosqueDe, kiosquesDeRangee, prixAffiche, WIFI,
   type PlanMarche, type Kiosque,
@@ -79,6 +79,16 @@ const KiosqueAssigne: React.FC<{
       </div>
 
       <div className="flex flex-wrap gap-2">
+        {/* Le repère premium ne paraît que lorsqu'il est vrai : annoncer
+            à un marchand que son emplacement n'est PAS premium ne lui
+            apprend rien d'utile et lui plante un doute (Alex, 2026-09-15). */}
+        {kiosque.premium && (
+          <Repere
+            actif
+            icone={<Crown size={13} />}
+            label={fr ? 'Emplacement premium' : 'Premium spot'}
+          />
+        )}
         <Repere
           actif={kiosque.electricite}
           icone={<Zap size={13} />}

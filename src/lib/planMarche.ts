@@ -26,6 +26,10 @@ export interface Kiosque {
   code: string;
   /** Prix du kiosque, en cents, avant taxes. Absent tant que Jesse ne l'a pas posé. */
   prixCents?: number;
+  /** Le haut de gamme du marché : les emplacements de passage, en tête
+   *  de rangée ou devant la scène, que Jesse vend plus cher. Alex,
+   *  15 septembre 2026 : « Jesse choisit lesquels sont premium ». */
+  premium: boolean;
   electricite: boolean;
   wifi: QualiteWifi;
   /** L'option des repas livrés au kiosque (le service du Salon des
@@ -80,6 +84,7 @@ export function nouveauKiosque(rangees: Rangee[], rangeeId: string, numero: numb
     rangeeId,
     numero,
     code: codeKiosque(idx, numero),
+    premium: false,
     electricite: false,
     wifi: 'moyen',
     nourriture: false,
@@ -210,6 +215,18 @@ export function placerSurCarte(plan: PlanMarche, kiosqueId: string, x: number, y
 /** Les kiosques que Jesse n'a pas encore posés sur la photo. */
 export function kiosquesSansPosition(plan: PlanMarche): Kiosque[] {
   return plan.kiosques.filter((k) => k.x == null || k.y == null);
+}
+
+/** Combien d'emplacements Jesse a marqués comme premium. */
+export function compterPremium(plan: PlanMarche): number {
+  return plan.kiosques.filter((k) => k.premium).length;
+}
+
+/** Un document écrit avant le 15 septembre 2026 n'a pas le champ
+ *  `premium` : il se relit comme un kiosque ordinaire plutôt que de
+ *  laisser un `undefined` traverser l'interface. */
+export function normaliserKiosque(k: Kiosque): Kiosque {
+  return { ...k, premium: Boolean(k.premium) };
 }
 
 export function prixAffiche(cents: number | undefined, lang: 'FR' | 'EN' = 'FR'): string {

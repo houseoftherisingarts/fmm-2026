@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Zap, ZapOff, Wifi, WifiOff, UtensilsCrossed, GripVertical } from 'lucide-react';
+import { Zap, ZapOff, Wifi, WifiOff, UtensilsCrossed, GripVertical, Crown } from 'lucide-react';
 import type { Kiosque } from '../../../../firebase/planMarche';
 import type { VendorApp } from '../../../../firebase/applications';
 import { prixAffiche, WIFI } from '../../../../lib/planMarche';
@@ -50,10 +50,23 @@ const KiosqueCard: React.FC<Props> = ({
       } ${survole ? 'ring-2 ring-brass shadow-[0_0_0_2px_rgba(201,160,90,0.35)]' : ''} ${
         enMain ? 'ring-2 ring-brass' : ''
       } ${cibleActive ? 'border-brass/60' : ''}`}
-      title={occupant ? `${kiosque.code} · ${occupant}` : `${kiosque.code} · libre`}
+      title={`${kiosque.code}${kiosque.premium ? ' · premium' : ''} · ${occupant || 'libre'}`}
     >
+      {/* Le filet doré du haut : il se repère d'un coup d'œil sur une
+          rangée de vingt cartes, sans voler la bordure qui dit déjà si
+          le kiosque est occupé (Alex, 2026-09-15). */}
+      {kiosque.premium && (
+        <span
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-[2px]"
+          style={{ background: 'linear-gradient(90deg, transparent, var(--color-amber-glow), transparent)' }}
+        />
+      )}
       <div className="flex items-start justify-between gap-1">
-        <span className="font-display title-medieval text-xs text-brass">{kiosque.code}</span>
+        <span className="font-display title-medieval text-xs text-brass inline-flex items-center gap-1">
+          {kiosque.premium && <Crown size={10} style={{ color: 'var(--color-amber-glow)' }} />}
+          {kiosque.code}
+        </span>
         {vendor && (
           <button
             type="button"

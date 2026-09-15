@@ -9,7 +9,7 @@ import {
 import {
   kiosqueDe, assigner, echanger, liberer, modifierKiosque,
   ajouterKiosque, retirerDernierKiosque, ajouterRangee, renommerRangee, retirerRangee,
-  placerSurCarte, prixAffiche, WIFI,
+  placerSurCarte, prixAffiche, compterPremium, WIFI,
 } from '../../../lib/planMarche';
 import { watchLivraisons, type FicheLivraison } from '../../../firebase/livraisonKiosque';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -123,6 +123,7 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
         code: k.code,
         rangee: nomRangee(k.rangeeId),
         prix: prixAffiche(k.prixCents),
+        premium: k.premium ? 'oui' : 'non',
         electricite: k.electricite ? 'oui' : 'non',
         wifi: WIFI.find((w) => w.id === k.wifi)?.FR || k.wifi,
         repas: k.nourriture ? 'oui' : 'non',
@@ -165,7 +166,7 @@ const PlanMarcheSection: React.FC<Props> = ({ fetchAll }) => {
           <div>
             <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory">Les kiosques de l’édition {CURRENT_YEAR}</h2>
             <p className="font-editorial italic text-sm text-ivory-soft mt-1">
-              {occupes} / {plan.kiosques.length} kiosques occupés · {vendorsSansKiosque.length} marchand{vendorsSansKiosque.length > 1 ? 's' : ''} accepté{vendorsSansKiosque.length > 1 ? 's' : ''} sans kiosque
+              {occupes} / {plan.kiosques.length} kiosques occupés · {compterPremium(plan)} premium · {vendorsSansKiosque.length} marchand{vendorsSansKiosque.length > 1 ? 's' : ''} accepté{vendorsSansKiosque.length > 1 ? 's' : ''} sans kiosque
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">

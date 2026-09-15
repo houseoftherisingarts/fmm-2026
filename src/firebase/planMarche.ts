@@ -22,7 +22,7 @@ import {
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { versWebp } from './photosPubliques';
-import { planParDefaut, type CartePlan, type PlanMarche } from '../lib/planMarche';
+import { planParDefaut, normaliserKiosque, type CartePlan, type PlanMarche } from '../lib/planMarche';
 
 export * from '../lib/planMarche';
 // ── Firestore ────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ function depuisDoc(annee: number, d: Partial<PlanMarche> | undefined): PlanMarch
   return {
     annee,
     rangees: Array.isArray(d.rangees) ? d.rangees : [],
-    kiosques: Array.isArray(d.kiosques) ? d.kiosques : [],
+    kiosques: Array.isArray(d.kiosques) ? d.kiosques.map(normaliserKiosque) : [],
     carte: d.carte ?? null,
     maj: d.maj,
   };

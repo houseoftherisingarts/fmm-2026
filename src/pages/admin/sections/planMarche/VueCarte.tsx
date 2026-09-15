@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { MapPin, Upload, X } from 'lucide-react';
+import { MapPin, Upload, X, Crown } from 'lucide-react';
 import type { PlanMarche } from '../../../../firebase/planMarche';
 import type { VendorApp } from '../../../../firebase/applications';
 import { kiosquesSansPosition } from '../../../../lib/planMarche';
@@ -128,15 +128,17 @@ const VueCarte: React.FC<Props> = ({
                 if (vendorUid) onDropVendorSurKiosque(k.id, vendorUid);
               }}
               onClick={(e) => { e.stopPropagation(); if (!glisseId) onOpenKiosque(k.id); }}
-              title={vendor ? `${k.code} · ${nomAffiche(vendor)}` : `${k.code} · libre`}
+              title={`${k.code}${k.premium ? ' · premium' : ''} · ${vendor ? nomAffiche(vendor) : 'libre'}`}
               style={{ left: `${k.x}%`, top: `${k.y}%` }}
               className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-1 rounded-full border font-sans text-[10px] font-semibold shadow-lg transition ${
                 vendor
                   ? 'bg-brass text-midnight-deep border-brass'
                   : 'bg-midnight-deep/85 text-ivory-soft border-ivory-soft/40'
-              } ${glisseId === k.id ? 'ring-2 ring-white z-10' : ''}`}
+              } ${glisseId === k.id ? 'ring-2 ring-white z-10' : ''} ${
+                k.premium ? 'ring-2 ring-[var(--color-amber-glow)]' : ''
+              }`}
             >
-              <MapPin size={10} /> {k.code}
+              {k.premium ? <Crown size={10} /> : <MapPin size={10} />} {k.code}
             </button>
           );
         })}

@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import {
   planParDefaut, assigner, echanger, liberer, kiosqueDe, ajouterKiosque,
   retirerDernierKiosque, retirerRangee, placerSurCarte, kiosquesDeRangee,
-  prixAffiche, codeKiosque,
+  prixAffiche, codeKiosque, compterPremium, normaliserKiosque, modifierKiosque,
 } from './planMarche';
 
 const plan = planParDefaut(2026);
@@ -72,5 +72,31 @@ assert.equal(placerSurCarte(p, 'r1-1', 12.345, 6.78).kiosques[0].x, 12.3);
 assert.equal(prixAffiche(15000, 'FR'), '150 $');
 assert.equal(prixAffiche(15050, 'EN'), '$150.50');
 assert.equal(prixAffiche(undefined, 'FR'), 'Prix à venir');
+
+// ── Le premium, choisi kiosque par kiosque ───────────────────────────
+// Ce que le banc protège : le repère suit le kiosque et non le marchand,
+// donc un échange de places ne l'emporte pas avec lui, et un document
+// écrit avant le 15 septembre 2026 se relit sans `undefined` qui traîne.
+let q = planParDefaut(2026);
+assert.equal(compterPremium(q), 0, 'aucun kiosque ne naît premium');
+q = modifierKiosque(q, 'r1-1', { premium: true });
+q = modifierKiosque(q, 'r2-3', { premium: true });
+assert.equal(compterPremium(q), 2);
+assert.equal(q.kiosques.find((x) => x.id === 'r1-1')!.premium, true);
+assert.equal(q.kiosques.find((x) => x.id === 'r1-2')!.premium, false, 'le voisin n’est pas contaminé');
+
+// L'emplacement reste premium quand le marchand s'en va ou change.
+q = assigner(q, 'r1-1', 'jesse');
+q = echanger(q, 'r1-1', 'r1-2');
+assert.equal(q.kiosques.find((x) => x.id === 'r1-1')!.premium, true, 'le premium tient au lieu, pas à l’occupant');
+assert.equal(q.kiosques.find((x) => x.id === 'r1-2')!.premium, false);
+assert.equal(kiosqueDe(q, 'jesse')?.id, 'r1-2');
+q = liberer(q, 'r1-2');
+assert.equal(compterPremium(q), 2, 'libérer un kiosque ne retire pas son repère');
+
+// Une fiche d'avant le champ se relit comme un kiosque ordinaire.
+const vieux = { ...planParDefaut(2026).kiosques[0] } as Record<string, unknown>;
+delete vieux.premium;
+assert.equal(normaliserKiosque(vieux as never).premium, false);
 
 console.log('planMarche : tout tient.');

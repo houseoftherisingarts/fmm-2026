@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Crown } from 'lucide-react';
 import type { Kiosque, QualiteWifi } from '../../../../firebase/planMarche';
 import type { VendorApp } from '../../../../firebase/applications';
 import type { FicheLivraison } from '../../../../firebase/livraisonKiosque';
@@ -100,6 +100,26 @@ const PanneauKiosque: React.FC<Props> = ({
               {WIFI.map((w) => <option key={w.id} value={w.id}>{w.FR}</option>)}
             </select>
           </div>
+        </div>
+
+        {/* Le haut de gamme se choisit kiosque par kiosque, et le repère
+            suit jusque dans l'espace du marchand (Alex, 2026-09-15). */}
+        <div
+          className="rounded-card border px-3.5 py-2.5 space-y-1.5 transition"
+          style={kiosque.premium
+            ? { borderColor: 'rgba(var(--sk-gilt-rgb), 0.45)', background: 'rgba(var(--sk-gilt-rgb), 0.07)' }
+            : { borderColor: 'rgba(228, 236, 247, 0.15)' }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-sans text-sm text-ivory inline-flex items-center gap-2">
+              <Crown size={13} className={kiosque.premium ? 'text-brass' : 'text-ivory-soft/40'} />
+              Emplacement premium
+            </span>
+            <ToggleSwitch checked={kiosque.premium} onChange={(v) => onPatch({ premium: v })} />
+          </div>
+          <p className="font-editorial italic text-xs text-ivory-soft/70">
+            Les emplacements de passage, en tête de rangée ou devant la scène, que vous vendez plus cher. Le marchand voit le repère dans son espace.
+          </p>
         </div>
 
         <div className="flex items-center justify-between rounded-card border border-ivory-soft/15 px-3.5 py-2.5">
