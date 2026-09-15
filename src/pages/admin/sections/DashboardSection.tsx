@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import type { AdminSectionId } from '../AdminShell';
 import type { BenevoleApp, VendorApp } from '../../../firebase/applications';
-import { listBenevoles, listVendors, CURRENT_YEAR } from '../../../firebase/applications';
+import { listBenevoles, listVendors, CURRENT_YEAR, estEditionCourante } from '../../../firebase/applications';
 import { listSubs } from '../../../firebase/newsletter';
 import { listInbox } from '../../../firebase/mail';
 import type { MailMessage } from '../../../firebase/mail';
@@ -118,9 +118,13 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
     return () => { cancelled = true; document.removeEventListener('visibilitychange', auRetour); };
   }, [devBypass]);
 
-  const bPending  = benevoles.filter((b) => b.status === 'pending').length;
-  const bAccepted = benevoles.filter((b) => b.status === 'accepted').length;
-  const bRejected = benevoles.filter((b) => b.status === 'rejected').length;
+  // Comme les marchands, les bénévoles se comptent par édition : une
+  // candidature versée à la liste d'attente de l'an prochain n'est pas
+  // une candidature à traiter cette année.
+  const bensAnnee  = benevoles.filter(estEditionCourante);
+  const bPending  = bensAnnee.filter((b) => b.status === 'pending').length;
+  const bAccepted = bensAnnee.filter((b) => b.status === 'accepted').length;
+  const bRejected = bensAnnee.filter((b) => b.status === 'rejected').length;
   const vPending  = vendors.filter((v) => v.status === 'pending').length;
   const vAccepted = vendors.filter((v) => v.status === 'accepted').length;
   const vRejected = vendors.filter((v) => v.status === 'rejected').length;
@@ -132,7 +136,7 @@ const DashboardSection: React.FC<Props> = ({ onNavigate, devBypass }) => {
     label: string; value: number | null; icon: React.ComponentType<{ size?: number; className?: string }>;
     section: AdminSectionId; hint?: string;
   }> = [
-    { label: 'Bénévoles à traiter', value: nonLu('les bénévoles') ? null : bPending, icon: HandHeart,    section: 'benevoles', hint: `${benevoles.length} au total` },
+    { label: 'Bénévoles à traiter', value: nonLu('les bénévoles') ? null : bPending, icon: HandHeart,    section: 'benevoles', hint: `${bensAnnee.length} au total` },
     { label: `Marchands ${CURRENT_YEAR} à traiter`, value: nonLu('les marchands') ? null : vPending, icon: ShoppingBag,  section: 'marchands', hint: `${vendors.length} pour ${CURRENT_YEAR}` },
     { label: 'Comptes',             value: nonLu('les comptes') ? null : users.length, icon: Users,     section: 'comptes' },
     { label: 'Infolettre',          value: nonLu('l’infolettre') ? null : subs,        icon: Mail,      section: 'newsletter' },

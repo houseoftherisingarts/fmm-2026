@@ -11,6 +11,7 @@ import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import {
   getBenevoleApp,
+  estListeAttente,
   type BenevoleApp,
 } from '../firebase/applications';
 import { mockGetBenevole, mockListTeams } from '../firebase/mockApplications';
@@ -137,6 +138,23 @@ const BenevoleSpacePage: React.FC = () => {
           ? "Nous n'avons pas trouvé de candidature de bénévole liée à votre compte. Soumettez-en une pour rejoindre l'équipe."
           : "We couldn't find a volunteer application linked to your account. Submit one to join the team."}
         primary={{ label: lang === 'FR' ? 'Postuler' : 'Apply', to: addLocale('/benevole', lang) }}
+        secondary={{ label: lang === 'FR' ? 'Déconnexion' : 'Sign out', fn: signOut }}
+      />
+    );
+  }
+
+  // Une candidature déposée pendant que l'équipe était complète porte
+  // l'année de l'édition suivante. Acceptée ou non, elle n'ouvre pas le
+  // tableau de bord de l'édition en cours : ni contrat, ni quart de
+  // travail, ni horaire qui ne la concernent pas encore.
+  if (estListeAttente(b)) {
+    return (
+      <FullPageStub
+        title={lang === 'FR' ? `Liste d’attente ${b.year}` : `Waiting list ${b.year}`}
+        body={lang === 'FR'
+          ? `L’équipe de l’édition en cours était complète au moment de votre candidature, alors nous l’avons gardée pour l’édition ${b.year}. L’équipe Bénévoles vous écrira dès l’ouverture du recrutement, et votre tableau de bord s’ouvrira à ce moment-là.`
+          : `The current edition’s team was already full when you applied, so we kept your application for the ${b.year} edition. The volunteer team will write to you as soon as recruiting opens, and your dashboard will unlock then.`}
+        primary={{ label: lang === 'FR' ? 'Modifier ma candidature' : 'Edit my application', to: addLocale('/benevole', lang) }}
         secondary={{ label: lang === 'FR' ? 'Déconnexion' : 'Sign out', fn: signOut }}
       />
     );

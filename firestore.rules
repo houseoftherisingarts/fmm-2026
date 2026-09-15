@@ -48,6 +48,30 @@ service cloud.firestore {
         ];
     }
 
+    // ── La Cuisine (Alex, 2026-09-15) ───────────────────────────
+    // Le coin Nourriture et Bar ne s'ouvre pas à un rôle, il s'ouvre à
+    // des personnes nommées. Avant ce jour-là, le bar et les tâches du
+    // Village tenaient à `isAdmin()` (donc toute l'équipe, Maïté
+    // comprise, et pas Marc-Alexis malgré son rôle Cuisine), tandis que
+    // l'inventaire du container s'ouvrait à n'importe quel porteur de
+    // rôle, bénévole inclus. Une seule liste tranche maintenant les
+    // deux cas, et elle vit dans config/equipe-admin.json.
+    function estCuisine() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() in [
+          // N'ÉCRIVEZ RIEN ICI À LA MAIN. La liste vit dans
+          // config/equipe-admin.json et se recopie toute seule.
+          // CUISINE:DÉBUT (écrit par scripts/sync-equipe.mjs)
+          'houseoftherisingarts@gmail.com', // Alex
+          'alex@lesalondesinconnus.com', // Alex, autre boîte
+          'marcalexispepin@gmail.com', // Marc-Alexis Pepin
+          'jesse.dippy@gmail.com', // Jesse Dippy
+          'tristan_cote_hotte@hotmail.fr', // Tristan Coté-Hotte
+          // CUISINE:FIN
+        ];
+    }
+
     // ── La programmation ────────────────────────────────────────
     // L'équipe au sens strict, plus les gens à qui un super-admin a
     // donné un rôle qui porte la programmation. Tristan tient la
@@ -1383,7 +1407,7 @@ service cloud.firestore {
     // l'organisation du festival, alors elle reste entre les mains de
     // l'équipe plutôt qu'ouverte au public (Alex, 2026-09-10).
     match /tachesVillage/{docId} {
-      allow read, write: if isAdmin();
+      allow read, write: if estCuisine();
     }
 
     // ── Plan du marché (Alex, 2026-09-12) ─────────────────────────
@@ -1442,10 +1466,10 @@ service cloud.firestore {
     // ── Admin-only operational collections ───────────────────────
     // bar inventory, volunteer schedule, social-media planner, mail
     // tab (internal — different from inquiry-form `contacts`).
-    match /bar/{docId}         { allow read, write: if isAdmin(); }
+    match /bar/{docId}         { allow read, write: if estCuisine(); }
     // Inventaire du container (admin › Nourriture et Bar › Inventaire) :
     // l'équipe et les rôles Cuisine lisent et écrivent, rien de public.
-    match /inventaire/{docId}  { allow read, write: if isAdmin() || aUnRoleAdmin(); }
+    match /inventaire/{docId}  { allow read, write: if estCuisine(); }
     // Tournée des affiches (admin › Marketing › Affichage) : même monde
     // que l'inventaire, l'équipe et les rôles admin lisent et écrivent.
     match /affichage/{docId}   { allow read, write: if isAdmin() || aUnRoleAdmin(); }
@@ -1491,7 +1515,7 @@ service cloud.firestore {
     // rien ne se lit du navigateur. Le formulaire public passe par
     // `reserverLivraisonKiosque`, qui écrit avec les droits du serveur,
     // et le compteur que la page affiche vit dans siteFlags.
-    match /livraisonsKiosque/{docId} { allow read, write: if isAdmin(); }
+    match /livraisonsKiosque/{docId} { allow read, write: if estCuisine(); }
 
     match /socialPosts/{docId} { allow read, write: if isAdmin(); }
     // Rapports publicitaires (section admin Publicité) : analyses de

@@ -11,7 +11,7 @@ import SEO from '../../components/SEO';
 import AdminShell from './AdminShell';
 import { Card, EmptyState, Badge, fmtDate } from './primitives';
 import MessageThread from '../../components/vendor/MessageThread';
-import { setBenevoleTeam, type BenevoleTeamRole } from '../../firebase/applications';
+import { setBenevoleTeam, estListeAttente, type BenevoleTeamRole } from '../../firebase/applications';
 import { listTeams, type Team } from '../../firebase/teams';
 import { mockListTeams, mockSetBenevoleTeam } from '../../firebase/mockApplications';
 import {
@@ -213,7 +213,8 @@ const Body: React.FC<{
           className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-card bg-midnight-deep/50 backdrop-blur border border-ivory-soft/15 text-ivory-soft hover:text-brass hover:border-brass transition font-sans text-xs uppercase tracking-widest">
           <ArrowLeft size={12} /> Retour aux bénévoles
         </Link>
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          {estListeAttente(b) && <Badge tone="waitlist">Liste d’attente {b.year}</Badge>}
           <Badge tone={b.status}>{STATUS_LABEL[b.status]}</Badge>
         </div>
       </div>

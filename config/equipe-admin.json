@@ -1,25 +1,54 @@
 {
   "_lisez_moi": "La SEULE liste des courriels de l'équipe. Ajoutez ou retirez quelqu'un ici, puis lancez « npm run equipe ». Les règles Firestore, la fonction d'envoi et le site se mettent d'accord tout seuls. Ne touchez à aucun autre fichier.",
+  "_role": "« super » ouvre tout, y compris la gestion des rôles. « ca » ouvre tout le reste. Une personne sans rôle écrit ici garde le sien dans adminRoles.",
   "equipe": [
     {
       "courriel": "admin@festivalmedievaldemontpellier.org",
-      "qui": "Boîte du festival"
+      "qui": "Boîte du festival",
+      "role": "super"
     },
     {
       "courriel": "alex@lesalondesinconnus.com",
-      "qui": "Alex"
+      "qui": "Alex",
+      "role": "super"
     },
     {
       "courriel": "houseoftherisingarts@gmail.com",
-      "qui": "Alex, second courriel"
+      "qui": "Alex, second courriel",
+      "role": "super"
     },
     {
       "courriel": "m.fournel11@gmail.com",
-      "qui": "Maïté, Master Bénévole"
+      "qui": "Maïté, Master Bénévole",
+      "role": "ca"
     },
     {
       "courriel": "benevoles.medievalmontpellier@gmail.com",
-      "qui": "Maïté, courriel de fonction"
+      "qui": "Maïté, courriel de fonction",
+      "role": "ca"
+    }
+  ],
+  "_cuisine": "Qui entre dans le coin Nourriture et Bar (bar, tâches du Village, inventaire du container, repas aux kiosques). Personne d'autre n'y entre, quel que soit son rôle (Alex, 2026-09-15).",
+  "cuisine": [
+    {
+      "courriel": "houseoftherisingarts@gmail.com",
+      "qui": "Alex"
+    },
+    {
+      "courriel": "alex@lesalondesinconnus.com",
+      "qui": "Alex, autre boîte"
+    },
+    {
+      "courriel": "marcalexispepin@gmail.com",
+      "qui": "Marc-Alexis Pepin"
+    },
+    {
+      "courriel": "jesse.dippy@gmail.com",
+      "qui": "Jesse Dippy"
+    },
+    {
+      "courriel": "tristan_cote_hotte@hotmail.fr",
+      "qui": "Tristan Coté-Hotte"
     }
   ]
 }

@@ -3,7 +3,7 @@ import { BarChart3, Eye, Users, MousePointerClick, ExternalLink, Target } from '
 import { Card } from '../primitives';
 import { mockSubs, mockUsers } from '../../../firebase/mockData';
 import { mockListBenevoles, mockListVendors } from '../../../firebase/mockApplications';
-import { listBenevoles, listVendors, CURRENT_YEAR } from '../../../firebase/applications';
+import { listBenevoles, listVendors, CURRENT_YEAR, estEditionCourante } from '../../../firebase/applications';
 import { listSubs } from '../../../firebase/newsletter';
 import { listUsers } from '../../../firebase/users';
 import { getDailyStats, suivreJourCourant, slugToPath, type DayStats } from '../../../lib/siteStats';
@@ -83,6 +83,7 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass, onNavigate }) => {
       if (cancelled) return;
 
       const vensAnnee = vens?.filter((v) => v.year === CURRENT_YEAR) ?? null;
+      const bensAnnee = bens?.filter(estEditionCourante) ?? null;
       const vide = (bens?.length ?? 0) + (vensAnnee?.length ?? 0)
         + (users?.length ?? 0) + (subs?.length ?? 0) === 0;
 
@@ -97,7 +98,7 @@ const AnalyticsSection: React.FC<Props> = ({ devBypass, onNavigate }) => {
         setSubsCount(mockSubs.filter((s) => !s.unsubscribed).length);
         return;
       }
-      setBCount(bens ? bens.length : null);
+      setBCount(bensAnnee ? bensAnnee.length : null);
       setVCount(vensAnnee ? vensAnnee.length : null);
       setUsersCount(users ? users.length : null);
       setSubsCount(subs ? subs.filter((s) => !s.unsubscribed).length : null);

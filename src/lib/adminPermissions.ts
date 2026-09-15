@@ -106,12 +106,35 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ],
 };
 
+// ─── La porte de la Cuisine ─────────────────────────────────────────
+// Alex, le 15 septembre 2026 : personne d'autre que lui, Marc-Alexis,
+// Arno, Tristan et Jesse n'entre dans le coin Nourriture et Bar. Le
+// rôle ne suffit donc pas : ces quatre sections demandent en plus que
+// le courriel figure dans VITE_CUISINE_EMAILS, recopié depuis
+// config/equipe-admin.json par « npm run equipe » et posé du même coup
+// dans les règles Firestore, qui refusent les données à tout le reste.
+export const SECTIONS_CUISINE = ['bar', 'tachesVillage', 'inventaire', 'livraison'] as unknown as AdminSectionId[];
+
+function listeCuisine(): string[] {
+  return (import.meta.env.VITE_CUISINE_EMAILS || '')
+    .split(',')
+    .map((s: string) => s.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export function peutEntrerEnCuisine(role: AdminRole | null, email?: string | null): boolean {
+  if (role === 'super') return true;
+  if (!email) return false;
+  return listeCuisine().includes(email.trim().toLowerCase());
+}
+
 // `'roles'` is the role-management section; only super-admins can see it.
 export const ROLES_SECTION_ID: AdminSectionId = 'roles' as AdminSectionId;
 
-export function canAccess(role: AdminRole | null, section: AdminSectionId): boolean {
+export function canAccess(role: AdminRole | null, section: AdminSectionId, email?: string | null): boolean {
   if (!role) return false;
   if (section === ROLES_SECTION_ID) return role === 'super';
+  if (SECTIONS_CUISINE.includes(section) && !peutEntrerEnCuisine(role, email)) return false;
   const perm = ROLE_SECTIONS[role];
   return perm === '*' || perm.includes(section);
 }
@@ -119,12 +142,14 @@ export function canAccess(role: AdminRole | null, section: AdminSectionId): bool
 // Return the concrete section list a role can navigate to.
 // `'super'` gets everything in the NAV, including the role-management
 // section. Other roles get their explicit list (with `'roles'` excluded).
-export function allowedSections(role: AdminRole | null, allSections: AdminSectionId[]): AdminSectionId[] {
+export function allowedSections(role: AdminRole | null, allSections: AdminSectionId[], email?: string | null): AdminSectionId[] {
   if (!role) return [];
-  if (role === 'super') return allSections;
+  const cuisineOuverte = peutEntrerEnCuisine(role, email);
+  const passe = (s: AdminSectionId) => cuisineOuverte || !SECTIONS_CUISINE.includes(s);
+  if (role === 'super') return allSections.filter(passe);
   const perm = ROLE_SECTIONS[role];
-  if (perm === '*') return allSections.filter((s) => s !== ROLES_SECTION_ID);
-  return allSections.filter((s) => (perm as AdminSectionId[]).includes(s));
+  if (perm === '*') return allSections.filter((s) => s !== ROLES_SECTION_ID && passe(s));
+  return allSections.filter((s) => (perm as AdminSectionId[]).includes(s) && passe(s));
 }
 
 // ─── Role hierarchy (for the "view as" preview toggle) ──────────────

@@ -301,6 +301,20 @@ export async function upsertBenevoleApp(app: BenevoleApp): Promise<void> {
   }
 }
 
+// ── Bénévole : l'édition d'une candidature ────────────────────────
+// Une candidature versée à la liste d'attente porte l'année de
+// l'édition SUIVANTE. Elle reste donc en dehors de l'équipe en cours,
+// et elle y reste quel que soit son statut : le 11 septembre 2026,
+// Jeremy Grenier a été accepté sur la liste d'attente 2027 et il a
+// aussitôt disparu du filtre, qui ne gardait que les « en attente ».
+// La liste d'attente se lit par l'année, jamais par le statut.
+export const anneeBenevole = (b: Pick<BenevoleApp, 'year'>): number =>
+  typeof b.year === 'number' ? b.year : CURRENT_YEAR;
+export const estListeAttente = (b: Pick<BenevoleApp, 'year'>): boolean =>
+  anneeBenevole(b) > CURRENT_YEAR;
+export const estEditionCourante = (b: Pick<BenevoleApp, 'year'>): boolean =>
+  anneeBenevole(b) <= CURRENT_YEAR;
+
 // Capped read: passes through `pageSize` so callers can shrink the
 // window. We don't yet expose cursor-based pagination because the admin
 // list view still renders everything client-side, but the limit alone

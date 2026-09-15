@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Download, HandHeart, Calendar, Lock, Unlock } from 'lucide-react';
-import { getBenevoleAdminNotes, CURRENT_YEAR, type AppStatus, type BenevoleApp } from '../../../firebase/applications';
+import { getBenevoleAdminNotes, CURRENT_YEAR, estListeAttente, estEditionCourante, type AppStatus, type BenevoleApp } from '../../../firebase/applications';
 import { useSiteFlags } from '../../../contexts/SiteFlagsContext';
 import { Badge, Card, EmptyState, GhostButton, downloadCsv, fmtDate } from '../primitives';
 import HoraireEditor from '../../../components/admin/HoraireEditor';
@@ -36,7 +36,11 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
   // formulaire public inscrit sur la liste d'attente de l'édition suivante.
   const { flags, setFlag } = useSiteFlags();
   const inscriptionsOpen = flags.volunteerSignupOpen;
-  const enAttenteSuivante = (b: BenevoleApp) => b.status === 'pending' && b.year > CURRENT_YEAR;
+  // La liste d'attente se lit par l'année de la candidature, jamais par
+  // son statut : accepter quelqu'un sur la liste d'attente 2027 le
+  // faisait disparaître de l'onglet, et la liste passait pour vide.
+  const enAttenteSuivante = estListeAttente;
+  const editionCourante = items.filter(estEditionCourante);
   const [search, setSearch]   = useState('');
 
   const load = async () => {
@@ -54,10 +58,14 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
   };
   useEffect(() => { load(); }, []);
 
-  const accepted = useMemo(() => items.filter((b) => b.status === 'accepted'), [items]);
+  // L'horaire et les équipes ne concernent que l'édition en cours : un
+  // bénévole accepté pour l'an prochain n'a pas de quart cette année.
+  const accepted = useMemo(() => items.filter((b) => estEditionCourante(b) && b.status === 'accepted'), [items]);
 
   const filtered = items.filter((b) =>
-    (filter === 'all' || (filter === 'waitlist' ? enAttenteSuivante(b) : b.status === filter)) &&
+    (filter === 'waitlist'
+      ? enAttenteSuivante(b)
+      : estEditionCourante(b) && (filter === 'all' || b.status === filter)) &&
     (search === '' || `${b.prenom} ${b.nom} ${b.email}`.toLowerCase().includes(search.toLowerCase())),
   );
 
@@ -76,10 +84,10 @@ const BenevolesSection: React.FC<Props> = ({ fetchAll }) => {
   };
 
   const counts = {
-    total:    items.length,
-    pending:  items.filter((b) => b.status === 'pending').length,
-    accepted: items.filter((b) => b.status === 'accepted').length,
-    rejected: items.filter((b) => b.status === 'rejected').length,
+    total:    editionCourante.length,
+    pending:  editionCourante.filter((b) => b.status === 'pending').length,
+    accepted: editionCourante.filter((b) => b.status === 'accepted').length,
+    rejected: editionCourante.filter((b) => b.status === 'rejected').length,
     waitlist: items.filter(enAttenteSuivante).length,
   };
 
@@ -255,7 +263,7 @@ const BenevoleCard: React.FC<{ b: BenevoleApp }> = ({ b }) => {
 
       {/* Status badge: sits just under the medallion */}
       <div className="mt-2.5 flex justify-center">
-        {b.status === 'pending' && b.year > CURRENT_YEAR
+        {estListeAttente(b)
           ? <Badge tone="waitlist">Liste d’attente {b.year}</Badge>
           : <Badge tone={b.status}>{STATUS_LABEL[b.status]}</Badge>}
       </div>

@@ -14,11 +14,11 @@ import { NAV } from '../../pages/admin/AdminShell';
 
 const PorteAdmin: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
-  const { isAdmin, adminRole } = useAuth();
+  const { isAdmin, adminRole, user } = useAuth();
   if (!isAdmin) return null;
 
   const teinte = ROLE_ACCENT[adminRole ?? 'super'];
-  const ouvertes = allowedSections(adminRole, NAV.map((n) => n.id));
+  const ouvertes = allowedSections(adminRole, NAV.map((n) => n.id), user?.email);
   const raccourcis = NAV.filter((n) => ouvertes.includes(n.id)).slice(0, 8);
 
   return (

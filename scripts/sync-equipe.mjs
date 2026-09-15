@@ -21,13 +21,33 @@ const ici = path.dirname(fileURLToPath(import.meta.url));
 const racine = path.resolve(ici, '..');
 
 const source = path.join(racine, 'config', 'equipe-admin.json');
-const { equipe } = JSON.parse(fs.readFileSync(source, 'utf8'));
+const { equipe, cuisine = [] } = JSON.parse(fs.readFileSync(source, 'utf8'));
 const courriels = equipe
+  .map((m) => String(m.courriel || '').trim().toLowerCase())
+  .filter(Boolean);
+
+// Qui est super-admin dans le navigateur. Les autres membres de
+// l'équipe gardent l'accès aux données (les règles ci-dessous les
+// reconnaissent toujours) mais leur rôle vient de adminRoles, ce qui
+// permet de donner le CA à quelqu'un sans lui donner les clés des rôles.
+const courrielsSuper = equipe
+  .filter((m) => (m.role || 'super') === 'super')
+  .map((m) => String(m.courriel || '').trim().toLowerCase())
+  .filter(Boolean);
+
+// Le coin Nourriture et Bar s'ouvre à des personnes nommées, jamais à
+// un rôle : Alex l'a demandé le 15 septembre 2026, après avoir constaté
+// que l'inventaire du container était ouvert à tout porteur de rôle.
+const courrielsCuisine = cuisine
   .map((m) => String(m.courriel || '').trim().toLowerCase())
   .filter(Boolean);
 
 if (courriels.length === 0) {
   console.error('[equipe] La liste est vide. Rien n’a été recopié, par prudence.');
+  process.exit(1);
+}
+if (courrielsSuper.length === 0) {
+  console.error('[equipe] Aucun super-admin. Rien n’a été recopié : personne ne pourrait plus donner un rôle.');
   process.exit(1);
 }
 
@@ -63,7 +83,17 @@ const ecrire = (chemin, avant, apres) => {
     `${lignes}\n`,
     'firestore.rules',
   );
-  ecrire(chemin, avant, apres);
+  const lignesCuisine = cuisine
+    .map((m) => `          '${m.courriel.trim().toLowerCase()}',${m.qui ? ` // ${m.qui}` : ''}`)
+    .join('\n');
+  const apres2 = entreLesReperes(
+    apres,
+    '// CUISINE:DÉBUT (écrit par scripts/sync-equipe.mjs)\n',
+    '          // CUISINE:FIN',
+    `${lignesCuisine}\n`,
+    'firestore.rules',
+  );
+  ecrire(chemin, avant, apres2);
 }
 
 // ── 2. La fonction d'envoi ────────────────────────────────────────
@@ -90,17 +120,21 @@ const ecrire = (chemin, avant, apres) => {
 // possible avec la variable posée autrement.
 {
   const chemin = path.join(racine, '.env.local');
-  const ligne = `VITE_ADMIN_EMAILS=${courriels.join(',')}`;
+  const ligne = `VITE_ADMIN_EMAILS=${courrielsSuper.join(',')}`;
+  const ligneCuisine = `VITE_CUISINE_EMAILS=${courrielsCuisine.join(',')}`;
   if (!fs.existsSync(chemin)) {
-    console.warn(`[equipe] .env.local est absent. Posez cette ligne où vous bâtissez :\n${ligne}`);
+    console.warn(`[equipe] .env.local est absent. Posez ces lignes où vous bâtissez :\n${ligne}\n${ligneCuisine}`);
   } else {
     const avant = fs.readFileSync(chemin, 'utf8');
-    const apres = avant.match(/^VITE_ADMIN_EMAILS=.*$/m)
-      ? avant.replace(/^VITE_ADMIN_EMAILS=.*$/m, ligne)
-      : `${avant.replace(/\s*$/, '')}\n${ligne}\n`;
+    const poser = (texte, cle, valeur) => (texte.match(new RegExp(`^${cle}=.*$`, 'm'))
+      ? texte.replace(new RegExp(`^${cle}=.*$`, 'm'), valeur)
+      : `${texte.replace(/\s*$/, '')}\n${valeur}\n`);
+    let apres = poser(avant, 'VITE_ADMIN_EMAILS', ligne);
+    apres = poser(apres, 'VITE_CUISINE_EMAILS', ligneCuisine);
     ecrire(chemin, avant, apres);
   }
 }
 
 const noms = equipe.map((m) => m.qui || m.courriel).join(', ');
-console.log(`[equipe] ${courriels.length} membres recopiés (${noms}). Fichiers modifiés : ${touches}.`);
+console.log(`[equipe] ${courriels.length} membres recopiés (${noms}), dont ${courrielsSuper.length} super-admins.`);
+console.log(`[equipe] Cuisine : ${courrielsCuisine.length} personnes (${cuisine.map((m) => m.qui || m.courriel).join(', ')}). Fichiers modifiés : ${touches}.`);

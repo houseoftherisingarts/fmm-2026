@@ -216,7 +216,7 @@ const AdminShell: React.FC<Props> = ({
   // to an empty list if no role is set, at which point AdminPage should
   // already be rendering the "access refused" gate, so we never actually
   // render an empty shell.
-  const allowed = new Set(allowedSections(adminRole, ALL_SECTION_IDS));
+  const allowed = new Set(allowedSections(adminRole, ALL_SECTION_IDS, user.email));
   const visibleNav = NAV.filter((n) => allowed.has(n.id));
   const current = visibleNav.find((n) => n.id === section) ?? NAV.find((n) => n.id === section);
 

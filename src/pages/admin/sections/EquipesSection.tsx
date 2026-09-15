@@ -14,7 +14,7 @@ import {
   mockSetBenevoleTeam, mockListBenevoles,
 } from '../../../firebase/mockApplications';
 import { setBenevoleTeam } from '../../../firebase/applications';
-import { listBenevoles } from '../../../firebase/applications';
+import { listBenevoles, estEditionCourante } from '../../../firebase/applications';
 import { Card, EmptyState, GhostButton, PrimaryButton } from '../primitives';
 
 // ─── Visual Teams board ────────────────────────────────────────────
@@ -89,7 +89,9 @@ const EquipesSection: React.FC<Props> = () => {
 
   // ── Filtering + grouping ──
   const accepted = useMemo(
-    () => benevoles.filter((b) => b.status === 'accepted'),
+    // Une candidature acceptée pour l'édition suivante ne s'affecte pas
+    // à une équipe de cette année-ci.
+    () => benevoles.filter((b) => estEditionCourante(b) && b.status === 'accepted'),
     [benevoles],
   );
   const filtered = useMemo(() => {

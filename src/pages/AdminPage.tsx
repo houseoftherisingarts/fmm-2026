@@ -201,8 +201,8 @@ const AdminPage: React.FC = () => {
   // changes (e.g., super-admin switched gates mid-session).
   useEffect(() => {
     if (!effectiveRole) return;
-    if (!canAccess(effectiveRole, section)) setSection('dashboard');
-  }, [effectiveRole, section]);
+    if (!canAccess(effectiveRole, section, user?.email)) setSection('dashboard');
+  }, [effectiveRole, section, user]);
 
   const renderSection = () => {
     switch (section) {
