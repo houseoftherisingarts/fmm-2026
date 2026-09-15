@@ -33,6 +33,9 @@ const FR_TO_EN: Record<string, string> = {
   '/profil': '/profile',
   '/musique/inscription': '/music/registration',
   '/musique': '/music',
+  // La porte des troupes et des animateurs, ouverte le 15 septembre
+  // 2026 : la musique avait la sienne, l'animation n'en avait aucune.
+  '/animation/inscription': '/entertainment/registration',
   '/jeunesse/hnefatafl': '/youth/hnefatafl',
   '/jeunesse': '/youth',
   // Les jeux et le lobby des défis, qui manquaient à la table de
