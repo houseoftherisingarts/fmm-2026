@@ -97,7 +97,7 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
   useEffect(() => {
     if (isNew) { setPublieesCompte(0); return; }
     let vivant = true;
-    compterPubliees(animation).then((n) => { if (vivant) setPublieesCompte(n); }).catch(() => {});
+    compterPubliees([animation]).then((m) => { if (vivant) setPublieesCompte(m[animation.id] ?? 0); }).catch(() => {});
     return () => { vivant = false; };
   }, [animation, isNew]);
 
