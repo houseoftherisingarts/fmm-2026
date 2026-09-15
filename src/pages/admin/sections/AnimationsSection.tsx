@@ -57,6 +57,37 @@ function badgeCompte(courriel: string, comptes: Map<string, AppUser> | null): Re
     : <Badge tone="neutral">Pas de compte</Badge>;
 }
 
+// Deux candidatures de démonstration, pour que l'onglet et le bouton
+// « Importer » se regardent en mode bypass. Elles ne vivent que dans le
+// navigateur du développeur et ne touchent jamais Firestore.
+function seedCandidaturesLocales(): CandidatureAnimation[] {
+  return [
+    {
+      id: 'local-cand-1', nom: 'Les Feux de Brocéliande', type: 'spectacle',
+      contactNom: 'Maud Lefebvre', courriel: 'maud@exemple.test', telephone: '819-555-0142',
+      provenance: 'Gatineau', nbPersonnes: 4,
+      description: 'Trois cracheuses de feu et un tambour qui ouvrent la soirée autour du grand foyer, avec un numéro de vingt minutes qui se reprend deux fois.',
+      jours: ['samedi'], duree: '20 minutes', nbPassages: 2,
+      besoins: 'Un cercle de six mètres dégagé, une prise de courant et un extincteur à portée.',
+      cachetDemande: 'À discuter, autour de 600 $ pour la soirée.',
+      transport: 'Nous venons de Gatineau, un forfait couvrirait l’essence.',
+      hebergement: true, dejaVenu: false,
+      message: 'Nous suivons le festival depuis trois ans et nous aimerions enfin y jouer.',
+      lang: 'FR', annee: CURRENT_YEAR, statut: 'nouvelle',
+    },
+    {
+      id: 'local-cand-2', nom: 'Atelier du tourneur sur bois', type: 'demonstration',
+      contactNom: 'Gilles Pomerleau', courriel: 'gilles@exemple.test', telephone: '450-555-0177',
+      provenance: 'Saint-André-Avellin', nbPersonnes: 1,
+      description: 'Un tour à perche monté sur place, où les visiteurs repartent avec la quille qu’ils ont tournée eux-mêmes.',
+      jours: ['vendredi', 'samedi', 'dimanche'], duree: 'En continu',
+      besoins: 'Quatre mètres sur quatre, à l’ombre si possible.',
+      hebergement: false, dejaVenu: true,
+      lang: 'FR', annee: CURRENT_YEAR, statut: 'nouvelle',
+    },
+  ];
+}
+
 function seedLocale(): Animation[] {
   return ANIMATIONS_DE_BASE.map((f, i) => ({
     ...f, id: `local-${i}`,
@@ -94,7 +125,8 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
   const [erreur, setErreur] = useState<string | null>(null);
 
   const [comptes, setComptes] = useState<Map<string, AppUser> | null>(null);
-  const [candidatures, setCandidatures] = useState<CandidatureAnimation[]>([]);
+  const [candidaturesFirestore, setCandidaturesFirestore] = useState<CandidatureAnimation[]>([]);
+  const [localCandidatures, setLocalCandidatures] = useState<CandidatureAnimation[]>([]);
   const [loadingCandidatures, setLoadingCandidatures] = useState(true);
   const [busyCandidatureId, setBusyCandidatureId] = useState<string | null>(null);
 
@@ -104,7 +136,7 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
   }, []);
 
   useEffect(() => {
-    const unsub = suivreCandidatures((rows) => { setCandidatures(rows); setLoadingCandidatures(false); });
+    const unsub = suivreCandidatures((rows) => { setCandidaturesFirestore(rows); setLoadingCandidatures(false); });
     return unsub;
   }, []);
 
@@ -121,10 +153,17 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
     if (!devBypass || loadingAnimations || animations.length > 0 || seedFaite.current) return;
     seedFaite.current = true;
     setLocalAnimations(seedLocale());
+    setLocalCandidatures(seedCandidaturesLocales());
+    // Un registre de comptes de démonstration, pour que la différence
+    // entre « Compte FMM » et « Pas de compte » se voie en mode bypass.
+    setComptes((cur) => (cur && cur.size > 0 ? cur : new Map([
+      ['gilles@exemple.test', { uid: 'local-u1', email: 'gilles@exemple.test', displayName: 'Gilles Pomerleau', hasBenevoleApp: false, hasVendorApp: false }],
+    ])));
   }, [devBypass, loadingAnimations, animations.length]);
 
   const enLocal = devBypass && !loadingAnimations && animations.length === 0;
   const liste = enLocal ? localAnimations : animations;
+  const candidatures = enLocal ? localCandidatures : candidaturesFirestore;
 
   useEffect(() => {
     let vivant = true;
@@ -241,14 +280,35 @@ const AnimationsSection: React.FC<Props> = ({ devBypass = false }) => {
 
   const importer = async (c: CandidatureAnimation) => {
     setBusyCandidatureId(c.id);
-    try { irALaFiche(await importerCandidature(c)); setErreur(null); }
+    try {
+      if (enLocal) {
+        const id = `local-new-${localCounter.current++}`;
+        const fiche: Animation = {
+          ...nouvelleFicheVide(), id,
+          nom: c.nom, type: c.type, contactNom: c.contactNom, courriel: c.courriel,
+          telephone: c.telephone, provenance: c.provenance, nbPersonnes: c.nbPersonnes,
+          descriptionFR: c.description, jours: c.jours,
+          besoinsParticuliers: c.besoins, cachetNote: c.cachetDemande, transportNote: c.transport,
+          hebergement: c.hebergement ? 'a-discuter' : 'aucun', candidatureId: c.id,
+        };
+        setLocalAnimations((cur) => [...cur, fiche]);
+        setLocalCandidatures((cur) => cur.map((x) => (x.id === c.id ? { ...x, statut: 'importee', animationId: id } : x)));
+        irALaFiche(id);
+        setErreur(null);
+        return;
+      }
+      irALaFiche(await importerCandidature(c)); setErreur(null);
+    }
     catch (e) { console.warn('[AnimationsSection] import de candidature échoué', e); setErreur('Échec de l’import de cette candidature.'); }
     finally { setBusyCandidatureId(null); }
   };
 
   const ecarter = async (c: CandidatureAnimation) => {
     setBusyCandidatureId(c.id);
-    try { await marquerCandidature(c.id, 'ecartee'); setErreur(null); }
+    try {
+      if (enLocal) { setLocalCandidatures((cur) => cur.map((x) => (x.id === c.id ? { ...x, statut: 'ecartee' } : x))); setErreur(null); return; }
+      await marquerCandidature(c.id, 'ecartee'); setErreur(null);
+    }
     catch (e) { console.warn('[AnimationsSection] écarter une candidature a échoué', e); setErreur('Échec : la candidature n’a pas pu être écartée.'); }
     finally { setBusyCandidatureId(null); }
   };
