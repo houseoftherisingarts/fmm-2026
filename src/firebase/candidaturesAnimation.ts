@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { CURRENT_YEAR } from './applications';
+import { creerAnimation, nouvelIdAnimation, nouvelleFicheVide } from './animations';
 import type { JourFestival, TypeAnimation } from './animations';
 
 export type StatutCandidature = 'nouvelle' | 'importee' | 'ecartee';
