@@ -28,8 +28,19 @@ for (const [w, h, tag] of [[1440, 900, '1440'], [390, 844, '390']]) {
   // ── L'admin ────────────────────────────────────────────────────────
   await p.goto(`${BASE}/admin/animations`, { waitUntil: 'domcontentloaded' });
   await p.waitForTimeout(2500);
-  const porte = p.getByText('Super-Admin', { exact: true }).first();
-  if (await porte.count()) { await porte.click().catch(() => {}); await p.waitForTimeout(2500); }
+  // Le bandeau des témoins couvre les portes : il se referme d'abord.
+  for (const nom of ['Tout refuser', 'Tout accepter', 'Enregistrer mes choix']) {
+    const btn = p.getByRole('button', { name: nom, exact: true }).first();
+    if (await btn.count()) { await btn.click().catch(() => {}); break; }
+  }
+  await p.waitForTimeout(1000);
+  // La porte de l'Organisateur : c'est celle que Tristan pousse.
+  const porte = p.getByText('Organisateur', { exact: true }).first();
+  if (await porte.count()) {
+    await porte.scrollIntoViewIfNeeded().catch(() => {});
+    await porte.click().catch(() => {});
+    await p.waitForTimeout(2500);
+  }
   if (!p.url().includes('/admin/animations')) {
     await p.goto(`${BASE}/admin/animations`, { waitUntil: 'domcontentloaded' });
     await p.waitForTimeout(2500);

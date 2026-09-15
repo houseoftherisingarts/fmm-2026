@@ -52,8 +52,10 @@ const Bloc: React.FC<{ titre: string; icone: React.ComponentType<{ size?: number
   </section>
 );
 
-const Grid2: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="grid sm:grid-cols-2 gap-4">{children}</div>
+const Grid2: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="grid sm:grid-cols-2 gap-4">{children}</div>;
+
+const Champ: React.FC<{ label: string; className?: string; children: React.ReactNode }> = ({ label, className, children }) => (
+  <label className={`block ${className ?? ''}`}><Label>{label}</Label>{children}</label>
 );
 
 const Pilule: React.FC<{ actif: boolean; onClick: () => void; children: React.ReactNode }> = ({ actif, onClick, children }) => (
@@ -103,26 +105,16 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
 
   const enregistrer = async () => {
     setBusy(true); setErreur(null);
-    try {
-      await onSave(versInput(draft));
-    } catch (e) {
-      console.warn('[AnimationFiche] enregistrement échoué', e);
-      setErreur('Échec de l’enregistrement de la fiche.');
-    } finally {
-      setBusy(false);
-    }
+    try { await onSave(versInput(draft)); }
+    catch (e) { console.warn('[AnimationFiche] enregistrement échoué', e); setErreur('Échec de l’enregistrement de la fiche.'); }
+    finally { setBusy(false); }
   };
 
   const supprimer = async () => {
     setBusy(true); setErreur(null);
-    try {
-      await onDelete();
-    } catch (e) {
-      console.warn('[AnimationFiche] suppression échouée', e);
-      setErreur('Échec de la suppression.');
-    } finally {
-      setBusy(false);
-    }
+    try { await onDelete(); }
+    catch (e) { console.warn('[AnimationFiche] suppression échouée', e); setErreur('Échec de la suppression.'); }
+    finally { setBusy(false); }
   };
 
   const publier = async () => {
@@ -136,9 +128,7 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
     } catch (e) {
       console.warn('[AnimationFiche] publication échouée', e);
       setErreur('Échec de la publication à l’horaire.');
-    } finally {
-      setBusyPub(false);
-    }
+    } finally { setBusyPub(false); }
   };
 
   const retirer = async () => {
@@ -151,127 +141,80 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
     } catch (e) {
       console.warn('[AnimationFiche] retrait échoué', e);
       setErreur('Échec du retrait de l’horaire.');
-    } finally {
-      setBusyPub(false);
-    }
+    } finally { setBusyPub(false); }
   };
 
   const onPickPhoto = async (file: File | undefined) => {
     if (!file) return;
     setBusyPhoto(true); setErreur(null);
-    try {
-      const url = await televerserPhotoAnimation(draft.id, file);
-      upd({ photoUrl: url });
-    } catch (e) {
-      console.warn('[AnimationFiche] téléversement de la photo échoué', e);
-      setErreur('Échec du téléversement de la photo.');
-    } finally {
-      setBusyPhoto(false);
-    }
+    try { upd({ photoUrl: await televerserPhotoAnimation(draft.id, file) }); }
+    catch (e) { console.warn('[AnimationFiche] téléversement de la photo échoué', e); setErreur('Échec du téléversement de la photo.'); }
+    finally { setBusyPhoto(false); }
   };
 
   const ajouterCreneau = () => {
-    const id = typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `creneau-${draft.creneaux.length}-${draft.id}`;
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `creneau-${draft.creneaux.length}-${draft.id}`;
     upd({ creneaux: [...draft.creneaux, { id, jour: 'vendredi', heure: '', titre: '', lieu: '' }] });
   };
-  const majCreneau = (id: string, patch: Partial<Animation['creneaux'][number]>) => {
+  const majCreneau = (id: string, patch: Partial<Animation['creneaux'][number]>) =>
     upd({ creneaux: draft.creneaux.map((c) => (c.id === id ? { ...c, ...patch } : c)) });
-  };
   const retirerCreneau = (id: string) => upd({ creneaux: draft.creneaux.filter((c) => c.id !== id) });
 
   const blocage = raisonDeBlocage(draft);
   const totalPassages = draft.creneaux.length;
+  const compteCourriel = badgeCompte(draft.courriel, comptes);
 
   return (
     <div>
-      {erreur && (
-        <p className="text-sm mb-4 px-3 py-2 rounded-card border border-blush/40 bg-blush/8 text-blush">{erreur}</p>
-      )}
+      {erreur && <p className="text-sm mb-4 px-3 py-2 rounded-card border border-blush/40 bg-blush/8 text-blush">{erreur}</p>}
 
       <Bloc titre="Qui vient" icone={Users2}>
         <Grid2>
-          <label className="block">
-            <Label>Nom de l’animation</Label>
-            <Input value={draft.nom} onChange={(e) => upd({ nom: e.target.value })} placeholder="Ex. : Troupe des Loups d’Hiver" />
-          </label>
-          <label className="block">
-            <Label>Type</Label>
+          <Champ label="Nom de l’animation"><Input value={draft.nom} onChange={(e) => upd({ nom: e.target.value })} placeholder="Ex. : Troupe des Loups d’Hiver" /></Champ>
+          <Champ label="Type">
             <select value={draft.type} onChange={(e) => upd({ type: e.target.value as Animation['type'] })} className="admin-input w-full">
               {TYPES_ANIMATION.map((t) => <option key={t.id} value={t.id}>{t.FR}</option>)}
             </select>
-          </label>
+          </Champ>
         </Grid2>
-        <label className="block">
-          <Label>Statut</Label>
-          <select value={draft.statut} onChange={(e) => upd({ statut: e.target.value as Animation['statut'] })} className="admin-input w-full sm:w-64">
+        <Champ label="Statut" className="sm:w-64">
+          <select value={draft.statut} onChange={(e) => upd({ statut: e.target.value as Animation['statut'] })} className="admin-input w-full">
             {STATUTS.map((s) => <option key={s.id} value={s.id}>{s.FR}</option>)}
           </select>
-        </label>
+        </Champ>
         <Grid2>
-          <label className="block">
-            <Label>Personne-ressource</Label>
-            <Input value={draft.contactNom} onChange={(e) => upd({ contactNom: e.target.value })} placeholder="Nom du contact" />
-          </label>
-          <label className="block">
-            <Label>Courriel</Label>
+          <Champ label="Personne-ressource"><Input value={draft.contactNom} onChange={(e) => upd({ contactNom: e.target.value })} placeholder="Nom du contact" /></Champ>
+          <Champ label="Courriel">
             <Input type="email" value={draft.courriel} onChange={(e) => upd({ courriel: e.target.value })} placeholder="contact@exemple.com" />
-            {badgeCompte(draft.courriel, comptes) && <div className="mt-1.5">{badgeCompte(draft.courriel, comptes)}</div>}
-          </label>
+            {compteCourriel && <div className="mt-1.5">{compteCourriel}</div>}
+          </Champ>
         </Grid2>
         <Grid2>
-          <label className="block">
-            <Label>Téléphone</Label>
-            <Input value={draft.telephone} onChange={(e) => upd({ telephone: e.target.value })} placeholder="514 555-0100" />
-          </label>
-          <label className="block">
-            <Label>Site web</Label>
-            <Input type="url" value={draft.siteWeb ?? ''} onChange={(e) => upd({ siteWeb: e.target.value || undefined })} placeholder="https://…" />
-          </label>
+          <Champ label="Téléphone"><Input value={draft.telephone} onChange={(e) => upd({ telephone: e.target.value })} placeholder="514 555-0100" /></Champ>
+          <Champ label="Site web"><Input type="url" value={draft.siteWeb ?? ''} onChange={(e) => upd({ siteWeb: e.target.value || undefined })} placeholder="https://…" /></Champ>
         </Grid2>
         <Grid2>
-          <label className="block">
-            <Label>Réseaux sociaux</Label>
-            <Input value={draft.reseaux ?? ''} onChange={(e) => upd({ reseaux: e.target.value || undefined })} placeholder="@troupe sur Instagram" />
-          </label>
-          <label className="block">
-            <Label>Provenance</Label>
-            <Input value={draft.provenance ?? ''} onChange={(e) => upd({ provenance: e.target.value || undefined })} placeholder="Ville, région" />
-          </label>
+          <Champ label="Réseaux sociaux"><Input value={draft.reseaux ?? ''} onChange={(e) => upd({ reseaux: e.target.value || undefined })} placeholder="@troupe sur Instagram" /></Champ>
+          <Champ label="Provenance"><Input value={draft.provenance ?? ''} onChange={(e) => upd({ provenance: e.target.value || undefined })} placeholder="Ville, région" /></Champ>
         </Grid2>
-        <label className="block sm:w-48">
-          <Label>Nombre de personnes</Label>
+        <Champ label="Nombre de personnes" className="sm:w-48">
           <Input type="number" min={0} value={draft.nbPersonnes ?? ''} onChange={(e) => upd({ nbPersonnes: numOrUndef(e.target.value) })} />
-        </label>
+        </Champ>
       </Bloc>
 
       <Bloc titre="Ce qui paraît au programme" icone={ClipboardCheck}>
         <div className="grid sm:grid-cols-[160px_1fr] gap-4 items-start">
           <label className="relative block w-full aspect-[4/3] rounded-card border-2 border-dashed border-ivory-soft/20 bg-midnight-deep/40 cursor-pointer overflow-hidden hover:border-brass transition">
-            {draft.photoUrl ? (
-              <img src={draft.photoUrl} alt="" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-ivory-soft/30"><ImagePlus size={22} /></div>
-            )}
-            {busyPhoto && <div className="absolute inset-0 bg-midnight-deep/60 flex items-center justify-center">
-              <div className="w-5 h-5 rounded-full border-2 border-t-transparent border-brass animate-spin" />
-            </div>}
+            {draft.photoUrl
+              ? <img src={draft.photoUrl} alt="" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
+              : <div className="absolute inset-0 flex items-center justify-center text-ivory-soft/30"><ImagePlus size={22} /></div>}
+            {busyPhoto && <div className="absolute inset-0 bg-midnight-deep/60 flex items-center justify-center"><div className="w-5 h-5 rounded-full border-2 border-t-transparent border-brass animate-spin" /></div>}
             <input type="file" accept="image/*" className="sr-only" onChange={(e) => onPickPhoto(e.target.files?.[0])} />
           </label>
-          <label className="block">
-            <Label>Adresse de la photo</Label>
-            <Input value={draft.photoUrl ?? ''} onChange={(e) => upd({ photoUrl: e.target.value || undefined })} placeholder="https://…" />
-          </label>
+          <Champ label="Adresse de la photo"><Input value={draft.photoUrl ?? ''} onChange={(e) => upd({ photoUrl: e.target.value || undefined })} placeholder="https://…" /></Champ>
         </div>
-        <label className="block">
-          <Label>Description (français)</Label>
-          <Textarea rows={3} value={draft.descriptionFR} onChange={(e) => upd({ descriptionFR: e.target.value })} placeholder="Ce que le public voit et vit" />
-        </label>
-        <label className="block">
-          <Label>Description (anglais)</Label>
-          <Textarea rows={3} value={draft.descriptionEN} onChange={(e) => upd({ descriptionEN: e.target.value })} placeholder="What visitors see and experience" />
-        </label>
+        <Champ label="Description (français)"><Textarea rows={3} value={draft.descriptionFR} onChange={(e) => upd({ descriptionFR: e.target.value })} placeholder="Ce que le public voit et vit" /></Champ>
+        <Champ label="Description (anglais)"><Textarea rows={3} value={draft.descriptionEN} onChange={(e) => upd({ descriptionEN: e.target.value })} placeholder="What visitors see and experience" /></Champ>
       </Bloc>
 
       <Bloc titre="Sur le terrain" icone={Tent}>
@@ -287,117 +230,61 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
           </div>
         </div>
         <Grid2>
-          <label className="block">
-            <Label>Espace requis</Label>
-            <Input value={draft.espaceRequis ?? ''} onChange={(e) => upd({ espaceRequis: e.target.value || undefined })} placeholder="Ex. : 10 m × 10 m, ombragé" />
-          </label>
-          <label className="block">
-            <Label>Montage et arrivée</Label>
-            <Input value={draft.montage ?? ''} onChange={(e) => upd({ montage: e.target.value || undefined })} placeholder="Jour et heure d’arrivée souhaités" />
-          </label>
+          <Champ label="Espace requis"><Input value={draft.espaceRequis ?? ''} onChange={(e) => upd({ espaceRequis: e.target.value || undefined })} placeholder="Ex. : 10 m × 10 m, ombragé" /></Champ>
+          <Champ label="Montage et arrivée"><Input value={draft.montage ?? ''} onChange={(e) => upd({ montage: e.target.value || undefined })} placeholder="Jour et heure d’arrivée souhaités" /></Champ>
         </Grid2>
         <Grid2>
-          <label className="block">
-            <Label>Électricité</Label>
-            <Input value={draft.electricite ?? ''} onChange={(e) => upd({ electricite: e.target.value || undefined })} placeholder="Ex. : une prise 15A" />
-          </label>
-          <label className="block">
-            <Label>Son</Label>
-            <Input value={draft.son ?? ''} onChange={(e) => upd({ son: e.target.value || undefined })} placeholder="Sonorisation demandée" />
-          </label>
+          <Champ label="Électricité"><Input value={draft.electricite ?? ''} onChange={(e) => upd({ electricite: e.target.value || undefined })} placeholder="Ex. : une prise 15A" /></Champ>
+          <Champ label="Son"><Input value={draft.son ?? ''} onChange={(e) => upd({ son: e.target.value || undefined })} placeholder="Sonorisation demandée" /></Champ>
         </Grid2>
         <div className="flex flex-wrap gap-6">
           <ToggleSwitch checked={draft.eau} onChange={(v) => upd({ eau: v })} label="Point d’eau" />
           <ToggleSwitch checked={draft.feu} onChange={(v) => upd({ feu: v })} label="Feu ou flamme" />
         </div>
-        <label className="block">
-          <Label>Sécurité</Label>
-          <Input value={draft.securite ?? ''} onChange={(e) => upd({ securite: e.target.value || undefined })} placeholder="Ex. : périmètre pour la joute" />
-        </label>
+        <Champ label="Sécurité"><Input value={draft.securite ?? ''} onChange={(e) => upd({ securite: e.target.value || undefined })} placeholder="Ex. : périmètre pour la joute" /></Champ>
         <Grid2>
-          <label className="block">
-            <Label>Hébergement</Label>
+          <Champ label="Hébergement">
             <select value={draft.hebergement} onChange={(e) => upd({ hebergement: e.target.value as ModeHebergement })} className="admin-input w-full">
               {(Object.keys(HEBERGEMENT_LABEL) as ModeHebergement[]).map((m) => <option key={m} value={m}>{HEBERGEMENT_LABEL[m]}</option>)}
             </select>
-          </label>
-          <label className="block">
-            <Label>Nombre de campeurs</Label>
-            <Input type="number" min={0} value={draft.nbCampeurs ?? ''} onChange={(e) => upd({ nbCampeurs: numOrUndef(e.target.value) })} />
-          </label>
+          </Champ>
+          <Champ label="Nombre de campeurs"><Input type="number" min={0} value={draft.nbCampeurs ?? ''} onChange={(e) => upd({ nbCampeurs: numOrUndef(e.target.value) })} /></Champ>
         </Grid2>
         <Grid2>
-          <label className="block">
-            <Label>Repas par jour</Label>
-            <Input type="number" min={0} value={draft.repasParJour ?? ''} onChange={(e) => upd({ repasParJour: numOrUndef(e.target.value) })} />
-          </label>
-          <label className="block">
-            <Label>Véhicules</Label>
-            <Input type="number" min={0} value={draft.vehicules ?? ''} onChange={(e) => upd({ vehicules: numOrUndef(e.target.value) })} />
-          </label>
+          <Champ label="Repas par jour"><Input type="number" min={0} value={draft.repasParJour ?? ''} onChange={(e) => upd({ repasParJour: numOrUndef(e.target.value) })} /></Champ>
+          <Champ label="Véhicules"><Input type="number" min={0} value={draft.vehicules ?? ''} onChange={(e) => upd({ vehicules: numOrUndef(e.target.value) })} /></Champ>
         </Grid2>
-        <label className="block">
-          <Label>Besoins particuliers</Label>
-          <Textarea rows={2} value={draft.besoinsParticuliers ?? ''} onChange={(e) => upd({ besoinsParticuliers: e.target.value || undefined })} />
-        </label>
+        <Champ label="Besoins particuliers"><Textarea rows={2} value={draft.besoinsParticuliers ?? ''} onChange={(e) => upd({ besoinsParticuliers: e.target.value || undefined })} /></Champ>
       </Bloc>
 
       <Bloc titre="L’argent" icone={Wallet}>
         <Grid2>
-          <label className="block">
-            <Label>Cachet</Label>
-            <Input type="number" min={0} step="0.01" value={draft.cachet ?? ''} onChange={(e) => upd({ cachet: numOrUndef(e.target.value) })} />
-          </label>
-          <label className="block">
-            <Label>Dépôt</Label>
-            <Input type="number" min={0} step="0.01" value={draft.depot ?? ''} onChange={(e) => upd({ depot: numOrUndef(e.target.value) })} />
-          </label>
+          <Champ label="Cachet"><Input type="number" min={0} step="0.01" value={draft.cachet ?? ''} onChange={(e) => upd({ cachet: numOrUndef(e.target.value) })} /></Champ>
+          <Champ label="Dépôt"><Input type="number" min={0} step="0.01" value={draft.depot ?? ''} onChange={(e) => upd({ depot: numOrUndef(e.target.value) })} /></Champ>
         </Grid2>
-        <label className="block">
-          <Label>Note sur le cachet</Label>
-          <Input value={draft.cachetNote ?? ''} onChange={(e) => upd({ cachetNote: e.target.value || undefined })} placeholder="Ce qui a été entendu" />
-        </label>
-        <label className="block">
-          <Label>Mode de transport</Label>
-          <select value={draft.transportMode} onChange={(e) => upd({ transportMode: e.target.value as ModeTransport })} className="admin-input w-full sm:w-64">
+        <Champ label="Note sur le cachet"><Input value={draft.cachetNote ?? ''} onChange={(e) => upd({ cachetNote: e.target.value || undefined })} placeholder="Ce qui a été entendu" /></Champ>
+        <Champ label="Mode de transport" className="sm:w-64">
+          <select value={draft.transportMode} onChange={(e) => upd({ transportMode: e.target.value as ModeTransport })} className="admin-input w-full">
             {(Object.keys(TRANSPORT_LABEL) as ModeTransport[]).map((m) => <option key={m} value={m}>{TRANSPORT_LABEL[m]}</option>)}
           </select>
-        </label>
+        </Champ>
         {draft.transportMode === 'forfait' && (
-          <label className="block sm:w-64">
-            <Label>Forfait de transport</Label>
-            <Input type="number" min={0} step="0.01" value={draft.transportForfait ?? ''} onChange={(e) => upd({ transportForfait: numOrUndef(e.target.value) })} />
-          </label>
+          <Champ label="Forfait de transport" className="sm:w-64"><Input type="number" min={0} step="0.01" value={draft.transportForfait ?? ''} onChange={(e) => upd({ transportForfait: numOrUndef(e.target.value) })} /></Champ>
         )}
         {draft.transportMode === 'kilometrage' && (
           <Grid2>
-            <label className="block">
-              <Label>Kilomètres</Label>
-              <Input type="number" min={0} value={draft.transportKm ?? ''} onChange={(e) => upd({ transportKm: numOrUndef(e.target.value) })} />
-            </label>
-            <label className="block">
-              <Label>Taux au kilomètre</Label>
-              <Input type="number" min={0} step="0.01" value={draft.transportTauxKm ?? ''} onChange={(e) => upd({ transportTauxKm: numOrUndef(e.target.value) })} />
-            </label>
+            <Champ label="Kilomètres"><Input type="number" min={0} value={draft.transportKm ?? ''} onChange={(e) => upd({ transportKm: numOrUndef(e.target.value) })} /></Champ>
+            <Champ label="Taux au kilomètre"><Input type="number" min={0} step="0.01" value={draft.transportTauxKm ?? ''} onChange={(e) => upd({ transportTauxKm: numOrUndef(e.target.value) })} /></Champ>
           </Grid2>
         )}
-        <label className="block">
-          <Label>Note sur le transport</Label>
-          <Input value={draft.transportNote ?? ''} onChange={(e) => upd({ transportNote: e.target.value || undefined })} />
-        </label>
+        <Champ label="Note sur le transport"><Input value={draft.transportNote ?? ''} onChange={(e) => upd({ transportNote: e.target.value || undefined })} /></Champ>
         <div className="flex flex-wrap gap-6">
           <ToggleSwitch checked={draft.repasFournis} onChange={(v) => upd({ repasFournis: v })} label="Repas fournis" />
           <ToggleSwitch checked={draft.hebergementFourni} onChange={(v) => upd({ hebergementFourni: v })} label="Hébergement fourni" />
         </div>
         <Grid2>
-          <label className="block">
-            <Label>Mode de paiement</Label>
-            <Input value={draft.modePaiement ?? ''} onChange={(e) => upd({ modePaiement: e.target.value || undefined })} placeholder="Virement, chèque…" />
-          </label>
-          <label className="block">
-            <Label>Payé le</Label>
-            <Input type="date" value={draft.payeLe ?? ''} onChange={(e) => upd({ payeLe: e.target.value || undefined })} />
-          </label>
+          <Champ label="Mode de paiement"><Input value={draft.modePaiement ?? ''} onChange={(e) => upd({ modePaiement: e.target.value || undefined })} placeholder="Virement, chèque…" /></Champ>
+          <Champ label="Payé le"><Input type="date" value={draft.payeLe ?? ''} onChange={(e) => upd({ payeLe: e.target.value || undefined })} /></Champ>
         </Grid2>
         <div className="rounded-card border p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center" style={{ borderColor: 'var(--admin-line)', background: 'rgba(196,214,230,0.03)' }}>
           <div>
@@ -479,15 +366,11 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
               <p className="text-sm mb-3" style={{ color: 'var(--admin-text)' }}>
                 {(publieesCompte ?? 0)} passage{(publieesCompte ?? 0) === 1 ? '' : 's'} sur {totalPassages} figure{(publieesCompte ?? 0) === 1 ? '' : 'nt'} à l’horaire public en ce moment.
               </p>
-              <DangerButton type="button" onClick={retirer} disabled={busyPub}>
-                {busyPub ? 'Retrait…' : 'Retirer de l’horaire'}
-              </DangerButton>
+              <DangerButton type="button" onClick={retirer} disabled={busyPub}>{busyPub ? 'Retrait…' : 'Retirer de l’horaire'}</DangerButton>
             </>
           ) : (
             <>
-              <PrimaryButton type="button" onClick={publier} disabled={busyPub || busy || !!blocage}>
-                {busyPub ? 'Publication…' : 'Publier à l’horaire'}
-              </PrimaryButton>
+              <PrimaryButton type="button" onClick={publier} disabled={busyPub || busy || !!blocage}>{busyPub ? 'Publication…' : 'Publier à l’horaire'}</PrimaryButton>
               {blocage && <p className="text-xs mt-2" style={{ color: 'var(--admin-text-mute)' }}>{blocage}</p>}
             </>
           )}
@@ -512,9 +395,7 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
             <GhostButton type="button" onClick={() => setConfirmerSuppr(true)}>Supprimer</GhostButton>
           )}
         </div>
-        <PrimaryButton type="button" onClick={enregistrer} disabled={busy || busyPub}>
-          {busy ? 'Enregistrement…' : isNew ? 'Créer la fiche' : 'Enregistrer'}
-        </PrimaryButton>
+        <PrimaryButton type="button" onClick={enregistrer} disabled={busy || busyPub}>{busy ? 'Enregistrement…' : isNew ? 'Créer la fiche' : 'Enregistrer'}</PrimaryButton>
       </div>
     </div>
   );
