@@ -124,7 +124,7 @@ const AnimationFiche: React.FC<AnimationFicheProps> = ({
       const phrase = await onPublier(draft);
       upd({ statut: 'publiee' });
       setResultatPub(phrase);
-      compterPubliees(draft).then(setPublieesCompte).catch(() => {});
+      compterPubliees([draft]).then((m) => setPublieesCompte(m[draft.id] ?? 0)).catch(() => {});
     } catch (e) {
       console.warn('[AnimationFiche] publication échouée', e);
       setErreur('Échec de la publication à l’horaire.');
