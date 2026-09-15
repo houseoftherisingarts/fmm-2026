@@ -39,6 +39,10 @@ await env.withSecurityRulesDisabled(async (libre) => {
   const d = libre.firestore();
   await setDoc(doc(d, 'adminRoles', 'tristan@exemple.test'),  { email: 'tristan@exemple.test',  role: 'organisateur' });
   await setDoc(doc(d, 'adminRoles', 'benevole@exemple.test'), { email: 'benevole@exemple.test', role: 'benevole' });
+  await setDoc(doc(d, 'adminRoles', 'ca@exemple.test'),       { email: 'ca@exemple.test',       role: 'ca' });
+  // Une fiche de rôle écrite à la main sans son champ `role` : elle ne
+  // doit ouvrir aucune porte, et surtout pas faire planter la règle.
+  await setDoc(doc(d, 'adminRoles', 'bancal@exemple.test'),   { email: 'bancal@exemple.test' });
   await setDoc(doc(d, 'animations', 'a1'), { nom: 'Troupe essai', cachet: 1200, courriel: 'troupe@exemple.test' });
   await setDoc(doc(d, 'schedule', '2026'), { year: 2026, days: [] });
   await setDoc(doc(d, 'candidaturesAnimation', 'c1'), {
@@ -50,6 +54,8 @@ await env.withSecurityRulesDisabled(async (libre) => {
 const tristan  = env.authenticatedContext(TRISTAN,  { email: 'tristan@exemple.test'  }).firestore();
 const benevole = env.authenticatedContext(BENEVOLE, { email: 'benevole@exemple.test' }).firestore();
 const visiteur = env.authenticatedContext(VISITEUR, { email: 'visiteur@exemple.test' }).firestore();
+const membreCa = env.authenticatedContext('uid-ca',     { email: 'ca@exemple.test'     }).firestore();
+const bancal   = env.authenticatedContext('uid-bancal', { email: 'bancal@exemple.test' }).firestore();
 const passant  = env.unauthenticatedContext().firestore();
 
 const CANDIDATURE = {
@@ -105,6 +111,12 @@ essai('Tristan lit la fiche', () =>
 
 essai('Tristan écrit une nouvelle fiche', () =>
   assertSucceeds(setDoc(doc(tristan, 'animations', 'a2'), { nom: 'Troupe Hullsborg', statut: 'piste' })));
+
+essai('le CA entre aussi dans les fiches', () =>
+  assertSucceeds(getDoc(doc(membreCa, 'animations', 'a1'))));
+
+essai('une fiche de rôle sans son champ role n’ouvre rien', () =>
+  assertFails(getDoc(doc(bancal, 'animations', 'a1'))));
 
 essai('Tristan marque une candidature comme importée', () =>
   assertSucceeds(updateDoc(doc(tristan, 'candidaturesAnimation', 'c1'), { statut: 'importee', animationId: 'a2' })));

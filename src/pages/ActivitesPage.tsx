@@ -1748,6 +1748,12 @@ const EN: typeof FR = {
   banquetTitle: 'The Prince William Banquet',
   banquetBody: 'A great banquet prepared by the clan chefs of the food village. The banquet seat is sold separately from regular entry tickets.',
   banquetCta: 'See the menu and book',
+  appelRailName: 'Call for performers',
+  appelMeta: 'Applications',
+  appelEyebrow: 'Call for troupes',
+  appelTitle: 'Troupes and craftspeople, the stage awaits',
+  appelBody: 'FMM is already looking for troupes for the next edition, alongside craftspeople who enjoy showing their trade in the open air, storytellers who know how to hold a crowd around the fire, and performers who just need a bit of room to work. The form opens the conversation with Tristan, who reads every application and replies by email, without promising a fee or a selection in advance.',
+  appelCta: 'Submit my application',
   replier: 'Collapse activities',
   deplier: 'Show activities',
 };

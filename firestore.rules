@@ -55,8 +55,11 @@ service cloud.firestore {
     // de l'équipe : sans cette porte, son propre module lui serait
     // fermé, et l'onglet Horaire que son rôle voit déjà refuserait
     // chacune de ses sauvegardes (Alex, 2026-09-15).
+    // `.get('role', '')` plutôt que `.role` : une fiche de rôle écrite
+    // à la main sans son champ ferait planter l'évaluation au lieu de
+    // rendre un franc refus.
     function roleDeLAdmin() {
-      return get(/databases/$(database)/documents/adminRoles/$(request.auth.token.email.lower())).data.role;
+      return get(/databases/$(database)/documents/adminRoles/$(request.auth.token.email.lower())).data.get('role', '');
     }
     function estProgrammation() {
       return isAdmin()
