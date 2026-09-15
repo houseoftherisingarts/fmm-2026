@@ -142,6 +142,49 @@ export function suivreCandidatures(cb: (liste: CandidatureAnimation[]) => void):
   );
 }
 
+/**
+ * L'import : la candidature devient une fiche d'animation au statut
+ * « piste », et la candidature garde la trace de la fiche née d'elle.
+ * Rien n'est inventé au passage; ce que le formulaire ne demande pas
+ * (cachet, montage, électricité) reste vide et attend Tristan.
+ */
+export async function importerCandidature(c: CandidatureAnimation): Promise<string> {
+  const id = nouvelIdAnimation();
+  const fiche = nouvelleFicheVide();
+  const enFrancais = c.lang === 'FR';
+  const notes = [
+    c.duree ? `Durée d’une prestation : ${c.duree}.` : '',
+    c.nbPassages ? `Passages souhaités : ${c.nbPassages}.` : '',
+    c.dejaVenu ? 'Déjà venue au festival.' : '',
+    c.message ? `Message reçu : ${c.message}` : '',
+  ].filter(Boolean).join('\n');
+
+  await creerAnimation(id, {
+    ...fiche,
+    nom: c.nom,
+    type: c.type,
+    statut: 'piste',
+    annee: c.annee,
+    contactNom: c.contactNom,
+    courriel: c.courriel,
+    telephone: c.telephone,
+    siteWeb: c.siteWeb,
+    provenance: c.provenance,
+    nbPersonnes: c.nbPersonnes,
+    descriptionFR: enFrancais ? c.description : '',
+    descriptionEN: enFrancais ? '' : c.description,
+    jours: c.jours,
+    besoinsParticuliers: c.besoins,
+    cachetNote: c.cachetDemande,
+    transportNote: c.transport,
+    hebergement: c.hebergement ? 'a-discuter' : 'aucun',
+    notes: notes || undefined,
+    candidatureId: c.id,
+  });
+  await marquerCandidature(c.id, 'importee', id);
+  return id;
+}
+
 export async function marquerCandidature(
   id: string,
   statut: StatutCandidature,
