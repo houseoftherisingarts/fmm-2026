@@ -108,8 +108,8 @@ const AFFICHE_2026_BANDS: Band[] = [
     image:   '/wix/musique/troupe-caravane.webp',
     imageAlt:'Sarah Barbieux et Sylvain Chiasson en spectacle · Fuego Bohemio',
     website: 'http://www.troupecaravane.com',
-    bioFR: 'Fondée à Montréal en 1980 par Sarah Barbieux, d’origine rom, la troupe CARAVANE porte le spectacle festif et participatif Fuego Bohemio : rumba flamenca, musique tzigane, chants et danses romanichelles. Sarah Barbieux (voix, danse, tambour) et Sylvain Chiasson (guitare, voix, flûte de pan, percussions).',
-    bioEN: 'Founded in Montreal in 1980 by Sarah Barbieux, of Roma descent, the CARAVANE troupe brings its festive, participatory show Fuego Bohemio: rumba flamenca, Romani music, songs and bohemian dance. Sarah Barbieux (voice, dance, drum) and Sylvain Chiasson (guitar, voice, pan flute, percussion).',
+    bioFR: 'Fondée à Montréal en 1980 par Sarah Barbieux, la troupe CARAVANE porte le spectacle festif et participatif Fuego Bohemio : rumba flamenca, musique tzigane, chants et danses bohémiennes. Sarah Barbieux (voix, danse, tambour) et Sylvain Chiasson (guitare, voix, flûte de pan, percussions).',
+    bioEN: 'Founded in Montreal in 1980 by Sarah Barbieux, the CARAVANE troupe brings its festive, participatory show Fuego Bohemio: rumba flamenca, tzigane music, songs and bohemian dance. Sarah Barbieux (voice, dance, drum) and Sylvain Chiasson (guitar, voice, pan flute, percussion).',
   },
   {
     name:    'L’Ensemble Klezmer de Sainte-Nigoune',

@@ -160,7 +160,7 @@ export const PIECE_SETS: PieceSet[] = [
     nomFR: 'La caravane',
     nomEN: 'The caravan',
     texteFR: 'Une roulotte de gitans pour roi, qui doit gagner un coin du plateau; des hommes de la route au foulard rouge à l\u2019assaut, des femmes en jupe rayée pour la défendre. Se gagne au huitième jour de visite d\u2019affilée.',
-    texteEN: 'A gypsy wagon for a king, bound for a corner of the board; red-scarfed men of the road on the attack, women in striped skirts to defend it. Earned on the eighth daily visit in a row.',
+    texteEN: 'A wagon of the road for a king, bound for a corner of the board; red-scarfed men of the road on the attack, women in striped skirts to defend it. Earned on the eighth daily visit in a row.',
     vignette: '/games/hnefatafl/vignettes/caravane.webp',
     urls: {
       1: '/games/hnefatafl/models/caravane-homme.glb',

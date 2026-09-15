@@ -90,7 +90,7 @@ function seedCandidaturesLocales(): CandidatureAnimation[] {
 
 function seedLocale(): Animation[] {
   return ANIMATIONS_DE_BASE.map((f, i) => ({
-    ...f, id: `local-${i}`,
+    ...f, id: `local-${i}`, annee: CURRENT_YEAR,
     confirmations: { ...f.confirmations },
     creneaux: f.creneaux.map((c) => ({ ...c })),
   }));

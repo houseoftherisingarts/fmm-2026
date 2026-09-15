@@ -333,13 +333,13 @@ export async function televerserPhotoAnimation(id: string, fichier: File): Promi
  * le nombre de fiches créées. Ne fait rien si la collection porte déjà
  * quelque chose : le bouton se presse deux fois sans dégât.
  */
-export async function semerAnimations(fiches: AnimationInput[]): Promise<number> {
+export async function semerAnimations(fiches: Omit<AnimationInput, 'annee'>[]): Promise<number> {
   if (!db) throw new Error('Firestore n’est pas configuré');
   const existantes = await listerAnimations();
   if (existantes.length > 0) return 0;
   let n = 0;
   for (const f of fiches) {
-    await creerAnimation(nouvelIdAnimation(), f);
+    await creerAnimation(nouvelIdAnimation(), { ...f, annee: CURRENT_YEAR });
     n += 1;
   }
   return n;

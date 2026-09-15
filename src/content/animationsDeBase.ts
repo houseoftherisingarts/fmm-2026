@@ -11,21 +11,28 @@
 // couchage, heures de passage) reste vide : ce sont des engagements,
 // et ils appartiennent à Tristan, pas à une graine de départ.
 
-import { CONFIRMATIONS_VIDES, type AnimationInput } from '../firebase/animations';
-import { CURRENT_YEAR } from '../firebase/applications';
+// Aucun import de valeur ici, seulement des types : ce fichier se
+// charge donc aussi bien dans le navigateur que dans un script Node qui
+// sème la collection en production, sans traîner le SDK Firebase.
+// L'année est posée au moment du semis par `semerAnimations`.
+import type { AnimationInput, ConfirmationsAnimation } from '../firebase/animations';
+
+const AUCUNE_CONFIRMATION: ConfirmationsAnimation = {
+  entente: false, cachet: false, transport: false,
+  logistique: false, descriptif: false, assurance: false, creneaux: false,
+};
 
 const base = {
   statut: 'piste' as const,
-  annee: CURRENT_YEAR,
   contactNom: '', courriel: '', telephone: '',
   eau: false, feu: false,
   hebergement: 'aucun' as const,
   transportMode: 'aucun' as const,
   repasFournis: false, hebergementFourni: false,
-  confirmations: { ...CONFIRMATIONS_VIDES },
+  confirmations: { ...AUCUNE_CONFIRMATION },
 };
 
-export const ANIMATIONS_DE_BASE: AnimationInput[] = [
+export const ANIMATIONS_DE_BASE: Omit<AnimationInput, 'annee'>[] = [
   {
     ...base,
     nom: 'Aslak · le Chevalier Vert',

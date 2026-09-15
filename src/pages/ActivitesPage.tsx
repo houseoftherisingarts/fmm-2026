@@ -99,6 +99,9 @@ const SCHEDULE = [
 // sont simplement pas cliquables. Textes = premier jet, à raffiner.
 const strip = (x: string) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const EVENT_INFO: Array<{ keys: string[]; FR: string; EN: string }> = [
+  { keys: ['petit cheval', 'hobby horse'],
+    FR: 'Le tournoi à cheval… de bois : parcours et épreuves à dos de hobby horse, aussi sérieux que désopilant.',
+    EN: 'The tournament on… hobby horses: courses and trials astride wooden steeds, as serious as it is hilarious.' },
   { keys: ['finale de joute', 'joute'],
     FR: 'La joute équestre : deux cavaliers en armure s’élancent l’un vers l’autre au galop, lance au poing, pour rompre leur bois sur l’écu de l’adversaire. Présentée par l’Association Médiévale du Québec (AMQ).',
     EN: 'The mounted joust: two armoured riders charge each other at full gallop, lance in hand, to break their lance on the opponent’s shield. Presented by the Association Médiévale du Québec (AMQ).' },
@@ -171,9 +174,6 @@ const EVENT_INFO: Array<{ keys: string[]; FR: string; EN: string }> = [
   { keys: ['cerfs-volants'],
     FR: 'Concours de cerfs-volants dans l’arène : fabriqués ou apportés, les plus beaux vols sont salués.',
     EN: 'Kite contest in the arena: built or brought, the finest flights take the honours.' },
-  { keys: ['hobby horse'],
-    FR: 'Le tournoi à cheval… de bois : parcours et épreuves à dos de hobby horse, aussi sérieux que désopilant.',
-    EN: 'The tournament on… hobby horses: courses and trials astride wooden steeds, as serious as it is hilarious.' },
   { keys: ['vente aux encheres'],
     FR: 'Les pièces forgées pendant la fin de semaine passent aux enchères : repartez avec un objet né sous vos yeux.',
     EN: 'The pieces forged over the weekend go to auction: leave with an object born before your eyes.' },
