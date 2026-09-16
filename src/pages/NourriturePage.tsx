@@ -111,6 +111,9 @@ const PlatRow: React.FC<{ plat: Plat; lang: 'FR' | 'EN' }> = ({ plat, lang }) =>
 );
 
 const LIEN_BANQUET = 'https://us-central1-festivalmedieval.cloudfunctions.net/banquetLien';
+// La caisse Stripe du Salon pour le livre (2026-09-16). Le lien Square
+// reste le filet si cette fonction ne répond pas.
+const LIEN_LIVRE = 'https://us-central1-festivalmedieval.cloudfunctions.net/livreLien';
 
 // ─── Une guilde du menu, repliée par défaut ─────────────────────────
 // Le tableau des trois jours arrivait tout ouvert et noyait l'œil (Alex,
@@ -213,6 +216,7 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
   const livrePris = typeof window !== 'undefined'
     && new URLSearchParams(window.location.search).get('livre') === 'merci';
   useGagnerBadge('livre', livrePris);
+  const [livreEnRoute, setLivreEnRoute] = useState(false);
   // `?banquet=1` ou `?banquet=merci` : la vue descend jusqu'au banquet
   // une fois le chapitre déplié, sinon le visiteur doit le chercher.
   //
@@ -577,17 +581,44 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                   <p className="font-editorial text-base md:text-lg text-ivory leading-relaxed mb-8 max-w-2xl">
                     {t.grimoireBody}
                   </p>
-                  {/* La vente passe par le lien Square du Salon des
-                      Inconnus, et le webhook `squareGrimoire` envoie le
-                      PDF par courriel dès que le paiement est confirmé. */}
+                  {/* La vente passe par la caisse Stripe du Salon des
+                      Inconnus : `livreLien` ouvre la caisse, et le webhook
+                      `stripeMontpellois` envoie le PDF et l'EPUB dès que
+                      le paiement est confirmé. Si la fonction ne répond
+                      pas, le clic retombe sur le lien Square d'origine,
+                      que `squareGrimoire` livre de la même façon. */}
+                  {livrePris && (
+                    <p className="font-editorial text-base text-[var(--color-amber-glow)] mb-5">{t.livreMerci}</p>
+                  )}
                   <div className="flex flex-wrap items-center gap-5">
                     {GRIMOIRE_EN_VENTE ? (
                       <a
                         href={import.meta.env.VITE_SQUARE_GRIMOIRE_URL || SQUARE_GRIMOIRE}
-                        target="_blank" rel="noopener noreferrer"
+                        aria-busy={livreEnRoute}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          if (livreEnRoute) return;
+                          const filet = e.currentTarget.href;
+                          setLivreEnRoute(true);
+                          try {
+                            const r = await fetch(LIEN_LIVRE, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                langue: lang,
+                                retour: window.location.origin + window.location.pathname,
+                              }),
+                            });
+                            const d = await r.json();
+                            if (!d.url) throw new Error('sans url');
+                            window.location.href = d.url;
+                          } catch {
+                            window.location.href = filet;
+                          }
+                        }}
                         className="inline-flex items-center gap-2 px-8 py-4 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card"
                       >
-                        {t.grimoireCta}
+                        {livreEnRoute ? t.enRoute : t.grimoireCta}
                         <ArrowUpRight size={14} />
                       </a>
                     ) : (
@@ -689,6 +720,7 @@ const FR = {
   grimoireBody: 'Les recettes de la cuisine du festival, telles qu’elles sortent des marmites : le pain viking, l’olla gitana, l’hypocras, le gâteau du voyageur et vingt autres, écrites de la main du chef Marc-Alexis Pepin. Le livre couvre les éditions 2025 et 2026, et réunit les recettes des deux années dans le même volume. Elles ont été ramenées à quatre personnes et réécrites en mesures d’ici, avec les tasses et les cuillères entre parenthèses, pour que vous puissiez les refaire chez vous un mardi soir sans avoir à diviser quoi que ce soit.',
   grimoireBientot: 'Bientôt en vente',
   grimoireCta: 'Acheter le livre',
+  livreMerci: 'Merci ! Le livre part par courriel, en PDF et en EPUB. Regardez aussi dans vos indésirables d’ici quelques minutes.',
   grimoirePreview: 'Feuilleter deux recettes',
   grimoireNote: '9 $ plus taxes · Livre numérique en PDF et en EPUB, les deux envoyés par courriel après l’achat.',
   grimoireAlt: 'La couverture du livre de recettes du festival',
@@ -749,6 +781,7 @@ const EN: typeof FR = {
   grimoireBody: 'The festival kitchen’s recipes, straight out of the cauldrons: viking bread, olla gitana, hypocras, the traveller’s cake and twenty more, written in the hand of chef Marc-Alexis Pepin. The book spans the 2025 and 2026 editions and gathers both years in a single volume. Every one of them has been scaled down to four people and rewritten in metric measures, with cups and spoons in brackets, so you can cook it at home on a Tuesday night without dividing anything.',
   grimoireBientot: 'Coming soon',
   grimoireCta: 'Buy the cookbook',
+  livreMerci: 'Thank you! The cookbook is on its way by email, in PDF and EPUB. Check your spam folder in a few minutes too.',
   grimoirePreview: 'Read two recipes',
   grimoireNote: '$9 plus tax · Digital book in PDF and EPUB, both emailed after purchase.',
   grimoireAlt: 'The cover of the festival cookbook',

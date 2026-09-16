@@ -146,6 +146,28 @@ festivalmedievaldemontpellier.org
 ---
 ${POLITIQUE_ANNULATION_FR}`;
 
+// Un seul envoi pour les deux caisses, Square et Stripe : le courriel, ses
+// deux pièces jointes et la boîte d'expédition ne vivent qu'ici.
+async function envoyerLivre(courriel, nom) {
+  const transport = nodemailer.createTransport({
+    host: ZOHO_SMTP_HOST,
+    port: 465,
+    secure: true,
+    auth: { user: ZOHO_EMAIL, pass: ZOHO_APP_PASSWORD.value() },
+  });
+  await transport.sendMail({
+    from: FROM,
+    to: courriel,
+    subject: 'Votre livre de recettes du festival',
+    text: CORPS_FR(nom),
+    attachments: [
+      { filename: 'Livre-de-recettes-du-festival-FMM-2026.pdf', content: fs.createReadStream(PDF) },
+      { filename: 'Livre-de-recettes-du-festival-FMM-2026.epub', content: fs.createReadStream(EPUB),
+        contentType: 'application/epub+zip' },
+    ],
+  });
+}
+
 exports.squareGrimoire = onRequest(
   {
     region: 'us-central1',
@@ -278,24 +300,7 @@ exports.squareGrimoire = onRequest(
         return res.status(200).send('sans courriel');
       }
 
-      const transport = nodemailer.createTransport({
-        host: ZOHO_SMTP_HOST,
-        port: 465,
-        secure: true,
-        auth: { user: ZOHO_EMAIL, pass: ZOHO_APP_PASSWORD.value() },
-      });
-
-      await transport.sendMail({
-        from: FROM,
-        to: courriel,
-        subject: 'Votre livre de recettes du festival',
-        text: CORPS_FR(nom),
-        attachments: [
-          { filename: 'Livre-de-recettes-du-festival-FMM-2026.pdf', content: fs.createReadStream(PDF) },
-          { filename: 'Livre-de-recettes-du-festival-FMM-2026.epub', content: fs.createReadStream(EPUB),
-            contentType: 'application/epub+zip' },
-        ],
-      });
+      await envoyerLivre(courriel, nom);
 
       await ref.set(
         {
@@ -3154,8 +3159,10 @@ exports.stripeMontpellois = onRequest(
   {
     region: 'us-central1',
     secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ZOHO_APP_PASSWORD],
-    memory: '256MiB',
-    timeoutSeconds: 60,
+    // Le livre de recettes passe aussi ici depuis le 2026-09-16, et ses
+    // deux fichiers pèsent 14 Mo : la mémoire et le délai de Square.
+    memory: '512MiB',
+    timeoutSeconds: 120,
   },
   async (req, res) => {
     if (req.method !== 'POST') { res.status(405).send('POST seulement'); return; }
@@ -3200,6 +3207,10 @@ exports.stripeMontpellois = onRequest(
       return;
     }
 
+    if (session.metadata && session.metadata.programme === 'livre') {
+      res.status(await livrerLivreStripe(session)).send('livre');
+      return;
+    }
     const uid = String((session.metadata && session.metadata.uid) || '').slice(0, 128);
     const packId = String((session.metadata && session.metadata.packId) || '');
     const pack = PACKS_MONTPELLOIS[packId];
@@ -3226,6 +3237,104 @@ exports.stripeMontpellois = onRequest(
   },
 );
 
+
+// ─── Le livre de recettes par la caisse Stripe du Salon ─────────────
+// Alex, 2026-09-16 : « double check qu'on peut bien acheter via stripe du
+// salon des inconnus ». Le livre ne se vendait que par un lien Square, et
+// aucun achat n'y était encore passé. La page ouvre maintenant une caisse
+// Stripe (9 $, TPS et TVQ en lignes à part, 10,35 $ comme sur Square) et
+// retombe sur le lien Square si cette fonction ne répond pas.
+//
+// Le webhook `stripeMontpellois` reconnaît `programme: 'livre'` et livre
+// le PDF et l'EPUB par `envoyerLivre`. Le registre reste
+// `grimoireLivraisons`, sous la clé `stripe_<session>`, qui absorbe les
+// rejeux de Stripe comme le paymentId absorbe ceux de Square.
+const LIVRE_PRIX_CENTS = 900;
+const LIVRE_TPS_CENTS = Math.round(LIVRE_PRIX_CENTS * 0.05);      // 45
+const LIVRE_TVQ_CENTS = Math.round(LIVRE_PRIX_CENTS * 0.09975);   // 90
+const LIVRE_RETOUR = 'https://www.festivalmedievaldemontpellier.org/nourriture';
+
+exports.livreLien = onRequest(
+  {
+    secrets: [STRIPE_SECRET_KEY],
+    region: 'us-central1',
+    cors: [
+      /festivalmedieval\.web\.app$/,
+      /festivalmedieval\.firebaseapp\.com$/,
+      /festivalmedievaldemontpellier\.(org|com)$/,
+      /localhost:\d+$/,
+    ],
+  },
+  async (req, res) => {
+    if (req.method !== 'POST') { res.status(405).json({ erreur: 'POST seulement' }); return; }
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || 'inconnu').split(',')[0].trim();
+    if (TROP_D_APPELS(ip)) { res.status(429).json({ erreur: 'trop de demandes' }); return; }
+    const cleStripe = STRIPE_SECRET_KEY.value();
+    if (!cleStripe || !/^(sk|rk)_/.test(cleStripe)) { res.status(503).json({ erreur: 'caisse fermée' }); return; }
+    const en = String((req.body && req.body.langue) || '') === 'EN';
+    const retour = String((req.body && req.body.retour) || '');
+    // On ne renvoie l'acheteur que chez nous, comme pour le banquet.
+    const NOTRE_MAISON = /^https:\/\/(www\.)?(festivalmedieval\.(web\.app|firebaseapp\.com)|festivalmedievaldemontpellier\.(org|com))(\/|$)/;
+    const base = NOTRE_MAISON.test(retour) ? retour.split(/[?#]/)[0] : LIVRE_RETOUR;
+    try {
+      const session = await Stripe(cleStripe).checkout.sessions.create({
+        mode: 'payment',
+        line_items: [
+          { quantity: 1, price_data: { currency: 'cad', unit_amount: LIVRE_PRIX_CENTS, product_data: {
+            name: en ? 'Festival cookbook' : 'Livre de recettes du festival',
+            description: en ? 'Digital book in PDF and EPUB, emailed after purchase'
+              : 'Livre numérique en PDF et en EPUB, envoyé par courriel après l’achat' } } },
+          { quantity: 1, price_data: { currency: 'cad', unit_amount: LIVRE_TPS_CENTS, product_data: {
+            name: en ? 'GST 5%' : 'TPS 5 %', description: `${en ? 'No.' : 'No'} ${LIVRAISON_NO_TPS}` } } },
+          { quantity: 1, price_data: { currency: 'cad', unit_amount: LIVRE_TVQ_CENTS, product_data: {
+            name: en ? 'QST 9.975%' : 'TVQ 9,975 %', description: `${en ? 'No.' : 'No'} ${LIVRAISON_NO_TVQ}` } } },
+        ],
+        metadata: { entite: 'fmm', programme: 'livre' },
+        payment_intent_data: { metadata: { entite: 'fmm', programme: 'livre' } },
+        locale: en ? 'en' : 'fr-CA',
+        success_url: `${base}?livre=merci`,
+        cancel_url: base,
+      });
+      logger.info('[livre] caisse ouverte', { sessionId: session.id });
+      res.json({ url: session.url });
+    } catch (e) {
+      logger.error('[livre] caisse refusée', e);
+      res.status(502).json({ erreur: 'caisse indisponible' });
+    }
+  },
+);
+
+async function livrerLivreStripe(session) {
+  const ref = db.collection('grimoireLivraisons').doc(`stripe_${session.id}`);
+  const aFaire = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (snap.exists && !['erreur', 'sans courriel'].includes(snap.data()?.statut)) return false;
+    tx.set(ref, { statut: 'en cours', caisse: 'stripe', sessionId: session.id,
+      recuLe: admin.firestore.FieldValue.serverTimestamp() });
+    return true;
+  });
+  if (!aFaire) return 200;
+  const details = session.customer_details || {};
+  const courriel = details.email || session.customer_email || '';
+  const nom = details.name || '';
+  if (!courriel) {
+    await ref.set({ statut: 'sans courriel' }, { merge: true });
+    logger.error('[livre] achat Stripe sans courriel', { sessionId: session.id });
+    return 200;
+  }
+  try {
+    await envoyerLivre(courriel, nom);
+    await ref.set({ statut: 'livré', courriel, nom,
+      livreLe: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+    logger.info('[livre] livré par Stripe', { sessionId: session.id });
+    return 200;
+  } catch (e) {
+    // Un 500 fait réessayer Stripe, et le statut d'erreur rouvre le verrou.
+    await ref.set({ statut: 'erreur', erreur: String(e && e.message ? e.message : e) }, { merge: true });
+    logger.error('[livre] livraison Stripe échouée', { sessionId: session.id, e });
+    return 500;
+  }
+}
 
 // ─── Repas livrés au kiosque · le pilote à dix places ────────────────
 // Alex, 10 septembre 2026. Le service rendu à un marchand l'an passé
