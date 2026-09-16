@@ -63,6 +63,10 @@ const ZOHO_SMTP_HOST = 'smtp.zohocloud.ca';
 const FROM = `Festival Médiéval de Montpellier <${ZOHO_EMAIL}>`;
 
 const PDF = path.join(__dirname, 'grimoire-fmm-2026.pdf');
+// L'EPUB part dans le même courriel, au même prix (Alex, 2026-09-16) :
+// un seul lien Square, et l'acheteur garde le format qui lui convient.
+// Il se fabrique par tools/grimoire/epub_livre.py, depuis les mêmes recettes.
+const EPUB = path.join(__dirname, 'livre-recettes-fmm-2026.epub');
 // Les noms possibles de l'article dans Square. Une commande qui n'en
 // porte aucun n'est pas le livre de recettes : rien ne part par la poste.
 //
@@ -129,7 +133,7 @@ const POLITIQUE_ANNULATION_EN =
 
 const CORPS_FR = (nom) => `Bonjour${nom ? ' ' + nom : ''},
 
-Merci d'avoir acheté le livre de recettes du festival. Il est en pièce jointe, en format PDF : vingt-quatre recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites. Elles viennent des deux éditions, celle de 2025 et celle de 2026.
+Merci d'avoir acheté le livre de recettes du festival. Vous le trouverez en pièce jointe en deux formats : le PDF, qui s'imprime et s'ouvre partout, et l'EPUB, qui s'ajuste à l'écran d'une liseuse ou d'un téléphone. Il réunit vingt-quatre recettes de la cuisine du festival, du pain viking à l'hypocras, telles qu'elles sortent des marmites, et elles viennent des deux éditions, celle de 2025 et celle de 2026.
 
 Les quantités ont été ramenées à quatre personnes, pour une table ordinaire un mardi soir. Vous les trouverez en mesures métriques, avec les tasses et les cuillères entre parenthèses, alors vous n'avez rien à diviser ni à convertir. Les temps de cuisson, eux, n'ont pas bougé d'une minute. Goûtez souvent, et salez un peu plus que vous ne croyez devoir le faire.
 
@@ -288,6 +292,8 @@ exports.squareGrimoire = onRequest(
         text: CORPS_FR(nom),
         attachments: [
           { filename: 'Livre-de-recettes-du-festival-FMM-2026.pdf', content: fs.createReadStream(PDF) },
+          { filename: 'Livre-de-recettes-du-festival-FMM-2026.epub', content: fs.createReadStream(EPUB),
+            contentType: 'application/epub+zip' },
         ],
       });
 

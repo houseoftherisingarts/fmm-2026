@@ -45,7 +45,7 @@ const GRIMOIRE_EN_VENTE = true;
 // L'aperçu public, quatre pages : la couverture, deux recettes et
 // l'invitation. Le numéro monte à chaque refonte du livre, parce que
 // `public/**` est servi avec un cache d'un an marqué immuable.
-const APERCU_GRIMOIRE = '/grimoire/apercu-livre-recettes-v4.pdf';
+const APERCU_GRIMOIRE = '/grimoire/apercu-livre-recettes-v5.pdf';
 
 // Le titre porte le nom complet du livre, qui est long. Les tailles sont
 // mesurées écran par écran pour qu'il tienne toujours sur deux lignes :
@@ -690,7 +690,7 @@ const FR = {
   grimoireBientot: 'Bientôt en vente',
   grimoireCta: 'Acheter le livre',
   grimoirePreview: 'Feuilleter deux recettes',
-  grimoireNote: '9 $ plus taxes · Livre numérique en format PDF, envoyé par courriel après l’achat.',
+  grimoireNote: '9 $ plus taxes · Livre numérique en PDF et en EPUB, les deux envoyés par courriel après l’achat.',
   grimoireAlt: 'La couverture du livre de recettes du festival',
 };
 
@@ -750,7 +750,7 @@ const EN: typeof FR = {
   grimoireBientot: 'Coming soon',
   grimoireCta: 'Buy the cookbook',
   grimoirePreview: 'Read two recipes',
-  grimoireNote: '$9 plus tax · Digital book in PDF, emailed after purchase.',
+  grimoireNote: '$9 plus tax · Digital book in PDF and EPUB, both emailed after purchase.',
   grimoireAlt: 'The cover of the festival cookbook',
 };
 

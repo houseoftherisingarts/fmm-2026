@@ -491,7 +491,7 @@ APERCU_RECETTES = ('olla gitana', 'brochette de poulet du verger')
 # `public/**` est servi avec un cache d'un an marque immuable. Remplacer
 # le fichier sans changer son nom laisserait tout le monde devant
 # l'ancien aperçu : le numero monte a chaque refonte du livre.
-APERCU_PUBLIC = 'apercu-livre-recettes-v4.pdf'
+APERCU_PUBLIC = 'apercu-livre-recettes-v5.pdf'
 
 RACINE = HERE.parent.parent
 
@@ -536,7 +536,7 @@ if __name__ == '__main__':
               'Vingt-quatre recettes des éditions 2025 et 2026, écrites pour quatre personnes et '
               'réparties en six chapitres qui vont du pain viking à l’hypocras. Le livre coûte '
               'neuf dollars plus taxes '
-              'et vous arrive par courriel, en format PDF.</p>'
+              'et vous arrive par courriel en deux formats, PDF et EPUB.</p>'
               '<div class="orn"><span class="rule-gold" style="width:1.7in"></span></div></div></section>')
     (HERE / 'apercu.html').write_text(
         head + '<body>' + secs[0] + ''.join(choisies) + teaser + '</body></html>',
