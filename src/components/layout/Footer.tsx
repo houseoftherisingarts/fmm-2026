@@ -498,8 +498,8 @@ const Footer: React.FC = () => {
             />
             <span className="opacity-45 group-hover:opacity-80 transition-opacity uppercase tracking-[0.28em]">
               {lang === 'FR'
-                ? 'Site développé par Vexel Webstudio, un projet du Salon des Inconnus'
-                : 'Website built by Vexel Webstudio, a project of Le Salon des Inconnus'}
+                ? 'Site développé par Vexel Webstudio, un projet créatif du Salon des Inconnus'
+                : 'Website built by Vexel Webstudio, a creative project of Le Salon des Inconnus'}
             </span>
           </a>
         </div>
