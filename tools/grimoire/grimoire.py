@@ -504,7 +504,12 @@ def deposer():
     ]
     for source, cible in cibles:
         cible.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, cible)
+        # Compactage sans perte (objets en double, flux compressés) : le PDF
+        # passait de 11,7 à 7,6 Mo, et le courriel d'achat, qui porte aussi
+        # l'EPUB, doit rester sous la limite de 20 Mo des boîtes Outlook.
+        import fitz
+        fitz.open(source).save(cible, garbage=4, deflate=True, deflate_images=True,
+                               deflate_fonts=True, clean=True, use_objstms=1)
         print(f'  déposé : {cible.relative_to(RACINE)} ({cible.stat().st_size // 1024} ko)')
 
 

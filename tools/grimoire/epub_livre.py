@@ -102,6 +102,18 @@ def recette(tab):
             + (f'<p class="note">{esc(r["note"])}</p>' if r.get('note') else '')
             + '</section>')
 
+# Une liseuse n'affiche jamais une couverture à plus de 1200 px de large :
+# les originaux de 1240 x 1848 pesaient 1,6 Mo à eux deux.
+def jpeg_leger(chemin, largeur=1000, qualite=82):
+    import io
+    from PIL import Image
+    im = Image.open(chemin).convert('RGB')
+    if im.width > largeur:
+        im = im.resize((largeur, round(im.height * largeur / im.width)), Image.LANCZOS)
+    tampon = io.BytesIO()
+    im.save(tampon, 'JPEG', quality=qualite, optimize=True, progressive=True)
+    return tampon.getvalue()
+
 def bati():
     fichiers = {}   # chemin dans OEBPS -> (contenu, media-type, propriétés)
     spine = []
@@ -113,8 +125,8 @@ def bati():
     fichiers['style.css'] = (CSS, 'text/css', '')
     for f in ('Cinzel.ttf', 'Cormorant.ttf'):
         fichiers[f'fonts/{f}'] = ((HERE / 'fonts' / f).read_bytes(), 'font/ttf', '')
-    fichiers['images/couverture.jpg'] = ((HERE / 'couv-face.jpg').read_bytes(), 'image/jpeg', 'cover-image')
-    fichiers['images/dos.jpg'] = ((HERE / 'couv-dos.jpg').read_bytes(), 'image/jpeg', '')
+    fichiers['images/couverture.jpg'] = (jpeg_leger(HERE / 'couv-face.jpg'), 'image/jpeg', 'cover-image')
+    fichiers['images/dos.jpg'] = (jpeg_leger(HERE / 'couv-dos.jpg'), 'image/jpeg', '')
 
     pose('couverture.xhtml', xhtml(TITRE, f'<div class="couverture"><img src="images/couverture.jpg" alt="{esc(TITRE)}"/></div>', 'couverture'))
     pose('mot.xhtml', xhtml('Le mot de la cuisine',
