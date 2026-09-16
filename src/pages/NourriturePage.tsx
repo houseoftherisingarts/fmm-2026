@@ -56,8 +56,9 @@ const TITRE_LIVRE = 'text-[1.5rem]! sm:text-3xl! md:text-5xl! lg:text-4xl! xl:te
 // ─── Village Nourriture · édition 2026 ───────────────────────────────
 // Trois choses sur cette page (Alex, 2026-08-22) :
 //   1. Le MENU DU VILLAGE : ce qui se commande aux étals les trois
-//      jours. Sans prix, décision d'Alex. Source : menu 1.3 de
-//      Marc-Alexis. Le menu 1.2 est retiré.
+//      jours, avec les prix depuis le menu final du 2026-09-15. Le menu
+//      1.3 de Marc-Alexis est retiré, et le déjeuner sort du menu tant
+//      que ses prix ne sont pas arrêtés avec Phil.
 //   2. Le BANQUET : trois services servis à table, 50 places,
 //      65 $ plus taxes, payé par Square. L'ancien banquet à cinq
 //      services (85 $) est retiré : il est passé.
@@ -69,7 +70,9 @@ const TITRE_LIVRE = 'text-[1.5rem]! sm:text-3xl! md:text-5xl! lg:text-4xl! xl:te
 
 const ROMANS = ['I', 'II', 'III'];
 
-// ── Rangée de plat : losange de laiton, nom, une ligne d'histoire ────
+// ── Rangée de plat : losange de laiton, nom, meneur pointillé, prix, ──
+// puis la ligne d'histoire dessous. Les prix sont arrivés avec le menu
+// final du 2026-09-15 : jusque-là ils vivaient seulement à l'étal.
 const PlatRow: React.FC<{ plat: Plat; lang: 'FR' | 'EN' }> = ({ plat, lang }) => (
   <li className="group/plat flex gap-3.5">
     <span
@@ -77,10 +80,27 @@ const PlatRow: React.FC<{ plat: Plat; lang: 'FR' | 'EN' }> = ({ plat, lang }) =>
       className="mt-[0.6rem] shrink-0 w-[7px] h-[7px] rotate-45 transition-colors duration-300"
       style={{ border: '1px solid var(--color-copper)' }}
     />
-    <div className="min-w-0">
-      <span className="font-display title-medieval text-base md:text-lg text-ivory leading-snug transition-colors duration-300 group-hover/plat:text-[var(--color-amber-glow)]">
-        {plat.name}
-      </span>
+    <div className="min-w-0 flex-1">
+      <div className="flex items-baseline gap-2.5">
+        <span className="font-display title-medieval text-base md:text-lg text-ivory leading-snug transition-colors duration-300 group-hover/plat:text-[var(--color-amber-glow)]">
+          {plat.name}
+        </span>
+        {plat.prix && (
+          <>
+            <span
+              aria-hidden
+              className="hidden sm:block flex-1 min-w-[1.5rem] self-end mb-[0.38em] border-b border-dotted"
+              style={{ borderColor: 'rgba(var(--sk-glow-rgb),0.34)' }}
+            />
+            <span
+              className="ml-auto pl-3 sm:pl-0 font-display title-medieval text-base md:text-lg shrink-0 whitespace-nowrap leading-snug"
+              style={{ color: 'var(--color-amber-glow)' }}
+            >
+              {plat.prix}
+            </span>
+          </>
+        )}
+      </div>
       {plat.note && (
         <p className="font-editorial text-sm text-ivory-soft leading-snug mt-1 max-w-prose">
           {plat.note[lang]}
@@ -504,7 +524,9 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
           {/* La taverne des élixirs : pleine largeur, corners dorés. */}
           <Reveal className="mt-2">
             <GildedFrame tone="amber" active className="block">
-              <div className="px-6 py-8 md:px-12 md:py-10" style={{ background: 'rgba(var(--sk-glow-rgb), 0.045)' }}>
+              {/* Le bas garde de l'air sur mobile : la dernière description
+                  touchait l'écoinçon doré depuis que chaque boisson en a une. */}
+              <div className="px-6 pt-8 pb-14 md:px-12 md:py-10" style={{ background: 'rgba(var(--sk-glow-rgb), 0.045)' }}>
                 <header className="flex items-baseline gap-3 mb-6">
                   <span aria-hidden style={{ color: 'var(--color-amber-glow)' }}><Glyphe name={ABREUVOIR.icon} size={26} /></span>
                   <h3 className="font-display title-medieval text-2xl md:text-3xl text-ivory">{ABREUVOIR.name[lang]}</h3>
@@ -624,7 +646,7 @@ const FR = {
   kioskAside: 'Sans réservation · Au gré du village',
   dishesWord: 'plats',
   tavernTag: 'Pour lever sa coupe',
-  kioskFootnote: 'Les prix sont affichés aux étals. Le menu peut changer sans préavis selon la disponibilité locale des produits.',
+  kioskFootnote: 'Le menu et les prix peuvent changer sans préavis, selon ce que les producteurs d’ici nous donnent la semaine du festival.',
 
   banquetRail: 'Le Banquet',
   banquetMeta: 'Places',
@@ -686,7 +708,7 @@ const EN: typeof FR = {
   kioskAside: 'No reservation · At the village’s pace',
   dishesWord: 'dishes',
   tavernTag: 'To raise your cup',
-  kioskFootnote: 'Prices are posted at the stalls. Menu subject to change without notice based on local availability.',
+  kioskFootnote: 'Menu and prices may change without notice, depending on what local growers bring us the week of the festival.',
 
   banquetRail: 'The Banquet',
   banquetMeta: 'Seats',

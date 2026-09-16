@@ -348,8 +348,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Pour celles et ceux que rien n’effraie, il y a les criquets épicés, les œufs de cent ans et la langue de porc. Ils figurent sous le titre « Pour les courageux », ce qui vous prévient.',
-        EN: 'For those whom nothing frightens, there are spiced crickets, century eggs and pork tongue. They sit under the heading “For the brave”, which is fair warning.',
+        FR: 'Pour celles et ceux que rien n’effraie, les criquets épicés attendent du côté des boustifailles, juste à côté des cuirs du seigneur. La nouveauté de l’année vient du grill : l’assiette de dégustation William J. Walter, deux saucisses au choix avec choucroute et moutarde forte.',
+        EN: 'For those whom nothing frightens, the spiced crickets are waiting over in the grub and greens, right beside the lord’s jerky. This year’s new thing comes off the grill: the William J. Walter tasting plate, two sausages of your choice with sauerkraut and strong mustard.',
       },
     ],
     salutFR: 'Bon appétit d’avance,',
