@@ -12,10 +12,20 @@
 // visuelle vient d'une variable CSS --pv-*, avec un repli sobre si le site
 // hôte ne les définit pas. Voir README.md pour les redéfinir avec le canon
 // du site.
+//
+// Le collant : la même section que l'inscription offre, plus bas, le choix
+// de la finition du collant Vexel au pied du site. `formule` (défaut Base)
+// décide quelles finitions s'allument, et `onCollant` est le seul chemin
+// d'écriture : le panneau ne touche jamais `settings/vexel.collant`
+// lui-même, c'est au site hôte de l'écrire dans SA base, exactement comme
+// `onSucces` l'écrit pour `settings/vexel.partenaire`. Sans `onCollant`, le
+// choix ne fait que se refléter dans l'aperçu, rien ne part nulle part.
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Eraser, Check, Copy, ExternalLink, Loader2 } from 'lucide-react';
 import { ARTICLES, PREAMBULE, TITRE, TEXTE_INTEGRAL_CONTRAT, VERSION_CONTRAT } from './contrat-representant';
+import { FINIS, FINI_DEFAUT, finiPermis, type FiniId, type FormuleCollant } from './collants';
+import { BadgeVexelRendu } from './BadgeVexelRendu';
 
 /** L'empreinte SHA-256 du texte affiché, calculée dans le navigateur : sert
  * seulement à se faire dire de rafraîchir si le serveur porte un contrat
@@ -121,6 +131,15 @@ const style = `
 .pv-panneau .pv-erreur { color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; }
 .pv-panneau .pv-spin { animation: pv-tourner 0.8s linear infinite; }
 @keyframes pv-tourner { to { transform: rotate(360deg); } }
+.pv-panneau .pv-collant { margin-top: 2rem; border-top: 1px solid var(--pv-bordure); padding-top: 1.5rem; }
+.pv-panneau .pv-collant-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 1rem 0.75rem; margin: 1rem 0 1.5rem; }
+.pv-panneau .pv-pastille-bloc { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; color: var(--pv-texte); font-family: var(--pv-font); }
+.pv-panneau .pv-pastille-bloc:disabled { opacity: 0.42; cursor: not-allowed; }
+.pv-panneau .pv-pastille { position: relative; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.pv-panneau .pv-pastille-lisere { position: absolute; inset: 0; border-radius: 50%; padding: 2px; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.pv-panneau .pv-pastille-nom { font-size: 13px; text-align: center; line-height: 1.2; }
+.pv-panneau .pv-pastille-mention { font-size: 11px; text-align: center; line-height: 1.2; color: var(--pv-muted); }
+.pv-panneau .pv-collant-apercu { margin-top: 0.25rem; }
 `;
 
 function AperçuPartage() {
@@ -251,6 +270,59 @@ function ZoneSignature({ onChange }: { onChange: (dataUrl: string | null) => voi
   );
 }
 
+function SectionCollant({
+  formule,
+  collant,
+  onChoisir,
+  code,
+}: {
+  formule: FormuleCollant;
+  collant: FiniId;
+  onChoisir: (id: FiniId) => void;
+  code: string;
+}) {
+  const finiActif = FINIS.find((f) => f.id === collant) ?? FINIS[0];
+  return (
+    <div className="pv-collant">
+      <h3>Votre collant</h3>
+      <p className="pv-muted" style={{ marginBottom: '0.5rem' }}>
+        Le collant Vexel au pied de votre site prend la finition que vous choisissez ici. Votre formule en ouvre
+        certaines; les autres s'allument en montant de formule.
+      </p>
+      <div className="pv-collant-grille">
+        {FINIS.map((f) => {
+          const permis = finiPermis(f.id, formule);
+          const actif = f.id === collant;
+          return (
+            <button
+              key={f.id}
+              type="button"
+              className="pv-pastille-bloc"
+              disabled={!permis}
+              aria-pressed={actif}
+              onClick={() => onChoisir(f.id)}
+            >
+              <span className="pv-pastille" style={{ background: f.fond }}>
+                <span className="pv-pastille-lisere" style={{ background: f.lisere }} aria-hidden />
+                {actif ? <Check size={16} style={{ color: f.encre }} aria-hidden /> : null}
+              </span>
+              <span className="pv-pastille-nom">{f.nom}</span>
+              {!permis ? (
+                <span className="pv-pastille-mention">
+                  {f.formuleMin === 'hybride' ? 'à partir de Hybride' : 'à partir de Signature'}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+      <div className="pv-collant-apercu">
+        <BadgeVexelRendu fini={finiActif} code={code} nom="Vexel" />
+      </div>
+    </div>
+  );
+}
+
 export interface PartenaireVexelPanneauProps {
   /** L'identifiant du site chez Vexel (clients/{slug} dans vexel-integrations). */
   slug: string;
@@ -259,11 +331,18 @@ export interface PartenaireVexelPanneauProps {
   /** Appelé une fois le code actif : au site hôte d'écrire settings/vexel
    * dans SA propre base pour que BadgeVexel le lise (voir README.md). */
   onSucces?: (resultat: { code: string; lien: string; page: string }) => void;
+  /** La formule d'abonnement du site, qui décide quelles finitions du collant
+   * s'allument dans la section « Votre collant ». Défaut : Base. */
+  formule?: FormuleCollant;
+  /** Au site hôte d'écrire settings/vexel.collant dans SA propre base quand le
+   * choix change (le panneau n'écrit jamais ce document lui-même). Sans cette
+   * prop, le choix ne fait que se refléter dans l'aperçu. */
+  onCollant?: (id: FiniId) => Promise<void>;
 }
 
 type Etat = 'formulaire' | 'envoi' | 'fait' | 'erreur';
 
-export function PartenaireVexelPanneau({ slug, cle, onSucces }: PartenaireVexelPanneauProps) {
+export function PartenaireVexelPanneau({ slug, cle, onSucces, formule = 'base', onCollant }: PartenaireVexelPanneauProps) {
   const [nom, setNom] = useState('');
   const [courriel, setCourriel] = useState('');
   const [signature, setSignature] = useState<string | null>(null);
@@ -272,6 +351,9 @@ export function PartenaireVexelPanneau({ slug, cle, onSucces }: PartenaireVexelP
   const [resultat, setResultat] = useState<{ code: string; lien: string; page: string } | null>(null);
   const [copie, setCopie] = useState(false);
   const [empreinte, setEmpreinte] = useState<string | null>(null);
+  const [collant, setCollant] = useState<FiniId>(FINI_DEFAUT);
+  const [collantOccupe, setCollantOccupe] = useState<FiniId | null>(null);
+  const [collantErreur, setCollantErreur] = useState('');
 
   useEffect(() => {
     empreinteContrat().then(setEmpreinte).catch(() => setEmpreinte(null));
@@ -306,6 +388,20 @@ export function PartenaireVexelPanneau({ slug, cle, onSucces }: PartenaireVexelP
     } catch (e) {
       setErreur(e instanceof Error ? e.message : 'L’inscription a échoué.');
       setEtat('erreur');
+    }
+  }
+
+  async function choisirCollant(id: FiniId) {
+    if (!finiPermis(id, formule) || id === collant || collantOccupe) return;
+    setCollantOccupe(id);
+    setCollantErreur('');
+    try {
+      await onCollant?.(id);
+      setCollant(id);
+    } catch (e) {
+      setCollantErreur(e instanceof Error ? e.message : 'La finition ne s’est pas enregistrée.');
+    } finally {
+      setCollantOccupe(null);
     }
   }
 
@@ -428,6 +524,18 @@ export function PartenaireVexelPanneau({ slug, cle, onSucces }: PartenaireVexelP
           </AnimatePresence>
         </>
       )}
+
+      <SectionCollant
+        formule={formule}
+        collant={collant}
+        onChoisir={(id) => void choisirCollant(id)}
+        code={resultat?.code ?? 'VEXEL'}
+      />
+      {collantErreur ? (
+        <p className="pv-erreur" role="alert">
+          {collantErreur}
+        </p>
+      ) : null}
     </div>
   );
 }

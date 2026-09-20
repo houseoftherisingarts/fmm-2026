@@ -46,6 +46,15 @@ const PartenaireVexelSection: React.FC = () => (
             console.warn('[FMM] settings/vexel, écriture refusée :', e);
           }
         }}
+        formule="signature"
+        onCollant={async (id) => {
+          if (!db) return;
+          try {
+            await setDoc(doc(db, 'settings/vexel'), { collant: id }, { merge: true });
+          } catch (e) {
+            console.warn('[FMM] settings/vexel.collant, écriture refusée :', e);
+          }
+        }}
       />
     </div>
   </div>
