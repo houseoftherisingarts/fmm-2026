@@ -127,6 +127,8 @@ const style = `
 }
 .cv-volet > *:not(.cv-sheen):not(.cv-grain) { position: relative; z-index: 1; }
 .cv-corps { position: relative; display: flex; flex-direction: column; justify-content: center; padding: 1.5rem; }
+/* Le titre de la carte garde son encre, même sous les styles de titre du site hôte (dégradés, texte détouré). */
+.cv-carte h2 { color: #1c1712; -webkit-text-fill-color: #1c1712; background: none; text-shadow: none; letter-spacing: normal; text-transform: none; }
 .cv-carte-fermer {
   position: absolute; top: 0.75rem; right: 0.75rem;
   width: 2.5rem; height: 2.5rem;
