@@ -15,10 +15,19 @@
 // donc jamais d'apparence sans qu'on le leur demande. Le rendu lui-même vit
 // dans BadgeVexelRendu, copié tel quel dans vexel-site, pour que l'aperçu du
 // studio et le badge des sites montrent exactement la même chose.
+//
+// Le collant choisi dans l'espace client de Vexel prime : dès qu'il a un code, le
+// badge demande à la fonction publique collantDuSite la finition posée pour
+// ce nom d'hôte. Si la réponse nomme une finition connue que la formule
+// ouvre, elle passe devant settings/vexel.collant. Toute autre réponse
+// (fonction absente, 404, réseau coupé) laisse settings/vexel.collant en
+// place, et aucune erreur ne remonte au site.
 import { useEffect, useState } from 'react';
 import { doc, onSnapshot, type Firestore } from 'firebase/firestore';
-import { finiDe } from './collants';
+import { finiDe, finiPermis, RANG_FORMULE, type FormuleCollant } from './collants';
 import { BadgeVexelRendu } from './BadgeVexelRendu';
+
+const PONT_COLLANT = 'https://us-central1-vexel-integrations.cloudfunctions.net/collantDuSite';
 
 interface ParametresVexel {
   partenaire?: { code?: string; lien?: string };
@@ -35,6 +44,7 @@ export interface BadgeVexelProps {
 export function BadgeVexel({ db, className = '' }: BadgeVexelProps) {
   const [code, setCode] = useState<string | null>(null);
   const [collant, setCollant] = useState<string | undefined>(undefined);
+  const [collantPont, setCollantPont] = useState<string | null>(null);
 
   useEffect(() => {
     return onSnapshot(
@@ -57,9 +67,27 @@ export function BadgeVexel({ db, className = '' }: BadgeVexelProps) {
     );
   }, [db]);
 
+  // Le pont n'est interrogé que si le badge a de quoi se rendre (un code
+  // partenaire), pour qu'un site sans représentant ne fasse aucun appel.
+  const actif = code !== null;
+  useEffect(() => {
+    if (!actif) return;
+    const ctrl = new AbortController();
+    fetch(`${PONT_COLLANT}?site=${encodeURIComponent(window.location.hostname)}`, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((r: { collant?: unknown; formule?: unknown } | null) => {
+        if (!r || typeof r.collant !== 'string') return;
+        const formule: FormuleCollant =
+          typeof r.formule === 'string' && Object.prototype.hasOwnProperty.call(RANG_FORMULE, r.formule) ? (r.formule as FormuleCollant) : 'base';
+        if (finiPermis(r.collant, formule)) setCollantPont(r.collant);
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [actif]);
+
   if (!code) return null;
 
-  return <BadgeVexelRendu fini={finiDe(collant)} code={code} nom="Vexel" className={className} />;
+  return <BadgeVexelRendu fini={finiDe(collantPont ?? collant)} code={code} nom="Vexel" className={className} />;
 }
 
 export default BadgeVexel;
