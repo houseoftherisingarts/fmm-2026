@@ -618,6 +618,11 @@ service cloud.firestore {
     // adresses. Les règles Firestore ne savent pas limiter un débit. Si
     // cela devait arriver, la voie à fermer est celle-ci (`allow create:
     // if false`), et le lien signé de la fonction suffit à tout.
+    match /banquetTickets/{courriel} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.token.email != null && request.auth.token.email.lower() == courriel);
+      allow write: if isAdmin();
+    }
+
     match /desabonnements/{courriel} {
       allow read: if isAdmin();
       allow create: if request.resource.data.keys().hasOnly(['courriel', 'source', 'desabonneLe'])
