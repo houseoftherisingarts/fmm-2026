@@ -20,7 +20,7 @@ const TEXTES = {
     salon: 'Le Salon des Inconnus',
     libelle: "Site créé par Vexel Webstudio : en savoir plus sur l'entente",
     titre: 'Un site comme celui-ci, avec un coup de pouce',
-    corps: (proprietaire: string, prenom: string) =>
+    corps: (proprietaire: string, _prenom: string) =>
       `${proprietaire} est affiliée à Vexel Webstudio pour les sites Internet. Si vous ouvrez un dossier chez Vexel à partir d'ici, vous gagnez un rabais sur ce même forfait.`,
     // Sans code partenaire, aucun rabais n'existe : la carte le tait au lieu de le promettre.
     titreSansCode: 'Un site comme celui-ci',
@@ -38,7 +38,7 @@ const TEXTES = {
     salon: 'Le Salon des Inconnus',
     libelle: 'Site by Vexel Webstudio: learn about the partnership',
     titre: 'A site like this one, with a helping hand',
-    corps: (proprietaire: string, prenom: string) =>
+    corps: (proprietaire: string, _prenom: string) =>
       `${proprietaire} is affiliated with Vexel Webstudio for websites. If you open a file with Vexel from here, you earn a discount on that same plan.`,
     titreSansCode: 'A site like this one',
     corpsSansCode: 'This site was built by Vexel Webstudio, a web studio founded at Le Salon des Inconnus.',
