@@ -700,7 +700,7 @@ const FR = {
   when: 'Quand',
   seats: 'Places',
   cost: 'Coût',
-  banquetWhen: 'Dimanche · 13h00. Date limite d’inscription : 17 septembre 2026.',
+  banquetWhen: 'Dimanche 27 septembre · 13h00.',
   banquetSeats: '50 places limitées',
   banquetCost: '65 $ par personne, plus taxes',
   // Le décompte dit le vrai et rien de plus : pas de compte à rebours,
@@ -763,7 +763,7 @@ const EN: typeof FR = {
   when: 'When',
   seats: 'Seats',
   cost: 'Cost',
-  banquetWhen: 'Sunday · 1:00 PM. Registration deadline: September 17, 2026.',
+  banquetWhen: 'Sunday, September 27 · 1:00 PM.',
   banquetSeats: '50 seats, limited',
   banquetCost: '$65 per person, plus tax',
   restant: (n: number) =>

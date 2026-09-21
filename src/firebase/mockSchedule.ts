@@ -57,7 +57,7 @@ const SEED: ScheduleDay[] = [
       { time: '11h45–12h15', label: 'Démonstration de forge',                    where: 'Village paysan' },
       { time: '12h00–13h00', label: 'Cérémonie de Freya : Célébration de l’équinoxe', where: 'Camp viking' },
       { time: '13h00–14h00', label: 'Spectacle de Canteraine',                    where: 'Scène' },
-      { time: '13h00–15h00', label: 'Banquet de l’Équinoxe',                       where: 'Scène' },
+      { time: '13h00–15h00', label: 'Banquet du Prince William',                    where: 'Scène' },
       { time: '13h30–15h00', label: 'Tournoi de bridge fight',                    where: 'Arène' },
       { time: '14h30–15h00', label: 'Démonstration de fonderie de fer',           where: 'Village paysan' },
     ],

@@ -70,6 +70,26 @@ const TOUTES: Annonce[] = [
     bodyEN: POLITIQUE_ANNULATION.longueEN,
     cta: { url: '/billets', labelFR: 'Voir les billets', labelEN: 'See the tickets' },
   },
+  // Le banquet est le dimanche (Alex, 2026-09-21). Une convive croyait
+  // lire « samedi » sur son reçu : les places vendues en août portent
+  // l'ancien nom, Banquet de l'Équinoxe, et Square n'imprime que la date
+  // d'achat. Épinglé jusqu'au festival, avec le fine print de la
+  // politique d'annulation comme partout où une place se vend.
+  {
+    id:   'banquet-dimanche-2026',
+    tone: 'info',
+    date: '2026-09-21',
+    permanent: true,
+    titleFR: 'Le Banquet du Prince William se tient le dimanche',
+    titleEN: 'The Prince William Banquet is on Sunday',
+    bodyFR:
+      'Il n’y a qu’un seul banquet de toute la fin de semaine, et il se tient le dimanche 27 septembre à treize heures, sur la scène du festival. Si vous avez réservé vos places plus tôt cet été, votre reçu porte peut-être encore l’ancien nom du repas, le Banquet de l’Équinoxe, avec la date du jour où vous avez payé : c’est le même banquet, et vos places vous attendent à la grande table le dimanche, tout de suite après la cérémonie de Freya. Il reste encore des places parmi les cinquante, à 65 $ plus taxes pour les trois services, et elles se réservent sur la page Nourriture. '
+      + POLITIQUE_ANNULATION.courteFR,
+    bodyEN:
+      'There is only one banquet all weekend, and it is held on Sunday 27 September at one o’clock, on the festival stage. If you booked your seats earlier this summer, your receipt may still carry the meal’s former name, the Equinox Banquet, along with the date you paid: it is the same banquet, and your seats are waiting at the long table on Sunday, right after the ceremony of Freya. There are still seats left among the fifty, at $65 plus tax for the three courses, and they can be booked on the Food page. '
+      + POLITIQUE_ANNULATION.courteEN,
+    cta: { url: '/nourriture?banquet=1', labelFR: 'Réserver ma place', labelEN: 'Book my seat' },
+  },
   // Le règlement des armes, adopté par le comité et affiché au babillard
   // (Alex, 2026-09-02). Il reste épinglé : un règlement ne se décroche
   // pas, et il ouvre le tableau parce que c'est ce qu'il faut avoir lu
