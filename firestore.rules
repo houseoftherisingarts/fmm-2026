@@ -1349,11 +1349,24 @@ service cloud.firestore {
     }
 
     // Partenaire Vexel (badge foil du pied de page) : lecture publique du
-    // seul document, écriture par l'admin du site seulement.
+    // seul document, écriture par l'admin du site seulement, et la finition
+    // du collant bornée à la formule du festival (Signature), recopiée de
+    // _vexel-base/docs/COLLANT-REGLES.md.
+    function finitionsDe(formule) {
+      return formule == 'signature'
+        ? ['noir', 'blanc', 'rouge', 'bleu', 'vert', 'violet', 'bronze', 'argent', 'or', 'saphir', 'irise', 'arc-en-ciel']
+        : formule == 'hybride'
+          ? ['noir', 'blanc', 'rouge', 'bleu', 'vert', 'violet', 'bronze', 'argent', 'or', 'saphir']
+          : ['noir', 'blanc', 'rouge', 'bleu', 'vert', 'violet', 'bronze'];
+    }
+    function collantOk(formule) {
+      return !('collant' in request.resource.data)
+        || request.resource.data.collant in finitionsDe(formule);
+    }
     match /settings/vexel {
       allow get:   if true;
       allow list:  if false;
-      allow write: if isAdmin();
+      allow write: if isAdmin() && collantOk('signature');
     }
 
     // ── Places du banquet · le compteur public ────────────────────

@@ -11,6 +11,7 @@ import { ouvrirBilletterie } from '../../lib/billetterie';
 import { ouvrirBanniereConsentement } from '../../lib/consentement';
 import { db, isFirebaseReady } from '../../firebase';
 import { BadgeVexel } from '../../vexel/BadgeVexel';
+import { CollantVexel } from '../../vexel/CollantVexel';
 import { HexPanel, ChevronButton, HexMark, Eyebrow } from '../marche/atmospherics';
 import { BubbleCanvas } from '../marche/effects';
 import { useCountdown } from '../../lib/useCountdown';
@@ -481,27 +482,9 @@ const Footer: React.FC = () => {
               <BadgeVexel db={db} />
             </div>
           )}
-          <a
-            href="https://vexel-webstudio.web.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2.5 text-[11px] font-sans transition-colors"
-            style={{ color: 'var(--color-bone)' }}
-          >
-            <img
-              src="/salon/salon-logo.webp"
-              alt=""
-              aria-hidden
-              width={12}
-              height={34}
-              className="h-[34px] w-auto opacity-65 group-hover:opacity-100 transition-opacity"
-            />
-            <span className="opacity-45 group-hover:opacity-80 transition-opacity uppercase tracking-[0.28em]">
-              {lang === 'FR'
-                ? 'Site développé par Vexel Webstudio, un projet créatif du Salon des Inconnus'
-                : 'Website built by Vexel Webstudio, a creative project of Le Salon des Inconnus'}
-            </span>
-          </a>
+          {/* Le collant obligatoire de Vexel, en foil (_vexel-base/src/vexel/CollantVexel.tsx).
+              Il remplace la ligne de texte du 3 août : sa carte nomme déjà le Salon des Inconnus. */}
+          <CollantVexel lang={lang} />
         </div>
       </div>
 
