@@ -376,6 +376,11 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       {/* Retirer les publicités, paiement unique (déplacé du profil, Alex, 2026-08-28). */}
       {uid && <div id="don-sans-pub"><SansPubPanel uid={uid} courriel={user?.email || undefined} lang={lang} /></div>}
 
+      {/* Le coffre et la clé (Alex, 2026-09-21) : la première des
+          sections en Montpellois, parce que c'est là que la monnaie
+          se dépense le plus vite. */}
+      <CoffreEtCle lang={lang} bourse={bourse} actif={!!uid} />
+
       {/* Skins de la plateforme */}
       <section>
         <p className="witcher-stat-label mb-4"><Palette size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Skins de la plateforme' : 'Platform skins'}</p>
