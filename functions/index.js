@@ -2873,6 +2873,196 @@ exports.acheterAmbiance = onCall({ region: 'us-central1' }, async (requete) => {
   return { solde };
 });
 
+// ── Le coffre et la clé (Alex, 2026-09-21) ───────────────────────────
+// Alex, à la voix : « un coffre qu'on ouvre avec une clé, qu'on peut
+// acheter un par semaine et qui nous donne trois objets au hasard ».
+// Le coffre coûte 100 Montpellois et s'achète autant de fois qu'on
+// veut; la clé en coûte 50 et ne se vend qu'une fois par semaine, et
+// c'est elle qui tient la cadence. Les deux ensemble rendent trois
+// prises tirées du catalogue cosmétique, plus deux prix rares à une
+// chance sur cent chacun : le livre de recettes, qui part par courriel
+// dans la seconde, et une nuit au Salon des Inconnus, qu'Alex remet à
+// la main depuis la collection prixRares.
+//
+// Les décisions (le catalogue, les poids, le tirage, la semaine de la
+// clé) vivent dans functions/coffre.js, que node rejoue sans émulateur
+// par `node functions/test-coffre.js`. Le catalogue se bâtit ici, une
+// seule fois, à partir des tables de prix ci-dessus : aucune seconde
+// liste de prix à tenir en phase.
+const coffreDecisions = require('./coffre');
+const CATALOGUE_COFFRE = coffreDecisions.construireCatalogue({
+  PRIX_SKIN, PRIX_DOS, PRIX_TAFL, CATALOGUE_BOUTIQUE, CATALOGUE_TROUVAILLE,
+  AMBIANCES_ACHETABLES, PRIX_AMBIANCE,
+});
+const { PRIX_COFFRE, PRIX_CLE } = coffreDecisions;
+
+// Le coffre distribue des prix qui valent de l'argent réel (le livre,
+// une nuit au Salon), alors le tirage ne se fie pas à Math.random, dont
+// la graine se devine : chaque nombre vient du générateur
+// cryptographique de Node. Le test, lui, garde son alea scénarisé.
+const aleaSur = () => crypto.randomInt(0, 2 ** 32) / 2 ** 32;
+
+/** Le courriel du compte : celui du jeton d'abord, la fiche users/{uid}
+ *  ensuite pour les comptes ouverts sans adresse dans le jeton. */
+async function courrielDuCompte(uid, jeton) {
+  const duJeton = String((jeton && jeton.email) || '').trim().toLowerCase();
+  if (duJeton) return duJeton;
+  const snap = await db.collection('users').doc(uid).get();
+  return String((snap.exists && snap.data().email) || '').trim().toLowerCase();
+}
+
+exports.acheterCoffre = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter un coffre.');
+  // debiter() garde et écrit dans la même transaction : deux clics coup
+  // sur coup ne peuvent pas payer un seul coffre deux fois.
+  const solde = await debiter(uid, PRIX_COFFRE, { coffres: FieldValue.increment(1) });
+  const { data } = await assurerBourse(uid);
+  return { solde, coffres: data.coffres || 0, cles: data.cles || 0 };
+});
+
+exports.acheterCle = onCall({ region: 'us-central1' }, async (requete) => {
+  const uid = requete.auth && requete.auth.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter une clé.');
+  const { data } = await assurerBourse(uid);
+  const dernier = data.dernierCle && data.dernierCle.toDate ? data.dernierCle.toDate() : null;
+  if (!coffreDecisions.peutAcheterCle(dernier, new Date())) {
+    const quand = coffreDecisions.prochaineCle(dernier);
+    throw new HttpsError('failed-precondition', `Une seule clé par semaine. La prochaine vous attend le ${journeeFestival(quand.getTime())}.`);
+  }
+  const solde = await debiter(uid, PRIX_CLE, {
+    cles: FieldValue.increment(1), dernierCle: FieldValue.serverTimestamp(),
+  });
+  const apres = await assurerBourse(uid);
+  return {
+    solde, coffres: apres.data.coffres || 0, cles: apres.data.cles || 0,
+    prochaineCle: coffreDecisions.prochaineCle(new Date()).toISOString(),
+  };
+});
+
+exports.ouvrirCoffre = onCall(
+  // Le livre part d'ici quand il sort : il faut le mot de passe Zoho, et
+  // la mémoire du PDF de cinq mégaoctets, comme pour squareGrimoire.
+  { region: 'us-central1', secrets: [ZOHO_APP_PASSWORD], memory: '512MiB', timeoutSeconds: 120 },
+  async (requete) => {
+    const uid = requete.auth && requete.auth.uid;
+    if (!uid) throw new HttpsError('unauthenticated', 'Connectez-vous pour ouvrir votre coffre.');
+    const bourseRef = db.collection('bourses').doc(uid);
+    const avatarRef = db.collection('avatars').doc(uid);
+    const [bourseSnap, avatarSnap] = await Promise.all([bourseRef.get(), avatarRef.get()]);
+    const bourse = bourseDe(bourseSnap);
+    const avatar = avatarSnap.exists ? avatarSnap.data() : { sac: [], equipe: {} };
+    if ((bourse.coffres || 0) < 1) throw new HttpsError('failed-precondition', 'Il vous faut d’abord un coffre.');
+    if ((bourse.cles || 0) < 1) throw new HttpsError('failed-precondition', 'Il vous faut une clé pour ouvrir ce coffre.');
+
+    // Tout ce que la personne possède déjà, d'où que ça vienne : un
+    // doublon se paie en Montpellois plutôt que de se donner deux fois.
+    const possedes = new Set([
+      ...(bourse.taflPieces || []), ...(bourse.taflPlateaux || []), ...(bourse.dosTarot || []),
+      ...(bourse.albums || []), ...(bourse.ambiances || []),
+      ...(avatar.sac || []), ...Object.values(avatar.equipe || {}).filter(Boolean),
+      ...(avatar.skinsDebloques || []),
+    ]);
+    const objets = coffreDecisions.tirerCoffre(CATALOGUE_COFFRE, possedes, aleaSur);
+
+    // Une seule transaction : le coffre et la clé s'en vont, les prises
+    // arrivent, et le journal s'écrit. Deux ouvertures lancées en même
+    // temps ne peuvent pas vider le même coffre deux fois.
+    const resultat = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(bourseRef);
+      const b = bourseDe(snap);
+      if ((b.coffres || 0) < 1 || (b.cles || 0) < 1) {
+        throw new HttpsError('failed-precondition', 'Il vous faut un coffre et une clé pour ouvrir.');
+      }
+      const versSac = [];
+      const versSkins = [];
+      const versDos = [];
+      const versTafl = [];
+      const versAmbiances = [];
+      let gain = 0;
+      for (const o of objets) {
+        gain += o.montpellois;
+        // Un doublon et un palier de pièces ne posent aucun objet : ils
+        // ont déjà rendu leurs Montpellois par `gain`.
+        if (o.doublon || o.type === 'montpellois') continue;
+        if (o.type === 'skin') versSkins.push(o.id);
+        else if (o.type === 'dos') versDos.push(o.id);
+        else if (o.type === 'tafl') versTafl.push(o.id);
+        else if (o.type === 'ambiance') versAmbiances.push(o.id);
+        else if (o.type === 'objet' || o.type === 'trouvaille') versSac.push(o.id);
+        // Le livre et la nuit ne vivent pas dans la bourse : ils partent
+        // par courriel et par le registre prixRares, juste après.
+      }
+      const gagneAvant = b.gagne || 0;
+      const majBourse = {
+        coffres: FieldValue.increment(-1), cles: FieldValue.increment(-1),
+        solde: (b.solde || 0) + gain, gagne: gagneAvant + gain,
+        maj: FieldValue.serverTimestamp(),
+      };
+      if (versDos.length) majBourse.dosTarot = FieldValue.arrayUnion(...versDos);
+      if (versTafl.length) {
+        // Un skin de tafl ouvre le plateau ET les pièces, d'un seul achat.
+        majBourse.taflPieces = FieldValue.arrayUnion(...versTafl);
+        majBourse.taflPlateaux = FieldValue.arrayUnion(...versTafl);
+      }
+      if (versAmbiances.length) majBourse.ambiances = FieldValue.arrayUnion(...versAmbiances);
+      tx.set(bourseRef, majBourse, { merge: true });
+
+      if (versSac.length || versSkins.length) {
+        const majAvatar = avatarSnap.exists ? {} : { corps: 'A', peau: 0, coiffure: 0, equipe: {} };
+        if (versSac.length) majAvatar.sac = FieldValue.arrayUnion(...versSac);
+        if (versSkins.length) majAvatar.skinsDebloques = FieldValue.arrayUnion(...versSkins);
+        tx.set(avatarRef, majAvatar, { merge: true });
+      }
+
+      // Le journal du coffre, pour qu'Alex puisse relire ce qui est
+      // sorti et vérifier que les chances tombent comme annoncé.
+      tx.set(bourseRef.collection('coffres').doc(), {
+        date: FieldValue.serverTimestamp(), objets, montpellois: gain,
+      });
+
+      return {
+        solde: majBourse.solde, coffres: (b.coffres || 0) - 1, cles: (b.cles || 0) - 1,
+        gagneAvant, gagneApres: majBourse.gagne,
+      };
+    });
+
+    await verifierRangsFortune(uid, resultat.gagneAvant, resultat.gagneApres);
+    if (!(bourse.depense > 0)) await poserBadge(uid, 'collectionneur');
+
+    // Les prix rares : le registre d'abord, parce qu'il doit exister
+    // même si le courriel se perd en chemin.
+    const rares = objets.filter((o) => o.type === 'livre' || o.type === 'nuit-salon');
+    if (rares.length) {
+      const courriel = await courrielDuCompte(uid, requete.auth.token);
+      const nom = String((requete.auth.token && requete.auth.token.name) || '');
+      for (const o of rares) {
+        const ref = await db.collection('prixRares').add({
+          uid, courriel, type: o.type, date: FieldValue.serverTimestamp(), remis: false,
+        });
+        if (o.type !== 'livre' || !courriel) continue;
+        try {
+          await envoyerLivre(courriel, nom);
+          await ref.set({ remis: true, livreLe: FieldValue.serverTimestamp() }, { merge: true });
+        } catch (e) {
+          // Le coffre est déjà ouvert et le gain est déjà écrit : une
+          // panne du SMTP laisse `remis: false`, et Alex renvoie le
+          // livre à la main depuis le registre.
+          logger.error('[coffre] livre non envoyé', { uid, e: String((e && e.message) || e) });
+        }
+      }
+    }
+
+    return {
+      solde: resultat.solde, coffres: resultat.coffres, cles: resultat.cles,
+      objets: objets.map((o) => ({
+        id: o.id, type: o.type, nomFR: o.nomFR, nomEN: o.nomEN,
+        doublon: o.doublon, montpellois: o.montpellois,
+      })),
+    };
+  },
+);
+
 exports.acheterAuSouk = onCall({ region: 'us-central1' }, async (requete) => {
   const acheteurUid = requete.auth && requete.auth.uid;
   if (!acheteurUid) throw new HttpsError('unauthenticated', 'Connectez-vous pour acheter.');
