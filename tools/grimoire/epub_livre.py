@@ -14,7 +14,9 @@ Usage : python3 epub_livre.py   (écrit livre-recettes-fmm-2026.epub et le
         dépose dans functions/ à côté du PDF)
 """
 import html, re, shutil, uuid, zipfile, pathlib, datetime
-from grimoire import RECETTES, CHAPITRES, MOT, GRAVURES, HERE, RACINE
+from grimoire import (RECETTES, CHAPITRES, MOT, GRAVURES, HERE, RACINE,
+                      MAPCHEF_CREDIT, MAPCHEF_TEXTE, MAPCHEF_CHANTIERS,
+                      MAPCHEF_SLOGAN, MAPCHEF_ETAPES, MAPCHEF_FIN)
 
 TITRE = 'Le livre de recettes du festival'
 AUTEUR = 'Marc-Alexis Pepin'
@@ -53,6 +55,14 @@ nav ol { list-style: none; padding-left: 0; }
 nav ol ol { padding-left: 1.2em; }
 nav li { margin: .3em 0; }
 nav a { text-decoration: none; color: inherit; }
+/* La page MapChef (2026-09-22) garde la police du site du chef, jamais Cinzel. */
+@font-face { font-family: 'Inter'; src: url(fonts/Inter.woff2); font-weight: 100 900; }
+.mapchef, .mapchef h1, .mapchef h3, .mapchef .kicker { font-family: 'Inter', Helvetica, Arial, sans-serif; }
+.mapchef h1 { font-weight: 900; text-transform: uppercase; letter-spacing: -.02em; line-height: 1; }
+.mapchef h3 { font-weight: 700; text-transform: none; letter-spacing: 0; color: inherit; font-size: .95em; }
+.mapchef .kicker { color: #a08060; margin-top: 1.2em; }
+.mapchef .photo { display: block; width: 100%; margin: 0 0 1em; }
+.mapchef .num { color: #a08060; font-weight: 900; }
 """
 
 def esc(t):
@@ -127,6 +137,8 @@ def bati():
         fichiers[f'fonts/{f}'] = ((HERE / 'fonts' / f).read_bytes(), 'font/ttf', '')
     fichiers['images/couverture.jpg'] = (jpeg_leger(HERE / 'couv-face.jpg'), 'image/jpeg', 'cover-image')
     fichiers['images/dos.jpg'] = (jpeg_leger(HERE / 'couv-dos.jpg'), 'image/jpeg', '')
+    fichiers['fonts/Inter.woff2'] = ((HERE / 'fonts' / 'Inter.woff2').read_bytes(), 'font/woff2', '')
+    fichiers['images/mapchef-chef.jpg'] = (jpeg_leger(HERE / 'mapchef-chef.webp'), 'image/jpeg', '')
 
     pose('couverture.xhtml', xhtml(TITRE, f'<div class="couverture"><img src="images/couverture.jpg" alt="{esc(TITRE)}"/></div>', 'couverture'))
     pose('mot.xhtml', xhtml('Le mot de la cuisine',
@@ -151,6 +163,13 @@ def bati():
         toc.append(f'<li><a href="{nom}">{rom}. {esc(titre)}</a><ol>'
                    + ''.join(f'<li><a href="{nom}#{slug(t)}">{esc(RECETTES[t]["titre"])}</a></li>' for t in tabs)
                    + '</ol></li>')
+    # Le chef, juste avant la quatrième, comme dans le PDF
+    pose('mapchef.xhtml', xhtml('MapChef', '<img class="photo" src="images/mapchef-chef.jpg" alt="Marc Alexis Pepin"/>'
+        f'<p class="kicker">{esc(MAPCHEF_CREDIT)}</p><h1>{esc(" ".join(MAPCHEF_SLOGAN))}</h1>'
+        f'<p>{esc(MAPCHEF_TEXTE)}</p><p class="kicker">{esc(MAPCHEF_ETAPES)}</p>'
+        + ''.join(f'<h3><span class="num">{i:02d}</span> {esc(t)}</h3><p>{esc(x)}</p>'
+                  for i, (t, x) in enumerate(MAPCHEF_CHANTIERS, 1))
+        + f'<p><b>{esc(MAPCHEF_FIN)}</b> <a href="https://mapchef.ca">mapchef.ca</a></p>', 'mapchef'))
     pose('fin.xhtml', xhtml('Au plaisir de festoyer ensemble', '<div class="couverture"><img src="images/dos.jpg" alt=""/></div>', 'couverture'))
 
     nav = xhtml('Sommaire',

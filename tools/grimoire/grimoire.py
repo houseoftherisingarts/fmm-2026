@@ -316,85 +316,36 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
     radial-gradient(90% 60% at 50% 0%, rgba(192,160,128,.1), transparent 70%),
     radial-gradient(60% 50% at 85% 100%, rgba(138,111,78,.12), transparent 70%); }
 .mc .pad { padding:0; }
-.mc .photo { position:relative; height:3.05in; flex-shrink:0; }
-.mc .photo img.fond { width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+.mc .photo { position:relative; height:2.4in; flex-shrink:0; }
+.mc .photo img.fond { width:100%; height:100%; object-fit:cover; object-position:center 12%; display:block; }
 .mc .photo::after { content:''; position:absolute; inset:0;
   background:linear-gradient(to bottom, rgba(10,10,8,.1) 0%, rgba(10,10,8,0) 38%, rgba(10,10,8,.82) 82%, #0a0a08 100%); }
 .mc .marque { position:absolute; left:.5in; bottom:.1in; z-index:2; display:flex; align-items:center; gap:.14in; }
 .mc .marque img { height:.6in; width:auto; filter:drop-shadow(0 2px 8px rgba(0,0,0,.7)); }
 .mc .nom { font-weight:900; font-size:27pt; letter-spacing:-.04em; line-height:.9; text-transform:uppercase; }
 .mc .par { font-size:6.4pt; letter-spacing:.3em; text-transform:uppercase; color:#c0a080; margin-top:.05in; }
-.mc .corps { padding:.2in .5in .42in; display:flex; flex-direction:column; flex:1; }
+.mc .corps { padding:.14in .5in .38in; display:flex; flex-direction:column; flex:1; }
 .mc .kick { font-size:6.6pt; font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:#c0a080; }
-.mc h2 { font-family:'InterMC',sans-serif; font-weight:900; font-size:24pt; letter-spacing:-.04em;
-  line-height:.92; text-transform:uppercase; margin:.08in 0 .14in; }
-.mc .or { background:linear-gradient(135deg, #e8d5b3 0%, #c0a080 46%, #8a6f4e 100%);
-  -webkit-background-clip:text; background-clip:text; color:transparent; }
-.mc .txt { font-size:8.6pt; line-height:1.55; color:rgba(236,228,212,.8); }
+.mc h2 { font-family:'InterMC',sans-serif; font-weight:900; font-size:19.5pt; letter-spacing:-.04em;
+  line-height:.92; text-transform:uppercase; margin:.07in 0 .12in; }
+/* L'or du texte reste plein : le dégradé posé par background-clip:text
+   laisse un cadre fin autour du mot dans le PDF de Chrome. Le dégradé
+   vit sur le bouton, qui est une surface. */
+.mc .or { color:#c0a080; }
+.mc .txt { font-size:8.4pt; line-height:1.5; color:rgba(236,228,212,.8); }
 .mc .grille { display:grid; grid-template-columns:1fr 1fr; gap:.12in; margin:.1in 0 0; }
+/* Aucune ombre portée sur cette page : Aperçu (macOS) dessine les halos
+   flous du PDF de Chrome comme des rectangles pleins (Alex, 2026-09-22). */
 .mc .carte { border:1px solid rgba(255,255,255,.15); border-radius:15px; background:rgba(255,255,255,.03);
-  box-shadow:0 0 30px rgba(192,160,128,.12), inset 0 1px 0 rgba(255,255,255,.06); padding:.13in .15in .14in; }
+  padding:.11in .14in .12in; }
 .mc .num { font-weight:900; font-size:15pt; letter-spacing:-.04em; line-height:1; }
 .mc h3 { font-family:'InterMC',sans-serif; font-weight:700; font-size:8.8pt; line-height:1.2; margin:.07in 0 .05in; }
-.mc .carte p { font-size:7.4pt; line-height:1.45; color:rgba(236,228,212,.72); }
-.mc .appel { margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:.2in; }
-.mc .bouton { display:inline-block; text-decoration:none; font-weight:700; font-size:7.4pt; letter-spacing:.14em;
-  text-transform:uppercase; color:#0a0a08; padding:.12in .22in; border-radius:999px;
-  background:linear-gradient(135deg, #e8d5b3 0%, #c0a080 46%, #8a6f4e 100%);
-  border:1px solid rgba(232,213,179,.55); box-shadow:0 10px 30px -12px rgba(192,160,128,.65); }
-.mc .note { font-size:6.8pt; color:rgba(236,228,212,.6); margin-top:.07in; padding-left:.06in; }
-.mc .coord { text-align:right; font-size:7.6pt; line-height:1.6; color:rgba(236,228,212,.85); }
-.mc .coord a { color:inherit; text-decoration:none; }
-.mc .coord .site { font-weight:800; font-size:9pt; letter-spacing:.02em; color:#c0a080; }
+.mc .carte p { font-size:7.2pt; line-height:1.42; color:rgba(236,228,212,.72); }
+.mc .fin { margin-top:auto; display:flex; align-items:baseline; justify-content:space-between; gap:.2in;
+  padding-top:.14in; border-top:1px solid rgba(192,160,128,.3); }
+.mc .fin p { font-weight:900; font-size:12pt; letter-spacing:-.03em; text-transform:uppercase; line-height:1; }
+.mc .fin a { font-weight:800; font-size:14pt; letter-spacing:-.01em; color:#c0a080; text-decoration:none; }
 """
-
-# Les quatre chantiers, repris de la copie approuvée de mapchef.ca
-# (lib/contenu.ts et lib/voix.ts), à la troisième personne.
-MAPCHEF_CHANTIERS = [
-    ('Remonter votre restaurant',
-     "Il lit vos ventes, goûte votre carte et regarde un service au complet, puis il vous remet un plan que votre brigade applique dès la semaine suivante."),
-    ('Réorganiser votre brigade',
-     "Les postes se redessinent avec vous et la mise en place se règle à la minute près, si bien que chacun sait quoi faire avant que le premier billet tombe."),
-    ('Faire rouler votre menu',
-     "Sa signature s'appelle le menu roulant : des plats neufs chaque mois, une fiche coûtée au sou près pour chaque assiette et une brigade formée pour suivre le changement."),
-    ('Réorganiser vos achats et votre matériel',
-     "Vos fournisseurs se renégocient avec vous, l'inventaire se compte jusqu'au fond de la chambre froide, et l'équipement qui dort se revend au bon moment."),
-]
-
-MAPCHEF_TEXTE = ("Chacune des recettes de ce livre est passée entre les mains de Marc Alexis Pepin, "
-    "qui les a relues une à une et a tranché ce qui méritait d'y rester. Le reste de l'année, il fait "
-    "tourner des cartes de restaurant, et il a vu assez de salles pleines perdre de l'argent sur des "
-    "plats qui dorment pour savoir où l'argent fuit. Sa cuisine à lui mêle la gastronomie moléculaire "
-    "de Montréal et la bistronomie portugaise, mais chez un client il garde son style dans sa poche et "
-    "travaille avec celui de la maison.")
-
-
-def page_mapchef():
-    cartes = ''.join(
-        f'<div class="carte"><span class="num or">{i:02d}</span><h3>{esc(t)}</h3><p>{esc(p)}</p></div>'
-        for i, (t, p) in enumerate(MAPCHEF_CHANTIERS, 1))
-    return page(f"""
-      <div class="photo">
-        <img class="fond" src="data:image/webp;base64,{b64('mapchef-chef.webp')}" alt="Marc Alexis Pepin">
-        <div class="marque">
-          <img src="data:image/png;base64,{b64('logo-marc-alexis.png')}" alt="">
-          <div><p class="nom">MapChef</p><p class="par">Par Marc Alexis Pepin</p></div>
-        </div>
-      </div>
-      <div class="corps">
-        <p class="kick">Le chef derrière ce livre</p>
-        <h2>Chef, artiste,<br><span class="or">sans gants blancs</span></h2>
-        <p class="txt">{esc(MAPCHEF_TEXTE)}</p>
-        <p class="kick" style="margin-top:.2in">Les quatre chantiers d'une cuisine</p>
-        <div class="grille">{cartes}</div>
-        <div class="appel">
-          <div><a class="bouton" href="https://mapchef.ca">Réserver mon appel découverte</a>
-            <p class="note">Gratuit · 30 minutes · il ne ménage rien</p></div>
-          <div class="coord"><a class="site" href="https://mapchef.ca">mapchef.ca</a><br>
-            <a href="mailto:info@mapchef.ca">info@mapchef.ca</a><br>514 462-2798</div>
-        </div>
-      </div>""", cls='mc')
-
 
 def esc(t):
     return html.escape(str(t))
@@ -412,6 +363,60 @@ def page(inner, cls='', folio=None, runhead=None, cle=None):
     # se resserre d'un cran, puis on remesure (voir caler()).
     k = f' data-cle="{cle}" data-serre="0"' if cle else ''
     return f'<section class="page {cls}"{k}>{r}<div class="pad">{inner}</div>{f}</section>'
+
+
+# La page reprend les textes de l'accueil de mapchef.ca (lib/voix.ts, la
+# voix « vraie »), à la troisième personne. Les recettes du livre sont de
+# Marc Alexis; la page le dit, puis fait connaître son service aux
+# restaurants. Ni appel découverte, ni courriel : le site seulement
+# (Alex, 2026-09-22).
+MAPCHEF_CREDIT = 'Les recettes de ce livre sont de Marc Alexis Pepin'
+
+# Le slogan et le texte sont ceux d'Alex, dictés le 2026-09-22, au
+# tutoiement : toute la page tutoie le restaurateur.
+MAPCHEF_SLOGAN = ("Ton restaurant n'a plus le temps", "de perdre de l'argent.")
+
+MAPCHEF_TEXTE = ("Que ce soit parce que tes employés tirent de la patte ou parce que ton menu "
+    "n'est pas adapté à ta clientèle, le chef Marc Alexis fait un audit de ton restaurant et te "
+    "propose un plan d'action concret en quatre étapes, tout en refaisant ton menu.")
+
+MAPCHEF_ETAPES = 'Le plan en quatre étapes'
+
+MAPCHEF_FIN = "Le chef t'attend sur"
+
+MAPCHEF_CHANTIERS = [
+    ("L'audit de ton restaurant",
+     "Il lit tes ventes, goûte ta carte et passe un service au complet dans ta cuisine, puis il te remet un plan que ta brigade peut appliquer dès la semaine suivante."),
+    ('Réorganiser ta brigade',
+     "Une brigade qui se pile sur les pieds te coûte plus cher qu'une brigade de trop, alors les postes se redessinent avec toi et chacun sait quoi faire avant que le premier billet tombe."),
+    ('Le menu roulant',
+     "Ta carte raccourcit d'un coup, puis elle se met à rouler avec des plats neufs chaque mois, une fiche coûtée au sou près pour chaque assiette et une équipe formée pour suivre le changement."),
+    ('Tes achats et ton matériel',
+     "Tes fournisseurs se renégocient avec toi et l'inventaire se compte pour vrai, jusqu'au fond de la chambre froide où ton argent dort depuis des mois."),
+]
+
+
+def page_mapchef():
+    cartes = ''.join(
+        f'<div class="carte"><span class="num or">{i:02d}</span><h3>{esc(t)}</h3><p>{esc(p)}</p></div>'
+        for i, (t, p) in enumerate(MAPCHEF_CHANTIERS, 1))
+    return page(f"""
+      <div class="photo">
+        <img class="fond" src="data:image/webp;base64,{b64('mapchef-chef.webp')}" alt="Marc Alexis Pepin">
+        <div class="marque">
+          <img src="data:image/png;base64,{b64('logo-marc-alexis.png')}" alt="">
+          <div><p class="nom">MapChef</p><p class="par">Par Marc Alexis Pepin</p></div>
+        </div>
+      </div>
+      <div class="corps">
+        <p class="kick">{esc(MAPCHEF_CREDIT)}</p>
+        <h2>{esc(MAPCHEF_SLOGAN[0])}<br><span class="or">{esc(MAPCHEF_SLOGAN[1])}</span></h2>
+        <p class="txt">{esc(MAPCHEF_TEXTE)}</p>
+        <p class="kick" style="margin-top:.17in">{esc(MAPCHEF_ETAPES)}</p>
+        <div class="grille">{cartes}</div>
+        <div class="fin"><p>{esc(MAPCHEF_FIN)}</p>
+          <a href="https://mapchef.ca">mapchef.ca</a></div>
+      </div>""", cls='mc')
 
 
 def build():
