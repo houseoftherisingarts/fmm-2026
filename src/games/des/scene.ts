@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { emblemePret, parures } from './skins';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { chargerSculpture } from '../sculpture';
 import type { Face } from './regles';
 
 /** Les textures gravées pour le jeu, servies depuis /public/jeux/des/. */
