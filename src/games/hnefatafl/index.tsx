@@ -696,18 +696,38 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, l
     const onMouseUp = () => endDrag();
     const onClick = (e: MouseEvent) => tryClick(e.clientX, e.clientY);
 
+    // ── Zoom : molette, pincement à deux doigts, et les boutons du bandeau ──
+    // Alex, 2026-09-21 : « une fonction pour zoomer à même le jeu, pour
+    // s'approcher de la table ».
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      scene.zoomCam(Math.exp(e.deltaY * 0.0012));
+    };
+    let pince = 0;                                   // écart des deux doigts, 0 = pas de pincement
+    const ecart = (e: TouchEvent) => Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+
     const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) { pince = ecart(e); endDrag(); dragged = true; return; }
       if (e.touches.length !== 1) return;
       const t = e.touches[0];
       beginDrag(t.clientX, t.clientY);
     };
     const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && pince > 0) {
+        e.preventDefault();
+        const d = ecart(e);
+        if (d > 0) scene.zoomCam(pince / d);
+        pince = d;
+        return;
+      }
       if (!isDown || e.touches.length !== 1) return;
       e.preventDefault();
       const t = e.touches[0];
       continueDrag(t.clientX, t.clientY);
     };
     const onTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) pince = 0;
       const t = e.changedTouches[0];
       const wasDragged = dragged;
       endDrag();
@@ -715,6 +735,7 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, l
     };
     const onContextMenu = (e: Event) => e.preventDefault();
 
+    el.addEventListener('wheel', onWheel, { passive: false });
     el.addEventListener('mousedown', onMouseDown);
     el.addEventListener('mousemove', onMouseMove);
     el.addEventListener('mouseup', onMouseUp);
