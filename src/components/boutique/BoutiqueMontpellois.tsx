@@ -197,7 +197,11 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     try {
       await acheterCosmetique(`dos_${id}`);
       const d = DOS_CARTES.find((x) => x.id === id);
-      celebrer({ nom: d ? (fr ? d.nomFR : d.nomEN) : (fr ? 'Le dos de carte' : 'The card back'), image: d?.image, portrait: true });
+      equiperDos(id);
+      celebrer({
+        nom: d ? (fr ? d.nomFR : d.nomEN) : (fr ? 'Le dos de carte' : 'The card back'), image: d?.image, portrait: true,
+        lien: { to: addLocale('/jeux/tarot', lang), label: fr ? 'Tester mon skin' : 'Try my skin' },
+      });
     }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
     finally { setEnCours(null); }
