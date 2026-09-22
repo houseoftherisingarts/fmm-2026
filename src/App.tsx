@@ -18,6 +18,7 @@ import { BadgesProvider } from './contexts/BadgesContext';
 import AnnonceBadge from './components/badges/AnnonceBadge';
 import RecompensesQuotidiennes from './components/compte/RecompensesQuotidiennes';
 import AnnonceCadeau from './components/compte/AnnonceCadeau';
+import AnnonceHullsborg from './components/compte/AnnonceHullsborg';
 import { usePerfTier } from './lib/usePerfTier';
 import { usePrefsFond, useAnimationsFond } from './lib/usePrefsFond';
 import { useSkinActif } from './lib/useSkinActif';
