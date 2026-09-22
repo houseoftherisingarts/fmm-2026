@@ -101,7 +101,7 @@ const TOUTES: Annonce[] = [
     tone: 'info',
     date: '2026-09-22',
     permanent: true,
-    image: '/games/hnefatafl/vignettes/annonce-hullsborg.webp',
+    image: '/games/hnefatafl/vignettes/annonce-hullsborg-v2.webp',
     titleFR: 'Le skin Hullsborg',
     titleEN: 'The Hullsborg skin',
     bodyFR:
