@@ -21,6 +21,9 @@ export interface Prise {
   /** Remplace « a été ajouté à votre coffre », déjà traduit par
    *  l'appelant : les Montpellois d'une recharge vont à la bourse. */
   texte?: string;
+  /** Un skin de jeu s'essaie tout de suite : le bouton mène au jeu,
+   *  le skin déjà équipé (Alex, 2026-09-21). */
+  lien?: { to: string; label: string };
 }
 
 const AffichePrise: React.FC<{ prise: Prise | null; onFermer: () => void; lienCoffre: string; fr: boolean }> = ({ prise, onFermer, lienCoffre, fr }) => {
