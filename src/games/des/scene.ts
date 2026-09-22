@@ -434,10 +434,20 @@ export function creerTable(): TableDes {
   // dessinait un grand disque gris autour de la table (Alex,
   // 2026-08-23). Un plancher de taverne le referme, et la brume avale
   // tout ce qui dépasse du plateau.
+  // Le plancher est en planches, pas en noir uni : vu d'en haut, le disque
+  // sombre autour d'une petite table se lisait comme « un énorme cercle
+  // noir en dessous de la table » (Alex, 2026-09-22). Le même bois que la
+  // table, répété serré et assombri, fait un vrai plancher de taverne.
+  const boisPlancher = chargeur.load(TEXTURES.table);
+  boisPlancher.wrapS = boisPlancher.wrapT = THREE.RepeatWrapping;
+  boisPlancher.colorSpace = THREE.SRGBColorSpace;
+  boisPlancher.repeat.set(9, 9);
+  boisPlancher.anisotropy = 8;
   const plancher = new THREE.Mesh(
     new THREE.CircleGeometry(26, 48),
-    new THREE.MeshBasicMaterial({ color: 0x140d08, fog: true }),
+    new THREE.MeshStandardMaterial({ map: boisPlancher, color: 0x5a4030, roughness: 0.9, fog: true }),
   );
+  plancher.receiveShadow = true;
   plancher.rotation.x = -Math.PI / 2;
   plancher.position.y = -5.98;
   plancher.renderOrder = -2;
