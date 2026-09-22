@@ -121,7 +121,10 @@ const ConsentBanner: React.FC = () => {
   // décision déjà prise se remet en marche une fois que Firebase a dit
   // qui est connecté, pour que le drapeau de l'équipe soit posé avant
   // le premier envoi de mesure.
+  // L'aperçu des cartes de chaleur de l'admin (?vh=apercu) montre la page
+  // sans bannière, qui cacherait le bas de la page et ses clics.
   useEffect(() => {
+    if (new URLSearchParams(location.search).get('vh') === 'apercu') return;
     if (!lireConsentement()) setOuvert(true);
   }, []);
   useEffect(() => {

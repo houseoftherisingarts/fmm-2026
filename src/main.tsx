@@ -11,6 +11,16 @@ import './index.css';
 const Harnais = import.meta.env.DEV ? React.lazy(() => import('./dev/HarnaisInventaire')) : null;
 const harnaisDemande = import.meta.env.DEV && new URLSearchParams(location.search).get('harnais') === '1';
 
+// L'aperçu des cartes de chaleur (?vh=apercu) ouvre la page dans un cadre qui fait toute la
+// hauteur du document, où rien ne défile : une section épinglée ou révélée au défilement y
+// resterait vide. Le site y prend donc sa version sans mouvement, comme ses feuilles de style,
+// que le cadre de l'admin récrit de la même façon.
+if (new URLSearchParams(location.search).get('vh') === 'apercu') {
+  const lire = window.matchMedia.bind(window);
+  window.matchMedia = (q: string) =>
+    lire(q.replace(/\(prefers-reduced-motion:\s*no-preference\)/g, '(min-width: 100000px)').replace(/\(prefers-reduced-motion(:\s*reduce)?\)/g, '(min-width: 0px)'));
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     {harnaisDemande && Harnais

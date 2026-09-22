@@ -9,6 +9,17 @@
 const RE_VH = /(-?\d*\.?\d+)(?:s|d|l)?vh\b/g;
 const ID_FIGE = 'vh-fige';
 
+// L'aperçu montre la version sans mouvement du site, celle qu'un visiteur
+// qui la demande voit déjà : rien ne défile dans le cadre, et une section
+// épinglée ou révélée au défilement y resterait vide. Les conditions
+// « prefers-reduced-motion » de la feuille se récrivent sur place; le site,
+// lui, en fait autant pour son JavaScript quand l'URL porte ?vh=apercu.
+function sansMouvement(m: MediaList): void {
+  const t = m.mediaText;
+  const n = t.replace(/\(prefers-reduced-motion:\s*no-preference\)/g, '(min-width: 100000px)').replace(/\(prefers-reduced-motion(:\s*reduce)?\)/g, '(min-width: 0px)');
+  if (n !== t) m.mediaText = n;
+}
+
 // Parcourt les règles d'une feuille et écrit, pour chaque déclaration qui
 // contient un « vh », la même déclaration en pixels, prioritaire, sous le
 // même sélecteur et la même condition (@media, @supports, @container).
@@ -26,6 +37,7 @@ function reglesEnPx(regles: CSSRuleList, enPx: (s: string) => string, sortie: st
       if (decl.length) sortie.push(`${(r as CSSStyleRule).selectorText}{${decl.join(';')}}`);
       continue;
     }
+    if (nom === 'CSSMediaRule') sansMouvement((r as CSSMediaRule).media);
     const enfants = (r as CSSGroupingRule).cssRules;
     if (!enfants) continue;
     const condition = { CSSMediaRule: '@media', CSSSupportsRule: '@supports', CSSContainerRule: '@container' }[nom as string];
@@ -73,16 +85,19 @@ function veillerVh(doc: Document, ecran: number): void {
   obs.observe(doc.head, { childList: true, subtree: true, characterData: true });
 }
 
-// La hauteur du document tel qu'il se lit sur l'appareil, mesurée cadre
-// réduit : la hauteur d'un document ne descend jamais sous celle de son
-// cadre, et un cadre déjà grand fausserait la lecture.
+// La hauteur du document tel qu'il se lit sur l'appareil, mesurée dans un
+// cadre à la hauteur de son écran : la hauteur d'un document ne descend
+// jamais sous celle de son cadre, donc un cadre déjà grand fausserait la
+// lecture, et un cadre plus court que l'écran ferait tomber les requêtes
+// sur la hauteur (un rail horizontal réservé aux écrans de 760 px et plus
+// se mesurerait à la verticale, puis se replierait une fois le cadre grandi).
 export function hauteurNaturelle(cadre: HTMLIFrameElement, ecran: number): number {
   const doc = cadre.contentDocument;
   if (!doc) return 0;
   figerVh(doc, ecran);
   const avant = cadre.style.height;
-  cadre.style.height = '400px';
-  const h = Math.max(doc.documentElement.scrollHeight, doc.body?.scrollHeight || 0, 400);
+  cadre.style.height = `${ecran}px`;
+  const h = Math.max(doc.documentElement.scrollHeight, doc.body?.scrollHeight || 0, ecran);
   cadre.style.height = avant;
   return Math.min(h, 30000);
 }
