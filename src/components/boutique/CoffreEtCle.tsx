@@ -204,7 +204,7 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
                     >
                       {p.type === 'montpellois'
                         ? <PieceMontpellois size={30} />
-                        : <Icone size={30} className={rare ? '' : 'opacity-85'} />}
+                        : <Icone size={30} style={{ color: rare ? 'var(--sk-gilt)' : 'rgba(var(--sk-parchment-rgb),0.8)' }} />}
                       <p className="font-display title-medieval text-[15px] leading-tight text-ivory">
                         {fr ? p.nomFR : p.nomEN}
                       </p>
