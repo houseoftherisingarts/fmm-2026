@@ -199,6 +199,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopSoon: 'Bientôt',
     pleinEcran: 'Plein écran',
     quitterPleinEcran: 'Quitter le plein écran',
+    zoomAvant: 'S’approcher de la table',
+    zoomArriere: 'Reculer',
     afficherRegles: 'Afficher les règles',
     cacherRegles: 'Cacher les règles',
     aideBut: 'Le but : le Roi doit atteindre un coin, les Raiders doivent l’encercler.',
