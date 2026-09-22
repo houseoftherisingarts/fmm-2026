@@ -119,7 +119,140 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "vh_lots",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "agrege",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recu",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "vh_sessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "site",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "debut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "vh_sessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "site",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "enregistre",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "debut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "vh_cartes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "site",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "device",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "page",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "jour",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "site",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "jour",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "vh_cartes",
+      "fieldPath": "clics",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_cartes",
+      "fieldPath": "mouv",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_cartes",
+      "fieldPath": "scroll",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "pages",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "entrees",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "sources",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "campagnes",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "objectifs",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "formulaires",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "vh_jours",
+      "fieldPath": "erreursListe",
+      "indexes": []
+    }
+  ]
 }

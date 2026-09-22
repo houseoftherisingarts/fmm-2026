@@ -1819,5 +1819,16 @@ service cloud.firestore {
       allow read:                  if signedIn();
       allow create, update, delete: if isOwner(uid) || isAdmin();
     }
+    // VexelHotjar : la mesure du comportement des visiteuses. Le navigateur
+    // n'écrit jamais ici (tout passe par la fonction vhCollecter, avec le
+    // SDK admin); l'admin lit les journées, les cartes et les sessions.
+    match /vh_jours/{id}    { allow read: if isAdmin(); allow write: if false; }
+    match /vh_cartes/{id}   { allow read: if isAdmin(); allow write: if false; }
+    match /vh_sessions/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /vh_lots/{id}     { allow read, write: if false; }
+    match /vh_prive/{id}    { allow read, write: if isAdmin(); }   // les adresses IP du client et de son équipe, hors compte
+    // Les réglages de VexelHotjar (allumé, part filmée, exclusions, parcours) :
+    // lus par le site au chargement, écrits par l'admin.
+    match /settings/vexelhotjar { allow read: if true; allow write: if isAdmin(); }
   }
 }

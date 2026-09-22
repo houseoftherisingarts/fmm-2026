@@ -332,5 +332,11 @@ service firebase.storage {
     }
 
     // Deny everything else by default.
+    // Les enregistrements de session de VexelHotjar (vh/replays/<session>/n.json.gz)
+    // : écrits par la fonction de collecte, lus par l'admin seulement.
+    match /vh/{allPaths=**} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
   }
 }

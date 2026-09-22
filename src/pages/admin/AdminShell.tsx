@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, BarChart3, Settings, LogOut, Menu, X, ExternalLink, Grid3x3,
   Beer, Heart, UsersRound, ShieldCheck, DoorOpen, Eye, CalendarClock, Music, Feather, Megaphone,
   Hash, Bug, Camera, Images, CalendarCheck2, TicketCheck, Wallet, BookUser, Landmark, Award, Send,
-  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, UtensilsCrossed, ListChecks, Map, Drama } from 'lucide-react';
+  Receipt, Tent, MailPlus, PenLine, FileSignature, Target, Shield, Store, Gift, Wrench, Boxes, Compass, MapPinned, MousePointerClick, UtensilsCrossed, ListChecks, Map, Drama } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import type { AdminRole } from '../../lib/adminPermissions';
 import { ROLE_LABELS, allowedSections, ROLE_ACCENT, previewableRoles } from '../../lib/adminPermissions';
@@ -61,6 +61,7 @@ export type AdminSectionId =
   | 'photos'
   | 'photosRecues'
   | 'analytics'
+  | 'visiteurs'
   | 'parametres'
   | 'discord'
   | 'bugs'
@@ -163,6 +164,8 @@ export const NAV: NavItem[] = [
   { id: 'clients',    label: 'Clients',         icon: Receipt,         group: 'Régie' },
   { id: 'carnet',     label: 'Bottin et contacts', icon: BookUser,     group: 'Régie' },
   { id: 'analytics',  label: 'Analytics',       icon: BarChart3,       group: 'Régie' },
+  // VexelHotjar : cartes de chaleur, visites rejouées, parcours et frictions.
+  { id: 'visiteurs',  label: 'Visiteurs et clics', icon: MousePointerClick, group: 'Régie' },
   { id: 'parametres', label: 'Paramètres',      icon: Settings,        group: 'Régie' },
   { id: 'bugs',       label: 'Bugs',            icon: Bug,             group: 'Régie' },
   // Super-admin-only section: assign/revoke admin roles for everyone else.

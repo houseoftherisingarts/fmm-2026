@@ -82,6 +82,8 @@ const ARTICLES_LIVRE = ['grimoire', 'livre de recettes'];
 const ARTICLE_BANQUET = 'banquet';
 const ARTICLE_SANS_PUB = 'sans publicité';
 const COMPTEUR_BANQUET = 'banquetPlaces/compteur';
+// Le dernier numéro de billet du banquet donné, privé (aucune règle ne l'ouvre).
+const NUMEROS_BILLETS_BANQUET = 'compteurs/billetsBanquet';
 
 /**
  * Vérifie la signature HMAC-SHA256 que Square pose sur chaque webhook.
@@ -233,7 +235,7 @@ exports.squareGrimoire = onRequest(
         // Le compteur public ne reçoit QUE le nombre : ni le nom, ni le
         // courriel, ni le montant de l'acheteur ne le touchent jamais.
         //
-        // L'incrément et le statut partent dans le même lot d'écriture.
+        // L'incrément et le statut partent dans la même transaction.
         // Firestore le commet d'un seul bloc, donc une panne au milieu ne
         // peut pas laisser une place comptée sans sa trace, et le rejeu
         // de Square retombe alors sur le verrou posé plus haut.
@@ -241,18 +243,41 @@ exports.squareGrimoire = onRequest(
           .filter((l) => (l.name || '').toLowerCase().includes(ARTICLE_BANQUET))
           .reduce((n, l) => n + (parseInt(l.quantity, 10) || 0), 0);
         if (places > 0) {
-          const lot = db.batch();
-          lot.set(
-            db.doc(COMPTEUR_BANQUET),
-            {
-              vendues: admin.firestore.FieldValue.increment(places),
-              majLe: admin.firestore.FieldValue.serverTimestamp(),
-            },
-            { merge: true },
-          );
-          lot.set(ref, { statut: 'banquet', places, orderId: paiement.order_id }, { merge: true });
-          await lot.commit();
-          logger.info('Places de banquet comptées', { paymentId, places });
+          // Le billet du coffre (Alex, 2026-09-22) : banquetTickets/{courriel},
+          // que l'onglet Banquet du coffre à billets affiche. Un acheteur
+          // qui revient voit ses places s'additionner sur le même billet,
+          // un nouveau reçoit le numéro suivant. Le compteur, le billet et
+          // le statut partent dans la même transaction, pour que le rejeu
+          // de Square ne laisse jamais une place comptée sans son billet.
+          const FV = admin.firestore.FieldValue;
+          const courrielBillet = String(paiement.buyer_email_address || '').trim().toLowerCase();
+          const adresse = paiement.billing_address || paiement.shipping_address || {};
+          const nomBillet = ([adresse.first_name, adresse.last_name].filter(Boolean).join(' ').trim()
+            || commande.fulfillments?.[0]?.pickup_details?.recipient?.display_name
+            || commande.fulfillments?.[0]?.shipment_details?.recipient?.display_name
+            || '').slice(0, 80);
+          const billetRef = courrielBillet.includes('@') ? db.collection('banquetTickets').doc(courrielBillet) : null;
+          const numerosRef = db.doc(NUMEROS_BILLETS_BANQUET);
+          const numero = await db.runTransaction(async (tx) => {
+            const [billet, numeros] = billetRef
+              ? await Promise.all([tx.get(billetRef), tx.get(numerosRef)])
+              : [null, null];
+            tx.set(db.doc(COMPTEUR_BANQUET), { vendues: FV.increment(places), majLe: FV.serverTimestamp() }, { merge: true });
+            let n = null;
+            if (billetRef && billet.exists) {
+              n = billet.data().numero || null;
+              tx.set(billetRef, { places: FV.increment(places), majLe: FV.serverTimestamp() }, { merge: true });
+            } else if (billetRef) {
+              const suivant = ((numeros.exists && Number(numeros.data().dernier)) || 0) + 1;
+              n = String(suivant).padStart(2, '0');
+              tx.set(numerosRef, { dernier: suivant }, { merge: true });
+              tx.set(billetRef, { nom: nomBillet, places, numero: n, source: 'square', paymentId, creeLe: FV.serverTimestamp() });
+            }
+            tx.set(ref, { statut: 'banquet', places, orderId: paiement.order_id, billet: billetRef ? 'déposé' : 'sans courriel' }, { merge: true });
+            return n;
+          });
+          if (!billetRef) logger.warn('Places de banquet sans courriel : billet à déposer à la main', { paymentId });
+          logger.info('Places de banquet comptées', { paymentId, places, numero });
           return res.status(200).send('banquet compté');
         }
         // Le don « sans publicité à vie » (Alex, 2026-08-27) : l'uid

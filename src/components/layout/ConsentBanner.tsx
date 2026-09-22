@@ -2,9 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../contexts/AppContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { CONSENT } from '../../content';
 import { enableAnalytics } from '../../firebase';
 import { loadMetaPixel } from '../../lib/metaPixel';
+import { activerVexelHotjar } from '../../vexelhotjar';
+import { mesureExclue } from '../../vexelhotjar/tracker';
 import {
   EVENEMENT_OUVERTURE,
   REFUS_COMPLET,
@@ -24,8 +27,12 @@ import {
 // visuel.
 //
 // Rien ne se charge avant l'acceptation de la finalité qui le couvre :
-// la mesure d'audience allume Google Analytics, la publicité injecte le
-// script d'AdSense, et les contenus tiers chargent le pixel de Meta.
+// la mesure d'audience allume Google Analytics et VexelHotjar (notre
+// propre mesure des clics, du défilement et des visites rejouées), la
+// publicité injecte le script d'AdSense, et les contenus tiers chargent
+// le pixel de Meta. Le navigateur de l'équipe (drapeau posé à la
+// connexion admin, voir AuthContext) ne se compte ni dans l'une ni dans
+// l'autre mesure.
 
 const CLIENT_ADSENSE = 'ca-pub-7365982984401895';
 
@@ -45,9 +52,10 @@ function chargerAdSense() {
 /** Met en marche ce qui a été accepté, et rien d'autre. */
 export function appliquerConsentement(c: Consentement | null) {
   if (!c) return;
-  if (c.mesure) enableAnalytics();
+  const equipe = mesureExclue();
+  if (c.mesure && !equipe) { enableAnalytics(); void activerVexelHotjar(); }
   if (c.publicite) chargerAdSense();
-  if (c.tiers) loadMetaPixel();
+  if (c.tiers && !equipe) loadMetaPixel();
 }
 
 const FINALITES = [
@@ -55,8 +63,8 @@ const FINALITES = [
     cle: 'mesure' as const,
     titre: { FR: 'Mesure d\'audience', EN: 'Audience measurement' },
     texte: {
-      FR: 'Google Analytics compte les visites et les pages lues, pour que nous sachions ce qui sert vraiment sur ce site.',
-      EN: 'Google Analytics counts visits and pages read, so we know which parts of this site are actually useful.',
+      FR: 'Google Analytics compte les visites et les pages lues. Notre propre outil, dont les données restent dans notre base, note aussi les clics et le défilement, et il rejoue parfois une visite en masquant tout ce que vous tapez, pour que nous voyions quelles pages vous servent vraiment.',
+      EN: 'Google Analytics counts visits and pages read. Our own tool, whose data stays in our own database, also notes clicks and scrolling, and it sometimes replays a visit with everything you type masked out, so we can see which pages actually serve you.',
     },
   },
   {
@@ -104,16 +112,23 @@ function retrait(avant: Consentement | null, apres: Choix): boolean {
 
 const ConsentBanner: React.FC = () => {
   const { lang } = useUI();
+  const { loading, roleLoading } = useAuth();
+  const authPret = !loading && !roleLoading;
   const [ouvert, setOuvert] = useState(false);
   const [choix, setChoix] = useState<Choix>(REFUS_COMPLET);
 
-  // Au premier rendu, la décision déjà prise se remet en marche. Une
-  // absence de décision ouvre la bannière.
+  // Une absence de décision ouvre la bannière au premier rendu. La
+  // décision déjà prise se remet en marche une fois que Firebase a dit
+  // qui est connecté, pour que le drapeau de l'équipe soit posé avant
+  // le premier envoi de mesure.
   useEffect(() => {
+    if (!lireConsentement()) setOuvert(true);
+  }, []);
+  useEffect(() => {
+    if (!authPret) return;
     const decision = lireConsentement();
     if (decision) appliquerConsentement(decision);
-    else setOuvert(true);
-  }, []);
+  }, [authPret]);
 
   // Le lien « Témoins et vie privée » du pied de page rouvre la
   // bannière, avec les choix courants déjà posés sur les interrupteurs.

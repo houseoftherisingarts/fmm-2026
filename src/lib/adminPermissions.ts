@@ -73,7 +73,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   ca: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'planMarche', 'commerces', 'activites', 'animations', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'tachesVillage', 'affichage', 'demandeVexel', 'partenaireVexel',
+    'medias', 'photos', 'photosRecues', 'analytics', 'visiteurs', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'tachesVillage', 'affichage', 'demandeVexel', 'partenaireVexel',
   ],
 
   // Organisateurs: total access minus the future CA-only tab.
@@ -81,7 +81,7 @@ export const ROLE_SECTIONS: Record<AdminRole, AdminSectionId[] | '*'> = {
   organisateur: [
     'dashboard', 'benevoles', 'equipes', 'marchands', 'planMarche', 'commerces', 'activites', 'animations', 'badges', 'musiciens', 'pupitre', 'signature', 'contrats', 'matrice', 'horaire',
     'bar', 'mariages', 'finances', 'carnet', 'comptes', 'guildes', 'placeClan', 'clients', 'messages', 'messagerie', 'campagnes', 'newsletter', 'social', 'pubs',
-    'medias', 'photos', 'photosRecues', 'analytics', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'tachesVillage', 'affichage',
+    'medias', 'photos', 'photosRecues', 'analytics', 'visiteurs', 'parametres', 'discord', 'bugs', 'dispos', 'invites', 'camping', 'concours', 'concoursParrainage', 'inventaire', 'livraison', 'tachesVillage', 'affichage',
   ],
 
   // Super Bénévole: supervises normal bénévoles. Reads bénévole

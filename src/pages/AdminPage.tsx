@@ -81,6 +81,7 @@ const NewsletterSection   = lazy(() => import('./admin/sections/NewsletterSectio
 const MediasSection       = lazy(() => import('./admin/sections/MediasSection'));
 const PhotosSection       = lazy(() => import('./admin/sections/PhotosSection'));
 const AnalyticsSection    = lazy(() => import('./admin/sections/AnalyticsSection'));
+const VisiteursSection    = lazy(() => import('./admin/sections/VisiteursSection'));
 const PubliciteSection    = lazy(() => import('./admin/sections/PubliciteSection'));
 const ParametresSection   = lazy(() => import('./admin/sections/ParametresSection'));
 const DiscordSection      = lazy(() => import('./admin/sections/DiscordSection'));
@@ -249,6 +250,7 @@ const AdminPage: React.FC = () => {
       case 'medias':     return <MediasSection     devBypass={DEV_BYPASS} />;
       case 'photos':     return <PhotosSection     devBypass={DEV_BYPASS} />;
       case 'analytics':  return <AnalyticsSection  onNavigate={setSection} devBypass={DEV_BYPASS} />;
+      case 'visiteurs':  return <VisiteursSection />;
       case 'parametres': return <ParametresSection flags={flags as unknown as Record<string, unknown>} setFlag={setFlag as any} />;
       case 'discord':    return <DiscordSection    devBypass={DEV_BYPASS} />;
       case 'bugs':       return <BugsSection       devBypass={DEV_BYPASS} />;
