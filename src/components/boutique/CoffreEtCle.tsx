@@ -222,7 +222,7 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
                       )}
                       {p.type === 'nuit-salon' && (
                         <p className="font-sans text-[10px] text-ivory-soft/70">
-                          {fr ? 'Le festival vous écrit pour la fixer.' : 'The festival will write to set the date.'}
+                          {fr ? 'Le festival vous écrit pour fixer la date avec vous.' : 'The festival will write to set the date with you.'}
                         </p>
                       )}
                     </motion.div>
