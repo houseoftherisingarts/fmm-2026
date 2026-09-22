@@ -72,11 +72,12 @@ const AnnonceHullsborg: React.FC = () => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') fermer(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ouvert]);
 
   return (
     <AnimatePresence>
-      {ouvert && ANNONCE && !vue && (
+      {ouvert && ANNONCE && (
         <motion.div
           className="fixed inset-0 z-[94] flex items-center justify-center p-4"
           style={{ background: 'rgba(6, 3, 4, 0.82)', backdropFilter: 'blur(6px)' }}
