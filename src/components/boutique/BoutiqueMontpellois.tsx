@@ -11,8 +11,8 @@ import {
   PRIX_SKIN, PRIX_ALBUM, PRIX_AMBIANCE, type Bourse, dejaReclameAujourdhui } from '../../firebase/montpellois';
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
-import { DOS_CARTES } from '../../games/tarot/dos';
-import { PRIX_TAFL } from '../../games/hnefatafl/assets';
+import { DOS_CARTES, equiperDos } from '../../games/tarot/dos';
+import { PRIX_TAFL, ecrireChoix } from '../../games/hnefatafl/assets';
 
 // Les dos vendus ici et leur prix; les autres dos (caravane, William) se gagnent.
 const PRIX_DOS: Record<string, number> = { salon: 0 };
