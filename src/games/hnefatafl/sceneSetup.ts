@@ -286,6 +286,7 @@ export function setupScene(el: HTMLElement): SceneHandle {
     updateCam,
     rotateOrbit,
     pushCameraIn,
+    zoomCam,
     attachResize,
     dispose,
   };
