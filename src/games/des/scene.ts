@@ -19,17 +19,23 @@ const TEXTURES = {
 
 const chargeur = new THREE.TextureLoader();
 
-/** Les convives peints, un par place, dans le registre des portraits
- *  de Thronebreaker (Alex, 2026-08-23). Six visages différents pour
- *  que deux joueurs ne se ressemblent jamais dans la même partie. */
-const CONVIVES = [
-  '/jeux/des/convives/bourreau.webp',
-  '/jeux/des/convives/dame.webp',
-  '/jeux/des/convives/meunier.webp',
-  '/jeux/des/convives/moine.webp',
-  '/jeux/des/convives/taverniere.webp',
-  '/jeux/des/convives/colporteur.webp',
-];
+/** Les convives sculptés, un par place : six figurines assises sur un
+ *  tabouret, peintes par Higgsfield puis modelées par Meshy, pour qu'on
+ *  ait l'impression que de vraies gens entourent la table (Alex,
+ *  2026-09-21 : « ça paraît que c'est juste des images au bout de la
+ *  table »). Chaque modèle se télécharge une seule fois et se clone. */
+const CONVIVES = ['bourreau', 'dame', 'meunier', 'moine', 'taverniere', 'colporteur']
+  .map((nom) => `/games/des/convives/${nom}.glb`);
+/** Hauteur d'un convive assis, du pied du tabouret au sommet du crâne,
+ *  choisie pour que la tête dépasse le plateau d'environ quatre unités
+ *  quand le tabouret repose sur le plancher. */
+const HAUT_CONVIVE = 10;
+const sculptures = new Map<string, Promise<THREE.Group>>();
+function convive(url: string): Promise<THREE.Group> {
+  let p = sculptures.get(url);
+  if (!p) { p = chargerSculpture(url, HAUT_CONVIVE); sculptures.set(url, p); }
+  return p;
+}
 
 /**
  * Charge une texture peinte, et garde le repli fabriqué au canevas si
