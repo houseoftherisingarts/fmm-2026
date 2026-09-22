@@ -19,9 +19,10 @@
 //
 //   node tools/rappel-banquet-messages.mjs --essai    (compte, n'écrit rien)
 //   node tools/rappel-banquet-messages.mjs            (écrit les fils et l'épingle)
+//   EXCLURE=fichier                                   (acheteurs du banquet, une adresse par ligne)
 
 import { createRequire } from 'node:module';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,9 +48,11 @@ const COURRIELS_ADMIN = [
 const ROLES_ECARTES = new Set(['super', 'ca', 'organisateur']);
 const MEMBRES_PAR_LOT = 200;
 
-const TEXTE = `Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures, sur la scène du festival, tout de suite après la cérémonie de Freya. Il n’y a qu’un seul banquet de la fin de semaine, et si votre reçu porte encore l’ancien nom du repas, le Banquet de l’Équinoxe, vos places sont bien celles du dimanche.
+// Texte approuvé par Alex dans la nuit du 22, après la correction : la
+// première version donnait la mauvaise heure et le mauvais lieu.
+const TEXTE = `Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures trente, au Village Nourriture, et c’est le seul banquet de toute la fin de semaine.
 
-Il reste encore des places parmi les cinquante, à 65 $ plus taxes pour les trois services. Elles se réservent sur le site du festival, à la page Nourriture : https://www.festivalmedievaldemontpellier.org/nourriture?banquet=1
+Il reste encore des places parmi les cinquante, à 65 $ plus taxes pour les trois services. Elles se réservent sur le site du festival, à la page Nourriture : festivalmedievaldemontpellier.org/nourriture
 
 Tout achat est définitif, sans annulation ni remboursement.`;
 
@@ -92,6 +95,13 @@ for (const d of snapRoles.docs) {
   if (uid) { ecartes.add(uid); raisons.push(`${r.email} (${r.role})`); }
   else raisons.push(`${r.email} (${r.role}, sans compte, rien à écarter)`);
 }
+// Les acheteurs du banquet (EXCLURE, une adresse par ligne) ont déjà leur place.
+const acheteurs = process.env.EXCLURE ? readFileSync(process.env.EXCLURE, 'utf8').split('\n').map(normaliser).filter(Boolean) : [];
+for (const e of acheteurs) {
+  const uid = uidParCourriel.get(e);
+  if (uid) { ecartes.add(uid); raisons.push(`${e.slice(0, 3)}… (acheteur du banquet)`); }
+  else try { const u = await admin.auth().getUserByEmail(e); ecartes.add(u.uid); raisons.push(`${e.slice(0, 3)}… (acheteur du banquet, auth)`); } catch { raisons.push(`${e.slice(0, 3)}… (acheteur du banquet, sans compte)`); }
+}
 const membres = snapMembres.docs.map((d) => ({ uid: d.id, ...d.data() }));
 for (const m of membres) if ((m.roles || []).includes('administrateur')) { ecartes.add(m.uid); raisons.push(`${m.nom} (administrateur du registre)`); }
 const vises = membres.filter((m) => m.uid && !ecartes.has(m.uid));
@@ -109,7 +119,7 @@ if (essai) { console.log('Essai : rien n’a été écrit.'); process.exit(0); }
 const trace = db.collection('envoisMasse').doc();
 await trace.set({
   parUid: EXPEDITEUR_UID, parNom: String(ficheAlex.nom || 'Alex'), parCourriel: 'houseoftherisingarts@gmail.com',
-  cible: 'Tous les membres, sauf l’équipe et les organisateurs', portee: 'selection', voix: 'festival',
+  cible: 'Tous les membres, sauf l’équipe, les organisateurs et les acheteurs du banquet', portee: 'selection', voix: 'festival',
   texte: TEXTE, destinataires: vises.length, faits: 0,
   lettresPrevues: 0, lettres: 0, lettresEchouees: 0, sansLettre: vises.length,
   note: 'Rappel du banquet posé par tools/rappel-banquet-messages.mjs, sans lettre : la lettre part à part aux clients de 2026.',

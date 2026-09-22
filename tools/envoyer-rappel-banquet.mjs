@@ -34,7 +34,10 @@ const ici = path.dirname(fileURLToPath(import.meta.url));
 const racine = path.join(ici, '..');
 const PROJET = 'festivalmedieval';
 const ANNEE = 2026;
-const MODELE = 'rappel-banquet';
+// MODELE=rappel-banquet-erratum SEULEMENT_DE=rappel-banquet : l'erratum,
+// aux seules adresses qui ont reçu la première version.
+const MODELE = process.env.MODELE || 'rappel-banquet';
+const SEULEMENT_DE = process.env.SEULEMENT_DE || '';
 const LANGUE = 'FR';
 const ZOHO_EMAIL = 'admin@festivalmedievaldemontpellier.org';
 const FROM = `Festival Médiéval de Montpellier <${ZOHO_EMAIL}>`;
@@ -113,11 +116,13 @@ const poserPixel = (h, campagneId, courriel) => {
 };
 
 // ── Les destinataires : tous les clients de 2026 ────────────────────
-const [snapClients, snapDesabo, snapRegistre] = await Promise.all([
+const [snapClients, snapDesabo, snapRegistre, snapSource] = await Promise.all([
   db.collection('clients').where('annee', '==', ANNEE).get(),
   db.collection('desabonnements').get(),
   db.collection('campagnesEnvois').where('modele', '==', MODELE).get(),
+  SEULEMENT_DE ? db.collection('campagnesEnvois').where('modele', '==', SEULEMENT_DE).get() : null,
 ]);
+const source = snapSource ? new Set(snapSource.docs.map((d) => normaliser((d.data() || {}).courriel))) : null;
 const desabonnes = new Set(snapDesabo.docs.map((d) => normaliser(d.id)));
 const dejaEcrits = new Set(snapRegistre.docs.map((d) => normaliser((d.data() || {}).courriel)).filter(Boolean));
 const parAdresse = new Map();
@@ -133,7 +138,9 @@ for (const d of snapClients.docs) {
 const exclus = new Set(process.env.EXCLURE
   ? readFileSync(process.env.EXCLURE, 'utf8').split('\n').map(normaliser).filter(Boolean)
   : []);
-const liste = [...parAdresse].map(([courriel, nom]) => ({ courriel, nom }));
+const liste = [...parAdresse].map(([courriel, nom]) => ({ courriel, nom }))
+  .filter((p) => !source || source.has(p.courriel));
+if (source && liste.length !== source.size) { console.error(`La source compte ${source.size} adresses, la liste ${liste.length} : on ne devine pas.`); process.exit(1); }
 const restants = liste.filter((p) => !dejaEcrits.has(p.courriel) && !desabonnes.has(p.courriel) && !exclus.has(p.courriel));
 log(`clients 2026 : ${snapClients.size} fiches · ${liste.length} adresses · déjà écrits : ${dejaEcrits.size} · désabonnés : ${desabonnes.size} · acheteurs du banquet écartés : ${liste.filter((p) => exclus.has(p.courriel)).length} · à envoyer : ${restants.length}`);
 
@@ -166,7 +173,7 @@ if (!trace) {
   await ref.set({
     parNom: 'Alex T. St-Laurent', parCourriel: 'houseoftherisingarts@gmail.com',
     modele: MODELE, modeleNom: modele.nom, langue: LANGUE,
-    cible: `Tous les clients de ${ANNEE} (billets, camping, kiosques)`,
+    cible: SEULEMENT_DE ? `Les personnes qui ont reçu « ${SEULEMENT_DE} »` : `Tous les clients de ${ANNEE} (billets, camping, kiosques), sauf les acheteurs du banquet`,
     sujet, destinataires: liste.length, envoyes: 0, echecs: 0,
     desabonnesIgnores: liste.length - restants.length - 0,
     statut: 'en cours', note: 'envoi au compte-gouttes depuis tools/envoyer-rappel-banquet.mjs',

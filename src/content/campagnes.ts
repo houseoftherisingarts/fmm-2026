@@ -45,7 +45,8 @@ export type IdCampagne =
   | 'antenne'
   | 'merci-achat'
   | 'rappel-festival'
-  | 'rappel-banquet';
+  | 'rappel-banquet'
+  | 'rappel-banquet-erratum';
 
 export type LangueCampagne = 'FR' | 'EN';
 
@@ -165,8 +166,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Le festival se remonte les 25, 26 et 27 septembre. Les cuisines de clans rallument leurs feux et la taverne rouvre ses fûts. Le dimanche à treize heures, cinquante convives s’assoient au Banquet du Prince William pour un repas à trois services.',
-        EN: 'The festival rises again on September 25, 26 and 27. The clan kitchens light their fires and the tavern rolls out its casks. On Sunday at one o’clock, fifty guests sit down to the Prince William Banquet for a meal in three courses.',
+        FR: 'Le festival se remonte les 25, 26 et 27 septembre. Les cuisines de clans rallument leurs feux et la taverne rouvre ses fûts. Le dimanche à treize heures trente, cinquante convives s’assoient au Banquet du Prince William pour un repas à trois services.',
+        EN: 'The festival rises again on September 25, 26 and 27. The clan kitchens light their fires and the tavern rolls out its casks. On Sunday at half past one, fifty guests sit down to the Prince William Banquet for a meal in three courses.',
       },
       {
         type: 'photo',
@@ -228,8 +229,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
       },
       {
         type: 'texte',
-        FR: 'Le dimanche midi, la cérémonie de Freya salue le passage de la saison au camp viking, et le Banquet du Prince William suit à treize heures. Neuf troupes montent sur la scène cette année : Skarazula, L’Harfang, la Troupe Caravane, l’Ensemble Klezmer de Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias et Alhambra. La musique porte le festival du tambour viking jusqu’aux ballades médiévales.',
-        EN: 'On Sunday at midday, the ceremony of Freya greets the turning of the season at the Viking camp, and the Prince William Banquet follows at one o’clock. Nine troupes take the stage this year: Skarazula, L’Harfang, Troupe Caravane, the Klezmer Ensemble of Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias and Alhambra. The music carries the festival from Viking drums to medieval ballads.',
+        FR: 'Le dimanche à treize heures trente, le Banquet du Prince William dresse sa grande table au Village Nourriture. Neuf troupes montent sur la scène cette année : Skarazula, L’Harfang, la Troupe Caravane, l’Ensemble Klezmer de Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias et Alhambra. La musique porte le festival du tambour viking jusqu’aux ballades médiévales.',
+        EN: 'On Sunday at half past one, the Prince William Banquet sets its long table in the Food Village. Nine troupes take the stage this year: Skarazula, L’Harfang, Troupe Caravane, the Klezmer Ensemble of Sainte-Nigoune, BicOasis, Trifolys, Svarica, Las Noches Bohemias and Alhambra. The music carries the festival from Viking drums to medieval ballads.',
       },
       {
         type: 'carte',
@@ -276,8 +277,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     blocs: [
       {
         type: 'texte',
-        FR: 'Le dimanche du festival, à treize heures, une longue tablée se dresse sur la scène et cinquante convives s’y assoient. C’est le Banquet du Prince William, et nous vous y invitons.',
-        EN: 'On the Sunday of the festival, at one o’clock, a long table is raised on the stage and fifty guests sit down at it. This is the Prince William Banquet, and we are inviting you to it.',
+        FR: 'Le dimanche du festival, à treize heures trente, une longue tablée se dresse au Village Nourriture et cinquante convives s’y assoient. C’est le Banquet du Prince William, et nous vous y invitons.',
+        EN: 'On the Sunday of the festival, at half past one, a long table is raised in the Food Village and fifty guests sit down at it. This is the Prince William Banquet, and we are inviting you to it.',
       },
       {
         type: 'photo',
@@ -737,7 +738,9 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
   // (« Banquet de l'Équinoxe » sur les premiers reçus), et une cliente
   // a cru son banquet le samedi. Cette lettre remet la date et l'heure
   // devant tout le monde et rappelle les places qui restent. Le texte
-  // est celui approuvé par Alex le soir du 21, mot pour mot.
+  // est celui approuvé par Alex dans la nuit du 22, mot pour mot, après
+  // la correction : 13 h 30 au Village Nourriture, selon l'horaire
+  // officiel, et aucune cérémonie de Freya cette année.
   {
     id: 'rappel-banquet',
     nom: 'Le rappel du Banquet du Prince William',
@@ -750,8 +753,8 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     blocs: [
       {
         type: 'texte',
-        FR: 'Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures trente, sur la scène du festival. Il n’y a qu’un seul banquet de la fin de semaine, et si votre reçu porte encore l’ancien nom du repas, le Banquet de l’Équinoxe, vos places sont bien celles du dimanche.',
-        EN: 'A small reminder for the long table: the Prince William Banquet takes place on Sunday, September 27 at half past one, on the festival stage. There is only one banquet all weekend, and if your receipt still bears the meal’s former name, the Equinox Banquet, your seats are indeed the Sunday ones.',
+        FR: 'Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures trente, au Village Nourriture, et c’est le seul banquet de toute la fin de semaine.',
+        EN: 'A small reminder for the long table: the Prince William Banquet takes place on Sunday, September 27 at half past one, in the Food Village, and it is the only banquet of the whole weekend.',
       },
       {
         type: 'photo',
@@ -773,6 +776,31 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     salutFR: 'Nous vous gardons un couvert,',
     salutEN: 'We are keeping a setting for you,',
     cta: { url: `${SITE}/nourriture?banquet=1`, labelFR: 'Réserver votre place', labelEN: 'Reserve your seat' },
+  },
+
+  // ── 14 · L'erratum du rappel du banquet ───────────────────────────
+  // Pour les seules personnes qui ont reçu la première version du
+  // rappel, partie dans la nuit du 22 avec la mauvaise heure, le mauvais
+  // lieu et une cérémonie qui n'a pas lieu cette année. Texte approuvé
+  // par Alex, mot pour mot. Un seul geste : la correction.
+  {
+    id: 'rappel-banquet-erratum',
+    nom: 'La correction du rappel du banquet',
+    pourQui: 'Les personnes qui ont reçu la première version du rappel',
+    motsDAlex: true,
+    sujetFR: 'Correction : le Banquet du Prince William, dimanche à 13 h 30',
+    sujetEN: 'Correction: the Prince William Banquet, Sunday at 1:30 pm',
+    titreFR: 'Une correction pour la grande table',
+    titreEN: 'A correction for the long table',
+    blocs: [
+      {
+        type: 'texte',
+        FR: 'Une correction à la lettre que nous vous avons envoyée cette nuit : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures trente, au Village Nourriture, et aucune cérémonie de Freya ne le précède cette année.',
+        EN: 'A correction to the letter we sent you last night: the Prince William Banquet takes place on Sunday, September 27 at half past one, in the Food Village, and no ceremony of Freya comes before it this year.',
+      },
+    ],
+    salutFR: 'Nous vous gardons un couvert,',
+    salutEN: 'We are keeping a setting for you,',
   },
 ];
 

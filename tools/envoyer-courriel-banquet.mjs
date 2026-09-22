@@ -35,7 +35,7 @@ const texte = `Bonjour${nom ? ' ' + nom : ''},
 
 Votre place pour le banquet du Prince William est réservée.
 
-Nous avons déposé un billet d'accès directement dans le coffre de votre Espace membre, sur le site du festival. C'est ce billet que vous présenterez à l'entrée du banquet le dimanche 27 septembre à 13h00. Notez que la présentation de votre reçu Stripe est aussi acceptée.
+Nous avons déposé un billet d'accès directement dans le coffre de votre Espace membre, sur le site du festival. C'est ce billet que vous présenterez à l'entrée du banquet le dimanche 27 septembre à 13h30. Notez que la présentation de votre reçu Stripe est aussi acceptée.
 
 Pour récupérer votre billet, connectez-vous simplement avec cette adresse courriel sur :
 https://www.festivalmedievaldemontpellier.org/compte
