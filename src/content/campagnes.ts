@@ -731,6 +731,49 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     salutEN: 'See you Friday, at the village,',
     cta: { url: `${SITE}/programmation`, labelFR: 'Voir la programmation', labelEN: 'See the program' },
   },
+
+  // ── 13 · Le rappel du banquet ─────────────────────────────────────
+  // Alex, 2026-09-21 : le repas a changé de nom en cours de vente
+  // (« Banquet de l'Équinoxe » sur les premiers reçus), et une cliente
+  // a cru son banquet le samedi. Cette lettre remet la date et l'heure
+  // devant tout le monde et rappelle les places qui restent. Le texte
+  // est celui approuvé par Alex le soir du 21, mot pour mot.
+  {
+    id: 'rappel-banquet',
+    nom: 'Le rappel du Banquet du Prince William',
+    pourQui: 'Tous les clients de 2026, la semaine du festival',
+    motsDAlex: true,
+    sujetFR: 'Le Banquet du Prince William, dimanche à 13 h',
+    sujetEN: 'The Prince William Banquet, Sunday at 1 pm',
+    titreFR: 'Un rappel pour la grande table',
+    titreEN: 'A reminder for the long table',
+    blocs: [
+      {
+        type: 'texte',
+        FR: 'Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures, sur la scène du festival, tout de suite après la cérémonie de Freya. Il n’y a qu’un seul banquet de la fin de semaine, et si votre reçu porte encore l’ancien nom du repas, le Banquet de l’Équinoxe, vos places sont bien celles du dimanche.',
+        EN: 'A small reminder for the long table: the Prince William Banquet takes place on Sunday, September 27 at one o’clock, on the festival stage, right after Freya’s ceremony. There is only one banquet all weekend, and if your receipt still bears the meal’s former name, the Equinox Banquet, your seats are indeed the Sunday ones.',
+      },
+      {
+        type: 'photo',
+        fichier: '2025-IMG_8036.jpg',
+        altFR: 'Un chaudron suspendu au-dessus d’un feu ouvert, sous une charpente de bois',
+        altEN: 'A cauldron hangs over an open fire, under a wooden frame',
+      },
+      {
+        type: 'texte',
+        FR: 'Il reste encore des places parmi les cinquante, à 65 $ plus taxes pour les trois services. Elles se réservent sur le site du festival, à la page Nourriture.',
+        EN: 'There are still seats left among the fifty, at $65 plus tax for the three courses. They are reserved on the festival website, on the Food page.',
+      },
+      {
+        type: 'texte',
+        FR: 'Tout achat est définitif, sans annulation ni remboursement.',
+        EN: 'Every purchase is final, with no cancellation or refund.',
+      },
+    ],
+    salutFR: 'Nous vous gardons un couvert,',
+    salutEN: 'We are keeping a setting for you,',
+    cta: { url: `${SITE}/nourriture?banquet=1`, labelFR: 'Réserver votre place', labelEN: 'Reserve your seat' },
+  },
 ];
 
 export const MODELE_PAR_ID = new Map<IdCampagne, ModeleCampagne>(
