@@ -3,6 +3,7 @@ import { Card, GhostButton, Input, Label, PrimaryButton, ToggleSwitch, Textarea 
 import { chargerReglages, enregistrerReglages, chargerExclusions, ajouterExclusion, retirerExclusion, monAdresse, EXCLUSIONS_MAX, type AdresseExclue } from './donnees';
 import { REGLAGES_DEFAUT, type ReglagesVexelHotjar } from '../../../../vexelhotjar';
 import { exclureMoi, mesureExclue } from '../../../../vexelhotjar/tracker';
+import { Icone } from './Icone';
 
 // ─── Réglages ───────────────────────────────────────────────────────────────
 // La mesure s'allume et s'éteint ici, la part des visites filmées se choisit
@@ -118,7 +119,7 @@ const Reglages: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <PrimaryButton type="button" onClick={enregistrer} disabled={etat === 'sauve'}>{etat === 'sauve' ? 'Enregistrement…' : 'Enregistrer les réglages'}</PrimaryButton>
-          {etat === 'fait' && <span className="text-sm text-[#8FC5A3]"><i className="fa-solid fa-check mr-1.5" aria-hidden="true" />Enregistré, en vigueur pour les prochaines visites.</span>}
+          {etat === 'fait' && <span className="text-sm text-[#8FC5A3]"><Icone nom="fa-check" className="mr-1.5" />Enregistré, en vigueur pour les prochaines visites.</span>}
         </div>
       </div>
 

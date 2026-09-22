@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, GhostButton } from '../../primitives';
 import { chargerEnregistrement, chargerEnregistrements, dateLongue, duree, effacerSession, nb, type Session } from './donnees';
+import { Icone } from './Icone';
 
 // ─── Visites filmées ────────────────────────────────────────────────────────
 // La liste des visites enregistrées (une part des visites, tirée au sort,
@@ -10,7 +11,7 @@ import { chargerEnregistrement, chargerEnregistrements, dateLongue, duree, effac
 
 const Appareil: React.FC<{ s: Session }> = ({ s }) => (
   <span className="inline-flex items-center gap-1.5 text-[12px] text-[#ECE5D2]/70 dark:text-white/60">
-    <i className={`fa-solid ${s.device === 'mobile' ? 'fa-mobile-screen' : s.device === 'tablette' ? 'fa-tablet-screen-button' : 'fa-desktop'} text-[11px]`} aria-hidden="true" />
+    <Icone nom={s.device === 'mobile' ? 'fa-mobile-screen' : s.device === 'tablette' ? 'fa-tablet-screen-button' : 'fa-desktop'} className="text-[11px]" />
     {s.device === 'mobile' ? 'Téléphone' : s.device === 'tablette' ? 'Tablette' : 'Ordinateur'}{s.pays ? ` · ${s.pays}` : ''}
   </span>
 );
@@ -62,20 +63,20 @@ const Lecteur: React.FC<{ session: Session; onFermer: () => void }> = ({ session
           <p className="font-serif text-lg text-[#ECE5D2] dark:text-white">Visite du {dateLongue(session.debut)}</p>
           <p className="text-[12px] text-[#ECE5D2]/60 dark:text-white/55">{duree(session.dureeMs || 0)} · {nb(session.nbPages || 0)} page{(session.nbPages || 0) > 1 ? 's' : ''} · <Appareil s={session} /></p>
         </div>
-        <GhostButton type="button" onClick={onFermer}><i className="fa-solid fa-xmark" aria-hidden="true" /> Fermer</GhostButton>
+        <GhostButton type="button" onClick={onFermer}><Icone nom="fa-xmark" /> Fermer</GhostButton>
       </div>
       {session.parcours && session.parcours.length > 0 && (
         <p className="mb-4 flex flex-wrap items-center gap-1.5 text-[12px] text-[#ECE5D2]/70 dark:text-white/60">
           {session.parcours.map((p, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <i className="fa-solid fa-arrow-right-long text-[10px] text-[#C9A85A]" aria-hidden="true" />}
+              {i > 0 && <Icone nom="fa-arrow-right-long" className="text-[10px] text-[#C9A85A]" />}
               <span className="rounded-full bg-white/5 px-2 py-0.5 dark:bg-white/10">{p}</span>
             </React.Fragment>
           ))}
         </p>
       )}
       <div ref={cible} className="vh-lecteur min-h-[200px] overflow-hidden rounded-[16px] bg-[#04080B]/95">
-        {etat === 'chargement' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70"><i className="fa-solid fa-circle-notch fa-spin mr-2" aria-hidden="true" />Le film se charge</p>}
+        {etat === 'chargement' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70"><Icone nom="fa-circle-notch" className="animate-spin mr-2" />Le film se charge</p>}
         {etat === 'vide' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70">Cet enregistrement est trop court pour être rejoué.</p>}
         {etat === 'erreur' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70">Le film n'a pas pu être lu.</p>}
       </div>
@@ -133,8 +134,8 @@ const Enregistrements: React.FC = () => {
                 <Badges s={s} />
               </button>
               <span className="flex shrink-0 items-center gap-2">
-                <button type="button" onClick={() => setOuverte(s)} className="rounded-full bg-[#C9A85A] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1116] hover:bg-[#8C7335]"><i className="fa-solid fa-play mr-1.5" aria-hidden="true" />Regarder</button>
-                <button type="button" onClick={() => effacer(s)} aria-label="Effacer cette visite" title="Effacer cette visite" className="h-8 w-8 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><i className="fa-solid fa-trash-can text-[12px]" aria-hidden="true" /></button>
+                <button type="button" onClick={() => setOuverte(s)} className="rounded-full bg-[#C9A85A] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1116] hover:bg-[#8C7335]"><Icone nom="fa-play" className="mr-1.5" />Regarder</button>
+                <button type="button" onClick={() => effacer(s)} aria-label="Effacer cette visite" title="Effacer cette visite" className="h-8 w-8 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><Icone nom="fa-trash-can" className="text-[12px]" /></button>
               </span>
             </li>
           ))}

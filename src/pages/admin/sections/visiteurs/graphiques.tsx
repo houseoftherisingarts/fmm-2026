@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { nb } from './donnees';
+import { Icone } from './Icone';
 
 // ─── Les graphiques de VexelHotjar, en SVG nu ───────────────────────────────
 // Une seule échelle par graphique, des traits fins, une grille discrète, la
@@ -170,7 +171,7 @@ export const Tuile: React.FC<{ etiquette: string; valeur: string; note?: string;
   <div className="rounded-[20px] border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_-18px_rgba(41,48,39,0.3)] backdrop-blur-md dark:border-white/10 dark:bg-black/30">
     <div className="flex items-center justify-between">
       <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#ECE5D2]/55 dark:text-white/50">{etiquette}</span>
-      <i className={`fa-solid ${icone} ${accent} text-sm`} aria-hidden="true" />
+      <Icone nom={icone} className={`${accent} text-sm`} />
     </div>
     <p className="mt-2 font-serif text-3xl leading-none text-[#ECE5D2] dark:text-white">{valeur}</p>
     {note && <p className="mt-1.5 text-[11px] text-[#ECE5D2]/55 dark:text-white/45">{note}</p>}

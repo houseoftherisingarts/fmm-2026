@@ -3,6 +3,7 @@ import { Card, GhostButton, Input, Label, PrimaryButton } from '../../primitives
 import { chargerReglages, chargerSessions, enregistrerReglages, nb, pct, type Resume, type Session } from './donnees';
 import type { Periode } from '../VisiteursSection';
 import type { ReglagesVexelHotjar } from '../../../../vexelhotjar';
+import { Icone } from './Icone';
 
 // ─── Parcours (entonnoirs) ──────────────────────────────────────────────────
 // Un parcours, c'est une suite de pages que le client voudrait voir enchaînées
@@ -77,7 +78,7 @@ const Entonnoirs: React.FC<Props> = ({ resume, periode }) => {
             {erreur ? 'La lecture des visites a échoué; changez de période ou revenez dans un instant.' : sessions ? `${nb(sessions.length)} visites lues sur ${periode.jours} jours.` : 'Lecture des visites…'}
           </p>
           <PrimaryButton type="button" onClick={() => setEdite({ id: `e${Date.now().toString(36)}`, nom: '', etapes: [chemins[0] || '/accueil', ''] })}>
-            <i className="fa-solid fa-plus" aria-hidden="true" /> Nouveau parcours
+            <Icone nom="fa-plus" /> Nouveau parcours
           </PrimaryButton>
         </div>
       )}
@@ -97,11 +98,11 @@ const Entonnoirs: React.FC<Props> = ({ resume, periode }) => {
                   <div key={i} className="flex items-center gap-2">
                     <span className="w-6 shrink-0 text-center text-[11px] font-bold text-[#C9A85A]">{i + 1}</span>
                     <Input list="vh-chemins" value={et} onChange={e => setEdite({ ...edite, etapes: edite.etapes.map((x, k) => (k === i ? e.target.value : x)) })} placeholder="/formations/*" />
-                    <button type="button" aria-label="Retirer cette étape" onClick={() => setEdite({ ...edite, etapes: edite.etapes.filter((_, k) => k !== i) })} className="h-8 w-8 shrink-0 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><i className="fa-solid fa-xmark" aria-hidden="true" /></button>
+                    <button type="button" aria-label="Retirer cette étape" onClick={() => setEdite({ ...edite, etapes: edite.etapes.filter((_, k) => k !== i) })} className="h-8 w-8 shrink-0 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><Icone nom="fa-xmark" /></button>
                   </div>
                 ))}
                 <datalist id="vh-chemins">{chemins.map(c => <option key={c} value={c} />)}</datalist>
-                <GhostButton type="button" onClick={() => setEdite({ ...edite, etapes: [...edite.etapes, ''] })}><i className="fa-solid fa-plus" aria-hidden="true" /> Ajouter une étape</GhostButton>
+                <GhostButton type="button" onClick={() => setEdite({ ...edite, etapes: [...edite.etapes, ''] })}><Icone nom="fa-plus" /> Ajouter une étape</GhostButton>
               </div>
             </div>
           </div>

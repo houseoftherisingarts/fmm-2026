@@ -7,6 +7,7 @@ import Enregistrements from './visiteurs/Enregistrements';
 import Entonnoirs from './visiteurs/Entonnoirs';
 import Frictions from './visiteurs/Frictions';
 import Reglages from './visiteurs/Reglages';
+import { Icone } from './visiteurs/Icone';
 
 // ─── Visiteurs et clics (VexelHotjar) ───────────────────────────────────────
 // La section qui répond à « où cliquent les gens, qu'est-ce qui marche ». Six
@@ -63,7 +64,7 @@ const VisiteursSection: React.FC = () => {
           {ONGLETS.map(o => (
             <button key={o.id} type="button" onClick={() => poser('onglet', o.id)}
               className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors ${onglet === o.id ? 'bg-[#C9A85A] text-[#0B1116] shadow-[0_6px_18px_-8px_rgba(186,123,57,0.7)]' : 'text-[#ECE5D2]/65 hover:bg-white/10 hover:text-[#ECE5D2] dark:text-white/65 dark:hover:bg-white/10'}`}>
-              <i className={`fa-solid ${o.icon} text-[10px]`} aria-hidden="true" />
+              <Icone nom={o.icon} className="text-[10px]" />
               <span>{o.label}</span>
             </button>
           ))}

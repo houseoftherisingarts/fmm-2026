@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card } from '../../primitives';
 import { nb, nomElement, pct, type Resume } from './donnees';
+import { Icone } from './Icone';
 
 // ─── Accrocs ────────────────────────────────────────────────────────────────
 // Tout ce qui signale une visiteuse contrariée : les clics de rage (trois
@@ -11,7 +12,7 @@ import { nb, nomElement, pct, type Resume } from './donnees';
 
 const Titre: React.FC<{ children: React.ReactNode; note?: string; icone: string; couleur?: string }> = ({ children, note, icone, couleur = 'text-[#C9A85A]' }) => (
   <div className="mb-4 flex items-baseline justify-between gap-3">
-    <h3 className="flex items-center gap-2.5 font-serif text-lg text-[#ECE5D2] dark:text-white"><i className={`fa-solid ${icone} text-sm ${couleur}`} aria-hidden="true" />{children}</h3>
+    <h3 className="flex items-center gap-2.5 font-serif text-lg text-[#ECE5D2] dark:text-white"><Icone nom={icone} className={`text-sm ${couleur}`} />{children}</h3>
     {note && <span className="text-[11px] text-[#ECE5D2]/50 dark:text-white/45">{note}</span>}
   </div>
 );

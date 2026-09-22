@@ -4,6 +4,7 @@ import { chargerCarte, nb, nomElement, pct, type Carte, type Device, type Resume
 import { ancrer, ancrerMouvements, peindreChaleur, peindreDefilement, peindreZones, zones, type Position, type Zone } from './chaleur';
 import { hauteurNaturelle, reveler } from './cadre';
 import type { Periode } from '../VisiteursSection';
+import { Icone } from './Icone';
 
 // ─── Cartes de chaleur ──────────────────────────────────────────────────────
 // La page vivante s'ouvre dans un cadre à la largeur de l'appareil choisi
@@ -183,14 +184,14 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
           <div className="flex flex-wrap gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Appareil">
             {APPAREILS.map(d => (
               <button key={d.id} type="button" onClick={() => { setDevice(d.id); setPret(false); }} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${device === d.id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
-                <i className={`fa-solid ${d.icon} text-[10px]`} aria-hidden="true" />{d.label}
+                <Icone nom={d.icon} className="text-[10px]" />{d.label}
               </button>
             ))}
           </div>
           <div className="flex flex-wrap gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Type de carte">
             {MODES.map(m => (
               <button key={m.id} type="button" onClick={() => setMode(m.id)} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${mode === m.id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
-                <i className={`fa-solid ${m.icon} text-[10px]`} aria-hidden="true" />{m.label}
+                <Icone nom={m.icon} className="text-[10px]" />{m.label}
               </button>
             ))}
           </div>
@@ -201,7 +202,7 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
           <span><b className="font-semibold text-[#E27A68]">{nb(carte?.nRage || 0)}</b> de rage</span>
           <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{nb(carte?.nMorts || 0)}</b> dans le vide</span>
           {scrollTotal > 0 && <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{pct(carte?.scroll.b50 || 0, scrollTotal)} %</b> passent la moitié de la page</span>}
-          {chargement && <span className="text-[#C9A85A]"><i className="fa-solid fa-circle-notch fa-spin mr-1" aria-hidden="true" />chargement</span>}
+          {chargement && <span className="text-[#C9A85A]"><Icone nom="fa-circle-notch" className="animate-spin mr-1" />chargement</span>}
           {vide && <span className="text-[#C9A85A]">{vide}</span>}
         </div>
       </Card>
@@ -238,7 +239,7 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
                 {liste.slice(0, 12).map((z, i) => (
                   <li key={`${i}-${z.s}`} className="flex items-baseline justify-between gap-2">
                     <span className="min-w-0 truncate text-[#ECE5D2] dark:text-white" title={z.s}>{nomElement(z)}</span>
-                    <span className="shrink-0 tabular-nums text-[#ECE5D2]/60">{nb(z.n)}{z.r ? <i className="fa-solid fa-bolt ml-1.5 text-[10px] text-[#E27A68]" title="clics de rage" aria-label="clics de rage" /> : null}</span>
+                    <span className="shrink-0 tabular-nums text-[#ECE5D2]/60">{nb(z.n)}{z.r ? <Icone nom="fa-bolt" className="ml-1.5 text-[10px] text-[#E27A68]" titre="clics de rage" /> : null}</span>
                   </li>
                 ))}
               </ol>

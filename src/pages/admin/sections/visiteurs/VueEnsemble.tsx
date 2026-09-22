@@ -3,6 +3,7 @@ import { Card, GhostButton } from '../../primitives';
 import { Anneau, Barres, Courbe, Heures, TEINTES, Tuile } from './graphiques';
 import { dateCourte, duree, nb, pct, rafraichirMaintenant, type Resume, nomElement } from './donnees';
 import type { Periode } from '../VisiteursSection';
+import { Icone } from './Icone';
 
 // ─── Vue d'ensemble ─────────────────────────────────────────────────────────
 // Les chiffres qui comptent en haut, la courbe des visites, puis ce que les
@@ -86,7 +87,7 @@ const VueEnsemble: React.FC<Props> = ({ resume, periode, onVoirCarte, onRafraich
             Le bouton ci-dessous force la mise à jour tout de suite.
           </p>
           <div className="mt-4 flex items-center gap-3">
-            <GhostButton type="button" onClick={rafraichir} disabled={rafraichit}><i className={`fa-solid fa-rotate ${rafraichit ? 'fa-spin' : ''}`} aria-hidden="true" /> Rafraîchir maintenant</GhostButton>
+            <GhostButton type="button" onClick={rafraichir} disabled={rafraichit}><Icone nom="fa-rotate" className={`${rafraichit ? 'animate-spin' : ''}`} /> Rafraîchir maintenant</GhostButton>
             {mot && <span className="text-xs text-[#ECE5D2]/60">{mot}</span>}
           </div>
         </Card>
@@ -107,7 +108,7 @@ const VueEnsemble: React.FC<Props> = ({ resume, periode, onVoirCarte, onRafraich
           <div className="flex items-center gap-3">
             {mot && <span className="text-[11px] text-[#ECE5D2]/55">{mot}</span>}
             <button type="button" onClick={rafraichir} disabled={rafraichit} className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#C9A85A] hover:underline disabled:opacity-50">
-              <i className={`fa-solid fa-rotate mr-1.5 ${rafraichit ? 'fa-spin' : ''}`} aria-hidden="true" />Rafraîchir
+              <Icone nom="fa-rotate" className={`mr-1.5 ${rafraichit ? 'animate-spin' : ''}`} />Rafraîchir
             </button>
           </div>
         </div>
