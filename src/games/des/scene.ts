@@ -676,7 +676,7 @@ export function creerTable(): TableDes {
     h0: number; axe: THREE.Vector3; tours: number;
   }> = [];
   const sieges: Array<{ x: number; z: number }> = [];
-  const convives: THREE.Mesh[] = [];
+  const convives: THREE.Object3D[] = [];
 
   // Le geste complet d'un joueur : il brasse, il retourne le gobelet
   // sur la table, puis il le soulève (Alex, 2026-08-23).
