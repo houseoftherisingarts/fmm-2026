@@ -10,6 +10,7 @@
 import { record } from '@rrweb/record';
 
 const ENVOI_MS = 10_000;
+const PREMIER_ENVOI_MS = 1_500;
 const EVENEMENTS_PAR_MORCEAU = 250;
 const DUREE_MAX_MS = 20 * 60_000;
 
@@ -33,7 +34,8 @@ export function demarrer(envoyer: (seq: number, events: unknown[]) => void): () 
       if (Date.now() - debut > DUREE_MAX_MS) { fin(); return; }
       tampon.push(ev);
       if (tampon.length >= EVENEMENTS_PAR_MORCEAU) vider();
-      else if (minuterie === undefined) minuterie = window.setTimeout(vider, ENVOI_MS);
+      // le premier morceau (la photo du DOM, le plus lourd) part vite, tant que la page vit
+      else if (minuterie === undefined) minuterie = window.setTimeout(vider, seq === 0 ? PREMIER_ENVOI_MS : ENVOI_MS);
     },
     maskAllInputs: true,
     maskTextSelector: '[data-vh-masquer]',

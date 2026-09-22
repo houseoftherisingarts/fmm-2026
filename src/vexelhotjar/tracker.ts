@@ -31,6 +31,7 @@ const CLE_SID = 'vh.sid';
 const CLE_SID_T = 'vh.sid.t';
 const CLE_VID = 'vh.vid';
 const CLE_REPLAY = 'vh.replay';
+const CLE_MORCEAU = 'vh.morceau';   // le prochain numéro de morceau du film, continu d'un rechargement à l'autre
 const CLE_PARCOURS = 'vh.parcours';
 const CLE_MOI = 'vh.moi';   // '1' : ce navigateur ne se compte pas (le client et son équipe); '0' : il se compte malgré tout
 const INACTIVITE_MS = 30 * 60_000;
@@ -92,6 +93,7 @@ function ouvrirSession() {
     ecrire(sessionStorage, CLE_SID, sid);
     ecrire(sessionStorage, CLE_PARCOURS, '[]');
     ecrire(sessionStorage, CLE_REPLAY, '');
+    ecrire(sessionStorage, CLE_MORCEAU, '0');
   }
   // Le parcours survit à un rechargement : la deuxième page d'une même visite
   // ne se compte pas comme une nouvelle visite.
@@ -434,9 +436,14 @@ function peutEtreEnregistrer() {
   if (choix !== 'oui') return;
   config.chargerReplay().then(mod => {
     if (!actif) return;
-    arreterReplay = mod.demarrer((seq, events) => {
+    arreterReplay = mod.demarrer((_seq, events) => {
+      // Numéroté sur la session et non sur la page : un rechargement n'écrase pas le film déjà reçu.
+      const seq = Number(lire(sessionStorage, CLE_MORCEAU)) || 0;
+      ecrire(sessionStorage, CLE_MORCEAU, String(seq + 1));
       const corps = JSON.stringify({ v: 1, t: 'replay', site: config.site, sid, seq, events });
-      compresser(corps).then(livrer);
+      // La page se ferme : la compression, asynchrone, finirait après elle; le morceau part tel quel.
+      if (document.visibilityState === 'hidden' && corps.length < 60_000) livrer(corps, true);
+      else compresser(corps).then((b) => livrer(b));
     });
   }).catch(() => {});
 }
