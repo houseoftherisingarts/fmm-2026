@@ -42,6 +42,8 @@ export interface Annonce {
    *  et le bouton « Accepté » la range dans la collection. C'est le même
    *  avis que le pop-up d'arrivée (voir components/carte/PopupCarte). */
   carte?: boolean;
+  /** Une capture posée sous le titre, pour un avis qui se regarde. */
+  image?: string;
   /** Affiche la pièce de la Petite Monnaie sous l'avis. */
   piece?:     boolean;
   lienPiece?: string;
