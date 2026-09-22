@@ -549,6 +549,9 @@ def build():
             <div><p class="lbl">La façon de faire</p><ol class="steps">{body}</ol>{note}</div>
           </div>""", cls='rec' + forme, folio=folio, runhead=titre, cle=tab))
 
+    # La page MapChef, la dernière avant la quatrième
+    pages.append(page_mapchef())
+
     # Colophon : la quatrième, d'un seul tenant elle aussi
     pages.append(page(
         f'<img class="plat" src="data:image/jpeg;base64,{b64('couv-dos.jpg')}" alt="">',
