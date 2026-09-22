@@ -268,6 +268,8 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     shopSoon: 'Coming soon',
     pleinEcran: 'Fullscreen',
     quitterPleinEcran: 'Exit fullscreen',
+    zoomAvant: 'Move closer to the table',
+    zoomArriere: 'Step back',
     afficherRegles: 'Show the rules',
     cacherRegles: 'Hide the rules',
     aideBut: 'The goal: the King must reach a corner, the Raiders must surround him.',
