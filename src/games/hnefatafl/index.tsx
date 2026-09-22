@@ -44,10 +44,12 @@ import {
 } from './arbitre';
 import { nouveauPenseur } from '../moteur/penseur';
 import { nomNiveau, NIVEAUX_POSSIBLES, type Niveau } from '../moteur/niveaux';
-import { BOARD_SETS, PIECE_SETS, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
+import { BOARD_SETS, PIECE_SETS, PRIX_TAFL, lireChoix, ecrireChoix, type BoardSet, type PieceSet } from './assets';
 import { useBadgeJeu, useBadges } from '../../contexts/BadgesContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { suivreMaBourse } from '../../firebase/montpellois';
+import { suivreMaBourse, acheterCosmetique } from '../../firebase/montpellois';
+import { listerMesGuildes } from '../../firebase/guildes';
+import PieceMontpellois from '../../components/boutique/PieceMontpellois';
 import { ApercuRecompense } from '../../components/compte/RecompensesQuotidiennes';
 import {
   suivrePartie, jouerCoup, abandonner, terminerParNulle, coupEnTexte, coupDepuisTexte,
@@ -809,25 +811,28 @@ const PilleJeu: React.FC<{
   onClick: () => void;
   /** Un jeu 'recompense' (roue des sept jours) gagné par la personne. */
   debloque?: boolean;
-}> = ({ it, active, lang, soon, onClick, debloque }) => {
-  const dispo = it.statut === 'disponible' || (it.statut === 'recompense' && !!debloque);
+  /** Un jeu 'boutique' pas encore acquis : le clic l'achète. */
+  onAcheter?: () => void;
+}> = ({ it, active, lang, soon, onClick, debloque, onAcheter }) => {
+  const dispo = it.statut === 'disponible' || ((it.statut === 'recompense' || it.statut === 'boutique') && !!debloque);
+  const aVendre = it.statut === 'boutique' && !debloque && !!onAcheter;
   return (
     <button
       type="button"
-      disabled={!dispo}
-      onClick={onClick}
+      disabled={!dispo && !aVendre}
+      onClick={aVendre ? onAcheter : onClick}
       aria-pressed={active}
       title={lang === 'FR' ? it.texteFR : it.texteEN}
       className={`inline-flex items-center gap-2 md:gap-2.5 p-1 pr-2.5 md:p-1.5 md:pr-4 rounded-card border font-sans text-[10px] md:text-xs uppercase tracking-[0.12em] md:tracking-[0.14em] transition-colors duration-200 min-h-[44px] ${
         active
           ? 'bg-brass text-[#1A0A05] border-brass'
-          : dispo
+          : dispo || aVendre
             ? 'bg-black/30 text-ivory-soft border-brass/35 hover:border-brass hover:text-ivory'
             : 'bg-black/30 text-ivory-soft/50 border-brass/20 opacity-55 cursor-not-allowed'
       }`}
     >
       <span className="relative w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-[3px] overflow-hidden bg-black/50">
-        {dispo ? (
+        {dispo || aVendre ? (
           it.vignette ? (
             <img
               src={it.vignette}
@@ -853,7 +858,12 @@ const PilleJeu: React.FC<{
       </span>
       <span className="text-left leading-tight max-w-[84px] md:max-w-[120px]">
         {lang === 'FR' ? it.nomFR : it.nomEN}
-        {!dispo && (
+        {aVendre && (
+          <span className="flex items-center gap-1 text-[9px] tracking-[0.2em] text-brass">
+            <PieceMontpellois size={11} />{PRIX_TAFL[it.id]}
+          </span>
+        )}
+        {!dispo && !aVendre && (
           <span className="block text-[9px] tracking-[0.2em] opacity-70">
             {it.statut === 'recompense'
               ? (lang === 'FR' ? '3e jour d’affilée' : '3rd day in a row')
@@ -884,6 +894,24 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
   useEffect(() => {
     if (!user?.uid) { setTaflDebloques([]); setPlateauxDebloques([]); return; }
     return suivreMaBourse(user.uid, (b) => { setTaflDebloques(b.taflPieces || []); setPlateauxDebloques(b.taflPlateaux || []); });
+  }, [user?.uid]);
+
+  // Le skin de Hullsborg : la troupe le reçoit d'office (le serveur
+  // vérifie l'appartenance et ne débite rien), les autres l'achètent.
+  const [achat, setAchat] = useState<string | null>(null);
+  const acheterTafl = async (id: string) => {
+    if (!user?.uid) { setAchat(lang === 'FR' ? 'Connectez-vous pour acheter ce jeu.' : 'Sign in to buy this set.'); return; }
+    try { await acheterCosmetique(`tafl_${id}`); setAchat(null); }
+    catch (e) { setAchat((e as Error).message); }
+  };
+  useEffect(() => {
+    if (!user?.uid) return;
+    let vivant = true;
+    listerMesGuildes(user.uid).then((gs) => {
+      const membre = gs.some((g) => g.id === 'hullsborg' || /^(troupe)?(hirdhafn)?hull?sborg/.test(g.slug || ''));
+      if (vivant && membre) acheterCosmetique('tafl_hullsborg').catch(() => { /* déjà au coffre */ });
+    }).catch(() => { /* hors ligne : rien à réclamer */ });
+    return () => { vivant = false; };
   }, [user?.uid]);
 
   const [mode, setMode] = useState<Mode>(initial.mode);
@@ -996,6 +1024,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
                 soon={s.shopSoon}
                 active={choix.plateau === b.id}
                 debloque={plateauxDebloques.includes(b.id)}
+                onAcheter={() => acheterTafl(b.id)}
                 onClick={() => onChoix('plateau', b.id)}
               />
             ))}
@@ -1010,9 +1039,11 @@ const StartScreen: React.FC<StartScreenProps> = ({ initial, strings: s, onBegin,
                 soon={s.shopSoon}
                 active={choix.pieces === b.id}
                 debloque={taflDebloques.includes(b.id)}
+                onAcheter={() => acheterTafl(b.id)}
                 onClick={() => onChoix('pieces', b.id)}
               />
             ))}
+            {achat && <p role="alert" className="font-editorial text-[12px] text-[var(--color-amber-glow)] leading-snug">{achat}</p>}
             {/* La caravane se gagne, elle ne s'achète pas : l'aperçu dit
                 comment, tant qu'elle n'est pas dans le coffre (Alex, 2026-08-30). */}
             {!taflDebloques.includes('caravane') && (

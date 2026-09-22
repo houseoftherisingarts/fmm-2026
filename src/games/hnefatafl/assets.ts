@@ -16,7 +16,14 @@
 
 // 'recompense' : le jeu existe mais ne se débloque qu'à la roue des
 // sept jours (bourses/{uid}.taflPieces, voir RecompensesQuotidiennes).
-export type StatutAsset = 'disponible' | 'bientot' | 'recompense';
+// 'boutique' : le jeu s'achète en Montpellois (acheterCosmetique
+// `tafl_{id}`, prix dans PRIX_TAFL) et vit ensuite dans la bourse.
+export type StatutAsset = 'disponible' | 'bientot' | 'recompense' | 'boutique';
+
+/** Prix en Montpellois des jeux 'boutique'. Le serveur a le dernier mot
+ *  (PRIX_TAFL dans functions/index.js) : les membres du groupe de
+ *  Hullsborg reçoivent le leur sans rien débourser. */
+export const PRIX_TAFL: Record<string, number> = { hullsborg: 100 };
 
 export interface BoardSet {
   id:        string;
@@ -34,7 +41,7 @@ export interface BoardSet {
   /** Teinte du blason peint au centre, et sa présence. */
   decal?:    { couleur: number; opacite: number };
   /** Palette du plateau procédural (voir PALETTES dans boardMesh). */
-  palette?:  'noyer' | 'pierre' | 'taverne' | 'caravane';
+  palette?:  'noyer' | 'pierre' | 'taverne' | 'caravane' | 'hullsborg';
 }
 
 export interface PieceSet {
@@ -90,6 +97,16 @@ export const BOARD_SETS: BoardSet[] = [
     texteEN: 'A board painted like a wagon: vardo green and burgundy, ochre lines. Earned with the caravan, on the third daily visit in a row.',
     vignette: '/games/hnefatafl/vignettes/route-caravane.webp',
     palette: 'caravane',
+  },
+  {
+    id: 'hullsborg',
+    statut: 'boutique',
+    nomFR: 'La table de Hullsborg',
+    nomEN: 'The Hullsborg table',
+    texteFR: 'Le plateau de pin taillé et brûlé à la main, avec sa notation : l\u2019ancien futhark d\u2019un côté, le futhark récent de l\u2019autre, et quatre runes ᚱ qui tournent autour du trône. Offert à la troupe de Hullsborg, 100 Montpellois pour les autres.',
+    texteEN: 'The hand-carved, hand-burnt pine board with its notation: the Elder Futhark along one side, the Younger Futhark along the other, and four ᚱ runes wheeling around the throne. Free for the Hullsborg troupe, 100 Montpellois for everyone else.',
+    vignette: '/games/hnefatafl/vignettes/table-hullsborg.webp',
+    palette: 'hullsborg',
   },
   {
     id: 'bientot',
@@ -175,6 +192,25 @@ export const PIECE_SETS: PieceSet[] = [
     // sur les cases voisines sans jamais toucher une pièce.
     scales: { 1: 0.54, 2: 0.54, 3: 0.80 },
     teintes: { assaillant: 0x233b5c, defenseur: 0x7a1f3a, roi: 0x8a2430 },
+  },
+  {
+    id: 'hullsborg',
+    statut: 'boutique',
+    nomFR: 'La hird de Hullsborg',
+    nomEN: 'The Hullsborg hird',
+    texteFR: 'Le Jarl de la troupe en personne, crâne rasé et barbe noire sous son capuchon de laine; ses défenseurs en cotte de mailles derrière le bouclier rouge de Hullsborg, et des assaillants en gambison au bouclier de bois brun. Offert à la troupe, 100 Montpellois pour les autres.',
+    texteEN: 'The troupe\u2019s own Jarl, shaved head and black beard under his wool cowl; his mail-clad defenders behind the red Hullsborg shield, and gambeson-clad attackers with plain brown wooden shields. Free for the troupe, 100 Montpellois for everyone else.',
+    vignette: '/games/hnefatafl/vignettes/hullsborg.webp',
+    urls: {
+      1: '/games/hnefatafl/models/hullsborg-assaillant.glb',
+      2: '/games/hnefatafl/models/hullsborg-defenseur.glb',
+      3: '/games/hnefatafl/models/hullsborg-jarl.glb',
+    },
+    // Meshy normalise sur la hauteur TOTALE, arme comprise (lance, hache,
+    // épée levée) : le corps n'en fait qu'environ 85 %, d'où des échelles
+    // plus fortes que celles de la hird du Jarl pour des hommes de même taille.
+    scales: { 1: 0.6, 2: 0.6, 3: 0.84 },
+    teintes: { assaillant: 0x6b4a2a, defenseur: 0x7a1f1f, roi: 0x2f3a4f },
   },
   {
     id: 'bientot',

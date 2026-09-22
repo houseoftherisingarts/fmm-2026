@@ -53,7 +53,7 @@ const Coffre: React.FC<Props> = ({ uid, lang }) => {
   // Un jeu 'recompense' se joue seulement s'il est gagné; un jeu
   // 'bientot' s'annonce sans se choisir; un jeu 'disponible' est à tous.
   const jeuOuvert = (statut: string, id: string, gagnes: string[]) =>
-    statut === 'disponible' || (statut === 'recompense' && gagnes.includes(id));
+    statut === 'disponible' || ((statut === 'recompense' || statut === 'boutique') && gagnes.includes(id));
   const dosPossedes = ['festival', ...(bourse?.dosTarot || [])];
   const [dosActuel, setDosActuel] = useState<string | null>(() => dosEquipe());
   const equiperUnDos = (id: string) => { equiperDos(id === 'festival' ? null : id); setDosActuel(id === 'festival' ? null : id); };

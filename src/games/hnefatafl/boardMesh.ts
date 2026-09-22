@@ -20,8 +20,9 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { CELL, MID, N, isCorner, isThrone } from './gameLogic';
+import { CELL, MID, N, initBoard, isCorner, isThrone } from './gameLogic';
 import { boardSet, BOARD_DEFAUT, type BoardSet } from './assets';
+import { graverHullsborg } from './hullsborgGravure';
 
 export interface BoardHandle {
   squares: THREE.Mesh[][];
@@ -62,6 +63,9 @@ const DECAL_RATIO = 512 / 626;
 interface Palette {
   clair: number; sombre: number; socle: number; socleHaut: number;
   trone: number; metal: number; metalSombre: number; brillance: number;
+  /** Plateau de bois brut : cases sombres aux postes de départ, aucun
+   *  laiton, cadre large gravé (voir hullsborgGravure.ts). */
+  brut?: boolean;
 }
 
 const PALETTES: Record<string, Palette> = {
@@ -84,6 +88,13 @@ const PALETTES: Record<string, Palette> = {
   caravane: {
     clair: 0x2f6f5a, sombre: 0x6b1f2a, socle: 0x3a1c0c, socleHaut: 0x5a2e14,
     trone: 0xd9a441, metal: 0xd9a441, metalSombre: 0x8a5a12, brillance: 34,
+  },
+  // Le plateau qu'Alex a taillé à la main pour Hullsborg, mesuré sur ses
+  // photos : pin teinté brun, postes de départ teints noyer foncé, trône
+  // et coins laissés au pin clair, sillons brûlés au fer.
+  hullsborg: {
+    clair: 0x8a5631, sombre: 0x3b2718, socle: 0x2a190d, socleHaut: 0x9a6232,
+    trone: 0xb07a42, metal: 0xb07a42, metalSombre: 0xb07a42, brillance: 10, brut: true,
   },
 };
 
@@ -168,11 +179,13 @@ export function buildBoard(
 
   // ── Socle : deux plateaux de velours-noyer, biseau de laiton ────
   const span = N * CELL;
+  // Le cadre gravé de Hullsborg demande une bande d'une case de large.
+  const cadre = pal.brut ? 2.3 : 1.5;
 
   const boisProfond = boisTexture(pal.socle, pal.socleHaut);
   boisProfond.repeat.set(2.5, 2.5);
   const baseDeep = new THREE.Mesh(
-    new THREE.BoxGeometry(span + 2.2, 0.5, span + 2.2),
+    new THREE.BoxGeometry(span + cadre + 0.7, 0.5, span + cadre + 0.7),
     new THREE.MeshPhongMaterial({ color: 0xffffff, map: boisProfond, shininess: 10, specular: 0x2a1a0c }),
   );
   baseDeep.position.y = -0.42;
@@ -183,7 +196,7 @@ export function buildBoard(
   const boisTable = boisTexture(pal.socleHaut, pal.clair);
   boisTable.repeat.set(2, 2);
   const baseTop = new THREE.Mesh(
-    new THREE.BoxGeometry(span + 1.5, 0.3, span + 1.5),
+    new THREE.BoxGeometry(span + cadre, 0.3, span + cadre),
     new THREE.MeshPhongMaterial({ color: 0xffffff, map: boisTable, shininess: 22, specular: 0x3a2712 }),
   );
   baseTop.position.y = -0.12;
@@ -205,6 +218,7 @@ export function buildBoard(
     [railW, span + 0.9, (span + 0.8) / 2, 0],
     [railW, span + 0.9, -(span + 0.8) / 2, 0],
   ] as Array<[number, number, number, number]>) {
+    if (pal.brut) break;
     const rail = new THREE.Mesh(
       new THREE.BoxGeometry(w, 0.06, d),
       railMat,
@@ -219,14 +233,25 @@ export function buildBoard(
   const clickables: THREE.Object3D[] = [];
   const sqGeo = new THREE.BoxGeometry(CELL * 0.965, 0.1, CELL * 0.965);
 
+  // Plateau brut : la teinte suit les postes de départ, pas un damier,
+  // et chaque essence a sa veine (trois textures pour tout le plateau).
+  const depart = pal.brut ? initBoard() : null;
+  const veines = new Map<number, THREE.CanvasTexture>();
+  const veine = (teinte: number) => {
+    if (!veines.has(teinte)) veines.set(teinte, boisTexture(teinte, 0x1a0f08));
+    return veines.get(teinte)!;
+  };
+
   for (let r = 0; r < N; r++) {
     const row: THREE.Mesh[] = [];
     for (let c = 0; c < N; c++) {
-      let col = (r + c) % 2 === 0 ? pal.clair : pal.sombre;
+      let col = (depart ? depart[r][c] === 0 : (r + c) % 2 === 0) ? pal.clair : pal.sombre;
       let emissive = 0x000000;
       if (isThrone(r, c)) { col = pal.trone; emissive = 0x1a0202; }
       if (isCorner(r, c)) { col = pal.metalSombre; emissive = 0x171004; }
-      const mat = new THREE.MeshPhongMaterial({ color: col, shininess: pal.brillance, emissive });
+      const mat = pal.brut
+        ? new THREE.MeshPhongMaterial({ color: 0xffffff, map: veine(col), shininess: pal.brillance })
+        : new THREE.MeshPhongMaterial({ color: col, shininess: pal.brillance, emissive });
       const sq = new THREE.Mesh(sqGeo, mat);
       sq.position.set((c - MID) * CELL, 0.05, (r - MID) * CELL);
       sq.receiveShadow = true;
@@ -252,7 +277,7 @@ export function buildBoard(
   const marks: Array<[number, number]> = [
     [0, 0], [0, N - 1], [N - 1, 0], [N - 1, N - 1], [MID, MID],
   ];
-  for (const [r, c] of marks) {
+  for (const [r, c] of pal.brut ? [] : marks) {
     const ring = new THREE.Mesh(ringGeo, inlayMat);
     ring.rotation.x = Math.PI / 2;
     ring.position.set((c - MID) * CELL, 0.108, (r - MID) * CELL);
@@ -265,7 +290,7 @@ export function buildBoard(
   }
 
   // Croix du trône : quatre courts rayons de laiton
-  for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as Array<[number, number]>) {
+  for (const [dx, dz] of (pal.brut ? [] : [[1, 0], [-1, 0], [0, 1], [0, -1]]) as Array<[number, number]>) {
     const ray = new THREE.Mesh(
       new THREE.BoxGeometry(dx !== 0 ? CELL * 0.22 : 0.03, 0.018, dz !== 0 ? CELL * 0.22 : 0.03),
       inlayMat,
@@ -273,6 +298,18 @@ export function buildBoard(
     ray.position.set(dx * CELL * 0.26, 0.106, dz * CELL * 0.26);
     group.add(ray);
     cosmetics.push(ray);
+  }
+
+  if (pal.brut) {
+    // Les sillons entre les cases sont brûlés noir, pas couleur de cadre.
+    const fond = new THREE.Mesh(
+      new THREE.PlaneGeometry(span, span),
+      new THREE.MeshBasicMaterial({ color: 0x120a05 }),
+    );
+    fond.rotation.x = -Math.PI / 2;
+    fond.position.y = 0.036;
+    group.add(fond);
+    graverHullsborg(group, span + cadre, 0.032, 0.102);
   }
 
   // ── Le blason du festival, peint sur le champ ───────────────────

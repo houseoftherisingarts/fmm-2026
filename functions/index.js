@@ -2332,6 +2332,15 @@ const PRIX_SKIN = { bleu: 0, vert: 1, dore: 5 };
 // dos du Salon des Inconnus est offert; les autres viennent des
 // récompenses quotidiennes (caravane, William), jamais de la boutique.
 const PRIX_DOS = { salon: 0 };
+// Skin de tafl de Hullsborg (Alex, 2026-09-21) : plateau gravé, Jarl,
+// défenseurs au bouclier rouge, assaillants au bouclier brun. Offert aux
+// membres du groupe de la troupe, 100 Montpellois pour les autres.
+const PRIX_TAFL = { hullsborg: 100 };
+const SLUG_HULLSBORG = /^(troupe)?(hirdhafn)?hull?sborg(guilde|clan|compagnie|confrerie|troupe|maisonnee|ordre)?$/;
+async function estDeHullsborg(uid) {
+  const snap = await db.collection('guildes').where('membres', 'array-contains', uid).get();
+  return snap.docs.some((d) => d.id === 'hullsborg' || SLUG_HULLSBORG.test(String(d.data().slug || '')));
+}
 const PRIX_ALBUM = 30;
 // Alex, 2026-08-28 : les ambiances achetables de src/lib/ambiances.ts
 // (celles marquées `gratuite: false`) — un seul palier pour l'instant.
@@ -2809,6 +2818,20 @@ exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) =>
     const solde = PRIX_DOS[dos] > 0 ? await debiter(uid, PRIX_DOS[dos]) : (data.solde || 0);
     await ref.set({ dosTarot: FieldValue.arrayUnion(dos), maj: FieldValue.serverTimestamp() }, { merge: true });
     return { solde };
+  }
+
+  if (objetId.startsWith('tafl_')) {
+    const jeu = objetId.slice(5);
+    if (!(jeu in PRIX_TAFL)) throw new HttpsError('invalid-argument', 'Jeu de tafl inconnu.');
+    const { ref, data } = await assurerBourse(uid);
+    if ((data.taflPieces || []).includes(jeu)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
+    const offert = jeu === 'hullsborg' && await estDeHullsborg(uid);
+    const solde = offert ? (data.solde || 0) : await debiter(uid, PRIX_TAFL[jeu]);
+    await ref.set({
+      taflPieces: FieldValue.arrayUnion(jeu), taflPlateaux: FieldValue.arrayUnion(jeu),
+      maj: FieldValue.serverTimestamp(),
+    }, { merge: true });
+    return { solde, offert };
   }
 
   const objet = CATALOGUE_BOUTIQUE.find((o) => o.id === objetId);
