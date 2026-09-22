@@ -183,7 +183,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       // jeu déjà habillé (Alex, 2026-09-21).
       ecrireChoix(id, id);
       celebrer({
-        nom: fr ? (r?.offert ? 'La table et la hird de Hullsborg, offertes par la troupe' : 'La table et la hird de Hullsborg') : (r?.offert ? 'The Hullsborg table and hird, a gift from the troupe' : 'The Hullsborg table and hird'),
+        nom: fr ? (r?.offert ? 'Le Plateau Futhark et la hird de Hullsborg, offerts par la troupe' : 'Le Plateau Futhark et la hird de Hullsborg') : (r?.offert ? 'The Futhark Board and the Hullsborg hird, a gift from the troupe' : 'The Futhark Board and the Hullsborg hird'),
         image: '/games/hnefatafl/vignettes/hullsborg.webp',
         lien: { to: addLocale('/jeunesse/hnefatafl', lang), label: fr ? 'Tester mon skin' : 'Try my skin' },
       });
@@ -433,8 +433,8 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
               <div className="min-w-0 flex-1">
                 <p className="font-editorial text-[13px] leading-snug text-ivory-soft">
                   {fr
-                    ? 'Le plateau taillé à la main par la troupe, gravé de l’ancien futhark et du futhark récent, avec le Jarl, ses défenseurs au bouclier rouge et les assaillants au bouclier brun. Offert aux membres de la guilde Hullsborg.'
-                    : 'The troupe’s hand-carved board, engraved with the Elder and Younger Futhark, with the Jarl, his red-shield defenders and the brown-shield raiders. Free for members of the Hullsborg guild.'}
+                    ? 'Le Plateau Futhark, taillé à la main par la troupe et gravé de l’ancien futhark et du futhark récent, avec le Jarl, ses défenseurs au bouclier rouge et les assaillants au bouclier brun. Offert aux membres de la guilde Hullsborg.'
+                    : 'The Futhark Board, hand-carved by the troupe and engraved with the Elder and Younger Futhark, with the Jarl, his red-shield defenders and the brown-shield raiders. Free for members of the Hullsborg guild.'}
                 </p>
                 <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
                   <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold"><PieceMontpellois size={14} />{PRIX_TAFL.hullsborg}</p>

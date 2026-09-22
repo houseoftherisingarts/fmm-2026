@@ -21,7 +21,26 @@ import { CELL, MID, N } from './gameLogic';
 
 type Trait = Array<[number, number]>;
 
+/** Une branche courbe, échantillonnée en polyligne : de p0 à p1 en
+ *  passant près du point de contrôle c (Bézier quadratique). */
+function courbe(p0: [number, number], c: [number, number], p1: [number, number], n = 8): Trait {
+  const pts: Trait = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, u = 1 - t;
+    pts.push([u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0], u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1]]);
+  }
+  return pts;
+}
+
 // Boîte unité, y vers le haut. Un tableau de polylignes par rune.
+//
+// Les deux alphabets doivent se distinguer à l'œil, parce que la
+// notation d'une case les combine (ᚠ récent · ᚢ ancien, par exemple)
+// et qu'une rune de forme identique dans les deux rangées la rendrait
+// ambiguë (Alex, 2026-09-21, d'après son tableau des deux futharks).
+// L'ancien futhark est donc tracé tout en traits droits et anguleux;
+// le futhark récent, comme sur le tableau, en branches rondes et
+// courbées, avec un point à chaque bout de trait.
 const FUT = {
   // Ancien futhark (les onze premières : ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ)
   fehu:     [[[0.35, 0], [0.35, 1]], [[0.35, 0.45], [0.8, 0.75]], [[0.35, 0.7], [0.8, 1]]],
@@ -35,23 +54,28 @@ const FUT = {
   hagalaz:  [[[0.25, 0], [0.25, 1]], [[0.75, 0], [0.75, 1]], [[0.25, 0.65], [0.75, 0.35]]],
   naudiz:   [[[0.5, 0], [0.5, 1]], [[0.25, 0.65], [0.75, 0.35]]],
   isaz:     [[[0.5, 0], [0.5, 1]]],
-  // Futhark récent (les onze premières : ᚠ ᚢ ᚦ ᚬ ᚱ ᚴ ᚼ ᚾ ᛁ ᛅ ᛋ).
-  // ᚠ ᚢ ᚦ ᚱ ᛁ ont la même forme dans les deux alphabets : c'est leur
-  // orientation sur le bord qui dit de quelle rangée elles sont.
-  oss:      [[[0.5, 0], [0.5, 1]], [[0.25, 0.85], [0.75, 0.6]], [[0.25, 0.6], [0.75, 0.35]]],
-  kaun:     [[[0.35, 0], [0.35, 1]], [[0.35, 0.5], [0.8, 0.95]]],
-  hagall:   [[[0.5, 0], [0.5, 1]], [[0.2, 0.25], [0.8, 0.75]], [[0.2, 0.75], [0.8, 0.25]]],
-  ar:       [[[0.5, 0], [0.5, 1]], [[0.25, 0.35], [0.75, 0.65]]],
-  sol:      [[[0.35, 1], [0.35, 0.4], [0.65, 0.6], [0.65, 0]]],
   algiz:    [[[0.5, 0], [0.5, 1]], [[0.5, 0.5], [0.2, 1]], [[0.5, 0.5], [0.8, 1]]],
+  // Futhark récent (les onze premières : ᚠ ᚢ ᚦ ᚬ ᚱ ᚴ ᚼ ᚾ ᛁ ᛅ ᛋ), en
+  // branches rondes.
+  fe:       [[[0.3, 0], [0.3, 1]], courbe([0.3, 0.95], [0.72, 0.98], [0.78, 0.66]), courbe([0.3, 0.68], [0.7, 0.7], [0.76, 0.4])],
+  ur:       [[[0.25, 0], [0.25, 1]], courbe([0.25, 1], [0.8, 1.04], [0.74, 0.32])],
+  thurs:    [[[0.3, 0], [0.3, 1]], courbe([0.3, 0.82], [0.95, 0.55], [0.3, 0.28])],
+  oss:      [[[0.6, 0], [0.6, 1]], courbe([0.6, 0.92], [0.28, 0.9], [0.18, 0.6]), courbe([0.6, 0.64], [0.28, 0.62], [0.18, 0.33])],
+  reid:     [[[0.3, 0], [0.3, 1]], courbe([0.3, 1], [0.9, 0.96], [0.3, 0.55]), courbe([0.3, 0.55], [0.5, 0.35], [0.76, 0.03])],
+  kaun:     [[[0.35, 0], [0.35, 1]], courbe([0.35, 0.5], [0.58, 0.68], [0.76, 0.96])],
+  hagall:   [[[0.5, 0.04], [0.5, 0.96]], [[0.2, 0.27], [0.8, 0.73]], [[0.2, 0.73], [0.8, 0.27]]],
+  naudr:    [[[0.5, 0], [0.5, 1]], courbe([0.22, 0.7], [0.5, 0.44], [0.78, 0.36])],
+  iss:      [[[0.5, 0.05], [0.5, 0.95]]],
+  ar:       [[[0.5, 0], [0.5, 1]], courbe([0.5, 0.78], [0.3, 0.66], [0.2, 0.36])],
+  sol:      [[[0.7, 1], [0.3, 0.64], [0.7, 0.38], [0.32, 0.02]]],
 } satisfies Record<string, Trait[]>;
 
-/** Les rangées, de haut en bas : ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁ. */
+/** Les rangées, de haut en bas : ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁ (ancien futhark, droit). */
 export const ANCIEN: Trait[][] = [FUT.fehu, FUT.uruz, FUT.thurisaz, FUT.ansuz, FUT.raido, FUT.kaunan,
   FUT.gebo, FUT.wunjo, FUT.hagalaz, FUT.naudiz, FUT.isaz];
-/** Les colonnes, de gauche à droite : ᚠᚢᚦᚬᚱᚴᚼᚾᛁᛅᛋ. */
-export const RECENT: Trait[][] = [FUT.fehu, FUT.uruz, FUT.thurisaz, FUT.oss, FUT.raido, FUT.kaun,
-  FUT.hagall, FUT.naudiz, FUT.isaz, FUT.ar, FUT.sol];
+/** Les colonnes, de gauche à droite : ᚠᚢᚦᚬᚱᚴᚼᚾᛁᛅᛋ (futhark récent, rond). */
+export const RECENT: Trait[][] = [FUT.fe, FUT.ur, FUT.thurs, FUT.oss, FUT.reid, FUT.kaun,
+  FUT.hagall, FUT.naudr, FUT.iss, FUT.ar, FUT.sol];
 
 /** Le nom des runes, pour la notation à venir : colonne puis rangée. */
 export const NOM_COLONNE = ['fé', 'úr', 'þurs', 'óss', 'reið', 'kaun', 'hagall', 'nauðr', 'íss', 'ár', 'sól'];
@@ -59,7 +83,7 @@ export const NOM_RANGEE = ['fehu', 'uruz', 'thurisaz', 'ansuz', 'raido', 'kenaz'
 
 /** Brûle une rune au fer : centre (x, y) en pixels, hauteur h, angle en radians
  *  (sens horaire à l'écran). */
-function bruler(g: CanvasRenderingContext2D, rune: Trait[], x: number, y: number, h: number, angle = 0, ancre: 'centre' | 'pied' = 'centre') {
+function bruler(g: CanvasRenderingContext2D, rune: Trait[], x: number, y: number, h: number, angle = 0, ancre: 'centre' | 'pied' = 'centre', rond = false) {
   g.save();
   g.translate(x, y);
   g.rotate(angle);
@@ -79,6 +103,16 @@ function bruler(g: CanvasRenderingContext2D, rune: Trait[], x: number, y: number
         if (i === 0) g.moveTo(X, Y); else g.lineTo(X, Y);
       });
       g.stroke();
+      if (rond) {
+        // Le futhark récent finit chaque trait par un point, comme
+        // sur le tableau : c'est ce qui le sépare de l'ancien.
+        g.fillStyle = couleur;
+        for (const [px, py] of [trait[0], trait[trait.length - 1]]) {
+          g.beginPath();
+          g.arc((px - 0.5) * h * 0.8, -(py - dy) * h, largeur * 0.95, 0, Math.PI * 2);
+          g.fill();
+        }
+      }
     }
   }
   g.restore();
@@ -122,8 +156,8 @@ export function graverHullsborg(group: THREE.Group, cote: number, yCadre: number
     bruler(g, ANCIEN[i], PX - bord, long, h, -HORAIRE);
     // Colonnes (futhark récent), de gauche à droite, couchées le haut
     // vers la gauche, en haut comme en bas.
-    bruler(g, RECENT[i], long, bord, h, -HORAIRE);
-    bruler(g, RECENT[i], long, PX - bord, h, -HORAIRE);
+    bruler(g, RECENT[i], long, bord, h, -HORAIRE, 'centre', true);
+    bruler(g, RECENT[i], long, PX - bord, h, -HORAIRE, 'centre', true);
   }
   group.add(plan(cadre, cote, yCadre));
 

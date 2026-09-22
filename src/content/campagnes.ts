@@ -44,7 +44,8 @@ export type IdCampagne =
   | 'comptant'
   | 'antenne'
   | 'merci-achat'
-  | 'rappel-festival';
+  | 'rappel-festival'
+  | 'rappel-banquet';
 
 export type LangueCampagne = 'FR' | 'EN';
 

@@ -101,8 +101,8 @@ export const BOARD_SETS: BoardSet[] = [
   {
     id: 'hullsborg',
     statut: 'boutique',
-    nomFR: 'La table de Hullsborg',
-    nomEN: 'The Hullsborg table',
+    nomFR: 'Plateau Futhark',
+    nomEN: 'Futhark Board',
     texteFR: 'Le plateau de pin taillé et brûlé à la main, avec sa notation : l\u2019ancien futhark d\u2019un côté, le futhark récent de l\u2019autre, et quatre runes ᚱ qui tournent autour du trône. Offert à la troupe de Hullsborg, 100 Montpellois pour les autres.',
     texteEN: 'The hand-carved, hand-burnt pine board with its notation: the Elder Futhark along one side, the Younger Futhark along the other, and four ᚱ runes wheeling around the throne. Free for the Hullsborg troupe, 100 Montpellois for everyone else.',
     vignette: '/games/hnefatafl/vignettes/table-hullsborg.webp',
