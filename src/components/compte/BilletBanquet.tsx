@@ -30,7 +30,7 @@ const CSS = `
 .bb:hover .bb-etoile { transform:scale(1.35) rotate(20deg); opacity:1; }
 @media (max-width: 639px) {
   .bb-coupes { width:64px; height:58px; }
-  .bb { --talon:112px; }
+  .bb { --talon:132px; }
   .bb-papier { grid-template-columns:1fr; grid-template-rows:auto var(--talon);
     -webkit-mask: radial-gradient(circle var(--creux) at 0 calc(100% - var(--talon)), #0000 98%, #000), radial-gradient(circle var(--creux) at 100% calc(100% - var(--talon)), #0000 98%, #000);
     -webkit-mask-composite: source-in; mask-composite: intersect; }
@@ -80,9 +80,9 @@ const BilletBanquet: React.FC<{ billet: BilletBanquetDonnees; nomRepli?: string 
   const places = Math.max(1, Number(billet.places) || 1);
   const nom = (billet.nom || nomRepli || '').trim();
   const t = fr
-    ? { sur: 'Billet de banquet', quand: 'Quand', lieu: 'Où', nom: 'Au nom de', date: 'Dimanche 27 septembre, 13 h 30', village: 'Village Nourriture',
+    ? { sur: 'Billet de banquet', quand: 'Quand', lieu: 'Où', nom: 'Au nom de', date: 'Dimanche 27 septembre', heure: '13 h 30', village: 'Village Nourriture',
         pied: 'Présentez ce billet à l’entrée du banquet.', table: 'À la table', couverts: places > 1 ? 'couverts' : 'couvert' }
-    : { sur: 'Banquet ticket', quand: 'When', lieu: 'Where', nom: 'In the name of', date: 'Sunday, September 27, 1:30 pm', village: 'Food Village',
+    : { sur: 'Banquet ticket', quand: 'When', lieu: 'Where', nom: 'In the name of', date: 'Sunday, September 27', heure: '1:30 pm', village: 'Food Village',
         pied: 'Show this ticket at the banquet entrance.', table: 'At the table', couverts: places > 1 ? 'seats' : 'seat' };
   const etiquette = 'font-display-alt uppercase tracking-[0.22em] text-[11px]';
 
@@ -108,8 +108,8 @@ const BilletBanquet: React.FC<{ billet: BilletBanquetDonnees; nomRepli?: string 
               <span className="w-1.5 h-1.5 rotate-45" style={{ background: 'var(--or)' }} />
               <span className="h-px flex-1" style={{ background: 'color-mix(in oklab, var(--or) 60%, transparent)' }} />
             </div>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 font-editorial text-[17px] leading-snug">
-              <div><dt className={etiquette} style={{ color: 'var(--encre-douce)' }}>{t.quand}</dt><dd className="font-semibold">{t.date}</dd></div>
+            <dl className="grid grid-cols-1 sm:grid-cols-[1.25fr_1fr] gap-x-6 gap-y-3 font-editorial text-[17px] leading-snug">
+              <div><dt className={etiquette} style={{ color: 'var(--encre-douce)' }}>{t.quand}</dt><dd className="font-semibold">{t.date}<span className="block">{t.heure}</span></dd></div>
               <div><dt className={etiquette} style={{ color: 'var(--encre-douce)' }}>{t.lieu}</dt><dd className="font-semibold">{t.village}</dd></div>
               {nom && <div className="sm:col-span-2"><dt className={etiquette} style={{ color: 'var(--encre-douce)' }}>{t.nom}</dt><dd className="font-semibold">{nom}</dd></div>}
             </dl>
@@ -117,7 +117,7 @@ const BilletBanquet: React.FC<{ billet: BilletBanquetDonnees; nomRepli?: string 
           </div>
         </div>
 
-        <div className="bb-talon flex sm:flex-col items-center justify-center gap-4 sm:gap-1 px-4 py-3 text-center">
+        <div className="bb-talon flex sm:flex-col items-center justify-center gap-5 sm:gap-1 px-5 py-4 text-center">
           <div className="flex flex-col items-center">
             <p className={etiquette} style={{ color: 'var(--or)' }}>{t.table}</p>
             <p className="font-display leading-none text-[52px] mt-1" style={{ color: 'var(--encre)', fontWeight: 700 }}>{places}</p>

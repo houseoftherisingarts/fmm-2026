@@ -151,7 +151,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     defendersThinking: 'Les Défenseurs réfléchissent…',
     ending: 'La saga se termine',
     newSaga: 'Nouvelle saga',
-    hint: 'Cliquez une pièce · Cliquez une case verte · Glissez pour pivoter',
+    hint: 'Cliquez une pièce · Cliquez une case verte · Glissez pour pivoter · Molette ou pincement pour s\u2019approcher',
     raidersDot: '● Raiders',
     defendersDot: '● Défenseurs',
     kingDot: '● Roi : atteindre un coin ★',
@@ -220,7 +220,7 @@ const STRINGS: Record<'FR' | 'EN', GameStrings> = {
     defendersThinking: 'Defenders thinking…',
     ending: 'The saga ends',
     newSaga: 'New saga',
-    hint: 'Click piece · Click green to move · Drag to orbit',
+    hint: 'Click piece · Click green to move · Drag to orbit · Scroll or pinch to zoom',
     raidersDot: '● Raiders',
     defendersDot: '● Defenders',
     kingDot: '● King : reach a corner ★',
@@ -1389,15 +1389,31 @@ const HnefataflPage: React.FC = () => {
               bascule reste hors du plein écran : sans ce bouton, il ne
               resterait que la touche Échap, que personne ne devine. */}
           {pleinEcran && (
-            <button
-              type="button"
-              onClick={basculerPleinEcran}
-              className="absolute top-4 right-4 md:top-6 md:right-6 z-[7] inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-[15px] border border-brass/55 bg-black/70 backdrop-blur-md text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
-              style={{ boxShadow: '0 10px 34px rgba(0,0,0,0.6)' }}
-            >
-              <Minimize2 size={13} />
-              {s.quitterPleinEcran}
-            </button>
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-[7] flex items-center gap-2">
+              {/* Le zoom suit en plein écran, où le bandeau n'est plus visible. */}
+              {([[0.8, s.zoomAvant, ZoomIn], [1.25, s.zoomArriere, ZoomOut]] as const).map(([f, label, Icone]) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => canvasRef.current?.zoomer(f)}
+                  title={label}
+                  aria-label={label}
+                  className="inline-flex items-center justify-center w-11 min-h-[44px] rounded-[15px] border border-brass/55 bg-black/70 backdrop-blur-md text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200"
+                  style={{ boxShadow: '0 10px 34px rgba(0,0,0,0.6)' }}
+                >
+                  <Icone size={14} />
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={basculerPleinEcran}
+                className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-[15px] border border-brass/55 bg-black/70 backdrop-blur-md text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.18em]"
+                style={{ boxShadow: '0 10px 34px rgba(0,0,0,0.6)' }}
+              >
+                <Minimize2 size={13} />
+                {s.quitterPleinEcran}
+              </button>
+            </div>
           )}
 
           {gameStarted && (
