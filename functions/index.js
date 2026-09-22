@@ -2969,7 +2969,11 @@ exports.ouvrirCoffre = onCall(
     // arrivent, et le journal s'écrit. Deux ouvertures lancées en même
     // temps ne peuvent pas vider le même coffre deux fois.
     const resultat = await db.runTransaction(async (tx) => {
-      const snap = await tx.get(bourseRef);
+      // L'avatar se relit ICI, et pas seulement plus haut : les champs
+      // de départ ne se posent que sur un document vraiment absent, sinon
+      // un `equipe: {}` fusionné déshabillerait un personnage né entre
+      // les deux lectures.
+      const [snap, avatarFrais] = await Promise.all([tx.get(bourseRef), tx.get(avatarRef)]);
       const b = bourseDe(snap);
       if ((b.coffres || 0) < 1 || (b.cles || 0) < 1) {
         throw new HttpsError('failed-precondition', 'Le coffre et la clé doivent être là tous les deux pour que la serrure cède.');

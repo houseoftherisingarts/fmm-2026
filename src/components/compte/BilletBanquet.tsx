@@ -40,7 +40,7 @@ const CSS = `
 `;
 
 // Deux coupes qui trinquent sous une petite couronne.
-const Coupes: React.FC = () => (
+export const Coupes: React.FC = () => (
   <svg className="bb-coupes" viewBox="0 0 96 88" width="88" height="80" aria-hidden="true">
     <g className="bb-g bb-gg">
       <path d="M14 22 h26 c0 12 -5 22 -13 22 s-13 -10 -13 -22z" fill="#9a2a22" stroke="#3b1219" strokeWidth="2.2" strokeLinejoin="round" />
