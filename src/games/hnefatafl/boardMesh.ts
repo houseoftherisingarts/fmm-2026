@@ -153,6 +153,36 @@ function boisTexture(teinte: number, veine: number): THREE.CanvasTexture {
   return tex;
 }
 
+// ── Le pin de Hullsborg, photographié ───────────────────────────────
+const PIN_CLAIR_URL = '/games/hnefatafl/bois/pin-clair.webp';
+const PIN_TEINTE_URL = '/games/hnefatafl/bois/pin-teinte.webp';
+
+function boisPhoto(url: string, manager?: THREE.LoadingManager): THREE.Texture {
+  const tex = new THREE.TextureLoader(manager).load(url);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+/** Une copie de la géométrie de case dont les UV ne montrent qu'un
+ *  morceau de la photo, tiré au hasard et parfois tourné d'un quart :
+ *  deux cases voisines n'ont jamais la même veine. */
+function morceauDeVeine(base: THREE.BufferGeometry): THREE.BufferGeometry {
+  const geo = base.clone();
+  const uv = geo.attributes.uv as THREE.BufferAttribute;
+  const PART = 0.38;
+  const ox = Math.random() * (1 - PART);
+  const oy = Math.random() * (1 - PART);
+  const tourne = Math.random() < 0.5;
+  for (let i = 0; i < uv.count; i++) {
+    const u = uv.getX(i), v = uv.getY(i);
+    uv.setXY(i, (tourne ? v : u) * PART + ox, (tourne ? u : v) * PART + oy);
+  }
+  uv.needsUpdate = true;
+  return geo;
+}
+
 export function buildBoard(
   scene: THREE.Scene,
   isAlive?: () => boolean,
