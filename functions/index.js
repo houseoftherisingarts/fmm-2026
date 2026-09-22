@@ -3028,7 +3028,6 @@ exports.ouvrirCoffre = onCall(
     });
 
     await verifierRangsFortune(uid, resultat.gagneAvant, resultat.gagneApres);
-    if (!(bourse.depense > 0)) await poserBadge(uid, 'collectionneur');
 
     // Les prix rares : le registre d'abord, parce qu'il doit exister
     // même si le courriel se perd en chemin.
