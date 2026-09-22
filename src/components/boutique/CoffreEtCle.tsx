@@ -156,7 +156,7 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
           >
             <motion.div
               role="status" aria-live="polite"
-              className="relative w-full max-w-2xl rounded-lg-card px-6 py-9 md:px-10 text-center"
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg-card px-6 py-9 md:px-10 text-center"
               style={{
                 background: 'linear-gradient(165deg, rgba(24,12,8,0.94), rgba(8,3,5,0.97))',
                 border: '1px solid rgba(var(--sk-gilt-rgb),0.45)',
