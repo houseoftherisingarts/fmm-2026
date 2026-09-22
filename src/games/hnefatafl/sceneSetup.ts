@@ -175,7 +175,7 @@ export function setupScene(el: HTMLElement): SceneHandle {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
-    camR = fitRadius(camera.aspect);
+    camR = fitRadius(camera.aspect) * zoom;
     updateCam();
   };
 
