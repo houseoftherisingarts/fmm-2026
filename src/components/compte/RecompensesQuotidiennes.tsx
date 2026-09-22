@@ -23,6 +23,16 @@ import {
 // jour » de la bourse rouvre le panneau par l'événement
 // 'fmm:ouvrir-recompenses'.
 
+/** La roue passe la main. Une annonce qui attend son tour (le skin
+ *  Hullsborg, Alex 2026-09-22) se lève une fois la roue refermée, ou
+ *  tout de suite quand la roue n'a pas à s'ouvrir aujourd'hui. */
+export let roueFinie = false;
+function finirRoue() {
+  if (roueFinie) return;
+  roueFinie = true;
+  window.dispatchEvent(new Event('fmm:roue-finie'));
+}
+
 /** Le temps qu'il reste avant la prochaine récompense : jusqu'à minuit
  *  dans le fuseau du festival, la même règle que le serveur. */
 function resteAvantDemain(): string {
