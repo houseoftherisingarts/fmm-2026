@@ -22,6 +22,7 @@ import SansPubPanel from '../compte/SansPubPanel';
 import InterrupteurAnimationsFond from '../compte/InterrupteurAnimationsFond';
 import AffichePrise, { type Prise } from './AffichePrise';
 import RechargerBourse from './RechargerBourse';
+import CoffreEtCle from './CoffreEtCle';
 
 // ─── BoutiqueMontpellois : la boutique du profil ─────────────────────
 // Alex, 2026-08-28 : le solde en tête, puis les vraies places
