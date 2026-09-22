@@ -126,9 +126,15 @@ for (const d of snapClients.docs) {
   if (!courriel || !courriel.includes('@') || c.statut === 'annule') continue;
   if (!parAdresse.get(courriel)) parAdresse.set(courriel, String(c.nom || '').trim());
 }
+// Alex, 2026-09-21 : « ignore aussi les gens qui ont déjà acheté le
+// banquet ». Leurs adresses viennent des paiements Square et vivent
+// dans un fichier du scratchpad (EXCLURE), jamais dans le dépôt.
+const exclus = new Set(process.env.EXCLURE
+  ? readFileSync(process.env.EXCLURE, 'utf8').split('\n').map(normaliser).filter(Boolean)
+  : []);
 const liste = [...parAdresse].map(([courriel, nom]) => ({ courriel, nom }));
-const restants = liste.filter((p) => !dejaEcrits.has(p.courriel) && !desabonnes.has(p.courriel));
-log(`clients 2026 : ${snapClients.size} fiches · ${liste.length} adresses · déjà écrits : ${dejaEcrits.size} · désabonnés : ${desabonnes.size} · à envoyer : ${restants.length}`);
+const restants = liste.filter((p) => !dejaEcrits.has(p.courriel) && !desabonnes.has(p.courriel) && !exclus.has(p.courriel));
+log(`clients 2026 : ${snapClients.size} fiches · ${liste.length} adresses · déjà écrits : ${dejaEcrits.size} · désabonnés : ${desabonnes.size} · acheteurs du banquet écartés : ${liste.filter((p) => exclus.has(p.courriel)).length} · à envoyer : ${restants.length}`);
 
 const pw = () => readFileSync(path.join(SECRETS, '.zoho_pw'), 'utf8').trim();
 const ouvrir = () => nodemailer.createTransport({ host: 'smtp.zohocloud.ca', port: 465, secure: true, auth: { user: ZOHO_EMAIL, pass: pw() } });
