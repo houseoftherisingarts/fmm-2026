@@ -299,6 +299,10 @@ const MurSocial: React.FC<{
             </div>
           </div>
           <h3 className="font-display title-medieval text-lg text-ivory mb-2">{fr ? l.annonce.titleFR : l.annonce.titleEN}</h3>
+          {l.annonce.image && (
+            <img src={l.annonce.image} alt={fr ? l.annonce.titleFR : l.annonce.titleEN} loading="lazy"
+                 className="block w-full mb-3 rounded-card border border-brass/30 object-cover" />
+          )}
           <p className="font-editorial text-sm text-ivory-soft leading-relaxed whitespace-pre-line">{fr ? l.annonce.bodyFR : l.annonce.bodyEN}</p>
           {l.annonce.cta?.url && (
             <a href={l.annonce.cta.url} target="_blank" rel="noreferrer"
