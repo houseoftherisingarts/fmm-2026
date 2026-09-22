@@ -16,6 +16,7 @@
 //   node tools/envoyer-rappel-banquet.mjs --essai          (compte, n'envoie rien)
 //   ESSAI_VERS=adresse node tools/envoyer-rappel-banquet.mjs   (un exemplaire complet)
 //   node tools/envoyer-rappel-banquet.mjs                  (envoie, écrit le registre)
+//   EXCLURE=fichier                                        (une adresse par ligne, jamais écrite)
 //
 // Les secrets se lisent dans deux fichiers protégés du scratchpad
 // (SECRETS_DIR), jamais dans le dépôt : `.zoho_pw` et `.campagne_cle`,
