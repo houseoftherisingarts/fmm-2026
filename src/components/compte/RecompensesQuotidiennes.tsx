@@ -202,6 +202,7 @@ const RecompensesQuotidiennes: React.FC = () => {
   const fermer = () => {
     setOuvert(false);
     try { sessionStorage.setItem('fmm.recompense.vue', journeeFestival(Date.now())); } catch { /* tant pis */ }
+    finirRoue();
   };
 
   // Aperçu de développement sans compte : /?roue=3 ouvre le panneau au
