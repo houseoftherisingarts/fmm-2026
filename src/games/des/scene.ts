@@ -523,8 +523,15 @@ export function creerTable(): TableDes {
   // Une salle basse éclairée à la chandelle : presque pas d'ambiante,
   // un rebond chaud du plancher, une flamme au-dessus de la table et
   // une braise au fond. Tout porte une ombre.
-  scene.add(new THREE.AmbientLight(0xffd2a0, 0.22));
-  scene.add(new THREE.HemisphereLight(0xffc98a, 0x1a0d07, 0.6));
+  scene.add(new THREE.AmbientLight(0xffd2a0, 0.4));
+  scene.add(new THREE.HemisphereLight(0xffc98a, 0x1a0d07, 0.85));
+
+  // Une lanterne au fond de la salle éclaire le visage des convives
+  // assis de l'autre côté de la table : sans elle, ils restaient des
+  // ombres au bord du cadre (Alex, 2026-09-21).
+  const lanterne = new THREE.PointLight(0xffb878, 140, 50, 2);
+  lanterne.position.set(0, 8, -8);
+  scene.add(lanterne);
 
   const chandelle = new THREE.PointLight(0xffb066, 90, 44, 2);
   chandelle.position.set(0, 5.4, 0.8);
