@@ -2972,7 +2972,7 @@ exports.ouvrirCoffre = onCall(
       const snap = await tx.get(bourseRef);
       const b = bourseDe(snap);
       if ((b.coffres || 0) < 1 || (b.cles || 0) < 1) {
-        throw new HttpsError('failed-precondition', 'Il vous faut un coffre et une clé pour ouvrir.');
+        throw new HttpsError('failed-precondition', 'Le coffre et la clé doivent être là tous les deux pour que la serrure cède.');
       }
       const versSac = [];
       const versSkins = [];
