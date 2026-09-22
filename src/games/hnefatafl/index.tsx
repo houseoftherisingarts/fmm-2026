@@ -347,6 +347,7 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, l
     let alive = true;
 
     const scene = setupScene(el);
+    zoomRef.current = scene.zoomCam;
     const detachResize = scene.attachResize();
 
     // ── Chargement des modèles ──────────────────────────────────────
