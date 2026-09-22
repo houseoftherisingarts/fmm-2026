@@ -204,6 +204,12 @@ export interface Bourse {
   taflPlateaux?: string[];
   dosTarot?: string[];
   chancesWJW?: number;
+  /** Les coffres achetés et pas encore ouverts (Alex, 2026-09-21). */
+  coffres?: number;
+  /** Les clés achetées et pas encore employées. */
+  cles?: number;
+  /** La dernière clé achetée : une par semaine, pas plus. */
+  dernierCle?: Timestamp | null;
   maj?: unknown;
 }
 
