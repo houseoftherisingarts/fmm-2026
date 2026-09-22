@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Package, KeyRound, Palette, Layers, Shield, Swords, Music, BookOpen, Moon, Loader2, X } from 'lucide-react';
+import { Package, KeyRound, Palette, Layers, Shield, Swords, Music, BookOpen, Moon, Loader2, X, type LucideIcon } from 'lucide-react';
 import {
   acheterCoffre, acheterCle, ouvrirCoffre, joursAvantLaProchaineCle,
   PRIX_COFFRE, PRIX_CLE, type Bourse, type PriseCoffre } from '../../firebase/montpellois';
