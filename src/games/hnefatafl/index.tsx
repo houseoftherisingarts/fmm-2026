@@ -296,6 +296,8 @@ export interface FilEnLigne {
 export interface CanvasHandle {
   /** Rejoue un coup reçu de l'adversaire. */
   jouerDistant: (fr: number, fc: number, tr: number, tc: number) => void;
+  /** Rapproche (facteur < 1) ou éloigne (facteur > 1) la caméra de la table. */
+  zoomer: (facteur: number) => void;
 }
 
 interface GameCanvasProps {
