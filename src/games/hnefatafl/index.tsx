@@ -321,10 +321,12 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, l
   // La poignée doit survivre aux re-rendus : le moteur vit dans un
   // effet, il publie sa fonction ici.
   const distantRef = useRef<((fr: number, fc: number, tr: number, tc: number) => void) | null>(null);
+  const zoomRef = useRef<((facteur: number) => void) | null>(null);
   const enLigneRef = useRef<FilEnLigne | null>(enLigne ?? null);
   enLigneRef.current = enLigne ?? null;
   useImperativeHandle(ref, () => ({
     jouerDistant: (fr, fc, tr, tc) => distantRef.current?.(fr, fc, tr, tc),
+    zoomer: (facteur) => zoomRef.current?.(facteur),
   }), []);
   const mountRef = useRef<HTMLDivElement | null>(null);
   const stringsRef = useRef(strings);
