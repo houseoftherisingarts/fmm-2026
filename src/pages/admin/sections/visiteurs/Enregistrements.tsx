@@ -69,7 +69,7 @@ const Lecteur: React.FC<{ session: Session; onFermer: () => void }> = ({ session
         <p className="mb-4 flex flex-wrap items-center gap-1.5 text-[12px] text-[#ECE5D2]/70 dark:text-white/60">
           {session.parcours.map((p, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <Icone nom="fa-arrow-right-long" className="text-[10px] text-[#C9A85A]" />}
+              {i > 0 && <Icone nom="fa-arrow-right-long" className="text-[10px] text-[var(--admin-accent)]" />}
               <span className="rounded-full bg-white/5 px-2 py-0.5 dark:bg-white/10">{p}</span>
             </React.Fragment>
           ))}
@@ -113,7 +113,7 @@ const Enregistrements: React.FC = () => {
           <p className="font-serif text-lg text-[#ECE5D2] dark:text-white">{sessions ? `${nb(visibles.length)} visite${visibles.length > 1 ? 's' : ''} filmée${visibles.length > 1 ? 's' : ''}` : 'Chargement'}</p>
           <div className="flex gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Filtre">
             {([['toutes', 'Toutes'], ['accrocs', 'Avec accrocs'], ['longues', 'Plus d\'une minute']] as const).map(([id, label]) => (
-              <button key={id} type="button" onClick={() => setFiltre(id)} className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${filtre === id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>{label}</button>
+              <button key={id} type="button" onClick={() => setFiltre(id)} className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${filtre === id ? 'bg-[var(--admin-accent)] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>{label}</button>
             ))}
           </div>
         </div>
@@ -124,7 +124,7 @@ const Enregistrements: React.FC = () => {
         )}
         <ul className="divide-y divide-[#ECE5D2]/10">
           {visibles.map(s => (
-            <li key={s.sid} className={`flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3.5 ${ouverte?.sid === s.sid ? 'bg-[#C9A85A]/10' : ''}`}>
+            <li key={s.sid} className={`flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3.5 ${ouverte?.sid === s.sid ? 'bg-[var(--admin-accent)]/10' : ''}`}>
               <button type="button" onClick={() => setOuverte(s)} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-5 gap-y-1 text-left">
                 <span className="w-44 shrink-0 text-[13px] text-[#ECE5D2] dark:text-white">{dateLongue(s.debut)}</span>
                 <span className="w-20 shrink-0 text-[12px] tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{duree(s.dureeMs || 0)}</span>
@@ -134,7 +134,7 @@ const Enregistrements: React.FC = () => {
                 <Badges s={s} />
               </button>
               <span className="flex shrink-0 items-center gap-2">
-                <button type="button" onClick={() => setOuverte(s)} className="rounded-full bg-[#C9A85A] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1116] hover:bg-[#8C7335]"><Icone nom="fa-play" className="mr-1.5" />Regarder</button>
+                <button type="button" onClick={() => setOuverte(s)} className="rounded-full bg-[var(--admin-accent)] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1116] hover:bg-[#8C7335]"><Icone nom="fa-play" className="mr-1.5" />Regarder</button>
                 <button type="button" onClick={() => effacer(s)} aria-label="Effacer cette visite" title="Effacer cette visite" className="h-8 w-8 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><Icone nom="fa-trash-can" className="text-[12px]" /></button>
               </span>
             </li>

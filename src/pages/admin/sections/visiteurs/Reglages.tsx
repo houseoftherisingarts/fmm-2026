@@ -71,7 +71,7 @@ const Reglages: React.FC = () => {
             Une part plus grande donne plus de films et coûte un peu plus d'espace; vingt-cinq pour cent suffit largement pour voir ce qui se passe.
           </p>
           <div className="mt-5 flex items-center gap-4">
-            <input type="range" min={0} max={100} step={5} value={part} onChange={e => setR({ ...r, echantillonReplay: Number(e.target.value) / 100 })} className="w-full accent-[#C9A85A]" aria-label="Part des visites filmées" />
+            <input type="range" min={0} max={100} step={5} value={part} onChange={e => setR({ ...r, echantillonReplay: Number(e.target.value) / 100 })} className="w-full accent-[var(--admin-accent)]" aria-label="Part des visites filmées" />
             <span className="w-16 shrink-0 text-right font-serif text-2xl tabular-nums text-[#ECE5D2] dark:text-white">{part} %</span>
           </div>
         </Card>

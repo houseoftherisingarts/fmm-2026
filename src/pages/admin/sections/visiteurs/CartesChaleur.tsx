@@ -177,20 +177,20 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex min-w-0 flex-1 items-center gap-3 text-sm">
             <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ECE5D2]/55">Page</span>
-            <select value={page?.cle || ''} onChange={e => onPage(e.target.value)} className="w-full min-w-0 rounded-xl border border-[#ECE5D2]/10 bg-white/5 px-3 py-2 text-sm text-[#ECE5D2] outline-none focus:border-[#C9A85A] dark:bg-white/5 dark:text-white">
+            <select value={page?.cle || ''} onChange={e => onPage(e.target.value)} className="w-full min-w-0 rounded-xl border border-[#ECE5D2]/10 bg-white/5 px-3 py-2 text-sm text-[#ECE5D2] outline-none focus:border-[var(--admin-accent)] dark:bg-white/5 dark:text-white">
               {pages.map(p => <option key={p.cle} value={p.cle}>{p.titre ? `${p.titre} · ${p.path}` : p.path} ({nb(p.vues)} vues)</option>)}
             </select>
           </label>
           <div className="flex flex-wrap gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Appareil">
             {APPAREILS.map(d => (
-              <button key={d.id} type="button" onClick={() => { setDevice(d.id); setPret(false); }} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${device === d.id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
+              <button key={d.id} type="button" onClick={() => { setDevice(d.id); setPret(false); }} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${device === d.id ? 'bg-[var(--admin-accent)] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
                 <Icone nom={d.icon} className="text-[10px]" />{d.label}
               </button>
             ))}
           </div>
           <div className="flex flex-wrap gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Type de carte">
             {MODES.map(m => (
-              <button key={m.id} type="button" onClick={() => setMode(m.id)} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${mode === m.id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
+              <button key={m.id} type="button" onClick={() => setMode(m.id)} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${mode === m.id ? 'bg-[var(--admin-accent)] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
                 <Icone nom={m.icon} className="text-[10px]" />{m.label}
               </button>
             ))}
@@ -202,8 +202,8 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
           <span><b className="font-semibold text-[#E27A68]">{nb(carte?.nRage || 0)}</b> de rage</span>
           <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{nb(carte?.nMorts || 0)}</b> dans le vide</span>
           {scrollTotal > 0 && <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{pct(carte?.scroll.b50 || 0, scrollTotal)} %</b> passent la moitié de la page</span>}
-          {chargement && <span className="text-[#C9A85A]"><Icone nom="fa-circle-notch" className="animate-spin mr-1" />chargement</span>}
-          {vide && <span className="text-[#C9A85A]">{vide}</span>}
+          {chargement && <span className="text-[var(--admin-accent)]"><Icone nom="fa-circle-notch" className="animate-spin mr-1" />chargement</span>}
+          {vide && <span className="text-[var(--admin-accent)]">{vide}</span>}
         </div>
       </Card>
 

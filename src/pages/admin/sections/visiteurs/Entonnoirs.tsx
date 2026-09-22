@@ -96,7 +96,7 @@ const Entonnoirs: React.FC<Props> = ({ resume, periode }) => {
               <div className="space-y-2">
                 {edite.etapes.map((et, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <span className="w-6 shrink-0 text-center text-[11px] font-bold text-[#C9A85A]">{i + 1}</span>
+                    <span className="w-6 shrink-0 text-center text-[11px] font-bold text-[var(--admin-accent)]">{i + 1}</span>
                     <Input list="vh-chemins" value={et} onChange={e => setEdite({ ...edite, etapes: edite.etapes.map((x, k) => (k === i ? e.target.value : x)) })} placeholder="/formations/*" />
                     <button type="button" aria-label="Retirer cette étape" onClick={() => setEdite({ ...edite, etapes: edite.etapes.filter((_, k) => k !== i) })} className="h-8 w-8 shrink-0 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><Icone nom="fa-xmark" /></button>
                   </div>
@@ -138,7 +138,7 @@ const Entonnoirs: React.FC<Props> = ({ resume, periode }) => {
                 </p>
               </div>
               <span className="flex gap-2">
-                <button type="button" onClick={() => setEdite({ ...e, etapes: [...e.etapes] })} className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#C9A85A] hover:underline">Modifier</button>
+                <button type="button" onClick={() => setEdite({ ...e, etapes: [...e.etapes] })} className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--admin-accent)] hover:underline">Modifier</button>
                 <button type="button" onClick={() => { if (window.confirm(`Retirer le parcours « ${e.nom} » ?`)) garder(liste.filter(x => x.id !== e.id)); }} className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#ECE5D2]/50 hover:text-red-500">Retirer</button>
               </span>
             </div>
@@ -152,7 +152,7 @@ const Entonnoirs: React.FC<Props> = ({ resume, periode }) => {
                     <p className="truncate text-[13px] text-[#ECE5D2] dark:text-white" title={et}>{et}</p>
                     <p className="mt-2 font-serif text-3xl leading-none text-[#ECE5D2] dark:text-white">{nb(n[i])}</p>
                     <div className="mt-3 h-[6px] w-full overflow-hidden rounded-full bg-[#ECE5D2]/[0.07]">
-                      <div className="h-full rounded-full bg-[#C9A85A]" style={{ width: `${Math.max(part ? 2 : 0, part * 100)}%` }} />
+                      <div className="h-full rounded-full bg-[var(--admin-accent)]" style={{ width: `${Math.max(part ? 2 : 0, part * 100)}%` }} />
                     </div>
                     <p className="mt-1.5 text-[11px] text-[#ECE5D2]/55">{Math.round(part * 100)} % du départ</p>
                   </li>

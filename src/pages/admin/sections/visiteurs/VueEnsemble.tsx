@@ -50,7 +50,7 @@ const VueEnsemble: React.FC<Props> = ({ resume, periode, onVoirCarte, onRafraich
     for (const p of resume.pages) {
       for (const e of Object.values(p.elements)) {
         if (!e.n) continue;
-        tous.push({ nom: nomElement(e), n: e.n, detail: p.path, cle: p.cle });
+        tous.push({ nom: nomElement(e), n: e.n, detail: p.path === '/' ? 'accueil' : p.path, cle: p.cle });
       }
     }
     return tous.sort((a, b) => b.n - a.n).slice(0, 8);
@@ -97,7 +97,7 @@ const VueEnsemble: React.FC<Props> = ({ resume, periode, onVoirCarte, onRafraich
         <Tuile etiquette="Visites" valeur={nb(resume.sessions)} note={`${nb(resume.nouveaux)} nouvelles visiteuses`} icone="fa-person-walking" />
         <Tuile etiquette="Pages vues" valeur={nb(resume.vues)} note={`${pagesParVisite.toFixed(1)} pages par visite`} icone="fa-file-lines" />
         <Tuile etiquette="Temps moyen" valeur={duree(dureeMoy)} note="par visite" icone="fa-hourglass-half" />
-        <Tuile etiquette="Rebond" valeur={`${pct(resume.rebonds, resume.fins)} %`} note="une seule page vue" icone="fa-arrow-turn-up" accent={pct(resume.rebonds, resume.fins) > 60 ? 'text-[#E27A68]' : 'text-[#C9A85A]'} />
+        <Tuile etiquette="Rebond" valeur={`${pct(resume.rebonds, resume.fins)} %`} note="une seule page vue" icone="fa-arrow-turn-up" accent={pct(resume.rebonds, resume.fins) > 60 ? 'text-[#E27A68]' : 'text-[var(--admin-accent)]'} />
         <Tuile etiquette="Clics" valeur={nb(resume.clics)} note={`${nb(resume.rage)} de rage · ${nb(resume.morts)} dans le vide`} icone="fa-arrow-pointer" />
         <Tuile etiquette="Erreurs" valeur={nb(resume.erreurs)} note="erreurs techniques vues" icone="fa-bug" accent={resume.erreurs ? 'text-[#E27A68]' : 'text-[#8FC5A3]'} />
       </div>
@@ -107,7 +107,7 @@ const VueEnsemble: React.FC<Props> = ({ resume, periode, onVoirCarte, onRafraich
           <h3 className="font-serif text-lg text-[#ECE5D2] dark:text-white">Visites par jour</h3>
           <div className="flex items-center gap-3">
             {mot && <span className="text-[11px] text-[#ECE5D2]/55">{mot}</span>}
-            <button type="button" onClick={rafraichir} disabled={rafraichit} className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#C9A85A] hover:underline disabled:opacity-50">
+            <button type="button" onClick={rafraichir} disabled={rafraichit} className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--admin-accent)] hover:underline disabled:opacity-50">
               <Icone nom="fa-rotate" className={`mr-1.5 ${rafraichit ? 'animate-spin' : ''}`} />Rafraîchir
             </button>
           </div>
@@ -158,7 +158,7 @@ const VueEnsemble: React.FC<Props> = ({ resume, periode, onVoirCarte, onRafraich
             <ul className="divide-y divide-[#ECE5D2]/10">
               {accrocs.map(p => (
                 <li key={p.cle} className="flex items-center justify-between gap-3 py-2.5">
-                  <button type="button" onClick={() => onVoirCarte(p.cle)} className="min-w-0 truncate text-left text-[13px] text-[#ECE5D2] hover:text-[#C9A85A] dark:text-white">{p.titre || p.path}</button>
+                  <button type="button" onClick={() => onVoirCarte(p.cle)} className="min-w-0 truncate text-left text-[13px] text-[#ECE5D2] hover:text-[var(--admin-accent)] dark:text-white">{p.titre || p.path}</button>
                   <span className="flex shrink-0 flex-wrap justify-end gap-1.5 text-[11px] tabular-nums text-[#ECE5D2]/60">
                     {p.rage > 0 && <span className="whitespace-nowrap rounded-full bg-[#E27A68]/10 px-2 py-0.5 text-[#E27A68]">{nb(p.rage)} rage</span>}
                     {p.morts > 0 && <span className="whitespace-nowrap rounded-full bg-[#ECE5D2]/10 px-2 py-0.5">{nb(p.morts)} dans le vide</span>}

@@ -10,7 +10,7 @@ import { Icone } from './Icone';
 // erreurs techniques que le navigateur a rencontrées. Chaque ligne mène à la
 // carte de la page pour voir l'endroit exact.
 
-const Titre: React.FC<{ children: React.ReactNode; note?: string; icone: string; couleur?: string }> = ({ children, note, icone, couleur = 'text-[#C9A85A]' }) => (
+const Titre: React.FC<{ children: React.ReactNode; note?: string; icone: string; couleur?: string }> = ({ children, note, icone, couleur = 'text-[var(--admin-accent)]' }) => (
   <div className="mb-4 flex items-baseline justify-between gap-3">
     <h3 className="flex items-center gap-2.5 font-serif text-lg text-[#ECE5D2] dark:text-white"><Icone nom={icone} className={`text-sm ${couleur}`} />{children}</h3>
     {note && <span className="text-[11px] text-[#ECE5D2]/50 dark:text-white/45">{note}</span>}
@@ -62,7 +62,7 @@ const Frictions: React.FC<Props> = ({ resume, onVoirCarte }) => {
 
   const Ligne: React.FC<{ nom: string; page: string; cle: string; n: number; unite: string }> = ({ nom, page, cle, n, unite }) => (
     <li className="flex items-center justify-between gap-3 py-2.5">
-      <button type="button" onClick={() => onVoirCarte(cle)} className="min-w-0 text-left hover:text-[#C9A85A]">
+      <button type="button" onClick={() => onVoirCarte(cle)} className="min-w-0 text-left hover:text-[var(--admin-accent)]">
         <span className="block truncate text-[13px] text-[#ECE5D2] dark:text-white">{nom}</span>
         <span className="block truncate text-[11px] text-[#ECE5D2]/55 dark:text-white/45">{page}</span>
       </button>

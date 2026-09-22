@@ -48,14 +48,14 @@ export const Courbe: React.FC<{ points: { x: string; y: number; etiquette?: stri
         {ticks.map(t => (
           <g key={t}>
             <line x1={mg.g} x2={L - mg.d} y1={Y(t)} y2={Y(t)} stroke={TEINTES.grille} strokeWidth="1" />
-            <text x={mg.g - 8} y={Y(t) + 4} textAnchor="end" fontSize="10" fill="rgba(41,48,39,0.5)">{nb(t)}</text>
+            <text x={mg.g - 8} y={Y(t) + 4} textAnchor="end" fontSize="10" fill="rgba(236,229,210,0.6)">{nb(t)}</text>
           </g>
         ))}
         {aire && <path d={aire} fill="url(#vh-aire)" />}
         {chemin && <path d={chemin} fill="none" stroke={couleur} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />}
         {etiquettesX.map(p => {
           const i = points.indexOf(p);
-          return <text key={p.x} x={X(i)} y={H - 8} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fontSize="10" fill="rgba(41,48,39,0.55)">{p.etiquette || p.x}</text>;
+          return <text key={p.x} x={X(i)} y={H - 8} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fontSize="10" fill="rgba(236,229,210,0.6)">{p.etiquette || p.x}</text>;
         })}
         {survol !== null && points[survol] && (
           <g>
@@ -76,6 +76,9 @@ export const Courbe: React.FC<{ points: { x: string; y: number; etiquette?: stri
 
 // ─── Barres horizontales (pages, sources) ───────────────────────────────────
 
+// En français, 0 et 1 prennent le singulier.
+const SINGULIERS: Record<string, string> = { ' clics': ' clic', ' vues': ' vue', ' visites': ' visite' };
+
 export const Barres: React.FC<{ lignes: { nom: string; n: number; detail?: string; onClick?: () => void }[]; couleur?: string; unite?: string; max?: number }> = ({ lignes, couleur = TEINTES.cuivre, unite = '', max }) => {
   const plafond = Math.max(1, max ?? Math.max(0, ...lignes.map(l => l.n)));
   return (
@@ -84,8 +87,8 @@ export const Barres: React.FC<{ lignes: { nom: string; n: number; detail?: strin
         <li key={`${i}-${l.nom}`}>
           <button type="button" onClick={l.onClick} disabled={!l.onClick} className={`group block w-full text-left ${l.onClick ? 'cursor-pointer' : 'cursor-default'}`}>
             <div className="mb-1 flex items-baseline justify-between gap-3 text-[13px]">
-              <span className={`min-w-0 truncate text-[#ECE5D2] dark:text-white ${l.onClick ? 'group-hover:text-[#C9A85A]' : ''}`}>{l.nom}</span>
-              <span className="max-w-[55%] shrink-0 truncate tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{nb(l.n)}{unite}{l.detail ? <span className="ml-2 text-[11px] text-[#ECE5D2]/45">{l.detail}</span> : null}</span>
+              <span className={`min-w-0 truncate text-[#ECE5D2] dark:text-white ${l.onClick ? 'group-hover:text-[var(--admin-accent)]' : ''}`}>{l.nom}</span>
+              <span className="max-w-[55%] shrink-0 truncate tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{nb(l.n)}{l.n < 2 ? SINGULIERS[unite] ?? unite : unite}{l.detail ? <span className="ml-2 text-[11px] text-[#ECE5D2]/45">{l.detail}</span> : null}</span>
             </div>
             <div className="h-[6px] w-full overflow-hidden rounded-full bg-[#ECE5D2]/[0.07] dark:bg-white/10">
               <div className="h-full rounded-full" style={{ width: `${Math.max(1.5, (l.n / plafond) * 100)}%`, background: couleur }} />
@@ -118,7 +121,7 @@ export const Anneau: React.FC<{ parts: { nom: string; n: number; couleur: string
             strokeDasharray={`${a.longueur} ${C - a.longueur}`} strokeDashoffset={-a.offset} transform="rotate(-90 60 60)" />
         ))}
         <text x="60" y="56" textAnchor="middle" fontSize="18" fontWeight="600" fill={TEINTES.encre}>{nb(total)}</text>
-        <text x="60" y="72" textAnchor="middle" fontSize="9" fill="rgba(41,48,39,0.5)" letterSpacing="1">VUES</text>
+        <text x="60" y="72" textAnchor="middle" fontSize="9" fill="rgba(236,229,210,0.6)" letterSpacing="1">VUES</text>
       </svg>
       <ul className="space-y-2 text-[13px]">
         {parts.map(p => (
@@ -150,7 +153,7 @@ export const Heures: React.FC<{ valeurs: number[] }> = ({ valeurs }) => {
             <g key={h} onMouseEnter={() => setSurvol(h)}>
               <rect x={10 + h * larg} y={0} width={larg} height={H - b} fill="transparent" />
               <rect x={10 + h * larg + 3} y={H - b - hb} width={larg - 6} height={hb} rx="3" fill={h === pic ? TEINTES.cuivre : 'rgba(201,168,90,0.45)'} />
-              {h % 3 === 0 && <text x={10 + h * larg + larg / 2} y={H - 6} textAnchor="middle" fontSize="10" fill="rgba(41,48,39,0.5)">{h} h</text>}
+              {h % 3 === 0 && <text x={10 + h * larg + larg / 2} y={H - 6} textAnchor="middle" fontSize="10" fill="rgba(236,229,210,0.6)">{h} h</text>}
             </g>
           );
         })}
@@ -167,7 +170,7 @@ export const Heures: React.FC<{ valeurs: number[] }> = ({ valeurs }) => {
 
 // ─── Tuile de chiffre ───────────────────────────────────────────────────────
 
-export const Tuile: React.FC<{ etiquette: string; valeur: string; note?: string; icone: string; accent?: string }> = ({ etiquette, valeur, note, icone, accent = 'text-[#C9A85A]' }) => (
+export const Tuile: React.FC<{ etiquette: string; valeur: string; note?: string; icone: string; accent?: string }> = ({ etiquette, valeur, note, icone, accent = 'text-[var(--admin-accent)]' }) => (
   <div className="rounded-[20px] border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_-18px_rgba(41,48,39,0.3)] backdrop-blur-md dark:border-white/10 dark:bg-black/30">
     <div className="flex items-center justify-between">
       <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#ECE5D2]/55 dark:text-white/50">{etiquette}</span>
