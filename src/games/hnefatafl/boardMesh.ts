@@ -181,28 +181,52 @@ export function buildBoard(
   const span = N * CELL;
   // Le cadre gravé de Hullsborg demande une bande d'une case de large.
   const cadre = pal.brut ? 2.3 : 1.5;
+  // Sur la planche d'Alex, le damier est une dalle d'un pouce posée
+  // sur le cadre gravé (photos du 2026-09-21) : le cadre descend
+  // d'autant, les cases restent où les pièces les attendent.
+  const DALLE = pal.brut ? 0.6 : 0;
 
-  const boisProfond = boisTexture(pal.socle, pal.socleHaut);
+  // Le bois de Hullsborg est photographié (deux planches de pin, l'une
+  // au miel pour le cadre, l'autre teinte noyer pour les cases), pas
+  // peint au canevas : Alex voulait « du vrai bois » (2026-09-21).
+  const pinClair = pal.brut ? boisPhoto(PIN_CLAIR_URL, manager) : null;
+  const pinTeinte = pal.brut ? boisPhoto(PIN_TEINTE_URL, manager) : null;
+
+  const boisProfond = pinTeinte ?? boisTexture(pal.socle, pal.socleHaut);
   boisProfond.repeat.set(2.5, 2.5);
   const baseDeep = new THREE.Mesh(
     new THREE.BoxGeometry(span + cadre + 0.7, 0.5, span + cadre + 0.7),
-    new THREE.MeshPhongMaterial({ color: 0xffffff, map: boisProfond, shininess: 10, specular: 0x2a1a0c }),
+    new THREE.MeshPhongMaterial({ color: pinTeinte ? 0x4a3020 : 0xffffff, map: boisProfond, shininess: 10, specular: 0x2a1a0c }),
   );
-  baseDeep.position.y = -0.42;
+  baseDeep.position.y = -0.42 - DALLE;
   baseDeep.receiveShadow = true;
   group.add(baseDeep);
   cosmetics.push(baseDeep);
 
-  const boisTable = boisTexture(pal.socleHaut, pal.clair);
-  boisTable.repeat.set(2, 2);
+  const boisTable = pinClair ?? boisTexture(pal.socleHaut, pal.clair);
+  boisTable.repeat.set(pinClair ? 1.4 : 2, pinClair ? 1.4 : 2);
   const baseTop = new THREE.Mesh(
     new THREE.BoxGeometry(span + cadre, 0.3, span + cadre),
-    new THREE.MeshPhongMaterial({ color: 0xffffff, map: boisTable, shininess: 22, specular: 0x3a2712 }),
+    new THREE.MeshPhongMaterial({ color: pinClair ? 0xb8916a : 0xffffff, map: boisTable, shininess: pinClair ? 8 : 22, specular: 0x3a2712 }),
   );
-  baseTop.position.y = -0.12;
+  baseTop.position.y = -0.12 - DALLE;
   baseTop.receiveShadow = true;
   group.add(baseTop);
   cosmetics.push(baseTop);
+
+  if (pal.brut && pinTeinte) {
+    // La dalle du damier : ses flancs montrent le pin teinté, son
+    // dessus disparaît sous les cases et les sillons brûlés.
+    const dalle = new THREE.Mesh(
+      new THREE.BoxGeometry(span + 0.04, DALLE, span + 0.04),
+      new THREE.MeshPhongMaterial({ color: 0x6a4630, map: pinTeinte, shininess: 8, specular: 0x2a1a0c }),
+    );
+    dalle.position.y = 0.05 - DALLE / 2;
+    dalle.castShadow = true;
+    dalle.receiveShadow = true;
+    group.add(dalle);
+    cosmetics.push(dalle);
+  }
 
   // Filet de laiton qui court autour du champ de jeu
   const railMat = new THREE.MeshPhongMaterial({
