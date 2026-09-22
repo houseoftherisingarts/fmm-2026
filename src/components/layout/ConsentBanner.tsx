@@ -9,6 +9,7 @@ import { loadMetaPixel } from '../../lib/metaPixel';
 import { activerVexelHotjar } from '../../vexelhotjar';
 import { mesureExclue } from '../../vexelhotjar/tracker';
 import {
+  ACCEPTATION_COMPLETE,
   EVENEMENT_OUVERTURE,
   REFUS_COMPLET,
   ecrireConsentement,
@@ -17,16 +18,16 @@ import {
   type Consentement,
 } from '../../lib/consentement';
 
-// ─── La bannière de consentement (Loi 25 du Québec) ──────────────────
-// Trois finalités, trois interrupteurs, tous éteints tant que la
-// personne n'a pas posé de geste. L'article 8.1 demande que les
-// fonctions d'identification et de profilage soient désactivées par
-// défaut, et les lignes directrices de la Commission d'accès à
-// l'information ajoutent qu'un refus doit être aussi facile qu'une
-// acceptation. Les deux boutons portent donc exactement le même poids
-// visuel.
+// ─── La bannière de consentement ─────────────────────────────────────
+// Décision d'Alex du 22 septembre 2026 : la bannière paraît d'abord en
+// petit (une phrase, « Tout accepter » et un lien « Voir plus »), et le
+// lien déplie les trois finalités, cochées par défaut, avec « Tout
+// accepter », « Tout refuser » et « Enregistrer mes choix ». Cocher par
+// défaut s'écarte de l'article 8.1 de la Loi 25, qui veut ces fonctions
+// éteintes tant que la personne ne les a pas activées.
 //
-// Rien ne se charge avant l'acceptation de la finalité qui le couvre :
+// Rien ne se charge avant un clic sur l'un des boutons, et chaque
+// finalité acceptée ne charge que ce qu'elle couvre :
 // la mesure d'audience allume Google Analytics et VexelHotjar (notre
 // propre mesure des clics, du défilement et des visites rejouées), la
 // publicité injecte le script d'AdSense, et les contenus tiers chargent
@@ -88,15 +89,21 @@ const FINALITES = [
 const T = {
   FR: {
     titre: 'Vos témoins et vos données',
+    court: 'Ce site utilise des témoins (cookies).',
+    voirPlus: 'Voir plus',
     politique: 'Lire la politique de confidentialité',
+    accepter: 'Tout accepter',
     refuser: 'Tout refuser',
     enregistrer: 'Enregistrer mes choix',
     fermer: 'Fermer sans changer mes choix',
   },
   EN: {
     titre: 'Your cookies and your data',
+    court: 'This site uses cookies.',
+    voirPlus: 'See more',
     politique: 'Read the privacy policy',
-    refuser: 'Decline everything',
+    accepter: 'Accept all',
+    refuser: 'Decline all',
     enregistrer: 'Save my choices',
     fermer: 'Close without changing my choices',
   },
@@ -115,7 +122,8 @@ const ConsentBanner: React.FC = () => {
   const { loading, roleLoading } = useAuth();
   const authPret = !loading && !roleLoading;
   const [ouvert, setOuvert] = useState(false);
-  const [choix, setChoix] = useState<Choix>(REFUS_COMPLET);
+  const [detail, setDetail] = useState(false);
+  const [choix, setChoix] = useState<Choix>(ACCEPTATION_COMPLETE);
 
   // Une absence de décision ouvre la bannière au premier rendu. La
   // décision déjà prise se remet en marche une fois que Firebase a dit
@@ -140,7 +148,8 @@ const ConsentBanner: React.FC = () => {
       const decision = lireConsentement();
       setChoix(decision
         ? { mesure: decision.mesure, publicite: decision.publicite, tiers: decision.tiers }
-        : REFUS_COMPLET);
+        : ACCEPTATION_COMPLETE);
+      setDetail(true);
       setOuvert(true);
     };
     window.addEventListener(EVENEMENT_OUVERTURE, rouvrir);
@@ -172,59 +181,92 @@ const ConsentBanner: React.FC = () => {
           transition={{ type: 'spring', damping: 24, stiffness: 200 }}
           role="dialog"
           aria-label={l.titre}
-          className="fixed inset-x-3 bottom-3 md:inset-x-auto md:bottom-6 md:right-6 md:max-w-lg z-[100]"
+          className={`fixed inset-x-3 bottom-3 md:inset-x-auto md:bottom-6 md:right-6 z-[100] ${detail ? 'md:max-w-lg' : 'md:max-w-sm'}`}
         >
-          <div className="text-parchment p-5 md:p-6 rounded-card border border-[rgba(var(--sk-mustard-rgb),0.35)] bg-[rgba(14,7,10,0.96)] backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.6)] max-h-[82vh] overflow-y-auto">
-            <p className="font-display text-base tracking-wide mb-2">{l.titre}</p>
-            <p className="font-editorial text-sm leading-relaxed mb-4">{t.body}</p>
+          {detail ? (
+            // Les boutons restent au bas de la carte, hors du défilement :
+            // sur un téléphone, « Tout refuser » ne doit jamais attendre
+            // sous le pli pendant que « Tout accepter » est en vue.
+            <div className="text-parchment rounded-card border border-[rgba(var(--sk-mustard-rgb),0.35)] bg-[rgba(14,7,10,0.96)] backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.6)] max-h-[85dvh] flex flex-col">
+              <div className="min-h-0 overflow-y-auto p-5 md:p-6 pb-3 md:pb-3">
+              <p className="font-display text-base tracking-wide mb-2">{l.titre}</p>
+              <p className="font-editorial text-sm leading-relaxed mb-4">{t.body}</p>
 
-            <div className="flex flex-col gap-2 mb-4">
-              {FINALITES.map((f) => (
-                <Interrupteur
-                  key={f.cle}
-                  titre={f.titre[lang]}
-                  texte={f.texte[lang]}
-                  actif={choix[f.cle]}
-                  onToggle={() => setChoix((c) => ({ ...c, [f.cle]: !c[f.cle] }))}
-                />
-              ))}
-            </div>
+              <div className="flex flex-col gap-2 mb-4">
+                {FINALITES.map((f) => (
+                  <Interrupteur
+                    key={f.cle}
+                    titre={f.titre[lang]}
+                    texte={f.texte[lang]}
+                    actif={choix[f.cle]}
+                    onToggle={() => setChoix((c) => ({ ...c, [f.cle]: !c[f.cle] }))}
+                  />
+                ))}
+              </div>
 
-            <Link
-              to={lang === 'FR' ? '/politique-de-confidentialite' : '/en/privacy'}
-              onClick={() => setOuvert(false)}
-              className="inline-block font-sans text-xs underline underline-offset-4 text-brass hover:text-brass-soft transition mb-4"
-            >
-              {l.politique}
-            </Link>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => repondre(REFUS_COMPLET)}
-                className="flex-1 min-h-[44px] px-4 py-2 bg-brass text-night hover:bg-brass-soft transition font-sans text-xs uppercase tracking-wider font-semibold rounded-card"
-              >
-                {l.refuser}
-              </button>
-              <button
-                onClick={() => repondre(choix)}
-                className="flex-1 min-h-[44px] px-4 py-2 bg-brass text-night hover:bg-brass-soft transition font-sans text-xs uppercase tracking-wider font-semibold rounded-card"
-              >
-                {l.enregistrer}
-              </button>
-            </div>
-
-            {/* Une bannière rouverte depuis le pied de page se referme
-                sans rien changer, sinon la personne serait forcée de
-                répondre une deuxième fois pour en sortir. */}
-            {dejaRepondu && (
-              <button
+              <Link
+                to={lang === 'FR' ? '/politique-de-confidentialite' : '/en/privacy'}
                 onClick={() => setOuvert(false)}
-                className="mt-3 w-full font-sans text-[11px] uppercase tracking-wider text-parchment/60 hover:text-parchment transition"
+                className="inline-block font-sans text-xs underline underline-offset-4 text-brass hover:text-brass-soft transition"
               >
-                {l.fermer}
+                {l.politique}
+              </Link>
+              </div>
+
+              <div className="shrink-0 px-5 md:px-6 pt-3 pb-5 md:pb-6 border-t border-stone-light/15">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => repondre(ACCEPTATION_COMPLETE)}
+                  className="min-h-[44px] px-4 py-2 bg-brass text-midnight-deep hover:bg-brass-soft transition font-sans text-xs uppercase tracking-wider font-semibold rounded-card"
+                >
+                  {l.accepter}
+                </button>
+                <button
+                  onClick={() => repondre(REFUS_COMPLET)}
+                  className="min-h-[44px] px-4 py-2 border border-brass/60 text-parchment hover:border-brass hover:text-brass transition font-sans text-xs uppercase tracking-wider font-semibold rounded-card"
+                >
+                  {l.refuser}
+                </button>
+                <button
+                  onClick={() => repondre(choix)}
+                  className="col-span-2 min-h-[44px] px-4 py-2 border border-stone-light/30 text-parchment/85 hover:border-brass/60 hover:text-parchment transition font-sans text-xs uppercase tracking-wider font-semibold rounded-card"
+                >
+                  {l.enregistrer}
+                </button>
+              </div>
+
+              {/* Une bannière rouverte depuis le pied de page se referme
+                  sans rien changer, sinon la personne serait forcée de
+                  répondre une deuxième fois pour en sortir. */}
+              {dejaRepondu && (
+                <button
+                  onClick={() => setOuvert(false)}
+                  className="mt-3 w-full font-sans text-[11px] uppercase tracking-wider text-parchment/60 hover:text-parchment transition"
+                >
+                  {l.fermer}
+                </button>
+              )}
+              </div>
+            </div>
+          ) : (
+            <div className="text-parchment px-4 py-3 rounded-card border border-[rgba(var(--sk-mustard-rgb),0.35)] bg-[rgba(14,7,10,0.96)] backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-editorial text-sm leading-snug">{l.court}</p>
+                <button
+                  onClick={() => setDetail(true)}
+                  className="font-sans text-[11px] underline underline-offset-4 text-parchment/60 hover:text-brass transition"
+                >
+                  {l.voirPlus}
+                </button>
+              </div>
+              <button
+                onClick={() => repondre(ACCEPTATION_COMPLETE)}
+                className="shrink-0 min-h-[40px] px-4 py-2 bg-brass text-midnight-deep hover:bg-brass-soft transition font-sans text-xs uppercase tracking-wider font-semibold rounded-card"
+              >
+                {l.accepter}
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
@@ -248,7 +290,7 @@ const Interrupteur: React.FC<{
       aria-hidden
       className={`mt-0.5 shrink-0 w-9 h-5 rounded-full transition ${actif ? 'bg-brass' : 'bg-stone-light/30'}`}
     >
-      <span className={`block w-4 h-4 mt-0.5 rounded-full bg-night transition-transform ${actif ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+      <span className={`block w-4 h-4 mt-0.5 rounded-full bg-midnight-deep transition-transform ${actif ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
     </span>
     <span className="min-w-0">
       <span className="block font-sans text-xs uppercase tracking-wider font-semibold">{titre}</span>

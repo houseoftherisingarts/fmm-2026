@@ -105,7 +105,7 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
           <button type="button" disabled={!actif || enCours !== null} onClick={() => demander('coffre')}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
             {enCours === 'coffre' ? <Loader2 size={12} className="animate-spin" /> : <Package size={12} />}
-            {fr ? 'Acheter un coffre' : 'Buy a chest'} · {PRIX_COFFRE}
+            {fr ? 'Acheter un coffre' : 'Buy a chest'} · {PRIX_COFFRE} Montpellois
           </button>
 
           <button type="button" disabled={!actif || enCours !== null || joursAvantLaCle > 0} onClick={() => demander('cle')}
@@ -115,7 +115,7 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
               ? (fr
                 ? `Prochaine clé dans ${joursAvantLaCle} jour${joursAvantLaCle > 1 ? 's' : ''}`
                 : `Next key in ${joursAvantLaCle} day${joursAvantLaCle > 1 ? 's' : ''}`)
-              : `${fr ? 'Acheter une clé' : 'Buy a key'} · ${PRIX_CLE}`}
+              : `${fr ? 'Acheter une clé' : 'Buy a key'} · ${PRIX_CLE} Montpellois`}
           </button>
 
           <button type="button" disabled={!actif || enCours !== null || coffres < 1 || cles < 1} onClick={() => demander('ouvrir')}

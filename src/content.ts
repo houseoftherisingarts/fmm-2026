@@ -246,12 +246,12 @@ export const FOOTER = {
 // ─── Consent banner (LOI 25 Quebec) ──────────────────────────────────
 export const CONSENT = {
   FR: {
-    body: 'Le FMM peut déposer des témoins (cookies) et faire appel à des services de Google, de Meta et de Zeffy. Rien de tout cela ne se met en marche tant que vous ne l\'avez pas accepté, finalité par finalité.',
+    body: 'Le FMM dépose des témoins (cookies) et fait appel à des services de Google, de Meta et de Zeffy, que vous pouvez accepter en bloc ou décocher un à un avant d\'enregistrer vos choix.',
     accept: 'J\'accepte',
     decline: 'Refuser',
   },
   EN: {
-    body: 'FMM may set cookies and call on services from Google, Meta and Zeffy. None of it starts until you have accepted it, one purpose at a time.',
+    body: 'FMM sets cookies and calls on services from Google, Meta and Zeffy, which you can accept all at once or untick one by one before saving your choices.',
     accept: 'Accept',
     decline: 'Decline',
   },
