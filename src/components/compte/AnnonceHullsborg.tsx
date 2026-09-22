@@ -53,8 +53,8 @@ const AnnonceHullsborg: React.FC = () => {
   }, [user?.uid]);
 
   const chemin = pathname.replace(/^\/en(?=\/|$)/, '') || '/';
-  const ouvert = !!ANNONCE && (APERCU || (
-    roue && !vue && !!user?.uid && !!bourse
+  const ouvert = !!ANNONCE && !vue && (APERCU || (
+    roue && !!user?.uid && !!bourse
     && !(bourse.taflPieces || []).includes('hullsborg')
     && !PAGES_SANS_POPUP.some((p) => chemin.startsWith(p))
   ));
