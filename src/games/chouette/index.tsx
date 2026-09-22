@@ -436,7 +436,7 @@ const ChouettePage: React.FC = () => {
 
         {/* À gauche : les scores */}
         {partie && (
-          <div data-tuto="scores" className="absolute left-3 md:left-6 top-[8.5rem] md:top-[7.25rem] z-10 w-44 md:w-56 rounded-lg-card border border-brass/25 px-3.5 py-3"
+          <div data-tuto="scores" className="absolute left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 top-[8.5rem] md:top-[7.25rem] z-10 w-44 md:w-56 rounded-lg-card border border-brass/25 px-3.5 py-3"
                style={{ background: 'rgba(8,3,5,0.62)', backdropFilter: 'blur(6px)' }}>
             <p className="witcher-stat-label mb-2">{t.scores}</p>
             <ul className="space-y-1.5">

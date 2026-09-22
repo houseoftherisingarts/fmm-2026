@@ -901,7 +901,7 @@ const DesPage: React.FC = () => {
 
           {/* À gauche : qui est encore là, et avec combien de dés */}
           {partie && (
-            <div className="absolute left-3 md:left-6 top-[8.5rem] md:top-[7.25rem] z-10 w-40 md:w-52 rounded-lg-card border border-brass/25 px-3.5 py-3"
+            <div className="absolute left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 top-[8.5rem] md:top-[7.25rem] z-10 w-40 md:w-52 rounded-lg-card border border-brass/25 px-3.5 py-3"
                  style={{ background: 'rgba(8,3,5,0.62)', backdropFilter: 'blur(6px)' }}>
               <p className="witcher-stat-label mb-2">{t.joueurs}</p>
               <ul className="space-y-1.5">
@@ -1014,7 +1014,7 @@ const DesPage: React.FC = () => {
           </AnimatePresence>
 
           {/* Le pupitre : tout se joue ici */}
-          <div className="absolute inset-x-0 bottom-0 z-10 px-3 md:px-6 pb-4 pt-8"
+          <div className="absolute inset-x-0 bottom-0 z-10 px-3 md:px-6 pb-16 md:pb-4 pt-8"
                style={{ background: 'linear-gradient(0deg, rgba(8,3,5,0.94), rgba(8,3,5,0))' }}>
             {partieId && !user ? (
               <div className="mx-auto w-full max-w-2xl rounded-lg-card border border-brass/30 px-5 py-5 text-center"

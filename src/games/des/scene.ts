@@ -840,9 +840,15 @@ export function creerTable(): TableDes {
     const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * camera.aspect);
     const recul = Math.max(RAYON / Math.tan(vertical / 2), RAYON / Math.tan(horizontal / 2));
     const dist = Math.max(11.5, recul * 0.92);
+    // Le regard descend un peu vers l'horizontale et vise un point
+    // au-delà du centre : les convives assis de l'autre côté entrent
+    // dans le cadre au lieu d'être coupés au front (Alex, 2026-09-21).
+    // En portrait, le regard se couche davantage : le bord du fond
+    // descend dans le cadre et laisse la place aux convives au-dessus.
+    const portrait = camera.aspect < 1;
     if (!orbite) {
-      camera.position.set(0, dist * 0.66, dist * 0.72);
-      camera.lookAt(0, -1.35, -0.2);
+      camera.position.set(0, dist * (portrait ? 0.4 : 0.58), dist * (portrait ? 0.92 : 0.8));
+      camera.lookAt(0, 0.2, -1.4);
     }
     camera.updateProjectionMatrix();
   };
@@ -860,7 +866,7 @@ export function creerTable(): TableDes {
       // On tourne autour de la table à la souris, comme au tafl : le
       // regard reste sur le plateau, la hauteur reste crédible.
       orbite = new OrbitControls(camera, renderer.domElement);
-      orbite.target.set(0, -1.35, -0.2);
+      orbite.target.set(0, 0.2, -1.4);
       orbite.enableDamping = true;
       orbite.dampingFactor = 0.08;
       orbite.enablePan = false;
@@ -913,8 +919,14 @@ export function creerTable(): TableDes {
           // table. Le siège existe tout de suite (vide), le modèle s'y
           // pose dès qu'il est téléchargé.
           const siege = new THREE.Group();
-          const kBord = (RAYON_TABLE + 1.6) / 3.7;
-          siege.position.set(p.x * kBord, -5.98, p.z * kBord);
+          // Les sièges se resserrent vers le fond de la salle : à trois
+          // joueurs, un convive posé à 120° sortait à moitié du cadre.
+          // En portrait, le cadre est étroit : ils se serrent encore
+          // plus, presque en face du joueur.
+          const angle = Math.atan2(p.x, p.z);
+          const serre = Math.PI - (Math.PI - Math.abs(angle)) * (camera.aspect < 1 ? 0.35 : 0.75);
+          const r = RAYON_TABLE + 1.6;
+          siege.position.set(Math.sign(angle) * Math.sin(serre) * r, -5.98, Math.cos(serre) * r);
           siege.lookAt(0, -5.98, 0);
           groupe.add(siege);
           convives.push(siege);
