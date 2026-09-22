@@ -185,7 +185,7 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
                 {fr ? 'Le coffre s’ouvre' : 'The chest opens'}
               </h2>
 
-              <div className="grid sm:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-3 gap-4" style={{ perspective: 900 }}>
                 {prises.map((p, i) => {
                   const Icone = ICONE[p.type] || Swords;
                   const rare = p.type === 'livre' || p.type === 'nuit-salon';
