@@ -261,6 +261,65 @@ export const acheterAlbum = (groupeId: string) =>
 export const acheterAmbiance = (ambianceId: string) =>
   appeler<{ ambianceId: string }, { solde: number }>('acheterAmbiance')({ ambianceId });
 
+// ── Le coffre et la clé (Alex, 2026-09-21) ──────────────────────────
+// Le coffre s'achète quand on veut, la clé une fois par semaine, et
+// les deux ensemble rendent trois prises tirées au sort. Tout se
+// décide côté serveur (functions/coffre.js et les trois fonctions
+// acheterCoffre / acheterCle / ouvrirCoffre) : ces prix-ci et ce
+// compte de jours ne servent qu'à ce que la boutique annonce la même
+// chose que lui. Un chiffre modifié ici sans l'être là-bas ferait
+// mentir la vitrine, comme les skins au 31 août.
+export const PRIX_COFFRE = 100;
+export const PRIX_CLE = 50;
+export const JOURS_ENTRE_DEUX_CLES = 7;
+
+/** Ce qui sort d'un coffre ouvert, une ligne par prise. */
+export interface PriseCoffre {
+  id: string;
+  type: 'skin' | 'dos' | 'tafl' | 'objet' | 'trouvaille' | 'ambiance' | 'montpellois' | 'livre' | 'nuit-salon';
+  nomFR: string;
+  nomEN: string;
+  /** L'objet était déjà au coffre : il se change en Montpellois. */
+  doublon: boolean;
+  /** Les pièces que la prise rapporte : le palier gagné, ou la moitié
+   *  du prix quand l'objet était déjà à vous. */
+  montpellois: number;
+}
+
+/** Ce que rendent les trois fonctions : la bourse telle qu'elle est
+ *  après le geste, pour que les boutons se remettent à jour sans
+ *  attendre le passage de suivreMaBourse. */
+export interface EtatCoffre {
+  solde: number;
+  coffres: number;
+  cles: number;
+  /** Quand la prochaine clé se débloque, en ISO (acheterCle seulement). */
+  prochaineCle?: string;
+}
+
+/** Achète un coffre : 100 Montpellois, autant de fois qu'on veut. */
+export const acheterCoffre = () =>
+  appeler<Record<string, never>, EtatCoffre>('acheterCoffre')({});
+
+/** Achète une clé : 50 Montpellois, une seule par semaine. Refuse
+ *  (failed-precondition) tant que la semaine n'est pas passée, et son
+ *  message dit la date; l'appelant l'affiche tel quel. */
+export const acheterCle = () =>
+  appeler<Record<string, never>, EtatCoffre>('acheterCle')({});
+
+/** Ouvre un coffre avec une clé et rend les trois prises. */
+export const ouvrirCoffre = () =>
+  appeler<Record<string, never>, EtatCoffre & { objets: PriseCoffre[] }>('ouvrirCoffre')({});
+
+/** Les jours qui restent avant la prochaine clé, zéro quand elle est
+ *  déjà achetable. Jumelle de peutAcheterCle (functions/coffre.js) :
+ *  le serveur reste le seul juge, ceci ne fait qu'étiqueter le bouton. */
+export function joursAvantLaProchaineCle(dernierCleMs: number, maintenant = Date.now()): number {
+  if (!dernierCleMs) return 0;
+  const reste = dernierCleMs + JOURS_ENTRE_DEUX_CLES * 86400000 - maintenant;
+  return reste <= 0 ? 0 : Math.ceil(reste / 86400000);
+}
+
 
 // ── Recharger sa bourse en argent réel (Stripe) ─────────────────────
 // Alex, 2026-08-31 : trois lots, payés par carte en dollars canadiens.
