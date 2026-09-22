@@ -454,7 +454,13 @@ export function creerTable(): TableDes {
   scene.add(plancher);
 
   // ── La table ──────────────────────────────────────────────────────
-  const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 1);
+  // La table est LARGE, comme celle du tafl : son bord sort du cadre et
+  // le bois remplit la vue au lieu de laisser la salle tout autour
+  // (Alex, 2026-09-22 : « il faut que la table soit plus grande, comme
+  // on l'avait fait pour l'autre »). L'aire de jeu (gobelets, dés) garde
+  // sa taille; seuls les convives reculent au nouveau bord.
+  const RAYON_TABLE = 12;
+  const bois = texturePeinte(TEXTURES.table, boisTexture('#3a2412', '#1c1108'), 2);
   // Le plateau est en bois d'un bord à l'autre : aucun drap, aucun
   // cercle au centre (Alex, 2026-08-23).
   const dessus = new THREE.MeshStandardMaterial({
