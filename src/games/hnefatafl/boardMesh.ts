@@ -273,10 +273,27 @@ export function buildBoard(
       let emissive = 0x000000;
       if (isThrone(r, c)) { col = pal.trone; emissive = 0x1a0202; }
       if (isCorner(r, c)) { col = pal.metalSombre; emissive = 0x171004; }
-      const mat = pal.brut
-        ? new THREE.MeshPhongMaterial({ color: 0xffffff, map: veine(col), shininess: pal.brillance })
-        : new THREE.MeshPhongMaterial({ color: col, shininess: pal.brillance, emissive });
-      const sq = new THREE.Mesh(sqGeo, mat);
+      let mat: THREE.MeshPhongMaterial;
+      let geo: THREE.BufferGeometry = sqGeo;
+      if (pinTeinte && pinClair) {
+        // Chaque case est un bloc distinct sur la planche : la même
+        // photo de pin, mais un morceau et un sens de veine par case.
+        // Trône et coins au pin clair, postes de départ teints noyer.
+        const special = isThrone(r, c) || isCorner(r, c);
+        const sombre = col === pal.sombre;
+        mat = new THREE.MeshPhongMaterial({
+          color: special ? 0xe0c090 : (sombre ? 0x4a3226 : 0xa07452),
+          map: special ? pinClair : pinTeinte,
+          shininess: pal.brillance,
+          specular: 0x2a1a0c,
+        });
+        geo = morceauDeVeine(sqGeo);
+      } else if (pal.brut) {
+        mat = new THREE.MeshPhongMaterial({ color: 0xffffff, map: veine(col), shininess: pal.brillance });
+      } else {
+        mat = new THREE.MeshPhongMaterial({ color: col, shininess: pal.brillance, emissive });
+      }
+      const sq = new THREE.Mesh(geo, mat);
       sq.position.set((c - MID) * CELL, 0.05, (r - MID) * CELL);
       sq.receiveShadow = true;
       sq.userData = { r, c, isSquare: true };
