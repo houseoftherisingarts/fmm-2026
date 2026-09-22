@@ -115,6 +115,12 @@ export function setupScene(el: HTMLElement): SceneHandle {
   let camR = FIT_R;
   let theta = 0.4;
   let phi = 1.08;
+  // Le zoom de la personne (molette, pincement, boutons), gardé comme
+  // FRACTION du rayon de cadrage pour survivre au redimensionnement.
+  // Alex, 2026-09-21 : « une fonction pour zoomer à même le jeu, pour
+  // s'approcher de la table ».
+  let zoom = 1;
+  const ZOOM_MIN = 0.4, ZOOM_MAX = 1.6;
 
   const updateCam = () => {
     camera.position.set(
