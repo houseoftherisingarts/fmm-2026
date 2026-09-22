@@ -811,12 +811,6 @@ export function creerTable(): TableDes {
       c.de.rotateOnWorldAxis(c.axe, reste * c.tours * 0.28);
     }
 
-    // Les convives restent tournés vers la caméra pendant qu'elle
-    // tourne autour de la table.
-    convives.forEach((c) => {
-      c.lookAt(camera.position.x, c.position.y, camera.position.z);
-    });
-
     orbite?.update();
     renderer.render(scene, camera);
   };
