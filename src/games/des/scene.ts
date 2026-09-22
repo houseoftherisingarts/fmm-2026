@@ -914,10 +914,11 @@ export function creerTable(): TableDes {
               depthWrite: true, depthTest: true,
             }),
           );
-          // Le buste se pose AU-DELÀ du bord de la table (rayon 6,2),
-          // et son bas plonge sous le plateau : les planches cachent la
-          // découpe et le convive a l'air assis (Alex, 2026-08-23).
-          plaque.position.set(p.x * 1.78, haut / 2 - 2.35, p.z * 1.78);
+          // Le buste se pose AU-DELÀ du bord de la table, et son bas
+          // plonge sous le plateau : les planches cachent la découpe et
+          // le convive a l'air assis (Alex, 2026-08-23).
+          const kBord = (RAYON_TABLE + 0.6) / 3.7;
+          plaque.position.set(p.x * kBord, haut / 2 - 2.35, p.z * kBord);
           plaque.lookAt(0, haut / 2 - 2.0, 0);
           groupe.add(plaque);
           convives.push(plaque);
