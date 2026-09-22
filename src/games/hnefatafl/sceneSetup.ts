@@ -141,6 +141,12 @@ export function setupScene(el: HTMLElement): SceneHandle {
     updateCam();
   };
 
+  const zoomCam = (facteur: number) => {
+    zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * facteur));
+    camR = fitRadius(camera.aspect) * zoom;
+    updateCam();
+  };
+
   // Rapproché cinématique (fuite du Roi). Le paramètre est une FRACTION
   // du rayon courant, et non un rayon absolu : le rayon dépend
   // maintenant du format de la scène, donc une valeur en dur zoomerait
