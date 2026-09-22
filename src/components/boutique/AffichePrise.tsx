@@ -89,13 +89,24 @@ const AffichePrise: React.FC<{ prise: Prise | null; onFermer: () => void; lienCo
               {prise.texte ?? (fr ? 'a été ajouté à votre coffre.' : 'has been added to your vault.')}
             </p>
 
-            <Link
-              to={lienCoffre}
-              onClick={onFermer}
-              className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brass/50 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory hover:bg-brass/15 transition-colors"
-            >
-              {fr ? 'Ouvrir mon coffre' : 'Open my vault'} <ArrowUpRight size={13} />
-            </Link>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {prise.lien && (
+                <Link
+                  to={prise.lien.to}
+                  onClick={onFermer}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brass text-midnight-deep font-sans uppercase tracking-[0.2em] text-[11px] font-semibold hover:bg-brass-soft transition-colors"
+                >
+                  {prise.lien.label} <ArrowUpRight size={13} />
+                </Link>
+              )}
+              <Link
+                to={lienCoffre}
+                onClick={onFermer}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brass/50 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory hover:bg-brass/15 transition-colors"
+              >
+                {fr ? 'Ouvrir mon coffre' : 'Open my vault'} <ArrowUpRight size={13} />
+              </Link>
+            </div>
           </motion.div>
         </motion.div>
       )}
