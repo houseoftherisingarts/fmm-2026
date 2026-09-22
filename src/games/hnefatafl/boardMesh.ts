@@ -348,9 +348,9 @@ export function buildBoard(
       new THREE.MeshBasicMaterial({ color: 0x120a05 }),
     );
     fond.rotation.x = -Math.PI / 2;
-    fond.position.y = 0.036;
+    fond.position.y = 0.052;
     group.add(fond);
-    graverHullsborg(group, span + cadre, 0.032, 0.102);
+    graverHullsborg(group, span + cadre, 0.032 - DALLE, 0.102);
   }
 
   // ── Le blason du festival, peint sur le champ ───────────────────
