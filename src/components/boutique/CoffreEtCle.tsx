@@ -19,7 +19,7 @@ import PieceMontpellois from './PieceMontpellois';
 
 /** L'icône qui tient lieu de vignette : le serveur rend un identifiant
  *  et un nom, jamais une image. */
-const ICONE: Record<PriseCoffre['type'], React.ComponentType<{ size?: number; className?: string }>> = {
+const ICONE: Record<PriseCoffre['type'], LucideIcon> = {
   skin: Palette,
   dos: Layers,
   tafl: Shield,
