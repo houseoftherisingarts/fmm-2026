@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ShieldOff, Heart, Loader2, Check, Coins } from 'lucide-react';
 import { ouvrirLienSansPub, suivreSansPub, DONS_PROPOSES } from '../../firebase/sansPub';
+import { objectif } from '../../vexelhotjar/tracker';
 
 // ─── « Retirer les publicités, paiement unique » ─────────────────────
 // Alex, 2026-08-27 : un paiement unique de 10 à 100 $ au festival, et
@@ -19,7 +20,7 @@ const SansPubPanel: React.FC<{ uid: string; courriel?: string; lang: 'FR' | 'EN'
 
   const payer = async () => {
     setEnvoi(true); setErreur(null);
-    try { window.location.href = await ouvrirLienSansPub({ uid, montant, courriel }); }
+    try { const url = await ouvrirLienSansPub({ uid, montant, courriel }); objectif('sans-pub', 'gros'); window.location.href = url; }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); setEnvoi(false); }
   };
 

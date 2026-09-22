@@ -22,6 +22,7 @@ import { watchAdminRole, backfillUid } from '../firebase/adminRoles';
 import { assurerFiche } from '../firebase/ordre';
 import type { AdminRole } from '../lib/adminPermissions';
 import { codeAuth } from '../lib/authErreurs';
+import { exclureMoi, exclusionDecidee, objectif } from '../vexelhotjar/tracker';
 
 // Allowlist: who counts as a SUPER ADMIN by email. Sourced from
 // VITE_ADMIN_EMAILS (comma-separated). Each entry is either a full
@@ -204,6 +205,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUpWithPassword = async (email: string, password: string, displayName?: string) => {
     if (!auth) throw new Error('Firebase not configured');
     const cred = await createUserWithEmailAndPassword(auth, email, password);
+    objectif('compte', 'petit');
     if (displayName && cred.user) {
       try { await updateProfile(cred.user, { displayName: displayName.trim() }); }
       catch (e) { console.warn('[Auth] updateProfile failed:', e); }
@@ -274,6 +276,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user, isSuperAdmin]);
 
   const isAdmin = adminRole !== null;
+
+  // VexelHotjar : le navigateur d'un membre de l'équipe ne se compte pas
+  // dans la mesure. Le drapeau se pose une seule fois, et l'onglet
+  // Visiteurs et clics de l'admin permet de le retirer.
+  useEffect(() => {
+    if (isAdmin && !exclusionDecidee()) exclureMoi(true);
+  }, [isAdmin]);
 
   const value = useMemo<AuthState>(() => ({
     user, loading, isAdmin, adminRole, isSuperAdmin, roleLoading,

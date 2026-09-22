@@ -23,6 +23,7 @@ import InterrupteurAnimationsFond from '../compte/InterrupteurAnimationsFond';
 import AffichePrise, { type Prise } from './AffichePrise';
 import RechargerBourse from './RechargerBourse';
 import CoffreEtCle from './CoffreEtCle';
+import { objectif } from '../../vexelhotjar/tracker';
 
 // ─── BoutiqueMontpellois : la boutique du profil ─────────────────────
 // Alex, 2026-08-28 : le solde en tête, puis les vraies places
@@ -112,6 +113,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       });
       const d = await r.json();
       if (!d.url) throw new Error('sans url');
+      objectif('boutique', 'gros');
       window.location.href = d.url;
     } catch {
       setBanquetEchec(true);
@@ -130,6 +132,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
       });
       const d = await r.json();
       if (!d.url) throw new Error('sans url');
+      objectif('boutique', 'gros');
       window.location.href = d.url;
     } catch {
       window.location.href = import.meta.env.VITE_SQUARE_GRIMOIRE_URL || SQUARE_GRIMOIRE;

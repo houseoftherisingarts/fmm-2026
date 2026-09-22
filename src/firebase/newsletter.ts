@@ -12,6 +12,7 @@ import {
   type DocumentData, type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { objectif } from '../vexelhotjar/tracker';
 
 export interface NewsletterSub {
   id: string;
@@ -73,6 +74,7 @@ export async function addSub(input: {
     subscribedAt: serverTimestamp(),
     unsubscribed: false,
   });
+  objectif('infolettre', 'petit');
   return {
     id: ref.id,
     email: input.email.trim().toLowerCase(),

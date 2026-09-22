@@ -16,6 +16,7 @@ import {
   NO_TPS, NO_TVQ, calculer, argent, type JourId,
 } from '../content/livraisonKiosque';
 import { reserverLivraisonKiosque, watchPlacesLibres } from '../firebase/livraisonKiosque';
+import { objectif } from '../vexelhotjar/tracker';
 
 // ─── Repas livrés au kiosque · programme pilote ──────────────────────
 // Alex, 10 septembre 2026. Le service rendu à un marchand l'an passé
@@ -97,7 +98,7 @@ const LivraisonKiosquePage: React.FC = () => {
         langue: lang,
         liste: complet,
       });
-      if (reponse.url) { window.location.href = reponse.url; return; }
+      if (reponse.url) { objectif('livraison', 'gros'); window.location.href = reponse.url; return; }
       if (reponse.enAttente) { setEtat('inscritEnAttente'); return; }
       if (reponse.complet) { setLibres(0); setEtat('repos'); setErreur(t.erreurComplet); return; }
       setEtat('repos');

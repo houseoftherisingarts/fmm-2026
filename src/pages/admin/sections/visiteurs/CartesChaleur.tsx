@@ -167,42 +167,42 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
     : mode === 'defilement' && !scrollTotal ? 'Aucune visite terminée sur cette page pendant la période : le défilement se compte quand la page se ferme.'
     : null;
 
-  if (!resume) return <div className="h-64 animate-pulse rounded-[20px] bg-white/45" aria-busy="true" />;
-  if (!pages.length) return <Card className="p-6"><p className="text-sm text-[#38403a]/70">Les cartes apparaissent dès qu'une page a reçu des visites.</p></Card>;
+  if (!resume) return <div className="h-64 animate-pulse rounded-[20px] bg-white/5" aria-busy="true" />;
+  if (!pages.length) return <Card className="p-6"><p className="text-sm text-[#ECE5D2]/70">Les cartes apparaissent dès qu'une page a reçu des visites.</p></Card>;
 
   return (
     <div className="space-y-5">
       <Card className="p-4">
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex min-w-0 flex-1 items-center gap-3 text-sm">
-            <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-[#38403a]/55">Page</span>
-            <select value={page?.cle || ''} onChange={e => onPage(e.target.value)} className="w-full min-w-0 rounded-xl border border-[#38403a]/10 bg-white/70 px-3 py-2 text-sm text-[#293027] outline-none focus:border-[#BA7B39] dark:bg-white/5 dark:text-white">
+            <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ECE5D2]/55">Page</span>
+            <select value={page?.cle || ''} onChange={e => onPage(e.target.value)} className="w-full min-w-0 rounded-xl border border-[#ECE5D2]/10 bg-white/5 px-3 py-2 text-sm text-[#ECE5D2] outline-none focus:border-[#C9A85A] dark:bg-white/5 dark:text-white">
               {pages.map(p => <option key={p.cle} value={p.cle}>{p.titre ? `${p.titre} · ${p.path}` : p.path} ({nb(p.vues)} vues)</option>)}
             </select>
           </label>
-          <div className="flex flex-wrap gap-1 rounded-full border border-[#38403a]/10 bg-white/50 p-1" role="group" aria-label="Appareil">
+          <div className="flex flex-wrap gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Appareil">
             {APPAREILS.map(d => (
-              <button key={d.id} type="button" onClick={() => { setDevice(d.id); setPret(false); }} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${device === d.id ? 'bg-[#293027] text-[#EEE7DB]' : 'text-[#38403a]/65 hover:bg-white/70'}`}>
+              <button key={d.id} type="button" onClick={() => { setDevice(d.id); setPret(false); }} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${device === d.id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
                 <i className={`fa-solid ${d.icon} text-[10px]`} aria-hidden="true" />{d.label}
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-1 rounded-full border border-[#38403a]/10 bg-white/50 p-1" role="group" aria-label="Type de carte">
+          <div className="flex flex-wrap gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Type de carte">
             {MODES.map(m => (
-              <button key={m.id} type="button" onClick={() => setMode(m.id)} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${mode === m.id ? 'bg-[#BA7B39] text-[#293027]' : 'text-[#38403a]/65 hover:bg-white/70'}`}>
+              <button key={m.id} type="button" onClick={() => setMode(m.id)} className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${mode === m.id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>
                 <i className={`fa-solid ${m.icon} text-[10px]`} aria-hidden="true" />{m.label}
               </button>
             ))}
           </div>
         </div>
-        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[12px] text-[#38403a]/65 dark:text-white/55">
-          <span><b className="font-semibold text-[#293027] dark:text-white">{nb(carte?.vues || 0)}</b> vues sur cet appareil</span>
-          <span><b className="font-semibold text-[#293027] dark:text-white">{nb(carte?.nClics || 0)}</b> clics</span>
-          <span><b className="font-semibold text-[#BC4A3C]">{nb(carte?.nRage || 0)}</b> de rage</span>
-          <span><b className="font-semibold text-[#293027] dark:text-white">{nb(carte?.nMorts || 0)}</b> dans le vide</span>
-          {scrollTotal > 0 && <span><b className="font-semibold text-[#293027] dark:text-white">{pct(carte?.scroll.b50 || 0, scrollTotal)} %</b> passent la moitié de la page</span>}
-          {chargement && <span className="text-[#8B4A2F]"><i className="fa-solid fa-circle-notch fa-spin mr-1" aria-hidden="true" />chargement</span>}
-          {vide && <span className="text-[#8B4A2F]">{vide}</span>}
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[12px] text-[#ECE5D2]/65 dark:text-white/55">
+          <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{nb(carte?.vues || 0)}</b> vues sur cet appareil</span>
+          <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{nb(carte?.nClics || 0)}</b> clics</span>
+          <span><b className="font-semibold text-[#E27A68]">{nb(carte?.nRage || 0)}</b> de rage</span>
+          <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{nb(carte?.nMorts || 0)}</b> dans le vide</span>
+          {scrollTotal > 0 && <span><b className="font-semibold text-[#ECE5D2] dark:text-white">{pct(carte?.scroll.b50 || 0, scrollTotal)} %</b> passent la moitié de la page</span>}
+          {chargement && <span className="text-[#C9A85A]"><i className="fa-solid fa-circle-notch fa-spin mr-1" aria-hidden="true" />chargement</span>}
+          {vide && <span className="text-[#C9A85A]">{vide}</span>}
         </div>
       </Card>
 
@@ -221,10 +221,10 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
         {/* La légende et le palmarès */}
         <div className="space-y-4">
           <Card className="p-5">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#38403a]/55">Comment lire</p>
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ECE5D2]/55">Comment lire</p>
             <div className="mb-3 h-2 w-full rounded-full" style={{ background: 'linear-gradient(90deg,#f3e2b8,#e2b463,#BA7B39,#8B4A2F,#4a2a1c)' }} />
-            <div className="mb-3 flex justify-between text-[11px] text-[#38403a]/55"><span>peu</span><span>beaucoup</span></div>
-            <p className="text-[13px] leading-relaxed text-[#38403a]/75 dark:text-white/65">
+            <div className="mb-3 flex justify-between text-[11px] text-[#ECE5D2]/55"><span>peu</span><span>beaucoup</span></div>
+            <p className="text-[13px] leading-relaxed text-[#ECE5D2]/75 dark:text-white/65">
               {mode === 'clics' && 'Chaque tache est un endroit où des visiteuses ont cliqué; plus elle est sombre, plus il y a eu de clics. Un clic est rattaché au bouton ou au lien touché, la carte reste donc juste même si la page a changé de hauteur.'}
               {mode === 'mouvements' && 'Les traces de la souris montrent ce que le regard suit sur un ordinateur ou une tablette avec souris : les zones sombres sont celles où la souris s\'attarde. Sur téléphone, il n\'y a pas de souris et cette carte reste vide.'}
               {mode === 'defilement' && 'Chaque bande dit la part des visites qui est descendue jusque là. La ligne pointillée marque ce que l\'écran montre avant tout défilement : ce qui est en dessous n\'est vu que par celles qui défilent.'}
@@ -233,12 +233,12 @@ const CartesChaleur: React.FC<Props> = ({ resume, periode, pageChoisie, onPage }
           </Card>
           {mode === 'zones' && liste.length > 0 && (
             <Card className="p-5">
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#38403a]/55">Les plus cliqués{carte && carte.nClics > carte.clics.length ? ` · estimés sur les ${nb(carte.clics.length)} derniers clics gardés` : ''}</p>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ECE5D2]/55">Les plus cliqués{carte && carte.nClics > carte.clics.length ? ` · estimés sur les ${nb(carte.clics.length)} derniers clics gardés` : ''}</p>
               <ol className="space-y-2 text-[13px]">
                 {liste.slice(0, 12).map((z, i) => (
                   <li key={`${i}-${z.s}`} className="flex items-baseline justify-between gap-2">
-                    <span className="min-w-0 truncate text-[#293027] dark:text-white" title={z.s}>{nomElement(z)}</span>
-                    <span className="shrink-0 tabular-nums text-[#38403a]/60">{nb(z.n)}{z.r ? <i className="fa-solid fa-bolt ml-1.5 text-[10px] text-[#BC4A3C]" title="clics de rage" aria-label="clics de rage" /> : null}</span>
+                    <span className="min-w-0 truncate text-[#ECE5D2] dark:text-white" title={z.s}>{nomElement(z)}</span>
+                    <span className="shrink-0 tabular-nums text-[#ECE5D2]/60">{nb(z.n)}{z.r ? <i className="fa-solid fa-bolt ml-1.5 text-[10px] text-[#E27A68]" title="clics de rage" aria-label="clics de rage" /> : null}</span>
                   </li>
                 ))}
               </ol>

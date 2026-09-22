@@ -7,10 +7,10 @@ import { nb } from './donnees';
 // trois teintes de catégorie (cuivre, bleu, prune) ont passé le validateur de
 // palette pour les daltoniens.
 
-export const TEINTES = { cuivre: '#BA7B39', bleu: '#2F6FBF', prune: '#8E4B8B', encre: '#293027', grille: 'rgba(41,48,39,0.08)' };
+export const TEINTES = { cuivre: '#C9A85A', bleu: '#6FA3E0', prune: '#C38BC0', encre: '#ECE5D2', grille: 'rgba(236,229,210,0.08)' };
 
 const Bulle: React.FC<{ x: number | string; y: number; children: React.ReactNode }> = ({ x, y, children }) => (
-  <div className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-[10px] bg-[#293027] px-3 py-2 text-[11px] leading-snug text-[#EEE7DB] shadow-[0_10px_30px_-12px_rgba(41,48,39,0.6)]" style={{ left: x, top: y - 8 }}>
+  <div className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-[10px] border border-[#ECE5D2]/15 bg-[#04080B] px-3 py-2 text-[11px] leading-snug text-[#ECE5D2] shadow-[0_10px_30px_-12px_rgba(41,48,39,0.6)]" style={{ left: x, top: y - 8 }}>
     {children}
   </div>
 );
@@ -83,10 +83,10 @@ export const Barres: React.FC<{ lignes: { nom: string; n: number; detail?: strin
         <li key={`${i}-${l.nom}`}>
           <button type="button" onClick={l.onClick} disabled={!l.onClick} className={`group block w-full text-left ${l.onClick ? 'cursor-pointer' : 'cursor-default'}`}>
             <div className="mb-1 flex items-baseline justify-between gap-3 text-[13px]">
-              <span className={`min-w-0 truncate text-[#293027] dark:text-white ${l.onClick ? 'group-hover:text-[#8B4A2F]' : ''}`}>{l.nom}</span>
-              <span className="max-w-[55%] shrink-0 truncate tabular-nums text-[#38403a]/70 dark:text-white/60">{nb(l.n)}{unite}{l.detail ? <span className="ml-2 text-[11px] text-[#38403a]/45">{l.detail}</span> : null}</span>
+              <span className={`min-w-0 truncate text-[#ECE5D2] dark:text-white ${l.onClick ? 'group-hover:text-[#C9A85A]' : ''}`}>{l.nom}</span>
+              <span className="max-w-[55%] shrink-0 truncate tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{nb(l.n)}{unite}{l.detail ? <span className="ml-2 text-[11px] text-[#ECE5D2]/45">{l.detail}</span> : null}</span>
             </div>
-            <div className="h-[6px] w-full overflow-hidden rounded-full bg-[#293027]/[0.07] dark:bg-white/10">
+            <div className="h-[6px] w-full overflow-hidden rounded-full bg-[#ECE5D2]/[0.07] dark:bg-white/10">
               <div className="h-full rounded-full" style={{ width: `${Math.max(1.5, (l.n / plafond) * 100)}%`, background: couleur }} />
             </div>
           </button>
@@ -123,8 +123,8 @@ export const Anneau: React.FC<{ parts: { nom: string; n: number; couleur: string
         {parts.map(p => (
           <li key={p.nom} className="flex items-center gap-2.5">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.couleur }} />
-            <span className="text-[#293027] dark:text-white">{p.nom}</span>
-            <span className="tabular-nums text-[#38403a]/60 dark:text-white/50">{Math.round((p.n / total) * 100)} %</span>
+            <span className="text-[#ECE5D2] dark:text-white">{p.nom}</span>
+            <span className="tabular-nums text-[#ECE5D2]/60 dark:text-white/50">{Math.round((p.n / total) * 100)} %</span>
           </li>
         ))}
       </ul>
@@ -148,7 +148,7 @@ export const Heures: React.FC<{ valeurs: number[] }> = ({ valeurs }) => {
           return (
             <g key={h} onMouseEnter={() => setSurvol(h)}>
               <rect x={10 + h * larg} y={0} width={larg} height={H - b} fill="transparent" />
-              <rect x={10 + h * larg + 3} y={H - b - hb} width={larg - 6} height={hb} rx="3" fill={h === pic ? TEINTES.cuivre : 'rgba(186,123,57,0.45)'} />
+              <rect x={10 + h * larg + 3} y={H - b - hb} width={larg - 6} height={hb} rx="3" fill={h === pic ? TEINTES.cuivre : 'rgba(201,168,90,0.45)'} />
               {h % 3 === 0 && <text x={10 + h * larg + larg / 2} y={H - 6} textAnchor="middle" fontSize="10" fill="rgba(41,48,39,0.5)">{h} h</text>}
             </g>
           );
@@ -166,13 +166,13 @@ export const Heures: React.FC<{ valeurs: number[] }> = ({ valeurs }) => {
 
 // ─── Tuile de chiffre ───────────────────────────────────────────────────────
 
-export const Tuile: React.FC<{ etiquette: string; valeur: string; note?: string; icone: string; accent?: string }> = ({ etiquette, valeur, note, icone, accent = 'text-[#8B4A2F]' }) => (
-  <div className="rounded-[20px] border border-white/60 bg-white/55 p-5 shadow-[0_10px_30px_-18px_rgba(41,48,39,0.3)] backdrop-blur-md dark:border-white/10 dark:bg-[#293027]/55">
+export const Tuile: React.FC<{ etiquette: string; valeur: string; note?: string; icone: string; accent?: string }> = ({ etiquette, valeur, note, icone, accent = 'text-[#C9A85A]' }) => (
+  <div className="rounded-[20px] border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_-18px_rgba(41,48,39,0.3)] backdrop-blur-md dark:border-white/10 dark:bg-black/30">
     <div className="flex items-center justify-between">
-      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#38403a]/55 dark:text-white/50">{etiquette}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#ECE5D2]/55 dark:text-white/50">{etiquette}</span>
       <i className={`fa-solid ${icone} ${accent} text-sm`} aria-hidden="true" />
     </div>
-    <p className="mt-2 font-serif text-3xl leading-none text-[#293027] dark:text-white">{valeur}</p>
-    {note && <p className="mt-1.5 text-[11px] text-[#38403a]/55 dark:text-white/45">{note}</p>}
+    <p className="mt-2 font-serif text-3xl leading-none text-[#ECE5D2] dark:text-white">{valeur}</p>
+    {note && <p className="mt-1.5 text-[11px] text-[#ECE5D2]/55 dark:text-white/45">{note}</p>}
   </div>
 );

@@ -3927,6 +3927,13 @@ Object.assign(exports, require('./placeClan')({ db, FieldValue, COURRIELS_ADMIN 
 // après un vrai compte des filleuls. Voir functions/concoursParrainage.js.
 Object.assign(exports, require('./concoursParrainage')({ db, FieldValue }));
 
+// VexelHotjar : la mesure du comportement des visiteurs (collecte par
+// /api/vh, agrégation aux quinze minutes, purge). Compilé depuis le module
+// _vexel-base/modules/vexelhotjar; seule l'équipe d'admin (COURRIELS_ADMIN)
+// peut rafraîchir les chiffres ou effacer une visite rejouée.
+require('./vexelhotjar/admin').ADMIN_EMAILS.push(...COURRIELS_ADMIN);
+Object.assign(exports, require('./vexelhotjar'));
+
 // ═══════════════════════════════════════════════════════════════════
 // Le fil Facebook sur l'accueil (Alex, 2026-09-12)
 // ═══════════════════════════════════════════════════════════════════

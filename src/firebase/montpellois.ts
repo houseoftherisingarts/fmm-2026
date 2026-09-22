@@ -14,6 +14,7 @@
 import { doc, onSnapshot, type Timestamp } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, firebaseApp } from '../firebase';
+import { objectif } from '../vexelhotjar/tracker';
 
 /** Le pécule de départ, à la création de la bourse. */
 export const SOLDE_DEPART = 10;
@@ -354,6 +355,7 @@ export const PACKS_MONTPELLOIS: PackMontpellois[] = [
 export const acheterMontpelloisLien = async (packId: PackMontpellois['id']): Promise<void> => {
   const { url } = await appeler<{ packId: string }, { url: string }>('acheterMontpelloisLien')({ packId });
   if (!url) throw new Error('La caisse n’a pas répondu.');
+  objectif('montpellois', 'gros');
   window.location.href = url;
 };
 

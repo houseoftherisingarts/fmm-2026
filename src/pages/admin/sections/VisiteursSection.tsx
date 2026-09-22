@@ -59,20 +59,20 @@ const VisiteursSection: React.FC = () => {
     <div className="space-y-6">
       {/* Onglets et période, sur une seule rangée qui replie sur mobile */}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex flex-wrap gap-1 rounded-full border border-white/60 bg-white/45 p-1 backdrop-blur-md dark:border-white/10 dark:bg-[#293027]/50">
+        <div className="flex flex-wrap gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md dark:border-white/10 dark:bg-black/30">
           {ONGLETS.map(o => (
             <button key={o.id} type="button" onClick={() => poser('onglet', o.id)}
-              className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors ${onglet === o.id ? 'bg-[#BA7B39] text-[#293027] shadow-[0_6px_18px_-8px_rgba(186,123,57,0.7)]' : 'text-[#38403a]/65 hover:bg-white/60 hover:text-[#38403a] dark:text-white/65 dark:hover:bg-white/10'}`}>
+              className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors ${onglet === o.id ? 'bg-[#C9A85A] text-[#0B1116] shadow-[0_6px_18px_-8px_rgba(186,123,57,0.7)]' : 'text-[#ECE5D2]/65 hover:bg-white/10 hover:text-[#ECE5D2] dark:text-white/65 dark:hover:bg-white/10'}`}>
               <i className={`fa-solid ${o.icon} text-[10px]`} aria-hidden="true" />
               <span>{o.label}</span>
             </button>
           ))}
         </div>
         {onglet !== 'reglages' && onglet !== 'enregistrements' && (
-          <div className="ml-auto flex gap-1 rounded-full border border-white/60 bg-white/45 p-1 backdrop-blur-md dark:border-white/10 dark:bg-[#293027]/50" role="group" aria-label="Période">
+          <div className="ml-auto flex gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md dark:border-white/10 dark:bg-black/30" role="group" aria-label="Période">
             {PERIODES.map(n => (
               <button key={n} type="button" onClick={() => poser('jours', String(n))}
-                className={`rounded-full px-3 py-1.5 text-[11px] font-bold tabular-nums transition-colors ${jours === n ? 'bg-[#293027] text-[#EEE7DB]' : 'text-[#38403a]/65 hover:bg-white/60 dark:text-white/65'}`}>
+                className={`rounded-full px-3 py-1.5 text-[11px] font-bold tabular-nums transition-colors ${jours === n ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10 dark:text-white/65'}`}>
                 {n} j
               </button>
             ))}

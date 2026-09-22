@@ -191,7 +191,10 @@ const HomeWithIntro: React.FC = () => {
   const presale = SITE_MODE === 'placeholder';
   // Le bouton « Nouvelles » de la barre mène à `/#nouvelles` : la
   // personne veut lire le fil, pas revoir le prologue (2026-09-12).
-  const versNouvelles = typeof window !== 'undefined' && window.location.hash === '#nouvelles';
+  // L'aperçu des cartes de chaleur (?vh=apercu, dans l'admin) veut la
+  // page elle-même, sans le prologue.
+  const versNouvelles = typeof window !== 'undefined'
+    && (window.location.hash === '#nouvelles' || new URLSearchParams(window.location.search).get('vh') === 'apercu');
   const [entered, setEntered] = useState<boolean>(
     () => !force && (versNouvelles || (!presale && typeof window !== 'undefined' && sessionStorage.getItem('fmm_intro_seen') === '1')),
   );

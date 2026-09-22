@@ -58,7 +58,7 @@ const SERIF = 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif';
 /** L'adresse se reconstruit toujours ici; seul un code de la forme attendue passe. */
 const codeValide = (code: string) => /^[A-Z0-9-]{4,24}$/.test(code);
 export const lienVexel = (code: string) =>
-  codeValide(code) ? `https://vexelwebstudio.com/compte?parrain=${encodeURIComponent(code)}` : 'https://vexelwebstudio.com/compte';
+  codeValide(code) ? `https://vexelwebstudio.com/?parrain=${encodeURIComponent(code)}` : 'https://vexelwebstudio.com/';
 
 const style = `
 .cv-foil {

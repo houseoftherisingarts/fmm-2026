@@ -9,14 +9,14 @@ import { nb, nomElement, pct, type Resume } from './donnees';
 // erreurs techniques que le navigateur a rencontrées. Chaque ligne mène à la
 // carte de la page pour voir l'endroit exact.
 
-const Titre: React.FC<{ children: React.ReactNode; note?: string; icone: string; couleur?: string }> = ({ children, note, icone, couleur = 'text-[#8B4A2F]' }) => (
+const Titre: React.FC<{ children: React.ReactNode; note?: string; icone: string; couleur?: string }> = ({ children, note, icone, couleur = 'text-[#C9A85A]' }) => (
   <div className="mb-4 flex items-baseline justify-between gap-3">
-    <h3 className="flex items-center gap-2.5 font-serif text-lg text-[#293027] dark:text-white"><i className={`fa-solid ${icone} text-sm ${couleur}`} aria-hidden="true" />{children}</h3>
-    {note && <span className="text-[11px] text-[#38403a]/50 dark:text-white/45">{note}</span>}
+    <h3 className="flex items-center gap-2.5 font-serif text-lg text-[#ECE5D2] dark:text-white"><i className={`fa-solid ${icone} text-sm ${couleur}`} aria-hidden="true" />{children}</h3>
+    {note && <span className="text-[11px] text-[#ECE5D2]/50 dark:text-white/45">{note}</span>}
   </div>
 );
 
-const Vide: React.FC<{ children: React.ReactNode }> = ({ children }) => <p className="text-sm text-[#38403a]/55 dark:text-white/45">{children}</p>;
+const Vide: React.FC<{ children: React.ReactNode }> = ({ children }) => <p className="text-sm text-[#ECE5D2]/55 dark:text-white/45">{children}</p>;
 
 interface Props { resume: Resume | null; onVoirCarte: (clePage: string) => void }
 
@@ -41,7 +41,7 @@ const Frictions: React.FC<Props> = ({ resume, onVoirCarte }) => {
     };
   }, [resume]);
 
-  if (!resume) return <div className="h-64 animate-pulse rounded-[20px] bg-white/45" aria-busy="true" />;
+  if (!resume) return <div className="h-64 animate-pulse rounded-[20px] bg-white/5" aria-busy="true" />;
   // Les listes gardent les dix liens et boutons les plus touchés : la note
   // sous la liste rend compte du reste, ceux d'après le dixième comme les
   // clics sur une image ou un titre, pour que le total de l'en-tête se
@@ -61,59 +61,59 @@ const Frictions: React.FC<Props> = ({ resume, onVoirCarte }) => {
 
   const Ligne: React.FC<{ nom: string; page: string; cle: string; n: number; unite: string }> = ({ nom, page, cle, n, unite }) => (
     <li className="flex items-center justify-between gap-3 py-2.5">
-      <button type="button" onClick={() => onVoirCarte(cle)} className="min-w-0 text-left hover:text-[#8B4A2F]">
-        <span className="block truncate text-[13px] text-[#293027] dark:text-white">{nom}</span>
-        <span className="block truncate text-[11px] text-[#38403a]/55 dark:text-white/45">{page}</span>
+      <button type="button" onClick={() => onVoirCarte(cle)} className="min-w-0 text-left hover:text-[#C9A85A]">
+        <span className="block truncate text-[13px] text-[#ECE5D2] dark:text-white">{nom}</span>
+        <span className="block truncate text-[11px] text-[#ECE5D2]/55 dark:text-white/45">{page}</span>
       </button>
-      <span className="shrink-0 text-[12px] tabular-nums text-[#38403a]/70 dark:text-white/60">{nb(n)} {unite}</span>
+      <span className="shrink-0 text-[12px] tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{nb(n)} {unite}</span>
     </li>
   );
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card className="p-6">
-        <Titre icone="fa-bolt" couleur="text-[#BC4A3C]" note={`${nb(resume.rage)} sur la période`}>Clics de rage</Titre>
-        {elements.rage.length ? <ul className="divide-y divide-[#38403a]/10">{elements.rage.map((e, i) => <Ligne key={i} {...e} unite="fois" />)}</ul>
+        <Titre icone="fa-bolt" couleur="text-[#E27A68]" note={`${nb(resume.rage)} sur la période`}>Clics de rage</Titre>
+        {elements.rage.length ? <ul className="divide-y divide-[#ECE5D2]/10">{elements.rage.map((e, i) => <Ligne key={i} {...e} unite="fois" />)}</ul>
           : <Vide>{resume.rage > 0 ? `Les ${nb(resume.rage)} clics de rage de la période visent des zones qui ne sont ni un lien ni un bouton (une image, un titre) : la carte des clics les montre.` : "Aucun clic de rage : personne ne s'est acharné sur un bouton qui ne répondait pas."}</Vide>}
-        {elements.rage.length > 0 && noteRage && <p className="mt-3 text-[12px] text-[#38403a]/55">{noteRage}</p>}
+        {elements.rage.length > 0 && noteRage && <p className="mt-3 text-[12px] text-[#ECE5D2]/55">{noteRage}</p>}
       </Card>
       <Card className="p-6">
         <Titre icone="fa-ban" note={`${nb(resume.morts)} sur la période`}>Clics dans le vide</Titre>
-        {elements.morts.length ? <ul className="divide-y divide-[#38403a]/10">{elements.morts.map((e, i) => <Ligne key={i} {...e} unite="fois" />)}</ul>
+        {elements.morts.length ? <ul className="divide-y divide-[#ECE5D2]/10">{elements.morts.map((e, i) => <Ligne key={i} {...e} unite="fois" />)}</ul>
           : <Vide>Aucun clic dans le vide sur un lien ou un bouton. Les clics sur du texte ordinaire ne sont pas comptés ici.</Vide>}
-        {resume.morts > 0 && !elements.morts.length && <p className="mt-3 text-[12px] text-[#38403a]/55">Les {nb(resume.morts)} clics dans le vide de la période visent des zones qui ne sont ni un lien ni un bouton (une image, un titre) : la carte des clics les montre.</p>}
-        {elements.morts.length > 0 && noteMorts && <p className="mt-3 text-[12px] text-[#38403a]/55">{noteMorts}</p>}
+        {resume.morts > 0 && !elements.morts.length && <p className="mt-3 text-[12px] text-[#ECE5D2]/55">Les {nb(resume.morts)} clics dans le vide de la période visent des zones qui ne sont ni un lien ni un bouton (une image, un titre) : la carte des clics les montre.</p>}
+        {elements.morts.length > 0 && noteMorts && <p className="mt-3 text-[12px] text-[#ECE5D2]/55">{noteMorts}</p>}
       </Card>
       <Card className="p-6">
         <Titre icone="fa-pen-to-square" note="commencés puis laissés">Formulaires abandonnés</Titre>
         {resume.formulaires.length ? (
-          <ul className="divide-y divide-[#38403a]/10">
+          <ul className="divide-y divide-[#ECE5D2]/10">
             {resume.formulaires.slice(0, 10).map((f, i) => (
               <li key={i} className="py-2.5">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="min-w-0 truncate text-[13px] text-[#293027] dark:text-white">{f.path}</span>
-                  <span className="shrink-0 text-[12px] tabular-nums text-[#38403a]/70">{nb(f.soumis)} envoyé{f.soumis > 1 ? 's' : ''} · {nb(f.abandons)} laissé{f.abandons > 1 ? 's' : ''}</span>
+                  <span className="min-w-0 truncate text-[13px] text-[#ECE5D2] dark:text-white">{f.path}</span>
+                  <span className="shrink-0 text-[12px] tabular-nums text-[#ECE5D2]/70">{nb(f.soumis)} envoyé{f.soumis > 1 ? 's' : ''} · {nb(f.abandons)} laissé{f.abandons > 1 ? 's' : ''}</span>
                 </div>
-                <div className="mt-1.5 h-[6px] w-full overflow-hidden rounded-full bg-[#293027]/[0.07]">
-                  <div className="h-full rounded-full bg-[#2D4A3E]" style={{ width: `${Math.min(100, pct(f.soumis, f.debuts))}%` }} />
+                <div className="mt-1.5 h-[6px] w-full overflow-hidden rounded-full bg-[#ECE5D2]/[0.07]">
+                  <div className="h-full rounded-full bg-[#8FC5A3]" style={{ width: `${Math.min(100, pct(f.soumis, f.debuts))}%` }} />
                 </div>
-                <p className="mt-1 text-[11px] text-[#38403a]/55">{Math.min(100, pct(f.soumis, f.debuts))} % des {nb(f.debuts)} qui commencent vont au bout{f.dernierChamp ? ` · dernier champ touché avant d'abandonner : ${f.dernierChamp}` : ''}</p>
+                <p className="mt-1 text-[11px] text-[#ECE5D2]/55">{Math.min(100, pct(f.soumis, f.debuts))} % des {nb(f.debuts)} qui commencent vont au bout{f.dernierChamp ? ` · dernier champ touché avant d'abandonner : ${f.dernierChamp}` : ''}</p>
               </li>
             ))}
           </ul>
         ) : <Vide>Aucun formulaire commencé sur la période.</Vide>}
       </Card>
       <Card className="p-6">
-        <Titre icone="fa-bug" couleur={resume.erreursListe.length ? 'text-[#BC4A3C]' : 'text-[#2D4A3E]'} note={`${nb(resume.erreurs)} sur la période`}>Erreurs techniques</Titre>
+        <Titre icone="fa-bug" couleur={resume.erreursListe.length ? 'text-[#E27A68]' : 'text-[#8FC5A3]'} note={`${nb(resume.erreurs)} sur la période`}>Erreurs techniques</Titre>
         {resume.erreursListe.length ? (
-          <ul className="divide-y divide-[#38403a]/10">
+          <ul className="divide-y divide-[#ECE5D2]/10">
             {resume.erreursListe.slice(0, 10).map((e, i) => (
               <li key={i} className="py-2.5">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="min-w-0 truncate font-mono text-[12px] text-[#293027] dark:text-white" title={e.msg}>{e.msg}</span>
-                  <span className="shrink-0 text-[12px] tabular-nums text-[#38403a]/70">{nb(e.n)} fois</span>
+                  <span className="min-w-0 truncate font-mono text-[12px] text-[#ECE5D2] dark:text-white" title={e.msg}>{e.msg}</span>
+                  <span className="shrink-0 text-[12px] tabular-nums text-[#ECE5D2]/70">{nb(e.n)} fois</span>
                 </div>
-                <p className="truncate text-[11px] text-[#38403a]/55">{e.path}{e.src ? ` · ${e.src.split('/').pop()}` : ''}</p>
+                <p className="truncate text-[11px] text-[#ECE5D2]/55">{e.path}{e.src ? ` · ${e.src.split('/').pop()}` : ''}</p>
               </li>
             ))}
           </ul>

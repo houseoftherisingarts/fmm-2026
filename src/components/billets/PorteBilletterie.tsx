@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useUI } from '../../contexts/AppContext';
 import { lienBilletterie, RABAIS_MEMBRE, EVENEMENT_PORTE } from '../../lib/billetterie';
 import { POLITIQUE_ANNULATION } from '../../content/politiqueAnnulation';
+import { objectif } from '../../vexelhotjar/tracker';
 
 // ─── La porte de la billetterie ──────────────────────────────────────
 // Alex, 2026-08-28 : le visiteur sans compte voit d'abord cette porte.
@@ -28,6 +29,7 @@ const PorteBilletterie: React.FC<{
 
   const continuerSansCompte = () => {
     onFermer();
+    objectif('billetterie', 'gros');
     window.location.href = lienBilletterie(false);
   };
 
@@ -38,6 +40,7 @@ const PorteBilletterie: React.FC<{
 
   const versMesBillets = () => {
     onFermer();
+    objectif('billetterie', 'gros');
     window.location.href = lienBilletterie(true);
   };
 

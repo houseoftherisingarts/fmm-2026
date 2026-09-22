@@ -16,6 +16,7 @@ import {
   IconSunrise, IconCauldron, IconFlame, IconGreens, IconBread,
   IconHoney, IconScorpion, IconPitcher,
 } from '../components/icons/Medieval';
+import { objectif } from '../vexelhotjar/tracker';
 
 // Les emoji de catégorie sont partis : ils cassaient la règle « aucune
 // icône générique » (Alex, 2026-08-22). Chaque catégorie porte son
@@ -374,6 +375,7 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                       });
                       const d = await r.json();
                       if (!d.url) throw new Error('sans url');
+                      objectif('repas', 'gros');
                       window.location.href = d.url;
                     } catch {
                       // Filet : si la fonction tombe, on n'empêche pas
@@ -611,6 +613,7 @@ const NourriturePage: React.FC<{ embedded?: boolean; sansEntete?: boolean }> = (
                             });
                             const d = await r.json();
                             if (!d.url) throw new Error('sans url');
+                            objectif('repas', 'gros');
                             window.location.href = d.url;
                           } catch {
                             window.location.href = filet;

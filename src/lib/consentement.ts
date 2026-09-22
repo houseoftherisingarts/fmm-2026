@@ -35,7 +35,7 @@ export interface Consentement extends Choix {
  * change, et ce jour-là chaque personne est reconsultée : un
  * consentement porte sur ce qui a été lu, pas sur une case cochée.
  */
-export const VERSION_TEXTE = '2026-09-02';
+export const VERSION_TEXTE = '2026-09-22';
 
 const CLE = 'fmm.consentement.v2';
 
@@ -87,8 +87,11 @@ function reprendreAncienneCle(): Consentement | null {
 export function lireConsentement(): Consentement | null {
   try {
     const brut = localStorage.getItem(CLE);
-    if (brut) return valide(JSON.parse(brut));
-    return reprendreAncienneCle();
+    const decision = brut ? valide(JSON.parse(brut)) : reprendreAncienneCle();
+    // Une réponse donnée à un texte plus ancien ne couvre pas ce que le
+    // texte d'aujourd'hui annonce (VexelHotjar s'est ajouté à la mesure
+    // le 22 septembre 2026) : la bannière se rouvre.
+    return decision && decision.version === VERSION_TEXTE ? decision : null;
   } catch {
     return null;
   }

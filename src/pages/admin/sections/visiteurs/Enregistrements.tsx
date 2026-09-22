@@ -9,7 +9,7 @@ import { chargerEnregistrement, chargerEnregistrements, dateLongue, duree, effac
 // telle que la visiteuse l'a vue, sans jamais montrer ce qu'elle a tapé.
 
 const Appareil: React.FC<{ s: Session }> = ({ s }) => (
-  <span className="inline-flex items-center gap-1.5 text-[12px] text-[#38403a]/70 dark:text-white/60">
+  <span className="inline-flex items-center gap-1.5 text-[12px] text-[#ECE5D2]/70 dark:text-white/60">
     <i className={`fa-solid ${s.device === 'mobile' ? 'fa-mobile-screen' : s.device === 'tablette' ? 'fa-tablet-screen-button' : 'fa-desktop'} text-[11px]`} aria-hidden="true" />
     {s.device === 'mobile' ? 'Téléphone' : s.device === 'tablette' ? 'Tablette' : 'Ordinateur'}{s.pays ? ` · ${s.pays}` : ''}
   </span>
@@ -17,10 +17,10 @@ const Appareil: React.FC<{ s: Session }> = ({ s }) => (
 
 const Badges: React.FC<{ s: Session }> = ({ s }) => (
   <span className="flex flex-wrap gap-1.5">
-    {(s.rage || 0) > 0 && <span className="rounded-full bg-[#BC4A3C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#BC4A3C]">{s.rage} rage</span>}
-    {(s.mort || 0) > 0 && <span className="rounded-full bg-[#38403a]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#38403a]/70">{s.mort} vide</span>}
-    {(s.erreurs || 0) > 0 && <span className="rounded-full bg-[#BC4A3C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#BC4A3C]">{s.erreurs} erreur{(s.erreurs || 0) > 1 ? 's' : ''}</span>}
-    {s.nouveau && <span className="rounded-full bg-[#2D4A3E]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#2D4A3E]">nouvelle</span>}
+    {(s.rage || 0) > 0 && <span className="rounded-full bg-[#E27A68]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E27A68]">{s.rage} rage</span>}
+    {(s.mort || 0) > 0 && <span className="rounded-full bg-[#ECE5D2]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#ECE5D2]/70">{s.mort} vide</span>}
+    {(s.erreurs || 0) > 0 && <span className="rounded-full bg-[#E27A68]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E27A68]">{s.erreurs} erreur{(s.erreurs || 0) > 1 ? 's' : ''}</span>}
+    {s.nouveau && <span className="rounded-full bg-[#8FC5A3]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#8FC5A3]">nouvelle</span>}
   </span>
 );
 
@@ -59,22 +59,22 @@ const Lecteur: React.FC<{ session: Session; onFermer: () => void }> = ({ session
     <Card className="p-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-serif text-lg text-[#293027] dark:text-white">Visite du {dateLongue(session.debut)}</p>
-          <p className="text-[12px] text-[#38403a]/60 dark:text-white/55">{duree(session.dureeMs || 0)} · {nb(session.nbPages || 0)} page{(session.nbPages || 0) > 1 ? 's' : ''} · <Appareil s={session} /></p>
+          <p className="font-serif text-lg text-[#ECE5D2] dark:text-white">Visite du {dateLongue(session.debut)}</p>
+          <p className="text-[12px] text-[#ECE5D2]/60 dark:text-white/55">{duree(session.dureeMs || 0)} · {nb(session.nbPages || 0)} page{(session.nbPages || 0) > 1 ? 's' : ''} · <Appareil s={session} /></p>
         </div>
         <GhostButton type="button" onClick={onFermer}><i className="fa-solid fa-xmark" aria-hidden="true" /> Fermer</GhostButton>
       </div>
       {session.parcours && session.parcours.length > 0 && (
-        <p className="mb-4 flex flex-wrap items-center gap-1.5 text-[12px] text-[#38403a]/70 dark:text-white/60">
+        <p className="mb-4 flex flex-wrap items-center gap-1.5 text-[12px] text-[#ECE5D2]/70 dark:text-white/60">
           {session.parcours.map((p, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <i className="fa-solid fa-arrow-right-long text-[10px] text-[#BA7B39]" aria-hidden="true" />}
-              <span className="rounded-full bg-white/70 px-2 py-0.5 dark:bg-white/10">{p}</span>
+              {i > 0 && <i className="fa-solid fa-arrow-right-long text-[10px] text-[#C9A85A]" aria-hidden="true" />}
+              <span className="rounded-full bg-white/5 px-2 py-0.5 dark:bg-white/10">{p}</span>
             </React.Fragment>
           ))}
         </p>
       )}
-      <div ref={cible} className="vh-lecteur min-h-[200px] overflow-hidden rounded-[16px] bg-[#293027]/95">
+      <div ref={cible} className="vh-lecteur min-h-[200px] overflow-hidden rounded-[16px] bg-[#04080B]/95">
         {etat === 'chargement' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70"><i className="fa-solid fa-circle-notch fa-spin mr-2" aria-hidden="true" />Le film se charge</p>}
         {etat === 'vide' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70">Cet enregistrement est trop court pour être rejoué.</p>}
         {etat === 'erreur' && <p className="p-10 text-center text-sm text-[#EEE7DB]/70">Le film n'a pas pu être lu.</p>}
@@ -108,33 +108,33 @@ const Enregistrements: React.FC = () => {
     <div className="space-y-5">
       {ouverte && <Lecteur session={ouverte} onFermer={() => setOuverte(null)} />}
       <Card className="p-0">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#38403a]/10 px-5 py-4">
-          <p className="font-serif text-lg text-[#293027] dark:text-white">{sessions ? `${nb(visibles.length)} visite${visibles.length > 1 ? 's' : ''} filmée${visibles.length > 1 ? 's' : ''}` : 'Chargement'}</p>
-          <div className="flex gap-1 rounded-full border border-[#38403a]/10 bg-white/50 p-1" role="group" aria-label="Filtre">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#ECE5D2]/10 px-5 py-4">
+          <p className="font-serif text-lg text-[#ECE5D2] dark:text-white">{sessions ? `${nb(visibles.length)} visite${visibles.length > 1 ? 's' : ''} filmée${visibles.length > 1 ? 's' : ''}` : 'Chargement'}</p>
+          <div className="flex gap-1 rounded-full border border-[#ECE5D2]/10 bg-white/5 p-1" role="group" aria-label="Filtre">
             {([['toutes', 'Toutes'], ['accrocs', 'Avec accrocs'], ['longues', 'Plus d\'une minute']] as const).map(([id, label]) => (
-              <button key={id} type="button" onClick={() => setFiltre(id)} className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${filtre === id ? 'bg-[#293027] text-[#EEE7DB]' : 'text-[#38403a]/65 hover:bg-white/70'}`}>{label}</button>
+              <button key={id} type="button" onClick={() => setFiltre(id)} className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${filtre === id ? 'bg-[#C9A85A] text-[#0B1116]' : 'text-[#ECE5D2]/65 hover:bg-white/10'}`}>{label}</button>
             ))}
           </div>
         </div>
         {sessions && !visibles.length && (
-          <p className="px-5 py-10 text-center text-sm text-[#38403a]/60">
+          <p className="px-5 py-10 text-center text-sm text-[#ECE5D2]/60">
             {sessions.length ? 'Aucune visite ne correspond à ce filtre.' : 'Aucune visite filmée pour l\'instant. La part des visites enregistrées se règle dans l\'onglet Réglages; les films arrivent quelques minutes après la visite.'}
           </p>
         )}
-        <ul className="divide-y divide-[#38403a]/10">
+        <ul className="divide-y divide-[#ECE5D2]/10">
           {visibles.map(s => (
-            <li key={s.sid} className={`flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3.5 ${ouverte?.sid === s.sid ? 'bg-[#BA7B39]/10' : ''}`}>
+            <li key={s.sid} className={`flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3.5 ${ouverte?.sid === s.sid ? 'bg-[#C9A85A]/10' : ''}`}>
               <button type="button" onClick={() => setOuverte(s)} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-5 gap-y-1 text-left">
-                <span className="w-44 shrink-0 text-[13px] text-[#293027] dark:text-white">{dateLongue(s.debut)}</span>
-                <span className="w-20 shrink-0 text-[12px] tabular-nums text-[#38403a]/70 dark:text-white/60">{duree(s.dureeMs || 0)}</span>
-                <span className="w-16 shrink-0 text-[12px] tabular-nums text-[#38403a]/70 dark:text-white/60">{nb(s.nbPages || 0)} page{(s.nbPages || 0) > 1 ? 's' : ''}</span>
+                <span className="w-44 shrink-0 text-[13px] text-[#ECE5D2] dark:text-white">{dateLongue(s.debut)}</span>
+                <span className="w-20 shrink-0 text-[12px] tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{duree(s.dureeMs || 0)}</span>
+                <span className="w-16 shrink-0 text-[12px] tabular-nums text-[#ECE5D2]/70 dark:text-white/60">{nb(s.nbPages || 0)} page{(s.nbPages || 0) > 1 ? 's' : ''}</span>
                 <Appareil s={s} />
-                <span className="min-w-0 flex-1 truncate text-[12px] text-[#38403a]/60 dark:text-white/50">{s.entree || ''}</span>
+                <span className="min-w-0 flex-1 truncate text-[12px] text-[#ECE5D2]/60 dark:text-white/50">{s.entree || ''}</span>
                 <Badges s={s} />
               </button>
               <span className="flex shrink-0 items-center gap-2">
-                <button type="button" onClick={() => setOuverte(s)} className="rounded-full bg-[#BA7B39] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#293027] hover:bg-[#9c6630]"><i className="fa-solid fa-play mr-1.5" aria-hidden="true" />Regarder</button>
-                <button type="button" onClick={() => effacer(s)} aria-label="Effacer cette visite" title="Effacer cette visite" className="h-8 w-8 rounded-full text-[#38403a]/40 hover:bg-red-50 hover:text-red-500"><i className="fa-solid fa-trash-can text-[12px]" aria-hidden="true" /></button>
+                <button type="button" onClick={() => setOuverte(s)} className="rounded-full bg-[#C9A85A] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0B1116] hover:bg-[#8C7335]"><i className="fa-solid fa-play mr-1.5" aria-hidden="true" />Regarder</button>
+                <button type="button" onClick={() => effacer(s)} aria-label="Effacer cette visite" title="Effacer cette visite" className="h-8 w-8 rounded-full text-[#ECE5D2]/40 hover:bg-red-50 hover:text-red-500"><i className="fa-solid fa-trash-can text-[12px]" aria-hidden="true" /></button>
               </span>
             </li>
           ))}
