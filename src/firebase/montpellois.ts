@@ -243,7 +243,7 @@ export const reclamerQuotidien = () =>
  *  (source: 'boutique', voir objets.ts) ou un skin de plateforme
  *  ('skin_bleu', 'skin_vert' ou 'skin_dore'). */
 export const acheterCosmetique = (objetId: string) =>
-  appeler<{ objetId: string }, { solde: number }>('acheterCosmetique')({ objetId });
+  appeler<{ objetId: string }, { solde: number; offert?: boolean }>('acheterCosmetique')({ objetId });
 
 /** Achète un objet du Souk en Montpellois : débite l'acheteur, crédite
  *  le vendeur, marque l'objet vendu, ouvre le fil de messagerie. */

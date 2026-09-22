@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { addLocale } from '../../lib/locale';
-import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight, Layers, Archive } from 'lucide-react';
+import { Palette, Disc3, Gift, Music, Ticket, UtensilsCrossed, BookOpen, Loader2, ArrowUpRight, Layers, Archive, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { definirPref, suivreFiche, type SkinMembre } from '../../firebase/ordre';
 import { suivreSansPub } from '../../firebase/sansPub';
@@ -12,6 +12,7 @@ import {
 import { listGroupes, type GroupeMusical } from '../../firebase/groupesMusicaux';
 import { AMBIANCES } from '../../lib/ambiances';
 import { DOS_CARTES } from '../../games/tarot/dos';
+import { PRIX_TAFL } from '../../games/hnefatafl/assets';
 
 // Les dos vendus ici et leur prix; les autres dos (caravane, William) se gagnent.
 const PRIX_DOS: Record<string, number> = { salon: 0 };
@@ -64,6 +65,10 @@ const DESCRIPTION_SKIN: Record<'bleu' | 'dore', { FR: string; EN: string }> = {
 // une place, le même lien de secours si la fonction serveur tombe.
 const LIEN_BANQUET = 'https://us-central1-festivalmedieval.cloudfunctions.net/banquetLien';
 const SQUARE_BANQUET = 'https://square.link/u/g0UOU5L3'; // 65 $ + taxes = 74,73 $
+// Le livre de recettes se vend depuis le 2026-09-14 (GRIMOIRE_EN_VENTE dans
+// NourriturePage) : même fonction serveur, même lien Square de secours.
+const LIEN_LIVRE = 'https://us-central1-festivalmedieval.cloudfunctions.net/livreLien';
+const SQUARE_GRIMOIRE = 'https://square.link/u/OLtFu9jY'; //  9 $ + taxes = 10,35 $
 
 const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const fr = lang === 'FR';
@@ -81,6 +86,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
   const [dejaReclameLocal, setDejaReclameLocal] = useState(false);
   const [banquetEnRoute, setBanquetEnRoute] = useState(false);
   const [banquetEchec, setBanquetEchec] = useState(false);
+  const [livreEnRoute, setLivreEnRoute] = useState(false);
 
   useEffect(() => { if (uid) return suivreMaBourse(uid, setBourse); }, [uid]);
   useEffect(() => { if (uid) return ecouterAvatar(uid, setAvatar); }, [uid]);
@@ -109,6 +115,23 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     } catch {
       setBanquetEchec(true);
       setBanquetEnRoute(false);
+    }
+  }
+
+  async function acheterLivre() {
+    if (livreEnRoute) return;
+    setLivreEnRoute(true);
+    try {
+      const r = await fetch(LIEN_LIVRE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ langue: lang, retour: window.location.origin + window.location.pathname }),
+      });
+      const d = await r.json();
+      if (!d.url) throw new Error('sans url');
+      window.location.href = d.url;
+    } catch {
+      window.location.href = import.meta.env.VITE_SQUARE_GRIMOIRE_URL || SQUARE_GRIMOIRE;
     }
   }
 
@@ -149,6 +172,18 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     const reste = params.toString();
     window.history.replaceState({}, '', window.location.pathname + (reste ? `?${reste}` : '') + window.location.hash);
   }, [fr]);
+
+  // Le skin Hullsborg du hnefatafl : plateau et pièces d'un seul achat,
+  // offert par le serveur aux membres de la guilde Hullsborg.
+  async function acheterTafl(id: string) {
+    setErreur(null); setEnCours(`tafl_${id}`);
+    try {
+      const r = await acheterCosmetique(`tafl_${id}`);
+      celebrer({ nom: fr ? (r?.offert ? 'La table et la hird de Hullsborg, offertes par la troupe' : 'La table et la hird de Hullsborg') : (r?.offert ? 'The Hullsborg table and hird, a gift from the troupe' : 'The Hullsborg table and hird'), image: '/games/hnefatafl/vignettes/hullsborg.webp' });
+    }
+    catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
+    finally { setEnCours(null); }
+  }
 
   async function acheterDos(id: string) {
     setErreur(null); setEnCours(`dos_${id}`);
@@ -307,22 +342,20 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
             </div>
           </div>
 
-          {/* Livre de recettes : pas encore en vente (voir GRIMOIRE_EN_VENTE,
-              src/pages/NourriturePage.tsx), même patron « à venir » que les
-              albums plus bas. */}
+          {/* Livre de recettes : en vente depuis le 2026-09-14, même caisse
+              Square que sur la page Nourriture (le bouton restait grisé,
+              Alex, 2026-09-21). */}
           <div className="glass-light rounded-lg-card overflow-hidden flex flex-col relative">
-            <span className="absolute top-2 right-2 z-10 witcher-stat-label bg-midnight-deep/85 px-2 py-1 rounded-card">
-              {fr ? 'À venir' : 'Coming soon'}
-            </span>
             <div className="aspect-[4/3] bg-midnight-deep/60 relative overflow-hidden">
-              <img src="/grimoire/couverture-livre-recettes.webp" alt="" loading="lazy" className="w-full h-full object-cover opacity-70" />
+              <img src="/grimoire/couverture-livre-recettes.webp" alt="" loading="lazy" className="w-full h-full object-cover" />
             </div>
-            <div className="p-4 flex flex-col gap-2">
+            <div className="p-4 flex flex-col gap-2 flex-1">
               <p className="font-display title-medieval text-sm text-ivory truncate flex items-center gap-1.5"><BookOpen size={13} className="text-brass shrink-0" />{fr ? 'Livre de recettes du festival' : 'Festival recipe book'}</p>
               <span className="font-sans text-sm text-brass font-semibold">9 $ + taxes</span>
-              <button type="button" disabled
-                      className="mt-1 px-3.5 py-1.5 bg-brass/40 text-midnight-deep/70 font-sans uppercase tracking-wider text-[10px] font-semibold rounded-card cursor-not-allowed">
-                {fr ? 'Acheter' : 'Buy'}
+              <button type="button" disabled={livreEnRoute} onClick={acheterLivre}
+                      className="mt-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40">
+                {livreEnRoute ? <Loader2 size={12} className="animate-spin" /> : (fr ? 'Acheter' : 'Buy')}
+                {!livreEnRoute && <ArrowUpRight size={11} />}
               </button>
             </div>
           </div>
@@ -371,6 +404,39 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
           })}
         </div>
       </section>
+
+      {/* Le skin Hullsborg du hnefatafl (Alex, 2026-09-21) : le plateau
+          gravé aux deux futharks et les figurines de la troupe. Un objet
+          acheté quitte la boutique et vit au coffre et dans le jeu. */}
+      {!(bourse?.taflPieces || []).includes('hullsborg') && (
+        <section>
+          <p className="witcher-stat-label mb-4"><Shield size={12} className="inline mr-1.5 -mt-0.5" />{fr ? 'Hnefatafl' : 'Hnefatafl'}</p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="glass-light rounded-lg-card p-4 flex items-start gap-4">
+              <div className="shrink-0 w-24 sm:w-28">
+                <img src="/games/hnefatafl/vignettes/hullsborg.webp" alt="" aria-hidden loading="lazy"
+                     className="block w-full aspect-square object-cover rounded-md"
+                     style={{ border: '1px solid rgba(var(--sk-gilt-rgb),0.35)' }} />
+                <p className="font-display title-medieval text-[13px] leading-tight text-ivory text-center mt-2">Hullsborg</p>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-editorial text-[13px] leading-snug text-ivory-soft">
+                  {fr
+                    ? 'Le plateau taillé à la main par la troupe, gravé de l’ancien futhark et du futhark récent, avec le Jarl, ses défenseurs au bouclier rouge et les assaillants au bouclier brun. Offert aux membres de la guilde Hullsborg.'
+                    : 'The troupe’s hand-carved board, engraved with the Elder and Younger Futhark, with the Jarl, his red-shield defenders and the brown-shield raiders. Free for members of the Hullsborg guild.'}
+                </p>
+                <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
+                  <p className="inline-flex items-center gap-1.5 font-sans text-sm text-brass font-semibold"><PieceMontpellois size={14} />{PRIX_TAFL.hullsborg}</p>
+                  <button type="button" disabled={enCours === 'tafl_hullsborg' || !uid} onClick={() => acheterTafl('hullsborg')}
+                          className="px-3.5 py-1.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[10px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-40 shrink-0">
+                    {enCours === 'tafl_hullsborg' ? <Loader2 size={12} className="animate-spin" /> : (fr ? 'Acheter' : 'Buy')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Les dos de carte du tarot (Alex, 2026-08-30) : le dos du Salon des
           Inconnus est offert; les autres se gagnent aux récompenses
