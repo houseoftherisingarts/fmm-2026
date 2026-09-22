@@ -906,29 +906,20 @@ export function creerTable(): TableDes {
             mesDes.push(d);
           }
         } else {
-          // Un convive peint se tient derrière la place, tourné vers
-          // le centre de la table.
-          const tex = chargeur.load(CONVIVES[(i - 1) % CONVIVES.length]);
-          tex.colorSpace = THREE.SRGBColorSpace;
-          const haut = 5.4;
-          // `alphaTest` plutôt que la transparence mélangée : le convive
-          // devient un objet plein qui se cache derrière la table au
-          // lieu d'un filigrane posé par-dessus (Alex, 2026-08-23).
-          const plaque = new THREE.Mesh(
-            new THREE.PlaneGeometry(haut * 0.62, haut),
-            new THREE.MeshBasicMaterial({
-              map: tex, transparent: true, alphaTest: 0.02,
-              depthWrite: true, depthTest: true,
-            }),
-          );
-          // Le buste se pose AU-DELÀ du bord de la table, et son bas
-          // plonge sous le plateau : les planches cachent la découpe et
-          // le convive a l'air assis (Alex, 2026-08-23).
-          const kBord = (RAYON_TABLE + 0.6) / 3.7;
-          plaque.position.set(p.x * kBord, haut / 2 - 2.35, p.z * kBord);
-          plaque.lookAt(0, haut / 2 - 2.0, 0);
-          groupe.add(plaque);
-          convives.push(plaque);
+          // Un convive sculpté est assis sur son tabouret, posé sur le
+          // plancher juste au-delà du bord : ses genoux passent sous le
+          // plateau, son buste dépasse, et il regarde le centre de la
+          // table. Le siège existe tout de suite (vide), le modèle s'y
+          // pose dès qu'il est téléchargé.
+          const siege = new THREE.Group();
+          const kBord = (RAYON_TABLE + 1.6) / 3.7;
+          siege.position.set(p.x * kBord, -5.98, p.z * kBord);
+          siege.lookAt(0, -5.98, 0);
+          groupe.add(siege);
+          convives.push(siege);
+          convive(CONVIVES[(i - 1) % CONVIVES.length])
+            .then((proto) => { if (siege.parent) siege.add(proto.clone()); })
+            .catch(() => { /* la table se joue aussi sans convive */ });
 
           const mains: THREE.Mesh[] = [];
           for (let k = 0; k < 5; k++) {
