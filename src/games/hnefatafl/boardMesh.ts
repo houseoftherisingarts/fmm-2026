@@ -226,7 +226,7 @@ export function buildBoard(
   boisProfond.repeat.set(2.5, 2.5);
   const baseDeep = new THREE.Mesh(
     new THREE.BoxGeometry(span + cadre + 0.7, 0.5, span + cadre + 0.7),
-    new THREE.MeshPhongMaterial({ color: pinTeinte ? 0x4e4034 : 0xffffff, map: boisProfond, shininess: 10, specular: 0x1e1712 }),
+    new THREE.MeshPhongMaterial({ color: pinTeinte ? 0x50483e : 0xffffff, map: boisProfond, shininess: 10, specular: 0x1e1712 }),
   );
   baseDeep.position.y = -0.42 - DALLE;
   baseDeep.receiveShadow = true;
@@ -237,7 +237,7 @@ export function buildBoard(
   boisTable.repeat.set(pinClair ? 1.4 : 2, pinClair ? 1.4 : 2);
   const baseTop = new THREE.Mesh(
     new THREE.BoxGeometry(span + cadre, 0.3, span + cadre),
-    new THREE.MeshPhongMaterial({ color: pinClair ? 0x9a8668 : 0xffffff, map: boisTable, shininess: pinClair ? 8 : 22, specular: pinClair ? 0x1e1712 : 0x3a2712 }),
+    new THREE.MeshPhongMaterial({ color: pinClair ? 0x86786a : 0xffffff, map: boisTable, shininess: pinClair ? 8 : 22, specular: pinClair ? 0x1e1712 : 0x3a2712 }),
   );
   baseTop.position.y = -0.12 - DALLE;
   baseTop.receiveShadow = true;
@@ -249,7 +249,7 @@ export function buildBoard(
     // dessus disparaît sous les cases et les sillons brûlés.
     const dalle = new THREE.Mesh(
       new THREE.BoxGeometry(span + 0.04, DALLE, span + 0.04),
-      new THREE.MeshPhongMaterial({ color: 0x7a6450, map: pinTeinte, shininess: 8, specular: 0x1e1712 }),
+      new THREE.MeshPhongMaterial({ color: 0x9a8a78, map: pinTeinte, shininess: 8, specular: 0x1e1712 }),
     );
     dalle.position.y = 0.05 - DALLE / 2;
     dalle.castShadow = true;
@@ -313,7 +313,7 @@ export function buildBoard(
         const special = isThrone(r, c) || isCorner(r, c);
         const sombre = col === pal.sombre;
         mat = new THREE.MeshPhongMaterial({
-          color: special ? 0xd8cbb0 : (sombre ? 0x62503f : 0x8c7256),
+          color: special ? 0xd2ccc0 : (sombre ? 0x5c544c : 0x7e7264),
           map: sombre ? pinTeinte : pinClair,
           shininess: pal.brillance,
           specular: 0x1e1712,
