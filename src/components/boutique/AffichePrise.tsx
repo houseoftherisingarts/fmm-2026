@@ -30,7 +30,8 @@ const AffichePrise: React.FC<{ prise: Prise | null; onFermer: () => void; lienCo
   useEffect(() => {
     if (!prise) return;
     sonnerBadge();
-    const minuteur = window.setTimeout(onFermer, 8000);
+    // Avec un bouton vers le jeu, l'affiche reste un peu plus longtemps.
+    const minuteur = window.setTimeout(onFermer, prise.lien ? 12000 : 8000);
     return () => window.clearTimeout(minuteur);
   }, [prise, onFermer]);
 
