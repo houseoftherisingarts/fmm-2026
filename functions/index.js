@@ -2822,7 +2822,7 @@ exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) =>
 
   if (objetId.startsWith('tafl_')) {
     const jeu = objetId.slice(5);
-    if (!(jeu in PRIX_TAFL)) throw new HttpsError('invalid-argument', 'Jeu de tafl inconnu.');
+    if (!Object.hasOwn(PRIX_TAFL, jeu)) throw new HttpsError('invalid-argument', 'Jeu de tafl inconnu.');
     const { ref, data } = await assurerBourse(uid);
     if ((data.taflPieces || []).includes(jeu)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
     const offert = jeu === 'hullsborg' && await estDeHullsborg(uid);
