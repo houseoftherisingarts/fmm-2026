@@ -305,7 +305,95 @@ h1,h2,h3,.disp { font-family:'Cinzel Decorative',Cinzel,Georgia,serif; font-weig
   color:rgba(232,228,220,.72); margin-top:.09in; text-shadow:0 1px 0 rgba(0,0,0,.6); }
 .colo p { color:rgba(238,234,226,.9); text-shadow:0 1px 2px rgba(0,0,0,.6); }
 .colo .logos img { filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
+
+/* ── MapChef : la dernière page intérieure, au style de mapchef.ca ──
+   Demandée par Alex le 2026-09-22. Le canon est celui du site du chef
+   (CLAUDE.md de mapchef) : noir chaud, crème, un seul or en dégradé,
+   Inter partout, titres en 900 capitales serrées. Aucune police du
+   festival ne touche cette page. */
+.mc { background:#0a0a08; color:#ece4d4; font-family:'InterMC',system-ui,sans-serif; }
+.mc::before { background:
+    radial-gradient(90% 60% at 50% 0%, rgba(192,160,128,.1), transparent 70%),
+    radial-gradient(60% 50% at 85% 100%, rgba(138,111,78,.12), transparent 70%); }
+.mc .pad { padding:0; }
+.mc .photo { position:relative; height:3.05in; flex-shrink:0; }
+.mc .photo img.fond { width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+.mc .photo::after { content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(10,10,8,.1) 0%, rgba(10,10,8,0) 38%, rgba(10,10,8,.82) 82%, #0a0a08 100%); }
+.mc .marque { position:absolute; left:.5in; bottom:.1in; z-index:2; display:flex; align-items:center; gap:.14in; }
+.mc .marque img { height:.6in; width:auto; filter:drop-shadow(0 2px 8px rgba(0,0,0,.7)); }
+.mc .nom { font-weight:900; font-size:27pt; letter-spacing:-.04em; line-height:.9; text-transform:uppercase; }
+.mc .par { font-size:6.4pt; letter-spacing:.3em; text-transform:uppercase; color:#c0a080; margin-top:.05in; }
+.mc .corps { padding:.2in .5in .42in; display:flex; flex-direction:column; flex:1; }
+.mc .kick { font-size:6.6pt; font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:#c0a080; }
+.mc h2 { font-family:'InterMC',sans-serif; font-weight:900; font-size:24pt; letter-spacing:-.04em;
+  line-height:.92; text-transform:uppercase; margin:.08in 0 .14in; }
+.mc .or { background:linear-gradient(135deg, #e8d5b3 0%, #c0a080 46%, #8a6f4e 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent; }
+.mc .txt { font-size:8.6pt; line-height:1.55; color:rgba(236,228,212,.8); }
+.mc .grille { display:grid; grid-template-columns:1fr 1fr; gap:.12in; margin:.1in 0 0; }
+.mc .carte { border:1px solid rgba(255,255,255,.15); border-radius:15px; background:rgba(255,255,255,.03);
+  box-shadow:0 0 30px rgba(192,160,128,.12), inset 0 1px 0 rgba(255,255,255,.06); padding:.13in .15in .14in; }
+.mc .num { font-weight:900; font-size:15pt; letter-spacing:-.04em; line-height:1; }
+.mc h3 { font-family:'InterMC',sans-serif; font-weight:700; font-size:8.8pt; line-height:1.2; margin:.07in 0 .05in; }
+.mc .carte p { font-size:7.4pt; line-height:1.45; color:rgba(236,228,212,.72); }
+.mc .appel { margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:.2in; }
+.mc .bouton { display:inline-block; text-decoration:none; font-weight:700; font-size:7.4pt; letter-spacing:.14em;
+  text-transform:uppercase; color:#0a0a08; padding:.12in .22in; border-radius:999px;
+  background:linear-gradient(135deg, #e8d5b3 0%, #c0a080 46%, #8a6f4e 100%);
+  border:1px solid rgba(232,213,179,.55); box-shadow:0 10px 30px -12px rgba(192,160,128,.65); }
+.mc .note { font-size:6.8pt; color:rgba(236,228,212,.6); margin-top:.07in; padding-left:.06in; }
+.mc .coord { text-align:right; font-size:7.6pt; line-height:1.6; color:rgba(236,228,212,.85); }
+.mc .coord a { color:inherit; text-decoration:none; }
+.mc .coord .site { font-weight:800; font-size:9pt; letter-spacing:.02em; color:#c0a080; }
 """
+
+# Les quatre chantiers, repris de la copie approuvée de mapchef.ca
+# (lib/contenu.ts et lib/voix.ts), à la troisième personne.
+MAPCHEF_CHANTIERS = [
+    ('Remonter votre restaurant',
+     "Il lit vos ventes, goûte votre carte et regarde un service au complet, puis il vous remet un plan que votre brigade applique dès la semaine suivante."),
+    ('Réorganiser votre brigade',
+     "Les postes se redessinent avec vous et la mise en place se règle à la minute près, si bien que chacun sait quoi faire avant que le premier billet tombe."),
+    ('Faire rouler votre menu',
+     "Sa signature s'appelle le menu roulant : des plats neufs chaque mois, une fiche coûtée au sou près pour chaque assiette et une brigade formée pour suivre le changement."),
+    ('Réorganiser vos achats et votre matériel',
+     "Vos fournisseurs se renégocient avec vous, l'inventaire se compte jusqu'au fond de la chambre froide, et l'équipement qui dort se revend au bon moment."),
+]
+
+MAPCHEF_TEXTE = ("Chacune des recettes de ce livre est passée entre les mains de Marc Alexis Pepin, "
+    "qui les a relues une à une et a tranché ce qui méritait d'y rester. Le reste de l'année, il fait "
+    "tourner des cartes de restaurant, et il a vu assez de salles pleines perdre de l'argent sur des "
+    "plats qui dorment pour savoir où l'argent fuit. Sa cuisine à lui mêle la gastronomie moléculaire "
+    "de Montréal et la bistronomie portugaise, mais chez un client il garde son style dans sa poche et "
+    "travaille avec celui de la maison.")
+
+
+def page_mapchef():
+    cartes = ''.join(
+        f'<div class="carte"><span class="num or">{i:02d}</span><h3>{esc(t)}</h3><p>{esc(p)}</p></div>'
+        for i, (t, p) in enumerate(MAPCHEF_CHANTIERS, 1))
+    return page(f"""
+      <div class="photo">
+        <img class="fond" src="data:image/webp;base64,{b64('mapchef-chef.webp')}" alt="Marc Alexis Pepin">
+        <div class="marque">
+          <img src="data:image/png;base64,{b64('logo-marc-alexis.png')}" alt="">
+          <div><p class="nom">MapChef</p><p class="par">Par Marc Alexis Pepin</p></div>
+        </div>
+      </div>
+      <div class="corps">
+        <p class="kick">Le chef derrière ce livre</p>
+        <h2>Chef, artiste,<br><span class="or">sans gants blancs</span></h2>
+        <p class="txt">{esc(MAPCHEF_TEXTE)}</p>
+        <p class="kick" style="margin-top:.2in">Les quatre chantiers d'une cuisine</p>
+        <div class="grille">{cartes}</div>
+        <div class="appel">
+          <div><a class="bouton" href="https://mapchef.ca">Réserver mon appel découverte</a>
+            <p class="note">Gratuit · 30 minutes · il ne ménage rien</p></div>
+          <div class="coord"><a class="site" href="https://mapchef.ca">mapchef.ca</a><br>
+            <a href="mailto:info@mapchef.ca">info@mapchef.ca</a><br>514 462-2798</div>
+        </div>
+      </div>""", cls='mc')
 
 
 def esc(t):
