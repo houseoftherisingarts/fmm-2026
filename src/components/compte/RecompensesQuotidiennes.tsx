@@ -170,10 +170,11 @@ const RecompensesQuotidiennes: React.FC = () => {
   // Le panneau se lève tout seul, une fois par jour, dès que la bourse
   // dit que la récompense n'est pas encore prise.
   useEffect(() => {
-    if (!user?.uid || !bourse || reclameAujourdhui || dejaTente.current) return;
+    if (!user?.uid || !bourse || dejaTente.current) return;
+    if (reclameAujourdhui) { finirRoue(); return; }
     let vu = null;
     try { vu = sessionStorage.getItem('fmm.recompense.vue'); } catch { /* navigation privée */ }
-    if (vu === journeeFestival(Date.now())) return;
+    if (vu === journeeFestival(Date.now())) { finirRoue(); return; }
     dejaTente.current = true;
     setOuvert(true);
     void reclamer();
