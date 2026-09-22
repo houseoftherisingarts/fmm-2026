@@ -562,7 +562,9 @@ def build():
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-<style>{CSS}</style></head><body>{''.join(pages)}</body></html>"""
+<style>@font-face {{ font-family:'InterMC'; font-weight:100 900;
+  src:url(data:font/woff2;base64,{b64('fonts/Inter.woff2')}) format('woff2'); }}
+{CSS}</style></head><body>{''.join(pages)}</body></html>"""
     (HERE / 'grimoire.html').write_text(doc, encoding='utf-8')
     return len(pages)
 
