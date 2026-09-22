@@ -474,7 +474,7 @@ export function creerTable(): TableDes {
   // s'épaissit pour qu'on ne le voie plus depuis la caméra.
   const dessous = new THREE.MeshStandardMaterial({ color: 0x120b06, roughness: 0.95 });
   const table = new THREE.Mesh(
-    new THREE.CylinderGeometry(6.2, 6.05, 0.9, 64),
+    new THREE.CylinderGeometry(RAYON_TABLE, RAYON_TABLE - 0.15, 0.9, 96),
     [tranche, dessus, dessous],
   );
   table.position.y = -0.45;
