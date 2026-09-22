@@ -3013,7 +3013,7 @@ exports.ouvrirCoffre = onCall(
       tx.set(bourseRef, majBourse, { merge: true });
 
       if (versSac.length || versSkins.length) {
-        const majAvatar = avatarSnap.exists ? {} : { corps: 'A', peau: 0, coiffure: 0, equipe: {} };
+        const majAvatar = avatarFrais.exists ? {} : { corps: 'A', peau: 0, coiffure: 0, equipe: {} };
         if (versSac.length) majAvatar.sac = FieldValue.arrayUnion(...versSac);
         if (versSkins.length) majAvatar.skinsDebloques = FieldValue.arrayUnion(...versSkins);
         tx.set(avatarRef, majAvatar, { merge: true });
