@@ -92,6 +92,24 @@ const TOUTES: Annonce[] = [
       + POLITIQUE_ANNULATION.courteEN,
     cta: { url: '/nourriture?banquet=1', labelFR: 'Réserver ma place', labelEN: 'Book my seat' },
   },
+  // Le skin Hullsborg du hnefatafl (Alex, 2026-09-22). Épinglé pour ne
+  // pas changer le compte des avis à collectionner. Le même avis sert
+  // au pop-up qui suit la roue des récompenses (AnnonceHullsborg) : un
+  // seul texte pour les deux, et retirer l'avis éteint aussi le pop-up.
+  {
+    id:   'skin-hullsborg-2026',
+    tone: 'info',
+    date: '2026-09-22',
+    permanent: true,
+    image: '/games/hnefatafl/vignettes/annonce-hullsborg.webp',
+    titleFR: 'Le skin Hullsborg',
+    titleEN: 'The Hullsborg skin',
+    bodyFR:
+      'Pour remercier la troupe Hullsborg de sa présence fidèle, année après année, nous avons créé ce skin du jeu de hnefatafl : le Plateau Futhark, gravé des runes de l’ancien et du récent futhark, avec le Jarl et sa garde au bouclier rouge. Il est gratuit pour tous les membres de la troupe, et les autres peuvent se le procurer au coût de 100 Montpellois dans la boutique en ligne.',
+    bodyEN:
+      'To thank the Hullsborg troupe for standing with us faithfully, year after year, we created this skin for the hnefatafl game: the Futhark Board, carved with the runes of the Elder and Younger Futhark, with the Jarl and his red-shield guard. It is free for every member of the troupe, and anyone else can get it for 100 Montpellois in the online shop.',
+    cta: { url: '/boutique', labelFR: 'Voir', labelEN: 'See' },
+  },
   // Le règlement des armes, adopté par le comité et affiché au babillard
   // (Alex, 2026-09-02). Il reste épinglé : un règlement ne se décroche
   // pas, et il ouvre le tableau parce que c'est ce qu'il faut avoir lu
