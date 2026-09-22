@@ -743,15 +743,15 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     nom: 'Le rappel du Banquet du Prince William',
     pourQui: 'Tous les clients de 2026, la semaine du festival',
     motsDAlex: true,
-    sujetFR: 'Le Banquet du Prince William, dimanche à 13 h',
-    sujetEN: 'The Prince William Banquet, Sunday at 1 pm',
+    sujetFR: 'Le Banquet du Prince William, dimanche à 13 h 30',
+    sujetEN: 'The Prince William Banquet, Sunday at 1:30 pm',
     titreFR: 'Un rappel pour la grande table',
     titreEN: 'A reminder for the long table',
     blocs: [
       {
         type: 'texte',
-        FR: 'Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures, sur la scène du festival, tout de suite après la cérémonie de Freya. Il n’y a qu’un seul banquet de la fin de semaine, et si votre reçu porte encore l’ancien nom du repas, le Banquet de l’Équinoxe, vos places sont bien celles du dimanche.',
-        EN: 'A small reminder for the long table: the Prince William Banquet takes place on Sunday, September 27 at one o’clock, on the festival stage, right after Freya’s ceremony. There is only one banquet all weekend, and if your receipt still bears the meal’s former name, the Equinox Banquet, your seats are indeed the Sunday ones.',
+        FR: 'Un petit rappel pour la grande table : le Banquet du Prince William se tient le dimanche 27 septembre à treize heures trente, sur la scène du festival. Il n’y a qu’un seul banquet de la fin de semaine, et si votre reçu porte encore l’ancien nom du repas, le Banquet de l’Équinoxe, vos places sont bien celles du dimanche.',
+        EN: 'A small reminder for the long table: the Prince William Banquet takes place on Sunday, September 27 at half past one, on the festival stage. There is only one banquet all weekend, and if your receipt still bears the meal’s former name, the Equinox Banquet, your seats are indeed the Sunday ones.',
       },
       {
         type: 'photo',
