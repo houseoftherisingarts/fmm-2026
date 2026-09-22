@@ -2928,7 +2928,7 @@ exports.acheterCle = onCall({ region: 'us-central1' }, async (requete) => {
   const dernier = data.dernierCle && data.dernierCle.toDate ? data.dernierCle.toDate() : null;
   if (!coffreDecisions.peutAcheterCle(dernier, new Date())) {
     const quand = coffreDecisions.prochaineCle(dernier);
-    throw new HttpsError('failed-precondition', `Une seule clé par semaine. La prochaine vous attend le ${journeeFestival(quand.getTime())}.`);
+    throw new HttpsError('failed-precondition', `Une seule clé par semaine, et la prochaine vous attend le ${journeeFestival(quand.getTime())}.`);
   }
   const solde = await debiter(uid, PRIX_CLE, {
     cles: FieldValue.increment(1), dernierCle: FieldValue.serverTimestamp(),
