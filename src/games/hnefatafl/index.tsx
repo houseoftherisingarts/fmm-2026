@@ -127,6 +127,8 @@ interface GameStrings {
   shopSoon:     string;
   pleinEcran:        string;
   quitterPleinEcran: string;
+  zoomAvant:         string;
+  zoomArriere:       string;
   afficherRegles:    string;
   cacherRegles:      string;
   // La boîte « je ne sais pas quoi faire ».
