@@ -13,7 +13,7 @@ export type BilletBanquetDonnees = { nom?: string; places: number; numero?: stri
 const GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .27 0 0 0 0 .12 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")`;
 
 const CSS = `
-.bb { --papier:#f3ead6; --encre:#3b1219; --encre-douce:#6b3b35; --or:#a87a2c; --cire:#9a2a22;
+.bb { --papier:#f3ead6; --encre:#3b1219; --encre-douce:#6b3b35; --or:#8d6421; --cire:#9a2a22;
   --talon:132px; --creux:13px; position:relative; filter:drop-shadow(0 18px 28px rgba(8,2,4,.45)) drop-shadow(0 2px 3px rgba(8,2,4,.35)); }
 .bb-papier { position:relative; display:grid; grid-template-columns:1fr var(--talon); color:var(--encre);
   background:${GRAIN}, radial-gradient(130% 120% at 30% 20%, #f8f1df 0%, var(--papier) 55%, #e6d6b4 100%);
@@ -28,7 +28,8 @@ const CSS = `
 .bb:hover .bb-gg { transform:rotate(9deg); } .bb:hover .bb-gd { transform:rotate(-9deg); }
 .bb-etoile { transform-box:fill-box; transform-origin:center; transition:transform .5s cubic-bezier(.22,1,.36,1), opacity .5s; opacity:.55; }
 .bb:hover .bb-etoile { transform:scale(1.35) rotate(20deg); opacity:1; }
-@media (max-width: 560px) {
+@media (max-width: 639px) {
+  .bb-coupes { width:64px; height:58px; }
   .bb { --talon:112px; }
   .bb-papier { grid-template-columns:1fr; grid-template-rows:auto var(--talon);
     -webkit-mask: radial-gradient(circle var(--creux) at 0 calc(100% - var(--talon)), #0000 98%, #000), radial-gradient(circle var(--creux) at 100% calc(100% - var(--talon)), #0000 98%, #000);
@@ -95,8 +96,8 @@ const BilletBanquet: React.FC<{ billet: BilletBanquetDonnees; nomRepli?: string 
       <style>{CSS}</style>
       <div className="bb-papier" role="group" aria-label={`${t.sur} · Banquet du Prince William · ${places} ${t.couverts}`}>
         <span className="bb-cadre" />
-        <div className="relative p-6 md:p-7 flex gap-5 min-w-0">
-          <div className="hidden sm:block shrink-0 pt-1"><Coupes /></div>
+        <div className="relative p-6 md:p-7 flex flex-col sm:flex-row gap-3 sm:gap-5 min-w-0">
+          <div className="shrink-0 sm:pt-1"><Coupes /></div>
           <div className="min-w-0 flex-1">
             <p className={etiquette} style={{ color: 'var(--or)' }}>{t.sur}</p>
             <h3 className="font-display text-[22px] md:text-[26px] leading-[1.15] mt-1.5" style={{ color: 'var(--encre)', fontWeight: 700 }}>

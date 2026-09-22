@@ -13,6 +13,9 @@ export interface SceneHandle {
   updateCam(): void;
   rotateOrbit(dx: number, dy: number): void;
   pushCameraIn(targetRadius: number, duration?: number): void;
+  /** Rapproche (facteur < 1) ou éloigne (facteur > 1) la caméra de la
+   *  table, entre le gros plan et le recul complet. */
+  zoomCam(facteur: number): void;
   attachResize(): () => void;
   dispose(): void;
 }
