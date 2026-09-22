@@ -195,6 +195,17 @@ const AnnonceNotice: React.FC<{
         <h3 className="font-display text-lg md:text-xl text-[var(--sk-brown-deep)] text-center mb-3 leading-snug">
           {fr ? a.titleFR : a.titleEN}
         </h3>
+        {a.image && (
+          <img
+            src={a.image} alt={fr ? a.titleFR : a.titleEN} loading="lazy"
+            className="block w-full mb-4 object-cover"
+            style={{
+              borderRadius: 'var(--radius-card)',
+              border: '1px solid rgba(var(--sk-copper-deep-rgb), 0.45)',
+              boxShadow: '0 10px 24px rgba(0,0,0,0.35)',
+            }}
+          />
+        )}
         {/* Les alinéas de l'auteur sont respectés : un avis long se lit
             en paragraphes, pas en pavé. Séparateur : une ligne vide. */}
         {(fr ? a.bodyFR : a.bodyEN).split('\n\n').filter(Boolean).map((para, i) => (
