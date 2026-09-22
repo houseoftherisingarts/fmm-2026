@@ -668,6 +668,9 @@ const App: React.FC = () => (
           {/* La roue des sept jours : la récompense de la visite
               quotidienne tombe d'elle-même, avec la fanfare. */}
           <RecompensesQuotidiennes />
+          {/* Le skin Hullsborg s'annonce une fois la roue refermée
+              (2026-09-22), avec le texte de son avis au babillard. */}
+          <AnnonceHullsborg />
         </BadgesProvider>
         </BrowserRouter>
         </AuthProvider>
