@@ -780,6 +780,8 @@ const GameCanvas = forwardRef<CanvasHandle, GameCanvasProps>(({ gameKey, onUi, l
       cancelCpu();
       penseur.fermer();
       detachResize();
+      zoomRef.current = null;
+      el.removeEventListener('wheel', onWheel);
       el.removeEventListener('mousedown', onMouseDown);
       el.removeEventListener('mousemove', onMouseMove);
       el.removeEventListener('mouseup', onMouseUp);
