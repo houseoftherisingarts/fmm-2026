@@ -45,6 +45,7 @@ const FR_TO_EN: Record<string, string> = {
   '/jeux/des': '/games/dice',
   '/jeux/merelle': '/games/merelle',
   '/jeux/renard': '/games/fox-and-geese',
+  '/jeux/tarot': '/games/tarot',
   '/defi': '/challenge',
   '/nourriture': '/food',
   '/apprendre': '/learn',
