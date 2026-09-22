@@ -14,7 +14,7 @@ import CadreJeu from '../../components/jeux/CadreJeu';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Check, Lock, Maximize2, Minimize2, Scroll, X } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Check, Lock, Maximize2, Minimize2, Scroll, X, ZoomIn, ZoomOut } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
