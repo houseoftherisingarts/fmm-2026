@@ -1222,6 +1222,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Les cadeaux posés par Alex dans l'espace d'un membre (2026-09-22) ──
+    // Le document ne porte que l'annonce (titre, mot d'Alex, bouton); le
+    // cadeau lui-même est déjà dans la bourse. Le membre le lit et ne
+    // peut y écrire qu'une chose : qu'il l'a vu.
+    match /cadeaux/{id} {
+      allow read:   if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow update: if signedIn() && resource.data.uid == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vu']);
+      allow create, delete: if isAdmin();
+    }
+
     // ── Votez avec votre portefeuille (Alex, 2026-09-06) ─────────
     // Les totaux se lisent par tout le monde : la page les montre même
     // à qui n'est pas connecté. Ils ne s'écrivent que depuis la
