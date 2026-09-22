@@ -2953,7 +2953,7 @@ exports.ouvrirCoffre = onCall(
     const bourse = bourseDe(bourseSnap);
     const avatar = avatarSnap.exists ? avatarSnap.data() : { sac: [], equipe: {} };
     if ((bourse.coffres || 0) < 1) throw new HttpsError('failed-precondition', 'Il vous faut d’abord un coffre.');
-    if ((bourse.cles || 0) < 1) throw new HttpsError('failed-precondition', 'Il vous faut une clé pour ouvrir ce coffre.');
+    if ((bourse.cles || 0) < 1) throw new HttpsError('failed-precondition', 'Sans clé, le coffre reste fermé.');
 
     // Tout ce que la personne possède déjà, d'où que ça vienne : un
     // doublon se paie en Montpellois plutôt que de se donner deux fois.
