@@ -215,7 +215,9 @@ const CoffreEtCle: React.FC<{ lang: 'FR' | 'EN'; bourse: Bourse | null; actif: b
                       )}
                       {p.type === 'livre' && (
                         <p className="font-sans text-[10px] text-ivory-soft/70">
-                          {fr ? 'Il part vers votre courriel.' : 'It is on its way to your inbox.'}
+                          {fr
+                            ? 'Il file déjà vers votre courriel, en PDF et en EPUB, sans que vous ayez rien à faire.'
+                            : 'It is already on its way to your inbox, in PDF and EPUB, with nothing for you to do.'}
                         </p>
                       )}
                       {p.type === 'nuit-salon' && (
