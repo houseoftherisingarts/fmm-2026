@@ -179,7 +179,14 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
     setErreur(null); setEnCours(`tafl_${id}`);
     try {
       const r = await acheterCosmetique(`tafl_${id}`);
-      celebrer({ nom: fr ? (r?.offert ? 'La table et la hird de Hullsborg, offertes par la troupe' : 'La table et la hird de Hullsborg') : (r?.offert ? 'The Hullsborg table and hird, a gift from the troupe' : 'The Hullsborg table and hird'), image: '/games/hnefatafl/vignettes/hullsborg.webp' });
+      // Le skin s'équipe tout de suite : « Tester mon skin » ouvre le
+      // jeu déjà habillé (Alex, 2026-09-21).
+      ecrireChoix(id, id);
+      celebrer({
+        nom: fr ? (r?.offert ? 'La table et la hird de Hullsborg, offertes par la troupe' : 'La table et la hird de Hullsborg') : (r?.offert ? 'The Hullsborg table and hird, a gift from the troupe' : 'The Hullsborg table and hird'),
+        image: '/games/hnefatafl/vignettes/hullsborg.webp',
+        lien: { to: addLocale('/jeunesse/hnefatafl', lang), label: fr ? 'Tester mon skin' : 'Try my skin' },
+      });
     }
     catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
     finally { setEnCours(null); }
