@@ -1590,6 +1590,26 @@ const HnefataflPage: React.FC = () => {
           </span>
           <span className="shrink-0 inline-flex items-center gap-2" data-tuto="musique">
             <BoutonMusique ref={musiqueRef} cle="hnefatafl" defaut="nordique" lang={lang} onLabel={s.musiqueOn} offLabel={s.musiqueOff} />
+            {/* S'approcher de la table ou reculer : la molette et le
+                pincement font pareil sur le canevas. */}
+            <button
+              type="button"
+              onClick={() => canvasRef.current?.zoomer(0.8)}
+              title={s.zoomAvant}
+              aria-label={s.zoomAvant}
+              className="shrink-0 inline-flex items-center justify-center w-10 min-h-[40px] rounded-[15px] border border-white/15 bg-black/40 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors duration-200"
+            >
+              <ZoomIn size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={() => canvasRef.current?.zoomer(1.25)}
+              title={s.zoomArriere}
+              aria-label={s.zoomArriere}
+              className="shrink-0 inline-flex items-center justify-center w-10 min-h-[40px] rounded-[15px] border border-white/15 bg-black/40 backdrop-blur-md text-ivory-soft hover:text-ivory hover:border-brass/60 transition-colors duration-200"
+            >
+              <ZoomOut size={13} />
+            </button>
             <button
               type="button"
               onClick={basculerPleinEcran}
