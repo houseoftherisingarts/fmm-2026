@@ -20,6 +20,8 @@
 // distinction disparaît : personne ne voit la porte, personne ne voit
 // un prix majoré, tout le monde part sur la campagne membre.
 
+import { objectif } from '../vexelhotjar/tracker';
+
 export const RABAIS_MEMBRE = 5;
 
 /** Tous les boutons « billets » du site passent par ce nom d'événement :
