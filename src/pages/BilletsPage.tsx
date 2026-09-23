@@ -410,6 +410,10 @@ const Carte: React.FC<{
             href={href}
             target="_blank"
             rel="noopener noreferrer"
+            // La carte file droit sur Zeffy : elle marque son propre départ.
+            // Quand la porte s'interpose, elle ne marque rien, sinon le même
+            // achat se compterait deux fois (PorteBilletterie le fait déjà).
+            {...(porte ? {} : { 'data-vh-objectif': 'billetterie', 'data-vh-niveau': 'gros' })}
             onClick={(e) => {
               e.stopPropagation();
               // Sans compte : la porte d'abord, qui offre le rabais membre.
