@@ -59,6 +59,14 @@ const FR_TO_EN: Record<string, string> = {
   // une adresse qui n'existe pas (Alex, 2026-09-10).
   '/kiosque/livraison': '/booth/delivery',
   '/change': '/exchange',
+  // Absents de la table, ces cinq chemins donnaient /en/billets et
+  // compagnie en anglais, des adresses sans route : le bouton Billets
+  // de la barre de navigation tombait sur la page 404 (2026-09-23).
+  '/billets': '/tickets',
+  '/presse': '/press',
+  '/videos': '/films',
+  '/ordre': '/order',
+  '/partenaires-2027': '/partners-2027',
 };
 
 const EN_TO_FR: Record<string, string> = Object.fromEntries(
