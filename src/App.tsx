@@ -19,6 +19,7 @@ import AnnonceBadge from './components/badges/AnnonceBadge';
 import RecompensesQuotidiennes from './components/compte/RecompensesQuotidiennes';
 import AnnonceCadeau from './components/compte/AnnonceCadeau';
 import AnnonceHullsborg from './components/compte/AnnonceHullsborg';
+import AnnonceBilletJournee from './components/billets/AnnonceBilletJournee';
 import { usePerfTier } from './lib/usePerfTier';
 import { usePrefsFond, useAnimationsFond } from './lib/usePrefsFond';
 import { useSkinActif } from './lib/useSkinActif';
@@ -679,6 +680,9 @@ const App: React.FC = () => (
           {/* Le skin Hullsborg s'annonce une fois la roue refermée
               (2026-09-22), avec le texte de son avis au babillard. */}
           <AnnonceHullsborg />
+          {/* Le billet d'une journée vaut pour le jour choisi (2026-09-23) :
+              montré à tous, avec ou sans compte. */}
+          <AnnonceBilletJournee />
         </BadgesProvider>
         </BrowserRouter>
         </AuthProvider>

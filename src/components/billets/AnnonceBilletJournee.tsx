@@ -11,10 +11,11 @@ import { addLocale } from '../../lib/locale';
 // sur le billet d'une journée. Ce pop-up le dit à TOUS les visiteurs,
 // avec ou sans compte, parce qu'un acheteur n'a pas forcément de compte
 // sur le site. Une seule fois par appareil. Le texte est celui de l'avis
-// `billet-journee-2026` du babillard : retirer l'avis éteint le pop-up.
-// Il se tient sous la roue (z-95) et sous l'avis Hullsborg (z-94).
+// `billet-un-jour-2026` du babillard : retirer l'avis éteint le pop-up.
+// Il passe devant tout le reste (z-125, au-dessus des badges à z-120) :
+// l'avis compte davantage que le reste pendant la fin de semaine du festival.
 
-const ANNONCE = ANNONCES.find((a) => a.id === 'billet-journee-2026');
+const ANNONCE = ANNONCES.find((a) => a.id === 'billet-un-jour-2026');
 const CLE_VUE = 'fmm.annonce.billet-journee-2026';
 const PAGES_SANS_POPUP = ['/admin', '/signer', '/jeux', '/jeunesse/hnefatafl', '/labo-titre'];
 
@@ -60,7 +61,7 @@ const AnnonceBilletJournee: React.FC = () => {
     <AnimatePresence>
       {ouvert && ANNONCE && (
         <motion.div
-          className="fixed inset-0 z-[93] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[125] flex items-center justify-center p-4"
           style={{ background: 'rgba(6, 3, 4, 0.82)', backdropFilter: 'blur(6px)' }}
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           onClick={() => fermer()}
