@@ -536,6 +536,13 @@ const App: React.FC = () => (
                     avec le montant reellement debite juste en dessous. */}
                 <Route path="/billets" element={<BilletsPage />} />
                 <Route path="/en/tickets" element={<BilletsPage />} />
+                {/* Adresses anglaises fautives produites avant le 2026-09-23
+                    (slug français sous /en), déjà partagées : on les rattrape. */}
+                <Route path="/en/billets"          element={<Navigate to="/en/tickets" replace />} />
+                <Route path="/en/presse"           element={<Navigate to="/en/press" replace />} />
+                <Route path="/en/videos"           element={<Navigate to="/en/films" replace />} />
+                <Route path="/en/ordre"            element={<Navigate to="/en/order" replace />} />
+                <Route path="/en/partenaires-2027" element={<Navigate to="/en/partners-2027" replace />} />
                 <Route path="/en/account" element={<ComptePage />} />
                 <Route path="/marche/inscription"   element={<VendorApplicationPage />} />
                 <Route path="/en/market/registration" element={<VendorApplicationPage />} />
