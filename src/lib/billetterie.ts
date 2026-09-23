@@ -51,6 +51,11 @@ export function lienBilletterie(connecte: boolean): string {
     système est allumé, voit d'abord la porte qui offre les cinq dollars. */
 export function ouvrirBilletterie(connecte: boolean): void {
   if (tarifMembre(connecte)) {
+    // Le départ vers la caisse compte ici et nulle part ailleurs : tous les
+    // boutons « billets » du site passent par cette branche tant que le
+    // système des non-membres dort. L'autre branche ouvre la porte, qui
+    // annonce elle-même son objectif en partant (PorteBilletterie).
+    objectif('billetterie', 'gros');
     window.open(lienBilletterie(true), '_blank', 'noopener,noreferrer');
   } else {
     window.dispatchEvent(new Event(EVENEMENT_PORTE));
