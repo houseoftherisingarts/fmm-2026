@@ -77,6 +77,24 @@ const TOUTES: Annonce[] = [
   // l'ancien nom, Banquet de l'Équinoxe, et Square n'imprime que la date
   // d'achat. Épinglé jusqu'au festival, avec le fine print de la
   // politique d'annulation comme partout où une place se vend.
+  // Le billet d'une journée vaut pour le jour choisi (Alex, 2026-09-23).
+  // Zeffy n'imprime que la date d'ouverture, le vendredi, et des
+  // acheteurs croyaient leur billet bon pour ce jour-là seulement. Le
+  // même avis sert au pop-up AnnonceBilletJournee, montré à tous les
+  // visiteurs, avec ou sans compte.
+  {
+    id:   'billet-journee-2026',
+    tone: 'info',
+    date: '2026-09-23',
+    permanent: true,
+    titleFR: 'Votre billet d’une journée vaut pour le jour de votre choix',
+    titleEN: 'Your one-day ticket is good for the day of your choice',
+    bodyFR:
+      'Si vous avez acheté un billet d’une journée, il vous ouvre les portes du festival le vendredi, le samedi ou le dimanche, selon le jour qui vous convient. La date du vendredi 25 septembre imprimée sur votre billet est celle de l’ouverture du festival : Zeffy, notre billetterie, n’y inscrit que ce jour-là, et votre billet reste valide pour n’importe laquelle des trois journées.',
+    bodyEN:
+      'If you bought a one-day ticket, you can come to the festival on whichever of the three days suits you best. Your ticket shows Friday 25 September because our ticketing platform Zeffy prints only the date the festival opens, and the ticket remains valid for Saturday and Sunday just the same.',
+    cta: { url: '/billets', labelFR: 'Voir les billets', labelEN: 'See the tickets' },
+  },
   {
     id:   'banquet-dimanche-2026',
     tone: 'info',
