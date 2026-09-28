@@ -22,10 +22,10 @@ const APERCU: Cadeau | null = import.meta.env.DEV
     id: 'apercu', uid: 'apercu', vu: false,
     image: '/games/hnefatafl/vignettes/hullsborg.webp',
     titreFR: 'Le skin Hullsborg du hnefatafl', titreEN: 'The Hullsborg hnefatafl skin',
-    texteFR: 'Tristan, vous avez reçu le skin Hullsborg pour le jeu de hnefatafl.',
-    texteEN: 'Tristan, you have received the Hullsborg skin for the hnefatafl game.',
-    message: 'Aweye donc bro, joueeeeee maintenant. J’ai upgradé le CPU, c’est plus dur. Alleeeeez!',
-    de: 'Alex', lien: '/jeunesse/hnefatafl', boutonFR: 'Jouer maintenant', boutonEN: 'Play now',
+    texteFR: 'Merci de votre visite au festival 2026 : le skin Hullsborg du jeu de hnefatafl est maintenant à vous.',
+    texteEN: 'Thank you for coming to the 2026 festival: the Hullsborg skin for the hnefatafl game is now yours.',
+    etiquetteFR: 'Un cadeau de merci du festival', etiquetteEN: 'A thank-you gift from the festival',
+    lien: '/jeunesse/hnefatafl', boutonFR: 'Jouer maintenant', boutonEN: 'Play now',
   }
   : null;
 

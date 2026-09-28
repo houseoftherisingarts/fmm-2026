@@ -16,7 +16,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import PageHeader from '../layout/PageHeader';
-import CreditJeux from './CreditJeux';
 import { addLocale } from '../../lib/locale';
 
 interface Props {
@@ -83,7 +82,6 @@ const CadreJeu: React.FC<Props> = ({
           {/* La signature de l'atelier, dans le cadre du jeu et non
               dans une section qui suivrait la page. */}
           <div className="shrink-0 border-t border-white/10 bg-black/40 backdrop-blur-md">
-            <CreditJeux lang={fr ? 'fr' : 'en'} dense />
           </div>
         </div>
       </section>

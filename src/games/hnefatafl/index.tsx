@@ -14,7 +14,7 @@ import CadreJeu from '../../components/jeux/CadreJeu';
 import BoutonMusique, { type BoutonMusiqueHandle } from '../../components/jeux/BoutonMusique';
 import * as THREE from 'three';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Download, Check, Lock, Maximize2, Minimize2, Scroll, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { Crown, Shield, Swords, Users, Cpu, RotateCcw, Check, Lock, Maximize2, Minimize2, Scroll, X, ZoomIn, ZoomOut } from 'lucide-react';
 
 import { useUI } from '../../contexts/AppContext';
 import { useCaravanPage } from '../../lib/useCaravanPage';
@@ -1856,23 +1856,6 @@ const HnefataflPage: React.FC = () => {
                 })}
               </ol>
 
-              {/* L'atelier qui a bâti le jeu, et le chemin pour l'emporter
-                  chez soi. Ce bloc vivait dans une section détachée sous
-                  la page : il vit maintenant ici. */}
-              <div className="mt-5 pt-4 border-t border-white/10">
-                <p className="font-editorial text-[13px] text-ivory-soft/85 leading-relaxed mb-3">
-                  {s.builtLead}
-                </p>
-                <a
-                  href="https://www.lesalondesinconnus.com/outils"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[15px] border border-brass/45 text-ivory hover:bg-brass hover:text-[#1A0A05] hover:border-brass transition-colors duration-200 font-sans text-[10px] uppercase tracking-[0.18em]"
-                >
-                  <Download size={13} />
-                  {s.builtCta}
-                </a>
-              </div>
             </motion.aside>
           )}
         </AnimatePresence>
