@@ -35,7 +35,9 @@ const TournoiSection: React.FC = () => {
   const [nom, setNom] = useState('Tournoi de hnefatafl 2027');
   const [date, setDate] = useState(enLocal(new Date(2027, 2, 7, 13, 0)));
   const [regleId, setRegleId] = useState('copenhague');
-  const [delaiMs, setDelaiMs] = useState(DELAIS_DEFI[1].ms);
+  const [dureeJours, setDureeJours] = useState(7);
+  // 24 heures par coup, timeout = forfait (Alex, 2026-09-28).
+  const [delaiMs, setDelaiMs] = useState(DELAIS_DEFI[2].ms);
   const [erreur, setErreur] = useState<string | null>(null);
 
   useEffect(() => suivreTournois(setTournois, true), []);
@@ -43,7 +45,7 @@ const TournoiSection: React.FC = () => {
   const creer = async () => {
     setErreur(null);
     try {
-      const id = await creerTournoi({ nom, dateDebut: new Date(date), regleId, delaiMs: delaiMs || null });
+      const id = await creerTournoi({ nom, dateDebut: new Date(date), dureeJours, regleId, delaiMs: delaiMs || null });
       setOuvert(id);
     } catch (e) { setErreur((e as Error).message); }
   };
@@ -54,7 +56,9 @@ const TournoiSection: React.FC = () => {
         <h2 className="font-display text-2xl text-ivory flex items-center gap-2"><Swords size={20} className="text-brass" /> Tournoi de hnefatafl</h2>
         <p className="font-sans text-sm text-ivory-soft/70 mt-1 max-w-2xl">
           Créez la fiche, ouvrez les inscriptions quand la page est publiée (Paramètres, drapeau « Tournoi de hnefatafl »),
-          lancez le tirage le jour venu. Les rondes avancent d'elles-mêmes à mesure que les parties finissent.
+          lancez le tirage le jour venu. Les rondes avancent d'elles-mêmes à mesure que les parties finissent, le minuteur
+          du coup et l'échéance de chaque ronde donnent forfait tout seuls, et les adversaires se donnent rendez-vous
+          depuis la page du tournoi.
         </p>
       </div>
 
@@ -62,7 +66,12 @@ const TournoiSection: React.FC = () => {
         <h3 className="font-display text-lg text-ivory mb-4">Nouveau tournoi</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div><Label>Nom</Label><Input value={nom} onChange={(e) => setNom(e.target.value)} /></div>
-          <div><Label>Date et heure</Label><Input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} /></div>
+          <div><Label>Date et heure du départ</Label><Input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} /></div>
+          <div>
+            <Label>Durée du tournoi (jours)</Label>
+            <Input type="number" min={1} max={60} value={dureeJours} onChange={(e) => setDureeJours(Number(e.target.value) || 7)} />
+            <p className="font-sans text-[11px] text-ivory-soft/50 mt-1">Chaque ronde reçoit une part égale; passé son échéance, la personne qui devait jouer perd par forfait.</p>
+          </div>
           <div>
             <Label>Règlement</Label>
             <select value={regleId} onChange={(e) => setRegleId(e.target.value)}
@@ -199,6 +208,7 @@ const Regie: React.FC<{ tournoi: Tournoi }> = ({ tournoi }) => {
                           </React.Fragment>
                         ))}
                         {m.parties.length > 1 && <span className="text-ivory-soft/40 text-xs"> · {m.parties.length} parties</span>}
+                        {m.echeance && m.statut === 'encours' && <span className="text-ivory-soft/40 text-xs"> · avant le {fmtDate(m.echeance, { dateStyle: 'medium', timeStyle: 'short' })}</span>}
                       </span>
                       {m.statut === 'fini' ? (
                         <Badge tone="accepted">{m.exempt ? 'Exempt' : 'Tranché'}</Badge>

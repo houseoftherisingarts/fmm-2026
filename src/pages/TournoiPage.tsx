@@ -15,7 +15,8 @@ import {
   matchsDeRonde, nomDeRonde,
   type Tournoi, type InscriptionTournoi, type MatchTournoi,
 } from '../firebase/tournoi';
-import { APERCU, APERCU_MOI, apercuActif } from './tournoiApercu';
+import Coordination from '../components/tournoi/Coordination';
+import { APERCU, APERCU_MOI, APERCU_RDV, apercuActif } from './tournoiApercu';
 
 // ─── Le tournoi de hnefatafl ────────────────────────────────────────
 // La page publique du tournoi du 7 mars 2027 (Alex, 2026-09-28) : la
@@ -52,9 +53,10 @@ const TournoiPage: React.FC = () => {
   const inscrit = !!user && inscrits.some((i) => i.uid === user.uid);
   const regle = useMemo(() => REGLES.find((r) => r.id === tournoi?.regleId), [tournoi?.regleId]);
   const date = tournoi ? tournoi.dateDebut.toDate() : null;
-  const dateLongue = date
-    ? date.toLocaleDateString(fr ? 'fr-CA' : 'en-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    : '';
+  const longue = (d: Date) => d.toLocaleDateString(fr ? 'fr-CA' : 'en-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const dateLongue = date ? longue(date) : '';
+  const fin = tournoi?.dateFin?.toDate() ?? null;
+  const periode = date && fin ? t.duAu(longue(date), longue(fin)) : dateLongue;
 
   const basculerInscription = async () => {
     if (!user || !tournoi) return;
@@ -123,7 +125,7 @@ const TournoiPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
                   <dl className="px-5 md:px-7 py-6 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-5 lg:border-r lg:border-brass/15">
-                    <Ligne icone={CalendarDays} titre={t.quand} valeur={dateLongue} />
+                    <Ligne icone={CalendarDays} titre={t.quand} valeur={periode} />
                     <Ligne icone={ScrollText} titre={t.regle}
                            valeur={regle ? (fr ? regle.nomFR : regle.nomEN) : tournoi.regleId} />
                     <Ligne icone={Hourglass} titre={t.cadence}
@@ -199,7 +201,7 @@ const TournoiPage: React.FC = () => {
                     )}
                   </div>
                 ) : (
-                  <Tableau tournoi={tournoi} matchs={matchs} fr={fr} t={t} moi={user?.uid ?? null} lienPartie={lienPartie} />
+                  <Tableau tournoi={tournoi} matchs={matchs} fr={fr} t={t} moi={user?.uid ?? null} lienPartie={lienPartie} apercu={apercu} />
                 )}
               </StaggerItem>
             </Stagger>
@@ -229,8 +231,8 @@ const Ligne: React.FC<{ icone: React.ComponentType<{ size?: number; className?: 
 /** Le tableau : une colonne par ronde, un match par carte. */
 const Tableau: React.FC<{
   tournoi: Tournoi; matchs: MatchTournoi[]; fr: boolean; t: typeof FR;
-  moi: string | null; lienPartie: (id: string) => string;
-}> = ({ tournoi, matchs, fr, t, moi, lienPartie }) => {
+  moi: string | null; lienPartie: (id: string) => string; apercu: boolean;
+}> = ({ tournoi, matchs, fr, t, moi, lienPartie, apercu }) => {
   const rondes = Array.from({ length: tournoi.nbRondes }, (_, i) => i + 1);
   return (
     <div className="rounded-lg-card border border-brass/25 overflow-hidden h-full" style={{ background: 'rgba(8,3,5,0.7)' }}>
@@ -280,6 +282,18 @@ const Tableau: React.FC<{
                       {m.parties.length > 1 && (
                         <p className="mt-2 font-sans text-[13px] text-ivory-soft/50">{t.rejouee(m.parties.length)}</p>
                       )}
+                      {!jeJoue && m.statut === 'encours' && m.echeance && !m.exempt && (
+                        <p className="mt-2 font-sans text-[13px] text-ivory-soft/50">
+                          {t.avantLe} {m.echeance.toDate().toLocaleDateString(fr ? 'fr-CA' : 'en-CA', { day: 'numeric', month: 'long' })}
+                        </p>
+                      )}
+                      {jeJoue && moi && (
+                        <Coordination
+                          tournoiId={tournoi.id} matchId={m.id} moi={moi} fr={fr} echeance={m.echeance}
+                          adversaire={(() => { const u = m.joueurs.find((x) => x && x !== moi) as string; return { uid: u, nom: m.noms[u] || '—' }; })()}
+                          apercu={apercu ? APERCU_RDV : undefined}
+                        />
+                      )}
                     </div>
                   );
                 })}
@@ -302,11 +316,13 @@ const FR = {
   aucun: 'Aucun tournoi n’est annoncé pour le moment. Revenez bientôt.',
   statuts: { brouillon: 'En préparation', inscriptions: 'Inscriptions ouvertes', encours: 'En cours', fini: 'Terminé' },
   quand: 'Quand',
+  duAu: (a: string, b: string) => `Du ${a} au ${b}`,
+  avantLe: 'À finir avant le',
   regle: 'Règlement',
   cadence: 'Cadence',
   parCoup: 'par coup',
   sansLimite: 'Sans limite de temps',
-  format: 'Élimination directe : une défaite et le tournoi est fini pour vous. Une nulle se rejoue, camps inversés. Le tirage se fait au moment du départ, et les parties s’ouvrent d’elles-mêmes dans votre espace, sur la table du Hnefatafl.',
+  format: 'Élimination directe : une défaite et le tournoi est fini pour vous. Une nulle se rejoue, camps inversés. Le tirage se fait au moment du départ, les parties s’ouvrent d’elles-mêmes sur la table du Hnefatafl, et vous vous donnez rendez-vous avec votre adversaire pour jouer en direct. Le tournoi entier tient dans la semaine : chaque ronde a son échéance, chaque coup a ses 24 heures, et le minuteur écoulé vaut forfait.',
   connecter: 'Se connecter pour s’inscrire',
   inscrire: 'Je m’inscris',
   inscritRetirer: 'Inscrit. Me retirer',
@@ -334,11 +350,13 @@ const EN: typeof FR = {
   aucun: 'No tournament is announced right now. Come back soon.',
   statuts: { brouillon: 'In preparation', inscriptions: 'Registration open', encours: 'Under way', fini: 'Finished' },
   quand: 'When',
+  duAu: (a: string, b: string) => `From ${a} to ${b}`,
+  avantLe: 'To finish before',
   regle: 'Rules',
   cadence: 'Pace',
   parCoup: 'per move',
   sansLimite: 'No time limit',
-  format: 'Single elimination: one loss and the tournament is over for you. A draw is replayed with sides swapped. The draw happens at the start, and your games open on their own in your space, on the Hnefatafl table.',
+  format: 'Single elimination: one loss and the tournament is over for you. A draw is replayed with sides swapped. The draw happens at the start, your games open on their own on the Hnefatafl table, and you set a time with your opponent to play live. The whole tournament fits in the week: every round has its deadline, every move has its 24 hours, and a run-out clock means a forfeit.',
   connecter: 'Sign in to register',
   inscrire: 'Sign me up',
   inscritRetirer: 'Registered. Withdraw',

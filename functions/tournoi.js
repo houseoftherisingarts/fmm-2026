@@ -28,6 +28,7 @@
 
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { onDocumentWritten } = require('firebase-functions/v2/firestore');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const logger = require('firebase-functions/logger');
 const { Timestamp } = require('firebase-admin/firestore');
 
@@ -70,6 +71,14 @@ function premiereRonde(inscrits) {
 }
 
 /** La ronde suivante : les vainqueurs de 2k et 2k+1 se rencontrent en k. */
+/** Le tournoi entier tient dans une fenêtre (une semaine par défaut) :
+ *  chaque ronde reçoit une part égale, et la ronde r doit être finie à
+ *  debut + r * part. Rend une échéance (ms) par ronde. */
+function echeancesRondes(debutMs, finMs, nbRondes) {
+  const part = Math.max(0, finMs - debutMs) / nbRondes;
+  return Array.from({ length: nbRondes }, (_, i) => Math.round(debutMs + (i + 1) * part));
+}
+
 function rondeSuivante(matchsFinis) {
   const tries = [...matchsFinis].sort((x, y) => x.ordre - y.ordre);
   const suite = [];
@@ -80,6 +89,7 @@ function rondeSuivante(matchsFinis) {
 }
 
 module.exports = ({ db, FieldValue, COURRIELS_ADMIN }) => {
+const SEMAINE_MS = 7 * 24 * 60 * 60 * 1000;
 const fonctions = {};
 
 function exigerEquipe(requete) {
@@ -138,6 +148,7 @@ async function ecrireRonde(tournoiRef, tournoi, ronde, matchs, noms) {
       gagnant: null,
       statut: 'encours',
       exempt: !b,
+      echeance: (tournoi.echeances || [])[ronde - 1] || null,
       createdAt: FieldValue.serverTimestamp(),
     };
     if (!b) {
@@ -203,15 +214,24 @@ fonctions.tournoiLancer = onCall({ region: 'us-central1' }, async (requete) => {
   inscritsSnap.docs.forEach((d) => { noms[d.id] = String(d.data().nom || ''); });
 
   const nbRondes = nombreDeRondes(inscrits.length);
+  // Une semaine pour tout le tournoi (Alex, 2026-09-28), à moins que la
+  // fiche porte une autre date de fin déjà dans le futur.
+  const maintenant = Date.now();
+  const finMs = tournoi.dateFin && tournoi.dateFin.toMillis() > maintenant
+    ? tournoi.dateFin.toMillis()
+    : maintenant + SEMAINE_MS;
+  const echeances = echeancesRondes(maintenant, finMs, nbRondes).map((ms) => Timestamp.fromMillis(ms));
   await tournoiRef.update({
     statut: 'encours',
     ronde: 1,
     nbRondes,
     nbInscrits: inscrits.length,
+    dateFin: Timestamp.fromMillis(finMs),
+    echeances,
     lanceLe: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
-  await ecrireRonde(tournoiRef, tournoi, 1, premiereRonde(melanger(inscrits)), noms);
+  await ecrireRonde(tournoiRef, { ...tournoi, echeances }, 1, premiereRonde(melanger(inscrits)), noms);
   await avancer(tournoiRef);
   logger.info('[tournoi] lancé', { tournoi: tournoiId, inscrits: inscrits.length, nbRondes });
   return { nbRondes, nbInscrits: inscrits.length };
@@ -283,7 +303,53 @@ fonctions.tournoiTrancher = onCall({ region: 'us-central1' }, async (requete) =>
   return { ok: true };
 });
 
+/** Ferme une partie par forfait contre la personne dont c'est le tour.
+ *  tournoiPartieFinie fait le reste (vainqueur du match, ronde suivante). */
+async function forfaitDuTour(pRef, partie, raison) {
+  const perdant = partie.camps[partie.tour];
+  const campGagnant = partie.tour === 'attacker' ? 'defender' : 'attacker';
+  await pRef.update({
+    statut: 'fini',
+    gagnant: campGagnant,
+    abandon: perdant,
+    forfait: true,
+    echeance: null,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+  logger.info('[tournoi] forfait', { partie: pRef.id, perdant, raison });
+}
+
+// Toutes les demi-heures : dans chaque tournoi en cours, une partie dont
+// le minuteur du coup est écoulé, ou dont la ronde a dépassé son échéance,
+// se perd par forfait pour la personne qui devait jouer (timeout =
+// forfait, Alex, 2026-09-28). Le réclamer à la main dans le jeu reste
+// possible, ceci passe derrière.
+fonctions.tournoiMinuterie = onSchedule(
+  { schedule: 'every 30 minutes', region: 'us-central1', timeZone: 'America/Toronto', memory: '256MiB' },
+  async () => {
+    const maintenant = Date.now();
+    const tournois = await db.collection('tournois').where('statut', '==', 'encours').get();
+    for (const t of tournois.docs) {
+      const matchs = await t.ref.collection('matchs').where('statut', '==', 'encours').get();
+      for (const m of matchs.docs) {
+        const match = m.data();
+        const partieId = match.parties && match.parties[match.parties.length - 1];
+        if (!partieId) continue;
+        const pRef = db.collection('taflParties').doc(partieId);
+        const pSnap = await pRef.get();
+        if (!pSnap.exists) continue;
+        const partie = pSnap.data();
+        if (partie.statut !== 'fini' && partie.echeance && partie.echeance.toMillis() < maintenant) {
+          await forfaitDuTour(pRef, partie, 'minuteur du coup');
+        } else if (partie.statut !== 'fini' && match.echeance && match.echeance.toMillis() < maintenant) {
+          await forfaitDuTour(pRef, partie, 'échéance de la ronde');
+        }
+      }
+    }
+  },
+);
+
 return fonctions;
 };
 
-module.exports.tableau = { nombreDeRondes, premiereRonde, rondeSuivante };
+module.exports.tableau = { nombreDeRondes, premiereRonde, rondeSuivante, echeancesRondes };

@@ -437,6 +437,23 @@ service cloud.firestore {
       match /matchs/{matchId} {
         allow read:  if true;
         allow write: if isAdmin();
+
+        // Le rendez-vous entre adversaires : chaque personne du match écrit
+        // son propre document (créneaux proposés, mot, créneau choisi).
+        match /rdv/{uid} {
+          function leMatch() {
+            return get(/databases/$(database)/documents/tournois/$(tournoiId)/matchs/$(matchId)).data;
+          }
+          allow read:  if signedIn();
+          allow write: if isOwner(uid)
+                       && uid in leMatch().joueurs
+                       && request.resource.data.keys().hasOnly(['creneaux', 'message', 'choix', 'majLe'])
+                       && request.resource.data.creneaux is list
+                       && request.resource.data.creneaux.size() <= 3
+                       && request.resource.data.message is string
+                       && request.resource.data.message.size() <= 200
+                       && (request.resource.data.choix == null || request.resource.data.choix is timestamp);
+        }
       }
     }
 

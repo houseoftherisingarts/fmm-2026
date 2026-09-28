@@ -33,6 +33,10 @@ export interface Tournoi {
   /** Le temps accordé à chaque coup, en millisecondes; nul = sans limite. */
   delaiMs:    number | null;
   dateDebut:  Timestamp;
+  /** Le tournoi entier doit être fini à cette date (une semaine par défaut). */
+  dateFin?:   Timestamp | null;
+  /** L'échéance de chaque ronde, posée au lancement (index 0 = ronde 1). */
+  echeances?: Timestamp[];
   statut:     StatutTournoi;
   ronde:      number;
   nbRondes:   number;
@@ -60,6 +64,19 @@ export interface MatchTournoi {
   gagnant: string | null;
   statut:  'encours' | 'fini';
   exempt:  boolean;
+  /** La ronde doit être finie avant : passé ce moment, la personne qui devait jouer perd par forfait. */
+  echeance?: Timestamp | null;
+}
+
+/** Ce qu'une personne propose à son adversaire pour jouer en direct. */
+export interface RdvMatch {
+  uid:      string;
+  /** Jusqu'à trois moments proposés. */
+  creneaux: Timestamp[];
+  message:  string;
+  /** Le créneau de l'autre que j'accepte, s'il y en a un. */
+  choix:    Timestamp | null;
+  majLe?:   Timestamp;
 }
 
 const COL = 'tournois';
@@ -112,8 +129,10 @@ export async function desinscrire(tournoiId: string, uid: string): Promise<void>
 
 // ── Ce que l'équipe fait ─────────────────────────────────────────────
 
+export const JOUR_MS = 24 * 60 * 60 * 1000;
+
 export async function creerTournoi(opts: {
-  nom: string; dateDebut: Date; regleId: string; delaiMs: number | null;
+  nom: string; dateDebut: Date; dureeJours: number; regleId: string; delaiMs: number | null;
 }): Promise<string> {
   if (!db) throw new Error('Firestore non configuré');
   const ref = await addDoc(collection(db, COL), {
@@ -122,6 +141,7 @@ export async function creerTournoi(opts: {
     regleId: opts.regleId,
     delaiMs: opts.delaiMs,
     dateDebut: Timestamp.fromDate(opts.dateDebut),
+    dateFin: Timestamp.fromMillis(opts.dateDebut.getTime() + Math.max(1, opts.dureeJours) * JOUR_MS),
     statut: 'brouillon' as StatutTournoi,
     ronde: 0,
     nbRondes: 0,
@@ -134,7 +154,7 @@ export async function creerTournoi(opts: {
 
 export async function majTournoi(
   id: string,
-  champs: Partial<Pick<Tournoi, 'nom' | 'regleId' | 'delaiMs' | 'dateDebut' | 'statut'>>,
+  champs: Partial<Pick<Tournoi, 'nom' | 'regleId' | 'delaiMs' | 'dateDebut' | 'dateFin' | 'statut'>>,
 ): Promise<void> {
   if (!db) throw new Error('Firestore non configuré');
   await updateDoc(doc(db, COL, id), { ...champs, updatedAt: serverTimestamp() });
@@ -159,6 +179,37 @@ export const lancerTournoi = appeler<{ tournoiId: string }, { nbRondes: number; 
 
 /** Déclare un vainqueur à la main (personne absente le jour venu). */
 export const trancherMatch = appeler<{ tournoiId: string; matchId: string; gagnantUid: string }, { ok: true }>('tournoiTrancher');
+
+// ── Le rendez-vous entre adversaires ─────────────────────────────────
+
+export function suivreRdv(tournoiId: string, matchId: string, cb: (r: RdvMatch[]) => void): () => void {
+  if (!db) { cb([]); return () => {}; }
+  return onSnapshot(
+    collection(db, COL, tournoiId, 'matchs', matchId, 'rdv'),
+    (snap) => cb(snap.docs.map((d) => ({ uid: d.id, ...(d.data() as object) } as RdvMatch))),
+    () => cb([]),
+  );
+}
+
+export async function proposerRdv(
+  tournoiId: string, matchId: string, uid: string,
+  rdv: { creneaux: Date[]; message: string; choix: Timestamp | null },
+): Promise<void> {
+  if (!db) throw new Error('Firestore non configuré');
+  await setDoc(doc(db, COL, tournoiId, 'matchs', matchId, 'rdv', uid), {
+    creneaux: rdv.creneaux.slice(0, 3).map((d) => Timestamp.fromDate(d)),
+    message: rdv.message.trim().slice(0, 200),
+    choix: rdv.choix,
+    majLe: serverTimestamp(),
+  });
+}
+
+/** Le moment convenu : un créneau de l'un que l'autre a choisi. */
+export function rendezVousConvenu(a: RdvMatch | undefined, b: RdvMatch | undefined): Timestamp | null {
+  const choisi = (qui?: RdvMatch, chez?: RdvMatch) =>
+    qui?.choix && chez?.creneaux.some((c) => c.isEqual(qui.choix as Timestamp)) ? qui.choix : null;
+  return choisi(a, b) ?? choisi(b, a);
+}
 
 // ── Lecture ──────────────────────────────────────────────────────────
 
