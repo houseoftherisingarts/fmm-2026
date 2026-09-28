@@ -124,7 +124,7 @@ const TournoiPage: React.FC = () => {
                            valeur={tournoi.delaiMs ? `${formatDelai(tournoi.delaiMs, fr)} ${t.parCoup}` : t.sansLimite} />
                   </dl>
 
-                  <div className="px-5 md:px-7 pb-7 lg:pt-6">
+                  <div className="px-5 md:px-7 pb-7 lg:py-6 lg:flex lg:flex-col lg:justify-center">
                     <div className="divider-brass w-14 mb-5 lg:hidden" />
                     <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-6">
                       {t.format}
@@ -235,11 +235,11 @@ const Tableau: React.FC<{
           {nomDeRonde(Math.min(tournoi.ronde, tournoi.nbRondes), tournoi.nbRondes, fr)}
         </span>
       </header>
-      <div className="flex gap-4 overflow-x-auto px-5 md:px-7 py-6" style={{ scrollbarWidth: 'thin' }}>
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-4 px-5 md:px-7 py-6">
         {rondes.map((r) => {
           const liste = matchsDeRonde(matchs, r);
           return (
-            <div key={r} className="shrink-0 w-64 md:w-72 lg:w-auto lg:flex-1 lg:min-w-0 flex flex-col">
+            <div key={r} className="w-full lg:w-auto lg:flex-1 lg:min-w-0 flex flex-col">
               <p className="font-sans uppercase tracking-[0.22em] text-[13px] text-ivory-soft/55 mb-3">
                 {nomDeRonde(r, tournoi.nbRondes, fr)}
               </p>
