@@ -26,7 +26,6 @@ const FIRE = '/hero/fireburst.mp4';
 // Position 2 of the sequence: the "Caravanes et Saltimbanques" intro video
 // (accordionist) the burst hands off to, played with sound. NOT the general
 // festival film (that plays at position 5, inside the orb after the countdown).
-const INTRO_CARAVANES = '/orb/intro-caravanes.mp4';
 // Purpose-built VEO near-still of the opening frame: the scene is frozen
 // except the torch flames, the orb's glow, and a faint breath on the knight.
 // Looped seamlessly; we crossfade to the scrubbed clip the moment scrolling
@@ -182,7 +181,7 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
   const [bufferFilm, setBufferFilm] = useState(false);
   // Set when the browser blocks autoplay-with-sound (no qualifying gesture);
   // we then play muted and surface a one-tap unmute.
-  const [needsUnmute, setNeedsUnmute] = useState(false);
+  const [, setNeedsUnmute] = useState(false);
   // False at the very top (idle breathing loop), true once scrolling scrubs the
   // clip. Flips both ways, so scrolling back up returns to the idle loop.
   const [scrollStarted, setScrollStarted] = useState(false);
@@ -322,13 +321,6 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
     window.setTimeout(onEnter, 1500);
   }
 
-  function unmuteFilm() {
-    const v = festivalRef.current;
-    if (!v) return;
-    v.muted = false;
-    setNeedsUnmute(false);
-    v.play().catch(() => { /* ignore */ });
-  }
 
   // Clicking the ring plays the whole prologue itself: a smooth eased scroll to
   // the end at a cinematic pace (which also drives the scrub + the burst hand-

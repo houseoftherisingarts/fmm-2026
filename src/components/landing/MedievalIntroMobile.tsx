@@ -28,7 +28,6 @@ const LOGO = '/fmm-crest-chrome.webp?v=3';
 const TITLE_FONT = '"Marcellus", "Cinzel", "Cinzel Decorative", Georgia, serif';
 const FIRE = '/hero/fireburst.mp4';
 // 720p variant: indistinguishable on phone-sized viewports, half the bytes.
-const INTRO_CARAVANES = '/orb/intro-caravanes-720.mp4';
 const CRYSTAL_IDLE = '/hero/crystal-idle.mp4';
 const fontAlt = '"Cormorant SC", "Cormorant Garamond", Georgia, serif';
 
@@ -142,7 +141,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
   const [leaving, setLeaving] = useState(false);
   const [phase, setPhase] = useState<'scroll' | 'video'>('scroll');
   const [bufferFilm, setBufferFilm] = useState(false);
-  const [needsUnmute, setNeedsUnmute] = useState(false);
+  const [, setNeedsUnmute] = useState(false);
   const [scrollStarted, setScrollStarted] = useState(false);
   // Scale needed for the 16:9 band to grow past the letterbox and cover the
   // whole portrait screen (Ken Burns push-in once the title is gone). Derived
@@ -272,13 +271,6 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
     window.setTimeout(onEnter, 1500);
   }
 
-  function unmuteFilm() {
-    const v = festivalRef.current;
-    if (!v) return;
-    v.muted = false;
-    setNeedsUnmute(false);
-    v.play().catch(() => {});
-  }
 
   // Tap anywhere / the cue plays the whole prologue at a cinematic pace.
   const autoRef = useRef(0);
