@@ -351,8 +351,8 @@ const FILMS: Film[] = [
     titleFR: 'Caravanes et Saltimbanques',
     titleEN: 'Caravans and Travelling Players',
     editionFR: 'Édition 2026', editionEN: '2026 edition',
-    bodyFR: 'La bande-annonce de l’édition qui vient. Roulottes, feux et musiciens sur la route.',
-    bodyEN: 'The trailer for the coming edition. Wagons, fires and musicians on the road.',
+    bodyFR: 'La bande-annonce de l’édition 2026. Roulottes, feux et musiciens sur la route.',
+    bodyEN: 'The trailer for the 2026 edition. Wagons, fires and musicians on the road.',
   },
   {
     key: 'vikings',

@@ -14,7 +14,7 @@ const IVORY = '#EAEFF6';
 const GOLD = '#E3C27A';
 
 const PARAGRAPHES = [
-  'Voici les visages heureux derrière l’organisation du festival. De gauche à droite : Léna, Éric, Jesse, Maïté, Mikael, Océane, Arnaud, Alex, Tristan et Thierry. Mention spéciale à Joëlle qui n’a pas pu être sur la photo.',
+  'Un immense merci pour cette incroyable édition ! Voici les visages heureux derrière l’organisation du festival. De gauche à droite : Léna, Éric, Jesse, Maïté, Mikael, Océane, Arnaud, Alex, Tristan et Thierry. Mention spéciale à Joëlle qui n’a pas pu être sur la photo.',
   'Il y a aussi tous les bénévoles, la municipalité de Montpellier, les pompiers, les partenaires, les loisirs, les artistes, les exposant-es et tout un ensemble de personnes incroyables qui permettent de faire exister ce festival...!',
   'On se repose juste un petit peu et on attaque déjà la préparation de la prochaine édition !',
 ];
@@ -40,8 +40,8 @@ const MerciEquipe: React.FC<{ onEnter: () => void }> = ({ onEnter }) => (
         <p className="uppercase text-[11px] sm:text-xs tracking-[0.35em] mb-4" style={{ color: GOLD, fontFamily: LABEL_FONT }}>
           Caravanes et Saltimbanques · 2026
         </p>
-        <h2 style={{ fontFamily: TITLE_FONT, color: IVORY, fontSize: 'clamp(1.7rem, 2.7vw, 2.6rem)', lineHeight: 1.15, letterSpacing: '0.02em', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>
-          Un immense <span style={{ color: GOLD }}>merci</span> pour cette incroyable édition !
+        <h2 style={{ fontFamily: TITLE_FONT, color: IVORY, fontSize: 'clamp(2rem, 3.4vw, 3.2rem)', lineHeight: 1.15, letterSpacing: '0.02em', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>
+          Un immense <span style={{ color: GOLD }}>merci</span>
         </h2>
       </div>
 

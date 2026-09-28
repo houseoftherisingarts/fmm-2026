@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import MerciEquipe from './MerciEquipe';
 import { motion, AnimatePresence, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import { usePerfTier } from '../../lib/usePerfTier';
 import IntroChant from './IntroChant';
@@ -479,23 +480,7 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               style={{ pointerEvents: phase === 'video' ? 'auto' : 'none' }}
             >
-              <video
-                ref={festivalRef}
-                className="absolute inset-0 h-full w-full object-contain"
-                src={INTRO_CARAVANES}
-                playsInline preload="auto"
-                onEnded={enterSite}
-              />
-              {phase === 'video' && needsUnmute && (
-                <button
-                  onClick={unmuteFilm}
-                  className="absolute bottom-4 left-4 z-[80] inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs uppercase tracking-[0.2em] backdrop-blur-sm outline-none transition-colors hover:border-white/60 focus-visible:ring-2 focus-visible:ring-[#D7DEE8]"
-                  style={{ border: `1px solid ${SILVER}88`, color: '#E6ECF3', background: 'rgba(8,10,16,0.45)', fontFamily: fontAlt }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SILVER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>
-                  Activer le son
-                </button>
-              )}
+              <MerciEquipe onEnter={enterSite} />
             </motion.div>
           )}
 
