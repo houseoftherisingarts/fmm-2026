@@ -24,6 +24,7 @@ export type AdminSectionId =
   | 'guildes'
   | 'tachesVillage'
   | 'placeClan'
+  | 'tournoi'
   | 'marchands'
   | 'commerces'
   | 'concours'
@@ -178,6 +179,7 @@ export const NAV: NavItem[] = [
 
   // Les jeux de l'année : le questionnaire de la Peste (Alex, 2026-09-09).
   { id: 'placeClan',  label: 'Ta place dans le clan', icon: Compass, group: 'Jeux' },
+  { id: 'tournoi',    label: 'Tournoi de hnefatafl', icon: Swords, group: 'Jeux' },
 ];
 
 const ALL_SECTION_IDS: AdminSectionId[] = NAV.map((n) => n.id);

@@ -69,6 +69,11 @@ const BASCULES: Record<string, Bascule> = {
     famille: 'affichage',
     effet: "Allumée : la frise animée apparaît sur la page Histoire & Apprendre. Éteinte : la page s'affiche sans elle, tout le reste intact.",
   },
+  pubTournoi: {
+    label: 'Tournoi de hnefatafl',
+    famille: 'affichage',
+    effet: "Allumée : la page du tournoi s'ouvre (/jeux/tournoi) et la page des jeux l'annonce. Éteinte : son adresse répond « page introuvable ». À allumer quand les inscriptions doivent commencer; le tournoi lui-même se mène depuis la section Tournoi.",
+  },
   pubAlliance: {
     label: 'L’Alliance (page des alliés)',
     famille: 'affichage',

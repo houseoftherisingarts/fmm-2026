@@ -104,6 +104,7 @@ const BureauDeChangePage   = lazy(() => import('./pages/BureauDeChangePage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const OrdrePage           = lazy(() => import('./pages/OrdrePage'));
 const AlliancePage        = lazy(() => import('./pages/AlliancePage'));
+const TournoiPage         = lazy(() => import('./pages/TournoiPage'));
 const VideosPage          = lazy(() => import('./pages/VideosPage'));
 const DefiLobbyPage       = lazy(() => import('./pages/DefiLobbyPage'));
 const MessagesPage     = lazy(() => import('./pages/MessagesPage'));
@@ -309,6 +310,13 @@ const PorteAlliance: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   return <>{children}</>;
 };
 
+/** Le tournoi de hnefatafl attend son heure derrière `pubTournoi`. */
+const PorteTournoi: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { flags } = useSiteFlags();
+  if (!flags.pubTournoi && SITE_MODE !== 'live') return <NotFoundPage />;
+  return <>{children}</>;
+};
+
 const Chrome: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;
@@ -492,6 +500,9 @@ const App: React.FC = () => (
                     l'admin (drapeau pubAlliance). */}
                 <Route path="/alliance"                         element={<PorteAlliance><AlliancePage /></PorteAlliance>} />
                 <Route path="/en/alliance"                      element={<PorteAlliance><AlliancePage /></PorteAlliance>} />
+                {/* Le tournoi de hnefatafl du 7 mars 2027 (drapeau pubTournoi). */}
+                <Route path="/jeux/tournoi"                     element={<PorteTournoi><TournoiPage /></PorteTournoi>} />
+                <Route path="/en/games/tournament"              element={<PorteTournoi><TournoiPage /></PorteTournoi>} />
                 <Route path="/en/order"                         element={<OrdrePage />} />
                 <Route path="/defi/:id"                         element={<DefiLobbyPage />} />
                 <Route path="/en/challenge/:id"                 element={<DefiLobbyPage />} />

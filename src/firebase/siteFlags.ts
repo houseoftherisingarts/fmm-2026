@@ -52,6 +52,10 @@ export interface SiteFlags {
   // FMM. Écrite le 2026-08-23, gardée EN DORMANCE à la demande d'Alex :
   // elle vit dans le code et s'allume d'ici quand ce sera le temps.
   pubAlliance:             boolean;
+  // Le tournoi de hnefatafl du 7 mars 2027 (Alex, 2026-09-28) : la
+  // page /jeux/tournoi et son annonce sur la page des jeux. Éteint tant
+  // qu'Alex ne l'allume pas; le code est en place d'ici là.
+  pubTournoi:              boolean;
   // ── Per-page publication ──────────────────────────────────────────
   // The public teaser (site bientôt disponible) is simply the state where
   // NO page is published. Flip a page on from the admin (Paramètres →
@@ -94,6 +98,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   showCommanditaire:       false,
   showHistoireFrise:       false,
   pubAlliance:             false,
+  pubTournoi:              false,
   // All pages start unpublished → the public sees the teaser until each is
   // flipped on one by one.
   pubActivites:            false,

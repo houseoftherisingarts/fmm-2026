@@ -201,6 +201,34 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "tournois",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateDebut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "matchs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ronde",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ordre",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

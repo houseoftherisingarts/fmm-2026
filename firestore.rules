@@ -408,6 +408,38 @@ service cloud.firestore {
       }
     }
 
+    // ── Le tournoi de hnefatafl (Alex, 2026-09-28) ───────────────
+    // La fiche s'écrit depuis l'admin; un brouillon ne se lit qu'en
+    // équipe. On s'inscrit soi-même, tant que les inscriptions sont
+    // ouvertes, avec un nom d'affichage et rien d'autre. Le tableau
+    // (matchs) s'écrit par les fonctions seulement, et tout le monde le
+    // lit : un tournoi se regarde.
+    match /tournois/{tournoiId} {
+      function leTournoi() {
+        return get(/databases/$(database)/documents/tournois/$(tournoiId)).data;
+      }
+      allow read:  if resource.data.statut in ['inscriptions', 'encours', 'fini'] || isAdmin();
+      allow write: if isAdmin();
+
+      match /inscriptions/{uid} {
+        allow read:   if signedIn();
+        allow create: if isOwner(uid)
+                      && leTournoi().statut == 'inscriptions'
+                      && request.resource.data.keys().hasOnly(['nom', 'inscritLe'])
+                      && request.resource.data.nom is string
+                      && request.resource.data.nom.size() > 0
+                      && request.resource.data.nom.size() <= 60;
+        allow update: if isAdmin();
+        allow delete: if isAdmin()
+                      || (isOwner(uid) && leTournoi().statut == 'inscriptions');
+      }
+
+      match /matchs/{matchId} {
+        allow read:  if true;
+        allow write: if isAdmin();
+      }
+    }
+
     // ── L'Ordre : les fiches des membres ──────────────────────────
     // Chacun publie la sienne, tous les membres connectés les lisent.
     // Le champ `roles` fait exception : les fonctions portées au
