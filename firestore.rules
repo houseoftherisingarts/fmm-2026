@@ -1848,6 +1848,43 @@ service cloud.firestore {
       allow delete:         if isOwner(uid) || isAdmin();
     }
 
+    // ── Les vitrines des musiciens et des artisans (Alex, 2026-09-28) ─
+    // L'identifiant du document est le slug de l'adresse publique
+    // (/vitrine/{slug}) : deux personnes ne peuvent pas prendre la même
+    // adresse, Firestore s'en charge. Une vitrine publiée se lit sans
+    // compte, puisque c'est une page à partager; brouillon, seule la
+    // personne et l'équipe la voient. La personne écrit tout sauf la
+    // boutique, qu'elle ne peut que DEMANDER (statut « demandee »); c'est
+    // l'équipe qui l'active une fois l'année payée (src/firebase/vitrines.ts).
+    match /vitrines/{slug} {
+      function vitrineValide(d) {
+        return d.uid is string
+          && d.slug == slug
+          && d.type in ['musique', 'artisan']
+          && d.nom is string && d.nom.size() >= 2 && d.nom.size() <= 60
+          && d.publie is bool
+          && d.photos is list && d.photos.size() <= 12
+          && d.pistes is list && d.pistes.size() <= 12
+          && d.produits is list && d.produits.size() <= 30
+          && (!('accroche' in d) || (d.accroche is string && d.accroche.size() <= 140))
+          && (!('bio' in d) || (d.bio is string && d.bio.size() <= 4000))
+          && (!('ville' in d) || (d.ville is string && d.ville.size() <= 80));
+      }
+      allow read:   if resource.data.publie == true || isOwner(resource.data.uid) || isAdmin();
+      allow create: if isOwner(request.resource.data.uid)
+                    && slug.matches('^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$')
+                    && vitrineValide(request.resource.data)
+                    && request.resource.data.boutique.statut == 'aucune';
+      allow update: if isAdmin()
+                    || (isOwner(resource.data.uid)
+                        && request.resource.data.uid == resource.data.uid
+                        && vitrineValide(request.resource.data)
+                        && (request.resource.data.boutique == resource.data.boutique
+                            || (request.resource.data.boutique.statut == 'demandee'
+                                && resource.data.boutique.statut in ['aucune', 'refusee'])));
+      allow delete: if isOwner(resource.data.uid) || isAdmin();
+    }
+
     // ── Chantier : inventaire du personnage + salon 2D ─────────────
     // Page non publiée (/chantier, gatée isAdmin côté client), mais les
     // règles restent réelles dès maintenant. Un document par membre,
