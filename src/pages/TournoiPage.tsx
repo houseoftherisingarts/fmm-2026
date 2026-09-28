@@ -96,10 +96,10 @@ const TournoiPage: React.FC = () => {
               <p className="font-editorial text-base text-ivory-soft">{t.aucun}</p>
             </div>
           ) : (
-            <Stagger className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 md:gap-8">
+            <Stagger className="flex flex-col gap-6 md:gap-8">
               {/* ── La fiche et l'inscription ─────────────────────── */}
               <StaggerItem as="div">
-                <div className="rounded-lg-card border border-brass/35 overflow-hidden h-full"
+                <div className="rounded-lg-card border border-brass/35 overflow-hidden"
                      style={{
                        background: 'linear-gradient(165deg, rgba(24,12,8,0.9), rgba(8,3,5,0.96))',
                        backdropFilter: 'blur(12px)',
@@ -107,15 +107,16 @@ const TournoiPage: React.FC = () => {
                      }}>
                   <header className="flex items-center gap-2 px-5 md:px-7 py-3.5 border-b border-brass/20 bg-black/30">
                     <Swords size={13} className="text-brass shrink-0" />
-                    <span className="font-display title-medieval uppercase tracking-[0.28em] text-[11px] text-ivory">
+                    <span className="font-display title-medieval uppercase tracking-[0.28em] text-[13px] text-ivory">
                       {tournoi.nom}
                     </span>
-                    <span className="ml-auto font-sans text-[10px] uppercase tracking-[0.18em] text-ivory-soft/55">
+                    <span className="ml-auto font-sans text-[13px] uppercase tracking-[0.18em] text-ivory-soft/55">
                       {t.statuts[tournoi.statut]}
                     </span>
                   </header>
 
-                  <dl className="px-5 md:px-7 py-6 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-5">
+                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+                  <dl className="px-5 md:px-7 py-6 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-5 lg:border-r lg:border-brass/15">
                     <Ligne icone={CalendarDays} titre={t.quand} valeur={dateLongue} />
                     <Ligne icone={ScrollText} titre={t.regle}
                            valeur={regle ? (fr ? regle.nomFR : regle.nomEN) : tournoi.regleId} />
@@ -123,21 +124,21 @@ const TournoiPage: React.FC = () => {
                            valeur={tournoi.delaiMs ? `${formatDelai(tournoi.delaiMs, fr)} ${t.parCoup}` : t.sansLimite} />
                   </dl>
 
-                  <div className="px-5 md:px-7 pb-7">
-                    <div className="divider-brass w-14 mb-5" />
-                    <p className="font-editorial text-sm md:text-base text-ivory-soft leading-relaxed mb-6">
+                  <div className="px-5 md:px-7 pb-7 lg:pt-6">
+                    <div className="divider-brass w-14 mb-5 lg:hidden" />
+                    <p className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-6">
                       {t.format}
                     </p>
 
                     {tournoi.statut === 'inscriptions' && (
                       !user ? (
                         <button type="button" onClick={openSignIn}
-                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-brass/50 font-sans uppercase tracking-[0.2em] text-[11px] text-ivory hover:bg-brass/15 transition-colors">
+                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-brass/50 font-sans uppercase tracking-[0.2em] text-[13px] text-ivory hover:bg-brass/15 transition-colors">
                           {t.connecter} <ArrowUpRight size={14} />
                         </button>
                       ) : (
                         <button type="button" onClick={basculerInscription} disabled={occupe}
-                                className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-full border font-sans uppercase tracking-[0.2em] text-[11px] transition-colors disabled:opacity-50 ${
+                                className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-full border font-sans uppercase tracking-[0.2em] text-[13px] transition-colors disabled:opacity-50 ${
                                   inscrit
                                     ? 'border-brass/30 text-ivory-soft/70 hover:border-brass/60'
                                     : 'border-brass/50 text-ivory hover:bg-brass/15'
@@ -156,11 +157,12 @@ const TournoiPage: React.FC = () => {
                            style={{ background: 'rgba(var(--sk-glow-rgb),0.08)' }}>
                         <Crown size={18} className="text-brass shrink-0" />
                         <span>
-                          <span className="block font-sans uppercase tracking-[0.22em] text-[10px] text-ivory-soft/60">{t.champion}</span>
+                          <span className="block font-sans uppercase tracking-[0.22em] text-[13px] text-ivory-soft/60">{t.champion}</span>
                           <span className="block font-display title-medieval text-lg text-ivory">{tournoi.champion.nom}</span>
                         </span>
                       </div>
                     )}
+                  </div>
                   </div>
                 </div>
               </StaggerItem>
@@ -172,8 +174,8 @@ const TournoiPage: React.FC = () => {
                        style={{ background: 'rgba(8,3,5,0.7)' }}>
                     <header className="flex items-center gap-2 px-5 md:px-7 py-3.5 border-b border-brass/20 bg-black/30">
                       <Users size={13} className="text-brass shrink-0" />
-                      <span className="font-display title-medieval uppercase tracking-[0.28em] text-[11px] text-ivory">{t.inscrits}</span>
-                      <span className="ml-auto font-sans text-[11px] tracking-[0.12em] text-ivory-soft/50">{inscrits.length}</span>
+                      <span className="font-display title-medieval uppercase tracking-[0.28em] text-[13px] text-ivory">{t.inscrits}</span>
+                      <span className="ml-auto font-sans text-[13px] tracking-[0.12em] text-ivory-soft/50">{inscrits.length}</span>
                     </header>
                     {inscrits.length === 0 ? (
                       <p className="px-5 md:px-7 py-10 font-editorial text-sm text-ivory-soft/70">{t.personne}</p>
@@ -184,7 +186,7 @@ const TournoiPage: React.FC = () => {
                             <span className="font-display title-medieval text-sm w-7 text-right" style={{ color: 'rgba(var(--sk-glow-rgb),0.6)' }}>
                               {n + 1}
                             </span>
-                            <span className={`font-display text-sm truncate ${i.uid === user?.uid ? 'text-brass' : 'text-ivory'}`}>{i.nom}</span>
+                            <span className={`font-display text-base truncate ${i.uid === user?.uid ? 'text-brass' : 'text-ivory'}`}>{i.nom}</span>
                           </li>
                         ))}
                       </ol>
@@ -212,7 +214,7 @@ const Ligne: React.FC<{ icone: React.ComponentType<{ size?: number; className?: 
     <div className="flex items-start gap-3">
       <Icone size={15} className="text-brass shrink-0 mt-0.5" />
       <span className="min-w-0">
-        <dt className="font-sans uppercase tracking-[0.22em] text-[10px] text-ivory-soft/55">{titre}</dt>
+        <dt className="font-sans uppercase tracking-[0.22em] text-[13px] text-ivory-soft/55">{titre}</dt>
         <dd className="font-display text-sm md:text-base text-ivory mt-0.5">{valeur}</dd>
       </span>
     </div>
@@ -228,8 +230,8 @@ const Tableau: React.FC<{
     <div className="rounded-lg-card border border-brass/25 overflow-hidden h-full" style={{ background: 'rgba(8,3,5,0.7)' }}>
       <header className="flex items-center gap-2 px-5 md:px-7 py-3.5 border-b border-brass/20 bg-black/30">
         <Swords size={13} className="text-brass shrink-0" />
-        <span className="font-display title-medieval uppercase tracking-[0.28em] text-[11px] text-ivory">{t.tableau}</span>
-        <span className="ml-auto font-sans text-[11px] tracking-[0.12em] text-ivory-soft/50">
+        <span className="font-display title-medieval uppercase tracking-[0.28em] text-[13px] text-ivory">{t.tableau}</span>
+        <span className="ml-auto font-sans text-[13px] tracking-[0.12em] text-ivory-soft/50">
           {nomDeRonde(Math.min(tournoi.ronde, tournoi.nbRondes), tournoi.nbRondes, fr)}
         </span>
       </header>
@@ -237,13 +239,13 @@ const Tableau: React.FC<{
         {rondes.map((r) => {
           const liste = matchsDeRonde(matchs, r);
           return (
-            <div key={r} className="shrink-0 w-64 md:w-72 flex flex-col">
-              <p className="font-sans uppercase tracking-[0.22em] text-[10px] text-ivory-soft/55 mb-3">
+            <div key={r} className="shrink-0 w-64 md:w-72 lg:w-auto lg:flex-1 lg:min-w-0 flex flex-col">
+              <p className="font-sans uppercase tracking-[0.22em] text-[13px] text-ivory-soft/55 mb-3">
                 {nomDeRonde(r, tournoi.nbRondes, fr)}
               </p>
               <div className="flex flex-col gap-3 flex-1 justify-around">
                 {liste.length === 0 && (
-                  <div className="rounded-card border border-dashed border-brass/20 px-4 py-5 font-sans text-[11px] text-ivory-soft/40">
+                  <div className="rounded-card border border-dashed border-brass/20 px-4 py-5 font-sans text-[13px] text-ivory-soft/40">
                     {t.aVenir}
                   </div>
                 )}
@@ -255,7 +257,7 @@ const Tableau: React.FC<{
                          style={{ background: jeJoue ? 'rgba(var(--sk-glow-rgb),0.08)' : 'rgba(0,0,0,0.3)' }}>
                       {m.joueurs.map((uid, i) => (
                         <div key={uid ?? `bye-${i}`} className={`flex items-center justify-between gap-2 ${i === 0 ? 'mb-1.5' : ''}`}>
-                          <span className={`font-display text-sm truncate ${
+                          <span className={`font-display text-base truncate ${
                             m.gagnant && m.gagnant === uid ? 'text-brass' : uid ? 'text-ivory' : 'text-ivory-soft/40'
                           }`}>
                             {uid ? (m.noms[uid] || '—') : t.exempt}
@@ -265,12 +267,12 @@ const Tableau: React.FC<{
                       ))}
                       {jeJoue && (
                         <Link to={lienPartie(partie)}
-                              className="mt-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-card border border-brass/40 text-brass hover:bg-brass hover:text-[var(--sk-brown-dark)] transition-colors font-sans text-[10px] uppercase tracking-[0.18em]">
+                              className="mt-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-card border border-brass/40 text-brass hover:bg-brass hover:text-[var(--sk-brown-dark)] transition-colors font-sans text-[13px] uppercase tracking-[0.18em]">
                           {t.jouer} <ArrowUpRight size={12} />
                         </Link>
                       )}
                       {m.parties.length > 1 && (
-                        <p className="mt-2 font-sans text-[10px] text-ivory-soft/50">{t.rejouee(m.parties.length)}</p>
+                        <p className="mt-2 font-sans text-[13px] text-ivory-soft/50">{t.rejouee(m.parties.length)}</p>
                       )}
                     </div>
                   );
@@ -287,8 +289,8 @@ const Tableau: React.FC<{
 const FR = {
   title: 'Le tournoi de hnefatafl',
   eyebrow: 'Jeux en ligne',
-  titreA: 'Le tournoi',
-  titreB: 'de hnefatafl',
+  titreA: 'Tournoi de',
+  titreB: 'hnefatafl',
   intro: 'Le jeu des Vikings se joue en tournoi sur le site du festival. Vous vous inscrivez avec votre compte, le tirage vous donne un premier adversaire, et chaque partie gagnée vous fait monter d’une ronde, jusqu’à la finale.',
   datelineVide: 'Date à venir',
   aucun: 'Aucun tournoi n’est annoncé pour le moment. Revenez bientôt.',
@@ -319,7 +321,7 @@ const FR = {
 const EN: typeof FR = {
   title: 'The Hnefatafl Tournament',
   eyebrow: 'Online games',
-  titreA: 'The Hnefatafl',
+  titreA: 'Hnefatafl',
   titreB: 'tournament',
   intro: 'The Viking game is played as a tournament on the festival site. You sign up with your account, the draw gives you a first opponent, and every game you win takes you up a round, all the way to the final.',
   datelineVide: 'Date to come',
