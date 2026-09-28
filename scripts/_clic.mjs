@@ -3,8 +3,8 @@ const b = await chromium.launch(); const c = await b.newContext({ viewport: { wi
 await c.addInitScript((s) => { for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v); }, JSON.parse(process.env.BV_STORAGE));
 const p = await c.newPage(); await p.goto('http://localhost:5231/jeux/tournoi?apercu=inscriptions'); await p.waitForTimeout(2500);
 const btn = p.getByRole('button', { name: /Je m’inscris|Je m'inscris/ }); console.log('bouton:', await btn.count());
-const avant = await p.locator('main').innerText(); await btn.click(); await p.waitForTimeout(400);
-const apres = await p.locator('main').innerText();
+const avant = await p.locator('body').innerText(); await btn.click(); await p.waitForTimeout(400);
+const apres = await p.locator('body').innerText();
 console.log('Vous présent après clic:', apres.includes('Vous'), '| bouton retirer:', await p.getByRole('button', { name: /retirer|Inscrit/i }).count());
 console.log('compte avant/après:', (avant.match(/Ragnar|Sigrid|Bjorn|Astrid|Vous/g)||[]).length, (apres.match(/Ragnar|Sigrid|Bjorn|Astrid|Vous/g)||[]).length);
 await b.close();
