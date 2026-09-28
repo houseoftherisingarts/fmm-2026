@@ -15,7 +15,7 @@ import {
   matchsDeRonde, nomDeRonde,
   type Tournoi, type InscriptionTournoi, type MatchTournoi,
 } from '../firebase/tournoi';
-import { APERCU, apercuActif } from './tournoiApercu';
+import { APERCU, APERCU_MOI, apercuActif } from './tournoiApercu';
 
 // ─── Le tournoi de hnefatafl ────────────────────────────────────────
 // La page publique du tournoi du 7 mars 2027 (Alex, 2026-09-28) : la
@@ -27,10 +27,12 @@ import { APERCU, apercuActif } from './tournoiApercu';
 
 const TournoiPage: React.FC = () => {
   const { lang } = useUI();
-  const { user, openSignIn } = useAuth();
+  const { user: utilisateur, openSignIn } = useAuth();
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
   const apercu = apercuActif();
+  // En aperçu local, une fausse personne connectée pour voir le bouton vivre.
+  const user = utilisateur ?? (apercu ? APERCU_MOI : null);
 
   const [tournois, setTournois] = useState<Tournoi[]>(apercu ? [APERCU.tournoi] : []);
   const tournoi = tournois[0] ?? null;
@@ -56,6 +58,10 @@ const TournoiPage: React.FC = () => {
 
   const basculerInscription = async () => {
     if (!user || !tournoi) return;
+    if (apercu) {
+      setInscrits((l) => inscrit ? l.filter((i) => i.uid !== user.uid) : [...l, { uid: user.uid, nom: user.displayName ?? t.inconnu }]);
+      return;
+    }
     setOccupe(true); setErreur(null);
     try {
       if (inscrit) {
