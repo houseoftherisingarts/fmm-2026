@@ -575,7 +575,7 @@ const FR = {
   brefTitle: 'Le festival en quelques lignes',
   facts: [
     { k: 'Quoi', v: 'Le Festival Médiéval de Montpellier, sous le titre Caravanes & Saltimbanques.' },
-    { k: 'Quand', v: '25 · 26 · 27 septembre 2026. Les portes ouvrent le vendredi à 17 h.' },
+    { k: 'Quand', v: 'Chaque année, à la fin de septembre. La prochaine édition est en préparation.' },
     {
       k: 'Où',
       v: 'Le site se trouve au 4 rue du Bosquet à Montpellier, dans la Petite-Nation en Outaouais. À ne pas confondre avec Montpellier en France.',
@@ -637,7 +637,7 @@ const EN: typeof FR = {
   brefTitle: 'The festival in a few lines',
   facts: [
     { k: 'What', v: 'The Festival Médiéval de Montpellier, under the title Caravans & Players.' },
-    { k: 'When', v: 'September 25 · 26 · 27, 2026. Gates open Friday at 5 p.m.' },
+    { k: 'When', v: 'Every year, in late September. The next edition is in the works.' },
     {
       k: 'Where',
       v: 'The grounds sit at 4 rue du Bosquet in Montpellier, in the Petite-Nation region of Outaouais. Not to be confused with Montpellier in France.',

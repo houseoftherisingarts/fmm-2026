@@ -13,8 +13,8 @@ interface Props {
 }
 
 const DEFAULT_DESC: Record<'FR' | 'EN', string> = {
-  FR: 'Festival Médiéval de Montpellier : 25, 26, 27 septembre 2026. Édition Caravanes & Saltimbanques. Marché, banquet, musique, joutes et chevaux au Québec.',
-  EN: 'Festival Médiéval de Montpellier: September 25-27, 2026. Caravans & Players Edition. Market, banquet, music, jousts and horses in Quebec.',
+  FR: 'Festival Médiéval de Montpellier, chaque septembre à Montpellier, Québec. Marché, banquet, musique, joutes et chevaux au Québec.',
+  EN: 'Festival Médiéval de Montpellier, every September in Montpellier, Quebec. Market, banquet, music, jousts and horses in Quebec.',
 };
 
 const SEO: React.FC<Props> = ({ title, description, image, noindex }) => {

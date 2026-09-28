@@ -11,7 +11,7 @@ export const SITE = {
   edition2026: 'Caravanes & Saltimbanques',
   year: 2026,
   dates: { start: '2026-09-25', end: '2026-09-27' },
-  datesLabel: { FR: '25 · 26 · 27 septembre 2026', EN: 'September 25 · 26 · 27, 2026' },
+  datesLabel: { FR: 'Merci tellement à tous, à septembre prochain !', EN: 'Thank you all so much, see you next September!' },
   contact: {
     email: 'admin@festivalmedievaldemontpellier.org',
     phone: '514-418-3450',
@@ -100,7 +100,7 @@ export const HOME = {
     hero: {
       eyebrow: 'Caravanes & Saltimbanques · Édition 2026',
       title: 'FMM 2026',
-      dates: '25 · 26 · 27 septembre 2026',
+      dates: 'Merci tellement à tous, à septembre prochain !',
       subtitle: 'Trois jours sur les routes du temps. Les caravanes et les saltimbanques s\'installent dans le village de Montpellier, Québec, avec le tarot, les tambours et les clans nordiques.',
       primaryCta: 'Acheter mes billets',
       secondaryCta: 'Découvrir le festival',
@@ -140,7 +140,7 @@ export const HOME = {
     hero: {
       eyebrow: 'Caravans & Players · 2026 Edition',
       title: 'FMM 2026',
-      dates: 'September 25 · 26 · 27, 2026',
+      dates: 'Thank you all so much, see you next September!',
       subtitle: 'Three days on the roads of time. Caravans and travelling players settle into the village of Montpellier, Quebec, with tarot, drums and the Nordic clans.',
       primaryCta: 'Get my tickets',
       secondaryCta: 'Discover the festival',

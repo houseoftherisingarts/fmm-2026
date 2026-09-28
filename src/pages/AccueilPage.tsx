@@ -518,7 +518,7 @@ const FR = {
   hero: {
     eyebrow: 'Édition 2026 · Caravanes & Saltimbanques',
     title: 'FMM 2026',
-    dates: '25, 26 et 27 septembre 2026',
+    dates: 'Merci tellement à tous, à septembre prochain !',
     subtitle: 'Trois jours sur les routes du temps. Les caravanes et les saltimbanques s’installent dans le village de Montpellier, Québec, avec le tarot, les tambours et les clans nordiques.',
     primaryCta: 'Acheter mes billets',
     secondaryCta: 'Découvrir le festival',
@@ -596,7 +596,7 @@ const EN = {
   hero: {
     eyebrow: '2026 Edition · Caravans & Players',
     title: 'FMM 2026',
-    dates: 'September 25, 26 and 27, 2026',
+    dates: 'Thank you all so much, see you next September!',
     subtitle: 'Three days on the roads of time. Caravans and travelling players settle into the village of Montpellier, Quebec, with tarot, drums and the Nordic clans.',
     primaryCta: 'Get my tickets',
     secondaryCta: 'Discover the festival',

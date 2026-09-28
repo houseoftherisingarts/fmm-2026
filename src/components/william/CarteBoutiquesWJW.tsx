@@ -118,7 +118,7 @@ const CarteBoutiquesWJW: React.FC<{ ouverte: boolean; onFermer: () => void }> = 
         title: FESTIVAL.nom,
       })
         .addTo(map)
-        .bindPopup(`<strong>${FESTIVAL.nom}</strong><br>25, 26 et 27 septembre 2026`);
+        .bindPopup(`<strong>${FESTIVAL.nom}</strong>`);
 
       // Le cadrage se calcule sur les punaises elles-mêmes plutôt que
       // sur un centre fixe : la carte s'ouvre sur le Québec habité, sans

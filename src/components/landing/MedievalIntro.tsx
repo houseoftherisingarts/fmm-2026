@@ -552,8 +552,8 @@ export default function MedievalIntro({ onEnter }: { onEnter: () => void }) {
                 <div className="pointer-events-none absolute left-[6vw] top-1/2 -translate-y-1/2 max-w-[48vw]">
                   <motion.div className="flex flex-col items-start text-left" style={{ opacity: b2, y: b2y }}>
                     <div className="fmm-rule-silver mb-5 w-28 sm:w-40" />
-                    <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(2rem, 4.6vw, 3.6rem)', fontWeight: 600, letterSpacing: '0.06em', lineHeight: 1.1, textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>25 · 26 · 27</div>
-                    <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(1.2rem, 3vw, 2.1rem)', letterSpacing: '0.2em', marginTop: '0.25rem', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>Septembre 2026</div>
+                    <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(2rem, 4.6vw, 3.6rem)', fontWeight: 600, letterSpacing: '0.06em', lineHeight: 1.1, textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>Merci tellement à tous</div>
+                    <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(1.2rem, 3vw, 2.1rem)', letterSpacing: '0.2em', marginTop: '0.25rem', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>À septembre prochain !</div>
                     <div className="fmm-rule-silver mt-5 w-28 sm:w-40" />
                   </motion.div>
                 </div>

@@ -438,8 +438,8 @@ export default function MedievalIntroMobile({ onEnter }: { onEnter: () => void }
                       variants={lineRise} custom={3} initial="hidden" animate="show"
                     >
                       <div className="mim-rule mb-3 w-28" />
-                      <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(1.5rem, 7vw, 2.2rem)', fontWeight: 600, letterSpacing: '0.08em', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>25 · 26 · 27</div>
-                      <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(0.95rem, 4.4vw, 1.3rem)', letterSpacing: '0.2em', marginTop: '0.25rem', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>Septembre 2026</div>
+                      <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(1.5rem, 7vw, 2.2rem)', fontWeight: 600, letterSpacing: '0.08em', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>Merci tellement à tous</div>
+                      <div style={{ fontFamily: TITLE_FONT, color: '#EAEFF6', fontSize: 'clamp(0.95rem, 4.4vw, 1.3rem)', letterSpacing: '0.2em', marginTop: '0.25rem', textShadow: '0 2px 14px rgba(0,0,0,0.85)' }}>À septembre prochain !</div>
                       <div className="mim-rule mt-3 w-28" />
                     </motion.div>
                   </motion.div>

@@ -170,8 +170,8 @@ const Footer: React.FC = () => {
               </h3>
               <p className="font-editorial italic text-base md:text-lg leading-relaxed max-w-xl" style={{ color: 'var(--color-bone)', opacity: 0.78 }}>
                 {lang === 'FR'
-                  ? 'Les billets se prennent sur notre portail Zeffy, pour les trois jours du festival, les 25, 26 et 27 septembre.'
-                  : 'Tickets are sold through our Zeffy portal, for the three days of the festival, September 25, 26 and 27.'}
+                  ? 'Les billets se prennent sur notre portail Zeffy, pour les trois jours du festival.'
+                  : 'Tickets are sold through our Zeffy portal, for the three days of the festival.'}
               </p>
             </div>
             <div className="md:col-span-5 md:justify-self-end flex flex-col items-start md:items-end gap-5">
@@ -190,7 +190,7 @@ const Footer: React.FC = () => {
                   className="font-display title-medieval uppercase text-[10px] tracking-[0.5em]"
                   style={{ color: 'var(--color-amber-glow)' }}
                 >
-                  {lang === 'FR' ? 'Le festival est commencé' : 'The festival has begun'}
+                  {lang === 'FR' ? 'Merci tellement à tous, à septembre prochain !' : 'Thank you all so much, see you next September!'}
                 </p>
               )}
               <ChevronButton
