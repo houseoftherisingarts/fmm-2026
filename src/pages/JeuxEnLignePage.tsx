@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight, Lock } from 'lucide-react';
 import { useUI } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useSiteFlags } from '../contexts/SiteFlagsContext';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
 import PageHeader from '../components/layout/PageHeader';
@@ -219,6 +220,7 @@ const JeuxEnLignePage: React.FC = () => {
   const { lang } = useUI();
   const fr = lang === 'FR';
   const t = fr ? FR : EN;
+  const { flags } = useSiteFlags();
 
   return (
     <>
@@ -237,6 +239,23 @@ const JeuxEnLignePage: React.FC = () => {
           {/* Le rail des années : une console de jeu, comme le menu de
               Gwent (référence donnée par Alex, 2026-08-23). Les tuiles
               défilent à l'horizontale, la vignette se voit en entier. */}
+          {/* Le tournoi de hnefatafl du 7 mars 2027 : l'annonce ne paraît
+              que lorsque le drapeau pubTournoi est levé (Alex, 2026-09-28). */}
+          {flags.pubTournoi && (
+            <Link to={fr ? '/jeux/tournoi' : '/en/games/tournament'}
+                  className="group mb-6 flex items-center justify-between gap-4 rounded-lg-card border border-brass/40 px-5 md:px-7 py-4 hover:border-brass/70 transition-colors"
+                  style={{ background: 'linear-gradient(90deg, rgba(var(--sk-glow-rgb),0.12), rgba(10,4,6,0.6))' }}>
+              <span className="min-w-0">
+                <span className="block font-sans uppercase tracking-[0.24em] text-[10px]" style={{ color: 'var(--color-amber-glow)' }}>
+                  {fr ? 'Le 7 mars 2027' : 'March 7, 2027'}
+                </span>
+                <span className="block font-display title-medieval text-lg md:text-xl text-ivory mt-0.5 truncate">
+                  {fr ? 'Le tournoi de hnefatafl : inscrivez-vous' : 'The Hnefatafl tournament: sign up'}
+                </span>
+              </span>
+              <ArrowUpRight size={18} className="shrink-0 text-brass group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          )}
           <TableDeJeux />
 
           {/* Qui attend, en ce moment même, sur l'un des jeux. Le bloc
