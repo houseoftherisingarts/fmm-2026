@@ -444,7 +444,9 @@ service cloud.firestore {
           function leMatch() {
             return get(/databases/$(database)/documents/tournois/$(tournoiId)/matchs/$(matchId)).data;
           }
-          allow read:  if signedIn();
+          // Seules les deux personnes du match (et l'équipe) lisent les
+          // disponibilités et le mot de l'autre.
+          allow read:  if signedIn() && (request.auth.uid in leMatch().joueurs || isAdmin());
           allow write: if isOwner(uid)
                        && uid in leMatch().joueurs
                        && request.resource.data.keys().hasOnly(['creneaux', 'message', 'choix', 'majLe'])
