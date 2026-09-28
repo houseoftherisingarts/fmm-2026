@@ -28,6 +28,7 @@ export type AdminSectionId =
   | 'commerces'
   | 'concours'
   | 'concoursParrainage'
+  | 'sondage'
   | 'activites'
   | 'animations'
   | 'badges'
@@ -108,6 +109,7 @@ export const NAV: NavItem[] = [
   { id: 'mariages',   label: 'Mariages',        icon: Heart,           group: 'Participants' },
   { id: 'invites',    label: 'Invités',         icon: TicketCheck,     group: 'Participants' },
   { id: 'concoursParrainage', label: 'Concours de parrainage', icon: Gift, group: 'Participants' },
+  { id: 'sondage',    label: 'Sondage 2026',    icon: Gift,            group: 'Participants' },
 
   // Ce qui se boit et ce qui se mange tient dans un même groupe : le
   // bar et le concours William J. Walter, dont la liste est remise au

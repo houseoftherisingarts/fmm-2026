@@ -54,14 +54,24 @@ const MerciEquipe: React.FC<{ onEnter: () => void }> = ({ onEnter }) => (
           </p>
         ))}
       </div>
+      <div className="mt-7 flex flex-wrap items-center gap-4">
+      <a
+        href="/sondage"
+        onClick={(e) => { e.preventDefault(); onEnter(); window.setTimeout(() => { window.history.pushState({}, '', '/sondage'); window.dispatchEvent(new PopStateEvent('popstate')); }, 50); }}
+        className="inline-flex min-h-[56px] items-center gap-3 rounded-[15px] px-8 py-3 uppercase text-sm tracking-[0.25em] outline-none transition-transform hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-[#D7DEE8]"
+        style={{ background: GOLD, color: '#1A0A05', fontFamily: LABEL_FONT, fontWeight: 700, boxShadow: '0 0 32px rgba(227,194,122,0.35)' }}
+      >
+        Participer au sondage de retour →
+      </a>
       <button
         type="button"
         onClick={onEnter}
-        className="mt-7 inline-flex min-h-[48px] items-center gap-3 rounded-[15px] border px-6 py-3 uppercase text-xs tracking-[0.28em] backdrop-blur-md outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-[#D7DEE8]"
+        className=" inline-flex min-h-[48px] items-center gap-3 rounded-[15px] border px-6 py-3 uppercase text-xs tracking-[0.28em] backdrop-blur-md outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-[#D7DEE8]"
         style={{ borderColor: `${GOLD}99`, color: IVORY, background: 'rgba(0,0,0,0.4)', fontFamily: LABEL_FONT }}
       >
         Entrer au festival →
       </button>
+      </div>
     </div>
   </div>
   {/* Les braises du site montent par-dessus la photo et le texte. */}

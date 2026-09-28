@@ -19,6 +19,7 @@ import AnnonceBadge from './components/badges/AnnonceBadge';
 import RecompensesQuotidiennes from './components/compte/RecompensesQuotidiennes';
 import AnnonceCadeau from './components/compte/AnnonceCadeau';
 import AnnonceHullsborg from './components/compte/AnnonceHullsborg';
+import AnnonceSondage from './components/compte/AnnonceSondage';
 import AnnonceBilletJournee from './components/billets/AnnonceBilletJournee';
 import { usePerfTier } from './lib/usePerfTier';
 import { usePrefsFond, useAnimationsFond } from './lib/usePrefsFond';
@@ -123,6 +124,7 @@ const NotFoundPage     = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage      = lazy(() => import('./pages/PrivacyPage'));
 const ContactPage      = lazy(() => import('./pages/ContactPage'));
 const PressePage       = lazy(() => import('./pages/PressePage'));
+const SondagePage      = lazy(() => import('./pages/SondagePage'));
 const MedievalIntro    = lazy(() => import('./components/landing/MedievalIntro'));
 const MedievalIntroMobile = lazy(() => import('./components/landing/MedievalIntroMobile'));
 
@@ -581,6 +583,8 @@ const App: React.FC = () => (
                     d'union : les trois orthographes rendent la même
                     page plutôt qu'un 404, dans les deux langues. */}
                 <Route path="/presse"       element={<PressePage />} />
+                <Route path="/sondage"      element={<SondagePage />} />
+                <Route path="/en/survey"    element={<SondagePage />} />
                 <Route path="/presskit"     element={<PressePage />} />
                 <Route path="/press-kit"    element={<PressePage />} />
                 <Route path="/en/press"     element={<PressePage />} />
@@ -680,6 +684,9 @@ const App: React.FC = () => (
           {/* Le skin Hullsborg s'annonce une fois la roue refermée
               (2026-09-22), avec le texte de son avis au babillard. */}
           <AnnonceHullsborg />
+          {/* « Le festival veut vous entendre », sous le Hullsborg (z-93) pour
+              qu'un seul pop-up parle à la fois (2026-09-28). */}
+          <AnnonceSondage />
           {/* Le billet d'une journée vaut pour le jour choisi (2026-09-23) :
               montré à tous, avec ou sans compte. */}
           <AnnonceBilletJournee />

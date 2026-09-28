@@ -4035,3 +4035,36 @@ exports.nouvellesFacebook = onSchedule(
   },
   rafraichirNouvellesFacebook,
 );
+
+// ─── Le bonus du sondage de retour 2026 ──────────────────────────────
+// Alex, 2026-09-28 : trente Montpellois à toute personne qui termine le
+// sondage. « Terminer » veut dire répondre à toutes les questions qui ne
+// portent pas la mention « facultatif » (src/content/sondageRetour.ts,
+// QUESTIONS_REQUISES). Le compte doit être connecté à l'envoi, sinon la
+// réponse compte pour le bilan mais personne ne reçoit rien. crediter()
+// note la clé dans badgesCredites : un deuxième sondage ne repaie pas.
+const BONUS_SONDAGE_2026 = 30;
+const REQUISES_SONDAGE_2026 = [
+  'role', 'premiereVisite', 'jours', 'activitesPreferees', 'groupesPreferes', 'noteActivites',
+  'noteNourriture', 'noteThematique', 'themesVotes', 'budget', 'noteApprentissage', 'noteAcces',
+  'noteSiteWeb', 'noteServiceClient', 'noteGlobale', 'recommander', 'benevolat', 'revenir',
+  'decouverte', 'provenance', 'distance', 'motif', 'age', 'groupe', 'taille', 'hebergement',
+  'nuitees', 'depensesSite', 'depensesRegion', 'langue',
+];
+
+exports.sondageRetourBonus = onDocumentCreated(
+  { document: 'sondageRetour2026/{id}', region: 'us-central1', memory: '256MiB' },
+  async (evenement) => {
+    const doc = evenement.data && evenement.data.data();
+    if (!doc || !doc.uid) return;
+    const r = doc.reponses || {};
+    const vide = (v) => v === undefined || v === null || (Array.isArray(v) ? !v.length : typeof v === 'string' && !v.trim());
+    const manquantes = REQUISES_SONDAGE_2026.filter((id) => vide(r[id]));
+    if (manquantes.length) {
+      logger.info('[sondage] incomplet, pas de bonus', { uid: doc.uid, manquantes });
+      return;
+    }
+    const solde = await crediter(String(doc.uid), BONUS_SONDAGE_2026, 'sondage-retour-2026');
+    logger.info('[sondage] bonus', { uid: doc.uid, verse: solde !== null, solde });
+  },
+);

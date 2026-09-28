@@ -42,6 +42,7 @@ const MarchandsSection    = lazy(() => import('./admin/sections/MarchandsSection
 const CommercesSection    = lazy(() => import('./admin/sections/CommercesSection'));
 const ConcoursSection     = lazy(() => import('./admin/sections/ConcoursSection'));
 const ConcoursParrainageSection = lazy(() => import('./admin/sections/ConcoursParrainageSection'));
+const SondageSection = lazy(() => import('./admin/sections/SondageSection'));
 const MusiquesSection     = lazy(() => import('./admin/sections/MusiquesSection'));
 const ActivitesSection    = lazy(() => import('./admin/sections/ActivitesSection'));
 // Le dossier des animations de Tristan : troupes, logistique, cachet,
@@ -213,6 +214,7 @@ const AdminPage: React.FC = () => {
       case 'marchands':  return <MarchandsSection  fetchAll={fetchVendors}   updateOne={updateVendor} />;
       case 'commerces':  return <CommercesSection />;
       case 'concours':   return <ConcoursSection />;
+      case 'sondage':    return <SondageSection />;
       case 'concoursParrainage': return <ConcoursParrainageSection />;
       case 'musiciens':  return <MusiquesSection   fetchAll={fetchMusicians} updateOne={updateMusician} />;
       case 'activites':  return <ActivitesSection />;
