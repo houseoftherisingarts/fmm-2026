@@ -29,33 +29,9 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { onDocumentWritten } = require('firebase-functions/v2/firestore');
 const logger = require('firebase-functions/logger');
-const admin = require('firebase-admin');
-const fs = require('fs');
-const path = require('path');
+const { Timestamp } = require('firebase-admin/firestore');
 
-const db = admin.firestore();
-const { FieldValue } = admin.firestore;
-
-// La même liste que le reste des fonctions : config/equipe-admin.json,
-// recopiée par scripts/sync-equipe.mjs.
-const COURRIELS_ADMIN = (() => {
-  try {
-    const brut = JSON.parse(fs.readFileSync(path.join(__dirname, 'equipe-admin.json'), 'utf8'));
-    return (brut.membres || brut).map((m) => String(m.courriel || m).toLowerCase());
-  } catch {
-    return [];
-  }
-})();
-
-function exigerEquipe(requete) {
-  const courriel = requete.auth && requete.auth.token && requete.auth.token.email
-    ? String(requete.auth.token.email).toLowerCase() : null;
-  if (!courriel || !COURRIELS_ADMIN.includes(courriel)) {
-    throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
-  }
-}
-
-// ── Le tableau ────────────────────────────────────────────────────────
+// ── Le tableau (pur, testé par functions/test-tournoi.js) ─────────────
 
 /** Mélange de Fisher-Yates, en place. */
 function melanger(liste) {
@@ -103,6 +79,17 @@ function rondeSuivante(matchsFinis) {
   return suite;
 }
 
+module.exports = ({ db, FieldValue, COURRIELS_ADMIN }) => {
+const fonctions = {};
+
+function exigerEquipe(requete) {
+  const courriel = requete.auth && requete.auth.token && requete.auth.token.email
+    ? String(requete.auth.token.email).toLowerCase() : null;
+  if (!courriel || !COURRIELS_ADMIN.includes(courriel)) {
+    throw new HttpsError('permission-denied', 'Cette fonction est réservée à l’équipe.');
+  }
+}
+
 // ── Les écritures ─────────────────────────────────────────────────────
 
 /** Ouvre la partie de tafl d'un match. `inverse` échange les camps, pour
@@ -128,7 +115,7 @@ async function ouvrirPartie(tournoi, tournoiId, matchId, match, inverse) {
     gagnant: null,
     abandon: null,
     delaiMs,
-    echeance: delaiMs ? admin.firestore.Timestamp.fromMillis(Date.now() + delaiMs) : null,
+    echeance: delaiMs ? Timestamp.fromMillis(Date.now() + delaiMs) : null,
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
@@ -198,7 +185,7 @@ async function avancer(tournoiRef) {
 
 // ── Les trois gestes ──────────────────────────────────────────────────
 
-exports.tournoiLancer = onCall({ region: 'us-central1' }, async (requete) => {
+fonctions.tournoiLancer = onCall({ region: 'us-central1' }, async (requete) => {
   exigerEquipe(requete);
   const tournoiId = String((requete.data || {}).tournoiId || '');
   if (!tournoiId) throw new HttpsError('invalid-argument', 'Quel tournoi ?');
@@ -230,7 +217,7 @@ exports.tournoiLancer = onCall({ region: 'us-central1' }, async (requete) => {
   return { nbRondes, nbInscrits: inscrits.length };
 });
 
-exports.tournoiPartieFinie = onDocumentWritten(
+fonctions.tournoiPartieFinie = onDocumentWritten(
   { document: 'taflParties/{id}', region: 'us-central1', memory: '256MiB' },
   async (event) => {
     const avant = event.data && event.data.before && event.data.before.exists ? event.data.before.data() : null;
@@ -260,7 +247,7 @@ exports.tournoiPartieFinie = onDocumentWritten(
   },
 );
 
-exports.tournoiTrancher = onCall({ region: 'us-central1' }, async (requete) => {
+fonctions.tournoiTrancher = onCall({ region: 'us-central1' }, async (requete) => {
   exigerEquipe(requete);
   const { tournoiId, matchId, gagnantUid } = requete.data || {};
   if (!tournoiId || !matchId || !gagnantUid) throw new HttpsError('invalid-argument', 'Tournoi, match et vainqueur sont requis.');
@@ -296,5 +283,7 @@ exports.tournoiTrancher = onCall({ region: 'us-central1' }, async (requete) => {
   return { ok: true };
 });
 
-// Pour le test (functions/tournoi.test.js).
-exports._tableau = { nombreDeRondes, premiereRonde, rondeSuivante };
+return fonctions;
+};
+
+module.exports.tableau = { nombreDeRondes, premiereRonde, rondeSuivante };

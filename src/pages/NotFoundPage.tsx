@@ -17,7 +17,11 @@ const COPY = {
   FR: {
     eyebrow:  '✦ Sentier perdu ✦',
     headline: '404',
-    quote:    '« Il n’y a personne ici. Seulement une armure abandonnée et le silence des bois. »',
+    // Le poème d'Alex (2026-09-28), deux strophes.
+    quote: [
+      ['Sur le sentier perdu sont les pas disparus', 'des hyperliens déçus et des espoirs déchus.'],
+      ['Le site nous a trahis, nous ne sommes plus d’ici,', 'J’ai l’internet de bois, dit-elle encore une fois.'],
+    ],
     line1:    'Cette page n’existe pas, ou plus.',
     line2:    'Revenez sur vos pas, le festival vous attend.',
     cta:      'Retour au festival',
@@ -25,7 +29,7 @@ const COPY = {
   EN: {
     eyebrow:  '✦ Lost path ✦',
     headline: '404',
-    quote:    '"There is no one here. Only an abandoned suit of armour and the silence of the woods."',
+    quote: [['"There is no one here. Only an abandoned suit of armour and the silence of the woods."']],
     line1:    'This page does not exist, or no longer does.',
     line2:    'Retrace your steps. The festival awaits.',
     cta:      'Back to the festival',
@@ -127,12 +131,11 @@ const NotFoundPage: React.FC = () => {
           transition={{ delay: 0.5, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className="relative max-w-2xl px-2"
         >
-          <p
-            className="font-editorial italic text-lg md:text-2xl leading-snug mb-4"
-            style={{ color: 'var(--color-bone)' }}
-          >
-            {t.quote}
-          </p>
+          <div className="font-editorial text-lg md:text-2xl leading-snug mb-6 space-y-4" style={{ color: 'var(--color-bone)' }}>
+            {t.quote.map((strophe, i) => (
+              <p key={i}>{strophe.map((vers, j) => <React.Fragment key={j}>{j > 0 && <br />}{vers}</React.Fragment>)}</p>
+            ))}
+          </div>
           <p
             className="font-editorial italic text-sm md:text-base mb-1"
             style={{ color: 'rgba(var(--sk-parchment-rgb), 0.7)' }}

@@ -4068,3 +4068,7 @@ exports.sondageRetourBonus = onDocumentCreated(
     logger.info('[sondage] bonus', { uid: doc.uid, verse: solde !== null, solde });
   },
 );
+
+// Le tournoi de hnefatafl du 7 mars 2027 (functions/tournoi.js) :
+// tirage, avancement des rondes et arbitrage manuel.
+Object.assign(exports, require('./tournoi')({ db, FieldValue, COURRIELS_ADMIN }));
