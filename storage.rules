@@ -331,6 +331,22 @@ service firebase.storage {
       allow delete: if isOwner(uid) || isAdmin();
     }
 
+    // ── Les vitrines des musiciens et des artisans (Alex, 2026-09-28) ─
+    // Photos en webp (8 Mo) et pistes audio (30 Mo), sous vitrines/{slug}/.
+    // Le propriétaire est celui que porte le document Firestore de la
+    // vitrine; tout le monde lit, parce que la page se partage sans compte.
+    match /vitrines/{slug}/{fileName} {
+      function proprietaire() {
+        return signedIn()
+          && request.auth.uid == firestore.get(/databases/(default)/documents/vitrines/$(slug)).data.uid;
+      }
+      allow read:   if true;
+      allow create: if (proprietaire() || isAdmin())
+        && ((request.resource.contentType == 'image/webp' && request.resource.size < 8 * 1024 * 1024)
+            || (request.resource.contentType.matches('audio/.*') && request.resource.size < 30 * 1024 * 1024));
+      allow delete: if proprietaire() || isAdmin();
+    }
+
     // Deny everything else by default.
     // Les enregistrements de session de VexelHotjar (vh/replays/<session>/n.json.gz)
     // : écrits par la fonction de collecte, lus par l'admin seulement.
