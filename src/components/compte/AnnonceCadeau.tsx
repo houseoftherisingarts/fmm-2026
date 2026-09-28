@@ -103,7 +103,9 @@ const AnnonceCadeau: React.FC = () => {
             </motion.div>
 
             <p className="font-sans uppercase tracking-[0.28em] text-[10px] text-ivory-soft/60 mb-2">
-              {cadeau.de
+              {cadeau.etiquetteFR
+                ? (fr ? cadeau.etiquetteFR : cadeau.etiquetteEN || cadeau.etiquetteFR)
+                : cadeau.de
                 ? (fr ? `Un cadeau d’${cadeau.de}` : `A gift from ${cadeau.de}`)
                 : (fr ? 'Vous avez reçu un cadeau' : 'You received a gift')}
             </p>

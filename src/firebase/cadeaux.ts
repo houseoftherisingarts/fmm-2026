@@ -23,6 +23,10 @@ export interface Cadeau {
   /** Le mot personnel de celui qui offre, tel quel, dans sa langue. */
   message?: string;
   de?: string;
+  /** L'étiquette au-dessus du titre, quand elle ne nomme pas une personne
+   *  (« Un cadeau de merci du festival », Alex, 2026-09-28). */
+  etiquetteFR?: string;
+  etiquetteEN?: string;
   /** Où mène le bouton, et ce qu'il dit. */
   lien?: string;
   boutonFR?: string;
