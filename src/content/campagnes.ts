@@ -585,7 +585,7 @@ export const MODELES_CAMPAGNE: ModeleCampagne[] = [
     salutFR: 'À très bientôt,',
     salutEN: 'See you very soon,',
     cta: {
-      url: 'https://www.lesalondesinconnus.com/petite-monnaie',
+      url: 'https://www.festivalmedievaldemontpellier.org/petite-monnaie',
       labelFR: 'Voir la Petite Monnaie',
       labelEN: 'See the Petite Monnaie',
     },

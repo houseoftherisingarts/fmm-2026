@@ -21,6 +21,8 @@ export const SITE = {
     facebook: 'https://www.facebook.com/FestivalMedievalMontpellier/',
     instagram: 'https://www.instagram.com/festivalmedievaldemontpellier/',
   },
+  operator: 'Le Salon des Inconnus',
+  operatorUrl: 'https://www.lesalondesinconnus.com',
   logo: '/fmm-logo-embossed-silver.png',
   logoWhite: '/fmm-logo-embossed-silver.webp',
 };

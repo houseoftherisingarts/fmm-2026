@@ -206,10 +206,10 @@ const TOUTES: Annonce[] = [
       'Cell coverage is weak on site. Card terminals get temperamental, especially at peak hours. Bring cash for the kiosks, the food and the bar. A Petite Monnaie kiosk will be at the entrance: you can trade your cash for the local currency, accepted everywhere on the grounds.',
     // La pièce de laiton (composant PetiteMonnaieCoin) remplace le logo
     // plat : c'est l'objet que les gens verront au kiosque. Le lien va
-    // au Salon des Inconnus et non au pilier interne, pour ramener du
-    // trafic chez nous. URL vérifiée (200).
+    // au pilier du festival et non au Salon des Inconnus (Alex,
+    // 2026-09-28 : la Petite Monnaie ne passe plus par le Salon).
     piece: true,
-    lienPiece: 'https://www.lesalondesinconnus.com/petite-monnaie',
+    lienPiece: '/petite-monnaie',
   },
   {
     id:   'connexion-etoiles-2026',

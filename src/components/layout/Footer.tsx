@@ -9,7 +9,9 @@ import { isPillarVisible } from '../../firebase/siteFlags';
 import { addSub } from '../../firebase/newsletter';
 import { ouvrirBilletterie } from '../../lib/billetterie';
 import { ouvrirBanniereConsentement } from '../../lib/consentement';
-import { isFirebaseReady } from '../../firebase';
+import { db, isFirebaseReady } from '../../firebase';
+import { BadgeVexel } from '../../vexel/BadgeVexel';
+import { CollantVexel } from '../../vexel/CollantVexel';
 import { HexPanel, ChevronButton, HexMark, Eyebrow } from '../marche/atmospherics';
 import { BubbleCanvas } from '../marche/effects';
 import { useCountdown } from '../../lib/useCountdown';
@@ -293,6 +295,17 @@ const Footer: React.FC = () => {
               {lang === 'FR' ? 'Témoins et vie privée' : 'Cookies and privacy'}
             </button>
           </li>
+          <li>
+            <a
+              href={SITE.operatorUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-sans text-sm hover:text-[var(--color-amber-glow)] transition"
+              style={{ color: 'var(--color-bone)', opacity: 0.7 }}
+            >
+              {SITE.operator}
+            </a>
+          </li>
         </FooterColumn>
       </div>
 
@@ -447,6 +460,32 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
+        {/* ── Signature de l'atelier ────────────────────────────── */}
+        {/* Sa propre ligne, sous les droits : la ligne de droits nomme
+            déjà Le Salon des Inconnus comme titulaire, et coller les
+            deux mentions côte à côte donnait une répétition maladroite.
+            Demandée par Alex le 2026-08-03. */}
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 pb-6 flex flex-col items-center gap-4">
+          {isFirebaseReady && db && (
+            <div
+              style={{
+                // @ts-expect-error -- variables CSS custom, pas dans le typage React
+                '--couleur-surface': 'rgba(var(--sk-ink-rgb), 0.55)',
+                '--couleur-texte': 'var(--color-bone)',
+                '--couleur-muted': 'color-mix(in srgb, var(--color-bone) 60%, transparent)',
+                '--couleur-bordure': 'rgba(var(--sk-glow-rgb), 0.28)',
+                '--couleur-accent': 'var(--color-amber-glow)',
+                '--rayon-carte': '15px',
+                '--police-corps': 'var(--font-sans, system-ui, sans-serif)',
+              }}
+            >
+              <BadgeVexel db={db} />
+            </div>
+          )}
+          {/* Le collant obligatoire de Vexel, en foil (_vexel-base/src/vexel/CollantVexel.tsx).
+              Il remplace la ligne de texte du 3 août : sa carte nomme déjà le Salon des Inconnus. */}
+          <CollantVexel lang={lang} />
+        </div>
       </div>
 
       <BugReportModal open={bugOpen} onClose={() => setBugOpen(false)} />
