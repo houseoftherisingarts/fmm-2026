@@ -112,8 +112,8 @@ export const QUESTIONS_SONDAGE: QuestionSondage[] = [
       { id: AUTRE, FR: 'Autre', EN: 'Other' },
     ] },
   { id: 'budget', type: 'classement',
-    FR: 'Glissez les postes en ordre d’importance : en haut, celui qui mérite selon vous le plus grand budget.',
-    EN: 'Drag the items into order of importance: at the top, the one you think deserves the biggest budget.',
+    FR: 'Selon vous, où devrions-nous concentrer nos efforts et nos ressources l’an prochain ? Glissez en haut ce qui compte le plus.',
+    EN: 'In your view, where should we focus our efforts and resources next year? Drag what matters most to the top.',
     options: [
       { id: 'spectacles', FR: 'Les spectacles', EN: 'The shows' },
       { id: 'cachets', FR: 'Le cachet des artistes', EN: 'Artists’ fees' },
