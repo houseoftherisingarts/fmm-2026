@@ -15,7 +15,7 @@ import { DOS_CARTES, equiperDos } from '../../games/tarot/dos';
 import { PRIX_TAFL, ecrireChoix } from '../../games/hnefatafl/assets';
 
 // Les dos vendus ici et leur prix; les autres dos (caravane, William) se gagnent.
-const PRIX_DOS: Record<string, number> = { salon: 0 };
+const PRIX_DOS: Record<string, number> = { salon: 0, hullsborg: 100 };
 import { lienBilletterie, ouvrirBilletterie } from '../../lib/billetterie';
 import PieceMontpellois from './PieceMontpellois';
 import SansPubPanel from '../compte/SansPubPanel';
@@ -475,6 +475,7 @@ const BoutiqueMontpellois: React.FC<{ lang: 'FR' | 'EN' }> = ({ lang }) => {
                   <p className="font-display title-medieval text-sm text-ivory">{fr ? d.nomFR : d.nomEN}</p>
                   <p className="font-sans text-xs mt-0.5 inline-flex items-center gap-1" style={{ color: 'var(--sk-gilt)' }}>
                     {PRIX_DOS[d.id] === 0 ? (fr ? 'Offert' : 'Free') : (<><PieceMontpellois size={14} />{PRIX_DOS[d.id]}</>)}
+                    {d.id === 'hullsborg' && <span className="text-ivory-soft/60"> · {fr ? 'offert à la hird' : 'free for the hird'}</span>}
                   </p>
                 </div>
                 <button type="button" disabled={enCours === `dos_${d.id}` || !uid} onClick={() => acheterDos(d.id)}

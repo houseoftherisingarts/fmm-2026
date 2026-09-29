@@ -2356,7 +2356,9 @@ const PRIX_SKIN = { bleu: 0, vert: 1, dore: 5 };
 // Les dos de carte du tarot vendus à la boutique (Alex, 2026-08-30) : le
 // dos du Salon des Inconnus est offert; les autres viennent des
 // récompenses quotidiennes (caravane, William), jamais de la boutique.
-const PRIX_DOS = { salon: 0 };
+// Le dos de la hird de Hullsborg (Alex, 2026-09-28) : 100 Montpellois,
+// offert aux membres du groupe, comme le Plateau Futhark.
+const PRIX_DOS = { salon: 0, hullsborg: 100 };
 // Skin de tafl de Hullsborg (Alex, 2026-09-21) : plateau gravé, Jarl,
 // défenseurs au bouclier rouge, assaillants au bouclier brun. Offert aux
 // membres du groupe de la troupe, 100 Montpellois pour les autres.
@@ -2840,9 +2842,10 @@ exports.acheterCosmetique = onCall({ region: 'us-central1' }, async (requete) =>
     if (!(dos in PRIX_DOS)) throw new HttpsError('invalid-argument', 'Dos de carte inconnu.');
     const { ref, data } = await assurerBourse(uid);
     if ((data.dosTarot || []).includes(dos)) throw new HttpsError('failed-precondition', 'Déjà à vous.');
-    const solde = PRIX_DOS[dos] > 0 ? await debiter(uid, PRIX_DOS[dos]) : (data.solde || 0);
+    const offert = PRIX_DOS[dos] === 0 || (dos === 'hullsborg' && await estDeHullsborg(uid));
+    const solde = offert ? (data.solde || 0) : await debiter(uid, PRIX_DOS[dos]);
     await ref.set({ dosTarot: FieldValue.arrayUnion(dos), maj: FieldValue.serverTimestamp() }, { merge: true });
-    return { solde };
+    return { solde, offert };
   }
 
   if (objetId.startsWith('tafl_')) {

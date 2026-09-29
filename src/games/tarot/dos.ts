@@ -22,6 +22,11 @@ export const DOS_CARTES: DosCarte[] = [
   { id: 'caravane', nomFR: 'Tarot de la caravane', nomEN: 'Caravan tarot', origineFR: 'Récompense quotidienne · jour 4', origineEN: 'Daily reward · day 4', image: '/tarot/dos-caravane.webp' },
   { id: 'william', nomFR: 'Dos William J. Walter', nomEN: 'William J. Walter back', origineFR: 'Récompense quotidienne · jour 7', origineEN: 'Daily reward · day 7', image: '/tarot/dos-william.webp' },
   { id: 'salon', nomFR: 'Dos du Salon des Inconnus', nomEN: 'Salon des Inconnus back', origineFR: 'Offert à la boutique', origineEN: 'Free at the shop', image: '/tarot/dos-salon.webp' },
+  // Le dos de la hird de Hullsborg (Alex, 2026-09-28) : l'emblème de la
+  // troupe sur cuir noir, futhark récent en haut et en bas, ancien sur
+  // les côtés, comme le Plateau Futhark. 100 Montpellois à la boutique,
+  // offert aux membres du groupe.
+  { id: 'hullsborg', nomFR: 'Dos de la hird de Hullsborg', nomEN: 'Hullsborg hird back', origineFR: 'Boutique · offert à la hird', origineEN: 'Shop · free for the hird', image: '/tarot/dos-hullsborg.webp' },
 ];
 
 export const imageDos = (id: string | null | undefined): string =>

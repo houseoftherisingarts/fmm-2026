@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Swords, Crown, Trash2, Play, Gavel } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
-import { Card, Input, Label, PrimaryButton, GhostButton, DangerButton, Badge, EmptyState, fmtDate } from '../primitives';
+import { Card, Input, Label, PrimaryButton, GhostButton, DangerButton, Badge, EmptyState, ToggleSwitch, fmtDate } from '../primitives';
+import { useSiteFlags } from '../../../contexts/SiteFlagsContext';
+import { setSiteFlag } from '../../../firebase/siteFlags';
 import { REGLES } from '../../../games/hnefatafl/gameLogic';
 import { DELAIS_DEFI } from '../../../firebase/tafl';
 import {
@@ -39,6 +41,13 @@ const TournoiSection: React.FC = () => {
   // 24 heures par coup, timeout = forfait (Alex, 2026-09-28).
   const [delaiMs, setDelaiMs] = useState(DELAIS_DEFI[2].ms);
   const [erreur, setErreur] = useState<string | null>(null);
+  // La publication est une bascule ici même (Alex, 2026-09-28 : « tout en
+  // mode toggle in admin; quand je publie le tournoi, c'est que c'est
+  // prêt à faire »). Même drapeau que dans Paramètres.
+  const { flags } = useSiteFlags();
+  const [erreurPub, setErreurPub] = useState<string | null>(null);
+  const publier = (v: boolean) => { setErreurPub(null); setSiteFlag('pubTournoi', v).catch((e) => setErreurPub((e as Error).message)); };
+  const pret = tournois.some((t) => t.statut !== 'brouillon');
 
   useEffect(() => suivreTournois(setTournois, true), []);
 
@@ -61,6 +70,24 @@ const TournoiSection: React.FC = () => {
           depuis la page du tournoi.
         </p>
       </div>
+
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display text-lg text-ivory">Publication</h3>
+            <p className="font-sans text-sm text-ivory-soft/70 mt-1 max-w-xl">
+              {flags.pubTournoi
+                ? 'La page /jeux/tournoi est ouverte et la page des jeux en ligne l’annonce.'
+                : 'Rien n’est visible : la page répond « Sentier perdu » et aucun lien n’existe. Ouvrez les inscriptions d’un tournoi ci-dessous, puis basculez ici quand c’est prêt à faire.'}
+            </p>
+            {!flags.pubTournoi && !pret && tournois.length > 0 && (
+              <p className="font-sans text-xs text-amber-300/80 mt-1">Aucun tournoi n’a ses inscriptions ouvertes : la page publiée dirait « Aucun tournoi n’est annoncé ».</p>
+            )}
+            {erreurPub && <p className="font-sans text-xs text-red-300 mt-1">{erreurPub}</p>}
+          </div>
+          <ToggleSwitch checked={!!flags.pubTournoi} onChange={publier} label={flags.pubTournoi ? 'Publié' : 'Caché'} />
+        </div>
+      </Card>
 
       <Card>
         <h3 className="font-display text-lg text-ivory mb-4">Nouveau tournoi</h3>

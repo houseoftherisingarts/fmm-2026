@@ -58,6 +58,7 @@ const NOMS = {
   dore: { FR: 'Bière et cervoise', EN: 'Beer and ale' },
   // Dos de carte du tarot (src/games/tarot/dos.ts).
   salon: { FR: 'Le dos du Salon des Inconnus', EN: 'The Salon des Inconnus card back' },
+  hullsborg_dos: { FR: 'Le dos de la hird de Hullsborg', EN: 'The Hullsborg hird card back' },
   // Hnefatafl (src/games/hnefatafl/assets.ts).
   hullsborg: { FR: 'Le Plateau Futhark et la hird de Hullsborg', EN: 'The Futhark Board and the Hullsborg hird' },
   // Objets de boutique.
@@ -123,7 +124,9 @@ function nomDe(id) {
 function construireCatalogue(tables) {
   const entrees = [];
   const poser = (id, type, prix, prixDuPoids) => {
-    const nom = nomDe(id);
+    // Un même identifiant peut servir deux types (le dos et le tafl de
+    // Hullsborg) : le nom propre au type passe d'abord.
+    const nom = NOMS[`${id}_${type}`] || nomDe(id);
     entrees.push({
       id, type, prix, nomFR: nom.FR, nomEN: nom.EN,
       poids: 1 / ((prixDuPoids === undefined ? prix : prixDuPoids) + 5),
