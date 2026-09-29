@@ -295,16 +295,11 @@ const Footer: React.FC = () => {
               {lang === 'FR' ? 'Témoins et vie privée' : 'Cookies and privacy'}
             </button>
           </li>
-          <li>
-            <a
-              href={SITE.operatorUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-sans text-sm hover:text-[var(--color-amber-glow)] transition"
-              style={{ color: 'var(--color-bone)', opacity: 0.7 }}
-            >
-              {SITE.operator}
-            </a>
+          {/* Le collant foil de Vexel ferme la colonne Ressources; il remplace le lien
+              « Le Salon des Inconnus » (demande d'Alex du 2026-09-29 : le Salon et le
+              festival restent des entités séparées). */}
+          <li className="pt-3">
+            <CollantVexel lang={lang} />
           </li>
         </FooterColumn>
       </div>
@@ -482,9 +477,6 @@ const Footer: React.FC = () => {
               <BadgeVexel db={db} />
             </div>
           )}
-          {/* Le collant obligatoire de Vexel, en foil (_vexel-base/src/vexel/CollantVexel.tsx).
-              Il remplace la ligne de texte du 3 août : sa carte nomme déjà le Salon des Inconnus. */}
-          <CollantVexel lang={lang} />
         </div>
       </div>
 
