@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, LogOut, Mail, User as UserIcon, Save, ShoppingBag, HandHeart, AlertCircle, ShieldCheck, Users, Award, Swords, MessageCircle, MapPin, Dices, Check, Bug, Tag, Store, Shield, Sparkles, Crown, BadgeCheck, Plus, Music, Palette, Ticket, Newspaper, X, Camera } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSiteFlags } from '../../contexts/SiteFlagsContext';
 import { useBadges } from '../../contexts/BadgesContext';
 import { addLocale } from '../../lib/locale';
 import { avancement, gagner, suivreBadges, suivreExposes } from '../../firebase/badges';
@@ -859,7 +860,7 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                 )}
 
                 <Repliable id="candidatures" titre={fr ? 'Mes candidatures' : 'My applications'} icone={<HandHeart size={16} />}>
-                <div className="grid md:grid-cols-3 gap-6 md:gap-8 items-start">
+                <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 items-start">
                   <ApplicationCard
                     icon={HandHeart}
                     eyebrow={t.benevoleEyebrow}
@@ -901,6 +902,9 @@ const FicheMembre: React.FC<Props> = ({ mode, uid, lang, compte }) => {
                     statusTone={(s) => STATUS_LABEL[s].tone}
                     none={t.musicianNone}
                   />
+                  {/* La vitrine : une page offerte aux musiciens et aux
+                      artisans sans site (Alex, 2026-09-28). */}
+                  <CarteVitrine lang={lang} eyebrow={t.vitrineEyebrow} titre={t.vitrineTitle} texte={t.vitrineTexte} cta={t.vitrineCta} />
                 </div>
 
                   {/* Le kiosque attribué vit dans l'onglet Carte : un
@@ -1326,6 +1330,26 @@ interface AppCardProps {
   statusTone: (s: AppStatus | VendorStatus) => string;
   none: string;
 }
+// La vitrine : une page offerte aux musiciens et aux artisans sans site.
+// La carte n'apparaît que lorsque le drapeau `pubVitrines` est levé (en
+// dev live, toujours), pour que rien ne pointe vers les vitrines avant
+// que Jesse les ait vues (Alex, 2026-09-29).
+const CarteVitrine: React.FC<{ lang: 'FR' | 'EN'; eyebrow: string; titre: string; texte: string; cta: string }> = ({ lang, eyebrow, titre, texte, cta }) => {
+  const { flags } = useSiteFlags();
+  if (!flags.pubVitrines && !import.meta.env.DEV) return null;
+  return (
+    <Link to={addLocale('/ma-vitrine', lang)} className="group glass-light rounded-lg-card p-6 flex flex-col gap-3 hover:border-brass/60 transition">
+      <div className="w-11 h-11 rounded-card bg-brass/15 border border-brass/40 flex items-center justify-center">
+        <Sparkles size={20} className="text-brass" />
+      </div>
+      <p className="font-editorial text-brass uppercase tracking-[0.3em] text-[13px]">{eyebrow}</p>
+      <h3 className="font-display title-medieval text-xl text-ivory">{titre}</h3>
+      <p className="font-editorial text-sm text-ivory-soft leading-relaxed">{texte}</p>
+      <span className="inline-flex items-center gap-1.5 font-sans text-[13px] uppercase tracking-wider text-brass mt-auto group-hover:gap-2.5 transition-all">{cta} <ArrowUpRight size={13} /></span>
+    </Link>
+  );
+};
+
 const ApplicationCard: React.FC<AppCardProps> = ({ icon: Icon, eyebrow, title, loading, app, ctaApply, ctaEdit, href, acceptedCta, statusLabel, statusTone, none }) => (
   <motion.article
     initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
@@ -1432,6 +1456,9 @@ const FR = {
   musicianEyebrow: 'Application groupe de musique', musicianTitle: 'Inscrire mon groupe',
   musicianApply: 'S’inscrire', musicianEdit: 'Voir / modifier mon inscription',
   musicianNone: 'Aucune inscription de groupe pour le moment.',
+  vitrineEyebrow: 'Votre vitrine', vitrineTitle: 'Une page à vous',
+  vitrineTexte: 'Musiciens et artisans sans site web : le festival vous prête une page à remplir, avec vos pistes, vos créations et vos liens.',
+  vitrineCta: 'Ouvrir mon atelier',
   membreVerifie: 'Membre vérifié', upgrade: 'Devenir VIP', personnaliser: 'Personnaliser',
   verifierMembre: 'Vérifier ce membre', retirerVerification: 'Retirer la vérification',
 };
@@ -1490,6 +1517,9 @@ const EN: typeof FR = {
   musicianEyebrow: 'Music group application', musicianTitle: 'Register my band',
   musicianApply: 'Apply', musicianEdit: 'View / edit my application',
   musicianNone: 'No band application yet.',
+  vitrineEyebrow: 'Your showcase', vitrineTitle: 'A page of your own',
+  vitrineTexte: 'Musicians and artisans without a website: the festival lends you a page to fill in, with your tracks, your creations and your links.',
+  vitrineCta: 'Open my workshop',
   membreVerifie: 'Verified member', upgrade: 'Become VIP', personnaliser: 'Customize',
   verifierMembre: 'Verify this member', retirerVerification: 'Remove verification',
 };

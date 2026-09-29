@@ -17,7 +17,7 @@ export const Carte: React.FC<{
         <Icone size={20} className="text-brass" />
       </div>
       <div className="min-w-0">
-        <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs mb-1">{eyebrow}</p>
+        <p className="font-editorial text-brass uppercase tracking-[0.3em] text-[13px] mb-1">{eyebrow}</p>
         <h2 className="font-display title-medieval text-xl md:text-2xl text-ivory">{titre}</h2>
         {aide && <p className="font-editorial text-sm text-ivory-soft leading-relaxed mt-2">{aide}</p>}
       </div>
@@ -28,9 +28,9 @@ export const Carte: React.FC<{
 
 export const Champ: React.FC<{ label: string; aide?: string; children: React.ReactNode }> = ({ label, aide, children }) => (
   <label className="block">
-    <span className="block font-sans text-xs uppercase tracking-wider text-ivory-soft mb-1.5">{label}</span>
+    <span className="block font-sans text-[13px] uppercase tracking-wider text-ivory-soft mb-1.5">{label}</span>
     {children}
-    {aide && <span className="block font-editorial text-xs text-ivory-soft/70 mt-1">{aide}</span>}
+    {aide && <span className="block font-editorial text-[13px] text-ivory-soft/70 mt-1">{aide}</span>}
   </label>
 );
 
@@ -38,14 +38,14 @@ type BoutonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const BoutonOr: React.FC<BoutonProps> = ({ className = '', children, ...rest }) => (
   <button type="button" {...rest}
-          className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50 disabled:cursor-not-allowed ${className}`}>
+          className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[13px] font-semibold hover:bg-brass-soft transition rounded-card disabled:opacity-50 disabled:cursor-not-allowed ${className}`}>
     {children}
   </button>
 );
 
 export const BoutonSobre: React.FC<BoutonProps> = ({ className = '', children, ...rest }) => (
   <button type="button" {...rest}
-          className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card disabled:opacity-50 disabled:cursor-not-allowed ${className}`}>
+          className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-[13px] font-semibold transition rounded-card disabled:opacity-50 disabled:cursor-not-allowed ${className}`}>
     {children}
   </button>
 );

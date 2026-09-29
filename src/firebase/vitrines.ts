@@ -12,8 +12,9 @@
 //
 // La boutique : la vitrine est gratuite; la boutique du festival est
 // une place payante, à l'année, que la personne demande depuis son
-// atelier et que l'équipe active depuis l'admin une fois le paiement
-// reçu (lien Zeffy posé par l'admin). Prix dans PRIX_BOUTIQUE_ANNUEL.
+// atelier, règle par le Square du festival (LIEN_SQUARE_BOUTIQUE, ou le
+// lien que l'équipe pose sur la demande) et que l'équipe active depuis
+// l'admin une fois le paiement reçu. Prix dans PRIX_BOUTIQUE_ANNUEL.
 
 import {
   collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot,
@@ -28,6 +29,11 @@ export type StatutBoutique = 'aucune' | 'demandee' | 'active' | 'refusee';
 
 /** Le prix d'une boutique sur le site du festival, pour un an, en dollars. */
 export const PRIX_BOUTIQUE_ANNUEL = 120;
+
+/** Le lien de paiement Square du festival pour l'année de boutique (Alex, 2026-09-29).
+ *  Se pose dans .env.local (VITE_SQUARE_BOUTIQUE_URL); l'équipe peut aussi poser un
+ *  lien propre à une demande depuis l'admin. */
+export const LIEN_SQUARE_BOUTIQUE: string = import.meta.env.VITE_SQUARE_BOUTIQUE_URL || '';
 
 export const MAX_PHOTOS   = 12;
 export const MAX_PISTES   = 12;
@@ -54,7 +60,7 @@ export interface Boutique {
   demandeeLe?: Timestamp;
   activeeLe?: Timestamp;
   expireLe?: Timestamp;
-  /** Le lien Zeffy que l'équipe pose pour encaisser l'année. */
+  /** Le lien Square que l'équipe pose pour encaisser l'année, s'il diffère du lien général. */
   lienPaiement?: string;
   note?: string;
 }

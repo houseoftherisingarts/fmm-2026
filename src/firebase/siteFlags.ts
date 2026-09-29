@@ -56,6 +56,10 @@ export interface SiteFlags {
   // page /jeux/tournoi et son annonce sur la page des jeux. Éteint tant
   // qu'Alex ne l'allume pas; le code est en place d'ici là.
   pubTournoi:              boolean;
+  // Les vitrines des musiciens et des artisans sans site, leur atelier
+  // et la page des boutiques (Alex, 2026-09-29). Éteint tant que Jesse
+  // n'a pas vu l'aperçu; les adresses répondent « page introuvable ».
+  pubVitrines:             boolean;
   // ── Per-page publication ──────────────────────────────────────────
   // The public teaser (site bientôt disponible) is simply the state where
   // NO page is published. Flip a page on from the admin (Paramètres →
@@ -99,6 +103,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   showHistoireFrise:       false,
   pubAlliance:             false,
   pubTournoi:              false,
+  pubVitrines:             false,
   // All pages start unpublished → the public sees the teaser until each is
   // flipped on one by one.
   pubActivites:            false,

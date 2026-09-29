@@ -69,7 +69,8 @@ export type AdminSectionId =
   | 'bugs'
   | 'roles'
   | 'demandeVexel'
-  | 'partenaireVexel';
+  | 'partenaireVexel'
+  | 'vitrines';
 
 interface NavItem {
   id: AdminSectionId;
@@ -100,6 +101,9 @@ export const NAV: NavItem[] = [
   // La ruelle du Souk : commerces non officiels créés par les membres,
   // pas encore promus en kiosque (Alex, 2026-08-27).
   { id: 'commerces',  label: 'Commerces de la ruelle', icon: Store,    group: 'Participants' },
+  // Les vitrines des musiciens et des artisans sans site, et les
+  // demandes de boutique à l'année (Alex, 2026-09-28).
+  { id: 'vitrines',   label: 'Vitrines et boutiques', icon: Store,   group: 'Participants' },
   { id: 'activites',  label: 'Activités',       icon: Swords,          group: 'Participants' },
   // Le dossier de Tristan : les troupes, les artistes, les jouteurs et
   // les conteurs, avec leur logistique, leur cachet et leur passage à

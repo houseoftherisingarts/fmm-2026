@@ -2,8 +2,9 @@ import type { Vitrine } from '../firebase/vitrines';
 
 // ─── Une vitrine d'aperçu, pour le développement seulement ───────────
 // Sert `?apercu=1` sur /ma-vitrine, /vitrine/apercu et /boutiques :
-// le rendu se vérifie à l'écran sans compte ni Firestore. Le bundle de
-// production n'emprunte jamais ce chemin (import.meta.env.DEV).
+// le rendu se vérifie à l'écran sans compte ni Firestore, en dev comme
+// en production, pour que l'équipe (Jesse) voie la chose avant que la
+// bascule `pubVitrines` s'allume (Alex, 2026-09-29).
 
 export const VITRINE_APERCU: Vitrine = {
   slug: 'apercu',

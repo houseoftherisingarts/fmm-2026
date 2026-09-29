@@ -91,6 +91,7 @@ const BugsSection         = lazy(() => import('./admin/sections/BugsSection'));
 const RolesSection        = lazy(() => import('./admin/sections/RolesSection'));
 const DemandeVexelSection = lazy(() => import('./admin/sections/DemandeVexelSection'));
 const PartenaireVexelSection = lazy(() => import('./admin/sections/PartenaireVexelSection'));
+const VitrinesSection     = lazy(() => import('./admin/sections/VitrinesSection'));
 
 const SectionFallback: React.FC = () => (
   <div className="flex items-center justify-center py-16">
@@ -261,6 +262,7 @@ const AdminPage: React.FC = () => {
       case 'roles':      return <RolesSection      devBypass={DEV_BYPASS} />;
       case 'demandeVexel': return <DemandeVexelSection nom={user?.displayName ?? ''} courriel={user?.email ?? ''} />;
       case 'partenaireVexel': return <PartenaireVexelSection />;
+      case 'vitrines':   return <VitrinesSection />;
     }
   };
 

@@ -74,6 +74,11 @@ const BASCULES: Record<string, Bascule> = {
     famille: 'affichage',
     effet: "Allumée : la page du tournoi s'ouvre (/jeux/tournoi) et la page des jeux l'annonce. Éteinte : son adresse répond « page introuvable ». À allumer quand les inscriptions doivent commencer; le tournoi lui-même se mène depuis la section Tournoi.",
   },
+  pubVitrines: {
+    label: 'Vitrines des musiciens et des artisans',
+    famille: 'affichage',
+    effet: "Allumée : l'atelier /ma-vitrine, les pages /vitrine/{adresse}, la page /boutiques et la carte « Une page à vous » de Mon espace s'ouvrent à tout le monde. Éteinte : ces adresses répondent « page introuvable », sauf pour l'équipe et pour l'aperçu. Les liens d'aperçu à montrer à Jesse sont dans la section Vitrines et boutiques.",
+  },
   pubAlliance: {
     label: 'L’Alliance (page des alliés)',
     famille: 'affichage',

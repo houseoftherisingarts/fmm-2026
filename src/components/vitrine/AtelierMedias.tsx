@@ -5,7 +5,7 @@ import {
   supprimerFichiers, televerserPhotoVitrine, televerserPiste,
   type Piste, type Produit, type Vitrine,
 } from '../../firebase/vitrines';
-import { Carte, Champ, BoutonOr, BoutonSobre, classeChamp } from './primitives';
+import { Carte, BoutonOr, BoutonSobre, classeChamp } from './primitives';
 
 // ─── Les médias de l'atelier : pistes, créations, galerie ────────────
 // Chaque liste écrit dans Firestore dès qu'elle change (ajout, retrait,
@@ -86,10 +86,10 @@ export const AtelierPistes: React.FC<Props> = ({ v, lang }) => {
       <ul className="space-y-2 mb-4">
         {v.pistes.map((p, i) => (
           <li key={p.id} className="flex items-center gap-3 rounded-card border border-white/10 bg-black/25 px-3 py-2">
-            <span className="font-sans text-xs text-ivory-soft/70 w-6">{String(i + 1).padStart(2, '0')}</span>
+            <span className="font-sans text-[13px] text-ivory-soft/70 w-6">{String(i + 1).padStart(2, '0')}</span>
             <input defaultValue={p.titre} onBlur={(e) => renommer(p.id, e.target.value)} aria-label={t.nom}
                    className="flex-1 min-w-0 bg-transparent font-editorial text-base text-ivory outline-none focus:text-brass" />
-            <span className="font-sans text-xs text-ivory-soft/80">{formatDuree(p.duree)}</span>
+            <span className="font-sans text-[13px] text-ivory-soft/80">{formatDuree(p.duree)}</span>
             <button type="button" onClick={() => retirer(p)} aria-label={t.retirer} className="text-ivory-soft/60 hover:text-blush transition"><Trash2 size={15} /></button>
           </li>
         ))}
@@ -98,7 +98,7 @@ export const AtelierPistes: React.FC<Props> = ({ v, lang }) => {
       <BoutonOr onClick={() => input.current?.click()} disabled={!!busy || v.pistes.length >= MAX_PISTES}>
         <Upload size={14} /> {busy ? `${t.envoi} ${busy}` : t.ajouterPistes}
       </BoutonOr>
-      {err && <p className="font-sans text-xs text-blush mt-3">{err}</p>}
+      {err && <p className="font-sans text-[13px] text-blush mt-3">{err}</p>}
     </Carte>
   );
 };
@@ -145,7 +145,7 @@ export const AtelierProduits: React.FC<Props> = ({ v, lang }) => {
           <li key={p.id} className="rounded-lg-card border border-white/10 bg-black/25 p-4 space-y-3">
             <div className="flex gap-4">
               <label className="shrink-0 w-24 h-24 rounded-card overflow-hidden border border-white/15 bg-black/30 flex items-center justify-center cursor-pointer hover:border-brass/60 transition" title={p.photo ? t.changerPhoto : t.photo}>
-                {p.photo ? <img src={p.photo.url} alt="" className="w-full h-full object-cover" /> : (busy === p.id ? <span className="font-sans text-[10px] text-brass">{t.envoi}</span> : <Plus size={18} className="text-brass" />)}
+                {p.photo ? <img src={p.photo.url} alt="" className="w-full h-full object-cover" /> : (busy === p.id ? <span className="font-sans text-[13px] text-brass">{t.envoi}</span> : <Plus size={18} className="text-brass" />)}
                 <input type="file" accept="image/*" hidden onChange={(e) => photo(p, e.target.files?.[0])} />
               </label>
               <div className="flex-1 min-w-0 space-y-2">
@@ -160,7 +160,7 @@ export const AtelierProduits: React.FC<Props> = ({ v, lang }) => {
             <input defaultValue={p.lien ?? ''} placeholder={t.lien} inputMode="url"
                    onBlur={(e) => poser(p.id, { lien: urlPropre(e.target.value) })} className={classeChamp} />
             <div className="flex justify-end">
-              <button type="button" onClick={() => retirer(p)} className="inline-flex items-center gap-1.5 font-sans text-xs uppercase tracking-wider text-ivory-soft/70 hover:text-blush transition">
+              <button type="button" onClick={() => retirer(p)} className="inline-flex items-center gap-1.5 font-sans text-[13px] uppercase tracking-wider text-ivory-soft/70 hover:text-blush transition">
                 <Trash2 size={13} /> {t.retirer}
               </button>
             </div>
@@ -168,7 +168,7 @@ export const AtelierProduits: React.FC<Props> = ({ v, lang }) => {
         ))}
       </ul>
       <BoutonOr onClick={ajouter} disabled={v.produits.length >= MAX_PRODUITS}><Plus size={14} /> {t.ajouterProduit}</BoutonOr>
-      {err && <p className="font-sans text-xs text-blush mt-3">{err}</p>}
+      {err && <p className="font-sans text-[13px] text-blush mt-3">{err}</p>}
     </Carte>
   );
 };
@@ -221,7 +221,7 @@ export const AtelierGalerie: React.FC<Props> = ({ v, lang }) => {
       <BoutonSobre onClick={() => input.current?.click()} disabled={busy || v.photos.length >= MAX_PHOTOS}>
         <Upload size={14} /> {busy ? t.envoi : t.ajouterPhotos}
       </BoutonSobre>
-      {err && <p className="font-sans text-xs text-blush mt-3">{err}</p>}
+      {err && <p className="font-sans text-[13px] text-blush mt-3">{err}</p>}
     </Carte>
   );
 };

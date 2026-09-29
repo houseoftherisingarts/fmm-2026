@@ -12,7 +12,7 @@ import { useReducedMotion } from 'framer-motion';
 
 import { AppProvider, useUI } from './contexts/AppContext';
 import { SiteFlagsProvider, useSiteFlags } from './contexts/SiteFlagsContext';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PorteDuJeu from './components/auth/PorteDuJeu';
 import { BadgesProvider } from './contexts/BadgesContext';
 import AnnonceBadge from './components/badges/AnnonceBadge';
@@ -84,6 +84,10 @@ const CommunautePage   = lazy(() => import('./pages/CommunautePage'));
 const MurPage              = lazy(() => import('./pages/MurPage'));
 const BabillardPage        = lazy(() => import('./pages/BabillardPage'));
 const BoutiquePage         = lazy(() => import('./pages/BoutiquePage'));
+// Les vitrines des musiciens et des artisans sans site (Alex, 2026-09-28).
+const VitrinePage          = lazy(() => import('./pages/VitrinePage'));
+const MaVitrinePage        = lazy(() => import('./pages/MaVitrinePage'));
+const BoutiquesPage        = lazy(() => import('./pages/BoutiquesPage'));
 const SoukPage             = lazy(() => import('./pages/SoukPage'));
 // Le chantier : inventaire du personnage + salon 2D, réservé à l'équipe
 // tant que ce n'est pas publié (Alex, 2026-08-27, dictée « inventaire
@@ -317,6 +321,21 @@ const PorteTournoi: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return <>{children}</>;
 };
 
+// Les vitrines : ouvertes par le drapeau `pubVitrines`, sinon par l'équipe
+// ou par l'aperçu `?apercu=1` que l'on montre à Jesse avant d'allumer.
+// L'aperçu n'ouvre que les trois pages d'exemple (jamais la vitrine
+// réelle d'un tiers), et le passe-droit du serveur de dev s'appuie sur
+// `import.meta.env.DEV`, faux dans tout build de production.
+const PorteVitrines: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { flags } = useSiteFlags();
+  const { isAdmin } = useAuth();
+  const { pathname, search } = useLocation();
+  const pageExemple = !pathname.includes('/vitrine/') || pathname.endsWith('/vitrine/apercu');
+  const apercu = pageExemple && new URLSearchParams(search).get('apercu') === '1';
+  if (!flags.pubVitrines && !isAdmin && !apercu && !import.meta.env.DEV) return <NotFoundPage />;
+  return <>{children}</>;
+};
+
 const Chrome: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;
@@ -510,6 +529,14 @@ const App: React.FC = () => (
                 <Route path="/en/profile/:uid"                  element={<PublicProfilePage />} />
                 <Route path="/boutique" element={<BoutiquePage />} />
                 <Route path="/en/shop"  element={<BoutiquePage />} />
+                {/* Les vitrines : la page publique d'un musicien ou d'un
+                    artisan, son atelier, et les boutiques à l'année. */}
+                <Route path="/vitrine/:slug"    element={<PorteVitrines><VitrinePage /></PorteVitrines>} />
+                <Route path="/en/vitrine/:slug" element={<PorteVitrines><VitrinePage /></PorteVitrines>} />
+                <Route path="/ma-vitrine"       element={<PorteVitrines><MaVitrinePage /></PorteVitrines>} />
+                <Route path="/en/my-showcase"   element={<PorteVitrines><MaVitrinePage /></PorteVitrines>} />
+                <Route path="/boutiques"        element={<PorteVitrines><BoutiquesPage /></PorteVitrines>} />
+                <Route path="/en/shops"         element={<PorteVitrines><BoutiquesPage /></PorteVitrines>} />
                 <Route path="/mur"     element={<MurPage />} />
                 <Route path="/en/wall" element={<MurPage />} />
                 {/* Le babillard a son adresse depuis le 2026-09-02 : le

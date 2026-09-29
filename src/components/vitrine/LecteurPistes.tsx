@@ -79,9 +79,9 @@ const LecteurPistes: React.FC<{ pistes: Piste[]; fr: boolean }> = ({ pistes, fr 
               <span className="w-10 h-10 rounded-full bg-brass text-midnight-deep flex items-center justify-center shrink-0">
                 {active && enLecture ? <Pause size={16} /> : <Play size={16} className="ml-0.5" />}
               </span>
-              <span className="font-sans text-xs text-ivory-soft/70 w-6 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-sans text-[13px] text-ivory-soft/70 w-6 shrink-0">{String(i + 1).padStart(2, '0')}</span>
               <span className="font-editorial text-base text-ivory flex-1 min-w-0 truncate">{p.titre}</span>
-              <span className="font-sans text-xs text-ivory-soft/80 shrink-0">{formatDuree(p.duree)}</span>
+              <span className="font-sans text-[13px] text-ivory-soft/80 shrink-0">{formatDuree(p.duree)}</span>
             </button>
             {active && (
               <div role="progressbar" aria-valuenow={Math.round(progres * 100)} aria-valuemin={0} aria-valuemax={100}

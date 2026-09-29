@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Download, ExternalLink, Music, Palette, Store } from 'lucide-react';
+import { Download, ExternalLink, Eye, Music, Palette, Store } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { Badge, Card, EmptyState, GhostButton, Input, PrimaryButton, downloadCsv, fmtDate } from '../primitives';
 import {
-  PRIX_BOUTIQUE_ANNUEL, listerVitrines, majBoutiqueAdmin, urlPublique,
+  LIEN_SQUARE_BOUTIQUE, PRIX_BOUTIQUE_ANNUEL, listerVitrines, majBoutiqueAdmin, urlPublique,
   type StatutBoutique, type Vitrine,
 } from '../../../firebase/vitrines';
 
@@ -20,6 +20,13 @@ const STATUT: Record<StatutBoutique, { label: string; tone: 'pending' | 'accepte
 };
 
 type Filtre = 'toutes' | StatutBoutique;
+
+const ORIGINE = typeof window !== 'undefined' ? window.location.origin : 'https://festivalmedievaldemontpellier.org';
+const APERCUS = [
+  { label: 'Vitrine publique (exemple)', chemin: '/vitrine/apercu?apercu=1' },
+  { label: 'Atelier rempli (exemple)',   chemin: '/ma-vitrine?apercu=1' },
+  { label: 'Page des boutiques',         chemin: '/boutiques?apercu=1' },
+];
 
 const VitrinesSection: React.FC = () => {
   const [liste, setListe] = useState<Vitrine[] | null>(null);
@@ -68,11 +75,32 @@ const VitrinesSection: React.FC = () => {
         <div>
           <h2 className="font-display text-2xl text-ivory">Vitrines</h2>
           <p className="font-editorial text-sm text-ivory-soft mt-1">
-            Les pages des musiciens et des artisans sans site. La boutique du festival se règle {PRIX_BOUTIQUE_ANNUEL} $ par année : posez le lien Zeffy, la personne le voit dans son atelier, puis activez dès la réception.
+            Les pages des musiciens et des artisans sans site. La boutique du festival se règle {PRIX_BOUTIQUE_ANNUEL} $ par année par le Square du festival{LIEN_SQUARE_BOUTIQUE ? '' : ' (lien général à poser dans .env.local, VITE_SQUARE_BOUTIQUE_URL)'} : la personne paie depuis son atelier, vous activez dès que le paiement passe.
           </p>
         </div>
         <GhostButton onClick={exporter}><Download size={14} /> CSV</GhostButton>
       </div>
+
+      <Card>
+        <div className="flex items-start gap-3">
+          <Eye size={18} className="text-brass shrink-0 mt-0.5" />
+          <div className="min-w-0">
+            <h3 className="font-display text-lg text-ivory">Aperçu pour l’équipe</h3>
+            <p className="font-editorial text-sm text-ivory-soft mt-1">
+              Tant que la bascule « Vitrines des musiciens et des artisans » dort dans Paramètres, ces adresses ne s’ouvrent que pour l’équipe et pour qui a l’un des liens d’aperçu ci-dessous. À montrer à Jesse avant d’allumer.
+            </p>
+            <ul className="mt-3 space-y-1">
+              {APERCUS.map((a) => (
+                <li key={a.chemin} className="flex flex-wrap items-center gap-2">
+                  <span className="font-sans text-[13px] text-ivory-soft w-44">{a.label}</span>
+                  <a href={a.chemin} target="_blank" rel="noopener noreferrer" className="font-sans text-[13px] text-brass hover:underline break-all">{ORIGINE}{a.chemin}</a>
+                  <GhostButton onClick={() => navigator.clipboard?.writeText(`${ORIGINE}${a.chemin}`)}>Copier</GhostButton>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Card>
 
       <div className="flex flex-wrap gap-2">
         {(['toutes', 'demandee', 'active', 'aucune', 'refusee'] as Filtre[]).map((f) => (
@@ -117,7 +145,7 @@ const VitrinesSection: React.FC = () => {
                 {s !== 'aucune' && (
                   <div className="flex flex-col gap-2 w-full md:w-auto md:min-w-[320px]">
                     <div className="flex gap-2">
-                      <Input placeholder="Lien de paiement Zeffy" defaultValue={v.boutique.lienPaiement ?? ''}
+                      <Input placeholder="Lien Square propre à cette demande (sinon le lien général)" defaultValue={v.boutique.lienPaiement ?? ''}
                              onChange={(e) => setLiens((l) => ({ ...l, [v.slug]: e.target.value }))} />
                       <GhostButton onClick={() => poserLien(v)} disabled={busy === v.slug}>Poser</GhostButton>
                     </div>

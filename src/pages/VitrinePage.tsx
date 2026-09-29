@@ -10,6 +10,7 @@ import SEO from '../components/SEO';
 import Brume from '../components/Brume';
 import LecteurPistes from '../components/vitrine/LecteurPistes';
 import { suivreVitrine, type Liens, type Produit, type Vitrine } from '../firebase/vitrines';
+import { VITRINE_APERCU } from '../content/vitrineApercu';
 
 // ─── /vitrine/{slug} · la page publique d'un musicien ou d'un artisan ─
 // La page que la personne partage à ses amis quand elle n'a pas de
@@ -31,6 +32,9 @@ const LIENS: { cle: keyof Liens; label: string }[] = [
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+/** Seules les adresses http(s) deviennent des liens; le reste ne sort pas de la page. */
+const sur = (u?: string) => (u && /^https?:\/\//i.test(u) ? u : undefined);
+
 const VitrinePage: React.FC = () => {
   useCaravanPage();
   const { slug = '' } = useParams<{ slug: string }>();
@@ -39,7 +43,13 @@ const VitrinePage: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const [v, setV] = useState<Vitrine | null | undefined>(undefined);
 
-  useEffect(() => suivreVitrine(slug, setV), [slug]);
+  // Échappatoire de développement : /vitrine/apercu?apercu=1 montre une
+  // vitrine remplie sans Firestore, pour vérifier le rendu.
+  const apercu = slug === 'apercu' && new URLSearchParams(window.location.search).get('apercu') === '1';
+  useEffect(() => {
+    if (apercu) { setV(VITRINE_APERCU); return; }
+    return suivreVitrine(slug, setV);
+  }, [slug, apercu]);
 
   if (v === undefined) {
     return (
@@ -52,8 +62,8 @@ const VitrinePage: React.FC = () => {
 
   const proprietaire = !!user && user.uid === v.uid;
   const boutiqueActive = v.boutique?.statut === 'active';
-  const lienCommandeGeneral = v.liens?.square || v.liens?.stripe;
-  const liens = LIENS.filter((l) => v.liens?.[l.cle]);
+  const lienCommandeGeneral = sur(v.liens?.square) || sur(v.liens?.stripe);
+  const liens = LIENS.filter((l) => sur(v.liens?.[l.cle]));
   const aDesPistes = v.pistes.length > 0;
   const aDesProduits = v.produits.length > 0;
   const musiqueDAbord = v.type === 'musique';
@@ -74,7 +84,7 @@ const VitrinePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-midnight-deep/70 via-transparent to-transparent" />
         <Brume />
 
-        <div className="relative w-full max-w-screen-xl mx-auto px-4 md:px-8 pb-12 md:pb-20 pt-32">
+        <div className="relative w-full w-full px-4 md:px-8 lg:px-12 pb-12 md:pb-20 pt-32">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease, delay: 0.2 }}
                       className="flex flex-col md:flex-row md:items-end gap-6 md:gap-10">
             <div className="shrink-0">
@@ -88,11 +98,11 @@ const VitrinePage: React.FC = () => {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs md:text-sm mb-3 flex items-center gap-3 flex-wrap">
+              <p className="font-editorial text-brass uppercase tracking-[0.3em] text-[13px] md:text-sm mb-3 flex items-center gap-3 flex-wrap">
                 <span>{musiqueDAbord ? (fr ? 'Musique' : 'Music') : (fr ? 'Artisan' : 'Artisan')}</span>
                 {v.ville && <span className="inline-flex items-center gap-1 text-ivory-soft normal-case tracking-normal"><MapPin size={12} />{v.ville}</span>}
                 {boutiqueActive && (
-                  <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-midnight-deep bg-brass px-2.5 py-0.5 rounded-full text-[11px] font-sans font-semibold">
+                  <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-midnight-deep bg-brass px-2.5 py-0.5 rounded-full text-[13px] font-sans font-semibold">
                     <BadgeCheck size={12} />{fr ? 'Boutique du festival' : 'Festival shop'}
                   </span>
                 )}
@@ -104,7 +114,7 @@ const VitrinePage: React.FC = () => {
                   {lienCommandeGeneral && (
                     <li>
                       <a href={lienCommandeGeneral} target="_blank" rel="noopener noreferrer"
-                         className="inline-flex items-center gap-2 px-4 py-2 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+                         className="inline-flex items-center gap-2 px-4 py-2 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[13px] font-semibold hover:bg-brass-soft transition rounded-card">
                         <ShoppingBag size={14} />{fr ? 'Commander en ligne' : 'Order online'}
                       </a>
                     </li>
@@ -112,7 +122,7 @@ const VitrinePage: React.FC = () => {
                   {liens.map((l) => (
                     <li key={l.cle}>
                       <a href={v.liens[l.cle]} target="_blank" rel="noopener noreferrer"
-                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-card bg-black/40 backdrop-blur-md border border-white/15 hover:border-brass/60 font-sans text-xs uppercase tracking-wider text-ivory transition">
+                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-card bg-black/40 backdrop-blur-md border border-white/15 hover:border-brass/60 font-sans text-[13px] uppercase tracking-wider text-ivory transition">
                         {l.label} <ArrowUpRight size={12} />
                       </a>
                     </li>
@@ -120,7 +130,7 @@ const VitrinePage: React.FC = () => {
                   {v.liens?.courriel && (
                     <li>
                       <a href={`mailto:${v.liens.courriel}`}
-                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-card bg-black/40 backdrop-blur-md border border-white/15 hover:border-brass/60 font-sans text-xs uppercase tracking-wider text-ivory transition">
+                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-card bg-black/40 backdrop-blur-md border border-white/15 hover:border-brass/60 font-sans text-[13px] uppercase tracking-wider text-ivory transition">
                         <Mail size={12} /> {fr ? 'Écrire' : 'Write'}
                       </a>
                     </li>
@@ -134,30 +144,31 @@ const VitrinePage: React.FC = () => {
 
       {!v.publie && (proprietaire || isAdmin) && (
         <div className="bg-brass/15 border-y border-brass/40">
-          <p className="max-w-screen-xl mx-auto px-4 md:px-8 py-3 font-sans text-xs uppercase tracking-wider text-brass">
+          <p className="w-full px-4 md:px-8 lg:px-12 py-3 font-sans text-[13px] uppercase tracking-wider text-brass">
             {fr ? 'Brouillon : cette vitrine ne se voit que par vous tant qu’elle n’est pas publiée.' : 'Draft: only you can see this page until it is published.'}
           </p>
         </div>
       )}
 
       <div className="relative bleed-edges overflow-hidden pb-24">
-        <div className="relative z-10 max-w-screen-xl mx-auto px-4 md:px-8 space-y-16 md:space-y-24 pt-16 md:pt-24">
-          {musiqueDAbord && aDesPistes && <SectionPistes v={v} fr={fr} />}
+        <div className="relative z-10 w-full px-4 md:px-8 lg:px-12 space-y-16 md:space-y-24 pt-16 md:pt-24">
+          {/* Les pistes et l'histoire se partagent la largeur de l'écran
+              quand les deux existent; seules, chacune prend tout. */}
+          {musiqueDAbord && (aDesPistes || v.bio) && <PistesEtBio v={v} fr={fr} />}
           {aDesProduits && <SectionProduits v={v} fr={fr} lienGeneral={lienCommandeGeneral} />}
-          {!musiqueDAbord && aDesPistes && <SectionPistes v={v} fr={fr} />}
+          {!musiqueDAbord && (aDesPistes || v.bio) && <PistesEtBio v={v} fr={fr} />}
           {v.photos.length > 0 && <SectionGalerie v={v} fr={fr} />}
-          {v.bio && <SectionBio v={v} fr={fr} />}
 
           <footer className="pt-8 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <p className="font-editorial text-sm text-ivory-soft">
               {fr ? 'Une vitrine offerte par le Festival Médiéval de Montpellier.' : 'A showcase offered by the Festival Médiéval de Montpellier.'}
             </p>
             <div className="flex items-center gap-4">
-              <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-ivory-soft hover:text-brass transition">
+              <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 font-sans text-[13px] uppercase tracking-widest text-ivory-soft hover:text-brass transition">
                 <ArrowLeft size={14} /> {fr ? 'Le festival' : 'The festival'}
               </Link>
               {!proprietaire && (
-                <Link to={addLocale('/ma-vitrine', lang)} className="font-sans text-xs uppercase tracking-widest text-brass hover:text-brass-soft transition">
+                <Link to={addLocale('/ma-vitrine', lang)} className="font-sans text-[13px] uppercase tracking-widest text-brass hover:text-brass-soft transition">
                   {fr ? 'Créer la mienne' : 'Create mine'}
                 </Link>
               )}
@@ -168,7 +179,7 @@ const VitrinePage: React.FC = () => {
 
       {proprietaire && (
         <Link to={addLocale('/ma-vitrine', lang)}
-              className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold rounded-card shadow-2xl hover:bg-brass-soft transition">
+              className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 px-5 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[13px] font-semibold rounded-card shadow-2xl hover:bg-brass-soft transition">
           <PenLine size={14} /> {fr ? 'Modifier ma vitrine' : 'Edit my showcase'}
         </Link>
       )}
@@ -178,16 +189,26 @@ const VitrinePage: React.FC = () => {
 
 const Titre: React.FC<{ eyebrow: string; titre: string }> = ({ eyebrow, titre }) => (
   <div className="mb-8">
-    <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs md:text-sm mb-2">{eyebrow}</p>
+    <p className="font-editorial text-brass uppercase tracking-[0.3em] text-[13px] md:text-sm mb-2">{eyebrow}</p>
     <h2 className="font-display title-medieval text-3xl md:text-4xl text-ivory">{titre}</h2>
     <div className="divider-brass w-24 mt-4" />
   </div>
 );
 
+const PistesEtBio: React.FC<{ v: Vitrine; fr: boolean }> = ({ v, fr }) => {
+  const deux = v.pistes.length > 0 && !!v.bio;
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+      {v.pistes.length > 0 && <div className={deux ? 'lg:col-span-5' : 'lg:col-span-12'}><SectionPistes v={v} fr={fr} /></div>}
+      {v.bio && <div className={deux ? 'lg:col-span-7' : 'lg:col-span-12'}><SectionBio v={v} fr={fr} large={!deux} /></div>}
+    </div>
+  );
+};
+
 const SectionPistes: React.FC<{ v: Vitrine; fr: boolean }> = ({ v, fr }) => (
   <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.8, ease }}>
     <Titre eyebrow={fr ? 'Écouter' : 'Listen'} titre={fr ? 'Les pistes' : 'The tracks'} />
-    <div className="glass-light rounded-lg-card p-4 md:p-6 max-w-3xl">
+    <div className="glass-light rounded-lg-card p-4 md:p-6">
       <LecteurPistes pistes={v.pistes} fr={fr} />
     </div>
   </motion.section>
@@ -197,8 +218,8 @@ const SectionProduits: React.FC<{ v: Vitrine; fr: boolean; lienGeneral?: string 
   <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.8, ease }}>
     <Titre eyebrow={v.type === 'musique' ? (fr ? 'Albums et objets' : 'Albums and goods') : (fr ? 'L’atelier' : 'The workshop')}
            titre={fr ? 'Les créations' : 'The creations'} />
-    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-      {v.produits.map((p, i) => <CarteProduit key={p.id} p={p} fr={fr} lien={p.lien || lienGeneral} i={i} />)}
+    <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-4 md:gap-6">
+      {v.produits.map((p, i) => <CarteProduit key={p.id} p={p} fr={fr} lien={sur(p.lien) || lienGeneral} i={i} />)}
     </ul>
   </motion.section>
 );
@@ -219,7 +240,7 @@ const CarteProduit: React.FC<{ p: Produit; fr: boolean; lien?: string; i: number
       {p.description && <p className="font-editorial text-sm text-ivory-soft leading-relaxed flex-1">{p.description}</p>}
       {lien && (
         <a href={lien} target="_blank" rel="noopener noreferrer"
-           className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold transition rounded-card">
+           className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 border border-brass text-brass hover:bg-brass hover:text-midnight-deep font-sans uppercase tracking-wider text-[13px] font-semibold transition rounded-card">
           {fr ? 'Commander' : 'Order'} <ExternalLink size={12} />
         </a>
       )}
@@ -240,13 +261,13 @@ const SectionGalerie: React.FC<{ v: Vitrine; fr: boolean }> = ({ v, fr }) => (
   </motion.section>
 );
 
-const SectionBio: React.FC<{ v: Vitrine; fr: boolean }> = ({ v, fr }) => (
+const SectionBio: React.FC<{ v: Vitrine; fr: boolean; large?: boolean }> = ({ v, fr, large }) => (
   <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.8, ease }}
-                  className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-    <div className="lg:col-span-4">
+                  className={large ? 'grid grid-cols-1 lg:grid-cols-12 gap-8' : ''}>
+    <div className={large ? 'lg:col-span-4' : ''}>
       <Titre eyebrow={fr ? 'À propos' : 'About'} titre={v.nom} />
     </div>
-    <div className="lg:col-span-8 glass-light rounded-lg-card p-6 md:p-10">
+    <div className={`glass-light rounded-lg-card p-6 md:p-10 ${large ? 'lg:col-span-8' : ''}`}>
       {v.bio!.split(/\n{2,}/).map((par, i) => (
         <p key={i} className="font-editorial text-base md:text-lg text-ivory-soft leading-relaxed mb-5 last:mb-0 whitespace-pre-line">{par}</p>
       ))}
@@ -258,14 +279,14 @@ const Introuvable: React.FC<{ fr: boolean; lang: 'FR' | 'EN' }> = ({ fr, lang })
   <main className="min-h-screen text-ivory flex items-center justify-center px-4">
     <SEO title={fr ? 'Vitrine introuvable' : 'Showcase not found'} noindex />
     <div className="glass-light rounded-lg-card p-10 max-w-lg text-center">
-      <p className="font-editorial text-brass uppercase tracking-[0.3em] text-xs mb-3">{fr ? 'Vitrine' : 'Showcase'}</p>
+      <p className="font-editorial text-brass uppercase tracking-[0.3em] text-[13px] mb-3">{fr ? 'Vitrine' : 'Showcase'}</p>
       <h1 className="font-display title-medieval text-3xl text-ivory mb-4">{fr ? 'Cette adresse ne mène nulle part' : 'This address leads nowhere'}</h1>
       <p className="font-editorial text-base text-ivory-soft leading-relaxed mb-6">
         {fr
           ? 'La vitrine n’existe pas, ou elle n’est pas encore publiée par la personne qui la tient.'
           : 'The showcase does not exist, or its owner has not published it yet.'}
       </p>
-      <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-xs font-semibold hover:bg-brass-soft transition rounded-card">
+      <Link to={addLocale('/', lang)} className="inline-flex items-center gap-2 px-6 py-3 bg-brass text-midnight-deep font-sans uppercase tracking-wider text-[13px] font-semibold hover:bg-brass-soft transition rounded-card">
         <ArrowLeft size={14} /> {fr ? 'Retour au festival' : 'Back to the festival'}
       </Link>
     </div>
