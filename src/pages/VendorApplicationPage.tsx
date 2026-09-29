@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, LogIn, ShoppingBag, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUI } from '../contexts/AppContext';
+import { useSiteFlags } from '../contexts/SiteFlagsContext';
 import { addLocale } from '../lib/locale';
 import { useCaravanPage } from '../lib/useCaravanPage';
 import SEO from '../components/SEO';
@@ -18,6 +19,7 @@ const VendorApplicationPage: React.FC = () => {
   const { lang } = useUI();
   const t = lang === 'FR' ? FR : EN;
   const { user, openSignIn } = useAuth();
+  const { flags } = useSiteFlags();
   const reduceMotion = useReducedMotion();
 
   // ?year= drives which festival year this application lands under.
@@ -126,7 +128,9 @@ const VendorApplicationPage: React.FC = () => {
             le visiteur atterrissait dans le pied de page. On recale la
             vue sur le puits à chaque bascule. */}
         <div ref={wellRef} className="relative z-10 w-full px-4 md:px-8 mt-14 stage-3d">
-          {!overtureClosed ? (
+          {flags.vendorApplicationsPaused ? (
+            <VendorQuestForm year={targetYear} />
+          ) : !overtureClosed ? (
             <OvertureScroll
               lang={lang}
               reduceMotion={!!reduceMotion}
