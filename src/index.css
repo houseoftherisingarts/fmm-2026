@@ -808,6 +808,11 @@ body.fmm-caravan-page .fmm-fire-backdrop,
 /* La flamme reste : c'est l'ambiance du site, et elle n'entraîne ni
    parallaxe ni détournement de défilement. Décision d'Alex 2026-08-02. */
 
+/* Le prologue du chevalier (HomeWithIntro, App.tsx) pose cette classe sur
+   <html> le temps qu'il joue : le pied de page global attend derrière et
+   ne doit ni se voir ni allonger la page (Alex, 2026-09-29). */
+html.fmm-intro-en-cours footer { display: none; }
+
 /* ── Fond animé, éteint sur demande ──────────────────────────────
    Réglage personnel (prefs.animationsFond, panneau Réglages de mon
    profil) : posé en classe sur <html> par usePrefsFond.ts. Éteint les

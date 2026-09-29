@@ -212,6 +212,13 @@ const HomeWithIntro: React.FC = () => {
   // the cinematic hero without toggling the OS setting).
   const skipIntro = reduce && !presale;
   const showIntro = force || (!entered && !skipIntro);
+  // Tant que le chevalier joue, le pied de page global se tait : la classe
+  // posée sur <html> le cache (index.css), sinon il allonge la page derrière
+  // l'intro. Seule exception au pied de page partout (Alex, 2026-09-29).
+  useEffect(() => {
+    document.documentElement.classList.toggle('fmm-intro-en-cours', showIntro);
+    return () => document.documentElement.classList.remove('fmm-intro-en-cours');
+  }, [showIntro]);
 
   const handleEnter = () => {
     try { sessionStorage.setItem('fmm_intro_seen', '1'); } catch { /* ignore */ }
@@ -344,25 +351,17 @@ const Chrome: React.FC = () => {
   if (isImmersive(pathname)) return null;
   return <NavBar />;
 };
-// Les jeux occupent l'écran d'un bord à l'autre : aucun pied de page ne
-// doit se dresser dessous (Alex, 2026-08-23 : « une seule fenêtre »).
-const SANS_PIED = [
-  '/jeux/renard', '/en/games/fox-and-geese', '/jeux/merelle', '/en/games/merelle',
-  '/', '/en', '/labo-titre', '/backuppage', '/en/backuppage',
-  '/jeux/des', '/en/games/dice',
-  '/jeux/tarot', '/en/games/tarot',
-  '/jeunesse/hnefatafl', '/en/youth/hnefatafl',
-];
+// Le pied de page se dresse sous chaque page publique, l'accueil de
+// l'orbe compris : l'entrée cinématique (chevalier, logo qui brûle, orbe)
+// garde son plein écran en haut, et le pied vient après les annonces et les
+// nouvelles quand on descend. Les jeux le portent aussi : ils gardent leurs
+// 100 % de largeur, le pied ne fait qu'attendre dessous (Alex, 2026-09-29).
 const Footing: React.FC = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith('/admin')) return null;
-  // Le pied de page reste absent des accueils cinématiques (la page du
-  // menu principal se termine sur l'orbe, pas sur un pied), même si la
-  // barre du haut, elle, s'y affiche maintenant.
-  const immersive = SANS_PIED.includes(pathname);
   return (
     <Suspense fallback={null}>
-      {!immersive && <Footer />}
+      <Footer />
       <PorteBilletterieGlobale />
     </Suspense>
   );
