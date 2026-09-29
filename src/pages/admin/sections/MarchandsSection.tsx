@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, Save, Download, ShoppingBag, ExternalLink, Lock, Unlock, RotateCcw, Sparkles, Globe, Crown, Image as ImageIcon } from 'lucide-react';
+import { ChevronDown, ChevronRight, Save, Download, ShoppingBag, ExternalLink, Lock, Unlock, Hourglass, RotateCcw, Sparkles, Globe, Crown, Image as ImageIcon } from 'lucide-react';
 import {
   CURRENT_YEAR, reinviteVendor, upsertVendorApp,
   type VendorStatus, type VendorApp, type VendorTier,
@@ -60,6 +60,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
   const { flags, setFlag } = useSiteFlags();
   const { user: adminUser } = useAuth();
   const inscriptionsOpen = flags.vendorApplicationsOpen;
+  const inscriptionsPaused = flags.vendorApplicationsPaused;
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   // Catalogue used by the image picker: every kiosk on every tier in
@@ -162,6 +163,7 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
   })));
 
   const toggleInscriptions = () => setFlag('vendorApplicationsOpen', !inscriptionsOpen);
+  const togglePause = () => setFlag('vendorApplicationsPaused', !inscriptionsPaused);
   const toggleYear = (y: number) => setCollapsedYears((p) => ({ ...p, [y]: !p[y] }));
 
   const reinvite = async (v: VendorApp) => {
@@ -280,7 +282,26 @@ const MarchandsSection: React.FC<Props> = ({ fetchAll, updateOne }) => {
           {inscriptionsOpen ? <Lock size={12} /> : <Unlock size={12} />}
           {inscriptionsOpen ? 'Fermer les inscriptions' : 'Rouvrir les inscriptions'}
         </button>
+        <button
+          onClick={togglePause}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-card font-sans uppercase tracking-wider text-xs font-semibold transition ${
+            inscriptionsPaused
+              ? 'bg-amber-300/15 border border-amber-300/40 text-amber-300 hover:bg-amber-300/25'
+              : 'bg-white/5 border border-white/15 text-ivory-soft hover:bg-white/10'
+          }`}
+        >
+          <Hourglass size={12} />
+          {inscriptionsPaused ? 'Reprendre les inscriptions' : 'Mettre en pause'}
+        </button>
       </div>
+
+      {inscriptionsPaused && (
+        <Card className="px-4 py-3 border border-amber-300/30">
+          <p className="font-editorial italic text-sm text-amber-300">
+            Inscriptions en pause : le formulaire du marché affiche « On récupère du festival, les inscriptions sont en pause pour le moment » et ne reçoit rien.
+          </p>
+        </Card>
+      )}
 
       {!inscriptionsOpen && (
         <Card className="px-4 py-3 border border-amber-300/30">

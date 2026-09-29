@@ -48,6 +48,11 @@ const BASCULES: Record<string, Bascule> = {
     famille: 'portes',
     effet: "Allumée : le formulaire du marché accepte les candidatures. Éteinte : le même formulaire devient une liste d'attente et le dit à qui le remplit. Le même interrupteur se trouve aussi en haut de la section Marchands.",
   },
+  vendorApplicationsPaused: {
+    label: 'Pause des inscriptions de kiosques',
+    famille: 'portes',
+    effet: "Allumée : le formulaire du marché ne s'ouvre plus et dit « On récupère du festival, les inscriptions sont en pause pour le moment ». Éteinte : le formulaire reprend selon la bascule « Candidatures de marchands ». Le même interrupteur se trouve aussi en haut de la section Marchands.",
+  },
   billetsNonMembres: {
     label: 'Billets non membres',
     famille: 'portes',

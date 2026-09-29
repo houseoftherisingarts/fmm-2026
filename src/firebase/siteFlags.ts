@@ -28,6 +28,11 @@ export interface SiteFlags {
   // la candidature). La page elle-même s'ouvre par `pubBenevole`.
   volunteerSignupOpen:     boolean;
   vendorApplicationsOpen:  boolean;
+  // Pause des inscriptions de kiosques (Alex, 2026-09-29, au lendemain du
+  // festival) : allumée, le formulaire du marché ne s'ouvre plus et dit
+  // « on récupère du festival, les inscriptions sont en pause ». Prime sur
+  // `vendorApplicationsOpen`, qui garde son sens ouvert / liste d'attente.
+  vendorApplicationsPaused: boolean;
   // Plus aucun lecteur. Le compte à rebours a quitté la séquence d'accueil
   // le 13 juillet 2026 : OrbHomePage déclare son propre `showCountdown`
   // local figé à false, qui masque celui-ci sans jamais le consulter.
@@ -97,6 +102,7 @@ export const SITE_FLAGS_DEFAULTS: SiteFlags = {
   banquetReservationsOpen: false,
   volunteerSignupOpen:     true,
   vendorApplicationsOpen:  true,
+  vendorApplicationsPaused: false,
   showCountdown:           true,
   knightPlacementEditor:   false,
   showCommanditaire:       false,

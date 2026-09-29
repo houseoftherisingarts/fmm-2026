@@ -87,6 +87,7 @@ const VendorQuestForm: React.FC<VendorQuestFormProps> = ({ onReopenOverture, yea
   const { flags } = useSiteFlags();
   const reduceMotion = useReducedMotion();
   const isWaitlist = !flags.vendorApplicationsOpen;
+  const isPaused = flags.vendorApplicationsPaused;
   const targetYear = year || CURRENT_YEAR;
 
   const [chapter, setChapter]   = useState<ChapterId>(1);
@@ -308,6 +309,10 @@ const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'sent' | 
       ? { duration: 0.15 }
       : { type: 'spring' as const, stiffness: 130, damping: 20, mass: 0.9 },
   }), [reduceMotion]);
+
+  if (isPaused) {
+    return <BannerCard tone="amber" icon={Hourglass} title={t.pausedTitle} body={t.pausedBody} />;
+  }
 
   if (!user) return null;
 
@@ -1134,6 +1139,8 @@ const FR = {
   statusPrefix: 'Statut',
   status: { pending: 'En attente', accepted: 'Acceptée', rejected: 'Refusée', waitlist: 'Liste d’attente' } as Record<'pending' | 'accepted' | 'rejected' | 'waitlist', string>,
   editLead: 'Vous pouvez mettre à jour votre inscription tant qu’elle est en attente.',
+  pausedTitle: 'Inscriptions en pause',
+  pausedBody:  'On récupère du festival, les inscriptions sont en pause pour le moment.',
   waitlistTitle: 'Inscriptions fermées : liste d’attente',
   waitlistBody:  'Les inscriptions principales sont closes. Vous pouvez tout de même soumettre votre candidature : elle sera ajoutée à la liste d’attente.',
 
@@ -1227,6 +1234,8 @@ const EN: typeof FR = {
   statusPrefix: 'Status',
   status: { pending: 'Pending', accepted: 'Accepted', rejected: 'Declined', waitlist: 'Wait list' },
   editLead: 'You can update your registration while it is pending.',
+  pausedTitle: 'Registrations paused',
+  pausedBody:  'We are recovering from the festival; registrations are paused for now.',
   waitlistTitle: 'Registrations closed: wait list',
   waitlistBody:  'Main registrations are closed. You can still submit your application: it will be added to the wait list.',
 
